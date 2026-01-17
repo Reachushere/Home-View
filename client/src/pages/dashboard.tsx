@@ -399,7 +399,7 @@ export default function Dashboard() {
                         >
                           <div className={`text-xs font-medium mb-1 text-left ${
                             isCurrentWeekDay
-                              ? "text-background"
+                              ? "text-red-500"
                               : isCurrentMonth 
                                 ? "text-foreground" 
                                 : "text-muted-foreground"
