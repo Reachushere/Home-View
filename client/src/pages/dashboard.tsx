@@ -392,7 +392,7 @@ export default function Dashboard() {
                               : "border " + (isCurrentMonth 
                                 ? "bg-card" 
                                 : "bg-muted/30 text-muted-foreground")}
-                            ${isToday ? "animate-today-blink" : ""}
+                            ${isToday ? "animate-today-blink hover:scale-110 hover:z-20 transition-transform" : ""}
                             ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
                           `}
                           data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
