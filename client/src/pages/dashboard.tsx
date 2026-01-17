@@ -268,7 +268,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" onClick={handlePrevMonth} data-testid="button-prev-month">
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <h2 className="text-2xl font-semibold text-foreground min-w-[200px] text-center">
+            <h2 className="text-2xl font-semibold text-white min-w-[200px] text-center">
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <Button variant="ghost" size="icon" onClick={handleNextMonth} data-testid="button-next-month">
@@ -390,7 +390,7 @@ export default function Dashboard() {
         {/* Selected Date / Week Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-lg font-semibold text-white">
               {selectedDate 
                 ? format(selectedDate, "EEEE, MMMM d, yyyy")
                 : `Week ${selectedWeek} Tasks`}
@@ -405,7 +405,7 @@ export default function Dashboard() {
 
         {/* Upcoming Tasks Section */}
         <section className="mb-6">
-          <h4 className="text-md font-semibold text-foreground mb-3">
+          <h4 className="text-md font-semibold text-white mb-3">
             Upcoming ({upcomingTasks.length})
           </h4>
           {isLoading ? (
