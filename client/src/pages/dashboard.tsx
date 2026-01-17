@@ -352,24 +352,27 @@ export default function Dashboard() {
                 
                 // Build red border for current week (Sat-Fri)
                 // dayIdx: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-                // Two boxes: Saturday gets its own box, Sun-Fri get another box
+                // Two boxes: Saturday gets its own box, Sun-Fri get connected box using box-shadow to span gaps
                 let currentWeekBorder = "";
+                let currentWeekShadow: React.CSSProperties = {};
                 if (isCurrentWeekDay) {
                   // Saturday = its own complete box
                   if (dayIdx === 6) {
                     currentWeekBorder = "border-4 border-red-500 rounded-lg";
                   }
-                  // Sunday = start of Sun-Fri box (left border)
+                  // Sunday = start of Sun-Fri box (left + top + bottom, with shadow extending right into gap)
                   else if (dayIdx === 0) {
-                    currentWeekBorder = "border-l-4 border-t-4 border-b-4 border-l-red-500 border-t-red-500 border-b-red-500 rounded-l-lg";
+                    currentWeekBorder = "border-l-4 border-t-4 border-b-4 border-red-500 rounded-l-lg";
+                    currentWeekShadow = { boxShadow: 'inset 0 4px 0 0 rgb(239 68 68), inset 0 -4px 0 0 rgb(239 68 68), 4px 0 0 0 rgb(239 68 68)' };
                   }
-                  // Friday = end of Sun-Fri box (right border)
+                  // Friday = end of Sun-Fri box (right + top + bottom, with shadow extending left into gap)
                   else if (dayIdx === 5) {
-                    currentWeekBorder = "border-r-4 border-t-4 border-b-4 border-r-red-500 border-t-red-500 border-b-red-500 rounded-r-lg";
+                    currentWeekBorder = "border-r-4 border-t-4 border-b-4 border-red-500 rounded-r-lg";
+                    currentWeekShadow = { boxShadow: 'inset 0 4px 0 0 rgb(239 68 68), inset 0 -4px 0 0 rgb(239 68 68), -4px 0 0 0 rgb(239 68 68)' };
                   }
-                  // Mon-Thu = middle of Sun-Fri box (top/bottom borders)
+                  // Mon-Thu = middle of Sun-Fri box (top/bottom via inset shadow, extending left/right into gaps)
                   else {
-                    currentWeekBorder = "border-t-4 border-b-4 border-t-red-500 border-b-red-500";
+                    currentWeekShadow = { boxShadow: 'inset 0 4px 0 0 rgb(239 68 68), inset 0 -4px 0 0 rgb(239 68 68), 4px 0 0 0 rgb(239 68 68), -4px 0 0 0 rgb(239 68 68)' };
                   }
                 }
                 
@@ -412,6 +415,7 @@ export default function Dashboard() {
                       ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
                       ${currentWeekBorder}
                     `}
+                    style={currentWeekShadow}
                     data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className={`text-xs font-medium mb-1 text-left ${
