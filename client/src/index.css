@@ -127,6 +127,8 @@
   width: 200px !important;
   height: 160px !important;
   transition: all 0.3s ease-in-out;
+  animation: none !important;
+  box-shadow: 0 0 0 3px hsl(217 91% 60%) !important;
 }
 
 @layer base {
