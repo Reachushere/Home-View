@@ -244,9 +244,14 @@ export default function Dashboard() {
               }}
               data-testid={`button-week-${week.weekNumber}`}
             >
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>Week {week.weekNumber}</span>
+              <div className="flex flex-col items-start">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>Week {week.weekNumber}</span>
+                </div>
+                <span className="text-[10px] text-muted-foreground ml-6">
+                  {format(new Date(week.startDate), "MMM d")} - {format(new Date(week.endDate), "MMM d")}
+                </span>
               </div>
               {week.taskCount > 0 && (
                 <Badge variant="outline" className="ml-auto">
