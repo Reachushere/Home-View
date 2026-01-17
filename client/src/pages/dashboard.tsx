@@ -506,7 +506,7 @@ export default function Dashboard() {
                     {/* Red border overlay for Sun-Fri of current week */}
                     {sunFriInCurrentWeek && (
                       <div 
-                        className="absolute pointer-events-none z-0 bg-blue-300/35"
+                        className="absolute pointer-events-none z-0 bg-red-500/35"
                         style={{
                           left: '18px',
                           right: 'calc((100% - 10px) / 7 - 8px)',
@@ -519,7 +519,7 @@ export default function Dashboard() {
                     {/* Red border overlay for Saturday of current week */}
                     {saturdayInCurrentWeek && (
                       <div 
-                        className="absolute pointer-events-none z-0 bg-blue-300/35"
+                        className="absolute pointer-events-none z-0 bg-red-500/35"
                         style={{
                           left: 'calc(100% - (100% - 10px) / 7 + 2px)',
                           right: '-6px',
