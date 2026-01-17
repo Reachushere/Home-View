@@ -273,7 +273,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" onClick={handlePrevMonth} data-testid="button-prev-month">
               <ChevronLeft className="h-5 w-5 text-white" />
             </Button>
-            <h2 className="text-2xl font-semibold text-white min-w-[200px] text-center">
+            <h2 className="text-2xl font-medium text-white min-w-[200px] text-center" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <Button variant="ghost" size="icon" onClick={handleNextMonth} data-testid="button-next-month">
@@ -450,54 +450,57 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Upcoming Tasks Section */}
-        <section className="mb-6">
-          <h4 className="text-md font-semibold text-white mb-3">
-            Upcoming ({upcomingTasks.length})
-          </h4>
-          {isLoading ? (
-            <div className="text-muted-foreground">Loading tasks...</div>
-          ) : upcomingTasks.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              No upcoming tasks {selectedDate ? "for this date" : "for this week"}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {upcomingTasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                  onReschedule={() => setRescheduleTask(task)}
-                  onEdit={() => setEditingTask(task)}
-                  onDelete={() => deleteMutation.mutate(task.id)}
-                />
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* Missed Tasks Section */}
-        {missedTasks.length > 0 && (
-          <section className="mb-6">
-            <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Missed ({missedTasks.length})
+        {/* Upcoming and Missed Tasks Side by Side */}
+        <div className="flex gap-6 mb-6">
+          {/* Upcoming Tasks Section */}
+          <section className="flex-1">
+            <h4 className="text-md font-semibold text-white mb-3">
+              Upcoming ({upcomingTasks.length})
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {missedTasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                  onReschedule={() => setRescheduleTask(task)}
-                  onEdit={() => setEditingTask(task)}
-                  onDelete={() => deleteMutation.mutate(task.id)}
-                />
-              ))}
-            </div>
+            {isLoading ? (
+              <div className="text-muted-foreground">Loading tasks...</div>
+            ) : upcomingTasks.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No upcoming tasks {selectedDate ? "for this date" : "for this week"}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                {upcomingTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                  />
+                ))}
+              </div>
+            )}
           </section>
-        )}
+
+          {/* Missed Tasks Section */}
+          {missedTasks.length > 0 && (
+            <section className="flex-1">
+              <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                Missed ({missedTasks.length})
+              </h4>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                {missedTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
 
         {/* Completed Tasks Section */}
         {completedTasks.length > 0 && (
