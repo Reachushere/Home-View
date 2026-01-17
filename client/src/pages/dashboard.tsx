@@ -436,7 +436,7 @@ export default function Dashboard() {
                                         const reminderTask = allTasks.find(t => t.id === reminder.id);
                                         if (reminderTask) setEditingTask(reminderTask);
                                       }}
-                                      className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center cursor-pointer hover:opacity-80 ${
+                                      className={`text-[9px] px-0.5 py-px font-medium flex items-center cursor-pointer hover:opacity-80 ${
                                         isCurrentWeekDay 
                                           ? "bg-red-500 text-white" 
                                           : "bg-red-500/20 text-red-600 dark:text-red-400"
@@ -454,7 +454,7 @@ export default function Dashboard() {
                                         setIsTodayExpanded(false);
                                         setEditingTask(task);
                                       }}
-                                      className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 cursor-pointer hover:opacity-80 ${
+                                      className={`text-[9px] truncate px-0.5 py-px font-medium flex-1 cursor-pointer hover:opacity-80 ${
                                         colors 
                                           ? isCurrentWeekDay 
                                             ? `${colors.dot} text-white` 
@@ -475,7 +475,7 @@ export default function Dashboard() {
                                         const reminderTask = allTasks.find(t => t.id === reminder.id);
                                         if (reminderTask) setEditingTask(reminderTask);
                                       }}
-                                      className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 cursor-pointer hover:opacity-80 ${
+                                      className={`text-[9px] truncate px-0.5 py-px font-medium flex-1 cursor-pointer hover:opacity-80 ${
                                         colors 
                                           ? isCurrentWeekDay 
                                             ? `${colors.dot} text-white` 
