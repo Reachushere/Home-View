@@ -344,7 +344,7 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={`reminder-${item.reminderType}-${item.id}`}
-                              className={`text-[8px] truncate px-0.5 py-0 rounded font-medium flex items-center gap-0.5 leading-tight ${
+                              className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex items-center gap-0.5 ${
                                 isCurrentWeekDay 
                                   ? "bg-red-500 text-white" 
                                   : "bg-red-500/10 text-red-600 dark:text-red-400"
@@ -360,7 +360,7 @@ export default function Dashboard() {
                         return (
                           <div 
                             key={item.id}
-                            className={`text-[8px] truncate px-0.5 py-0 rounded font-medium leading-tight ${
+                            className={`text-[9px] truncate px-0.5 py-px rounded font-medium ${
                               colors 
                                 ? isCurrentWeekDay 
                                   ? `${colors.dot} text-white` 
@@ -375,7 +375,7 @@ export default function Dashboard() {
                         );
                       })}
                       {allItems.length > 3 && (
-                        <div className={`text-[8px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
+                        <div className={`text-[9px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
                           +{allItems.length - 3} more
                         </div>
                       )}
