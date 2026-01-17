@@ -28,6 +28,9 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  X,
+  Link,
+  Paperclip,
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES } from "@shared/schema";
@@ -578,6 +581,44 @@ function TaskCard({
           <span>Reminders: 12h, 6h, 2h, 30min before</span>
         </div>
 
+        {task.referenceLink && (
+          <div className="flex items-center gap-1 text-xs">
+            <Link className="h-3 w-3 text-primary" />
+            <a 
+              href={task.referenceLink} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-primary hover:underline truncate"
+              data-testid={`link-reference-${task.id}`}
+            >
+              {task.referenceLink}
+            </a>
+          </div>
+        )}
+
+        {task.attachments && task.attachments.length > 0 && (
+          <div className="space-y-1">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Paperclip className="h-3 w-3" />
+              <span>{task.attachments.length} attachment{task.attachments.length > 1 ? "s" : ""}</span>
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {task.attachments.map((attachment, idx) => (
+                <a
+                  key={idx}
+                  href={attachment}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline truncate max-w-[150px]"
+                  data-testid={`link-attachment-${task.id}-${idx}`}
+                >
+                  {attachment.split('/').pop() || attachment}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center gap-2 pt-2 flex-wrap">
           {isMissed && (
             <Button size="sm" variant="destructive" onClick={onReschedule} data-testid={`button-reschedule-${task.id}`}>
@@ -623,7 +664,10 @@ function TaskForm({
     dueDate: getDefaultDate(),
     priority: task?.priority || "medium",
     weekNumber: task?.weekNumber || weekNumber,
+    referenceLink: task?.referenceLink || "",
+    attachments: task?.attachments || [] as string[],
   });
+  const [newAttachment, setNewAttachment] = useState("");
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -735,6 +779,67 @@ function TaskForm({
           placeholder="Add notes or details..."
           data-testid="input-description"
         />
+      </div>
+
+      <div>
+        <Label htmlFor="referenceLink">Reference Link (optional)</Label>
+        <Input
+          id="referenceLink"
+          type="url"
+          value={formData.referenceLink}
+          onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
+          placeholder="https://example.com/resource"
+          data-testid="input-reference-link"
+        />
+      </div>
+
+      <div>
+        <Label>Attachments (optional)</Label>
+        <div className="space-y-2">
+          {formData.attachments.map((attachment, idx) => (
+            <div key={idx} className="flex items-center gap-2 text-sm">
+              <a href={attachment} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate flex-1">
+                {attachment}
+              </a>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setFormData(prev => ({
+                  ...prev,
+                  attachments: prev.attachments.filter((_, i) => i !== idx)
+                }))}
+                data-testid={`button-remove-attachment-${idx}`}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <div className="flex gap-2">
+            <Input
+              value={newAttachment}
+              onChange={(e) => setNewAttachment(e.target.value)}
+              placeholder="Paste attachment URL..."
+              data-testid="input-new-attachment"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                if (newAttachment.trim()) {
+                  setFormData(prev => ({
+                    ...prev,
+                    attachments: [...prev.attachments, newAttachment.trim()]
+                  }));
+                  setNewAttachment("");
+                }
+              }}
+              data-testid="button-add-attachment"
+            >
+              Add
+            </Button>
+          </div>
+        </div>
       </div>
 
       <div className="flex gap-2 pt-4">

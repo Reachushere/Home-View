@@ -37,6 +37,8 @@ export const tasks = pgTable("tasks", {
   isMissed: boolean("is_missed").default(false),
   priority: text("priority").default("medium"), // low, medium, high
   notes: text("notes"),
+  referenceLink: text("reference_link"), // URL reference for the task
+  attachments: text("attachments").array(), // Array of attachment URLs/paths
   calendarEventId: text("calendar_event_id"), // For synced calendar events
   calendarProvider: text("calendar_provider"), // 'google' or 'outlook'
 });
