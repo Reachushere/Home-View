@@ -60,7 +60,7 @@ const typeColors: Record<string, string> = {
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string }> = {
   "CPPA122": { bg: "bg-blue-500/30", border: "border-blue-500", text: "text-blue-700 dark:text-blue-300", dot: "bg-blue-500" },
-  "CFNF400": { bg: "bg-green-500/30", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500" },
+  "CFNF400": { bg: "bg-green-500/30", border: "border-green-500", text: "text-black dark:text-black", dot: "bg-green-500" },
   "CASL101": { bg: "bg-yellow-500/30", border: "border-yellow-500", text: "text-yellow-700 dark:text-yellow-300", dot: "bg-yellow-500" },
 };
 
@@ -388,7 +388,7 @@ export default function Dashboard() {
                           className={`
                             relative z-10 h-[80px] p-1 rounded-md text-left transition-all overflow-hidden flex flex-col items-start justify-start
                             ${isCurrentWeekDay 
-                              ? "bg-gray-400 text-background border-2 border-black"
+                              ? "bg-gray-300 text-background border-2 border-black"
                               : "border " + (isCurrentMonth 
                                 ? "bg-card" 
                                 : "bg-muted/30 text-muted-foreground")}
