@@ -266,13 +266,13 @@ export default function Dashboard() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={handlePrevMonth} data-testid="button-prev-month">
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-5 w-5 text-white" />
             </Button>
             <h2 className="text-2xl font-semibold text-white min-w-[200px] text-center">
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <Button variant="ghost" size="icon" onClick={handleNextMonth} data-testid="button-next-month">
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-5 w-5 text-white" />
             </Button>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
