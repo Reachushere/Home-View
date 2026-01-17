@@ -509,8 +509,8 @@ export default function Dashboard() {
                         style={{
                           left: '18px',
                           right: 'calc((100% - 10px) / 7 - 8px)',
-                          top: '-12px',
-                          bottom: '-12px',
+                          top: '-8px',
+                          bottom: '-8px',
                         }}
                       />
                     )}
@@ -522,8 +522,8 @@ export default function Dashboard() {
                         style={{
                           left: 'calc(100% - (100% - 10px) / 7 + 2px)',
                           right: '-6px',
-                          top: '-14px',
-                          bottom: '-14px',
+                          top: '-8px',
+                          bottom: '-8px',
                         }}
                       />
                     )}
