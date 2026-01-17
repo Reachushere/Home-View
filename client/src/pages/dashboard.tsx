@@ -416,7 +416,7 @@ export default function Dashboard() {
                               : isCurrentMonth 
                                 ? "text-foreground" 
                                 : "text-muted-foreground"
-                          } ${isToday ? "text-blue-400" : ""}`}>
+                          } ${isToday ? "text-blue-400 animate-pulse" : ""}`}>
                             {format(day, "d")}
                           </div>
                           <div className="space-y-0.5 w-full overflow-hidden">
