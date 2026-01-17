@@ -305,7 +305,7 @@ export default function Dashboard() {
         <Card className="mb-6">
           <CardContent className="p-4">
             {/* Day Headers */}
-            <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: '9px repeat(7, 1fr)' }}>
+            <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
               <div></div>
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div key={day} className="text-center text-sm font-medium text-foreground py-2">
@@ -323,7 +323,7 @@ export default function Dashboard() {
                 const showWeekNum = weekNum >= 1 && weekNum <= 13;
                 
                 return (
-                  <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '9px repeat(7, 1fr)' }}>
+                  <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
                     {/* Week number label */}
                     <div className="flex items-center justify-end">
                       {showWeekNum && (
