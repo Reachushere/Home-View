@@ -339,6 +339,10 @@ export default function Dashboard() {
                 const sunFriInCurrentWeek = sunFriDays.some(day => isInCurrentWeek(day));
                 const saturdayInCurrentWeek = saturdayDay && isInCurrentWeek(saturdayDay);
                 
+                // Check if today is in this row
+                const todayIndex = weekDays.findIndex(day => isSameDay(day, new Date()));
+                const hasTodayInRow = todayIndex !== -1;
+                
                 return (
                   <div key={`week-row-${weekIdx}`} className="relative grid gap-2" style={{ gridTemplateColumns: '2px 8px repeat(7, 1fr)' }}>
                     {/* Week number label */}
@@ -525,6 +529,19 @@ export default function Dashboard() {
                           right: '-6px',
                           top: '-8px',
                           bottom: '-8px',
+                        }}
+                      />
+                    )}
+                    
+                    {/* Blue overlay for today's date */}
+                    {hasTodayInRow && (
+                      <div 
+                        className="absolute pointer-events-none z-20 bg-blue-400/50"
+                        style={{
+                          left: `calc(10px + (100% - 10px) / 7 * ${todayIndex} + 8px)`,
+                          width: 'calc((100% - 10px) / 7 - 8px)',
+                          top: '-4px',
+                          bottom: '-4px',
                         }}
                       />
                     )}

@@ -120,12 +120,10 @@
 
 .today-popup {
   cursor: pointer;
-  background-color: hsl(210 70% 45% / 0.5) !important;
 }
 
 .today-popup:hover {
   animation: none !important;
-  background-color: hsl(210 70% 45% / 0.6) !important;
 }
 
 .today-popup-expanded {
@@ -137,7 +135,6 @@
   width: 200px !important;
   height: 160px !important;
   animation: none !important;
-  background-color: hsl(210 70% 45% / 0.6) !important;
 }
 
 .calendar-container {
