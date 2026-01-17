@@ -149,6 +149,15 @@ export default function Dashboard() {
     });
   };
 
+  // Check if a task is urgent (within 24 hours of due date and not completed)
+  const isUrgentTask = (task: Task) => {
+    if (task.isCompleted) return false;
+    const now = new Date();
+    const dueDate = new Date(task.dueDate);
+    const hoursUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+    return hoursUntilDue <= 24 && hoursUntilDue > 0;
+  };
+
   const handlePrevMonth = () => {
     setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
   };
@@ -335,6 +344,7 @@ export default function Dashboard() {
                           );
                         }
                         const colors = getCourseColor(item.courseName);
+                        const urgent = isUrgentTask(item);
                         return (
                           <div 
                             key={item.id}
@@ -346,7 +356,7 @@ export default function Dashboard() {
                                 : isCurrentWeekDay 
                                   ? "bg-background/20 text-background" 
                                   : "bg-muted text-muted-foreground"
-                            } ${item.isCompleted ? "line-through opacity-50" : ""}`}
+                            } ${item.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
                           >
                             {item.title}
                           </div>
