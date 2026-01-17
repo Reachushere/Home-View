@@ -507,21 +507,50 @@ export default function Dashboard() {
                       );
                     })}
                     
-                    {/* Red border overlay for Sun-Fri of current week */}
+                    {/* Red border overlay for Sun-Fri of current week (excludes today if today is in Sun-Fri) */}
                     {sunFriInCurrentWeek && (
-                      <div 
-                        className="absolute pointer-events-none z-0 bg-red-500/35"
-                        style={{
-                          left: '18px',
-                          right: 'calc((100% - 10px) / 7 - 8px)',
-                          top: '-8px',
-                          bottom: '-8px',
-                        }}
-                      />
+                      <>
+                        {/* Part before today */}
+                        {todayIndex > 0 && todayIndex < 6 && (
+                          <div 
+                            className="absolute pointer-events-none z-0 bg-red-500/35"
+                            style={{
+                              left: '18px',
+                              width: `calc((100% - 10px) / 7 * ${todayIndex} - 8px)`,
+                              top: '-8px',
+                              bottom: '-8px',
+                            }}
+                          />
+                        )}
+                        {/* Part after today */}
+                        {todayIndex >= 0 && todayIndex < 5 && (
+                          <div 
+                            className="absolute pointer-events-none z-0 bg-red-500/35"
+                            style={{
+                              left: `calc(10px + (100% - 10px) / 7 * ${todayIndex + 1} + 8px)`,
+                              right: 'calc((100% - 10px) / 7 - 8px)',
+                              top: '-8px',
+                              bottom: '-8px',
+                            }}
+                          />
+                        )}
+                        {/* Full Sun-Fri if today is not in this row or is Saturday */}
+                        {(todayIndex === -1 || todayIndex === 6) && (
+                          <div 
+                            className="absolute pointer-events-none z-0 bg-red-500/35"
+                            style={{
+                              left: '18px',
+                              right: 'calc((100% - 10px) / 7 - 8px)',
+                              top: '-8px',
+                              bottom: '-8px',
+                            }}
+                          />
+                        )}
+                      </>
                     )}
                     
-                    {/* Red border overlay for Saturday of current week */}
-                    {saturdayInCurrentWeek && (
+                    {/* Red border overlay for Saturday of current week (skip if today is Saturday) */}
+                    {saturdayInCurrentWeek && todayIndex !== 6 && (
                       <div 
                         className="absolute pointer-events-none z-0 bg-red-500/35"
                         style={{
