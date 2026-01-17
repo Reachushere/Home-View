@@ -118,7 +118,16 @@
   animation: today-blink 1.5s ease-in-out infinite;
 }
 
+.today-popup {
+  cursor: pointer;
+}
+
 .today-popup:hover {
+  animation: none !important;
+  box-shadow: 0 0 0 3px hsl(217 91% 60%) !important;
+}
+
+.today-popup-expanded {
   position: fixed !important;
   top: 50% !important;
   left: 50% !important;
@@ -126,9 +135,15 @@
   z-index: 100 !important;
   width: 200px !important;
   height: 160px !important;
-  transition: all 0.3s ease-in-out;
   animation: none !important;
   box-shadow: 0 0 0 3px hsl(217 91% 60%) !important;
+}
+
+.today-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
 }
 
 @layer base {

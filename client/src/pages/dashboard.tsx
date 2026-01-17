@@ -78,6 +78,7 @@ export default function Dashboard() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
+  const [isTodayExpanded, setIsTodayExpanded] = useState(false);
 
   const { data: weeks = [] } = useQuery<WeekInfo[]>({
     queryKey: ["/api/weeks"],
@@ -197,6 +198,12 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen">
+      {isTodayExpanded && (
+        <div 
+          className="today-backdrop"
+          onClick={() => setIsTodayExpanded(false)}
+        />
+      )}
       {/* Sidebar */}
       <aside className="w-72 border-r border-border bg-sidebar p-4 flex flex-col gap-4 overflow-auto">
         <div className="flex items-center gap-2 px-2 py-4">
@@ -384,7 +391,12 @@ export default function Dashboard() {
                       return (
                         <button
                           key={idx}
-                          onClick={() => handleDayClick(day)}
+                          onClick={() => {
+                            if (isToday) {
+                              setIsTodayExpanded(!isTodayExpanded);
+                            }
+                            handleDayClick(day);
+                          }}
                           className={`
                             relative z-10 h-[80px] p-1 rounded-md text-left transition-all overflow-hidden flex flex-col items-start justify-start
                             ${isCurrentWeekDay 
@@ -392,7 +404,8 @@ export default function Dashboard() {
                               : "border " + (isCurrentMonth 
                                 ? "bg-card" 
                                 : "bg-muted/30 text-muted-foreground")}
-                            ${isToday ? "animate-today-blink today-popup" : ""}
+                            ${isToday && !isTodayExpanded ? "animate-today-blink today-popup" : ""}
+                            ${isToday && isTodayExpanded ? "today-popup-expanded" : ""}
                             ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
                           `}
                           data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
