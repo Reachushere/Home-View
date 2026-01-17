@@ -336,7 +336,7 @@ export default function Dashboard() {
                 return (
                   <div key={`week-row-${weekIdx}`} className="relative grid gap-2" style={{ gridTemplateColumns: '2px 8px repeat(7, 1fr)' }}>
                     {/* Week number label */}
-                    <div className="flex items-center justify-end">
+                    <div className="flex items-center justify-end" style={{ marginLeft: '5px' }}>
                       {showWeekNum && (
                         <span 
                           className="text-[13px] font-bold text-foreground whitespace-nowrap"
