@@ -481,8 +481,8 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section */}
           {missedTasks.length > 0 && (
-            <section className="w-[300px] flex-shrink-0">
-              <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2">
+            <section className="w-[300px] flex-shrink-0 bg-white rounded-lg p-4">
+              <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2 animate-urgent-blink">
                 <Clock className="h-4 w-4" />
                 Missed ({missedTasks.length})
               </h4>
