@@ -252,7 +252,7 @@ export default function Dashboard() {
                 <Calendar className="h-3 w-3" />
                 <span className="text-xs">Week {week.weekNumber}</span>
                 <span className="text-[9px] text-muted-foreground">
-                  ({format(parseISO(week.startDate), "M/d")} - {format(parseISO(week.endDate), "M/d")})
+                  ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                 </span>
               </div>
               {week.taskCount > 0 && (
