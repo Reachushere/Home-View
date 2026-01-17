@@ -475,7 +475,7 @@ export default function Dashboard() {
                         className="absolute pointer-events-none border-2 border-red-500 rounded-lg z-0 bg-red-500/20"
                         style={{
                           left: '18px',
-                          right: 'calc((100% - 10px) / 7 - 6px)',
+                          right: 'calc((100% - 10px) / 7 - 10px)',
                           top: '-6px',
                           bottom: '-6px',
                         }}
