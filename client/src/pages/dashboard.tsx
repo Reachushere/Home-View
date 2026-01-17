@@ -341,6 +341,7 @@ export default function Dashboard() {
                       {allItems.slice(0, 3).map((item, itemIdx) => {
                         if (item.isReminder) {
                           const is24hrReminder = item.reminderType === '24hr';
+                          const reminderColors = getCourseColor(item.courseName);
                           return (
                             <div 
                               key={`reminder-${item.reminderType}-${item.id}`}
@@ -351,6 +352,7 @@ export default function Dashboard() {
                               } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
                             >
                               <Bell className="h-2 w-2 flex-shrink-0" />
+                              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${reminderColors?.dot || "bg-gray-500"}`} />
                               {is24hrReminder ? "URGENT: " : ""}{item.title}
                             </div>
                           );
