@@ -470,10 +470,10 @@ export default function Dashboard() {
                       <div 
                         className="absolute pointer-events-none border-4 border-red-500 rounded-lg z-10"
                         style={{
-                          left: '10px',
-                          right: 'calc((100% - 6px) / 7 + 4px)',
-                          top: '-2px',
-                          bottom: '-2px',
+                          left: '4px',
+                          right: 'calc((100% - 6px) / 7 + 8px)',
+                          top: '-6px',
+                          bottom: '-6px',
                         }}
                       />
                     )}
@@ -483,10 +483,10 @@ export default function Dashboard() {
                       <div 
                         className="absolute pointer-events-none border-4 border-red-500 rounded-lg z-10"
                         style={{
-                          left: 'calc(100% - (100% - 6px) / 7)',
-                          right: '-2px',
-                          top: '-2px',
-                          bottom: '-2px',
+                          left: 'calc(100% - (100% - 6px) / 7 - 4px)',
+                          right: '-6px',
+                          top: '-6px',
+                          bottom: '-6px',
                         }}
                       />
                     )}
