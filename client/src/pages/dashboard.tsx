@@ -322,8 +322,11 @@ export default function Dashboard() {
                 const weekNum = saturdayOfWeek ? getWeekNumber(saturdayOfWeek) : 0;
                 const showWeekNum = weekNum >= 1 && weekNum <= 13;
                 
+                // Check if this row contains the current week (any day in this row is in the current week)
+                const isCurrentWeekRow = weekDays.some(d => isInCurrentWeek(d));
+                
                 return (
-                  <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
+                  <div key={`week-row-${weekIdx}`} className={`grid gap-1 ${isCurrentWeekRow ? "border-4 border-red-500 rounded-lg p-1 -m-1" : ""}`} style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
                     {/* Week number label */}
                     <div className="flex items-center justify-end">
                       {showWeekNum && (
