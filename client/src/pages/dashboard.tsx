@@ -444,6 +444,7 @@ export default function Dashboard() {
                                     <div 
                                       onClick={(e) => {
                                         e.stopPropagation();
+                                        setIsTodayExpanded(false);
                                         setEditingTask(task);
                                       }}
                                       className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 cursor-pointer hover:opacity-80 ${
