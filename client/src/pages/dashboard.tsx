@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES } from "@shared/schema";
-import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
+import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   reading: BookOpen,
@@ -57,7 +57,7 @@ const typeColors: Record<string, string> = {
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string }> = {
   "CPPA122": { bg: "bg-blue-500/10", border: "border-blue-500", text: "text-blue-600 dark:text-blue-400", dot: "bg-blue-500" },
-  "CFNF400": { bg: "bg-red-500/10", border: "border-red-500", text: "text-red-600 dark:text-red-400", dot: "bg-red-500" },
+  "CFNF400": { bg: "bg-green-500/10", border: "border-green-500", text: "text-green-600 dark:text-green-400", dot: "bg-green-500" },
   "CASL101": { bg: "bg-yellow-500/10", border: "border-yellow-500", text: "text-yellow-600 dark:text-yellow-400", dot: "bg-yellow-500" },
 };
 
@@ -138,6 +138,15 @@ export default function Dashboard() {
 
   const getTasksForDay = (day: Date) => {
     return allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
+  };
+
+  // Get reminders for a day (tasks due 2 days after this day)
+  const getRemindersForDay = (day: Date) => {
+    return allTasks.filter(t => {
+      const dueDate = new Date(t.dueDate);
+      const reminderDate = subDays(dueDate, 2);
+      return isSameDay(reminderDate, day) && !t.isCompleted;
+    });
   };
 
   const handlePrevMonth = () => {
@@ -282,10 +291,12 @@ export default function Dashboard() {
             <div className="grid grid-cols-7 gap-1">
               {calendarDays.map((day, idx) => {
                 const dayTasks = getTasksForDay(day);
+                const dayReminders = getRemindersForDay(day);
                 const isToday = isSameDay(day, new Date());
                 const isSelected = selectedDate && isSameDay(day, selectedDate);
                 const isCurrentMonth = isSameMonth(day, currentMonth);
                 const isCurrentWeekDay = isInCurrentWeek(day);
+                const allItems = [...dayReminders.map(t => ({ ...t, isReminder: true })), ...dayTasks.map(t => ({ ...t, isReminder: false }))];
                 
                 return (
                   <button
@@ -307,11 +318,26 @@ export default function Dashboard() {
                       {format(day, "d")}
                     </div>
                     <div className="space-y-1">
-                      {dayTasks.slice(0, 3).map((task) => {
-                        const colors = getCourseColor(task.courseName);
+                      {allItems.slice(0, 3).map((item, itemIdx) => {
+                        if (item.isReminder) {
+                          return (
+                            <div 
+                              key={`reminder-${item.id}`}
+                              className={`text-xs truncate px-1 py-0.5 rounded font-medium flex items-center gap-1 ${
+                                isCurrentWeekDay 
+                                  ? "bg-red-500 text-white" 
+                                  : "bg-red-500/10 text-red-600 dark:text-red-400"
+                              }`}
+                            >
+                              <Bell className="h-3 w-3 flex-shrink-0" />
+                              {item.title}
+                            </div>
+                          );
+                        }
+                        const colors = getCourseColor(item.courseName);
                         return (
                           <div 
-                            key={task.id}
+                            key={item.id}
                             className={`text-xs truncate px-1 py-0.5 rounded font-medium ${
                               colors 
                                 ? isCurrentWeekDay 
@@ -320,15 +346,15 @@ export default function Dashboard() {
                                 : isCurrentWeekDay 
                                   ? "bg-background/20 text-background" 
                                   : "bg-muted text-muted-foreground"
-                            } ${task.isCompleted ? "line-through opacity-50" : ""}`}
+                            } ${item.isCompleted ? "line-through opacity-50" : ""}`}
                           >
-                            {task.title}
+                            {item.title}
                           </div>
                         );
                       })}
-                      {dayTasks.length > 3 && (
+                      {allItems.length > 3 && (
                         <div className={`text-xs ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
-                          +{dayTasks.length - 3} more
+                          +{allItems.length - 3} more
                         </div>
                       )}
                     </div>
