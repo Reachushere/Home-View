@@ -283,7 +283,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-base font-bold bg-blue-500 text-white px-4 py-1.5 rounded-full" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{format(currentMonth, "MMMM")}</span>
+            <span className="text-base font-bold bg-[#5979CC] text-white px-4 py-1.5 rounded-full" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{format(currentMonth, "MMMM")}</span>
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleNextMonth}>
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -308,7 +308,7 @@ export default function Dashboard() {
                     onClick={() => handleDayClick(day)}
                     className={`text-[10px] py-1 rounded-full transition-colors ${
                       isToday 
-                        ? "bg-primary text-primary-foreground font-bold" 
+                        ? "bg-[#5979CC] text-white font-bold" 
                         : isSelected
                           ? "bg-primary/20 text-primary font-medium"
                           : isCurrentMonthDay 
@@ -403,7 +403,7 @@ export default function Dashboard() {
           <h1 className="text-2xl font-semibold text-foreground">Bryn's Task Management</h1>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
-              <Button data-testid="button-add-task">
+              <Button className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" data-testid="button-add-task">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Task
               </Button>
