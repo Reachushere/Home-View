@@ -344,13 +344,13 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={`reminder-${item.reminderType}-${item.id}`}
-                              className={`text-[10px] truncate px-1 py-0.5 rounded font-medium flex items-center gap-0.5 ${
+                              className={`text-[8px] truncate px-0.5 py-0 rounded font-medium flex items-center gap-0.5 leading-tight ${
                                 isCurrentWeekDay 
                                   ? "bg-red-500 text-white" 
                                   : "bg-red-500/10 text-red-600 dark:text-red-400"
                               } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
                             >
-                              <Bell className="h-2.5 w-2.5 flex-shrink-0" />
+                              <Bell className="h-2 w-2 flex-shrink-0" />
                               {is24hrReminder ? "URGENT: " : ""}{item.title}
                             </div>
                           );
@@ -360,7 +360,7 @@ export default function Dashboard() {
                         return (
                           <div 
                             key={item.id}
-                            className={`text-[10px] truncate px-1 py-0.5 rounded font-medium ${
+                            className={`text-[8px] truncate px-0.5 py-0 rounded font-medium leading-tight ${
                               colors 
                                 ? isCurrentWeekDay 
                                   ? `${colors.dot} text-white` 
@@ -375,7 +375,7 @@ export default function Dashboard() {
                         );
                       })}
                       {allItems.length > 3 && (
-                        <div className={`text-[10px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
+                        <div className={`text-[8px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
                           +{allItems.length - 3} more
                         </div>
                       )}
