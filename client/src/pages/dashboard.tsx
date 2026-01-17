@@ -565,7 +565,7 @@ export default function Dashboard() {
                     {/* Blue overlay for today's date */}
                     {hasTodayInRow && (
                       <div 
-                        className="absolute pointer-events-none z-0 bg-blue-400/50"
+                        className="absolute pointer-events-none z-0 bg-blue-400/50 animate-pulse"
                         style={{
                           left: `calc(10px + (100% - 10px) / 7 * ${todayIndex} + 4px)`,
                           width: 'calc((100% - 10px) / 7 + 2px)',
