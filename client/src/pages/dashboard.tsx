@@ -123,12 +123,16 @@ export default function Dashboard() {
   const upcomingTasks = displayTasks.filter(t => !t.isMissed && !t.isCompleted);
   const completedTasks = displayTasks.filter(t => t.isCompleted);
 
-  // Calendar generation - display starts Sunday, but backend weeks run Sat-Fri
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(currentMonth);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 }); // Display starts on Sunday
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
-  const displayCalendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  // Weekly view - get the current selected week's days
+  const selectedWeekInfo = weeks.find(w => w.weekNumber === selectedWeek);
+  const weekStartDate = selectedWeekInfo ? parseISO(selectedWeekInfo.startDate) : new Date(2026, 0, 17);
+  const weekEndDate = selectedWeekInfo ? parseISO(selectedWeekInfo.endDate) : new Date(2026, 0, 23);
+  
+  // Generate 5 weekdays (Mon-Fri) for the weekly view - starting from Sunday of the week
+  const weekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate });
+  
+  // Time slots for the day view (8 AM to 6 PM)
+  const timeSlots = Array.from({ length: 11 }, (_, i) => i + 8); // 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
@@ -137,11 +141,26 @@ export default function Dashboard() {
 
   const isInCurrentWeek = (day: Date) => {
     if (!currentWeekStart || !currentWeekEnd) return false;
-    // Use startOfDay to compare only dates, not times
     const dayStart = startOfDay(day);
     const weekStart = startOfDay(currentWeekStart);
     const weekEnd = endOfDay(currentWeekEnd);
     return isWithinInterval(dayStart, { start: weekStart, end: weekEnd });
+  };
+  
+  // Get tasks for a specific hour on a day
+  const getTasksForHour = (day: Date, hour: number) => {
+    return allTasks.filter(t => {
+      const dueDate = new Date(t.dueDate);
+      return isSameDay(dueDate, day) && dueDate.getHours() === hour;
+    });
+  };
+  
+  // Get all-day tasks (tasks without specific time, or 12 AM)
+  const getAllDayTasks = (day: Date) => {
+    return allTasks.filter(t => {
+      const dueDate = new Date(t.dueDate);
+      return isSameDay(dueDate, day) && (dueDate.getHours() === 0 || dueDate.getHours() === 23);
+    });
   };
 
   const getTasksForDay = (day: Date) => {
@@ -187,6 +206,15 @@ export default function Dashboard() {
       setSelectedDate(null); // Deselect if clicking same day
     } else {
       setSelectedDate(day);
+      // Find and switch to the week containing this day
+      const weekForDay = weeks.find(w => {
+        const start = parseISO(w.startDate);
+        const end = parseISO(w.endDate);
+        return isWithinInterval(day, { start: startOfDay(start), end: endOfDay(end) });
+      });
+      if (weekForDay) {
+        setSelectedWeek(weekForDay.weekNumber);
+      }
     }
   };
 
@@ -213,8 +241,51 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        <div className="text-sm text-muted-foreground px-2 mb-2">
-          Today: {format(new Date(), "MMM d, yyyy")}
+        {/* Mini Calendar */}
+        <div className="px-2">
+          <div className="flex items-center justify-between mb-2">
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handlePrevMonth}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-sm font-medium">{format(currentMonth, "MMMM")}</span>
+            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleNextMonth}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-7 gap-0.5 text-center">
+            {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+              <div key={i} className="text-[10px] text-muted-foreground font-medium py-1">{d}</div>
+            ))}
+            {(() => {
+              const monthStart = startOfMonth(currentMonth);
+              const monthEnd = endOfMonth(currentMonth);
+              const calStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+              const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+              const days = eachDayOfInterval({ start: calStart, end: calEnd });
+              return days.map((day, i) => {
+                const isToday = isSameDay(day, new Date());
+                const isCurrentMonthDay = isSameMonth(day, currentMonth);
+                const isSelected = selectedDate && isSameDay(day, selectedDate);
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handleDayClick(day)}
+                    className={`text-[10px] py-1 rounded-full transition-colors ${
+                      isToday 
+                        ? "bg-primary text-primary-foreground font-bold" 
+                        : isSelected
+                          ? "bg-primary/20 text-primary font-medium"
+                          : isCurrentMonthDay 
+                            ? "text-foreground hover:bg-muted" 
+                            : "text-muted-foreground/50"
+                    }`}
+                  >
+                    {format(day, "d")}
+                  </button>
+                );
+              });
+            })()}
+          </div>
         </div>
 
         {/* Course Legend */}
@@ -280,17 +351,20 @@ export default function Dashboard() {
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={handlePrevMonth} data-testid="button-prev-month">
+            <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <h2 className="text-2xl font-semibold text-foreground min-w-[200px] text-center">
-              {format(currentMonth, "MMMM yyyy")}
+            <h2 className="text-2xl font-semibold text-foreground min-w-[280px] text-center">
+              {format(weekStartDate, "MMMM d")} - {format(weekEndDate, "d, yyyy")}
             </h2>
-            <Button variant="ghost" size="icon" onClick={handleNextMonth} data-testid="button-next-month">
+            <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
               <ChevronRight className="h-5 w-5" />
             </Button>
+            <Button variant="outline" size="sm" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+              TODAY
+            </Button>
           </div>
-          <h1 className="text-2xl font-semibold text-foreground">Bryn's Task Management Application</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Bryn's Task Management</h1>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-add-task">
@@ -311,270 +385,119 @@ export default function Dashboard() {
           </Dialog>
         </div>
 
-        {/* Calendar Grid */}
-        <Card className="mb-6 shadow-lg rounded-xl flex-1">
-          <CardContent className="p-5">
+        {/* Weekly Time-Slot Calendar */}
+        <Card className="mb-6 shadow-lg rounded-xl flex-1 overflow-hidden">
+          <CardContent className="p-0 h-full flex flex-col">
             {/* Day Headers */}
-            <div className="grid gap-2 mb-2" style={{ gridTemplateColumns: '2px 8px repeat(7, 1fr)' }}>
-              <div></div>
-              <div></div>
-              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-foreground py-2">
-                  {day}
-                </div>
-              ))}
-            </div>
-            
-            {/* Calendar Days with Week Numbers */}
-            <div className="space-y-5 calendar-container">
-              {Array.from({ length: Math.ceil(displayCalendarDays.length / 7) }).map((_, weekIdx) => {
-                const weekDays = displayCalendarDays.slice(weekIdx * 7, weekIdx * 7 + 7);
-                const saturdayOfWeek = weekDays[6];
-                const weekNum = saturdayOfWeek ? getWeekNumber(saturdayOfWeek) : 0;
-                const showWeekNum = weekNum >= 1 && weekNum <= 13;
-                
-                // Check which parts of this row are in the current week
-                const sunFriDays = weekDays.slice(0, 6);
-                const saturdayDay = weekDays[6];
-                const sunFriInCurrentWeek = sunFriDays.some(day => isInCurrentWeek(day));
-                const saturdayInCurrentWeek = saturdayDay && isInCurrentWeek(saturdayDay);
-                
-                // Check if today is in this row
-                const todayIndex = weekDays.findIndex(day => isSameDay(day, new Date()));
-                const hasTodayInRow = todayIndex !== -1;
-                
+            <div className="grid border-b border-border" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+              <div className="p-3"></div>
+              {weekDays.map((day, idx) => {
+                const isToday = isSameDay(day, new Date());
+                const dayName = format(day, "EEE").toUpperCase();
+                const dayNum = format(day, "d");
                 return (
-                  <div key={`week-row-${weekIdx}`} className="relative grid gap-2" style={{ gridTemplateColumns: '2px 8px repeat(7, 1fr)' }}>
-                    {/* Week number label */}
-                    <div className="flex items-center justify-end" style={{ marginLeft: '13px' }}>
-                      {showWeekNum && (
-                        <span 
-                          className="text-base font-bold text-foreground whitespace-nowrap"
-                          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                        >
-                          Week <span className="text-blue-500">{weekNum}</span>
-                        </span>
-                      )}
+                  <div 
+                    key={idx} 
+                    className={`p-3 text-center border-l border-border ${isToday ? "" : ""}`}
+                    data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
+                  >
+                    <div className="text-xs text-muted-foreground font-medium">{dayNum}</div>
+                    <div className={`text-sm font-semibold mt-1 ${
+                      isToday 
+                        ? "bg-primary text-primary-foreground px-3 py-1 rounded-full inline-block" 
+                        : "text-foreground"
+                    }`}>
+                      {dayName}
                     </div>
-                    
-                    {/* Spacer */}
-                    <div></div>
-                    
-                    {/* Days of the week */}
-                    {weekDays.map((day, dayIdx) => {
-                      const idx = weekIdx * 7 + dayIdx;
-                      const dayTasks = getTasksForDay(day);
-                      const dayReminders = getRemindersForDay(day);
-                      const isToday = isSameDay(day, new Date());
-                      const isSelected = selectedDate && isSameDay(day, selectedDate);
-                      const isCurrentMonth = isSameMonth(day, currentMonth);
-                      const isCurrentWeekDay = isInCurrentWeek(day);
-                      
-                      const taskReminderPairs: Array<{ task: typeof dayTasks[0] | null; reminder: typeof dayReminders[0] | null }> = [];
-                      const usedReminderIds = new Set<number>();
-                      
-                      dayTasks.forEach(task => {
-                        const matchingReminder = dayReminders.find(r => r.id === task.id && !usedReminderIds.has(r.id));
-                        if (matchingReminder) {
-                          usedReminderIds.add(matchingReminder.id);
-                          taskReminderPairs.push({ task, reminder: matchingReminder });
-                        } else {
-                          taskReminderPairs.push({ task, reminder: null });
-                        }
-                      });
-                      
-                      dayReminders.forEach(reminder => {
-                        if (!usedReminderIds.has(reminder.id)) {
-                          taskReminderPairs.push({ task: null, reminder });
-                        }
-                      });
-                      
-                      const totalItems = taskReminderPairs.length;
-                      
-                      return (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            if (isToday) {
-                              setIsTodayExpanded(!isTodayExpanded);
-                            }
-                            handleDayClick(day);
-                          }}
-                          className={`
-                            relative z-10 h-[80px] p-1.5 text-left transition-all overflow-hidden flex flex-col items-start justify-start rounded-lg
-                            ${isCurrentWeekDay 
-                              ? "bg-primary text-primary-foreground shadow-md"
-                              : "bg-card border border-border shadow-sm " + (isCurrentMonth 
-                                ? "" 
-                                : "opacity-60")}
-                            ${isToday && !isTodayExpanded ? "today-popup" : ""}
-                            ${isToday && isTodayExpanded ? "today-popup-expanded" : ""}
-                            ${isSelected ? "ring-2 ring-primary" : "hover:shadow-md"}
-                          `}
-                          data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
-                        >
-                          <div className={`text-xs font-semibold mb-1 text-left ${
-                            isToday 
-                              ? "!text-primary-foreground"
-                              : isCurrentWeekDay
-                                ? "text-primary-foreground"
-                                : "text-foreground"
-                          }`}>
-                            {format(day, "d")}
-                          </div>
-                          <div className="space-y-0.5 w-full overflow-hidden">
-                            {taskReminderPairs.slice(0, 3).map((pair, pairIdx) => {
-                              const { task, reminder } = pair;
-                              const colors = task ? getCourseColor(task.courseName) : reminder ? getCourseColor(reminder.courseName) : null;
-                              const is24hrReminder = reminder?.reminderType === '24hr';
-                              const urgent = task ? isUrgentTask(task) : false;
-                              
-                              return (
-                                <div key={`pair-${pairIdx}`} className={`flex items-center gap-0.5 ${is24hrReminder ? "animate-urgent-blink" : ""}`}>
-                                  {reminder && (
-                                    <div 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setIsTodayExpanded(false);
-                                        const reminderTask = allTasks.find(t => t.id === reminder.id);
-                                        if (reminderTask) setEditingTask(reminderTask);
-                                      }}
-                                      className={`text-[9px] px-1 py-0.5 font-medium flex items-center cursor-pointer hover:opacity-80 rounded ${
-                                        isCurrentWeekDay 
-                                          ? "bg-red-500 text-white" 
-                                          : "bg-red-500/20 text-red-600 dark:text-red-400"
-                                      }`}
-                                      title={`Reminder: ${reminder.title}`}
-                                      data-testid={`calendar-reminder-${reminder.id}`}
-                                    >
-                                      <Bell className="h-2 w-2" />
-                                    </div>
-                                  )}
-                                  {task ? (
-                                    <div 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setIsTodayExpanded(false);
-                                        setEditingTask(task);
-                                      }}
-                                      className={`text-[9px] truncate px-1 py-0.5 font-medium flex-1 cursor-pointer hover:opacity-80 rounded ${
-                                        colors 
-                                          ? isCurrentWeekDay 
-                                            ? `${colors.dot} text-white` 
-                                            : `${colors.bg} ${colors.text}`
-                                          : isCurrentWeekDay 
-                                            ? "bg-gray-500 text-white" 
-                                            : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
-                                      } ${task.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
-                                      data-testid={`calendar-task-${task.id}`}
-                                    >
-                                      {task.title}
-                                    </div>
-                                  ) : reminder && (
-                                    <div 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setIsTodayExpanded(false);
-                                        const reminderTask = allTasks.find(t => t.id === reminder.id);
-                                        if (reminderTask) setEditingTask(reminderTask);
-                                      }}
-                                      className={`text-[9px] truncate px-1 py-0.5 font-medium flex-1 cursor-pointer hover:opacity-80 rounded ${
-                                        colors 
-                                          ? isCurrentWeekDay 
-                                            ? `${colors.dot} text-white` 
-                                            : `${colors.bg} ${colors.text}`
-                                          : isCurrentWeekDay 
-                                            ? "bg-gray-500 text-white" 
-                                            : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
-                                      }`}
-                                      data-testid={`calendar-reminder-title-${reminder.id}`}
-                                    >
-                                      {reminder.title}
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                            {totalItems > 3 && (
-                              <div className={`text-[9px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
-                                +{totalItems - 3} more
-                              </div>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })}
-                    
-                    {/* Red border overlay for Sun-Fri of current week (excludes today if today is in Sun-Fri) */}
-                    {sunFriInCurrentWeek && (
-                      <>
-                        {/* Part before today */}
-                        {todayIndex > 0 && todayIndex < 6 && (
-                          <div 
-                            className="absolute pointer-events-none z-0 bg-red-500/35"
-                            style={{
-                              left: '18px',
-                              width: `calc((100% - 10px) / 7 * ${todayIndex} - 8px)`,
-                              top: '-8px',
-                              bottom: '-8px',
-                            }}
-                          />
-                        )}
-                        {/* Part after today */}
-                        {todayIndex >= 0 && todayIndex < 5 && (
-                          <div 
-                            className="absolute pointer-events-none z-0 bg-red-500/35"
-                            style={{
-                              left: `calc(10px + (100% - 10px) / 7 * ${todayIndex + 1} + 8px)`,
-                              right: 'calc((100% - 10px) / 7 - 8px)',
-                              top: '-8px',
-                              bottom: '-8px',
-                            }}
-                          />
-                        )}
-                        {/* Full Sun-Fri if today is not in this row or is Saturday */}
-                        {(todayIndex === -1 || todayIndex === 6) && (
-                          <div 
-                            className="absolute pointer-events-none z-0 bg-red-500/35"
-                            style={{
-                              left: '18px',
-                              right: 'calc((100% - 10px) / 7 - 8px)',
-                              top: '-8px',
-                              bottom: '-8px',
-                            }}
-                          />
-                        )}
-                      </>
-                    )}
-                    
-                    {/* Red border overlay for Saturday of current week (skip if today is Saturday) */}
-                    {saturdayInCurrentWeek && todayIndex !== 6 && (
-                      <div 
-                        className="absolute pointer-events-none z-0 bg-red-500/35"
-                        style={{
-                          left: 'calc(100% - (100% - 10px) / 7 + 2px)',
-                          right: '-6px',
-                          top: '-8px',
-                          bottom: '-8px',
-                        }}
-                      />
-                    )}
-                    
-                    {/* Blue overlay for today's date */}
-                    {hasTodayInRow && (
-                      <div 
-                        className="absolute pointer-events-none z-0 bg-blue-400/50 animate-pulse"
-                        style={{
-                          left: `calc(10px + (100% - 10px) / 7 * ${todayIndex} + 4px)`,
-                          width: 'calc((100% - 10px) / 7 + 2px)',
-                          top: '-4px',
-                          bottom: '-4px',
-                        }}
-                      />
-                    )}
                   </div>
                 );
               })}
+            </div>
+            
+            {/* ALL DAY Row */}
+            <div className="grid border-b border-border" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+              <div className="p-2 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
+                ALL DAY
+              </div>
+              {weekDays.map((day, idx) => {
+                const allDayTasks = getAllDayTasks(day);
+                return (
+                  <div 
+                    key={idx} 
+                    className="p-1 border-l border-border min-h-[40px] flex flex-wrap gap-1"
+                    data-testid={`all-day-${format(day, "yyyy-MM-dd")}`}
+                  >
+                    {allDayTasks.map(task => {
+                      const colors = getCourseColor(task.courseName);
+                      return (
+                        <div
+                          key={task.id}
+                          onClick={() => setEditingTask(task)}
+                          className={`text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 ${
+                            colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
+                          }`}
+                          data-testid={`all-day-task-${task.id}`}
+                        >
+                          {task.title}
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Time Slots */}
+            <div className="flex-1 overflow-auto">
+              <div className="relative" style={{ minHeight: `${timeSlots.length * 60}px` }}>
+                {timeSlots.map((hour, hourIdx) => (
+                  <div 
+                    key={hour} 
+                    className="grid border-b border-border/50" 
+                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '60px' }}
+                  >
+                    <div className="text-xs text-muted-foreground font-medium flex items-start justify-end pr-3 pt-1">
+                      {hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
+                    </div>
+                    {weekDays.map((day, dayIdx) => {
+                      const hourTasks = getTasksForHour(day, hour);
+                      return (
+                        <div 
+                          key={dayIdx} 
+                          className="border-l border-border/50 relative p-0.5"
+                          data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
+                        >
+                          {hourTasks.map((task, taskIdx) => {
+                            const colors = getCourseColor(task.courseName);
+                            return (
+                              <div
+                                key={task.id}
+                                onClick={() => setEditingTask(task)}
+                                className={`absolute left-0.5 right-0.5 rounded-lg p-2 cursor-pointer hover:opacity-90 shadow-sm overflow-hidden ${
+                                  colors ? `${colors.bg} border-l-4 ${colors.border}` : "bg-gray-200 border-l-4 border-gray-400"
+                                }`}
+                                style={{
+                                  top: `${taskIdx * 2}px`,
+                                  minHeight: '50px',
+                                  zIndex: taskIdx + 1
+                                }}
+                                data-testid={`time-task-${task.id}`}
+                              >
+                                <div className={`text-xs font-semibold truncate ${colors?.text || "text-gray-700"}`}>
+                                  {task.title}
+                                </div>
+                                <div className="text-[10px] text-muted-foreground mt-0.5">
+                                  {format(new Date(task.dueDate), "h:mm a")}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -588,7 +511,7 @@ export default function Dashboard() {
                 : `Week ${selectedWeek} Tasks`}
             </h3>
             {selectedDate && (
-              <Button variant="link" className="p-0 h-auto" onClick={() => setSelectedDate(null)}>
+              <Button variant="ghost" className="p-0 h-auto text-primary" onClick={() => setSelectedDate(null)}>
                 Clear date filter
               </Button>
             )}
