@@ -322,11 +322,8 @@ export default function Dashboard() {
                 const weekNum = saturdayOfWeek ? getWeekNumber(saturdayOfWeek) : 0;
                 const showWeekNum = weekNum >= 1 && weekNum <= 13;
                 
-                // Check if this row's week number matches the currently selected week
-                const isCurrentWeekRow = weekNum === selectedWeek;
-                
                 return (
-                  <div key={`week-row-${weekIdx}`} className={`grid gap-1 ${isCurrentWeekRow ? "border-4 border-red-500 rounded-lg p-1 -m-1" : ""}`} style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
+                  <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
                     {/* Week number label */}
                     <div className="flex items-center justify-end">
                       {showWeekNum && (
@@ -348,6 +345,34 @@ export default function Dashboard() {
                 const isSelected = selectedDate && isSameDay(day, selectedDate);
                 const isCurrentMonth = isSameMonth(day, currentMonth);
                 const isCurrentWeekDay = isInCurrentWeek(day);
+                
+                // Build red border for current week contour (Sat-Fri)
+                // dayIdx: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+                // Saturday is START of week (left border), Friday is END (right border)
+                let currentWeekBorder = "";
+                if (isCurrentWeekDay) {
+                  const borders = [];
+                  // Saturday = start of week, needs left border and top/bottom
+                  if (dayIdx === 6) {
+                    borders.push("border-l-4 border-l-red-500");
+                    borders.push("border-t-4 border-t-red-500");
+                    borders.push("border-b-4 border-b-red-500");
+                    borders.push("rounded-l-lg");
+                  }
+                  // Friday = end of week, needs right border and top/bottom
+                  else if (dayIdx === 5) {
+                    borders.push("border-r-4 border-r-red-500");
+                    borders.push("border-t-4 border-t-red-500");
+                    borders.push("border-b-4 border-b-red-500");
+                    borders.push("rounded-r-lg");
+                  }
+                  // Sunday-Thursday = middle days, need top/bottom borders
+                  else {
+                    borders.push("border-t-4 border-t-red-500");
+                    borders.push("border-b-4 border-b-red-500");
+                  }
+                  currentWeekBorder = borders.join(" ");
+                }
                 
                 // Group tasks with their reminders
                 const taskReminderPairs: Array<{ task: typeof dayTasks[0] | null; reminder: typeof dayReminders[0] | null }> = [];
@@ -386,6 +411,7 @@ export default function Dashboard() {
                           : "bg-muted/30 text-muted-foreground"}
                       ${isToday ? "ring-2 ring-primary ring-offset-2" : ""}
                       ${isSelected ? "ring-2 ring-primary" : "hover:border-primary/50"}
+                      ${currentWeekBorder}
                     `}
                     data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                   >
