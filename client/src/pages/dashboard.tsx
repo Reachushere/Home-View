@@ -349,7 +349,7 @@ export default function Dashboard() {
                           className="text-base font-bold text-foreground whitespace-nowrap"
                           style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                         >
-                          Week {weekNum}
+                          Week <span className="text-blue-500">{weekNum}</span>
                         </span>
                       )}
                     </div>
