@@ -385,8 +385,11 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto flex flex-col">
+        {/* Title Row */}
+        <h1 className="text-lg font-semibold text-foreground mb-2">Bryn's Task Management</h1>
+        
         {/* Calendar Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-5 w-5" />
@@ -401,46 +404,50 @@ export default function Dashboard() {
               TODAY
             </Button>
           </div>
-          <h1 className="text-2xl font-semibold text-foreground">Bryn's Task Management</h1>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <Button 
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              size="sm"
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-3 w-3 mr-1" />
               Module
             </Button>
             <Button 
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              size="sm"
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-3 w-3 mr-1" />
               Reading
             </Button>
             <Button 
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              size="sm"
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-3 w-3 mr-1" />
               Discussion
             </Button>
             <Button 
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              size="sm"
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-3 w-3 mr-1" />
               Assignment
             </Button>
             <Button 
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              size="sm"
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-4 w-4 mr-1" />
+              <Plus className="h-3 w-3 mr-1" />
               Exam/Test
             </Button>
           </div>
