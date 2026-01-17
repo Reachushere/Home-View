@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES } from "@shared/schema";
-import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek } from "date-fns";
+import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   reading: BookOpen,
@@ -125,6 +125,16 @@ export default function Dashboard() {
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 6 }); // Start on Saturday
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 6 });
   const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+
+  // Current week dates (Week 2 = Jan 17-23, 2026)
+  const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
+  const currentWeekStart = currentWeekInfo ? new Date(currentWeekInfo.startDate) : null;
+  const currentWeekEnd = currentWeekInfo ? new Date(currentWeekInfo.endDate) : null;
+
+  const isInCurrentWeek = (day: Date) => {
+    if (!currentWeekStart || !currentWeekEnd) return false;
+    return isWithinInterval(day, { start: currentWeekStart, end: currentWeekEnd });
+  };
 
   const getTasksForDay = (day: Date) => {
     return allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
@@ -275,6 +285,7 @@ export default function Dashboard() {
                 const isToday = isSameDay(day, new Date());
                 const isSelected = selectedDate && isSameDay(day, selectedDate);
                 const isCurrentMonth = isSameMonth(day, currentMonth);
+                const isCurrentWeekDay = isInCurrentWeek(day);
                 
                 return (
                   <button
@@ -282,13 +293,17 @@ export default function Dashboard() {
                     onClick={() => handleDayClick(day)}
                     className={`
                       min-h-[80px] p-2 rounded-md border text-left transition-all
-                      ${isCurrentMonth ? "bg-card" : "bg-muted/30 text-muted-foreground"}
-                      ${isToday ? "ring-2 ring-primary" : ""}
-                      ${isSelected ? "bg-primary/10 border-primary" : "border-border hover:border-primary/50"}
+                      ${isCurrentWeekDay 
+                        ? "bg-foreground text-background border-foreground" 
+                        : isCurrentMonth 
+                          ? "bg-card" 
+                          : "bg-muted/30 text-muted-foreground"}
+                      ${isToday ? "ring-2 ring-primary ring-offset-2" : ""}
+                      ${isSelected ? "ring-2 ring-primary" : "hover:border-primary/50"}
                     `}
                     data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                   >
-                    <div className={`text-sm font-medium mb-1 ${isToday ? "text-primary" : ""}`}>
+                    <div className={`text-sm font-medium mb-1 ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
                       {format(day, "d")}
                     </div>
                     <div className="space-y-1">
@@ -297,8 +312,14 @@ export default function Dashboard() {
                         return (
                           <div 
                             key={task.id}
-                            className={`text-xs truncate px-1 py-0.5 rounded ${
-                              colors ? `${colors.bg} ${colors.text}` : "bg-muted text-muted-foreground"
+                            className={`text-xs truncate px-1 py-0.5 rounded font-medium ${
+                              colors 
+                                ? isCurrentWeekDay 
+                                  ? `${colors.dot} text-white` 
+                                  : `${colors.bg} ${colors.text}`
+                                : isCurrentWeekDay 
+                                  ? "bg-background/20 text-background" 
+                                  : "bg-muted text-muted-foreground"
                             } ${task.isCompleted ? "line-through opacity-50" : ""}`}
                           >
                             {task.title}
@@ -306,7 +327,7 @@ export default function Dashboard() {
                         );
                       })}
                       {dayTasks.length > 3 && (
-                        <div className="text-xs text-muted-foreground">
+                        <div className={`text-xs ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
                           +{dayTasks.length - 3} more
                         </div>
                       )}
