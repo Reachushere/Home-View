@@ -432,7 +432,7 @@ export default function Dashboard() {
                               const urgent = task ? isUrgentTask(task) : false;
                               
                               return (
-                                <div key={`pair-${pairIdx}`} className="flex items-center gap-0.5">
+                                <div key={`pair-${pairIdx}`} className={`flex items-center gap-0.5 ${is24hrReminder ? "animate-urgent-blink" : ""}`}>
                                   {reminder && (
                                     <div 
                                       onClick={(e) => {
@@ -445,7 +445,7 @@ export default function Dashboard() {
                                         isCurrentWeekDay 
                                           ? "bg-red-500 text-white" 
                                           : "bg-red-500/20 text-red-600 dark:text-red-400"
-                                      } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
+                                      }`}
                                       title={`Reminder: ${reminder.title}`}
                                       data-testid={`calendar-reminder-${reminder.id}`}
                                     >
