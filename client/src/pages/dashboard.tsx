@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
-import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO } from "date-fns";
+import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   reading: BookOpen,
@@ -136,7 +136,11 @@ export default function Dashboard() {
 
   const isInCurrentWeek = (day: Date) => {
     if (!currentWeekStart || !currentWeekEnd) return false;
-    return isWithinInterval(day, { start: currentWeekStart, end: currentWeekEnd });
+    // Use startOfDay to compare only dates, not times
+    const dayStart = startOfDay(day);
+    const weekStart = startOfDay(currentWeekStart);
+    const weekEnd = endOfDay(currentWeekEnd);
+    return isWithinInterval(dayStart, { start: weekStart, end: weekEnd });
   };
 
   const getTasksForDay = (day: Date) => {
