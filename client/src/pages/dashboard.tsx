@@ -567,7 +567,7 @@ export default function Dashboard() {
                       <div 
                         className="absolute pointer-events-none z-0 bg-blue-400/50"
                         style={{
-                          left: `calc(10px + (100% - 10px) / 7 * ${todayIndex} + 2px)`,
+                          left: `calc(10px + (100% - 10px) / 7 * ${todayIndex} + 4px)`,
                           width: 'calc((100% - 10px) / 7 + 4px)',
                           top: '-4px',
                           bottom: '-4px',
