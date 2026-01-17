@@ -430,12 +430,19 @@ export default function Dashboard() {
                                 <div key={`pair-${pairIdx}`} className="flex items-center gap-0.5">
                                   {reminder && (
                                     <div 
-                                      className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center ${
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsTodayExpanded(false);
+                                        const reminderTask = allTasks.find(t => t.id === reminder.id);
+                                        if (reminderTask) setEditingTask(reminderTask);
+                                      }}
+                                      className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center cursor-pointer hover:opacity-80 ${
                                         isCurrentWeekDay 
                                           ? "bg-red-500 text-white" 
                                           : "bg-red-500/20 text-red-600 dark:text-red-400"
                                       } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
                                       title={`Reminder: ${reminder.title}`}
+                                      data-testid={`calendar-reminder-${reminder.id}`}
                                     >
                                       <Bell className="h-2 w-2" />
                                     </div>
@@ -462,7 +469,13 @@ export default function Dashboard() {
                                     </div>
                                   ) : reminder && (
                                     <div 
-                                      className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setIsTodayExpanded(false);
+                                        const reminderTask = allTasks.find(t => t.id === reminder.id);
+                                        if (reminderTask) setEditingTask(reminderTask);
+                                      }}
+                                      className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 cursor-pointer hover:opacity-80 ${
                                         colors 
                                           ? isCurrentWeekDay 
                                             ? `${colors.dot} text-white` 
@@ -471,6 +484,7 @@ export default function Dashboard() {
                                             ? "bg-gray-500 text-white" 
                                             : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
                                       }`}
+                                      data-testid={`calendar-reminder-title-${reminder.id}`}
                                     >
                                       {reminder.title}
                                     </div>
