@@ -122,20 +122,12 @@ export default function Dashboard() {
   const upcomingTasks = displayTasks.filter(t => !t.isMissed && !t.isCompleted);
   const completedTasks = displayTasks.filter(t => t.isCompleted);
 
-  // Calendar generation
+  // Calendar generation - display starts Sunday, but backend weeks run Sat-Fri
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
-  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 6 }); // Start on Saturday
-  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 6 });
-  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-  
-  // Reorder days for display: Sunday first (shift Saturday to end of each week row)
-  const displayCalendarDays: Date[] = [];
-  for (let i = 0; i < calendarDays.length; i += 7) {
-    const weekDays = calendarDays.slice(i, i + 7);
-    // weekDays is [Sat, Sun, Mon, Tue, Wed, Thu, Fri], reorder to [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
-    displayCalendarDays.push(...weekDays.slice(1), weekDays[0]);
-  }
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 }); // Display starts on Sunday
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+  const displayCalendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
