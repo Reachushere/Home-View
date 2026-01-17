@@ -118,6 +118,17 @@
   animation: today-blink 1.5s ease-in-out infinite;
 }
 
+.today-popup:hover {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) scale(2) !important;
+  z-index: 100 !important;
+  width: 200px !important;
+  height: 160px !important;
+  transition: all 0.3s ease-in-out;
+}
+
 @layer base {
   body {
     @apply bg-black text-foreground antialiased;
