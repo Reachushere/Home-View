@@ -316,7 +316,30 @@ export default function Dashboard() {
                 const isSelected = selectedDate && isSameDay(day, selectedDate);
                 const isCurrentMonth = isSameMonth(day, currentMonth);
                 const isCurrentWeekDay = isInCurrentWeek(day);
-                const allItems = [...dayTasks.map(t => ({ ...t, isReminder: false, reminderType: undefined as '2day' | '24hr' | undefined })), ...dayReminders.map(t => ({ ...t, isReminder: true }))];
+                
+                // Group tasks with their reminders
+                const taskReminderPairs: Array<{ task: typeof dayTasks[0] | null; reminder: typeof dayReminders[0] | null }> = [];
+                const usedReminderIds = new Set<number>();
+                
+                // First, pair tasks with their reminders
+                dayTasks.forEach(task => {
+                  const matchingReminder = dayReminders.find(r => r.id === task.id && !usedReminderIds.has(r.id));
+                  if (matchingReminder) {
+                    usedReminderIds.add(matchingReminder.id);
+                    taskReminderPairs.push({ task, reminder: matchingReminder });
+                  } else {
+                    taskReminderPairs.push({ task, reminder: null });
+                  }
+                });
+                
+                // Add orphan reminders (reminders without a task on the same day)
+                dayReminders.forEach(reminder => {
+                  if (!usedReminderIds.has(reminder.id)) {
+                    taskReminderPairs.push({ task: null, reminder });
+                  }
+                });
+                
+                const totalItems = taskReminderPairs.length;
                 
                 return (
                   <button
@@ -338,47 +361,63 @@ export default function Dashboard() {
                       {format(day, "d")}
                     </div>
                     <div className="space-y-0.5">
-                      {allItems.slice(0, 3).map((item, itemIdx) => {
-                        if (item.isReminder) {
-                          const is24hrReminder = item.reminderType === '24hr';
-                          const reminderColors = getCourseColor(item.courseName);
-                          return (
-                            <div 
-                              key={`reminder-${item.reminderType}-${item.id}`}
-                              className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex items-center gap-0.5 ${
-                                isCurrentWeekDay 
-                                  ? "bg-red-500 text-white" 
-                                  : "bg-red-500/10 text-red-600 dark:text-red-400"
-                              } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
-                            >
-                              <Bell className="h-2 w-2 flex-shrink-0" />
-                              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${reminderColors?.dot || "bg-gray-500"}`} />
-                              {is24hrReminder ? "URGENT: " : ""}{item.title}
-                            </div>
-                          );
-                        }
-                        const colors = getCourseColor(item.courseName);
-                        const urgent = isUrgentTask(item);
+                      {taskReminderPairs.slice(0, 3).map((pair, pairIdx) => {
+                        const { task, reminder } = pair;
+                        const colors = task ? getCourseColor(task.courseName) : reminder ? getCourseColor(reminder.courseName) : null;
+                        const is24hrReminder = reminder?.reminderType === '24hr';
+                        const urgent = task ? isUrgentTask(task) : false;
+                        
                         return (
-                          <div 
-                            key={item.id}
-                            className={`text-[9px] truncate px-0.5 py-px rounded font-medium ${
-                              colors 
-                                ? isCurrentWeekDay 
-                                  ? `${colors.dot} text-white` 
-                                  : `${colors.bg} ${colors.text}`
-                                : isCurrentWeekDay 
-                                  ? "bg-gray-500 text-white" 
-                                  : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
-                            } ${item.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
-                          >
-                            {item.title}
+                          <div key={`pair-${pairIdx}`} className="flex items-center gap-0.5">
+                            {/* Reminder indicator */}
+                            {reminder && (
+                              <div 
+                                className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center ${
+                                  isCurrentWeekDay 
+                                    ? "bg-red-500 text-white" 
+                                    : "bg-red-500/10 text-red-600 dark:text-red-400"
+                                } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
+                                title={`Reminder: ${reminder.title}`}
+                              >
+                                <Bell className="h-2 w-2" />
+                              </div>
+                            )}
+                            {/* Task label */}
+                            {task ? (
+                              <div 
+                                className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
+                                  colors 
+                                    ? isCurrentWeekDay 
+                                      ? `${colors.dot} text-white` 
+                                      : `${colors.bg} ${colors.text}`
+                                    : isCurrentWeekDay 
+                                      ? "bg-gray-500 text-white" 
+                                      : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
+                                } ${task.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
+                              >
+                                {task.title}
+                              </div>
+                            ) : reminder && (
+                              <div 
+                                className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
+                                  colors 
+                                    ? isCurrentWeekDay 
+                                      ? `${colors.dot} text-white` 
+                                      : `${colors.bg} ${colors.text}`
+                                    : isCurrentWeekDay 
+                                      ? "bg-gray-500 text-white" 
+                                      : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
+                                }`}
+                              >
+                                {reminder.title}
+                              </div>
+                            )}
                           </div>
                         );
                       })}
-                      {allItems.length > 3 && (
+                      {totalItems > 3 && (
                         <div className={`text-[9px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
-                          +{allItems.length - 3} more
+                          +{totalItems - 3} more
                         </div>
                       )}
                     </div>
