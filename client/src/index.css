@@ -128,7 +128,7 @@
 }
 
 .today-popup-expanded {
-  position: fixed !important;
+  position: absolute !important;
   top: 50% !important;
   left: 50% !important;
   transform: translate(-50%, -50%) scale(2) !important;
@@ -137,6 +137,10 @@
   height: 160px !important;
   animation: none !important;
   box-shadow: 0 0 0 3px hsl(217 91% 60%) !important;
+}
+
+.calendar-container {
+  position: relative;
 }
 
 .today-backdrop {
