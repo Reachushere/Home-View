@@ -319,7 +319,7 @@ export default function Dashboard() {
             </div>
             
             {/* Calendar Days with Week Numbers */}
-            <div className="space-y-3">
+            <div className="space-y-5">
               {Array.from({ length: Math.ceil(displayCalendarDays.length / 7) }).map((_, weekIdx) => {
                 const weekDays = displayCalendarDays.slice(weekIdx * 7, weekIdx * 7 + 7);
                 const saturdayOfWeek = weekDays[6];
