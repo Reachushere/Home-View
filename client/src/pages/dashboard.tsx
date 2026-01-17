@@ -162,8 +162,10 @@ export default function Dashboard() {
   const weekStartDate = selectedWeekInfo ? parseISO(selectedWeekInfo.startDate) : new Date(2026, 0, 17);
   const weekEndDate = selectedWeekInfo ? parseISO(selectedWeekInfo.endDate) : new Date(2026, 0, 23);
   
-  // Generate 5 weekdays (Mon-Fri) for the weekly view - starting from Sunday of the week
-  const weekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate });
+  // Generate weekdays for the weekly view - reorder so Sunday is first and Saturday is last
+  const rawWeekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate });
+  // Move Saturday (first day) to the end so order is Sun-Sat
+  const weekDays = rawWeekDays.length === 7 ? [...rawWeekDays.slice(1), rawWeekDays[0]] : rawWeekDays;
   
   // Time slots for the day view (8 AM to 6 PM)
   const timeSlots = Array.from({ length: 11 }, (_, i) => i + 8); // 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
