@@ -227,7 +227,7 @@ export default function Dashboard() {
                 <div className={`w-2 h-2 rounded-full ${colors?.dot}`} />
                 <span className="text-[11px]">
                   <span className="font-medium">{course.code}</span>
-                  <span className="text-muted-foreground"> - {course.name}</span>
+                  <span className="text-black dark:text-white"> - {course.name}</span>
                 </span>
               </div>
             );
