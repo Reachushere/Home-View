@@ -404,7 +404,7 @@ export default function Dashboard() {
                               : "border " + (isCurrentMonth 
                                 ? "bg-card" 
                                 : "bg-muted/30 text-muted-foreground")}
-                            ${isToday && !isTodayExpanded ? "animate-today-blink today-popup" : ""}
+                            ${isToday && !isTodayExpanded ? "today-popup" : ""}
                             ${isToday && isTodayExpanded ? "today-popup-expanded" : ""}
                             ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
                           `}
@@ -416,7 +416,7 @@ export default function Dashboard() {
                               : isCurrentMonth 
                                 ? "text-foreground" 
                                 : "text-muted-foreground"
-                          } ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
+                          } ${isToday ? "text-blue-400" : ""}`}>
                             {format(day, "d")}
                           </div>
                           <div className="space-y-0.5 w-full overflow-hidden">
