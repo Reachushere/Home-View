@@ -407,7 +407,7 @@ export default function Dashboard() {
                     className={`
                       h-[80px] p-1 text-left transition-all overflow-hidden flex flex-col items-start justify-start
                       ${isCurrentWeekDay 
-                        ? "bg-foreground text-background" 
+                        ? (isCurrentMonth ? "bg-card" : "bg-muted/30 text-muted-foreground")
                         : "rounded-md border " + (isCurrentMonth 
                           ? "bg-card" 
                           : "bg-muted/30 text-muted-foreground")}
@@ -419,12 +419,10 @@ export default function Dashboard() {
                     data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className={`text-xs font-medium mb-1 text-left ${
-                      isCurrentWeekDay 
-                        ? "text-background" 
-                        : isCurrentMonth 
-                          ? "text-foreground" 
-                          : "text-muted-foreground"
-                    } ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
+                      isCurrentMonth 
+                        ? "text-foreground" 
+                        : "text-muted-foreground"
+                    } ${isToday ? "text-primary" : ""}`}>
                       {format(day, "d")}
                     </div>
                     <div className="space-y-0.5">
@@ -439,11 +437,7 @@ export default function Dashboard() {
                             {/* Reminder indicator */}
                             {reminder && (
                               <div 
-                                className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center ${
-                                  isCurrentWeekDay 
-                                    ? "bg-red-500 text-white" 
-                                    : "bg-red-500/10 text-red-600 dark:text-red-400"
-                                } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
+                                className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center bg-red-500/10 text-red-600 dark:text-red-400 ${is24hrReminder ? "animate-urgent-blink" : ""}`}
                                 title={`Reminder: ${reminder.title}`}
                               >
                                 <Bell className="h-2 w-2" />
@@ -454,12 +448,8 @@ export default function Dashboard() {
                               <div 
                                 className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
                                   colors 
-                                    ? isCurrentWeekDay 
-                                      ? `${colors.dot} text-white` 
-                                      : `${colors.bg} ${colors.text}`
-                                    : isCurrentWeekDay 
-                                      ? "bg-gray-500 text-white" 
-                                      : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
+                                    ? `${colors.bg} ${colors.text}`
+                                    : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
                                 } ${task.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
                               >
                                 {task.title}
@@ -468,12 +458,8 @@ export default function Dashboard() {
                               <div 
                                 className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
                                   colors 
-                                    ? isCurrentWeekDay 
-                                      ? `${colors.dot} text-white` 
-                                      : `${colors.bg} ${colors.text}`
-                                    : isCurrentWeekDay 
-                                      ? "bg-gray-500 text-white" 
-                                      : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
+                                    ? `${colors.bg} ${colors.text}`
+                                    : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
                                 }`}
                               >
                                 {reminder.title}
@@ -483,7 +469,7 @@ export default function Dashboard() {
                         );
                       })}
                       {totalItems > 3 && (
-                        <div className={`text-[9px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
+                        <div className="text-[9px] text-muted-foreground">
                           +{totalItems - 3} more
                         </div>
                       )}
