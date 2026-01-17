@@ -305,10 +305,10 @@ export default function Dashboard() {
         <Card className="mb-6">
           <CardContent className="p-4">
             {/* Day Headers */}
-            <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: '14px repeat(7, 1fr)' }}>
+            <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: '9px repeat(7, 1fr)' }}>
               <div></div>
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
+                <div key={day} className="text-center text-sm font-medium text-foreground py-2">
                   {day}
                 </div>
               ))}
@@ -323,7 +323,7 @@ export default function Dashboard() {
                 const showWeekNum = weekNum >= 1 && weekNum <= 13;
                 
                 return (
-                  <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '14px repeat(7, 1fr)' }}>
+                  <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '9px repeat(7, 1fr)' }}>
                     {/* Week number label */}
                     <div className="flex items-center justify-end">
                       {showWeekNum && (
@@ -386,7 +386,13 @@ export default function Dashboard() {
                     `}
                     data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                   >
-                    <div className={`text-xs font-medium mb-1 ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
+                    <div className={`text-xs font-medium mb-1 text-left ${
+                      isCurrentWeekDay 
+                        ? "text-background" 
+                        : isCurrentMonth 
+                          ? "text-foreground" 
+                          : "text-muted-foreground"
+                    } ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
                       {format(day, "d")}
                     </div>
                     <div className="space-y-0.5">
