@@ -13,6 +13,14 @@ export const TASK_TYPES = [
   "quiz"
 ] as const;
 
+export const COURSES = [
+  { code: "CPPA122", name: "Local Politics", color: "blue" },
+  { code: "CFNF400", name: "Human Sexuality", color: "red" },
+  { code: "CASL101", name: "American Sign Language", color: "yellow" },
+] as const;
+
+export type Course = typeof COURSES[number];
+
 export type TaskType = typeof TASK_TYPES[number];
 
 export const REMINDER_OFFSETS = [30, 120, 360, 720] as const; // minutes: 30min, 2hr, 6hr, 12hr

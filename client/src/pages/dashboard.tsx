@@ -26,10 +26,12 @@ import {
   RefreshCw,
   Bell,
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import type { Task } from "@shared/schema";
-import { TASK_TYPES, REMINDER_OFFSETS } from "@shared/schema";
-import { format } from "date-fns";
+import { TASK_TYPES, COURSES } from "@shared/schema";
+import { format, addDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   reading: BookOpen,
@@ -53,6 +55,12 @@ const typeColors: Record<string, string> = {
   quiz: "bg-amber-500/20 text-amber-600 dark:text-amber-400",
 };
 
+const courseColors: Record<string, { bg: string; border: string; text: string; dot: string }> = {
+  "CPPA122": { bg: "bg-blue-500/10", border: "border-blue-500", text: "text-blue-600 dark:text-blue-400", dot: "bg-blue-500" },
+  "CFNF400": { bg: "bg-red-500/10", border: "border-red-500", text: "text-red-600 dark:text-red-400", dot: "bg-red-500" },
+  "CASL101": { bg: "bg-yellow-500/10", border: "border-yellow-500", text: "text-yellow-600 dark:text-yellow-400", dot: "bg-yellow-500" },
+};
+
 interface WeekInfo {
   weekNumber: number;
   startDate: string;
@@ -62,12 +70,19 @@ interface WeekInfo {
 
 export default function Dashboard() {
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 17)); // January 2026
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
 
   const { data: weeks = [] } = useQuery<WeekInfo[]>({
     queryKey: ["/api/weeks"],
+  });
+
+  const { data: allTasks = [] } = useQuery<Task[]>({
+    queryKey: ["/api/tasks"],
+    queryFn: () => fetch("/api/tasks").then(r => r.json()),
   });
 
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
@@ -95,14 +110,51 @@ export default function Dashboard() {
     },
   });
 
-  const currentWeekInfo = weeks.find(w => w.weekNumber === selectedWeek);
-  const missedTasks = tasks.filter(t => t.isMissed && !t.isCompleted);
-  const upcomingTasks = tasks.filter(t => !t.isMissed && !t.isCompleted);
-  const completedTasks = tasks.filter(t => t.isCompleted);
+  // Filter tasks by selected date if a date is clicked
+  const displayTasks = selectedDate 
+    ? allTasks.filter(t => isSameDay(new Date(t.dueDate), selectedDate))
+    : tasks;
+
+  const missedTasks = displayTasks.filter(t => t.isMissed && !t.isCompleted);
+  const upcomingTasks = displayTasks.filter(t => !t.isMissed && !t.isCompleted);
+  const completedTasks = displayTasks.filter(t => t.isCompleted);
+
+  // Calendar generation
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const calendarStart = startOfWeek(monthStart, { weekStartsOn: 6 }); // Start on Saturday
+  const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 6 });
+  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+
+  const getTasksForDay = (day: Date) => {
+    return allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
+  };
+
+  const handlePrevMonth = () => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
+
+  const handleDayClick = (day: Date) => {
+    if (selectedDate && isSameDay(selectedDate, day)) {
+      setSelectedDate(null); // Deselect if clicking same day
+    } else {
+      setSelectedDate(day);
+    }
+  };
+
+  const getCourseColor = (courseName: string | null) => {
+    if (!courseName) return null;
+    const courseCode = courseName.split(" ")[0];
+    return courseColors[courseCode] || null;
+  };
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Sidebar - Week Navigator */}
+      {/* Sidebar */}
       <aside className="w-72 border-r border-border bg-sidebar p-4 flex flex-col gap-4 overflow-auto">
         <div className="flex items-center gap-2 px-2 py-4">
           <CalendarDays className="h-6 w-6 text-primary" />
@@ -115,13 +167,34 @@ export default function Dashboard() {
           Today: {format(new Date(), "MMM d, yyyy")}
         </div>
 
-        <nav className="flex flex-col gap-1">
+        {/* Course Legend */}
+        <div className="px-2 space-y-2">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Courses</h3>
+          {COURSES.map((course) => {
+            const colors = courseColors[course.code];
+            return (
+              <div key={course.code} className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full ${colors?.dot}`} />
+                <span className="text-sm">
+                  <span className="font-medium">{course.code}</span>
+                  <span className="text-muted-foreground"> - {course.name}</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
+
+        <nav className="flex flex-col gap-1 mt-4">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2 mb-1">Weeks</h3>
           {weeks.map((week) => (
             <Button
               key={week.weekNumber}
-              variant={selectedWeek === week.weekNumber ? "secondary" : "ghost"}
+              variant={selectedWeek === week.weekNumber && !selectedDate ? "secondary" : "ghost"}
               className="justify-between gap-2"
-              onClick={() => setSelectedWeek(week.weekNumber)}
+              onClick={() => {
+                setSelectedWeek(week.weekNumber);
+                setSelectedDate(null);
+              }}
               data-testid={`button-week-${week.weekNumber}`}
             >
               <div className="flex items-center gap-2">
@@ -150,16 +223,18 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto">
-        <header className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-semibold text-foreground">
-              Week {selectedWeek}
+        {/* Calendar Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={handlePrevMonth} data-testid="button-prev-month">
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <h2 className="text-2xl font-semibold text-foreground min-w-[200px] text-center">
+              {format(currentMonth, "MMMM yyyy")}
             </h2>
-            {currentWeekInfo && (
-              <p className="text-muted-foreground">
-                {format(new Date(currentWeekInfo.startDate), "MMM d")} - {format(new Date(currentWeekInfo.endDate), "MMM d, yyyy")}
-              </p>
-            )}
+            <Button variant="ghost" size="icon" onClick={handleNextMonth} data-testid="button-next-month">
+              <ChevronRight className="h-5 w-5" />
+            </Button>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
@@ -174,20 +249,99 @@ export default function Dashboard() {
               </DialogHeader>
               <TaskForm 
                 weekNumber={selectedWeek}
+                initialDate={selectedDate}
                 onSuccess={() => setIsAddDialogOpen(false)} 
               />
             </DialogContent>
           </Dialog>
-        </header>
+        </div>
+
+        {/* Calendar Grid */}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            {/* Day Headers */}
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"].map((day) => (
+                <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
+                  {day}
+                </div>
+              ))}
+            </div>
+            
+            {/* Calendar Days */}
+            <div className="grid grid-cols-7 gap-1">
+              {calendarDays.map((day, idx) => {
+                const dayTasks = getTasksForDay(day);
+                const isToday = isSameDay(day, new Date());
+                const isSelected = selectedDate && isSameDay(day, selectedDate);
+                const isCurrentMonth = isSameMonth(day, currentMonth);
+                
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => handleDayClick(day)}
+                    className={`
+                      min-h-[80px] p-2 rounded-md border text-left transition-all
+                      ${isCurrentMonth ? "bg-card" : "bg-muted/30 text-muted-foreground"}
+                      ${isToday ? "ring-2 ring-primary" : ""}
+                      ${isSelected ? "bg-primary/10 border-primary" : "border-border hover:border-primary/50"}
+                    `}
+                    data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
+                  >
+                    <div className={`text-sm font-medium mb-1 ${isToday ? "text-primary" : ""}`}>
+                      {format(day, "d")}
+                    </div>
+                    <div className="space-y-1">
+                      {dayTasks.slice(0, 3).map((task) => {
+                        const colors = getCourseColor(task.courseName);
+                        return (
+                          <div 
+                            key={task.id}
+                            className={`text-xs truncate px-1 py-0.5 rounded ${
+                              colors ? `${colors.bg} ${colors.text}` : "bg-muted text-muted-foreground"
+                            } ${task.isCompleted ? "line-through opacity-50" : ""}`}
+                          >
+                            {task.title}
+                          </div>
+                        );
+                      })}
+                      {dayTasks.length > 3 && (
+                        <div className="text-xs text-muted-foreground">
+                          +{dayTasks.length - 3} more
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Selected Date / Week Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-semibold">
+              {selectedDate 
+                ? format(selectedDate, "EEEE, MMMM d, yyyy")
+                : `Week ${selectedWeek} Tasks`}
+            </h3>
+            {selectedDate && (
+              <Button variant="link" className="p-0 h-auto" onClick={() => setSelectedDate(null)}>
+                Clear date filter
+              </Button>
+            )}
+          </div>
+        </div>
 
         {/* Missed Tasks Section */}
         {missedTasks.length > 0 && (
-          <section className="mb-8">
-            <h3 className="text-lg font-semibold text-destructive mb-4 flex items-center gap-2">
-              <Clock className="h-5 w-5" />
+          <section className="mb-6">
+            <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2">
+              <Clock className="h-4 w-4" />
               Missed ({missedTasks.length})
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {missedTasks.map((task) => (
                 <TaskCard
                   key={task.id}
@@ -203,18 +357,18 @@ export default function Dashboard() {
         )}
 
         {/* Upcoming Tasks Section */}
-        <section className="mb-8">
-          <h3 className="text-lg font-semibold text-foreground mb-4">
+        <section className="mb-6">
+          <h4 className="text-md font-semibold text-foreground mb-3">
             Upcoming ({upcomingTasks.length})
-          </h3>
+          </h4>
           {isLoading ? (
             <div className="text-muted-foreground">Loading tasks...</div>
           ) : upcomingTasks.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              No upcoming tasks for this week
+            <div className="text-center py-8 text-muted-foreground">
+              No upcoming tasks {selectedDate ? "for this date" : "for this week"}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {upcomingTasks.map((task) => (
                 <TaskCard
                   key={task.id}
@@ -232,10 +386,10 @@ export default function Dashboard() {
         {/* Completed Tasks Section */}
         {completedTasks.length > 0 && (
           <section>
-            <h3 className="text-lg font-semibold text-muted-foreground mb-4">
+            <h4 className="text-md font-semibold text-muted-foreground mb-3">
               Completed ({completedTasks.length})
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {completedTasks.map((task) => (
                 <TaskCard
                   key={task.id}
@@ -301,6 +455,10 @@ function TaskCard({
   const Icon = iconMap[task.type] || ClipboardCheck;
   const isMissed = task.isMissed && !task.isCompleted;
   
+  // Get course color
+  const courseCode = task.courseName?.split(" ")[0] || "";
+  const colors = courseColors[courseCode];
+  
   const handleExportCalendar = () => {
     window.open(`/api/tasks/${task.id}/ics`, '_blank');
   };
@@ -308,8 +466,10 @@ function TaskCard({
   return (
     <Card
       className={`transition-all ${
-        isMissed ? "border-destructive/50 bg-destructive/5" : ""
-      } ${task.isCompleted ? "opacity-60" : ""}`}
+        colors ? `border-l-4 ${colors.border}` : ""
+      } ${isMissed ? "border-destructive/50 bg-destructive/5" : ""} ${
+        task.isCompleted ? "opacity-60" : ""
+      }`}
       data-testid={`card-task-${task.id}`}
     >
       <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 pb-2">
@@ -324,7 +484,9 @@ function TaskCard({
               {task.title}
             </CardTitle>
             {task.courseName && (
-              <p className="text-xs text-muted-foreground">{task.courseName}</p>
+              <p className={`text-xs font-medium ${colors?.text || "text-muted-foreground"}`}>
+                {task.courseName}
+              </p>
             )}
           </div>
         </div>
@@ -372,19 +534,27 @@ function TaskCard({
 
 function TaskForm({ 
   task, 
-  weekNumber, 
+  weekNumber,
+  initialDate,
   onSuccess 
 }: { 
   task?: Task; 
-  weekNumber: number; 
+  weekNumber: number;
+  initialDate?: Date | null;
   onSuccess: () => void;
 }) {
+  const getDefaultDate = () => {
+    if (task?.dueDate) return format(new Date(task.dueDate), "yyyy-MM-dd'T'HH:mm");
+    if (initialDate) return format(initialDate, "yyyy-MM-dd'T'HH:mm");
+    return "";
+  };
+
   const [formData, setFormData] = useState({
     title: task?.title || "",
     description: task?.description || "",
     type: task?.type || "reading",
     courseName: task?.courseName || "",
-    dueDate: task?.dueDate ? format(new Date(task.dueDate), "yyyy-MM-dd'T'HH:mm") : "",
+    dueDate: getDefaultDate(),
     priority: task?.priority || "medium",
     weekNumber: task?.weekNumber || weekNumber,
   });
@@ -427,6 +597,28 @@ function TaskForm({
       </div>
 
       <div>
+        <Label htmlFor="courseName">Course</Label>
+        <Select value={formData.courseName} onValueChange={(v) => setFormData(prev => ({ ...prev, courseName: v }))}>
+          <SelectTrigger data-testid="select-course">
+            <SelectValue placeholder="Select a course" />
+          </SelectTrigger>
+          <SelectContent>
+            {COURSES.map(course => {
+              const colors = courseColors[course.code];
+              return (
+                <SelectItem key={course.code} value={`${course.code} - ${course.name}`}>
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${colors?.dot}`} />
+                    {course.code} - {course.name}
+                  </div>
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
         <Label htmlFor="type">Type</Label>
         <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
           <SelectTrigger data-testid="select-type">
@@ -440,17 +632,6 @@ function TaskForm({
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="courseName">Course Name</Label>
-        <Input
-          id="courseName"
-          value={formData.courseName}
-          onChange={(e) => setFormData(prev => ({ ...prev, courseName: e.target.value }))}
-          placeholder="e.g., CS 201"
-          data-testid="input-course"
-        />
       </div>
 
       <div>
