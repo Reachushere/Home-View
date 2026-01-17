@@ -442,7 +442,11 @@ export default function Dashboard() {
                                   )}
                                   {task ? (
                                     <div 
-                                      className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditingTask(task);
+                                      }}
+                                      className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 cursor-pointer hover:opacity-80 ${
                                         colors 
                                           ? isCurrentWeekDay 
                                             ? `${colors.dot} text-white` 
@@ -451,6 +455,7 @@ export default function Dashboard() {
                                             ? "bg-gray-500 text-white" 
                                             : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
                                       } ${task.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
+                                      data-testid={`calendar-task-${task.id}`}
                                     >
                                       {task.title}
                                     </div>
