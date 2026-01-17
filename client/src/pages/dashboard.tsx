@@ -416,7 +416,7 @@ export default function Dashboard() {
                                       className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center ${
                                         isCurrentWeekDay 
                                           ? "bg-red-500 text-white" 
-                                          : "bg-red-500/10 text-red-600 dark:text-red-400"
+                                          : "bg-red-500/20 text-red-600 dark:text-red-400"
                                       } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
                                       title={`Reminder: ${reminder.title}`}
                                     >
@@ -468,7 +468,7 @@ export default function Dashboard() {
                     {/* Red border overlay for Sun-Fri of current week */}
                     {sunFriInCurrentWeek && (
                       <div 
-                        className="absolute pointer-events-none border-2 border-red-500 rounded-lg z-10 bg-red-500/10"
+                        className="absolute pointer-events-none border-2 border-red-500 rounded-lg z-10 bg-red-500/20"
                         style={{
                           left: '4px',
                           right: 'calc((100% - 6px) / 7 - 4px)',
@@ -481,7 +481,7 @@ export default function Dashboard() {
                     {/* Red border overlay for Saturday of current week */}
                     {saturdayInCurrentWeek && (
                       <div 
-                        className="absolute pointer-events-none border-2 border-red-500 rounded-lg z-10 bg-red-500/10"
+                        className="absolute pointer-events-none border-2 border-red-500 rounded-lg z-10 bg-red-500/20"
                         style={{
                           left: 'calc(100% - (100% - 6px) / 7 - 4px)',
                           right: '-6px',
