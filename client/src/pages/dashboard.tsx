@@ -328,10 +328,10 @@ export default function Dashboard() {
                     <div className="flex items-center justify-end">
                       {showWeekNum && (
                         <span 
-                          className="text-[13px] font-bold text-foreground whitespace-nowrap uppercase"
+                          className="text-[13px] font-bold text-foreground whitespace-nowrap"
                           style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                         >
-                          WEEK {weekNum}
+                          Week {weekNum}
                         </span>
                       )}
                     </div>
