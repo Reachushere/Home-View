@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES } from "@shared/schema";
-import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval } from "date-fns";
+import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   reading: BookOpen,
@@ -250,7 +250,7 @@ export default function Dashboard() {
                   <span>Week {week.weekNumber}</span>
                 </div>
                 <span className="text-[10px] text-muted-foreground ml-6">
-                  {format(new Date(week.startDate), "MMM d")} - {format(new Date(week.endDate), "MMM d")}
+                  {format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")}
                 </span>
               </div>
               {week.taskCount > 0 && (

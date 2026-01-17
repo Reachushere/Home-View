@@ -52,7 +52,7 @@ export type UpdateTaskRequest = Partial<InsertTask>;
 // Week calculation helpers
 // Week 2 starts Saturday Jan 11, 2025 (today is Jan 17, 2025 - Friday of Week 2)
 // Weeks run Saturday to Friday
-export const SEMESTER_START = new Date("2026-01-10"); // Week 1 Saturday
+export const SEMESTER_START = new Date("2026-01-10T12:00:00"); // Week 1 Saturday (noon to avoid timezone shifts)
 export const FIRST_WEEK = 1;
 export const LAST_WEEK = 13;
 
