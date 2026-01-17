@@ -415,7 +415,7 @@ export default function Dashboard() {
                         >
                           <div className={`text-xs font-medium mb-1 text-left ${
                             isToday 
-                              ? "!text-white animate-pulse"
+                              ? "!text-white"
                               : isCurrentWeekDay
                                 ? "text-white"
                                 : isCurrentMonth 
