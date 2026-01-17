@@ -382,7 +382,7 @@ export default function Dashboard() {
                           key={idx}
                           onClick={() => handleDayClick(day)}
                           className={`
-                            h-[80px] p-1 rounded-md text-left transition-all overflow-hidden flex flex-col items-start justify-start
+                            relative z-10 h-[80px] p-1 rounded-md text-left transition-all overflow-hidden flex flex-col items-start justify-start
                             ${isCurrentWeekDay 
                               ? "bg-foreground text-background"
                               : "border " + (isCurrentMonth 
