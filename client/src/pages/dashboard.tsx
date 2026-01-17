@@ -128,6 +128,14 @@ export default function Dashboard() {
   const calendarStart = startOfWeek(monthStart, { weekStartsOn: 6 }); // Start on Saturday
   const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 6 });
   const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  
+  // Reorder days for display: Sunday first (shift Saturday to end of each week row)
+  const displayCalendarDays: Date[] = [];
+  for (let i = 0; i < calendarDays.length; i += 7) {
+    const weekDays = calendarDays.slice(i, i + 7);
+    // weekDays is [Sat, Sun, Mon, Tue, Wed, Thu, Fri], reorder to [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
+    displayCalendarDays.push(...weekDays.slice(1), weekDays[0]);
+  }
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
@@ -300,7 +308,7 @@ export default function Dashboard() {
           <CardContent className="p-4">
             {/* Day Headers */}
             <div className="grid grid-cols-7 gap-1 mb-2">
-              {["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"].map((day) => (
+              {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
                   {day}
                 </div>
@@ -309,7 +317,7 @@ export default function Dashboard() {
             
             {/* Calendar Days */}
             <div className="grid grid-cols-7 gap-1">
-              {calendarDays.map((day, idx) => {
+              {displayCalendarDays.map((day, idx) => {
                 const dayTasks = getTasksForDay(day);
                 const dayReminders = getRemindersForDay(day);
                 const isToday = isSameDay(day, new Date());
