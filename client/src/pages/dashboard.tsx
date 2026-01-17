@@ -420,8 +420,9 @@ export default function Dashboard() {
         </div>
 
         {/* Weekly Time-Slot Calendar */}
-        <Card className="mb-6 shadow-lg rounded-xl overflow-hidden relative" style={{ height: calendarHeight }}>
-          <CardContent className="p-0 h-full flex flex-col">
+        <div className="mb-6 relative" style={{ height: calendarHeight }}>
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full">
+            <CardContent className="p-0 h-full flex flex-col overflow-auto">
             {/* Day Headers */}
             <div className="grid border-b border-border" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="p-3"></div>
@@ -534,15 +535,16 @@ export default function Dashboard() {
               </div>
             </div>
           </CardContent>
+          </Card>
           {/* Resize Handle */}
           <div
-            className={`absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize flex items-center justify-center bg-gradient-to-t from-muted/50 to-transparent hover:from-muted transition-colors ${isResizing ? 'from-primary/20' : ''}`}
+            className={`absolute bottom-0 left-0 right-0 h-4 cursor-ns-resize flex items-center justify-center hover:bg-muted/50 transition-colors rounded-b-xl ${isResizing ? 'bg-primary/20' : ''}`}
             onMouseDown={handleResizeStart}
             data-testid="calendar-resize-handle"
           >
-            <div className="w-12 h-1 rounded-full bg-muted-foreground/30" />
+            <div className="w-16 h-1.5 rounded-full bg-muted-foreground/40" />
           </div>
-        </Card>
+        </div>
 
         {/* Selected Date / Week Header */}
         <div className="flex items-center justify-between mb-4">
