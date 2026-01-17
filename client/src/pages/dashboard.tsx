@@ -424,10 +424,10 @@ export default function Dashboard() {
         {/* Weekly Time-Slot Calendar */}
         <div className="mb-6 relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-xl overflow-hidden h-full">
-            <CardContent className="p-0 h-full flex flex-col overflow-auto">
+            <CardContent className="p-0 h-full overflow-auto">
             {/* Day Headers */}
-            <div className="grid border-b border-border" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-              <div className="p-3"></div>
+            <div className="grid border-b border-border sticky top-0 bg-card z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+              <div className="p-2"></div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
                 const dayName = format(day, "EEE").toUpperCase();
@@ -487,8 +487,7 @@ export default function Dashboard() {
             </div>
             
             {/* Time Slots */}
-            <div className="flex-1 overflow-auto">
-              <div className="relative" style={{ minHeight: `${timeSlots.length * 60}px` }}>
+            <div>
                 {timeSlots.map((hour, hourIdx) => (
                   <div 
                     key={hour} 
@@ -536,7 +535,6 @@ export default function Dashboard() {
                     })}
                   </div>
                 ))}
-              </div>
             </div>
           </CardContent>
           </Card>
