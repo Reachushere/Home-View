@@ -402,14 +402,14 @@ export default function Dashboard() {
                     key={idx}
                     onClick={() => handleDayClick(day)}
                     className={`
-                      h-[80px] p-1 rounded-md border text-left transition-all overflow-hidden flex flex-col items-start justify-start
+                      h-[80px] p-1 text-left transition-all overflow-hidden flex flex-col items-start justify-start
                       ${isCurrentWeekDay 
-                        ? "bg-foreground text-background border-foreground" 
-                        : isCurrentMonth 
+                        ? "bg-foreground text-background" 
+                        : "rounded-md border " + (isCurrentMonth 
                           ? "bg-card" 
-                          : "bg-muted/30 text-muted-foreground"}
+                          : "bg-muted/30 text-muted-foreground")}
                       ${isToday ? "ring-2 ring-primary ring-offset-2" : ""}
-                      ${isSelected ? "ring-2 ring-primary" : "hover:border-primary/50"}
+                      ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
                       ${currentWeekBorder}
                     `}
                     data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
