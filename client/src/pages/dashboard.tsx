@@ -223,9 +223,9 @@ export default function Dashboard() {
           {COURSES.map((course) => {
             const colors = courseColors[course.code];
             return (
-              <div key={course.code} className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${colors?.dot}`} />
-                <span className="text-sm">
+              <div key={course.code} className="flex items-center gap-1.5">
+                <div className={`w-2 h-2 rounded-full ${colors?.dot}`} />
+                <span className="text-[10px]">
                   <span className="font-medium">{course.code}</span>
                   <span className="text-muted-foreground"> - {course.name}</span>
                 </span>
