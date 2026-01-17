@@ -338,13 +338,18 @@ export default function Dashboard() {
                       {allItems.slice(0, 3).map((item, itemIdx) => {
                         if (item.isReminder) {
                           const is24hrReminder = item.reminderType === '24hr';
+                          const reminderColors = getCourseColor(item.courseName);
                           return (
                             <div 
                               key={`reminder-${item.reminderType}-${item.id}`}
                               className={`text-[10px] truncate px-1 py-0.5 rounded font-medium flex items-center gap-0.5 ${
-                                isCurrentWeekDay 
-                                  ? "bg-red-500 text-white" 
-                                  : "bg-red-500/10 text-red-600 dark:text-red-400"
+                                reminderColors
+                                  ? isCurrentWeekDay 
+                                    ? `${reminderColors.dot} text-white` 
+                                    : `${reminderColors.bg} ${reminderColors.text}`
+                                  : isCurrentWeekDay 
+                                    ? "bg-muted text-white" 
+                                    : "bg-muted text-muted-foreground"
                               } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
                             >
                               <Bell className="h-2.5 w-2.5 flex-shrink-0" />
