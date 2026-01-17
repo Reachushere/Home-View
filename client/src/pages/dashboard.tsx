@@ -433,17 +433,17 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className="p-2 text-center border-l border-border"
+                    className="p-2 border-l border-border flex items-center justify-center gap-1.5"
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    <div className="text-xs text-muted-foreground font-medium tracking-wide">{dayName}</div>
-                    <div className={`text-xl font-bold mt-1 ${
+                    <div className={`text-2xl font-bold ${
                       isToday 
-                        ? "bg-blue-500 text-white w-9 h-9 rounded-full inline-flex items-center justify-center" 
+                        ? "bg-blue-500 text-white w-10 h-10 rounded-full inline-flex items-center justify-center" 
                         : "text-foreground"
                     }`}>
                       {dayNum}
                     </div>
+                    <div className="text-xs text-muted-foreground font-medium tracking-wide">{dayName}</div>
                   </div>
                 );
               })}
