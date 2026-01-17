@@ -392,7 +392,7 @@ export default function Dashboard() {
                               : "border " + (isCurrentMonth 
                                 ? "bg-card" 
                                 : "bg-muted/30 text-muted-foreground")}
-                            ${isToday ? "ring-4 ring-primary" : ""}
+                            ${isToday ? "ring-[3px] ring-primary" : ""}
                             ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
                           `}
                           data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
