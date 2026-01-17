@@ -411,12 +411,14 @@ export default function Dashboard() {
                           data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div className={`text-xs font-medium mb-1 text-left ${
-                            isCurrentWeekDay
-                              ? "text-white"
-                              : isCurrentMonth 
-                                ? "text-foreground" 
-                                : "text-muted-foreground"
-                          } ${isToday ? "text-blue-400 animate-pulse" : ""}`}>
+                            isToday 
+                              ? "!text-blue-400 animate-pulse"
+                              : isCurrentWeekDay
+                                ? "text-white"
+                                : isCurrentMonth 
+                                  ? "text-foreground" 
+                                  : "text-muted-foreground"
+                          }`}>
                             {format(day, "d")}
                           </div>
                           <div className="space-y-0.5 w-full overflow-hidden">
