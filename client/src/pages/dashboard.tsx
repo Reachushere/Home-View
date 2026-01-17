@@ -326,8 +326,14 @@ export default function Dashboard() {
                 const weekNum = saturdayOfWeek ? getWeekNumber(saturdayOfWeek) : 0;
                 const showWeekNum = weekNum >= 1 && weekNum <= 13;
                 
+                // Check which parts of this row are in the current week
+                const sunFriDays = weekDays.slice(0, 6);
+                const saturdayDay = weekDays[6];
+                const sunFriInCurrentWeek = sunFriDays.some(day => isInCurrentWeek(day));
+                const saturdayInCurrentWeek = saturdayDay && isInCurrentWeek(saturdayDay);
+                
                 return (
-                  <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
+                  <div key={`week-row-${weekIdx}`} className="relative grid gap-1" style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
                     {/* Week number label */}
                     <div className="flex items-center justify-end">
                       {showWeekNum && (
@@ -385,7 +391,6 @@ export default function Dashboard() {
                             ${isToday ? "ring-2 ring-primary ring-offset-2" : ""}
                             ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
                           `}
-                          style={isCurrentWeekDay ? { outline: '4px solid rgb(239 68 68)', outlineOffset: '-2px' } : {}}
                           data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                         >
                           <div className={`text-xs font-medium mb-1 text-left ${
@@ -459,6 +464,32 @@ export default function Dashboard() {
                         </button>
                       );
                     })}
+                    
+                    {/* Red border overlay for Sun-Fri of current week */}
+                    {sunFriInCurrentWeek && (
+                      <div 
+                        className="absolute pointer-events-none border-4 border-red-500 rounded-lg z-10"
+                        style={{
+                          left: '10px',
+                          right: 'calc((100% - 6px) / 7 + 4px)',
+                          top: '-2px',
+                          bottom: '-2px',
+                        }}
+                      />
+                    )}
+                    
+                    {/* Red border overlay for Saturday of current week */}
+                    {saturdayInCurrentWeek && (
+                      <div 
+                        className="absolute pointer-events-none border-4 border-red-500 rounded-lg z-10"
+                        style={{
+                          left: 'calc(100% - (100% - 6px) / 7)',
+                          right: '-2px',
+                          top: '-2px',
+                          bottom: '-2px',
+                        }}
+                      />
+                    )}
                   </div>
                 );
               })}
