@@ -322,9 +322,134 @@ export default function Dashboard() {
             <div className="space-y-3">
               {Array.from({ length: Math.ceil(displayCalendarDays.length / 7) }).map((_, weekIdx) => {
                 const weekDays = displayCalendarDays.slice(weekIdx * 7, weekIdx * 7 + 7);
-                const saturdayOfWeek = weekDays[6]; // Saturday is the last day of the display week
+                const saturdayOfWeek = weekDays[6];
                 const weekNum = saturdayOfWeek ? getWeekNumber(saturdayOfWeek) : 0;
                 const showWeekNum = weekNum >= 1 && weekNum <= 13;
+                
+                // Check if Saturday is in current week
+                const saturdayInCurrentWeek = weekDays[6] && isInCurrentWeek(weekDays[6]);
+                // Check if Sun-Fri are in current week
+                const sunFriDays = weekDays.slice(0, 6);
+                const sunFriInCurrentWeek = sunFriDays.some(day => isInCurrentWeek(day));
+                
+                // Render a day cell
+                const renderDayCell = (day: Date, dayIdx: number) => {
+                  const idx = weekIdx * 7 + dayIdx;
+                  const dayTasks = getTasksForDay(day);
+                  const dayReminders = getRemindersForDay(day);
+                  const isToday = isSameDay(day, new Date());
+                  const isSelected = selectedDate && isSameDay(day, selectedDate);
+                  const isCurrentMonth = isSameMonth(day, currentMonth);
+                  const isCurrentWeekDay = isInCurrentWeek(day);
+                  
+                  const taskReminderPairs: Array<{ task: typeof dayTasks[0] | null; reminder: typeof dayReminders[0] | null }> = [];
+                  const usedReminderIds = new Set<number>();
+                  
+                  dayTasks.forEach(task => {
+                    const matchingReminder = dayReminders.find(r => r.id === task.id && !usedReminderIds.has(r.id));
+                    if (matchingReminder) {
+                      usedReminderIds.add(matchingReminder.id);
+                      taskReminderPairs.push({ task, reminder: matchingReminder });
+                    } else {
+                      taskReminderPairs.push({ task, reminder: null });
+                    }
+                  });
+                  
+                  dayReminders.forEach(reminder => {
+                    if (!usedReminderIds.has(reminder.id)) {
+                      taskReminderPairs.push({ task: null, reminder });
+                    }
+                  });
+                  
+                  const totalItems = taskReminderPairs.length;
+                  
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => handleDayClick(day)}
+                      className={`
+                        h-[80px] p-1 text-left transition-all overflow-hidden flex flex-col items-start justify-start flex-1
+                        ${isCurrentWeekDay 
+                          ? "bg-foreground text-background"
+                          : "rounded-md border " + (isCurrentMonth 
+                            ? "bg-card" 
+                            : "bg-muted/30 text-muted-foreground")}
+                        ${isToday ? "ring-2 ring-primary ring-offset-2" : ""}
+                        ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
+                      `}
+                      data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
+                    >
+                      <div className={`text-xs font-medium mb-1 text-left ${
+                        isCurrentWeekDay
+                          ? "text-background"
+                          : isCurrentMonth 
+                            ? "text-foreground" 
+                            : "text-muted-foreground"
+                      } ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
+                        {format(day, "d")}
+                      </div>
+                      <div className="space-y-0.5">
+                        {taskReminderPairs.slice(0, 3).map((pair, pairIdx) => {
+                          const { task, reminder } = pair;
+                          const colors = task ? getCourseColor(task.courseName) : reminder ? getCourseColor(reminder.courseName) : null;
+                          const is24hrReminder = reminder?.reminderType === '24hr';
+                          const urgent = task ? isUrgentTask(task) : false;
+                          
+                          return (
+                            <div key={`pair-${pairIdx}`} className="flex items-center gap-0.5">
+                              {reminder && (
+                                <div 
+                                  className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center ${
+                                    isCurrentWeekDay 
+                                      ? "bg-red-500 text-white" 
+                                      : "bg-red-500/10 text-red-600 dark:text-red-400"
+                                  } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
+                                  title={`Reminder: ${reminder.title}`}
+                                >
+                                  <Bell className="h-2 w-2" />
+                                </div>
+                              )}
+                              {task ? (
+                                <div 
+                                  className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
+                                    colors 
+                                      ? isCurrentWeekDay 
+                                        ? `${colors.dot} text-white` 
+                                        : `${colors.bg} ${colors.text}`
+                                      : isCurrentWeekDay 
+                                        ? "bg-gray-500 text-white" 
+                                        : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
+                                  } ${task.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
+                                >
+                                  {task.title}
+                                </div>
+                              ) : reminder && (
+                                <div 
+                                  className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
+                                    colors 
+                                      ? isCurrentWeekDay 
+                                        ? `${colors.dot} text-white` 
+                                        : `${colors.bg} ${colors.text}`
+                                      : isCurrentWeekDay 
+                                        ? "bg-gray-500 text-white" 
+                                        : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
+                                  }`}
+                                >
+                                  {reminder.title}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                        {totalItems > 3 && (
+                          <div className={`text-[9px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
+                            +{totalItems - 3} more
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                };
                 
                 return (
                   <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '6px repeat(7, 1fr)' }}>
@@ -340,159 +465,27 @@ export default function Dashboard() {
                       )}
                     </div>
                     
-                    {/* Days of the week */}
-                    {weekDays.map((day, dayIdx) => {
-                const idx = weekIdx * 7 + dayIdx;
-                const dayTasks = getTasksForDay(day);
-                const dayReminders = getRemindersForDay(day);
-                const isToday = isSameDay(day, new Date());
-                const isSelected = selectedDate && isSameDay(day, selectedDate);
-                const isCurrentMonth = isSameMonth(day, currentMonth);
-                const isCurrentWeekDay = isInCurrentWeek(day);
-                
-                // Build red border for current week (Sat-Fri)
-                // dayIdx: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-                // Two boxes: Saturday gets its own box, Sun-Fri get connected box
-                // Using only outer box-shadows (no inset) to avoid any "fill" effect inside cells
-                let currentWeekBorder = "";
-                let currentWeekShadow: React.CSSProperties = {};
-                if (isCurrentWeekDay) {
-                  // Saturday = its own complete box (outline effect using shadow)
-                  if (dayIdx === 6) {
-                    currentWeekBorder = "rounded-lg";
-                    currentWeekShadow = { boxShadow: '0 0 0 4px rgb(239 68 68)' };
-                  }
-                  // Sunday = start of Sun-Fri box (left + top + bottom outer shadows, extending right)
-                  else if (dayIdx === 0) {
-                    currentWeekBorder = "rounded-l-lg";
-                    currentWeekShadow = { boxShadow: '-4px 0 0 0 rgb(239 68 68), 0 -4px 0 0 rgb(239 68 68), 0 4px 0 0 rgb(239 68 68), 4px 0 0 0 rgb(239 68 68)' };
-                  }
-                  // Friday = end of Sun-Fri box (right + top + bottom outer shadows, extending left)
-                  else if (dayIdx === 5) {
-                    currentWeekBorder = "rounded-r-lg";
-                    currentWeekShadow = { boxShadow: '4px 0 0 0 rgb(239 68 68), 0 -4px 0 0 rgb(239 68 68), 0 4px 0 0 rgb(239 68 68), -4px 0 0 0 rgb(239 68 68)' };
-                  }
-                  // Mon-Thu = middle of Sun-Fri box (top/bottom outer shadows, extending left/right)
-                  else {
-                    currentWeekShadow = { boxShadow: '0 -4px 0 0 rgb(239 68 68), 0 4px 0 0 rgb(239 68 68), 4px 0 0 0 rgb(239 68 68), -4px 0 0 0 rgb(239 68 68)' };
-                  }
-                }
-                
-                // Group tasks with their reminders
-                const taskReminderPairs: Array<{ task: typeof dayTasks[0] | null; reminder: typeof dayReminders[0] | null }> = [];
-                const usedReminderIds = new Set<number>();
-                
-                // First, pair tasks with their reminders
-                dayTasks.forEach(task => {
-                  const matchingReminder = dayReminders.find(r => r.id === task.id && !usedReminderIds.has(r.id));
-                  if (matchingReminder) {
-                    usedReminderIds.add(matchingReminder.id);
-                    taskReminderPairs.push({ task, reminder: matchingReminder });
-                  } else {
-                    taskReminderPairs.push({ task, reminder: null });
-                  }
-                });
-                
-                // Add orphan reminders (reminders without a task on the same day)
-                dayReminders.forEach(reminder => {
-                  if (!usedReminderIds.has(reminder.id)) {
-                    taskReminderPairs.push({ task: null, reminder });
-                  }
-                });
-                
-                const totalItems = taskReminderPairs.length;
-                
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => handleDayClick(day)}
-                    className={`
-                      h-[80px] p-1 text-left transition-all overflow-hidden flex flex-col items-start justify-start
-                      ${isCurrentWeekDay 
-                        ? "bg-foreground text-background"
-                        : "rounded-md border " + (isCurrentMonth 
-                          ? "bg-card" 
-                          : "bg-muted/30 text-muted-foreground")}
-                      ${isToday ? "ring-2 ring-primary ring-offset-2" : ""}
-                      ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
-                      ${currentWeekBorder}
-                    `}
-                    style={currentWeekShadow}
-                    data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
-                  >
-                    <div className={`text-xs font-medium mb-1 text-left ${
-                      isCurrentWeekDay
-                        ? "text-background"
-                        : isCurrentMonth 
-                          ? "text-foreground" 
-                          : "text-muted-foreground"
-                    } ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
-                      {format(day, "d")}
-                    </div>
-                    <div className="space-y-0.5">
-                      {taskReminderPairs.slice(0, 3).map((pair, pairIdx) => {
-                        const { task, reminder } = pair;
-                        const colors = task ? getCourseColor(task.courseName) : reminder ? getCourseColor(reminder.courseName) : null;
-                        const is24hrReminder = reminder?.reminderType === '24hr';
-                        const urgent = task ? isUrgentTask(task) : false;
-                        
-                        return (
-                          <div key={`pair-${pairIdx}`} className="flex items-center gap-0.5">
-                            {/* Reminder indicator */}
-                            {reminder && (
-                              <div 
-                                className={`text-[9px] px-0.5 py-px rounded font-medium flex items-center ${
-                                  isCurrentWeekDay 
-                                    ? "bg-red-500 text-white" 
-                                    : "bg-red-500/10 text-red-600 dark:text-red-400"
-                                } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
-                                title={`Reminder: ${reminder.title}`}
-                              >
-                                <Bell className="h-2 w-2" />
-                              </div>
-                            )}
-                            {/* Task label */}
-                            {task ? (
-                              <div 
-                                className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
-                                  colors 
-                                    ? isCurrentWeekDay 
-                                      ? `${colors.dot} text-white` 
-                                      : `${colors.bg} ${colors.text}`
-                                    : isCurrentWeekDay 
-                                      ? "bg-gray-500 text-white" 
-                                      : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
-                                } ${task.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
-                              >
-                                {task.title}
-                              </div>
-                            ) : reminder && (
-                              <div 
-                                className={`text-[9px] truncate px-0.5 py-px rounded font-medium flex-1 ${
-                                  colors 
-                                    ? isCurrentWeekDay 
-                                      ? `${colors.dot} text-white` 
-                                      : `${colors.bg} ${colors.text}`
-                                    : isCurrentWeekDay 
-                                      ? "bg-gray-500 text-white" 
-                                      : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
-                                }`}
-                              >
-                                {reminder.title}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                      {totalItems > 3 && (
-                        <div className={`text-[9px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
-                          +{totalItems - 3} more
+                    {/* Sun-Fri cells - wrapped if in current week */}
+                    {sunFriInCurrentWeek ? (
+                      <div className="col-span-6 border-4 border-red-500 rounded-lg">
+                        <div className="grid grid-cols-6 gap-0">
+                          {sunFriDays.map((day, dayIdx) => renderDayCell(day, dayIdx))}
                         </div>
-                      )}
-                    </div>
-                  </button>
-                    );
-                    })}
+                      </div>
+                    ) : (
+                      <>
+                        {sunFriDays.map((day, dayIdx) => renderDayCell(day, dayIdx))}
+                      </>
+                    )}
+                    
+                    {/* Saturday cell - wrapped if in current week */}
+                    {saturdayInCurrentWeek ? (
+                      <div className="border-4 border-red-500 rounded-lg">
+                        {renderDayCell(weekDays[6], 6)}
+                      </div>
+                    ) : (
+                      renderDayCell(weekDays[6], 6)
+                    )}
                   </div>
                 );
               })}
