@@ -280,7 +280,7 @@ export default function Dashboard() {
               <ChevronRight className="h-5 w-5 text-white" />
             </Button>
           </div>
-          <h1 className="text-xl font-bold text-white">Bryn's Task Management Application</h1>
+          <h1 className="text-2xl font-bold text-white" style={{ fontFamily: "'Playfair Display', serif" }}>Bryn's Task Management Application</h1>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-add-task">
