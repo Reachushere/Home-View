@@ -696,7 +696,7 @@ function TaskCard({
 
   return (
     <Card
-      className={`transition-all h-full rounded-xl shadow-md border-l-4 ${
+      className={`transition-all h-full rounded-xl shadow-md border-0 border-l-4 ${
         colors ? `${colors.border}` : "border-gray-400"
       } ${isMissed ? "border-l-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
