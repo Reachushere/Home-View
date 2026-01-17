@@ -76,6 +76,7 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 17)); // January 2026
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newTaskType, setNewTaskType] = useState<string>("module");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
@@ -401,13 +402,49 @@ export default function Dashboard() {
             </Button>
           </div>
           <h1 className="text-2xl font-semibold text-foreground">Bryn's Task Management</h1>
+          <div className="flex gap-2">
+            <Button 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              data-testid="button-add-module"
+              onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Module
+            </Button>
+            <Button 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              data-testid="button-add-reading"
+              onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Reading
+            </Button>
+            <Button 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              data-testid="button-add-discussion"
+              onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Discussion
+            </Button>
+            <Button 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              data-testid="button-add-assignment"
+              onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Assignment
+            </Button>
+            <Button 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" 
+              data-testid="button-add-exam"
+              onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Exam/Test
+            </Button>
+          </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-[#5979CC] hover:bg-[#4a68b3] text-white" data-testid="button-add-task">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Task
-              </Button>
-            </DialogTrigger>
             <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>Add New Task</DialogTitle>
@@ -415,6 +452,7 @@ export default function Dashboard() {
               <TaskForm 
                 weekNumber={selectedWeek}
                 initialDate={selectedDate}
+                initialType={newTaskType}
                 onSuccess={() => setIsAddDialogOpen(false)} 
               />
             </DialogContent>
@@ -807,11 +845,13 @@ function TaskForm({
   task, 
   weekNumber,
   initialDate,
+  initialType,
   onSuccess 
 }: { 
   task?: Task; 
   weekNumber: number;
   initialDate?: Date | null;
+  initialType?: string;
   onSuccess: () => void;
 }) {
   const getDefaultDate = () => {
@@ -823,7 +863,7 @@ function TaskForm({
   const [formData, setFormData] = useState({
     title: task?.title || "",
     description: task?.description || "",
-    type: task?.type || "reading",
+    type: task?.type || initialType || "reading",
     courseName: task?.courseName || "",
     dueDate: getDefaultDate(),
     priority: task?.priority || "medium",
