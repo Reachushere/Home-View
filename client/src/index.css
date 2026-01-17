@@ -111,7 +111,7 @@
 
 @layer base {
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-black text-foreground antialiased;
     font-family: 'Inter', sans-serif;
   }
   

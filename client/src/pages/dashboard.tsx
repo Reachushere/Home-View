@@ -56,9 +56,9 @@ const typeColors: Record<string, string> = {
 };
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string }> = {
-  "CPPA122": { bg: "bg-blue-500/10", border: "border-blue-500", text: "text-blue-600 dark:text-blue-400", dot: "bg-blue-500" },
-  "CFNF400": { bg: "bg-green-500/10", border: "border-green-500", text: "text-green-600 dark:text-green-400", dot: "bg-green-500" },
-  "CASL101": { bg: "bg-yellow-500/10", border: "border-yellow-500", text: "text-yellow-600 dark:text-yellow-400", dot: "bg-yellow-500" },
+  "CPPA122": { bg: "bg-blue-500/30", border: "border-blue-500", text: "text-blue-700 dark:text-blue-300", dot: "bg-blue-500" },
+  "CFNF400": { bg: "bg-green-500/30", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500" },
+  "CASL101": { bg: "bg-yellow-500/30", border: "border-yellow-500", text: "text-yellow-700 dark:text-yellow-300", dot: "bg-yellow-500" },
 };
 
 interface WeekInfo {
@@ -313,7 +313,7 @@ export default function Dashboard() {
                 const isSelected = selectedDate && isSameDay(day, selectedDate);
                 const isCurrentMonth = isSameMonth(day, currentMonth);
                 const isCurrentWeekDay = isInCurrentWeek(day);
-                const allItems = [...dayReminders.map(t => ({ ...t, isReminder: true })), ...dayTasks.map(t => ({ ...t, isReminder: false, reminderType: undefined as '2day' | '24hr' | undefined }))];
+                const allItems = [...dayTasks.map(t => ({ ...t, isReminder: false, reminderType: undefined as '2day' | '24hr' | undefined })), ...dayReminders.map(t => ({ ...t, isReminder: true }))];
                 
                 return (
                   <button
@@ -363,8 +363,8 @@ export default function Dashboard() {
                                   ? `${colors.dot} text-white` 
                                   : `${colors.bg} ${colors.text}`
                                 : isCurrentWeekDay 
-                                  ? "bg-background/20 text-background" 
-                                  : "bg-muted text-muted-foreground"
+                                  ? "bg-gray-500 text-white" 
+                                  : "bg-gray-500/30 text-gray-700 dark:text-gray-300"
                             } ${item.isCompleted ? "line-through opacity-50" : ""} ${urgent ? "animate-urgent-blink" : ""}`}
                           >
                             {item.title}
