@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,6 +79,40 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
+  const [calendarHeight, setCalendarHeight] = useState(400);
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
+
+  // Calendar resize handlers
+  const handleResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+    resizeRef.current = { startY: e.clientY, startHeight: calendarHeight };
+  }, [calendarHeight]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizing || !resizeRef.current) return;
+      const delta = e.clientY - resizeRef.current.startY;
+      const newHeight = Math.max(200, Math.min(800, resizeRef.current.startHeight + delta));
+      setCalendarHeight(newHeight);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      resizeRef.current = null;
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   const { data: weeks = [] } = useQuery<WeekInfo[]>({
     queryKey: ["/api/weeks"],
@@ -386,7 +420,7 @@ export default function Dashboard() {
         </div>
 
         {/* Weekly Time-Slot Calendar */}
-        <Card className="mb-6 shadow-lg rounded-xl flex-1 overflow-hidden">
+        <Card className="mb-6 shadow-lg rounded-xl overflow-hidden relative" style={{ height: calendarHeight }}>
           <CardContent className="p-0 h-full flex flex-col">
             {/* Day Headers */}
             <div className="grid border-b border-border" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
@@ -500,6 +534,14 @@ export default function Dashboard() {
               </div>
             </div>
           </CardContent>
+          {/* Resize Handle */}
+          <div
+            className={`absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize flex items-center justify-center bg-gradient-to-t from-muted/50 to-transparent hover:from-muted transition-colors ${isResizing ? 'from-primary/20' : ''}`}
+            onMouseDown={handleResizeStart}
+            data-testid="calendar-resize-handle"
+          >
+            <div className="w-12 h-1 rounded-full bg-muted-foreground/30" />
+          </div>
         </Card>
 
         {/* Selected Date / Week Header */}
