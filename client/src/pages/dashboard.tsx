@@ -436,7 +436,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`p-2 border-l border-border flex items-center justify-center gap-1.5 ${
-                      isToday ? "bg-blue-500" : ""
+                      isToday ? "bg-[#5979CC]" : ""
                     }`}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
