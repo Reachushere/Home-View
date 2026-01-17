@@ -509,7 +509,7 @@ export default function Dashboard() {
                                 key={task.id}
                                 onClick={() => setEditingTask(task)}
                                 className={`absolute left-0.5 right-0.5 rounded-lg p-2 cursor-pointer hover:opacity-90 shadow-sm overflow-hidden ${
-                                  colors ? `${colors.bg} border-l-4 ${colors.border}` : "bg-gray-200 border-l-4 border-gray-400"
+                                  colors ? `${colors.bg} border-2 ${colors.border}` : "bg-gray-200 border-2 border-gray-400"
                                 }`}
                                 style={{
                                   top: `${taskIdx * 2}px`,
@@ -565,7 +565,7 @@ export default function Dashboard() {
         {/* Upcoming and Missed Tasks Side by Side */}
         <div className="flex gap-6 mb-6">
           {/* Upcoming Tasks Section */}
-          <section className="flex-1 bg-card rounded-xl shadow-md border-l-4 border-l-blue-500 border border-card-border p-4">
+          <section className="flex-1 bg-card rounded-xl shadow-md border-2 border-blue-500 p-4">
             <h4 className="text-md font-semibold text-foreground mb-3">
               Upcoming ({upcomingTasks.length})
             </h4>
@@ -593,7 +593,7 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section */}
           {missedTasks.length > 0 && (
-            <section className="w-[300px] flex-shrink-0 bg-card rounded-xl shadow-md border-l-4 border-l-destructive border border-card-border p-4">
+            <section className="w-[300px] flex-shrink-0 bg-card rounded-xl shadow-md border-2 border-destructive p-4">
               <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2 animate-urgent-blink">
                 <Clock className="h-4 w-4" />
                 Missed ({missedTasks.length})
@@ -696,9 +696,9 @@ function TaskCard({
 
   return (
     <Card
-      className={`transition-all h-full rounded-xl shadow-md border-0 border-l-4 ${
+      className={`transition-all h-full rounded-xl shadow-md border-2 ${
         colors ? `${colors.border}` : "border-gray-400"
-      } ${isMissed ? "border-l-destructive bg-destructive/5" : ""} ${
+      } ${isMissed ? "border-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
       }`}
       data-testid={`card-task-${task.id}`}
