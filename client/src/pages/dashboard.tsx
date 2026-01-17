@@ -401,7 +401,7 @@ export default function Dashboard() {
                             relative z-10 h-[80px] p-1 text-left transition-all overflow-hidden flex flex-col items-start justify-start
                             ${isCurrentWeekDay 
                               ? "bg-foreground text-background"
-                              : "border border-black dark:border-white " + (isCurrentMonth 
+                              : "border border-gray-600 dark:border-gray-400 " + (isCurrentMonth 
                                 ? "bg-card" 
                                 : "bg-muted/30 text-muted-foreground")}
                             ${isToday && !isTodayExpanded ? "today-popup" : ""}
