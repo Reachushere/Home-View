@@ -140,13 +140,21 @@ export default function Dashboard() {
     return allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
   };
 
-  // Get reminders for a day (tasks due 2 days after this day)
+  // Get reminders for a day (tasks due 2 days after this day, and 24-hour urgent reminders)
   const getRemindersForDay = (day: Date) => {
-    return allTasks.filter(t => {
+    const twoDayReminders = allTasks.filter(t => {
       const dueDate = new Date(t.dueDate);
       const reminderDate = subDays(dueDate, 2);
       return isSameDay(reminderDate, day) && !t.isCompleted;
-    });
+    }).map(t => ({ ...t, reminderType: '2day' as const }));
+
+    const oneDayReminders = allTasks.filter(t => {
+      const dueDate = new Date(t.dueDate);
+      const reminderDate = subDays(dueDate, 1);
+      return isSameDay(reminderDate, day) && !t.isCompleted;
+    }).map(t => ({ ...t, reminderType: '24hr' as const }));
+
+    return [...oneDayReminders, ...twoDayReminders];
   };
 
   // Check if a task is urgent (within 24 hours of due date and not completed)
@@ -305,7 +313,7 @@ export default function Dashboard() {
                 const isSelected = selectedDate && isSameDay(day, selectedDate);
                 const isCurrentMonth = isSameMonth(day, currentMonth);
                 const isCurrentWeekDay = isInCurrentWeek(day);
-                const allItems = [...dayReminders.map(t => ({ ...t, isReminder: true })), ...dayTasks.map(t => ({ ...t, isReminder: false }))];
+                const allItems = [...dayReminders.map(t => ({ ...t, isReminder: true })), ...dayTasks.map(t => ({ ...t, isReminder: false, reminderType: undefined as '2day' | '24hr' | undefined }))];
                 
                 return (
                   <button
@@ -329,17 +337,18 @@ export default function Dashboard() {
                     <div className="space-y-0.5">
                       {allItems.slice(0, 3).map((item, itemIdx) => {
                         if (item.isReminder) {
+                          const is24hrReminder = item.reminderType === '24hr';
                           return (
                             <div 
-                              key={`reminder-${item.id}`}
+                              key={`reminder-${item.reminderType}-${item.id}`}
                               className={`text-[10px] truncate px-1 py-0.5 rounded font-medium flex items-center gap-0.5 ${
                                 isCurrentWeekDay 
                                   ? "bg-red-500 text-white" 
                                   : "bg-red-500/10 text-red-600 dark:text-red-400"
-                              }`}
+                              } ${is24hrReminder ? "animate-urgent-blink" : ""}`}
                             >
                               <Bell className="h-2.5 w-2.5 flex-shrink-0" />
-                              {item.title}
+                              {is24hrReminder ? "URGENT: " : ""}{item.title}
                             </div>
                           );
                         }
