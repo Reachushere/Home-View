@@ -225,7 +225,7 @@ export default function Dashboard() {
             return (
               <div key={course.code} className="flex items-center gap-1.5">
                 <div className={`w-2 h-2 rounded-full ${colors?.dot}`} />
-                <span className="text-[10px]">
+                <span className="text-[11px]">
                   <span className="font-medium">{course.code}</span>
                   <span className="text-muted-foreground"> - {course.name}</span>
                 </span>
