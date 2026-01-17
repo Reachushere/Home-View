@@ -334,28 +334,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Missed Tasks Section */}
-        {missedTasks.length > 0 && (
-          <section className="mb-6">
-            <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Missed ({missedTasks.length})
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {missedTasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                  onReschedule={() => setRescheduleTask(task)}
-                  onEdit={() => setEditingTask(task)}
-                  onDelete={() => deleteMutation.mutate(task.id)}
-                />
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* Upcoming Tasks Section */}
         <section className="mb-6">
           <h4 className="text-md font-semibold text-foreground mb-3">
@@ -382,6 +360,28 @@ export default function Dashboard() {
             </div>
           )}
         </section>
+
+        {/* Missed Tasks Section */}
+        {missedTasks.length > 0 && (
+          <section className="mb-6">
+            <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Missed ({missedTasks.length})
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {missedTasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                  onReschedule={() => setRescheduleTask(task)}
+                  onEdit={() => setEditingTask(task)}
+                  onDelete={() => deleteMutation.mutate(task.id)}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Completed Tasks Section */}
         {completedTasks.length > 0 && (
