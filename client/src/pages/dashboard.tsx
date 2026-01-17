@@ -402,7 +402,7 @@ export default function Dashboard() {
                           } ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
                             {format(day, "d")}
                           </div>
-                          <div className="space-y-0.5">
+                          <div className="space-y-0.5 w-full overflow-hidden">
                             {taskReminderPairs.slice(0, 3).map((pair, pairIdx) => {
                               const { task, reminder } = pair;
                               const colors = task ? getCourseColor(task.courseName) : reminder ? getCourseColor(reminder.courseName) : null;
