@@ -247,7 +247,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-medium">{format(currentMonth, "MMMM")}</span>
+            <span className="text-sm font-medium bg-blue-500 text-white px-3 py-1 rounded-full">{format(currentMonth, "MMMM")}</span>
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleNextMonth}>
               <ChevronRight className="h-4 w-4" />
             </Button>
