@@ -192,7 +192,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen">
       {/* Sidebar */}
       <aside className="w-72 border-r border-border bg-sidebar p-4 flex flex-col gap-4 overflow-auto">
         <div className="flex items-center gap-2 px-2 py-4">
