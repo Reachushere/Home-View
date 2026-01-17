@@ -346,32 +346,27 @@ export default function Dashboard() {
                 const isCurrentMonth = isSameMonth(day, currentMonth);
                 const isCurrentWeekDay = isInCurrentWeek(day);
                 
-                // Build red border for current week contour (Sat-Fri)
+                // Build red border for current week (Sat-Fri)
                 // dayIdx: 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-                // Saturday is START of week (left border), Friday is END (right border)
+                // Two boxes: Saturday gets its own box, Sun-Fri get another box
                 let currentWeekBorder = "";
                 if (isCurrentWeekDay) {
-                  const borders = [];
-                  // Saturday = start of week, needs left border and top/bottom
+                  // Saturday = its own complete box
                   if (dayIdx === 6) {
-                    borders.push("border-l-4 border-l-red-500");
-                    borders.push("border-t-4 border-t-red-500");
-                    borders.push("border-b-4 border-b-red-500");
-                    borders.push("rounded-l-lg");
+                    currentWeekBorder = "border-4 border-red-500 rounded-lg";
                   }
-                  // Friday = end of week, needs right border and top/bottom
+                  // Sunday = start of Sun-Fri box (left border)
+                  else if (dayIdx === 0) {
+                    currentWeekBorder = "border-l-4 border-t-4 border-b-4 border-l-red-500 border-t-red-500 border-b-red-500 rounded-l-lg";
+                  }
+                  // Friday = end of Sun-Fri box (right border)
                   else if (dayIdx === 5) {
-                    borders.push("border-r-4 border-r-red-500");
-                    borders.push("border-t-4 border-t-red-500");
-                    borders.push("border-b-4 border-b-red-500");
-                    borders.push("rounded-r-lg");
+                    currentWeekBorder = "border-r-4 border-t-4 border-b-4 border-r-red-500 border-t-red-500 border-b-red-500 rounded-r-lg";
                   }
-                  // Sunday-Thursday = middle days, need top/bottom borders
+                  // Mon-Thu = middle of Sun-Fri box (top/bottom borders)
                   else {
-                    borders.push("border-t-4 border-t-red-500");
-                    borders.push("border-b-4 border-b-red-500");
+                    currentWeekBorder = "border-t-4 border-b-4 border-t-red-500 border-b-red-500";
                   }
-                  currentWeekBorder = borders.join(" ");
                 }
                 
                 // Group tasks with their reminders
