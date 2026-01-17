@@ -1,41 +1,68 @@
 import { db } from "./db";
-import { devices, type Device, type InsertDevice, type UpdateDeviceRequest } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { tasks, type Task, type InsertTask, type UpdateTaskRequest, getWeekNumber } from "@shared/schema";
+import { eq, and, gte, lte } from "drizzle-orm";
 
 export interface IStorage {
-  getDevices(): Promise<Device[]>;
-  getDevice(id: number): Promise<Device | undefined>;
-  createDevice(device: InsertDevice): Promise<Device>;
-  updateDevice(id: number, updates: UpdateDeviceRequest): Promise<Device>;
-  deleteDevice(id: number): Promise<void>;
+  getTasks(filters?: { weekNumber?: number; type?: string; showCompleted?: boolean }): Promise<Task[]>;
+  getTask(id: number): Promise<Task | undefined>;
+  createTask(task: InsertTask): Promise<Task>;
+  updateTask(id: number, updates: UpdateTaskRequest): Promise<Task>;
+  deleteTask(id: number): Promise<void>;
+  getTaskCountByWeek(): Promise<Record<number, number>>;
 }
 
 export class DatabaseStorage implements IStorage {
-  async getDevices(): Promise<Device[]> {
-    return await db.select().from(devices).orderBy(devices.id);
+  async getTasks(filters?: { weekNumber?: number; type?: string; showCompleted?: boolean }): Promise<Task[]> {
+    let query = db.select().from(tasks);
+    
+    const conditions = [];
+    if (filters?.weekNumber) {
+      conditions.push(eq(tasks.weekNumber, filters.weekNumber));
+    }
+    if (filters?.type) {
+      conditions.push(eq(tasks.type, filters.type));
+    }
+    if (filters?.showCompleted === false) {
+      conditions.push(eq(tasks.isCompleted, false));
+    }
+    
+    if (conditions.length > 0) {
+      return await db.select().from(tasks).where(and(...conditions)).orderBy(tasks.dueDate);
+    }
+    
+    return await db.select().from(tasks).orderBy(tasks.dueDate);
   }
 
-  async getDevice(id: number): Promise<Device | undefined> {
-    const [device] = await db.select().from(devices).where(eq(devices.id, id));
-    return device;
+  async getTask(id: number): Promise<Task | undefined> {
+    const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
+    return task;
   }
 
-  async createDevice(insertDevice: InsertDevice): Promise<Device> {
-    const [device] = await db.insert(devices).values(insertDevice).returning();
-    return device;
+  async createTask(insertTask: InsertTask): Promise<Task> {
+    const [task] = await db.insert(tasks).values(insertTask).returning();
+    return task;
   }
 
-  async updateDevice(id: number, updates: UpdateDeviceRequest): Promise<Device> {
+  async updateTask(id: number, updates: UpdateTaskRequest): Promise<Task> {
     const [updated] = await db
-      .update(devices)
+      .update(tasks)
       .set(updates)
-      .where(eq(devices.id, id))
+      .where(eq(tasks.id, id))
       .returning();
     return updated;
   }
 
-  async deleteDevice(id: number): Promise<void> {
-    await db.delete(devices).where(eq(devices.id, id));
+  async deleteTask(id: number): Promise<void> {
+    await db.delete(tasks).where(eq(tasks.id, id));
+  }
+
+  async getTaskCountByWeek(): Promise<Record<number, number>> {
+    const allTasks = await db.select().from(tasks);
+    const counts: Record<number, number> = {};
+    for (const task of allTasks) {
+      counts[task.weekNumber] = (counts[task.weekNumber] || 0) + 1;
+    }
+    return counts;
   }
 }
 

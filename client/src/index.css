@@ -1,63 +1,108 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  /* Dark mode by default for home automation */
-  --background: 224 71% 4%;
-  --foreground: 213 31% 91%;
+  --background: 210 20% 98%;
+  --foreground: 222 47% 11%;
   
-  --primary: 263 70% 50%;
+  --primary: 221 83% 53%;
   --primary-foreground: 210 40% 98%;
   
-  --secondary: 222 47% 11%;
-  --secondary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
   
-  --card: 224 71% 5%;
-  --card-foreground: 213 31% 91%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --card-border: 214 32% 91%;
   
-  --muted: 223 47% 11%;
-  --muted-foreground: 215 20.2% 65.1%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
   
-  --accent: 180 100% 35%; /* Cyan neon accent */
+  --accent: 210 40% 96%;
   --accent-foreground: 222 47% 11%;
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
   
-  --border: 216 34% 17%;
-  --input: 216 34% 17%;
-  --ring: 263 70% 50%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 221 83% 53%;
   
-  --card-border: 216 34% 17%;
-  
-  --sidebar: 224 71% 6%;
-  --sidebar-foreground: 213 31% 91%;
-  --sidebar-border: 216 34% 17%;
-  --sidebar-primary: 263 70% 50%;
+  --sidebar: 210 40% 96%;
+  --sidebar-foreground: 222 47% 11%;
+  --sidebar-border: 214 32% 91%;
+  --sidebar-primary: 221 83% 53%;
   --sidebar-primary-foreground: 210 40% 98%;
-  --sidebar-accent: 223 47% 15%;
-  --sidebar-accent-foreground: 213 31% 91%;
-  --sidebar-ring: 263 70% 50%;
+  --sidebar-accent: 214 32% 91%;
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-ring: 221 83% 53%;
   
-  --popover: 224 71% 5%;
-  --popover-foreground: 213 31% 91%;
-  --popover-border: 216 34% 17%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --popover-border: 214 32% 91%;
   
-  --chart-1: 263 70% 50%;
-  --chart-2: 180 100% 35%;
-  --chart-3: 30 80% 55%;
+  --chart-1: 221 83% 53%;
+  --chart-2: 142 71% 45%;
+  --chart-3: 38 92% 50%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
   
-  --radius: 1rem;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222 47% 8%;
+  --foreground: 210 40% 96%;
+  
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 11%;
+  
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 96%;
+  
+  --card: 222 47% 11%;
+  --card-foreground: 210 40% 96%;
+  --card-border: 217 33% 20%;
+  
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  
+  --accent: 217 33% 17%;
+  --accent-foreground: 210 40% 96%;
+  
+  --destructive: 0 62% 50%;
+  --destructive-foreground: 210 40% 98%;
+  
+  --border: 217 33% 20%;
+  --input: 217 33% 20%;
+  --ring: 217 91% 60%;
+  
+  --sidebar: 222 47% 10%;
+  --sidebar-foreground: 210 40% 96%;
+  --sidebar-border: 217 33% 20%;
+  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary-foreground: 222 47% 11%;
+  --sidebar-accent: 217 33% 17%;
+  --sidebar-accent-foreground: 210 40% 96%;
+  --sidebar-ring: 217 91% 60%;
+  
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 96%;
+  --popover-border: 217 33% 20%;
+  
+  --chart-1: 217 91% 60%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
 }
 
 @layer base {
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/30;
+    @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
   }
   
@@ -67,15 +112,11 @@
 }
 
 @layer utilities {
-  .glass-panel {
-    @apply bg-card/80 backdrop-blur-md border border-white/5 shadow-xl;
+  .task-missed {
+    @apply border-destructive/50 bg-destructive/5;
   }
   
-  .neon-glow {
-    box-shadow: 0 0 20px -5px theme('colors.primary.DEFAULT');
-  }
-  
-  .neon-glow-accent {
-    box-shadow: 0 0 15px -3px theme('colors.accent.DEFAULT');
+  .task-completed {
+    @apply opacity-60;
   }
 }

@@ -1,24 +1,64 @@
-import { pgTable, text, serial, boolean, integer, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const devices = pgTable("devices", {
+export const TASK_TYPES = [
+  "reading",
+  "module", 
+  "essay",
+  "project",
+  "discussion",
+  "poll",
+  "exam",
+  "quiz"
+] as const;
+
+export type TaskType = typeof TASK_TYPES[number];
+
+export const REMINDER_OFFSETS = [30, 120, 360, 720] as const; // minutes: 30min, 2hr, 6hr, 12hr
+
+export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  type: text("type").notNull(), // 'light', 'switch', 'sensor', 'climate'
-  room: text("room").notNull(), // 'Living Room', 'Kitchen', etc.
-  isOn: boolean("is_on").default(false),
-  value: integer("value"), // Brightness (0-100), Temperature, or Sensor value
-  unit: text("unit"), // '°C', '%', etc.
-  icon: text("icon").notNull(), // Lucide icon name
+  title: text("title").notNull(),
+  description: text("description"),
+  type: text("type").notNull(), // reading, module, essay, project, discussion, poll, exam, quiz
+  courseName: text("course_name"),
+  dueDate: timestamp("due_date").notNull(),
+  weekNumber: integer("week_number").notNull(), // 2-13
+  isCompleted: boolean("is_completed").default(false),
+  isMissed: boolean("is_missed").default(false),
+  priority: text("priority").default("medium"), // low, medium, high
+  notes: text("notes"),
+  calendarEventId: text("calendar_event_id"), // For synced calendar events
+  calendarProvider: text("calendar_provider"), // 'google' or 'outlook'
 });
 
-export const insertDeviceSchema = createInsertSchema(devices).omit({ id: true });
+export const insertTaskSchema = createInsertSchema(tasks).omit({ id: true });
 
-export type Device = typeof devices.$inferSelect;
-export type InsertDevice = z.infer<typeof insertDeviceSchema>;
-export type UpdateDeviceRequest = Partial<InsertDevice>;
+export type Task = typeof tasks.$inferSelect;
+export type InsertTask = z.infer<typeof insertTaskSchema>;
+export type UpdateTaskRequest = Partial<InsertTask>;
 
-// Predefined rooms for organization
-export const ROOMS = ["Living Room", "Kitchen", "Bedroom", "Office", "Entrance"];
-export const DEVICE_TYPES = ["light", "switch", "sensor", "climate"];
+// Week calculation helpers
+// Week 2 starts Saturday Jan 11, 2025 (today is Jan 17, 2025 - Friday of Week 2)
+// Weeks run Saturday to Friday
+export const SEMESTER_START = new Date("2026-01-10"); // Week 1 Saturday
+export const FIRST_WEEK = 1;
+export const LAST_WEEK = 13;
+
+export function getWeekNumber(date: Date): number {
+  const startOfSemester = new Date(SEMESTER_START);
+  const diffTime = date.getTime() - startOfSemester.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  return Math.floor(diffDays / 7) + 1;
+}
+
+export function getWeekDates(weekNum: number): { start: Date; end: Date } {
+  const startOfSemester = new Date(SEMESTER_START);
+  const weekStart = new Date(startOfSemester);
+  weekStart.setDate(startOfSemester.getDate() + (weekNum - 1) * 7);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
+  weekEnd.setHours(23, 59, 59, 999);
+  return { start: weekStart, end: weekEnd };
+}
