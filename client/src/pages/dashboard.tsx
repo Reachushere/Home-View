@@ -346,7 +346,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-end" style={{ marginLeft: '10px' }}>
                       {showWeekNum && (
                         <span 
-                          className="text-[13px] font-bold text-foreground whitespace-nowrap"
+                          className="text-base font-bold text-foreground whitespace-nowrap"
                           style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
                         >
                           Week {weekNum}
