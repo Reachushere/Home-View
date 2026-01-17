@@ -314,22 +314,22 @@ export default function Dashboard() {
                     `}
                     data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                   >
-                    <div className={`text-sm font-medium mb-1 ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
+                    <div className={`text-xs font-medium mb-1 ${isToday && !isCurrentWeekDay ? "text-primary" : ""}`}>
                       {format(day, "d")}
                     </div>
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
                       {allItems.slice(0, 3).map((item, itemIdx) => {
                         if (item.isReminder) {
                           return (
                             <div 
                               key={`reminder-${item.id}`}
-                              className={`text-xs truncate px-1 py-0.5 rounded font-medium flex items-center gap-1 ${
+                              className={`text-[10px] truncate px-1 py-0.5 rounded font-medium flex items-center gap-0.5 ${
                                 isCurrentWeekDay 
                                   ? "bg-red-500 text-white" 
                                   : "bg-red-500/10 text-red-600 dark:text-red-400"
                               }`}
                             >
-                              <Bell className="h-3 w-3 flex-shrink-0" />
+                              <Bell className="h-2.5 w-2.5 flex-shrink-0" />
                               {item.title}
                             </div>
                           );
@@ -338,7 +338,7 @@ export default function Dashboard() {
                         return (
                           <div 
                             key={item.id}
-                            className={`text-xs truncate px-1 py-0.5 rounded font-medium ${
+                            className={`text-[10px] truncate px-1 py-0.5 rounded font-medium ${
                               colors 
                                 ? isCurrentWeekDay 
                                   ? `${colors.dot} text-white` 
@@ -353,7 +353,7 @@ export default function Dashboard() {
                         );
                       })}
                       {allItems.length > 3 && (
-                        <div className={`text-xs ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
+                        <div className={`text-[10px] ${isCurrentWeekDay ? "text-background/70" : "text-muted-foreground"}`}>
                           +{allItems.length - 3} more
                         </div>
                       )}
