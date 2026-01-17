@@ -205,7 +205,7 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className="w-72 border-r border-border bg-sidebar p-4 flex flex-col gap-4 overflow-auto">
+      <aside className="w-72 bg-card m-3 mr-0 rounded-xl shadow-lg p-4 flex flex-col gap-4 overflow-auto">
         <div className="flex items-center gap-2 px-2 py-4">
           <CalendarDays className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-semibold text-sidebar-foreground">
@@ -276,21 +276,21 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 p-6 overflow-auto flex flex-col">
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={handlePrevMonth} data-testid="button-prev-month">
-              <ChevronLeft className="h-5 w-5 text-white" />
+              <ChevronLeft className="h-5 w-5" />
             </Button>
-            <h2 className="text-2xl font-medium text-white min-w-[200px] text-center" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+            <h2 className="text-2xl font-semibold text-foreground min-w-[200px] text-center">
               {format(currentMonth, "MMMM yyyy")}
             </h2>
             <Button variant="ghost" size="icon" onClick={handleNextMonth} data-testid="button-next-month">
-              <ChevronRight className="h-5 w-5 text-white" />
+              <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
-          <h1 className="text-2xl font-medium text-white" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>Bryn's Task Management Application</h1>
+          <h1 className="text-2xl font-semibold text-foreground">Bryn's Task Management Application</h1>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-add-task">
@@ -312,8 +312,8 @@ export default function Dashboard() {
         </div>
 
         {/* Calendar Grid */}
-        <Card className="mb-6">
-          <CardContent className="p-4">
+        <Card className="mb-6 shadow-lg rounded-xl flex-1">
+          <CardContent className="p-5">
             {/* Day Headers */}
             <div className="grid gap-2 mb-2" style={{ gridTemplateColumns: '2px 8px repeat(7, 1fr)' }}>
               <div></div>
@@ -401,26 +401,24 @@ export default function Dashboard() {
                             handleDayClick(day);
                           }}
                           className={`
-                            relative z-10 h-[80px] p-1 text-left transition-all overflow-hidden flex flex-col items-start justify-start
+                            relative z-10 h-[80px] p-1.5 text-left transition-all overflow-hidden flex flex-col items-start justify-start rounded-lg
                             ${isCurrentWeekDay 
-                              ? "bg-foreground text-background"
-                              : "border border-gray-600 dark:border-gray-400 " + (isCurrentMonth 
-                                ? "bg-card" 
-                                : "bg-muted/30 text-muted-foreground")}
+                              ? "bg-primary text-primary-foreground shadow-md"
+                              : "bg-card border border-border shadow-sm " + (isCurrentMonth 
+                                ? "" 
+                                : "opacity-60")}
                             ${isToday && !isTodayExpanded ? "today-popup" : ""}
                             ${isToday && isTodayExpanded ? "today-popup-expanded" : ""}
-                            ${isSelected ? "ring-2 ring-primary" : (!isCurrentWeekDay ? "hover:border-primary/50" : "")}
+                            ${isSelected ? "ring-2 ring-primary" : "hover:shadow-md"}
                           `}
                           data-testid={`calendar-day-${format(day, "yyyy-MM-dd")}`}
                         >
-                          <div className={`text-xs font-medium mb-1 text-left ${
+                          <div className={`text-xs font-semibold mb-1 text-left ${
                             isToday 
-                              ? "!text-white"
+                              ? "!text-primary-foreground"
                               : isCurrentWeekDay
-                                ? "text-white"
-                                : isCurrentMonth 
-                                  ? "text-foreground" 
-                                  : "text-muted-foreground"
+                                ? "text-primary-foreground"
+                                : "text-foreground"
                           }`}>
                             {format(day, "d")}
                           </div>
@@ -441,7 +439,7 @@ export default function Dashboard() {
                                         const reminderTask = allTasks.find(t => t.id === reminder.id);
                                         if (reminderTask) setEditingTask(reminderTask);
                                       }}
-                                      className={`text-[9px] px-0.5 py-px font-medium flex items-center cursor-pointer hover:opacity-80 ${
+                                      className={`text-[9px] px-1 py-0.5 font-medium flex items-center cursor-pointer hover:opacity-80 rounded ${
                                         isCurrentWeekDay 
                                           ? "bg-red-500 text-white" 
                                           : "bg-red-500/20 text-red-600 dark:text-red-400"
@@ -459,7 +457,7 @@ export default function Dashboard() {
                                         setIsTodayExpanded(false);
                                         setEditingTask(task);
                                       }}
-                                      className={`text-[9px] truncate px-0.5 py-px font-medium flex-1 cursor-pointer hover:opacity-80 ${
+                                      className={`text-[9px] truncate px-1 py-0.5 font-medium flex-1 cursor-pointer hover:opacity-80 rounded ${
                                         colors 
                                           ? isCurrentWeekDay 
                                             ? `${colors.dot} text-white` 
@@ -480,7 +478,7 @@ export default function Dashboard() {
                                         const reminderTask = allTasks.find(t => t.id === reminder.id);
                                         if (reminderTask) setEditingTask(reminderTask);
                                       }}
-                                      className={`text-[9px] truncate px-0.5 py-px font-medium flex-1 cursor-pointer hover:opacity-80 ${
+                                      className={`text-[9px] truncate px-1 py-0.5 font-medium flex-1 cursor-pointer hover:opacity-80 rounded ${
                                         colors 
                                           ? isCurrentWeekDay 
                                             ? `${colors.dot} text-white` 
@@ -584,7 +582,7 @@ export default function Dashboard() {
         {/* Selected Date / Week Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-foreground">
               {selectedDate 
                 ? format(selectedDate, "EEEE, MMMM d, yyyy")
                 : `Week ${selectedWeek} Tasks`}
@@ -601,7 +599,7 @@ export default function Dashboard() {
         <div className="flex gap-6 mb-6">
           {/* Upcoming Tasks Section */}
           <section className="flex-1">
-            <h4 className="text-md font-semibold text-white mb-3">
+            <h4 className="text-md font-semibold text-foreground mb-3">
               Upcoming ({upcomingTasks.length})
             </h4>
             {isLoading ? (
@@ -633,7 +631,7 @@ export default function Dashboard() {
                 <Clock className="h-4 w-4" />
                 Missed ({missedTasks.length})
               </h4>
-              <div className="space-y-4 bg-white rounded-lg p-4">
+              <div className="space-y-4 bg-card rounded-xl shadow-md p-4">
                 {missedTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -731,9 +729,9 @@ function TaskCard({
 
   return (
     <Card
-      className={`transition-all h-full border ${
-        colors ? `${colors.border}` : "border-gray-500"
-      } ${isMissed ? "border-destructive/50 bg-destructive/5" : ""} ${
+      className={`transition-all h-full rounded-xl shadow-md border-l-4 ${
+        colors ? `${colors.border}` : "border-gray-400"
+      } ${isMissed ? "border-l-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
       }`}
       data-testid={`card-task-${task.id}`}
