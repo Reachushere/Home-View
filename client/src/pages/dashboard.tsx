@@ -234,30 +234,29 @@ export default function Dashboard() {
           })}
         </div>
 
-        <nav className="flex flex-col gap-1 mt-4">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2 mb-1">Weeks</h3>
+        <nav className="flex flex-col gap-0.5 mt-2">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2 mb-0.5">Weeks</h3>
           {weeks.map((week) => (
             <Button
               key={week.weekNumber}
               variant={selectedWeek === week.weekNumber && !selectedDate ? "secondary" : "ghost"}
-              className="justify-between gap-2"
+              className="justify-between gap-1 h-auto py-1 px-2"
+              size="sm"
               onClick={() => {
                 setSelectedWeek(week.weekNumber);
                 setSelectedDate(null);
               }}
               data-testid={`button-week-${week.weekNumber}`}
             >
-              <div className="flex flex-col items-start">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>Week {week.weekNumber}</span>
-                </div>
-                <span className="text-[10px] text-muted-foreground ml-6">
-                  {format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")}
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                <span className="text-xs">Week {week.weekNumber}</span>
+                <span className="text-[9px] text-muted-foreground">
+                  ({format(parseISO(week.startDate), "M/d")} - {format(parseISO(week.endDate), "M/d")})
                 </span>
               </div>
               {week.taskCount > 0 && (
-                <Badge variant="outline" className="ml-auto">
+                <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0">
                   {week.taskCount}
                 </Badge>
               )}
