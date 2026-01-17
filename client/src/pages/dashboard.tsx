@@ -388,7 +388,7 @@ export default function Dashboard() {
                           className={`
                             relative z-10 h-[80px] p-1 rounded-md text-left transition-all overflow-hidden flex flex-col items-start justify-start
                             ${isCurrentWeekDay 
-                              ? "bg-foreground text-background border border-white"
+                              ? "bg-foreground text-background border-2 border-white"
                               : "border " + (isCurrentMonth 
                                 ? "bg-card" 
                                 : "bg-muted/30 text-muted-foreground")}
