@@ -305,26 +305,46 @@ export default function Dashboard() {
         <Card className="mb-6">
           <CardContent className="p-4">
             {/* Day Headers */}
-            <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: 'repeat(7, 1fr) 30px' }}>
+            <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: '40px repeat(7, 1fr)' }}>
+              <div></div>
               {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                 <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
                   {day}
                 </div>
               ))}
-              <div></div>
             </div>
             
             {/* Calendar Days with Week Numbers */}
-            <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(7, 1fr) 30px' }}>
-              {displayCalendarDays.map((day, idx) => {
+            <div className="space-y-1">
+              {Array.from({ length: Math.ceil(displayCalendarDays.length / 7) }).map((_, weekIdx) => {
+                const weekDays = displayCalendarDays.slice(weekIdx * 7, weekIdx * 7 + 7);
+                const saturdayOfWeek = weekDays[6]; // Saturday is the last day of the display week
+                const weekNum = saturdayOfWeek ? getWeekNumber(saturdayOfWeek) : 0;
+                const showWeekNum = weekNum >= 1 && weekNum <= 13;
+                
+                return (
+                  <div key={`week-row-${weekIdx}`} className="grid gap-1" style={{ gridTemplateColumns: '40px repeat(7, 1fr)' }}>
+                    {/* Week number label */}
+                    <div className="flex items-center justify-center">
+                      {showWeekNum && (
+                        <span 
+                          className="text-[9px] font-medium text-muted-foreground whitespace-nowrap"
+                          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
+                        >
+                          Week {weekNum}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Days of the week */}
+                    {weekDays.map((day, dayIdx) => {
+                const idx = weekIdx * 7 + dayIdx;
                 const dayTasks = getTasksForDay(day);
                 const dayReminders = getRemindersForDay(day);
                 const isToday = isSameDay(day, new Date());
                 const isSelected = selectedDate && isSameDay(day, selectedDate);
                 const isCurrentMonth = isSameMonth(day, currentMonth);
                 const isCurrentWeekDay = isInCurrentWeek(day);
-                const isSaturday = idx % 7 === 6; // Saturday is 7th column (index 6)
-                const weekNum = getWeekNumber(day);
                 
                 // Group tasks with their reminders
                 const taskReminderPairs: Array<{ task: typeof dayTasks[0] | null; reminder: typeof dayReminders[0] | null }> = [];
@@ -431,27 +451,10 @@ export default function Dashboard() {
                       )}
                     </div>
                   </button>
-                );
-              })}
-              {/* Week number indicators - rendered separately */}
-              {Array.from({ length: Math.ceil(displayCalendarDays.length / 7) }).map((_, weekIdx) => {
-                const saturdayOfWeek = displayCalendarDays[weekIdx * 7 + 6];
-                if (!saturdayOfWeek) return null;
-                const weekNum = getWeekNumber(saturdayOfWeek);
-                return weekNum >= 1 && weekNum <= 13 ? (
-                  <div 
-                    key={`week-label-${weekIdx}`} 
-                    className="flex items-center justify-center"
-                    style={{ gridColumn: 8, gridRow: weekIdx + 2 }}
-                  >
-                    <span 
-                      className="text-[10px] font-medium text-muted-foreground whitespace-nowrap"
-                      style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
-                    >
-                      Week {weekNum}
-                    </span>
+                    );
+                    })}
                   </div>
-                ) : null;
+                );
               })}
             </div>
           </CardContent>
