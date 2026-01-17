@@ -567,7 +567,7 @@ export default function Dashboard() {
         {/* Upcoming and Missed Tasks Side by Side */}
         <div className="flex gap-6 mb-6">
           {/* Upcoming Tasks Section */}
-          <section className="flex-1 bg-card rounded-xl shadow-md border-2 border-blue-500 p-4">
+          <section className="flex-1 bg-card rounded-xl shadow-md border-2 border-[#5979CC] p-4">
             <h4 className="text-md font-semibold text-foreground mb-3">
               Upcoming ({upcomingTasks.length})
             </h4>
