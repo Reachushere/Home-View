@@ -521,7 +521,7 @@ export default function Dashboard() {
         {/* Upcoming and Missed Tasks Side by Side */}
         <div className="flex gap-6 mb-6">
           {/* Upcoming Tasks Section */}
-          <section className="flex-1">
+          <section className="flex-1 bg-card rounded-xl shadow-md border-l-4 border-l-blue-500 border border-card-border p-4">
             <h4 className="text-md font-semibold text-foreground mb-3">
               Upcoming ({upcomingTasks.length})
             </h4>
@@ -549,12 +549,12 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section */}
           {missedTasks.length > 0 && (
-            <section className="w-[300px] flex-shrink-0">
+            <section className="w-[300px] flex-shrink-0 bg-card rounded-xl shadow-md border-l-4 border-l-destructive border border-card-border p-4">
               <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2 animate-urgent-blink">
                 <Clock className="h-4 w-4" />
                 Missed ({missedTasks.length})
               </h4>
-              <div className="space-y-4 bg-card rounded-xl shadow-md p-4">
+              <div className="space-y-4">
                 {missedTasks.map((task) => (
                   <TaskCard
                     key={task.id}
