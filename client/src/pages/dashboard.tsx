@@ -489,8 +489,8 @@ export default function Dashboard() {
                         style={{
                           left: 'calc(100% - (100% - 10px) / 7 + 2px)',
                           right: '-6px',
-                          top: '-10px',
-                          bottom: '-10px',
+                          top: '-8px',
+                          bottom: '-8px',
                         }}
                       />
                     )}
