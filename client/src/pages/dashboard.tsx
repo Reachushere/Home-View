@@ -412,7 +412,7 @@ export default function Dashboard() {
                         >
                           <div className={`text-xs font-medium mb-1 text-left ${
                             isToday 
-                              ? "!text-blue-300 animate-pulse !text-base font-bold"
+                              ? "!text-blue-300 animate-pulse !text-base font-bold !mb-0 -mt-1"
                               : isCurrentWeekDay
                                 ? "text-white"
                                 : isCurrentMonth 
