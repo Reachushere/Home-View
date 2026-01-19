@@ -443,13 +443,13 @@ export default function Dashboard() {
                 Week {selectedWeek}
               </div>
               <div className="text-[13px] font-semibold text-foreground">
-                {format(weekStartDate, "EEEE, MMM d")}
+                {format(weekStartDate, "EEE, MMMM d")}
               </div>
               <div className="text-[10px] text-muted-foreground leading-tight -my-0.5">
                 to
               </div>
               <div className="text-[13px] font-semibold text-foreground">
-                {format(weekEndDate, "EEEE, MMM d")}
+                {format(weekEndDate, "EEE, MMMM d")}
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
