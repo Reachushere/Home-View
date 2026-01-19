@@ -585,7 +585,7 @@ export default function Dashboard() {
                                 {!isFirstPrepDay && <div className={`w-1.5 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />}
                                 <div
                                   onClick={() => setEditingTask(task)}
-                                  className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${borderStyle} ${
+                                  className={`flex-1 text-[9px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${borderStyle} ${
                                     colors ? `${colors.prepBg} ${colors.prepText}` : "bg-gray-100 text-gray-500"
                                   }`}
                                   data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
@@ -601,12 +601,12 @@ export default function Dashboard() {
                               <div className={`w-1.5 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
                               <div
                                 onClick={() => setEditingTask(task)}
-                                className={`flex-1 text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
+                                className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
                                   colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
                                 }`}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
-                                <span className="font-bold text-[10px]">DUE:</span> {task.title}
+                                <span className="font-bold text-[9px]">DUE:</span> {task.title}
                               </div>
                             </div>
                           )}
@@ -638,7 +638,7 @@ export default function Dashboard() {
                             <div
                               key={task.id}
                               onClick={() => setEditingTask(task)}
-                              className={`text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
+                              className={`text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
                                 colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
                               }`}
                               data-testid={`all-day-task-${task.id}`}
@@ -702,10 +702,10 @@ export default function Dashboard() {
                                 }}
                                 data-testid={`time-task-${task.id}`}
                               >
-                                <div className={`text-xs font-semibold truncate ${colors?.text || "text-gray-700"}`}>
+                                <div className={`text-[10px] font-semibold truncate ${colors?.text || "text-gray-700"}`}>
                                   {task.title}
                                 </div>
-                                <div className="text-[10px] text-muted-foreground mt-0.5">
+                                <div className="text-[9px] text-muted-foreground mt-0.5">
                                   {format(new Date(task.dueDate), "h:mm a")}
                                 </div>
                               </div>
