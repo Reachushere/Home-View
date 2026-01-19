@@ -582,12 +582,12 @@ export default function Dashboard() {
                               >
                                 <span className="font-bold">PREP:</span> {task.title}
                               </div>
-                              <div className={`w-3 h-[3px] ${colors ? colors.bg : "bg-gray-300"}`} />
+                              <div className={`w-3 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
                             </div>
                           )}
                           {isDueDay && (
                             <div className="flex items-center w-full">
-                              <div className={`w-3 h-[3px] ${colors ? colors.bg : "bg-gray-300"}`} />
+                              <div className={`w-3 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
                               <div
                                 onClick={() => setEditingTask(task)}
                                 className={`flex-1 text-xs px-2 py-0.5 rounded-r cursor-pointer hover:opacity-80 truncate ${
