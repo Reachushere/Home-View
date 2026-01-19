@@ -886,8 +886,8 @@ function TaskCard({
       }`}
       data-testid={`card-task-${task.id}`}
     >
-      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 pb-2">
-        <div className="flex items-start gap-3">
+      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 pb-1 pt-3 px-3">
+        <div className="flex items-start gap-2">
           <Checkbox
             checked={task.isCompleted || false}
             onCheckedChange={(checked) => onComplete(!!checked)}
@@ -909,7 +909,7 @@ function TaskCard({
           {task.type}
         </Badge>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-1.5 px-3 pb-3 pt-0">
         {task.description && (
           <p className="text-xs text-muted-foreground line-clamp-2">
             {task.description}
@@ -964,7 +964,7 @@ function TaskCard({
           </div>
         )}
 
-        <div className="flex items-center gap-2 pt-2 flex-wrap">
+        <div className="flex items-center gap-2 pt-1 flex-wrap">
           {isMissed && (
             <Button size="sm" variant="destructive" onClick={onReschedule} data-testid={`button-reschedule-${task.id}`}>
               <RefreshCw className="h-3 w-3 mr-1" />
