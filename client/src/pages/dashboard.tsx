@@ -442,16 +442,16 @@ export default function Dashboard() {
               <div className="text-[10px] font-bold text-[#5979CC] mb-1">
                 Week {selectedWeek}
               </div>
-              <div className="text-foreground flex items-start gap-1">
-                <span className="text-[10px] font-semibold leading-[13px]">{format(weekStartDate, "EEE")},</span>
-                <span className="text-[13px] font-semibold leading-[13px]">{format(weekStartDate, "MMMM d")}</span>
+              <div className="text-foreground">
+                <span className="text-[10px] font-semibold align-top">{format(weekStartDate, "EEE")}, </span>
+                <span className="text-[13px] font-semibold">{format(weekStartDate, "MMMM d")}</span>
               </div>
               <div className="text-[10px] text-muted-foreground leading-tight -my-0.5">
                 to
               </div>
-              <div className="text-foreground flex items-start gap-1">
-                <span className="text-[10px] font-semibold leading-[13px]">{format(weekEndDate, "EEE")},</span>
-                <span className="text-[13px] font-semibold leading-[13px]">{format(weekEndDate, "MMMM d")}</span>
+              <div className="text-foreground">
+                <span className="text-[10px] font-semibold align-top">{format(weekEndDate, "EEE")}, </span>
+                <span className="text-[13px] font-semibold">{format(weekEndDate, "MMMM d")}</span>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
