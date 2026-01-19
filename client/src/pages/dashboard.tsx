@@ -730,7 +730,7 @@ export default function Dashboard() {
         </div>
 
         {/* Selected Date / Week Header */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-1">
           <div>
             <h3 className="text-lg font-semibold text-[#5979CC]" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               {selectedDate 
