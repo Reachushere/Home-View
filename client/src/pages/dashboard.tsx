@@ -531,7 +531,7 @@ export default function Dashboard() {
 
         {/* Weekly Time-Slot Calendar */}
         <div className="mb-6 relative" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full">
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border border-black">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto">
             {/* Day Headers */}
             <div className="grid border-b border-border sticky top-0 bg-card z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
