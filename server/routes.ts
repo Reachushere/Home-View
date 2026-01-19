@@ -5,7 +5,7 @@ import { api } from "@shared/routes";
 import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent } from "./googleCalendar";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const pdfParseModule = require("pdf-parse");
@@ -321,19 +321,24 @@ export async function registerRoutes(
   app.post("/api/tasks/sync-all-calendar", async (req, res) => {
     try {
       const tasks = await storage.getTasks({});
-      const results = { created: 0, updated: 0, failed: 0 };
+      const results = { dueEvents: { created: 0, updated: 0, failed: 0 }, prepEvents: { created: 0, updated: 0, failed: 0, skipped: 0 } };
       
       for (const task of tasks) {
+        // Sync due date event
         try {
           if (task.calendarEventId) {
-            // Update existing calendar event
-            await updateCalendarEvent(task.calendarEventId, {
+            // Update existing calendar event (may return new ID if type changed)
+            const updatedEvent = await updateCalendarEvent(task.calendarEventId, {
               title: task.title,
               description: task.description,
               dueDate: task.dueDate,
               courseName: task.courseName,
             });
-            results.updated++;
+            // If event was recreated, update the stored ID
+            if (updatedEvent.id && updatedEvent.id !== task.calendarEventId) {
+              await storage.updateTask(task.id, { calendarEventId: updatedEvent.id });
+            }
+            results.dueEvents.updated++;
           } else {
             // Create new calendar event
             const event = await createCalendarEvent({
@@ -349,11 +354,50 @@ export async function registerRoutes(
               calendarProvider: "google",
             });
             
-            results.created++;
+            results.dueEvents.created++;
           }
         } catch (err) {
-          console.error(`Failed to sync task ${task.id}:`, err);
-          results.failed++;
+          console.error(`Failed to sync due date for task ${task.id}:`, err);
+          results.dueEvents.failed++;
+        }
+        
+        // Sync prep/start date event (if task has a startDate)
+        if (task.startDate) {
+          try {
+            if (task.prepCalendarEventId) {
+              // Update existing prep event
+              const updatedEvent = await updatePrepCalendarEvent(task.prepCalendarEventId, {
+                title: task.title,
+                description: task.description,
+                startDate: task.startDate,
+                dueDate: task.dueDate,
+                courseName: task.courseName,
+              });
+              // If event was recreated, update the stored ID
+              if (updatedEvent.id && updatedEvent.id !== task.prepCalendarEventId) {
+                await storage.updateTask(task.id, { prepCalendarEventId: updatedEvent.id });
+              }
+              results.prepEvents.updated++;
+            } else {
+              // Create new prep event
+              const event = await createPrepCalendarEvent({
+                id: task.id,
+                title: task.title,
+                description: task.description,
+                startDate: task.startDate,
+                dueDate: task.dueDate,
+                courseName: task.courseName,
+              });
+              
+              await storage.updateTask(task.id, { prepCalendarEventId: event.id });
+              results.prepEvents.created++;
+            }
+          } catch (err) {
+            console.error(`Failed to sync prep event for task ${task.id}:`, err);
+            results.prepEvents.failed++;
+          }
+        } else {
+          results.prepEvents.skipped++;
         }
       }
       

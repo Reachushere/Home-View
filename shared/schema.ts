@@ -40,8 +40,9 @@ export const tasks = pgTable("tasks", {
   notes: text("notes"),
   referenceLink: text("reference_link"), // URL reference for the task
   attachments: text("attachments").array(), // Array of attachment URLs/paths
-  calendarEventId: text("calendar_event_id"), // For synced calendar events
+  calendarEventId: text("calendar_event_id"), // For synced calendar events (due date)
   calendarProvider: text("calendar_provider"), // 'google' or 'outlook'
+  prepCalendarEventId: text("prep_calendar_event_id"), // For synced prep/start date events
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
