@@ -355,21 +355,25 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Try multiple stop methods for better reliability
-      // 1. First try media_stop
-      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+      // Use Alexa Media Player's alexa_media service to send "stop" command
+      // This can interrupt TTS announcements
+      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: BATHROOM_ECHO_ENTITY,
+          message: "stop",
+          target: BATHROOM_ECHO_ENTITY,
+          data: {
+            type: "tts"
+          }
         }),
       });
 
-      // 2. Also try media_pause which sometimes works better for TTS
-      await fetch(`${haUrl}/api/services/media_player/media_pause`, {
+      // Also try media_stop for regular media
+      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
