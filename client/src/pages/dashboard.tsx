@@ -997,9 +997,15 @@ function TaskForm({
     return "";
   };
 
-  const getDefaultStartDate = () => {
-    if (task?.startDate) return format(new Date(task.startDate), "yyyy-MM-dd'T'HH:mm");
-    return "";
+  const getDefaultPrepDays = () => {
+    if (task?.startDate && task?.dueDate) {
+      const start = new Date(task.startDate);
+      const due = new Date(task.dueDate);
+      const diffTime = due.getTime() - start.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays > 0 ? diffDays : 0;
+    }
+    return 0;
   };
 
   const [formData, setFormData] = useState({
@@ -1007,7 +1013,7 @@ function TaskForm({
     description: task?.description || "",
     type: task?.type || initialType || "reading",
     courseName: task?.courseName || "",
-    startDate: getDefaultStartDate(),
+    prepDays: getDefaultPrepDays(),
     dueDate: getDefaultDate(),
     priority: task?.priority || "medium",
     weekNumber: task?.weekNumber || weekNumber,
@@ -1040,7 +1046,7 @@ function TaskForm({
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      // Build payload explicitly, excluding startDate if empty
+      // Build payload explicitly
       const payload: Record<string, unknown> = {
         title: data.title,
         description: data.description,
@@ -1052,9 +1058,12 @@ function TaskForm({
         referenceLink: data.referenceLink,
         attachments: data.attachments,
       };
-      // Only include startDate if it has a value
-      if (data.startDate) {
-        payload.startDate = new Date(data.startDate).toISOString();
+      // Calculate startDate from prepDays if set
+      if (data.prepDays > 0) {
+        const dueDate = new Date(data.dueDate);
+        const startDate = new Date(dueDate);
+        startDate.setDate(startDate.getDate() - data.prepDays);
+        payload.startDate = startDate.toISOString();
       }
       if (task) {
         return apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
@@ -1126,17 +1135,6 @@ function TaskForm({
       </div>
 
       <div>
-        <Label htmlFor="startDate">Start Date (optional - for planning/prep time)</Label>
-        <Input
-          id="startDate"
-          type="datetime-local"
-          value={formData.startDate}
-          onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
-          data-testid="input-startdate"
-        />
-      </div>
-
-      <div>
         <Label htmlFor="dueDate">Due Date & Time</Label>
         <Input
           id="dueDate"
@@ -1146,6 +1144,25 @@ function TaskForm({
           required
           data-testid="input-duedate"
         />
+      </div>
+
+      <div>
+        <Label htmlFor="prepDays">Prep Days (optional - days before due date to start)</Label>
+        <Input
+          id="prepDays"
+          type="number"
+          min="0"
+          max="30"
+          value={formData.prepDays}
+          onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
+          placeholder="0"
+          data-testid="input-prepdays"
+        />
+        {formData.prepDays > 0 && formData.dueDate && (
+          <p className="text-xs text-muted-foreground mt-1">
+            Prep starts: {format(new Date(new Date(formData.dueDate).getTime() - formData.prepDays * 24 * 60 * 60 * 1000), "MMM d, yyyy")}
+          </p>
+        )}
       </div>
 
       <div>
