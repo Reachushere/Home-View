@@ -205,7 +205,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/media/play - Fetch file content and read it aloud via TTS
+  // POST /api/media/play - Fetch file content from object storage and read it aloud via TTS
   app.post("/api/media/play", async (req, res) => {
     try {
       const { mediaUrl } = req.body;
@@ -218,13 +218,32 @@ export async function registerRoutes(
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
-      // Fetch the text content from the file URL
-      const fileResponse = await fetch(mediaUrl);
-      if (!fileResponse.ok) {
-        return res.status(400).json({ error: "Failed to fetch file content" });
-      }
+      // Read file content from object storage
+      let textContent = "";
       
-      const textContent = await fileResponse.text();
+      if (mediaUrl.startsWith("/objects/")) {
+        // It's an object storage path - read from object storage
+        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+        const objectStorage = new ObjectStorageService();
+        
+        try {
+          const objectFile = await objectStorage.getObjectEntityFile(mediaUrl);
+          
+          // Download the file content
+          const [content] = await objectFile.download();
+          textContent = content.toString('utf-8');
+        } catch (error) {
+          console.error("Error reading from object storage:", error);
+          return res.status(400).json({ error: "Failed to read file from storage" });
+        }
+      } else {
+        // It's a regular URL - fetch it
+        const fileResponse = await fetch(mediaUrl);
+        if (!fileResponse.ok) {
+          return res.status(400).json({ error: "Failed to fetch file content" });
+        }
+        textContent = await fileResponse.text();
+      }
       
       if (!textContent || textContent.trim().length === 0) {
         return res.status(400).json({ error: "File is empty or not readable" });
