@@ -565,10 +565,11 @@ export default function Dashboard() {
                     {weekDays.map((day, dayIdx) => {
                       const isInPlanningPeriod = isPlanningDayForTask(task, day);
                       const isDueDay = isSameDay(day, taskDueDate);
+                      const isFriday = day.getDay() === 5;
                       return (
                         <div 
                           key={dayIdx} 
-                          className="p-0.5 border-l border-border min-h-[24px] flex items-center"
+                          className={`p-0.5 border-l border-border min-h-[24px] flex items-center ${isFriday ? "bg-destructive/5" : ""}`}
                           data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}-${rowIdx}`}
                         >
                           {isInPlanningPeriod && (() => {
@@ -622,10 +623,11 @@ export default function Dashboard() {
                   </div>
                   {weekDays.map((day, idx) => {
                     const allDayTasks = getAllDayTasks(day);
+                    const isFriday = day.getDay() === 5;
                     return (
                       <div 
                         key={idx} 
-                        className="p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5"
+                        className={`p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5 ${isFriday ? "bg-destructive/5" : ""}`}
                         data-testid={`all-day-${format(day, "yyyy-MM-dd")}`}
                       >
                         {allDayTasks.map(task => {
@@ -654,8 +656,8 @@ export default function Dashboard() {
                   <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
                     ALL DAY
                   </div>
-                  {weekDays.map((_, idx) => (
-                    <div key={idx} className="p-1 border-l border-border min-h-[24px]" />
+                  {weekDays.map((day, idx) => (
+                    <div key={idx} className={`p-1 border-l border-border min-h-[24px] ${day.getDay() === 5 ? "bg-destructive/5" : ""}`} />
                   ))}
                 </div>
               )}
@@ -674,10 +676,11 @@ export default function Dashboard() {
                     </div>
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
+                      const isFriday = day.getDay() === 5;
                       return (
                         <div 
                           key={dayIdx} 
-                          className="border-l border-border/50 relative p-0.5"
+                          className={`border-l border-border/50 relative p-0.5 ${isFriday ? "bg-destructive/5" : ""}`}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                         >
                           {hourTasks.map((task, taskIdx) => {
