@@ -35,7 +35,7 @@ import {
   Paperclip,
   Upload,
   Loader2,
-  Volume2,
+  Play,
   Square,
   MinusCircle,
   PlusCircle,
@@ -1100,7 +1100,7 @@ function TaskCard({
             {isSendingTTS ? (
               <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
-              <Volume2 className="h-3 w-3" />
+              <Play className="h-3 w-3" />
             )}
           </Button>
           <Button
