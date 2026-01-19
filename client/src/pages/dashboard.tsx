@@ -585,7 +585,7 @@ export default function Dashboard() {
                           {isDueDay && (
                             <div
                               onClick={() => setEditingTask(task)}
-                              className={`w-full text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
+                              className={`w-full text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
                                 colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
                               }`}
                               data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
