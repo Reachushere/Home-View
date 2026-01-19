@@ -205,10 +205,10 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/media/play - Play a media file on Echo device
+  // POST /api/media/play - Fetch file content and read it aloud via TTS
   app.post("/api/media/play", async (req, res) => {
     try {
-      const { mediaUrl, mediaType } = req.body;
+      const { mediaUrl } = req.body;
       
       if (!mediaUrl) {
         return res.status(400).json({ error: "Media URL is required" });
@@ -218,38 +218,43 @@ export async function registerRoutes(
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
 
-      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      
-      // Determine media content type
-      let contentType = "music";
-      if (mediaType) {
-        contentType = mediaType;
-      } else if (mediaUrl.match(/\.(mp4|webm|mkv|avi)$/i)) {
-        contentType = "video";
-      } else if (mediaUrl.match(/\.(mp3|wav|ogg|flac|m4a)$/i)) {
-        contentType = "music";
+      // Fetch the text content from the file URL
+      const fileResponse = await fetch(mediaUrl);
+      if (!fileResponse.ok) {
+        return res.status(400).json({ error: "Failed to fetch file content" });
       }
       
-      const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+      const textContent = await fileResponse.text();
+      
+      if (!textContent || textContent.trim().length === 0) {
+        return res.status(400).json({ error: "File is empty or not readable" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Send the file content to TTS
+      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: BATHROOM_ECHO_ENTITY,
-          media_content_id: mediaUrl,
-          media_content_type: contentType,
+          message: textContent,
+          target: BATHROOM_ECHO_ENTITY,
+          data: {
+            type: "tts"
+          }
         }),
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Home Assistant play media error:", errorText);
-        return res.status(response.status).json({ error: "Failed to play media" });
+        console.error("Home Assistant TTS error:", errorText);
+        return res.status(response.status).json({ error: "Failed to read file content" });
       }
 
-      res.json({ success: true, message: "Media playback started" });
+      res.json({ success: true, message: "Reading file content aloud" });
     } catch (error) {
       console.error("Play media error:", error);
       res.status(500).json({ error: "Failed to play media" });
