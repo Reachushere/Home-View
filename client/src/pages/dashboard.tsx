@@ -603,7 +603,7 @@ export default function Dashboard() {
                             const isFirstPrepDay = isSameDay(day, startDate);
                             return (
                               <div className="flex items-center w-full">
-                                {!isFirstPrepDay && <div className={`w-1.5 h-[2px] ${colors ? colors.dot : "bg-gray-400"}`} />}
+                                <div className={`w-1.5 h-[2px] ${!isFirstPrepDay ? (colors ? colors.dot : "bg-gray-400") : "bg-transparent"}`} />
                                 <div
                                   className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${borderStyle} ${
                                     task.isCompleted 
