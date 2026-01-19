@@ -36,6 +36,9 @@ import {
   Upload,
   Loader2,
   Volume2,
+  VolumeX,
+  Volume1,
+  Square,
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
@@ -901,6 +904,7 @@ function TaskCard({
   };
 
   const [isSendingTTS, setIsSendingTTS] = useState(false);
+  const [isControlling, setIsControlling] = useState(false);
   
   const handlePlayTTS = async () => {
     setIsSendingTTS(true);
@@ -920,6 +924,32 @@ function TaskCard({
       console.error('TTS error:', error);
     } finally {
       setIsSendingTTS(false);
+    }
+  };
+
+  const handleStop = async () => {
+    setIsControlling(true);
+    try {
+      await fetch('/api/media/stop', { method: 'POST' });
+    } catch (error) {
+      console.error('Stop error:', error);
+    } finally {
+      setIsControlling(false);
+    }
+  };
+
+  const handleVolume = async (action: "up" | "down") => {
+    setIsControlling(true);
+    try {
+      await fetch('/api/media/volume', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+    } catch (error) {
+      console.error('Volume error:', error);
+    } finally {
+      setIsControlling(false);
     }
   };
 
@@ -1007,23 +1037,59 @@ function TaskCard({
                     >
                       {attachmentName}
                     </a>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-5 w-5"
-                      onClick={() => handlePlayTTS()}
-                      disabled={isSendingTTS}
-                      data-testid={`button-tts-${task.id}-${idx}`}
-                    >
-                      {isSendingTTS ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      ) : (
-                        <Volume2 className="h-3 w-3" />
-                      )}
-                    </Button>
                   </div>
                 );
               })}
+            </div>
+            <div className="flex items-center gap-1 pt-1">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={() => handlePlayTTS()}
+                disabled={isSendingTTS}
+                data-testid={`button-tts-play-${task.id}`}
+                title="Speak Task"
+              >
+                {isSendingTTS ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Volume2 className="h-3 w-3" />
+                )}
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={handleStop}
+                disabled={isControlling}
+                data-testid={`button-tts-stop-${task.id}`}
+                title="Stop"
+              >
+                <Square className="h-3 w-3" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={() => handleVolume("down")}
+                disabled={isControlling}
+                data-testid={`button-volume-down-${task.id}`}
+                title="Volume Down"
+              >
+                <VolumeX className="h-3 w-3" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={() => handleVolume("up")}
+                disabled={isControlling}
+                data-testid={`button-volume-up-${task.id}`}
+                title="Volume Up"
+              >
+                <Volume1 className="h-3 w-3" />
+              </Button>
             </div>
           </div>
         )}

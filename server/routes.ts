@@ -205,6 +205,84 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/media/stop - Stop media playback on Echo device
+  app.post("/api/media/stop", async (_req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      const response = await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: BATHROOM_ECHO_ENTITY,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Home Assistant stop error:", errorText);
+        return res.status(response.status).json({ error: "Failed to stop media" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Stop error:", error);
+      res.status(500).json({ error: "Failed to stop media" });
+    }
+  });
+
+  // POST /api/media/volume - Set volume on Echo device
+  app.post("/api/media/volume", async (req, res) => {
+    try {
+      const { action } = req.body; // "up", "down", or a number 0-1
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      let service = "volume_up";
+      let body: any = { entity_id: BATHROOM_ECHO_ENTITY };
+      
+      if (action === "down") {
+        service = "volume_down";
+      } else if (action === "up") {
+        service = "volume_up";
+      } else if (typeof action === "number") {
+        service = "volume_set";
+        body.volume_level = action;
+      }
+      
+      const response = await fetch(`${haUrl}/api/services/media_player/${service}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Home Assistant volume error:", errorText);
+        return res.status(response.status).json({ error: "Failed to adjust volume" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Volume error:", error);
+      res.status(500).json({ error: "Failed to adjust volume" });
+    }
+  });
+
   // Seed database with sample tasks
   await seedDatabase();
 
