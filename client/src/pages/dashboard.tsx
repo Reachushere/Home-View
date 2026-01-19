@@ -592,17 +592,14 @@ export default function Dashboard() {
                             );
                           })()}
                           {isDueDay && (
-                            <div className="flex items-center w-full">
-                              <div className={`w-3 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
-                              <div
-                                onClick={() => setEditingTask(task)}
-                                className={`flex-1 text-xs px-2 py-0.5 rounded-r cursor-pointer hover:opacity-80 truncate ${
-                                  colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
-                                }`}
-                                data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                              >
-                                <span className="font-bold text-[10px]">DUE:</span> {task.title}
-                              </div>
+                            <div
+                              onClick={() => setEditingTask(task)}
+                              className={`w-full text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
+                                colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
+                              }`}
+                              data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                            >
+                              <span className="font-bold text-[10px]">DUE:</span> {task.title}
                             </div>
                           )}
                         </div>
