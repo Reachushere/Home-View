@@ -685,7 +685,7 @@ export default function Dashboard() {
                     style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '40px' }}
                   >
                     <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-start pl-2">
-                      {hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
+                      {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
