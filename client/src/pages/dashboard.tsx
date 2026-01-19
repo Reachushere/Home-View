@@ -460,7 +460,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
               <ChevronRight className="h-5 w-5" strokeWidth={3} />
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+            <Button variant="outline" size="sm" className="border-2 border-foreground font-semibold" onClick={() => setSelectedWeek(2)} data-testid="button-today">
               TODAY
             </Button>
           </div>
