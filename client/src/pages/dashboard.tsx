@@ -36,7 +36,7 @@ import {
   Upload,
   Loader2,
   Volume2,
-  CircleX,
+  Square,
   MinusCircle,
   PlusCircle,
   Rewind,
@@ -1083,7 +1083,7 @@ function TaskCard({
                 data-testid={`button-tts-stop-${task.id}`}
                 title="Stop"
               >
-                <CircleX className="h-3 w-3" />
+                <Square className="h-3 w-3 fill-current" />
               </Button>
               <Button
                 size="icon"
