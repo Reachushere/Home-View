@@ -442,14 +442,14 @@ export default function Dashboard() {
               <div className="text-[10px] font-bold text-[#5979CC] mb-1">
                 Week {selectedWeek}
               </div>
-              <div className="text-sm font-semibold text-foreground">
+              <div className="text-xs font-semibold text-foreground">
                 {format(weekStartDate, "EEEE, MMMM d")}
               </div>
               <div className="text-[10px] text-muted-foreground leading-tight -my-0.5">
                 to
               </div>
-              <div className="text-sm font-semibold text-foreground">
-                {format(weekEndDate, "EEEE, MMMM d, yyyy")}
+              <div className="text-xs font-semibold text-foreground">
+                {format(weekEndDate, "EEEE, MMMM d")}
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
