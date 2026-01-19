@@ -5,6 +5,8 @@ import { api } from "@shared/routes";
 import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import * as pdfParseModule from "pdf-parse";
+const pdfParse = (pdfParseModule as any).default || pdfParseModule;
 
 // Use Nabu Casa cloud URL for remote access
 const HOME_ASSISTANT_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
@@ -257,8 +259,6 @@ export async function registerRoutes(
       if (isPDF) {
         // Parse PDF and extract text
         try {
-          const pdfParseModule = await import('pdf-parse');
-          const pdfParse = pdfParseModule.default || pdfParseModule;
           const pdfData = await pdfParse(fileBuffer);
           textContent = pdfData.text;
         } catch (error) {
