@@ -793,6 +793,7 @@ export default function Dashboard() {
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
+                      const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
                       return (
                         <div 
                           key={dayIdx} 
@@ -804,20 +805,22 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                className={`absolute left-0.5 right-0.5 rounded pt-1 px-1 pb-2 hover:opacity-90 shadow-sm overflow-hidden ${
+                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
                                     : colors ? `${colors.bg} border ${colors.border}` : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
                                   top: '2px',
+                                  left: `calc(${taskIdx * columnWidth}% + 2px)`,
+                                  width: `calc(${columnWidth}% - 4px)`,
                                   height: '40px',
                                   maxHeight: '40px',
-                                  zIndex: taskIdx + 1
+                                  zIndex: 1
                                 }}
                                 data-testid={`time-task-${task.id}`}
                               >
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-0.5">
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -846,16 +849,18 @@ export default function Dashboard() {
                               href={event.htmlLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="absolute left-0.5 right-0.5 rounded pt-1 px-1 pb-2 hover:opacity-90 shadow-sm overflow-hidden bg-purple-500/20 border border-purple-500 cursor-pointer"
+                              className="absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden bg-purple-500/20 border border-purple-500 cursor-pointer"
                               style={{
-                                top: `${2 + (hourTasks.length + eventIdx) * 42}px`,
+                                top: '2px',
+                                left: `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
+                                width: `calc(${columnWidth}% - 4px)`,
                                 height: '40px',
                                 maxHeight: '40px',
-                                zIndex: hourTasks.length + eventIdx + 1
+                                zIndex: 1
                               }}
                               data-testid={`gcal-event-${event.id}`}
                             >
-                              <div className="flex items-center gap-1">
+                              <div className="flex items-center gap-0.5">
                                 <CalendarDays className="h-3 w-3 shrink-0 text-purple-600" />
                                 <div className="text-[8px] font-semibold truncate text-black">
                                   {event.title}
