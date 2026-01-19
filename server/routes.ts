@@ -6,8 +6,9 @@ import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } 
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 
-const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL;
-const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN;
+// Use hardcoded URL since it's not sensitive, but token from env
+const HOME_ASSISTANT_URL = "http://172.24.0.2:8123";
+const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN || process.env.HOME_ASSISTANT_URL;
 const BATHROOM_ECHO_ENTITY = "media_player.echo_lr_studio_white_am";
 
 export async function registerRoutes(
