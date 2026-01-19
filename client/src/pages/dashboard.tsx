@@ -93,6 +93,52 @@ export default function Dashboard() {
   const [calendarHeight, setCalendarHeight] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
+  
+  // Media control state
+  const [isMediaControlling, setIsMediaControlling] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  // Media control handlers
+  const handleMediaStop = async () => {
+    setIsMediaControlling(true);
+    try {
+      await fetch('/api/media/stop', { method: 'POST' });
+    } catch (error) {
+      console.error('Stop error:', error);
+    } finally {
+      setIsMediaControlling(false);
+    }
+  };
+
+  const handleMediaSeek = async (direction: "forward" | "backward") => {
+    setIsMediaControlling(true);
+    try {
+      await fetch('/api/media/seek', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ direction }),
+      });
+    } catch (error) {
+      console.error('Seek error:', error);
+    } finally {
+      setIsMediaControlling(false);
+    }
+  };
+
+  const handleMediaVolume = async (action: "up" | "down") => {
+    setIsMediaControlling(true);
+    try {
+      await fetch('/api/media/volume', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+    } catch (error) {
+      console.error('Volume error:', error);
+    } finally {
+      setIsMediaControlling(false);
+    }
+  };
 
   // Calendar resize handlers
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
@@ -777,9 +823,69 @@ export default function Dashboard() {
         <div className="flex gap-6 mb-6">
           {/* Upcoming Tasks Section */}
           <section className="flex-1 bg-card rounded-xl shadow-md p-4 border border-black">
-            <h4 className="text-md font-semibold text-foreground mb-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              Upcoming ({upcomingTasks.length})
-            </h4>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-md font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+                Upcoming ({upcomingTasks.length})
+              </h4>
+              {/* Media Controls */}
+              <div className="flex items-center gap-1 bg-muted/50 rounded-lg px-2 py-1">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7"
+                  onClick={handleMediaStop}
+                  disabled={isMediaControlling}
+                  data-testid="button-media-stop"
+                  title="Stop"
+                >
+                  <Square className="h-4 w-4 fill-current" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7"
+                  onClick={() => handleMediaSeek("backward")}
+                  disabled={isMediaControlling}
+                  data-testid="button-media-rewind"
+                  title="Rewind"
+                >
+                  <Rewind className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7"
+                  onClick={() => handleMediaSeek("forward")}
+                  disabled={isMediaControlling}
+                  data-testid="button-media-forward"
+                  title="Fast Forward"
+                >
+                  <FastForward className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7"
+                  onClick={() => handleMediaVolume("down")}
+                  disabled={isMediaControlling}
+                  data-testid="button-media-volume-down"
+                  title="Volume Down"
+                >
+                  <MinusCircle className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7"
+                  onClick={() => handleMediaVolume("up")}
+                  disabled={isMediaControlling}
+                  data-testid="button-media-volume-up"
+                  title="Volume Up"
+                >
+                  <PlusCircle className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
             {isLoading ? (
               <div className="text-muted-foreground">Loading tasks...</div>
             ) : upcomingTasks.length === 0 ? (
@@ -906,7 +1012,6 @@ function TaskCard({
   };
 
   const [isSendingTTS, setIsSendingTTS] = useState(false);
-  const [isControlling, setIsControlling] = useState(false);
   
   const handlePlayTTS = async () => {
     setIsSendingTTS(true);
@@ -926,47 +1031,6 @@ function TaskCard({
       console.error('TTS error:', error);
     } finally {
       setIsSendingTTS(false);
-    }
-  };
-
-  const handleStop = async () => {
-    setIsControlling(true);
-    try {
-      await fetch('/api/media/stop', { method: 'POST' });
-    } catch (error) {
-      console.error('Stop error:', error);
-    } finally {
-      setIsControlling(false);
-    }
-  };
-
-  const handleVolume = async (action: "up" | "down") => {
-    setIsControlling(true);
-    try {
-      await fetch('/api/media/volume', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
-      });
-    } catch (error) {
-      console.error('Volume error:', error);
-    } finally {
-      setIsControlling(false);
-    }
-  };
-
-  const handleSeek = async (direction: "forward" | "backward") => {
-    setIsControlling(true);
-    try {
-      await fetch('/api/media/seek', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ direction }),
-      });
-    } catch (error) {
-      console.error('Seek error:', error);
-    } finally {
-      setIsControlling(false);
     }
   };
 
@@ -1073,61 +1137,6 @@ function TaskCard({
                 ) : (
                   <Volume2 className="h-3 w-3" />
                 )}
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6"
-                onClick={handleStop}
-                disabled={isControlling}
-                data-testid={`button-tts-stop-${task.id}`}
-                title="Stop"
-              >
-                <Square className="h-3 w-3 fill-current" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6"
-                onClick={() => handleSeek("backward")}
-                disabled={isControlling}
-                data-testid={`button-rewind-${task.id}`}
-                title="Rewind"
-              >
-                <Rewind className="h-3 w-3" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6"
-                onClick={() => handleSeek("forward")}
-                disabled={isControlling}
-                data-testid={`button-forward-${task.id}`}
-                title="Fast Forward"
-              >
-                <FastForward className="h-3 w-3" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6"
-                onClick={() => handleVolume("down")}
-                disabled={isControlling}
-                data-testid={`button-volume-down-${task.id}`}
-                title="Volume Down"
-              >
-                <MinusCircle className="h-3 w-3" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6"
-                onClick={() => handleVolume("up")}
-                disabled={isControlling}
-                data-testid={`button-volume-up-${task.id}`}
-                title="Volume Up"
-              >
-                <PlusCircle className="h-3 w-3" />
               </Button>
             </div>
           </div>
