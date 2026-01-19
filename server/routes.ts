@@ -251,8 +251,17 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Send the file content to TTS with a prefix to prevent skill interpretation
-      const safeMessage = `Reading document: ${textContent}`;
+      // Use SSML to force Alexa to speak the text without skill interpretation
+      // Escape any special XML characters in the content
+      const escapedContent = textContent
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+      
+      const ssmlMessage = `<speak><prosody rate="medium">${escapedContent}</prosody></speak>`;
+      
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -260,7 +269,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: safeMessage,
+          message: ssmlMessage,
           target: BATHROOM_ECHO_ENTITY,
           data: {
             type: "tts"
