@@ -464,7 +464,9 @@ export default function Dashboard() {
               TODAY
             </Button>
           </div>
-          <div className="flex gap-1.5">
+          <div className="flex flex-col items-end gap-1">
+            <img src="/tmu_logo.png" alt="Toronto Metropolitan University" className="h-8 object-contain" />
+            <div className="flex gap-1.5">
             <Button 
               size="sm"
               className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
@@ -510,6 +512,7 @@ export default function Dashboard() {
               <Plus className="h-3 w-3 mr-1" />
               Exam/Test
             </Button>
+            </div>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogContent className="max-w-lg">
