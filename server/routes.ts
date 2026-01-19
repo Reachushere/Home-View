@@ -329,21 +329,18 @@ export async function registerRoutes(
         isPlaying: true
       };
       
-      // Don't use SSML - send plain text like the working /api/tts endpoint
+      // Use tts.speak service directly for longer content
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
       
-      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+      const response = await fetch(`${haUrl}/api/services/tts/speak`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: cleanedContent,
-          target: BATHROOM_ECHO_ENTITY,
-          data: {
-            type: "tts"
-          }
+          entity_id: BATHROOM_ECHO_ENTITY,
+          message: cleanedContent
         }),
       });
 
