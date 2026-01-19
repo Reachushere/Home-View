@@ -263,7 +263,18 @@ export async function registerRoutes(
         try {
           const parser = new pdfParse({ data: new Uint8Array(fileBuffer) });
           await parser.load();
-          textContent = await parser.getText();
+          const pdfText = await parser.getText();
+          // getText() may return an array of page texts, join them
+          if (Array.isArray(pdfText)) {
+            textContent = pdfText.join(' ');
+          } else if (typeof pdfText === 'string') {
+            textContent = pdfText;
+          } else if (pdfText && typeof pdfText === 'object') {
+            // May be an object with text property or items
+            textContent = JSON.stringify(pdfText);
+          } else {
+            textContent = String(pdfText || '');
+          }
           await parser.destroy();
         } catch (error) {
           console.error("Error parsing PDF:", error);
