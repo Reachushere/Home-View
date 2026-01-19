@@ -1164,7 +1164,14 @@ function TaskCard({
     );
   }
 
-  return cardElement;
+  // For cards without attachments, add an invisible spacer to match the height of media controls
+  return (
+    <div className="flex flex-col">
+      {/* Invisible spacer to match media controls height */}
+      <div className="h-8" />
+      {cardElement}
+    </div>
+  );
 }
 
 function TaskForm({ 
