@@ -251,7 +251,7 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Send the file content to TTS
+      // Send the file content to TTS using announce type (prevents skill interpretation)
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -262,7 +262,7 @@ export async function registerRoutes(
           message: textContent,
           target: BATHROOM_ECHO_ENTITY,
           data: {
-            type: "tts"
+            type: "announce"
           }
         }),
       });
