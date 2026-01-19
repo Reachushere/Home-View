@@ -571,20 +571,26 @@ export default function Dashboard() {
                           className="p-0.5 border-l border-border min-h-[24px] flex items-center"
                           data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}-${rowIdx}`}
                         >
-                          {isInPlanningPeriod && (
-                            <div className="flex items-center w-full">
-                              <div
-                                onClick={() => setEditingTask(task)}
-                                className={`flex-1 text-[10px] px-2 py-0.5 rounded-l cursor-pointer hover:opacity-80 border border-dashed border-r-0 truncate ${
-                                  colors ? `${colors.prepBg} ${colors.prepBorder} ${colors.prepText}` : "bg-gray-100 border-gray-300 text-gray-500"
-                                }`}
-                                data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                              >
-                                <span className="font-bold">PREP:</span> {task.title}
+                          {isInPlanningPeriod && (() => {
+                            const dayBeforeDue = new Date(taskDueDate);
+                            dayBeforeDue.setDate(dayBeforeDue.getDate() - 1);
+                            const isDayBeforeDue = isSameDay(day, dayBeforeDue);
+                            const borderColor = isDayBeforeDue ? "border-red-500" : "border-orange-400";
+                            return (
+                              <div className="flex items-center w-full">
+                                <div
+                                  onClick={() => setEditingTask(task)}
+                                  className={`flex-1 text-[10px] px-2 py-0.5 rounded-l cursor-pointer hover:opacity-80 border border-r-0 truncate ${borderColor} ${
+                                    colors ? `${colors.prepBg} ${colors.prepText}` : "bg-gray-100 text-gray-500"
+                                  }`}
+                                  data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                                >
+                                  <span className="font-bold">PREP:</span> {task.title}
+                                </div>
+                                <div className={`w-3 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
                               </div>
-                              <div className={`w-3 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
-                            </div>
-                          )}
+                            );
+                          })()}
                           {isDueDay && (
                             <div className="flex items-center w-full">
                               <div className={`w-3 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
