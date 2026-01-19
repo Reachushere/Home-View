@@ -597,7 +597,7 @@ export default function Dashboard() {
                                 <div
                                   onClick={() => setEditingTask(task)}
                                   className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${borderStyle} ${
-                                    colors ? `${colors.prepBg} ${colors.prepText}` : "bg-gray-100 text-gray-500"
+                                    colors ? `${colors.prepBg} ${colors.prepText} border ${colors.border}` : "bg-gray-100 text-gray-500 border border-gray-400"
                                   }`}
                                   data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                                 >
@@ -613,7 +613,7 @@ export default function Dashboard() {
                               <div
                                 onClick={() => setEditingTask(task)}
                                 className={`flex-1 text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
-                                  colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
+                                  colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200 text-gray-700 border border-gray-400"
                                 }`}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
@@ -650,7 +650,7 @@ export default function Dashboard() {
                               key={task.id}
                               onClick={() => setEditingTask(task)}
                               className={`text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
-                                colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
+                                colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200 text-gray-700 border border-gray-400"
                               }`}
                               data-testid={`all-day-task-${task.id}`}
                             >
