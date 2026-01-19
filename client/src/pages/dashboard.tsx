@@ -137,6 +137,24 @@ export default function Dashboard() {
     queryFn: () => fetch(`/api/tasks?weekNumber=${selectedWeek}`).then(r => r.json()),
   });
 
+  // Google Calendar events query
+  interface CalendarEvent {
+    id: string;
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    isAllDay: boolean;
+    htmlLink: string;
+    source: string;
+  }
+  
+  const { data: calendarEvents = [] } = useQuery<CalendarEvent[]>({
+    queryKey: ["/api/calendar/events", { weekNumber: selectedWeek }],
+    queryFn: () => fetch(`/api/calendar/events?weekNumber=${selectedWeek}`).then(r => r.json()).catch(() => []),
+    refetchInterval: 60000, // Refresh every minute
+  });
+
   const completeMutation = useMutation({
     mutationFn: async ({ id, isCompleted }: { id: number; isCompleted: boolean }) => {
       return apiRequest("PATCH", `/api/tasks/${id}/complete`, { isCompleted });
@@ -209,6 +227,24 @@ export default function Dashboard() {
       if (t.startDate) return false; // Tasks with planning periods show in ALL DAY row
       const dueDate = new Date(t.dueDate);
       return isSameDay(dueDate, day) && dueDate.getHours() === hour;
+    });
+  };
+  
+  // Get Google Calendar events for a specific hour on a day
+  const getCalendarEventsForHour = (day: Date, hour: number) => {
+    return calendarEvents.filter(e => {
+      if (e.isAllDay) return false;
+      const eventDate = new Date(e.startDate);
+      return isSameDay(eventDate, day) && eventDate.getHours() === hour;
+    });
+  };
+  
+  // Get all-day Google Calendar events for a day
+  const getAllDayCalendarEvents = (day: Date) => {
+    return calendarEvents.filter(e => {
+      if (!e.isAllDay) return false;
+      const eventDate = new Date(e.startDate);
+      return isSameDay(eventDate, day);
     });
   };
   
@@ -662,13 +698,14 @@ export default function Dashboard() {
                 );
               })}
               {/* All-day tasks row (non-planning) */}
-              {weekDays.some(day => getAllDayTasks(day).length > 0) && (
+              {weekDays.some(day => getAllDayTasks(day).length > 0 || getAllDayCalendarEvents(day).length > 0) && (
                 <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
                   <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
                     {weekPlanningTasks.length === 0 ? "ALL DAY" : ""}
                   </div>
                   {weekDays.map((day, idx) => {
                     const allDayTasks = getAllDayTasks(day);
+                    const allDayEvents = getAllDayCalendarEvents(day);
                     const isFriday = day.getDay() === 5;
                     const isToday = isSameDay(day, new Date());
                     return (
@@ -704,6 +741,20 @@ export default function Dashboard() {
                             </div>
                           );
                         })}
+                        {/* All-day Google Calendar events */}
+                        {allDayEvents.map(event => (
+                          <a
+                            key={event.id}
+                            href={event.htmlLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-purple-500/20 text-black border border-purple-500 cursor-pointer hover:opacity-80"
+                            data-testid={`all-day-gcal-${event.id}`}
+                          >
+                            <CalendarDays className="h-3 w-3 shrink-0 text-purple-600" />
+                            <span className="truncate">{event.title}</span>
+                          </a>
+                        ))}
                       </div>
                     );
                   })}
@@ -738,8 +789,10 @@ export default function Dashboard() {
                     </div>
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
+                      const hourCalendarEvents = getCalendarEventsForHour(day, hour);
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDay(day, new Date());
+                      const totalItems = hourTasks.length + hourCalendarEvents.length;
                       return (
                         <div 
                           key={dayIdx} 
@@ -786,6 +839,33 @@ export default function Dashboard() {
                               </div>
                             );
                           })}
+                          {/* Google Calendar Events */}
+                          {hourCalendarEvents.map((event, eventIdx) => (
+                            <a
+                              key={event.id}
+                              href={event.htmlLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="absolute left-0.5 right-0.5 rounded pt-1 px-1 pb-2 hover:opacity-90 shadow-sm overflow-hidden bg-purple-500/20 border border-purple-500 cursor-pointer"
+                              style={{
+                                top: `${2 + (hourTasks.length + eventIdx) * 42}px`,
+                                height: '40px',
+                                maxHeight: '40px',
+                                zIndex: hourTasks.length + eventIdx + 1
+                              }}
+                              data-testid={`gcal-event-${event.id}`}
+                            >
+                              <div className="flex items-center gap-1">
+                                <CalendarDays className="h-3 w-3 shrink-0 text-purple-600" />
+                                <div className="text-[8px] font-semibold truncate text-black">
+                                  {event.title}
+                                </div>
+                              </div>
+                              <div className="text-[8px] mt-0.5 mb-3 ml-4 text-muted-foreground">
+                                {format(new Date(event.startDate), "h:mm a")}
+                              </div>
+                            </a>
+                          ))}
                         </div>
                       );
                     })}

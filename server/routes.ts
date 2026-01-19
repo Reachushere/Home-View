@@ -5,7 +5,7 @@ import { api } from "@shared/routes";
 import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents } from "./googleCalendar";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const pdfParseModule = require("pdf-parse");
@@ -152,7 +152,27 @@ export async function registerRoutes(
     try {
       const input = api.tasks.create.input.parse(req.body);
       const task = await storage.createTask(input);
-      res.status(201).json(task);
+      
+      // Auto-sync to Google Calendar
+      try {
+        const event = await createCalendarEvent({
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          dueDate: task.dueDate,
+          courseName: task.courseName,
+        });
+        // Update task with calendar event ID
+        const updatedTask = await storage.updateTask(task.id, {
+          calendarEventId: event.id,
+          calendarProvider: "google",
+        });
+        res.status(201).json(updatedTask);
+      } catch (calErr) {
+        console.error("Auto-sync to Google Calendar failed:", calErr);
+        // Still return the task even if calendar sync fails
+        res.status(201).json(task);
+      }
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({
@@ -168,10 +188,26 @@ export async function registerRoutes(
   app.patch(api.tasks.update.path, async (req, res) => {
     try {
       const input = api.tasks.update.input.parse(req.body);
+      const existingTask = await storage.getTask(Number(req.params.id));
       const task = await storage.updateTask(Number(req.params.id), input);
       if (!task) {
         return res.status(404).json({ message: 'Task not found' });
       }
+      
+      // Auto-sync to Google Calendar if task has calendar event
+      if (task.calendarEventId) {
+        try {
+          await updateCalendarEvent(task.calendarEventId, {
+            title: task.title,
+            description: task.description,
+            dueDate: task.dueDate,
+            courseName: task.courseName,
+          });
+        } catch (calErr) {
+          console.error("Auto-update Google Calendar failed:", calErr);
+        }
+      }
+      
       res.json(task);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -186,6 +222,18 @@ export async function registerRoutes(
 
   // DELETE /api/tasks/:id
   app.delete(api.tasks.delete.path, async (req, res) => {
+    // Get task first to check for calendar event
+    const task = await storage.getTask(Number(req.params.id));
+    
+    // Delete from Google Calendar if synced
+    if (task?.calendarEventId) {
+      try {
+        await deleteCalendarEvent(task.calendarEventId);
+      } catch (calErr) {
+        console.error("Auto-delete from Google Calendar failed:", calErr);
+      }
+    }
+    
     await storage.deleteTask(Number(req.params.id));
     res.status(204).end();
   });
@@ -211,6 +259,21 @@ export async function registerRoutes(
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
     }
+    
+    // Auto-sync to Google Calendar if task has calendar event
+    if (task.calendarEventId) {
+      try {
+        await updateCalendarEvent(task.calendarEventId, {
+          title: task.title,
+          description: task.description,
+          dueDate: task.dueDate,
+          courseName: task.courseName,
+        });
+      } catch (calErr) {
+        console.error("Auto-update Google Calendar on reschedule failed:", calErr);
+      }
+    }
+    
     res.json(task);
   });
 
@@ -745,6 +808,40 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Google Calendar delete error:", error);
       res.status(500).json({ error: "Failed to remove from Google Calendar" });
+    }
+  });
+
+  // GET /api/calendar/events - Fetch events from Google Calendar
+  app.get("/api/calendar/events", async (req, res) => {
+    try {
+      const weekNumber = Number(req.query.weekNumber) || getWeekNumber(new Date());
+      const { start, end } = getWeekDates(weekNumber);
+      
+      const events = await listEvents(start, end);
+      
+      // Get all tasks to find which events are already synced
+      const tasks = await storage.getTasks({});
+      const syncedEventIds = new Set(tasks.map(t => t.calendarEventId).filter(Boolean));
+      
+      // Filter out events that are already synced from this app
+      const externalEvents = events.filter(event => event.id && !syncedEventIds.has(event.id));
+      
+      // Transform to a simpler format
+      const formattedEvents = externalEvents.map(event => ({
+        id: event.id,
+        title: event.summary || 'Untitled Event',
+        description: event.description || '',
+        startDate: event.start?.dateTime || event.start?.date,
+        endDate: event.end?.dateTime || event.end?.date,
+        isAllDay: !event.start?.dateTime,
+        htmlLink: event.htmlLink,
+        source: 'google',
+      }));
+      
+      res.json(formattedEvents);
+    } catch (error) {
+      console.error("Fetch Google Calendar events error:", error);
+      res.status(500).json({ error: "Failed to fetch Google Calendar events" });
     }
   });
 

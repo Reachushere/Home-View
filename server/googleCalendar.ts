@@ -149,3 +149,19 @@ export async function listCalendars() {
   const response = await calendar.calendarList.list();
   return response.data.items || [];
 }
+
+// List events in a date range
+export async function listEvents(timeMin: Date, timeMax: Date) {
+  const calendar = await getGoogleCalendarClient();
+  
+  const response = await calendar.events.list({
+    calendarId: 'primary',
+    timeMin: timeMin.toISOString(),
+    timeMax: timeMax.toISOString(),
+    singleEvents: true,
+    orderBy: 'startTime',
+    maxResults: 250,
+  });
+  
+  return response.data.items || [];
+}
