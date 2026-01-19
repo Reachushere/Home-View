@@ -36,7 +36,7 @@ import {
   Upload,
   Loader2,
   Volume2,
-  StopCircle,
+  CircleX,
   MinusCircle,
   PlusCircle,
 } from "lucide-react";
@@ -1066,7 +1066,7 @@ function TaskCard({
                 data-testid={`button-tts-stop-${task.id}`}
                 title="Stop"
               >
-                <StopCircle className="h-3 w-3" />
+                <CircleX className="h-3 w-3" />
               </Button>
               <Button
                 size="icon"
