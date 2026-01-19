@@ -384,7 +384,7 @@ export default function Dashboard() {
 
         {/* Course Legend */}
         <div className="px-2 space-y-2">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Courses</h3>
+          <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {COURSES.map((course) => {
             const colors = courseColors[course.code];
             return (
@@ -400,7 +400,7 @@ export default function Dashboard() {
         </div>
 
         <nav className="flex flex-col gap-0.5 mt-2">
-          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2 mb-0.5">Weeks</h3>
+          <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-2 mb-0.5">Weeks</h3>
           {weeks.map((week) => (
             <Button
               key={week.weekNumber}
