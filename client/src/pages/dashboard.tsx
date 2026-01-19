@@ -172,7 +172,10 @@ export default function Dashboard() {
   const weekDays = rawWeekDays.length === 7 ? [...rawWeekDays.slice(1), rawWeekDays[0]] : rawWeekDays;
   
   // Time slots for the day view (8 AM to 6 PM)
-  const timeSlots = Array.from({ length: 11 }, (_, i) => i + 8); // 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
+  const allTimeSlots = Array.from({ length: 24 }, (_, i) => i); // 0-23 (full 24 hours)
+  const [visibleStartHour, setVisibleStartHour] = useState(8);
+  const [visibleEndHour, setVisibleEndHour] = useState(17);
+  const timeSlots = allTimeSlots.filter(h => h >= visibleStartHour && h <= visibleEndHour);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
