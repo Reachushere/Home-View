@@ -676,7 +676,7 @@ export default function Dashboard() {
                     className="grid border-b border-border/50" 
                     style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '40px' }}
                   >
-                    <div className="text-xs text-muted-foreground font-bold tracking-wide flex items-center justify-end pr-3">
+                    <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-end pr-3">
                       {hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
