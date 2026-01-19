@@ -36,19 +36,27 @@ Preferred communication style: Simple, everyday language.
 ├── client/           # React frontend application
 │   └── src/
 │       ├── components/  # UI components including shadcn/ui
-│       ├── hooks/       # Custom React hooks
+│       ├── hooks/       # Custom React hooks (including use-upload for file uploads)
 │       ├── lib/         # Utility functions and query client
 │       └── pages/       # Page components
 ├── server/           # Express backend
 │   ├── index.ts      # Server entry point
 │   ├── routes.ts     # API route definitions
 │   ├── storage.ts    # Database operations layer
-│   └── db.ts         # Database connection
+│   ├── db.ts         # Database connection
+│   └── replit_integrations/  # Replit integrations
+│       └── object_storage/   # File upload handling via presigned URLs
 ├── shared/           # Shared code between client and server
 │   ├── schema.ts     # Drizzle database schema and types
 │   └── routes.ts     # API route contracts with Zod validation
 └── migrations/       # Database migration files
 ```
+
+### Features
+- **Planning Periods**: Tasks can have optional start dates to show when to begin preparation
+- **File Attachments**: Upload files directly to Replit object storage or paste URLs
+- **Course Color Coding**: CPPA122 (blue), CFNF400 (green), CASL101 (yellow)
+- **Calendar Export**: Download .ics files for individual tasks
 
 ### Key Design Patterns
 - **Type Safety**: End-to-end TypeScript with shared types between frontend and backend

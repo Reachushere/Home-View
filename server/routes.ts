@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } from "@shared/schema";
 import { z } from "zod";
+import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -148,6 +149,9 @@ export async function registerRoutes(
     
     res.json(weeks);
   });
+
+  // Register object storage routes for file uploads
+  registerObjectStorageRoutes(app);
 
   // Seed database with sample tasks
   await seedDatabase();

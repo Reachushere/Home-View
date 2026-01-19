@@ -44,7 +44,26 @@ export const tasks = pgTable("tasks", {
   calendarProvider: text("calendar_provider"), // 'google' or 'outlook'
 });
 
-export const insertTaskSchema = createInsertSchema(tasks).omit({ id: true });
+// Base schema from drizzle, then override date fields to accept ISO strings
+const baseInsertSchema = createInsertSchema(tasks).omit({ id: true });
+
+// Helper to validate and transform date strings
+const dateStringToDate = z.string().min(1).transform((s, ctx) => {
+  const date = new Date(s);
+  if (isNaN(date.getTime())) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Invalid date format",
+    });
+    return z.NEVER;
+  }
+  return date;
+});
+
+export const insertTaskSchema = baseInsertSchema.extend({
+  dueDate: z.union([z.date(), dateStringToDate]),
+  startDate: z.union([z.date(), dateStringToDate]).optional().nullable(),
+});
 
 export type Task = typeof tasks.$inferSelect;
 export type InsertTask = z.infer<typeof insertTaskSchema>;

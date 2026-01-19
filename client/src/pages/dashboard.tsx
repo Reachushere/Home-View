@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useUpload } from "@/hooks/use-upload";
 import {
   BookOpen,
   Layers,
@@ -31,6 +32,8 @@ import {
   X,
   Link,
   Paperclip,
+  Upload,
+  Loader2,
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
@@ -917,6 +920,28 @@ function TaskForm({
     attachments: task?.attachments || [] as string[],
   });
   const [newAttachment, setNewAttachment] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const { uploadFile, isUploading } = useUpload({
+    onSuccess: (response) => {
+      // Add the object path to attachments
+      setFormData(prev => ({
+        ...prev,
+        attachments: [...prev.attachments, response.objectPath]
+      }));
+    },
+  });
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      await uploadFile(file);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
@@ -1070,8 +1095,9 @@ function TaskForm({
         <div className="space-y-2">
           {formData.attachments.map((attachment, idx) => (
             <div key={idx} className="flex items-center gap-2 text-sm">
-              <a href={attachment} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate flex-1">
-                {attachment}
+              <Paperclip className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
+              <a href={attachment.startsWith('/objects/') ? attachment : attachment} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate flex-1">
+                {attachment.startsWith('/objects/') ? attachment.split('/').pop() : attachment}
               </a>
               <Button
                 type="button"
@@ -1087,11 +1113,42 @@ function TaskForm({
               </Button>
             </div>
           ))}
+          
+          <div className="flex gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              onChange={handleFileUpload}
+              className="hidden"
+              data-testid="input-file-upload"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="flex-1"
+              data-testid="button-upload-file"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload File
+                </>
+              )}
+            </Button>
+          </div>
+          
           <div className="flex gap-2">
             <Input
               value={newAttachment}
               onChange={(e) => setNewAttachment(e.target.value)}
-              placeholder="Paste attachment URL..."
+              placeholder="Or paste URL..."
               data-testid="input-new-attachment"
             />
             <Button
