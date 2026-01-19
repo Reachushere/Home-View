@@ -550,6 +550,7 @@ export default function Dashboard() {
               {/* Render each planning task as its own row */}
               {weekPlanningTasks.length > 0 && weekPlanningTasks.map((task, rowIdx) => {
                 const colors = getCourseColor(task.courseName);
+                const taskDueDate = new Date(task.dueDate);
                 return (
                   <div 
                     key={`prep-row-${task.id}`}
@@ -561,6 +562,7 @@ export default function Dashboard() {
                     </div>
                     {weekDays.map((day, dayIdx) => {
                       const isInPlanningPeriod = isPlanningDayForTask(task, day);
+                      const isDueDay = isSameDay(day, taskDueDate);
                       return (
                         <div 
                           key={dayIdx} 
@@ -576,6 +578,17 @@ export default function Dashboard() {
                               data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
                               <span className="font-medium">Prep:</span> {task.title}
+                            </div>
+                          )}
+                          {isDueDay && (
+                            <div
+                              onClick={() => setEditingTask(task)}
+                              className={`w-full text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
+                                colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
+                              }`}
+                              data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                            >
+                              {task.title}
                             </div>
                           )}
                         </div>
