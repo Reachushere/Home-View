@@ -35,6 +35,7 @@ import {
   Paperclip,
   Upload,
   Loader2,
+  Volume2,
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
@@ -899,6 +900,28 @@ function TaskCard({
     window.open(`/api/tasks/${task.id}/ics`, '_blank');
   };
 
+  const [isSendingTTS, setIsSendingTTS] = useState(false);
+  
+  const handlePlayTTS = async (attachmentName: string) => {
+    setIsSendingTTS(true);
+    try {
+      const message = `Task: ${task.title}. Attachment: ${attachmentName}`;
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+      
+      if (!response.ok) {
+        console.error('TTS failed');
+      }
+    } catch (error) {
+      console.error('TTS error:', error);
+    } finally {
+      setIsSendingTTS(false);
+    }
+  };
+
   return (
     <Card
       className={`transition-all h-full rounded-xl shadow-md border-2 ${
@@ -970,18 +993,36 @@ function TaskCard({
               <span>{task.attachments.length} attachment{task.attachments.length > 1 ? "s" : ""}</span>
             </div>
             <div className="flex flex-wrap gap-1">
-              {task.attachments.map((attachment, idx) => (
-                <a
-                  key={idx}
-                  href={attachment}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[10px] text-primary hover:underline truncate max-w-[150px]"
-                  data-testid={`link-attachment-${task.id}-${idx}`}
-                >
-                  {attachment.split('/').pop() || attachment}
-                </a>
-              ))}
+              {task.attachments.map((attachment, idx) => {
+                const attachmentName = attachment.split('/').pop() || attachment;
+                return (
+                  <div key={idx} className="flex items-center gap-1">
+                    <a
+                      href={attachment}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] text-primary hover:underline truncate max-w-[150px]"
+                      data-testid={`link-attachment-${task.id}-${idx}`}
+                    >
+                      {attachmentName}
+                    </a>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-5 w-5"
+                      onClick={() => handlePlayTTS(attachmentName)}
+                      disabled={isSendingTTS}
+                      data-testid={`button-tts-${task.id}-${idx}`}
+                    >
+                      {isSendingTTS ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Volume2 className="h-3 w-3" />
+                      )}
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

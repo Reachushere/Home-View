@@ -6,6 +6,10 @@ import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } 
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 
+const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL;
+const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN;
+const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -152,6 +156,46 @@ export async function registerRoutes(
 
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
+
+  // POST /api/tts - Send text-to-speech to Home Assistant Echo device
+  app.post("/api/tts", async (req, res) => {
+    try {
+      const { message } = req.body;
+      
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      const response = await fetch(`${haUrl}/api/services/tts/speak`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: BATHROOM_ECHO_ENTITY,
+          message: message,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Home Assistant TTS error:", errorText);
+        return res.status(response.status).json({ error: "Failed to send TTS to Home Assistant" });
+      }
+
+      res.json({ success: true, message: "Text-to-speech sent to bathroom Echo" });
+    } catch (error) {
+      console.error("TTS error:", error);
+      res.status(500).json({ error: "Failed to send text-to-speech" });
+    }
+  });
 
   // Seed database with sample tasks
   await seedDatabase();
