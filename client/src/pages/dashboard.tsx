@@ -591,7 +591,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`p-0.5 border-l border-border min-h-[24px] flex items-center ${isFriday ? "bg-destructive/5" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
+                          className={`p-0.5 border-l border-border min-h-[24px] flex items-center ${isFriday ? "bg-destructive/20" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
                           data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}-${rowIdx}`}
                         >
                           {isInPlanningPeriod && (() => {
@@ -650,7 +650,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={idx} 
-                        className={`p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5 ${isFriday ? "bg-destructive/5" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
+                        className={`p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5 ${isFriday ? "bg-destructive/20" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
                         data-testid={`all-day-${format(day, "yyyy-MM-dd")}`}
                       >
                         {allDayTasks.map(task => {
@@ -707,7 +707,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 ${isFriday ? "bg-destructive/5" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 ${isFriday ? "bg-destructive/20" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                         >
                           {hourTasks.map((task, taskIdx) => {
