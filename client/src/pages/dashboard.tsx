@@ -405,7 +405,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto flex flex-col">
         {/* Title Row */}
-        <h1 className="text-lg font-semibold text-foreground mb-2">Bryn's Task Management</h1>
+        <h1 className="text-lg font-light text-foreground mb-2" style={{ fontFamily: "'Nunito', sans-serif" }}>Bryn's Task Management</h1>
         
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-4">
@@ -413,8 +413,8 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <h2 className="text-2xl font-semibold text-foreground min-w-[320px] text-center">
-              {format(weekStartDate, "MMMM d")} - {format(weekEndDate, "d, yyyy")} <span className="text-base font-bold text-foreground">(Week {selectedWeek})</span>
+            <h2 className="text-2xl font-light text-foreground min-w-[320px] text-center" style={{ fontFamily: "'Nunito', sans-serif" }}>
+              {format(weekStartDate, "MMMM d")} - {format(weekEndDate, "d, yyyy")} <span className="text-base font-bold">(Week {selectedWeek})</span>
             </h2>
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
               <ChevronRight className="h-5 w-5" />
