@@ -348,7 +348,7 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-7 gap-0.5 text-center">
             {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-              <div key={i} className="text-[10px] text-white/70 font-medium py-1">{d}</div>
+              <div key={i} className="text-[10px] text-white font-medium py-1">{d}</div>
             ))}
             {(() => {
               const monthStart = startOfMonth(currentMonth);
