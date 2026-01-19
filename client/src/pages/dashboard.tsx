@@ -435,26 +435,16 @@ export default function Dashboard() {
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center">
-            <Button variant="ghost" size="icon" className="-ml-2 mt-4" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+            <Button variant="ghost" size="icon" className="-ml-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-5 w-5" strokeWidth={3} />
             </Button>
-            <div className="text-left -ml-1" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <div className="text-[10px] font-bold text-[#5979CC] mb-1">
-                Week {selectedWeek}
-              </div>
-              <div className="text-foreground">
-                <span className="text-[10px] font-semibold" style={{ verticalAlign: '1px' }}>{format(weekStartDate, "EEE")}, </span>
-                <span className="text-[13px] font-semibold">{format(weekStartDate, "MMMM d")}</span>
-              </div>
-              <div className="text-[10px] text-muted-foreground leading-tight -my-0.5">
-                to
-              </div>
-              <div className="text-foreground">
-                <span className="text-[10px] font-semibold" style={{ verticalAlign: '1px' }}>{format(weekEndDate, "EEE")}, </span>
-                <span className="text-[13px] font-semibold">{format(weekEndDate, "MMMM d")}</span>
-              </div>
+            <div className="flex items-center gap-2 -ml-1" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <span className="text-[10px] font-bold text-[#5979CC]">Week {selectedWeek}</span>
+              <span className="text-[13px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
+              <span className="text-[10px] text-muted-foreground">to</span>
+              <span className="text-[13px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
             </div>
-            <Button variant="ghost" size="icon" className="mt-4" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+            <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
               <ChevronRight className="h-5 w-5" strokeWidth={3} />
             </Button>
             <Button variant="outline" size="sm" onClick={() => setSelectedWeek(2)} data-testid="button-today">
