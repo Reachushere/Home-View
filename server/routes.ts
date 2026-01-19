@@ -320,9 +320,9 @@ export async function registerRoutes(
         .replace(/[\u2013\u2014]/g, "-")
         .replace(/[^\x20-\x7E]/g, ' ');
       cleanedContent = cleanedContent.replace(/\s+/g, ' ').trim();
-      // Start with very short length to test
-      if (cleanedContent.length > 300) {
-        cleanedContent = cleanedContent.substring(0, 300);
+      // Limit length for TTS (about 4 minutes of reading at ~12 chars/second)
+      if (cleanedContent.length > 3000) {
+        cleanedContent = cleanedContent.substring(0, 3000);
       }
       // Add a clear prefix so Alexa knows this is content to read, not a command
       cleanedContent = "Now reading your document. " + cleanedContent;
@@ -454,9 +454,9 @@ export async function registerRoutes(
         .replace(/[^\x20-\x7E]/g, ' ');
       remainingText = remainingText.replace(/\s+/g, ' ').trim();
       
-      // Limit length
-      if (remainingText.length > 300) {
-        remainingText = remainingText.substring(0, 300);
+      // Limit length for TTS (about 4 minutes of reading)
+      if (remainingText.length > 3000) {
+        remainingText = remainingText.substring(0, 3000);
       }
       
       // Add prefix
