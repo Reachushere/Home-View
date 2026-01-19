@@ -580,7 +580,7 @@ export default function Dashboard() {
                                 }`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
-                                <span className="font-medium">PREP:</span> {task.title}
+                                <span className="font-bold">PREP:</span> {task.title}
                               </div>
                               <div className={`w-3 h-[3px] ${colors ? colors.bg : "bg-gray-300"}`} />
                             </div>
@@ -595,7 +595,7 @@ export default function Dashboard() {
                                 }`}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
-                                <span className="font-medium text-[10px]">DUE:</span> {task.title}
+                                <span className="font-bold text-[10px]">DUE:</span> {task.title}
                               </div>
                             </div>
                           )}
