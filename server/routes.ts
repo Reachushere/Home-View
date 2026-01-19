@@ -309,22 +309,16 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // For debugging: use a simple test message first
-      const testMode = true; // Set to true to test with simple message
-      let cleanedContent: string;
-      
-      if (testMode) {
-        cleanedContent = "This is a test of the PDF reading feature.";
-      } else {
-        // Clean up the text for TTS
-        cleanedContent = textContent.trim();
-        // Remove excessive whitespace and newlines
-        cleanedContent = cleanedContent.replace(/\s+/g, ' ');
-        // Limit length to avoid TTS timeout (Alexa has limits)
-        if (cleanedContent.length > 6000) {
-          cleanedContent = cleanedContent.substring(0, 6000) + " Content truncated due to length.";
-        }
+      // Clean up the text for TTS
+      let cleanedContent = textContent.trim();
+      // Remove excessive whitespace and newlines
+      cleanedContent = cleanedContent.replace(/\s+/g, ' ');
+      // Limit length to avoid TTS timeout (Alexa has limits)
+      if (cleanedContent.length > 5500) {
+        cleanedContent = cleanedContent.substring(0, 5500);
       }
+      // Add a clear prefix so Alexa knows this is content to read, not a command
+      cleanedContent = "Now reading your document. " + cleanedContent;
       // Save session for resume functionality (store cleaned text without SSML escaping)
       // Store the original cleaned content for position tracking
       const textForSession = textContent.trim().replace(/\s+/g, ' ');
