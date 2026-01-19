@@ -5,6 +5,7 @@ import { api } from "@shared/routes";
 import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent } from "./googleCalendar";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const pdfParseModule = require("pdf-parse");
@@ -684,6 +685,66 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Volume error:", error);
       res.status(500).json({ error: "Failed to adjust volume" });
+    }
+  });
+
+  // POST /api/tasks/:id/calendar - Add task to Google Calendar
+  app.post("/api/tasks/:id/calendar", async (req, res) => {
+    try {
+      const taskId = Number(req.params.id);
+      const task = await storage.getTask(taskId);
+      
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+
+      const event = await createCalendarEvent({
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        courseName: task.courseName,
+      });
+
+      // Update task with calendar event ID
+      await storage.updateTask(taskId, {
+        calendarEventId: event.id,
+        calendarProvider: "google",
+      });
+
+      res.json({ success: true, eventId: event.id, eventLink: event.htmlLink });
+    } catch (error) {
+      console.error("Google Calendar error:", error);
+      res.status(500).json({ error: "Failed to add to Google Calendar" });
+    }
+  });
+
+  // DELETE /api/tasks/:id/calendar - Remove task from Google Calendar
+  app.delete("/api/tasks/:id/calendar", async (req, res) => {
+    try {
+      const taskId = Number(req.params.id);
+      const task = await storage.getTask(taskId);
+      
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+
+      if (!task.calendarEventId) {
+        return res.status(400).json({ error: "Task is not on calendar" });
+      }
+
+      await deleteCalendarEvent(task.calendarEventId);
+
+      // Clear calendar info from task
+      await storage.updateTask(taskId, {
+        calendarEventId: null,
+        calendarProvider: null,
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Google Calendar delete error:", error);
+      res.status(500).json({ error: "Failed to remove from Google Calendar" });
     }
   });
 

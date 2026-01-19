@@ -1019,6 +1019,27 @@ function TaskCard({
     }
   };
 
+  const [isSyncingCalendar, setIsSyncingCalendar] = useState(false);
+  
+  const handleGoogleCalendarSync = async () => {
+    setIsSyncingCalendar(true);
+    try {
+      if (task.calendarEventId) {
+        // Remove from calendar
+        await fetch(`/api/tasks/${task.id}/calendar`, { method: 'DELETE' });
+      } else {
+        // Add to calendar
+        await fetch(`/api/tasks/${task.id}/calendar`, { method: 'POST' });
+      }
+      // Refresh tasks to get updated calendar status
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    } catch (error) {
+      console.error('Google Calendar sync error:', error);
+    } finally {
+      setIsSyncingCalendar(false);
+    }
+  };
+
   const hasAttachments = task.attachments && task.attachments.length > 0;
 
   const cardElement = (
@@ -1121,7 +1142,21 @@ function TaskCard({
           )}
           <Button size="sm" variant="outline" onClick={handleExportCalendar} data-testid={`button-export-${task.id}`}>
             <Download className="h-3 w-3 mr-1" />
-            Calendar
+            .ics
+          </Button>
+          <Button 
+            size="sm" 
+            variant={task.calendarEventId ? "default" : "outline"}
+            onClick={handleGoogleCalendarSync}
+            disabled={isSyncingCalendar}
+            data-testid={`button-gcal-${task.id}`}
+          >
+            {isSyncingCalendar ? (
+              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+            ) : (
+              <CalendarDays className="h-3 w-3 mr-1" />
+            )}
+            {task.calendarEventId ? "On Calendar" : "Google Cal"}
           </Button>
           <Button size="sm" variant="ghost" onClick={onEdit} data-testid={`button-edit-${task.id}`}>
             Edit
