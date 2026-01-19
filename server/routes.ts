@@ -5,7 +5,7 @@ import { api } from "@shared/routes";
 import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars } from "./googleCalendar";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const pdfParseModule = require("pdf-parse");
@@ -246,6 +246,34 @@ export async function registerRoutes(
       return res.status(404).json({ message: 'Task not found' });
     }
     res.json(task);
+  });
+
+  // GET /api/calendar/debug - Debug Google Calendar connection
+  app.get("/api/calendar/debug", async (_req, res) => {
+    try {
+      const calendars = await listCalendars();
+      const primary = calendars.find((c: any) => c.primary);
+      
+      // Get events from the past week to now + 2 months
+      const now = new Date();
+      const twoMonthsLater = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000);
+      const events = await listEvents(now, twoMonthsLater);
+      
+      res.json({
+        connectedEmail: primary?.id || 'unknown',
+        calendarSummary: primary?.summary || 'unknown',
+        totalCalendars: calendars.length,
+        upcomingEventsCount: events.length,
+        sampleEvents: events.slice(0, 5).map((e: any) => ({
+          id: e.id,
+          summary: e.summary,
+          start: e.start?.dateTime || e.start?.date,
+        })),
+      });
+    } catch (err) {
+      console.error("Calendar debug error:", err);
+      res.status(500).json({ error: String(err) });
+    }
   });
 
   // POST /api/tasks/:id/sync-calendar - Manually sync task to Google Calendar
