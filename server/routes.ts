@@ -251,18 +251,19 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Strip common skill trigger phrases from the beginning to prevent skill invocation
+      // Strip common skill trigger phrases from ANYWHERE in the text to prevent skill invocation
       let cleanedContent = textContent.trim();
       const skillTriggers = [
-        /^simon\s+says?\s*/i,
-        /^alexa\s*/i,
-        /^echo\s*/i,
-        /^computer\s*/i,
-        /^hey\s+alexa\s*/i,
+        /simon\s+says?\s*/gi,
+        /alexa,?\s*/gi,
+        /hey\s+alexa\s*/gi,
       ];
       for (const trigger of skillTriggers) {
         cleanedContent = cleanedContent.replace(trigger, '');
       }
+      
+      // Log the first 200 chars to debug
+      console.log("TTS content preview:", cleanedContent.substring(0, 200));
       
       // Escape any special XML characters in the content
       const escapedContent = cleanedContent
