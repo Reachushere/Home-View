@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
+import tmuLogo from "@assets/tmu_logo.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -465,7 +466,7 @@ export default function Dashboard() {
             </Button>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <img src="/tmu_logo.png" alt="Toronto Metropolitan University" className="h-8 object-contain" />
+            <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-8 object-contain" />
             <div className="flex gap-1.5">
             <Button 
               size="sm"
