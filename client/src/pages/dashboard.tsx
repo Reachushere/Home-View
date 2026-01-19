@@ -445,7 +445,7 @@ export default function Dashboard() {
               <div className="text-sm font-semibold text-foreground">
                 {format(weekStartDate, "EEEE, MMMM d")}
               </div>
-              <div className="text-[10px] text-muted-foreground">
+              <div className="text-[10px] text-muted-foreground leading-tight -my-0.5">
                 to
               </div>
               <div className="text-sm font-semibold text-foreground">
