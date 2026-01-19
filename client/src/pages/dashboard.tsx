@@ -777,7 +777,7 @@ export default function Dashboard() {
         <div className="flex gap-6 mb-6">
           {/* Upcoming Tasks Section */}
           <section className="flex-1 bg-card rounded-xl shadow-md p-4 border border-black">
-            <h4 className="text-md font-semibold text-foreground mb-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-md font-semibold text-foreground mb-0 h-8 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               Upcoming ({upcomingTasks.length})
             </h4>
             {isLoading ? (
@@ -787,7 +787,7 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start content-start pt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start content-start -mt-8">
                 {upcomingTasks.map((task) => (
                   <div key={task.id} className="self-start">
                     <TaskCard
@@ -1085,9 +1085,9 @@ function TaskCard({
 
   if (hasAttachments) {
     return (
-      <div className="flex flex-col">
-        {/* Media Controls - positioned to align with Upcoming header */}
-        <div className="flex items-center justify-center gap-1 bg-muted/50 rounded-lg px-2 py-1 border border-muted mb-2 -mt-8">
+      <div className="relative pt-9">
+        {/* Media Controls - positioned absolutely at top, same height as header */}
+        <div className="absolute top-0 left-0 right-0 h-8 flex items-center justify-center gap-1 bg-muted/50 rounded-lg px-2 border border-muted">
           <Button
             size="icon"
             variant="ghost"
