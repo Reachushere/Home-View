@@ -324,17 +324,24 @@ export async function registerRoutes(
       if (cleanedContent.length > 3000) {
         cleanedContent = cleanedContent.substring(0, 3000);
       }
-      // Add a clear prefix so Alexa knows this is content to read, not a command
-      cleanedContent = "Now reading your document. " + cleanedContent;
-      // Save session for resume functionality (store cleaned text without SSML escaping)
-      // Store the original cleaned content for position tracking
-      const textForSession = textContent.trim().replace(/\s+/g, ' ');
+      // Save session for resume functionality - store full cleaned text (up to 100,000 chars)
+      const fullCleanedText = textContent.trim()
+        .replace(/\s+/g, ' ')
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2013\u2014]/g, "-")
+        .replace(/[^\x20-\x7E]/g, ' ')
+        .replace(/\s+/g, ' ').trim();
+      
       currentTTSSession = {
-        fullText: textForSession.length > 6000 ? textForSession.substring(0, 6000) : textForSession,
+        fullText: fullCleanedText.length > 100000 ? fullCleanedText.substring(0, 100000) : fullCleanedText,
         currentPosition: 0,
         startTime: Date.now(),
         isPlaying: true
       };
+      
+      // Add a clear prefix so Alexa knows this is content to read, not a command
+      cleanedContent = "Now reading your document. " + cleanedContent;
       
       // Use TTS type like the working /api/tts endpoint
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
