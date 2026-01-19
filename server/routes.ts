@@ -7,7 +7,8 @@ import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const pdfParse = require("pdf-parse");
+const pdfParseModule = require("pdf-parse");
+const pdfParse = pdfParseModule.PDFParse;
 
 // Use Nabu Casa cloud URL for remote access
 const HOME_ASSISTANT_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
@@ -258,10 +259,12 @@ export async function registerRoutes(
       const isPDF = fileBuffer.slice(0, 4).toString() === '%PDF';
       
       if (isPDF) {
-        // Parse PDF and extract text
+        // Parse PDF and extract text using PDFParse class
         try {
-          const pdfData = await pdfParse(fileBuffer);
-          textContent = pdfData.text;
+          const parser = new pdfParse({ data: new Uint8Array(fileBuffer) });
+          await parser.load();
+          textContent = await parser.getText();
+          await parser.destroy();
         } catch (error) {
           console.error("Error parsing PDF:", error);
           return res.status(400).json({ error: "Failed to parse PDF" });
