@@ -580,7 +580,7 @@ export default function Dashboard() {
                               <div className="flex items-center w-full">
                                 <div
                                   onClick={() => setEditingTask(task)}
-                                  className={`flex-1 text-[10px] px-2 py-0.5 rounded-l cursor-pointer hover:opacity-80 border border-r-0 truncate ${borderColor} ${
+                                  className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 border truncate ${borderColor} ${
                                     colors ? `${colors.prepBg} ${colors.prepText}` : "bg-gray-100 text-gray-500"
                                   }`}
                                   data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
