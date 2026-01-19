@@ -572,25 +572,31 @@ export default function Dashboard() {
                           data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}-${rowIdx}`}
                         >
                           {isInPlanningPeriod && (
-                            <div
-                              onClick={() => setEditingTask(task)}
-                              className={`w-full text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 border border-dashed truncate ${
-                                colors ? `${colors.prepBg} ${colors.prepBorder} ${colors.prepText}` : "bg-gray-100 border-gray-300 text-gray-500"
-                              }`}
-                              data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                            >
-                              <span className="font-medium">Prep:</span> {task.title}
+                            <div className="flex items-center w-full">
+                              <div
+                                onClick={() => setEditingTask(task)}
+                                className={`flex-1 text-[10px] px-2 py-0.5 rounded-l cursor-pointer hover:opacity-80 border border-dashed border-r-0 truncate ${
+                                  colors ? `${colors.prepBg} ${colors.prepBorder} ${colors.prepText}` : "bg-gray-100 border-gray-300 text-gray-500"
+                                }`}
+                                data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                              >
+                                <span className="font-medium">Prep:</span> {task.title}
+                              </div>
+                              <div className={`w-2 border-t-2 border-dashed ${colors ? colors.prepBorder : "border-gray-300"}`} />
                             </div>
                           )}
                           {isDueDay && (
-                            <div
-                              onClick={() => setEditingTask(task)}
-                              className={`w-full text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
-                                colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
-                              }`}
-                              data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                            >
-                              {task.title}
+                            <div className="flex items-center w-full">
+                              <div className={`w-2 border-t-2 border-dashed ${colors ? colors.prepBorder : "border-gray-300"}`} />
+                              <div
+                                onClick={() => setEditingTask(task)}
+                                className={`flex-1 text-xs px-2 py-0.5 rounded-r cursor-pointer hover:opacity-80 truncate ${
+                                  colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
+                                }`}
+                                data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                              >
+                                {task.title}
+                              </div>
                             </div>
                           )}
                         </div>
