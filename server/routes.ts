@@ -440,11 +440,27 @@ export async function registerRoutes(
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
       // Get remaining text from current position
-      const remainingText = currentTTSSession.fullText.substring(currentTTSSession.currentPosition);
+      let remainingText = currentTTSSession.fullText.substring(currentTTSSession.currentPosition);
       
       if (remainingText.trim().length === 0) {
         return res.status(400).json({ error: "Already finished reading" });
       }
+
+      // Clean the text the same way as Play
+      remainingText = remainingText
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2013\u2014]/g, "-")
+        .replace(/[^\x20-\x7E]/g, ' ');
+      remainingText = remainingText.replace(/\s+/g, ' ').trim();
+      
+      // Limit length
+      if (remainingText.length > 300) {
+        remainingText = remainingText.substring(0, 300);
+      }
+      
+      // Add prefix
+      remainingText = "Continuing. " + remainingText;
 
       // Update session
       currentTTSSession.startTime = Date.now();
