@@ -348,7 +348,7 @@ export default function Dashboard() {
           </div>
           <div className="grid grid-cols-7 gap-0.5 text-center">
             {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-              <div key={i} className="text-[10px] text-muted-foreground font-medium py-1">{d}</div>
+              <div key={i} className="text-[10px] text-white/70 font-medium py-1">{d}</div>
             ))}
             {(() => {
               const monthStart = startOfMonth(currentMonth);
@@ -370,8 +370,8 @@ export default function Dashboard() {
                         : isSelected
                           ? "bg-primary/20 text-primary font-medium"
                           : isCurrentMonthDay 
-                            ? "text-foreground hover:bg-muted" 
-                            : "text-muted-foreground/50"
+                            ? "text-white hover:bg-white/20" 
+                            : "text-white/30"
                     }`}
                   >
                     {format(day, "d")}
