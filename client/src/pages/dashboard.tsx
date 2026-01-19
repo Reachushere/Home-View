@@ -522,7 +522,7 @@ export default function Dashboard() {
             </div>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogContent className="max-w-lg">
+            <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Task</DialogTitle>
               </DialogHeader>
@@ -897,7 +897,7 @@ export default function Dashboard() {
 
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Reschedule Task</DialogTitle>
             </DialogHeader>
@@ -912,7 +912,7 @@ export default function Dashboard() {
 
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Task</DialogTitle>
             </DialogHeader>
