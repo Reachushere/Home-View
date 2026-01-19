@@ -219,6 +219,31 @@ export default function Dashboard() {
     });
   };
 
+  // Get all planning tasks for the week and assign row slots
+  const getAllWeekPlanningTasks = () => {
+    const tasksWithPlanningPeriods = allTasks.filter(t => t.startDate);
+    // Sort by start date to ensure consistent ordering
+    return tasksWithPlanningPeriods.sort((a, b) => {
+      const aStart = new Date(a.startDate!).getTime();
+      const bStart = new Date(b.startDate!).getTime();
+      return aStart - bStart;
+    });
+  };
+
+  // Check if a task's planning period includes a specific day
+  const isPlanningDayForTask = (task: Task, day: Date) => {
+    if (!task.startDate) return false;
+    const startDate = new Date(task.startDate);
+    const dueDate = new Date(task.dueDate);
+    const dayStart = new Date(day);
+    dayStart.setHours(0, 0, 0, 0);
+    const dayEnd = new Date(day);
+    dayEnd.setHours(23, 59, 59, 999);
+    return startDate <= dayEnd && dayStart < dueDate && !isSameDay(day, dueDate);
+  };
+
+  const weekPlanningTasks = getAllWeekPlanningTasks();
+
   const getTasksForDay = (day: Date) => {
     return allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
   };
@@ -517,53 +542,90 @@ export default function Dashboard() {
               })}
             </div>
             
-            {/* ALL DAY Row */}
-            <div className="grid border-b border-border sticky top-[52px] bg-card z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-              <div className="p-2 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
-                ALL DAY
-              </div>
-              {weekDays.map((day, idx) => {
-                const allDayTasks = getAllDayTasks(day);
-                const planningTasks = getPlanningTasksForDay(day);
+            {/* ALL DAY Row - with consistent row slots for multi-day tasks */}
+            <div className="border-b border-border sticky top-[52px] bg-card z-10">
+              {/* Render each planning task as its own row */}
+              {weekPlanningTasks.length > 0 && weekPlanningTasks.map((task, rowIdx) => {
+                const colors = getCourseColor(task.courseName);
                 return (
                   <div 
-                    key={idx} 
-                    className="p-1 border-l border-border min-h-[40px] flex flex-col gap-1"
-                    data-testid={`all-day-${format(day, "yyyy-MM-dd")}`}
+                    key={`prep-row-${task.id}`}
+                    className="grid" 
+                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}
                   >
-                    {planningTasks.map(task => {
-                      const colors = getCourseColor(task.courseName);
+                    <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
+                      {rowIdx === 0 ? "ALL DAY" : ""}
+                    </div>
+                    {weekDays.map((day, dayIdx) => {
+                      const isInPlanningPeriod = isPlanningDayForTask(task, day);
                       return (
-                        <div
-                          key={`prep-${task.id}`}
-                          onClick={() => setEditingTask(task)}
-                          className={`text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 border border-dashed ${
-                            colors ? `${colors.prepBg} ${colors.prepBorder} ${colors.prepText}` : "bg-gray-100 border-gray-300 text-gray-500"
-                          }`}
-                          data-testid={`prep-task-${task.id}`}
+                        <div 
+                          key={dayIdx} 
+                          className="p-0.5 border-l border-border min-h-[24px] flex items-center"
+                          data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}-${rowIdx}`}
                         >
-                          <span className="font-medium">Prep:</span> {task.title}
-                        </div>
-                      );
-                    })}
-                    {allDayTasks.map(task => {
-                      const colors = getCourseColor(task.courseName);
-                      return (
-                        <div
-                          key={task.id}
-                          onClick={() => setEditingTask(task)}
-                          className={`text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 ${
-                            colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
-                          }`}
-                          data-testid={`all-day-task-${task.id}`}
-                        >
-                          {task.title}
+                          {isInPlanningPeriod && (
+                            <div
+                              onClick={() => setEditingTask(task)}
+                              className={`w-full text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 border border-dashed truncate ${
+                                colors ? `${colors.prepBg} ${colors.prepBorder} ${colors.prepText}` : "bg-gray-100 border-gray-300 text-gray-500"
+                              }`}
+                              data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                            >
+                              <span className="font-medium">Prep:</span> {task.title}
+                            </div>
+                          )}
                         </div>
                       );
                     })}
                   </div>
                 );
               })}
+              {/* All-day tasks row (non-planning) */}
+              {weekDays.some(day => getAllDayTasks(day).length > 0) && (
+                <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
+                    {weekPlanningTasks.length === 0 ? "ALL DAY" : ""}
+                  </div>
+                  {weekDays.map((day, idx) => {
+                    const allDayTasks = getAllDayTasks(day);
+                    return (
+                      <div 
+                        key={idx} 
+                        className="p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5"
+                        data-testid={`all-day-${format(day, "yyyy-MM-dd")}`}
+                      >
+                        {allDayTasks.map(task => {
+                          const colors = getCourseColor(task.courseName);
+                          return (
+                            <div
+                              key={task.id}
+                              onClick={() => setEditingTask(task)}
+                              className={`text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
+                                colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
+                              }`}
+                              data-testid={`all-day-task-${task.id}`}
+                            >
+                              {task.title}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              {/* Empty row if no tasks */}
+              {weekPlanningTasks.length === 0 && !weekDays.some(day => getAllDayTasks(day).length > 0) && (
+                <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
+                    ALL DAY
+                  </div>
+                  {weekDays.map((_, idx) => (
+                    <div key={idx} className="p-1 border-l border-border min-h-[24px]" />
+                  ))}
+                </div>
+              )}
             </div>
             
             {/* Time Slots */}
