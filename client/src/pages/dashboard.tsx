@@ -378,7 +378,7 @@ export default function Dashboard() {
               <div className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
                 <span className="text-xs">Week {week.weekNumber}</span>
-                <span className="text-[9px] text-muted-foreground">
+                <span className="text-[9px] text-muted-foreground font-semibold">
                   ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                 </span>
               </div>
