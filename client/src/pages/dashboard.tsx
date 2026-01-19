@@ -175,6 +175,15 @@ export default function Dashboard() {
     },
   });
 
+  const syncAllCalendarMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/tasks/sync-all-calendar", {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+    },
+  });
+
   // Filter tasks by selected date if a date is clicked
   const displayTasks = selectedDate 
     ? allTasks.filter(t => isSameDay(new Date(t.dueDate), selectedDate))
@@ -506,6 +515,21 @@ export default function Dashboard() {
             </Button>
             <Button variant="outline" size="sm" className="border border-foreground/60 font-semibold" onClick={() => setSelectedWeek(2)} data-testid="button-today">
               TODAY
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="border border-purple-500 text-purple-600 font-semibold" 
+              onClick={() => syncAllCalendarMutation.mutate()}
+              disabled={syncAllCalendarMutation.isPending}
+              data-testid="button-sync-calendar"
+            >
+              {syncAllCalendarMutation.isPending ? (
+                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+              ) : (
+                <CalendarDays className="h-3 w-3 mr-1" />
+              )}
+              Sync to Google
             </Button>
           </div>
           <div className="flex flex-col items-end gap-1">

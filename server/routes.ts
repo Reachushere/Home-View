@@ -248,6 +248,87 @@ export async function registerRoutes(
     res.json(task);
   });
 
+  // POST /api/tasks/:id/sync-calendar - Manually sync task to Google Calendar
+  app.post("/api/tasks/:id/sync-calendar", async (req, res) => {
+    try {
+      const task = await storage.getTask(Number(req.params.id));
+      if (!task) {
+        return res.status(404).json({ message: 'Task not found' });
+      }
+      
+      // If already synced, update the event
+      if (task.calendarEventId) {
+        await updateCalendarEvent(task.calendarEventId, {
+          title: task.title,
+          description: task.description,
+          dueDate: task.dueDate,
+          courseName: task.courseName,
+        });
+        return res.json({ success: true, message: 'Calendar event updated' });
+      }
+      
+      // Create new calendar event
+      const event = await createCalendarEvent({
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        dueDate: task.dueDate,
+        courseName: task.courseName,
+      });
+      
+      // Update task with calendar event ID
+      const updatedTask = await storage.updateTask(task.id, {
+        calendarEventId: event.id,
+        calendarProvider: "google",
+      });
+      
+      res.json({ success: true, task: updatedTask, message: 'Task synced to Google Calendar' });
+    } catch (err) {
+      console.error("Error syncing task to calendar:", err);
+      res.status(500).json({ message: 'Failed to sync task to Google Calendar', error: String(err) });
+    }
+  });
+
+  // POST /api/tasks/sync-all-calendar - Sync all tasks to Google Calendar
+  app.post("/api/tasks/sync-all-calendar", async (req, res) => {
+    try {
+      const tasks = await storage.getTasks({});
+      const results = { synced: 0, failed: 0, skipped: 0 };
+      
+      for (const task of tasks) {
+        if (task.calendarEventId) {
+          results.skipped++;
+          continue;
+        }
+        
+        try {
+          const event = await createCalendarEvent({
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            dueDate: task.dueDate,
+            courseName: task.courseName,
+          });
+          
+          await storage.updateTask(task.id, {
+            calendarEventId: event.id,
+            calendarProvider: "google",
+          });
+          
+          results.synced++;
+        } catch (err) {
+          console.error(`Failed to sync task ${task.id}:`, err);
+          results.failed++;
+        }
+      }
+      
+      res.json({ success: true, results });
+    } catch (err) {
+      console.error("Error syncing all tasks:", err);
+      res.status(500).json({ message: 'Failed to sync tasks', error: String(err) });
+    }
+  });
+
   // PATCH /api/tasks/:id/reschedule
   app.patch(api.tasks.reschedule.path, async (req, res) => {
     const { dueDate, weekNumber } = req.body;
