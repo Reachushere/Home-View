@@ -443,14 +443,14 @@ export default function Dashboard() {
                 Week {selectedWeek}
               </div>
               <div className="text-foreground">
-                <span className="text-[10px] font-semibold align-top">{format(weekStartDate, "EEE")}, </span>
+                <span className="text-[10px] font-semibold" style={{ verticalAlign: '1px' }}>{format(weekStartDate, "EEE")}, </span>
                 <span className="text-[13px] font-semibold">{format(weekStartDate, "MMMM d")}</span>
               </div>
               <div className="text-[10px] text-muted-foreground leading-tight -my-0.5">
                 to
               </div>
               <div className="text-foreground">
-                <span className="text-[10px] font-semibold align-top">{format(weekEndDate, "EEE")}, </span>
+                <span className="text-[10px] font-semibold" style={{ verticalAlign: '1px' }}>{format(weekEndDate, "EEE")}, </span>
                 <span className="text-[13px] font-semibold">{format(weekEndDate, "MMMM d")}</span>
               </div>
             </div>
