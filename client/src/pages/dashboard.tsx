@@ -319,7 +319,7 @@ export default function Dashboard() {
       <aside className="w-72 bg-card m-3 mr-0 rounded-xl shadow-lg p-4 flex flex-col gap-4 overflow-auto">
         <div className="flex items-center gap-2 px-2 py-4">
           <CalendarDays className="h-6 w-6 text-primary" />
-          <h1 className="text-xl font-semibold text-sidebar-foreground">
+          <h1 className="text-xl font-semibold text-sidebar-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             School Planner
           </h1>
         </div>
@@ -330,7 +330,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-base font-bold bg-[#5979CC] text-white px-4 py-1.5 rounded-full" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{format(currentMonth, "MMMM")}</span>
+            <span className="text-base font-bold bg-[#5979CC] text-white px-4 py-1.5 rounded-full" style={{ fontFamily: "'Open Sans', sans-serif" }}>{format(currentMonth, "MMMM")}</span>
             <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleNextMonth}>
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -732,7 +732,7 @@ export default function Dashboard() {
         {/* Selected Date / Week Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-lg font-semibold text-foreground">
+            <h3 className="text-lg font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               {selectedDate 
                 ? format(selectedDate, "EEEE, MMMM d, yyyy")
                 : `Week ${selectedWeek} Tasks`}
@@ -749,7 +749,7 @@ export default function Dashboard() {
         <div className="flex gap-6 mb-6">
           {/* Upcoming Tasks Section */}
           <section className="flex-1 bg-card rounded-xl shadow-md p-4">
-            <h4 className="text-md font-semibold text-foreground mb-3">
+            <h4 className="text-md font-semibold text-foreground mb-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               Upcoming ({upcomingTasks.length})
             </h4>
             {isLoading ? (
@@ -777,7 +777,7 @@ export default function Dashboard() {
           {/* Missed Tasks Section */}
           {missedTasks.length > 0 && (
             <section className="w-[300px] flex-shrink-0 bg-card rounded-xl shadow-md p-4">
-              <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2 animate-urgent-blink">
+              <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
                 <Clock className="h-4 w-4" />
                 Missed ({missedTasks.length})
               </h4>
