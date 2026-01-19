@@ -605,13 +605,25 @@ export default function Dashboard() {
                               <div className="flex items-center w-full">
                                 {!isFirstPrepDay && <div className={`w-1.5 h-[2px] ${colors ? colors.dot : "bg-gray-400"}`} />}
                                 <div
-                                  onClick={() => setEditingTask(task)}
-                                  className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${borderStyle} ${
-                                    colors ? `${colors.prepBg} ${colors.prepText} border ${colors.border}` : "bg-gray-100 text-gray-500 border border-gray-400"
+                                  className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${borderStyle} ${
+                                    task.isCompleted 
+                                      ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                      : colors ? `${colors.prepBg} ${colors.prepText} border ${colors.border}` : "bg-gray-100 text-gray-500 border border-gray-400"
                                   }`}
                                   data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                                 >
-                                  <span className="font-bold">PREP:</span> {task.title}
+                                  <Checkbox
+                                    checked={task.isCompleted || false}
+                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                    className="h-3 w-3 shrink-0"
+                                    data-testid={`checkbox-prep-${task.id}`}
+                                  />
+                                  <span 
+                                    onClick={() => setEditingTask(task)}
+                                    className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                  >
+                                    <span className="font-bold">PREP:</span> {task.title}
+                                  </span>
                                 </div>
                                 <div className={`w-1.5 h-[2px] ${colors ? colors.dot : "bg-gray-400"}`} />
                               </div>
@@ -621,13 +633,25 @@ export default function Dashboard() {
                             <div className="flex items-center w-full">
                               <div className={`w-1.5 h-[2px] ${colors ? colors.dot : "bg-gray-400"}`} />
                               <div
-                                onClick={() => setEditingTask(task)}
-                                className={`flex-1 text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
-                                  colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200 text-gray-700 border border-gray-400"
+                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
+                                  task.isCompleted 
+                                    ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                    : colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200 text-gray-700 border border-gray-400"
                                 }`}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
-                                <span className="font-bold text-[10px]">DUE:</span> {task.title}
+                                <Checkbox
+                                  checked={task.isCompleted || false}
+                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  className="h-3 w-3 shrink-0"
+                                  data-testid={`checkbox-due-${task.id}`}
+                                />
+                                <span 
+                                  onClick={() => setEditingTask(task)}
+                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                >
+                                  <span className="font-bold">DUE:</span> {task.title}
+                                </span>
                               </div>
                             </div>
                           )}
@@ -658,13 +682,25 @@ export default function Dashboard() {
                           return (
                             <div
                               key={task.id}
-                              onClick={() => setEditingTask(task)}
-                              className={`text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
-                                colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200 text-gray-700 border border-gray-400"
+                              className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
+                                task.isCompleted 
+                                  ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                  : colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200 text-gray-700 border border-gray-400"
                               }`}
                               data-testid={`all-day-task-${task.id}`}
                             >
-                              {task.title}
+                              <Checkbox
+                                checked={task.isCompleted || false}
+                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                className="h-3 w-3 shrink-0"
+                                data-testid={`checkbox-allday-${task.id}`}
+                              />
+                              <span 
+                                onClick={() => setEditingTask(task)}
+                                className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                              >
+                                {task.title}
+                              </span>
                             </div>
                           );
                         })}
@@ -715,9 +751,10 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={task.id}
-                                onClick={() => setEditingTask(task)}
-                                className={`absolute left-0.5 right-0.5 rounded pt-1 px-1 pb-2 cursor-pointer hover:opacity-90 shadow-sm overflow-hidden ${
-                                  colors ? `${colors.bg} border ${colors.border}` : "bg-gray-200 border border-gray-400"
+                                className={`absolute left-0.5 right-0.5 rounded pt-1 px-1 pb-2 hover:opacity-90 shadow-sm overflow-hidden ${
+                                  task.isCompleted 
+                                    ? "bg-gray-200 border border-gray-300" 
+                                    : colors ? `${colors.bg} border ${colors.border}` : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
                                   top: '2px',
@@ -727,10 +764,23 @@ export default function Dashboard() {
                                 }}
                                 data-testid={`time-task-${task.id}`}
                               >
-                                <div className={`text-xs font-semibold truncate ${colors?.text || "text-gray-700"}`}>
-                                  {task.title}
+                                <div className="flex items-center gap-1">
+                                  <Checkbox
+                                    checked={task.isCompleted || false}
+                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                    className="h-3 w-3 shrink-0"
+                                    data-testid={`checkbox-time-${task.id}`}
+                                  />
+                                  <div 
+                                    onClick={() => setEditingTask(task)}
+                                    className={`text-[8px] font-semibold truncate cursor-pointer ${
+                                      task.isCompleted ? "text-gray-400 line-through" : colors?.text || "text-gray-700"
+                                    }`}
+                                  >
+                                    {task.title}
+                                  </div>
                                 </div>
-                                <div className="text-[10px] text-muted-foreground mt-0.5 mb-3">
+                                <div className={`text-[8px] mt-0.5 mb-3 ml-4 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}>
                                   {format(new Date(task.dueDate), "h:mm a")}
                                 </div>
                               </div>
