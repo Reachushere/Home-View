@@ -787,7 +787,7 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start content-start">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start content-start pt-8">
                 {upcomingTasks.map((task) => (
                   <div key={task.id} className="self-start">
                     <TaskCard
@@ -1086,8 +1086,8 @@ function TaskCard({
   if (hasAttachments) {
     return (
       <div className="flex flex-col">
-        {/* Media Controls Above Card */}
-        <div className="flex items-center justify-center gap-1 bg-muted/50 rounded-t-lg px-2 py-1 border border-b-0 border-muted">
+        {/* Media Controls - positioned to align with Upcoming header */}
+        <div className="flex items-center justify-center gap-1 bg-muted/50 rounded-lg px-2 py-1 border border-muted mb-2 -mt-8">
           <Button
             size="icon"
             variant="ghost"
@@ -1164,14 +1164,8 @@ function TaskCard({
     );
   }
 
-  // For cards without attachments, add an invisible spacer to match the height of media controls
-  return (
-    <div className="flex flex-col">
-      {/* Invisible spacer to match media controls height */}
-      <div className="h-8" />
-      {cardElement}
-    </div>
-  );
+  // For cards without attachments, return card directly (no spacer needed)
+  return cardElement;
 }
 
 function TaskForm({ 
