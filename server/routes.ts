@@ -251,9 +251,21 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Use SSML to force Alexa to speak the text without skill interpretation
+      // Strip common skill trigger phrases from the beginning to prevent skill invocation
+      let cleanedContent = textContent.trim();
+      const skillTriggers = [
+        /^simon\s+says?\s*/i,
+        /^alexa\s*/i,
+        /^echo\s*/i,
+        /^computer\s*/i,
+        /^hey\s+alexa\s*/i,
+      ];
+      for (const trigger of skillTriggers) {
+        cleanedContent = cleanedContent.replace(trigger, '');
+      }
+      
       // Escape any special XML characters in the content
-      const escapedContent = textContent
+      const escapedContent = cleanedContent
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
