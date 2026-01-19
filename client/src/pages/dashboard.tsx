@@ -711,8 +711,8 @@ export default function Dashboard() {
                                 }`}
                                 style={{
                                   top: '2px',
-                                  height: '44px',
-                                  maxHeight: '44px',
+                                  height: '40px',
+                                  maxHeight: '40px',
                                   zIndex: taskIdx + 1
                                 }}
                                 data-testid={`time-task-${task.id}`}
