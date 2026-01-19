@@ -912,17 +912,20 @@ function TaskCard({
   const handlePlayTTS = async () => {
     setIsSendingTTS(true);
     try {
-      // Read task details aloud
-      const dueInfo = task.dueDate ? `Due ${format(new Date(task.dueDate), "EEEE, MMMM do 'at' h:mm a")}` : "";
-      const message = `${task.courseName || ""}: ${task.title}. ${task.description || ""}. ${dueInfo}`;
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message }),
-      });
+      const attachments = task.attachments || [];
       
-      if (!response.ok) {
-        console.error('TTS failed');
+      if (attachments.length > 0) {
+        // Read PDF/file content aloud
+        const mediaUrl = attachments[0];
+        const response = await fetch('/api/media/play', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mediaUrl }),
+        });
+        
+        if (!response.ok) {
+          console.error('PDF TTS failed');
+        }
       }
     } catch (error) {
       console.error('TTS error:', error);
