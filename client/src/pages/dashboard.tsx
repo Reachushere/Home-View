@@ -575,12 +575,12 @@ export default function Dashboard() {
                             const dayBeforeDue = new Date(taskDueDate);
                             dayBeforeDue.setDate(dayBeforeDue.getDate() - 1);
                             const isDayBeforeDue = isSameDay(day, dayBeforeDue);
-                            const borderColor = isDayBeforeDue ? "border-red-500" : "border-orange-400";
+                            const borderStyle = isDayBeforeDue ? "border border-red-500" : "";
                             return (
                               <div className="flex items-center w-full">
                                 <div
                                   onClick={() => setEditingTask(task)}
-                                  className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 border truncate ${borderColor} ${
+                                  className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${borderStyle} ${
                                     colors ? `${colors.prepBg} ${colors.prepText}` : "bg-gray-100 text-gray-500"
                                   }`}
                                   data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
