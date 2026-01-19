@@ -710,8 +710,9 @@ export default function Dashboard() {
                                   colors ? `${colors.bg} border ${colors.border}` : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
-                                  top: '1px',
-                                  bottom: '1px',
+                                  top: '2px',
+                                  height: '36px',
+                                  maxHeight: '36px',
                                   zIndex: taskIdx + 1
                                 }}
                                 data-testid={`time-task-${task.id}`}
