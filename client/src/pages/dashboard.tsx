@@ -580,7 +580,7 @@ export default function Dashboard() {
                                 }`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
-                                <span className="font-medium">Prep:</span> {task.title}
+                                <span className="font-medium">PREP:</span> {task.title}
                               </div>
                               <div className={`w-3 h-[3px] ${colors ? colors.bg : "bg-gray-300"}`} style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 2px, currentColor 2px, currentColor 4px)' }} />
                             </div>
