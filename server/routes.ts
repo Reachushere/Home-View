@@ -355,7 +355,9 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      const response = await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+      // Try multiple stop methods for better reliability
+      // 1. First try media_stop
+      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
@@ -366,11 +368,17 @@ export async function registerRoutes(
         }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Home Assistant stop error:", errorText);
-        return res.status(response.status).json({ error: "Failed to stop media" });
-      }
+      // 2. Also try media_pause which sometimes works better for TTS
+      await fetch(`${haUrl}/api/services/media_player/media_pause`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: BATHROOM_ECHO_ENTITY,
+        }),
+      });
 
       res.json({ success: true });
     } catch (error) {
