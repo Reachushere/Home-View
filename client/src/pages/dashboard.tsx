@@ -595,7 +595,7 @@ export default function Dashboard() {
                                 }`}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
-                                <span className="font-medium">DUE:</span> {task.title}
+                                <span className="font-medium text-[10px]">DUE:</span> {task.title}
                               </div>
                             </div>
                           )}
