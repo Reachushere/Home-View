@@ -313,9 +313,16 @@ export async function registerRoutes(
       let cleanedContent = textContent.trim();
       // Remove excessive whitespace and newlines
       cleanedContent = cleanedContent.replace(/\s+/g, ' ');
+      // Remove smart quotes and special characters that may cause issues
+      cleanedContent = cleanedContent
+        .replace(/[\u2018\u2019]/g, "'")  // Smart single quotes
+        .replace(/[\u201C\u201D]/g, '"')  // Smart double quotes
+        .replace(/[\u2013\u2014]/g, '-')  // En/em dashes
+        .replace(/[^\x00-\x7F]/g, ' ');   // Remove non-ASCII
+      cleanedContent = cleanedContent.replace(/\s+/g, ' ').trim();
       // Limit length to avoid TTS timeout (Alexa has limits)
-      if (cleanedContent.length > 6000) {
-        cleanedContent = cleanedContent.substring(0, 6000) + " Content truncated due to length.";
+      if (cleanedContent.length > 4000) {
+        cleanedContent = cleanedContent.substring(0, 4000);
       }
       // Save session for resume functionality (store cleaned text without SSML escaping)
       // Store the original cleaned content for position tracking
