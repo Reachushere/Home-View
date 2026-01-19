@@ -435,7 +435,7 @@ export default function Dashboard() {
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+            <Button variant="ghost" size="icon" className="-ml-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
