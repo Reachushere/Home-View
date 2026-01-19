@@ -439,14 +439,14 @@ export default function Dashboard() {
               <ChevronLeft className="h-5 w-5" />
             </Button>
             <div className="min-w-[320px] text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <div className="text-base font-semibold text-foreground">
+              <div className="text-sm font-semibold text-foreground">
                 {format(weekStartDate, "EEEE, MMMM d")}
               </div>
-              <div className="text-xs text-muted-foreground">
+              <div className="text-[10px] text-muted-foreground">
                 to
               </div>
-              <div className="text-base font-semibold text-foreground">
-                {format(weekEndDate, "EEEE, MMMM d, yyyy")} <span className="text-sm font-bold">(Week {selectedWeek})</span>
+              <div className="text-sm font-semibold text-foreground">
+                {format(weekEndDate, "EEEE, MMMM d, yyyy")} <span className="text-xs font-bold">(Week {selectedWeek})</span>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
