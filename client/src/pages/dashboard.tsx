@@ -172,10 +172,18 @@ export default function Dashboard() {
   const weekDays = rawWeekDays.length === 7 ? [...rawWeekDays.slice(1), rawWeekDays[0]] : rawWeekDays;
   
   // Time slots for the day view (8 AM to 6 PM)
-  const allTimeSlots = Array.from({ length: 24 }, (_, i) => i); // 0-23 (full 24 hours)
-  const [visibleStartHour, setVisibleStartHour] = useState(8);
-  const [visibleEndHour, setVisibleEndHour] = useState(17);
-  const timeSlots = allTimeSlots.filter(h => h >= visibleStartHour && h <= visibleEndHour);
+  const timeSlots = Array.from({ length: 24 }, (_, i) => i); // 0-23 (full 24 hours)
+  const calendarScrollRef = useRef<HTMLDivElement>(null);
+  
+  // Auto-scroll to 8 AM on mount
+  useEffect(() => {
+    if (calendarScrollRef.current) {
+      const hourHeight = 40; // height of each time slot
+      const headerHeight = 52; // approximate header height
+      const scrollTo = (8 * hourHeight); // scroll to 8 AM
+      calendarScrollRef.current.scrollTop = scrollTo;
+    }
+  }, []);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
@@ -521,7 +529,7 @@ export default function Dashboard() {
         {/* Weekly Time-Slot Calendar */}
         <div className="mb-6 relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-xl overflow-hidden h-full">
-            <CardContent className="p-0 h-full overflow-auto">
+            <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto">
             {/* Day Headers */}
             <div className="grid border-b border-border sticky top-0 bg-card z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="p-2"></div>
