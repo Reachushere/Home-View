@@ -906,33 +906,27 @@ function TaskCard({
     window.open(`/api/tasks/${task.id}/ics`, '_blank');
   };
 
-  const [isPlayingMedia, setIsPlayingMedia] = useState(false);
+  const [isSendingTTS, setIsSendingTTS] = useState(false);
   const [isControlling, setIsControlling] = useState(false);
   
-  const handlePlayMedia = async () => {
-    // Get the first attachment URL to play
-    const attachments = task.attachments || [];
-    if (attachments.length === 0) {
-      console.error('No attachments to play');
-      return;
-    }
-    
-    const mediaUrl = attachments[0];
-    setIsPlayingMedia(true);
+  const handlePlayTTS = async () => {
+    setIsSendingTTS(true);
     try {
-      const response = await fetch('/api/media/play', {
+      const dueInfo = task.dueDate ? `Due ${format(new Date(task.dueDate), "EEEE, MMMM do 'at' h:mm a")}` : "";
+      const message = `${task.courseName || ""}: ${task.title}. ${task.description || ""}. ${dueInfo}`;
+      const response = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mediaUrl }),
+        body: JSON.stringify({ message }),
       });
       
       if (!response.ok) {
-        console.error('Play media failed');
+        console.error('TTS failed');
       }
     } catch (error) {
-      console.error('Play media error:', error);
+      console.error('TTS error:', error);
     } finally {
-      setIsPlayingMedia(false);
+      setIsSendingTTS(false);
     }
   };
 
@@ -1098,12 +1092,12 @@ function TaskCard({
             size="icon"
             variant="ghost"
             className="h-6 w-6"
-            onClick={handlePlayMedia}
-            disabled={isPlayingMedia}
+            onClick={handlePlayTTS}
+            disabled={isSendingTTS}
             data-testid={`button-play-${task.id}`}
             title="Play"
           >
-            {isPlayingMedia ? (
+            {isSendingTTS ? (
               <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
               <Play className="h-3 w-3 fill-current" />
