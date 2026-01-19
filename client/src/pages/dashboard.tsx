@@ -671,7 +671,7 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className="grid border-b border-border/50" 
-                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '60px' }}
+                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '40px' }}
                   >
                     <div className="text-xs text-muted-foreground font-medium flex items-start justify-end pr-3 pt-1">
                       {hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
