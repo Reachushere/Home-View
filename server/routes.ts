@@ -313,20 +313,10 @@ export async function registerRoutes(
       let cleanedContent = textContent.trim();
       // Remove excessive whitespace and newlines
       cleanedContent = cleanedContent.replace(/\s+/g, ' ');
-      // Remove special Unicode characters that might cause issues
-      cleanedContent = cleanedContent.replace(/[–—]/g, '-');
-      cleanedContent = cleanedContent.replace(/[""]/g, '"');
-      cleanedContent = cleanedContent.replace(/['']/g, "'");
-      // Remove any other non-ASCII characters
-      cleanedContent = cleanedContent.replace(/[^\x20-\x7E]/g, ' ');
-      // Clean up any double spaces created
-      cleanedContent = cleanedContent.replace(/\s+/g, ' ').trim();
-      // Limit length - Alexa has strict limits
-      if (cleanedContent.length > 400) {
-        cleanedContent = cleanedContent.substring(0, 400);
+      // Limit length to avoid TTS timeout (Alexa has limits)
+      if (cleanedContent.length > 6000) {
+        cleanedContent = cleanedContent.substring(0, 6000) + " Content truncated due to length.";
       }
-      // Add prefix to prevent command interpretation
-      cleanedContent = "Here is the document. " + cleanedContent;
       // Save session for resume functionality (store cleaned text without SSML escaping)
       // Store the original cleaned content for position tracking
       const textForSession = textContent.trim().replace(/\s+/g, ' ');
