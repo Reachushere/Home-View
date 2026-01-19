@@ -444,7 +444,10 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto flex flex-col">
         {/* Title Row */}
-        <h1 className="text-xl font-bold text-foreground mb-6" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Task Management</h1>
+        <div className="flex items-start justify-between mb-6">
+          <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Task Management</h1>
+          <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
+        </div>
         
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-2">
@@ -466,7 +469,6 @@ export default function Dashboard() {
             </Button>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
             <div className="flex gap-1.5">
             <Button 
               size="sm"
