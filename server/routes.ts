@@ -8,7 +8,7 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 
 const HOME_ASSISTANT_URL = process.env.HOME_ASSISTANT_URL;
 const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN;
-const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
+const BATHROOM_ECHO_ENTITY = "media_player.echo_lr_studio_white_am";
 
 export async function registerRoutes(
   httpServer: Server,
