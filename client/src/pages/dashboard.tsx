@@ -582,7 +582,7 @@ export default function Dashboard() {
                             const isFirstPrepDay = isSameDay(day, startDate);
                             return (
                               <div className="flex items-center w-full">
-                                {!isFirstPrepDay && <div className={`w-1.5 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />}
+                                {!isFirstPrepDay && <div className={`w-1.5 h-[2px] ${colors ? colors.dot : "bg-gray-400"}`} />}
                                 <div
                                   onClick={() => setEditingTask(task)}
                                   className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${borderStyle} ${
@@ -592,13 +592,13 @@ export default function Dashboard() {
                                 >
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </div>
-                                <div className={`w-1.5 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
+                                <div className={`w-1.5 h-[2px] ${colors ? colors.dot : "bg-gray-400"}`} />
                               </div>
                             );
                           })()}
                           {isDueDay && (
                             <div className="flex items-center w-full">
-                              <div className={`w-1.5 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
+                              <div className={`w-1.5 h-[2px] ${colors ? colors.dot : "bg-gray-400"}`} />
                               <div
                                 onClick={() => setEditingTask(task)}
                                 className={`flex-1 text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
