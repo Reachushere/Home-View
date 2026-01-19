@@ -706,12 +706,12 @@ export default function Dashboard() {
                               <div
                                 key={task.id}
                                 onClick={() => setEditingTask(task)}
-                                className={`absolute left-0.5 right-0.5 rounded-lg p-2 cursor-pointer hover:opacity-90 shadow-sm overflow-hidden ${
-                                  colors ? `${colors.bg} border-2 ${colors.border}` : "bg-gray-200 border-2 border-gray-400"
+                                className={`absolute left-0.5 right-0.5 rounded p-1 cursor-pointer hover:opacity-90 shadow-sm overflow-hidden ${
+                                  colors ? `${colors.bg} border ${colors.border}` : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
-                                  top: `${taskIdx * 2}px`,
-                                  minHeight: '36px',
+                                  top: '1px',
+                                  bottom: '1px',
                                   zIndex: taskIdx + 1
                                 }}
                                 data-testid={`time-task-${task.id}`}
