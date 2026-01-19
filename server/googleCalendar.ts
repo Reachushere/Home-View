@@ -62,32 +62,61 @@ export async function createCalendarEvent(task: {
   const calendar = await getGoogleCalendarClient();
   
   const dueDate = new Date(task.dueDate);
+  const hour = dueDate.getHours();
   
-  // Create event at the due time, 1 hour duration
-  const startTime = dueDate.toISOString();
-  const endTime = new Date(dueDate.getTime() + 60 * 60 * 1000).toISOString();
+  // Check if this is an all-day task (midnight or 11 PM)
+  const isAllDay = hour === 0 || hour === 23;
   
-  const event = {
-    summary: `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`,
-    description: task.description || '',
-    start: {
-      dateTime: startTime,
-      timeZone: 'America/Toronto',
-    },
-    end: {
-      dateTime: endTime,
-      timeZone: 'America/Toronto',
-    },
-    reminders: {
-      useDefault: false,
-      overrides: [
-        { method: 'popup', minutes: 60 * 24 * 2 }, // 2 days before
-        { method: 'popup', minutes: 60 * 24 },     // 1 day before
-        { method: 'popup', minutes: 60 * 2 },      // 2 hours before
-        { method: 'popup', minutes: 30 },          // 30 minutes before
-      ],
-    },
-  };
+  const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+  
+  let event: any;
+  
+  if (isAllDay) {
+    // All-day event uses date (not dateTime)
+    const dateStr = dueDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    event = {
+      summary,
+      description: task.description || '',
+      start: {
+        date: dateStr,
+      },
+      end: {
+        date: dateStr,
+      },
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: 'popup', minutes: 60 * 24 * 2 }, // 2 days before
+          { method: 'popup', minutes: 60 * 24 },     // 1 day before
+        ],
+      },
+    };
+  } else {
+    // Timed event
+    const startTime = dueDate.toISOString();
+    const endTime = new Date(dueDate.getTime() + 60 * 60 * 1000).toISOString();
+    event = {
+      summary,
+      description: task.description || '',
+      start: {
+        dateTime: startTime,
+        timeZone: 'America/Toronto',
+      },
+      end: {
+        dateTime: endTime,
+        timeZone: 'America/Toronto',
+      },
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: 'popup', minutes: 60 * 24 * 2 }, // 2 days before
+          { method: 'popup', minutes: 60 * 24 },     // 1 day before
+          { method: 'popup', minutes: 60 * 2 },      // 2 hours before
+          { method: 'popup', minutes: 30 },          // 30 minutes before
+        ],
+      },
+    };
+  }
 
   const response = await calendar.events.insert({
     calendarId: 'primary',
@@ -117,21 +146,41 @@ export async function updateCalendarEvent(eventId: string, task: {
   const calendar = await getGoogleCalendarClient();
   
   const dueDate = new Date(task.dueDate);
-  const startTime = dueDate.toISOString();
-  const endTime = new Date(dueDate.getTime() + 60 * 60 * 1000).toISOString();
+  const hour = dueDate.getHours();
+  const isAllDay = hour === 0 || hour === 23;
   
-  const event = {
-    summary: `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`,
-    description: task.description || '',
-    start: {
-      dateTime: startTime,
-      timeZone: 'America/Toronto',
-    },
-    end: {
-      dateTime: endTime,
-      timeZone: 'America/Toronto',
-    },
-  };
+  const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+  
+  let event: any;
+  
+  if (isAllDay) {
+    const dateStr = dueDate.toISOString().split('T')[0];
+    event = {
+      summary,
+      description: task.description || '',
+      start: {
+        date: dateStr,
+      },
+      end: {
+        date: dateStr,
+      },
+    };
+  } else {
+    const startTime = dueDate.toISOString();
+    const endTime = new Date(dueDate.getTime() + 60 * 60 * 1000).toISOString();
+    event = {
+      summary,
+      description: task.description || '',
+      start: {
+        dateTime: startTime,
+        timeZone: 'America/Toronto',
+      },
+      end: {
+        dateTime: endTime,
+        timeZone: 'America/Toronto',
+      },
+    };
+  }
 
   const response = await calendar.events.update({
     calendarId: 'primary',
