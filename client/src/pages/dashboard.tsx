@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import tmuLogo from "@assets/generated_images/tmu_logo_dark_background.png";
+import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
