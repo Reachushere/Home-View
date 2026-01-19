@@ -806,11 +806,11 @@ export default function Dashboard() {
           {/* Missed Tasks Section */}
           {missedTasks.length > 0 && (
             <section className="w-[300px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black">
-              <h4 className="text-md font-semibold text-destructive mb-3 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <h4 className="text-md font-semibold text-destructive mb-0 h-8 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
                 <Clock className="h-4 w-4" />
                 Missed ({missedTasks.length})
               </h4>
-              <div className="space-y-4">
+              <div className="space-y-4 -mt-8">
                 {missedTasks.map((task) => (
                   <TaskCard
                     key={task.id}
