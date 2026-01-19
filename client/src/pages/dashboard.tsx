@@ -774,7 +774,7 @@ export default function Dashboard() {
         </div>
 
         {/* Upcoming and Missed Tasks Side by Side */}
-        <div className="flex gap-6 mb-6">
+        <div className="flex gap-6 mb-6 items-start">
           {/* Upcoming Tasks Section */}
           <section className="flex-1 bg-card rounded-xl shadow-md p-4 border border-black">
             <h4 className="text-md font-semibold text-foreground mb-0 h-8 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
