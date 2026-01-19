@@ -187,9 +187,10 @@ export default function Dashboard() {
     return isWithinInterval(dayStart, { start: weekStart, end: weekEnd });
   };
   
-  // Get tasks for a specific hour on a day
+  // Get tasks for a specific hour on a day (exclude tasks with planning periods - they show in ALL DAY)
   const getTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
+      if (t.startDate) return false; // Tasks with planning periods show in ALL DAY row
       const dueDate = new Date(t.dueDate);
       return isSameDay(dueDate, day) && dueDate.getHours() === hour;
     });
