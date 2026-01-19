@@ -518,7 +518,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row */}
-            <div className="grid border-b border-border" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+            <div className="grid border-b border-border sticky top-[52px] bg-card z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="p-2 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
                 ALL DAY
               </div>
