@@ -582,12 +582,12 @@ export default function Dashboard() {
                               >
                                 <span className="font-medium">Prep:</span> {task.title}
                               </div>
-                              <div className={`w-2 border-t-4 border-dashed ${colors ? colors.prepBorder : "border-gray-300"}`} />
+                              <div className={`w-3 h-[3px] ${colors ? colors.bg : "bg-gray-300"}`} style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 2px, currentColor 2px, currentColor 4px)' }} />
                             </div>
                           )}
                           {isDueDay && (
                             <div className="flex items-center w-full">
-                              <div className={`w-2 border-t-4 border-dashed ${colors ? colors.prepBorder : "border-gray-300"}`} />
+                              <div className={`w-3 h-[3px] ${colors ? colors.bg : "bg-gray-300"}`} style={{ backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 2px, currentColor 2px, currentColor 4px)' }} />
                               <div
                                 onClick={() => setEditingTask(task)}
                                 className={`flex-1 text-xs px-2 py-0.5 rounded-r cursor-pointer hover:opacity-80 truncate ${
