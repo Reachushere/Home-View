@@ -433,7 +433,7 @@ export default function Dashboard() {
         <h1 className="text-lg font-semibold text-foreground mb-6" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Task Management</h1>
         
         {/* Calendar Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon" className="-ml-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-5 w-5" strokeWidth={3} />
