@@ -36,9 +36,9 @@ import {
   Upload,
   Loader2,
   Volume2,
-  VolumeX,
-  Volume1,
-  Square,
+  StopCircle,
+  MinusCircle,
+  PlusCircle,
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
@@ -1066,7 +1066,7 @@ function TaskCard({
                 data-testid={`button-tts-stop-${task.id}`}
                 title="Stop"
               >
-                <Square className="h-3 w-3" />
+                <StopCircle className="h-3 w-3" />
               </Button>
               <Button
                 size="icon"
@@ -1077,7 +1077,7 @@ function TaskCard({
                 data-testid={`button-volume-down-${task.id}`}
                 title="Volume Down"
               >
-                <VolumeX className="h-3 w-3" />
+                <MinusCircle className="h-3 w-3" />
               </Button>
               <Button
                 size="icon"
@@ -1088,7 +1088,7 @@ function TaskCard({
                 data-testid={`button-volume-up-${task.id}`}
                 title="Volume Up"
               >
-                <Volume1 className="h-3 w-3" />
+                <PlusCircle className="h-3 w-3" />
               </Button>
             </div>
           </div>
