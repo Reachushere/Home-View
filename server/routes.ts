@@ -18,6 +18,17 @@ const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
 const BATHROOM_ECHO_ENTITY = "media_player.echo_lr_studio_white_am";
 
+// Track TTS reading session for resume functionality
+interface TTSSession {
+  fullText: string;
+  currentPosition: number;
+  startTime: number;
+  isPlaying: boolean;
+}
+let currentTTSSession: TTSSession | null = null;
+// Average reading speed: ~150 words per minute, ~750 characters per minute
+const CHARS_PER_SECOND = 12.5;
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -313,6 +324,14 @@ export async function registerRoutes(
       if (cleanedContent.length > 6000) {
         cleanedContent = cleanedContent.substring(0, 6000) + " Content truncated due to length.";
       }
+      // Save session for resume functionality (store unescaped text for position tracking)
+      currentTTSSession = {
+        fullText: cleanedContent,
+        currentPosition: 0,
+        startTime: Date.now(),
+        isPlaying: true
+      };
+      
       // Wrap in SSML speak tags to force direct speech (avoid skill invocation)
       const ssmlMessage = `<speak>${cleanedContent}</speak>`;
       
@@ -336,6 +355,7 @@ export async function registerRoutes(
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Home Assistant TTS error:", errorText);
+        currentTTSSession = null;
         return res.status(response.status).json({ error: "Failed to read file content" });
       }
 
@@ -354,6 +374,18 @@ export async function registerRoutes(
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Calculate position for resume if we have an active session
+      if (currentTTSSession && currentTTSSession.isPlaying) {
+        const elapsedSeconds = (Date.now() - currentTTSSession.startTime) / 1000;
+        const charsRead = Math.floor(elapsedSeconds * CHARS_PER_SECOND);
+        currentTTSSession.currentPosition = Math.min(
+          currentTTSSession.currentPosition + charsRead,
+          currentTTSSession.fullText.length
+        );
+        currentTTSSession.isPlaying = false;
+        console.log(`TTS stopped at position ${currentTTSSession.currentPosition} of ${currentTTSSession.fullText.length}`);
+      }
       
       // Use Alexa Media Player's alexa_media service to send "stop" command
       // This can interrupt TTS announcements
@@ -384,10 +416,68 @@ export async function registerRoutes(
         }),
       });
 
-      res.json({ success: true });
+      const canResume = currentTTSSession && currentTTSSession.currentPosition < currentTTSSession.fullText.length;
+      res.json({ success: true, canResume });
     } catch (error) {
       console.error("Stop error:", error);
       res.status(500).json({ error: "Failed to stop media" });
+    }
+  });
+
+  // POST /api/media/resume - Resume TTS from where it was stopped
+  app.post("/api/media/resume", async (_req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      if (!currentTTSSession || currentTTSSession.currentPosition >= currentTTSSession.fullText.length) {
+        return res.status(400).json({ error: "Nothing to resume" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Get remaining text from current position
+      const remainingText = currentTTSSession.fullText.substring(currentTTSSession.currentPosition);
+      
+      if (remainingText.trim().length === 0) {
+        return res.status(400).json({ error: "Already finished reading" });
+      }
+
+      // Update session
+      currentTTSSession.startTime = Date.now();
+      currentTTSSession.isPlaying = true;
+      
+      // Wrap in SSML speak tags
+      const ssmlMessage = `<speak>${remainingText}</speak>`;
+      
+      console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
+      
+      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: ssmlMessage,
+          target: BATHROOM_ECHO_ENTITY,
+          data: {
+            type: "tts"
+          }
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Home Assistant resume error:", errorText);
+        return res.status(response.status).json({ error: "Failed to resume" });
+      }
+
+      res.json({ success: true, message: "Resumed reading" });
+    } catch (error) {
+      console.error("Resume error:", error);
+      res.status(500).json({ error: "Failed to resume" });
     }
   });
 

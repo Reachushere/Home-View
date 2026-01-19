@@ -945,6 +945,17 @@ function TaskCard({
     }
   };
 
+  const handleResume = async () => {
+    setIsControlling(true);
+    try {
+      await fetch('/api/media/resume', { method: 'POST' });
+    } catch (error) {
+      console.error('Resume error:', error);
+    } finally {
+      setIsControlling(false);
+    }
+  };
+
   const handleSeek = async (direction: "forward" | "backward") => {
     setIsControlling(true);
     try {
@@ -1117,6 +1128,17 @@ function TaskCard({
             title="Stop"
           >
             <Square className="h-3 w-3 fill-current" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-6 w-6"
+            onClick={handleResume}
+            disabled={isControlling}
+            data-testid={`button-resume-${task.id}`}
+            title="Resume"
+          >
+            <RefreshCw className="h-3 w-3" />
           </Button>
           <Button
             size="icon"
