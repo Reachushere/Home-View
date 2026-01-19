@@ -439,6 +439,9 @@ export default function Dashboard() {
               <ChevronLeft className="h-5 w-5" strokeWidth={3} />
             </Button>
             <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <div className="text-[10px] font-bold text-foreground">
+                Week {selectedWeek}
+              </div>
               <div className="text-sm font-semibold text-foreground">
                 {format(weekStartDate, "EEEE, MMMM d")}
               </div>
@@ -446,7 +449,7 @@ export default function Dashboard() {
                 to
               </div>
               <div className="text-sm font-semibold text-foreground">
-                {format(weekEndDate, "EEEE, MMMM d, yyyy")} <span className="text-xs font-bold">(Week {selectedWeek})</span>
+                {format(weekEndDate, "EEEE, MMMM d, yyyy")}
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
