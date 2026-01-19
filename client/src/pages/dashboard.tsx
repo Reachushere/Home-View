@@ -328,7 +328,7 @@ export default function Dashboard() {
       )}
       {/* Sidebar */}
       <aside className="w-72 bg-black text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto">
-        <div className="flex items-center gap-2 px-2 pt-3 pb-4">
+        <div className="flex items-center gap-2 px-2 pt-3 pb-2">
           <CalendarDays className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             School Planner
@@ -443,7 +443,7 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto flex flex-col">
         {/* Title Row */}
-        <h1 className="text-xl font-semibold text-foreground mb-6" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Task Management</h1>
+        <h1 className="text-xl font-bold text-foreground mb-6" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Task Management</h1>
         
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-2">
