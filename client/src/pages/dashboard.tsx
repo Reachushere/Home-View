@@ -902,10 +902,11 @@ function TaskCard({
 
   const [isSendingTTS, setIsSendingTTS] = useState(false);
   
-  const handlePlayTTS = async (attachmentName: string) => {
+  const handlePlayTTS = async () => {
     setIsSendingTTS(true);
     try {
-      const message = `Task: ${task.title}. Attachment: ${attachmentName}`;
+      const dueInfo = task.dueDate ? `Due ${format(new Date(task.dueDate), "EEEE, MMMM do 'at' h:mm a")}` : "";
+      const message = `${task.courseName || ""}: ${task.title}. ${task.description || ""}. ${dueInfo}`;
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1010,7 +1011,7 @@ function TaskCard({
                       size="icon"
                       variant="ghost"
                       className="h-5 w-5"
-                      onClick={() => handlePlayTTS(attachmentName)}
+                      onClick={() => handlePlayTTS()}
                       disabled={isSendingTTS}
                       data-testid={`button-tts-${task.id}-${idx}`}
                     >
