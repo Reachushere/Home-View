@@ -8,7 +8,10 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 
 // Use Nabu Casa cloud URL for remote access
 const HOME_ASSISTANT_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
-const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN || process.env.HOME_ASSISTANT_URL;
+// Auto-detect which env var contains the JWT token (starts with "eyJ")
+const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
+const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
+const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
 const BATHROOM_ECHO_ENTITY = "media_player.echo_lr_studio_white_am";
 
 export async function registerRoutes(
