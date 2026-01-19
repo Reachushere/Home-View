@@ -1164,8 +1164,12 @@ function TaskCard({
     );
   }
 
-  // For cards without attachments, return card directly (no spacer needed)
-  return cardElement;
+  // For cards without attachments, add padding to align with cards that have media controls
+  return (
+    <div className="pt-9">
+      {cardElement}
+    </div>
+  );
 }
 
 function TaskForm({ 
