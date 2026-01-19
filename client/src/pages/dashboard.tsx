@@ -434,11 +434,13 @@ export default function Dashboard() {
         
         {/* Calendar Header */}
         <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-            <div className="min-w-[320px] text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <div className="flex items-center gap-1">
+            <div className="w-[70px] flex justify-end pr-1">
+              <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+                <ChevronLeft className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="text-left" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <div className="text-sm font-semibold text-foreground">
                 {format(weekStartDate, "EEEE, MMMM d")}
               </div>
