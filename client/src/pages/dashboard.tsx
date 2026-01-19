@@ -787,9 +787,9 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start content-start -mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch -mt-8">
                 {upcomingTasks.map((task) => (
-                  <div key={task.id} className="self-start">
+                  <div key={task.id}>
                     <TaskCard
                       task={task}
                       onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
@@ -975,7 +975,7 @@ function TaskCard({
 
   const cardElement = (
     <Card
-      className={`transition-all rounded-xl shadow-md border ${
+      className={`transition-all rounded-xl shadow-md border flex-1 ${
         colors ? `${colors.bg} ${colors.border}` : "border-gray-400"
       } ${isMissed ? "border-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
@@ -1085,7 +1085,7 @@ function TaskCard({
 
   if (hasAttachments) {
     return (
-      <div className="relative pt-9">
+      <div className="relative pt-9 h-full flex flex-col">
         {/* Media Controls - positioned absolutely at top, same height as header */}
         <div className={`absolute top-0 left-0 right-0 h-8 flex items-center justify-around rounded-lg px-2 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
           <Button
@@ -1166,7 +1166,7 @@ function TaskCard({
 
   // For cards without attachments, add padding to align with cards that have media controls
   return (
-    <div className="pt-9">
+    <div className="pt-9 h-full flex flex-col">
       {cardElement}
     </div>
   );
