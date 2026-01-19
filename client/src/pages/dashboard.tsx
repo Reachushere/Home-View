@@ -570,7 +570,7 @@ export default function Dashboard() {
                     className="grid" 
                     style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}
                   >
-                    <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
+                    <div className="p-1 text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
                       {rowIdx === 0 ? "ALL DAY" : ""}
                     </div>
                     {weekDays.map((day, dayIdx) => {
