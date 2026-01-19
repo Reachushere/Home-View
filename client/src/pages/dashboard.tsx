@@ -932,7 +932,7 @@ function TaskCard({
           </p>
         )}
         
-        <div className="flex items-center gap-2 text-[10px] text-muted-foreground mb-3">
+        <div className="flex items-center gap-2 text-[10px] text-muted-foreground pb-4">
           <Clock className="h-3 w-3" />
           {format(new Date(task.dueDate), "MMM d, h:mm a")}
         </div>
