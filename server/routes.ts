@@ -313,12 +313,10 @@ export async function registerRoutes(
       let cleanedContent = textContent.trim();
       // Remove excessive whitespace and newlines
       cleanedContent = cleanedContent.replace(/\s+/g, ' ');
-      // Limit length to avoid TTS timeout (Alexa has limits)
-      if (cleanedContent.length > 5900) {
-        cleanedContent = cleanedContent.substring(0, 5900) + " Content truncated due to length.";
+      // Try short length first - Alexa may have strict limits
+      if (cleanedContent.length > 400) {
+        cleanedContent = cleanedContent.substring(0, 400) + ". End of excerpt.";
       }
-      // Add prefix to prevent Alexa from interpreting text as a command
-      cleanedContent = "Reading document. " + cleanedContent;
       // Save session for resume functionality (store cleaned text without SSML escaping)
       // Store the original cleaned content for position tracking
       const textForSession = textContent.trim().replace(/\s+/g, ' ');
@@ -329,7 +327,7 @@ export async function registerRoutes(
         isPlaying: true
       };
       
-      // Use announce type which bypasses skill invocation
+      // Use TTS type like the working /api/tts endpoint
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
@@ -342,7 +340,7 @@ export async function registerRoutes(
           message: cleanedContent,
           target: BATHROOM_ECHO_ENTITY,
           data: {
-            type: "announce"
+            type: "tts"
           }
         }),
       });
