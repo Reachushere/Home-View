@@ -313,28 +313,21 @@ export async function registerRoutes(
       let cleanedContent = textContent.trim();
       // Remove excessive whitespace and newlines
       cleanedContent = cleanedContent.replace(/\s+/g, ' ');
-      // Escape SSML special characters
-      cleanedContent = cleanedContent
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
       // Limit length to avoid TTS timeout (Alexa has limits)
       if (cleanedContent.length > 6000) {
         cleanedContent = cleanedContent.substring(0, 6000) + " Content truncated due to length.";
       }
-      // Save session for resume functionality (store unescaped text for position tracking)
+      // Save session for resume functionality (store cleaned text without SSML escaping)
+      // Store the original cleaned content for position tracking
+      const textForSession = textContent.trim().replace(/\s+/g, ' ');
       currentTTSSession = {
-        fullText: cleanedContent,
+        fullText: textForSession.length > 6000 ? textForSession.substring(0, 6000) : textForSession,
         currentPosition: 0,
         startTime: Date.now(),
         isPlaying: true
       };
       
-      // Wrap in SSML speak tags to force direct speech (avoid skill invocation)
-      const ssmlMessage = `<speak>${cleanedContent}</speak>`;
-      
+      // Don't use SSML - send plain text like the working /api/tts endpoint
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
@@ -344,7 +337,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: ssmlMessage,
+          message: cleanedContent,
           target: BATHROOM_ECHO_ENTITY,
           data: {
             type: "tts"
@@ -448,9 +441,6 @@ export async function registerRoutes(
       currentTTSSession.startTime = Date.now();
       currentTTSSession.isPlaying = true;
       
-      // Wrap in SSML speak tags
-      const ssmlMessage = `<speak>${remainingText}</speak>`;
-      
       console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
@@ -460,7 +450,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: ssmlMessage,
+          message: remainingText,
           target: BATHROOM_ECHO_ENTITY,
           data: {
             type: "tts"
