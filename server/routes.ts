@@ -256,8 +256,9 @@ export async function registerRoutes(
       
       if (isPDF) {
         // Parse PDF and extract text
-        const pdfParse = (await import('pdf-parse')).default;
         try {
+          const pdfParseModule = await import('pdf-parse');
+          const pdfParse = pdfParseModule.default || pdfParseModule;
           const pdfData = await pdfParse(fileBuffer);
           textContent = pdfData.text;
         } catch (error) {
