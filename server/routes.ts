@@ -6,8 +6,8 @@ import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } 
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 
-// Use hardcoded URL since it's not sensitive, but token from env
-const HOME_ASSISTANT_URL = "http://172.24.0.2:8123";
+// Use Nabu Casa cloud URL for remote access
+const HOME_ASSISTANT_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
 const HOME_ASSISTANT_TOKEN = process.env.HOME_ASSISTANT_TOKEN || process.env.HOME_ASSISTANT_URL;
 const BATHROOM_ECHO_ENTITY = "media_player.echo_lr_studio_white_am";
 
