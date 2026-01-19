@@ -334,14 +334,14 @@ export default function Dashboard() {
             </Button>
           </div>
           <div className="grid grid-cols-7 gap-0.5 text-center">
-            {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
               <div key={i} className="text-[10px] text-muted-foreground font-medium py-1">{d}</div>
             ))}
             {(() => {
               const monthStart = startOfMonth(currentMonth);
               const monthEnd = endOfMonth(currentMonth);
-              const calStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-              const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+              const calStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+              const calEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
               const days = eachDayOfInterval({ start: calStart, end: calEnd });
               return days.map((day, i) => {
                 const isToday = isSameDay(day, new Date());
