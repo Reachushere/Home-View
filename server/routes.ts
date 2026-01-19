@@ -24,10 +24,95 @@ interface TTSSession {
   currentPosition: number;
   startTime: number;
   isPlaying: boolean;
+  autoTimer: ReturnType<typeof setTimeout> | null;
 }
 let currentTTSSession: TTSSession | null = null;
 // Average reading speed: ~150 words per minute, ~750 characters per minute
 const CHARS_PER_SECOND = 12.5;
+const CHUNK_SIZE = 3000; // Characters per TTS chunk
+
+// Function to send next TTS chunk automatically
+async function sendNextChunk() {
+  if (!currentTTSSession || !currentTTSSession.isPlaying) return;
+  
+  // Calculate position based on elapsed time
+  const elapsedSeconds = (Date.now() - currentTTSSession.startTime) / 1000;
+  const charsRead = Math.floor(elapsedSeconds * CHARS_PER_SECOND);
+  currentTTSSession.currentPosition += charsRead;
+  
+  // Check if we've finished
+  if (currentTTSSession.currentPosition >= currentTTSSession.fullText.length) {
+    console.log("TTS auto-read complete - finished entire document");
+    currentTTSSession.isPlaying = false;
+    return;
+  }
+  
+  // Get next chunk
+  let nextChunk = currentTTSSession.fullText.substring(
+    currentTTSSession.currentPosition,
+    currentTTSSession.currentPosition + CHUNK_SIZE
+  );
+  
+  if (nextChunk.trim().length === 0) {
+    console.log("TTS auto-read complete - no more content");
+    currentTTSSession.isPlaying = false;
+    return;
+  }
+  
+  // Update session
+  currentTTSSession.startTime = Date.now();
+  
+  console.log("Auto-continuing TTS from position", currentTTSSession.currentPosition, 
+    "remaining:", currentTTSSession.fullText.length - currentTTSSession.currentPosition);
+  
+  const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+  
+  try {
+    const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: nextChunk,
+        target: BATHROOM_ECHO_ENTITY,
+        data: { type: "tts" }
+      }),
+    });
+    
+    if (!response.ok) {
+      console.error("Auto-continue TTS error");
+      currentTTSSession.isPlaying = false;
+      return;
+    }
+    
+    // Schedule next chunk
+    scheduleNextChunk();
+  } catch (error) {
+    console.error("Auto-continue error:", error);
+    currentTTSSession.isPlaying = false;
+  }
+}
+
+function scheduleNextChunk() {
+  if (!currentTTSSession || !currentTTSSession.isPlaying) return;
+  
+  // Calculate how long this chunk will take to read
+  const readTimeMs = (CHUNK_SIZE / CHARS_PER_SECOND) * 1000;
+  
+  // Add 2 seconds buffer for Alexa processing
+  const delayMs = readTimeMs + 2000;
+  
+  console.log(`Scheduling next chunk in ${Math.round(delayMs / 1000)} seconds`);
+  
+  // Clear any existing timer
+  if (currentTTSSession.autoTimer) {
+    clearTimeout(currentTTSSession.autoTimer);
+  }
+  
+  currentTTSSession.autoTimer = setTimeout(sendNextChunk, delayMs);
+}
 
 export async function registerRoutes(
   httpServer: Server,
@@ -337,7 +422,8 @@ export async function registerRoutes(
         fullText: fullCleanedText.length > 100000 ? fullCleanedText.substring(0, 100000) : fullCleanedText,
         currentPosition: 0,
         startTime: Date.now(),
-        isPlaying: true
+        isPlaying: true,
+        autoTimer: null
       };
       
       // Add a clear prefix so Alexa knows this is content to read, not a command
@@ -345,6 +431,7 @@ export async function registerRoutes(
       
       // Use TTS type like the working /api/tts endpoint
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
+      console.log("Total document length:", fullCleanedText.length, "characters");
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
@@ -368,6 +455,9 @@ export async function registerRoutes(
         return res.status(response.status).json({ error: "Failed to read file content" });
       }
 
+      // Schedule automatic continuation for the rest of the document
+      scheduleNextChunk();
+
       res.json({ success: true, message: "Reading PDF content aloud" });
     } catch (error) {
       console.error("Play media error:", error);
@@ -384,16 +474,24 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Calculate position for resume if we have an active session
-      if (currentTTSSession && currentTTSSession.isPlaying) {
-        const elapsedSeconds = (Date.now() - currentTTSSession.startTime) / 1000;
-        const charsRead = Math.floor(elapsedSeconds * CHARS_PER_SECOND);
-        currentTTSSession.currentPosition = Math.min(
-          currentTTSSession.currentPosition + charsRead,
-          currentTTSSession.fullText.length
-        );
-        currentTTSSession.isPlaying = false;
-        console.log(`TTS stopped at position ${currentTTSSession.currentPosition} of ${currentTTSSession.fullText.length}`);
+      // Cancel auto-continuation timer and calculate position
+      if (currentTTSSession) {
+        // Clear the auto timer
+        if (currentTTSSession.autoTimer) {
+          clearTimeout(currentTTSSession.autoTimer);
+          currentTTSSession.autoTimer = null;
+        }
+        
+        if (currentTTSSession.isPlaying) {
+          const elapsedSeconds = (Date.now() - currentTTSSession.startTime) / 1000;
+          const charsRead = Math.floor(elapsedSeconds * CHARS_PER_SECOND);
+          currentTTSSession.currentPosition = Math.min(
+            currentTTSSession.currentPosition + charsRead,
+            currentTTSSession.fullText.length
+          );
+          currentTTSSession.isPlaying = false;
+          console.log(`TTS stopped at position ${currentTTSSession.currentPosition} of ${currentTTSSession.fullText.length}`);
+        }
       }
       
       // Use Alexa Media Player's alexa_media service to send "stop" command
@@ -495,6 +593,9 @@ export async function registerRoutes(
         console.error("Home Assistant resume error:", errorText);
         return res.status(response.status).json({ error: "Failed to resume" });
       }
+
+      // Schedule automatic continuation for the rest of the document
+      scheduleNextChunk();
 
       res.json({ success: true, message: "Resumed reading" });
     } catch (error) {
