@@ -576,8 +576,11 @@ export default function Dashboard() {
                             dayBeforeDue.setDate(dayBeforeDue.getDate() - 1);
                             const isDayBeforeDue = isSameDay(day, dayBeforeDue);
                             const borderStyle = isDayBeforeDue ? "border border-red-500" : "";
+                            const startDate = new Date(task.startDate!);
+                            const isFirstPrepDay = isSameDay(day, startDate);
                             return (
                               <div className="flex items-center w-full">
+                                {!isFirstPrepDay && <div className={`w-1.5 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />}
                                 <div
                                   onClick={() => setEditingTask(task)}
                                   className={`flex-1 text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${borderStyle} ${
@@ -587,19 +590,22 @@ export default function Dashboard() {
                                 >
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </div>
-                                <div className={`w-3 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
+                                <div className={`w-1.5 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
                               </div>
                             );
                           })()}
                           {isDueDay && (
-                            <div
-                              onClick={() => setEditingTask(task)}
-                              className={`w-full text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
-                                colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
-                              }`}
-                              data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                            >
-                              <span className="font-bold text-[10px]">DUE:</span> {task.title}
+                            <div className="flex items-center w-full">
+                              <div className={`w-1.5 h-[3px] ${colors ? colors.dot : "bg-gray-400"}`} />
+                              <div
+                                onClick={() => setEditingTask(task)}
+                                className={`flex-1 text-xs px-2 py-0.5 rounded cursor-pointer hover:opacity-80 truncate ${
+                                  colors ? `${colors.bg} ${colors.text}` : "bg-gray-200 text-gray-700"
+                                }`}
+                                data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                              >
+                                <span className="font-bold text-[10px]">DUE:</span> {task.title}
+                              </div>
                             </div>
                           )}
                         </div>
