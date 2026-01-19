@@ -439,7 +439,7 @@ export default function Dashboard() {
               <ChevronLeft className="h-5 w-5" strokeWidth={3} />
             </Button>
             <div className="text-left -ml-1" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <div className="text-[10px] font-bold text-foreground mb-1">
+              <div className="text-[10px] font-bold text-[#5979CC] mb-1">
                 Week {selectedWeek}
               </div>
               <div className="text-sm font-semibold text-foreground">
