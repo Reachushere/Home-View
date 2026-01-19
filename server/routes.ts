@@ -264,14 +264,21 @@ export async function registerRoutes(
           const parser = new pdfParse({ data: new Uint8Array(fileBuffer) });
           await parser.load();
           const pdfText = await parser.getText();
-          // getText() may return an array of page texts, join them
-          if (Array.isArray(pdfText)) {
-            textContent = pdfText.join(' ');
+          // getText() returns an object with pages array containing text
+          if (pdfText && typeof pdfText === 'object') {
+            if (pdfText.pages && Array.isArray(pdfText.pages)) {
+              // Extract text from each page
+              textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
+            } else if (Array.isArray(pdfText)) {
+              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
+            } else if (pdfText.text) {
+              textContent = pdfText.text;
+            } else {
+              // Fallback - try to extract any text properties
+              textContent = Object.values(pdfText).filter(v => typeof v === 'string').join(' ');
+            }
           } else if (typeof pdfText === 'string') {
             textContent = pdfText;
-          } else if (pdfText && typeof pdfText === 'object') {
-            // May be an object with text property or items
-            textContent = JSON.stringify(pdfText);
           } else {
             textContent = String(pdfText || '');
           }
