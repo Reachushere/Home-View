@@ -31,6 +31,7 @@ export const tasks = pgTable("tasks", {
   description: text("description"),
   type: text("type").notNull(), // reading, module, essay, project, discussion, poll, exam, quiz
   courseName: text("course_name"),
+  startDate: timestamp("start_date"), // Optional: when to start working on the task (planning/prep period)
   dueDate: timestamp("due_date").notNull(),
   weekNumber: integer("week_number").notNull(), // 2-13
   isCompleted: boolean("is_completed").default(false),
