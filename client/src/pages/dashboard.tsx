@@ -58,10 +58,10 @@ const typeColors: Record<string, string> = {
   quiz: "bg-amber-500/20 text-amber-600 dark:text-amber-400",
 };
 
-const courseColors: Record<string, { bg: string; border: string; text: string; dot: string }> = {
-  "CPPA122": { bg: "bg-blue-500/30", border: "border-blue-500", text: "text-blue-700 dark:text-blue-300", dot: "bg-blue-500" },
-  "CFNF400": { bg: "bg-green-500/30", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500" },
-  "CASL101": { bg: "bg-yellow-500/30", border: "border-yellow-500", text: "text-yellow-700 dark:text-yellow-300", dot: "bg-yellow-500" },
+const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
+  "CPPA122": { bg: "bg-blue-500/30", border: "border-blue-500", text: "text-blue-700 dark:text-blue-300", dot: "bg-blue-500", prepBg: "bg-blue-200/50", prepBorder: "border-blue-300", prepText: "text-blue-600 dark:text-blue-400" },
+  "CFNF400": { bg: "bg-green-500/30", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-green-200/50", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
+  "CASL101": { bg: "bg-yellow-500/30", border: "border-yellow-500", text: "text-yellow-700 dark:text-yellow-300", dot: "bg-yellow-500", prepBg: "bg-yellow-200/50", prepBorder: "border-yellow-300", prepText: "text-yellow-600 dark:text-yellow-400" },
 };
 
 interface WeekInfo {
@@ -197,6 +197,22 @@ export default function Dashboard() {
     return allTasks.filter(t => {
       const dueDate = new Date(t.dueDate);
       return isSameDay(dueDate, day) && (dueDate.getHours() === 0 || dueDate.getHours() === 23);
+    });
+  };
+
+  // Get tasks with planning periods on a specific day (startDate <= day < dueDate)
+  const getPlanningTasksForDay = (day: Date) => {
+    return allTasks.filter(t => {
+      if (!t.startDate) return false;
+      const startDate = new Date(t.startDate);
+      const dueDate = new Date(t.dueDate);
+      const dayStart = new Date(day);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(day);
+      dayEnd.setHours(23, 59, 59, 999);
+      
+      // Day is in the planning period: startDate <= day < dueDate (not including due date itself)
+      return startDate <= dayEnd && dayStart < dueDate && !isSameDay(day, dueDate);
     });
   };
 
@@ -505,12 +521,28 @@ export default function Dashboard() {
               </div>
               {weekDays.map((day, idx) => {
                 const allDayTasks = getAllDayTasks(day);
+                const planningTasks = getPlanningTasksForDay(day);
                 return (
                   <div 
                     key={idx} 
-                    className="p-1 border-l border-border min-h-[40px] flex flex-wrap gap-1"
+                    className="p-1 border-l border-border min-h-[40px] flex flex-col gap-1"
                     data-testid={`all-day-${format(day, "yyyy-MM-dd")}`}
                   >
+                    {planningTasks.map(task => {
+                      const colors = getCourseColor(task.courseName);
+                      return (
+                        <div
+                          key={`prep-${task.id}`}
+                          onClick={() => setEditingTask(task)}
+                          className={`text-[10px] px-2 py-0.5 rounded cursor-pointer hover:opacity-80 border border-dashed ${
+                            colors ? `${colors.prepBg} ${colors.prepBorder} ${colors.prepText}` : "bg-gray-100 border-gray-300 text-gray-500"
+                          }`}
+                          data-testid={`prep-task-${task.id}`}
+                        >
+                          <span className="font-medium">Prep:</span> {task.title}
+                        </div>
+                      );
+                    })}
                     {allDayTasks.map(task => {
                       const colors = getCourseColor(task.courseName);
                       return (
@@ -867,11 +899,17 @@ function TaskForm({
     return "";
   };
 
+  const getDefaultStartDate = () => {
+    if (task?.startDate) return format(new Date(task.startDate), "yyyy-MM-dd'T'HH:mm");
+    return "";
+  };
+
   const [formData, setFormData] = useState({
     title: task?.title || "",
     description: task?.description || "",
     type: task?.type || initialType || "reading",
     courseName: task?.courseName || "",
+    startDate: getDefaultStartDate(),
     dueDate: getDefaultDate(),
     priority: task?.priority || "medium",
     weekNumber: task?.weekNumber || weekNumber,
@@ -882,10 +920,22 @@ function TaskForm({
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const payload = {
-        ...data,
-        dueDate: new Date(data.dueDate),
+      // Build payload explicitly, excluding startDate if empty
+      const payload: Record<string, unknown> = {
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        courseName: data.courseName,
+        dueDate: new Date(data.dueDate).toISOString(),
+        priority: data.priority,
+        weekNumber: data.weekNumber,
+        referenceLink: data.referenceLink,
+        attachments: data.attachments,
       };
+      // Only include startDate if it has a value
+      if (data.startDate) {
+        payload.startDate = new Date(data.startDate).toISOString();
+      }
       if (task) {
         return apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
       }
@@ -953,6 +1003,17 @@ function TaskForm({
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div>
+        <Label htmlFor="startDate">Start Date (optional - for planning/prep time)</Label>
+        <Input
+          id="startDate"
+          type="datetime-local"
+          value={formData.startDate}
+          onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value }))}
+          data-testid="input-startdate"
+        />
       </div>
 
       <div>
