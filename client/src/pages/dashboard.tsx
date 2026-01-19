@@ -974,7 +974,7 @@ function TaskCard({
 
   const cardElement = (
     <Card
-      className={`transition-all h-full rounded-xl shadow-md border-2 ${
+      className={`transition-all rounded-xl shadow-md border-2 ${
         colors ? `${colors.bg} ${colors.border}` : "border-gray-400"
       } ${isMissed ? "border-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
@@ -1084,7 +1084,7 @@ function TaskCard({
 
   if (hasAttachments) {
     return (
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col">
         {/* Media Controls Above Card */}
         <div className="flex items-center justify-center gap-1 bg-muted/50 rounded-t-lg px-2 py-1 border border-b-0 border-muted">
           <Button
