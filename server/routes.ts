@@ -205,7 +205,7 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/media/play - Fetch file content from object storage and read it aloud via TTS
+  // POST /api/media/play - Extract text from PDF and read it aloud via TTS
   app.post("/api/media/play", async (req, res) => {
     try {
       const { mediaUrl } = req.body;
@@ -220,6 +220,7 @@ export async function registerRoutes(
 
       // Read file content from object storage
       let textContent = "";
+      let fileBuffer: Buffer | null = null;
       
       if (mediaUrl.startsWith("/objects/")) {
         // It's an object storage path - read from object storage
@@ -229,9 +230,9 @@ export async function registerRoutes(
         try {
           const objectFile = await objectStorage.getObjectEntityFile(mediaUrl);
           
-          // Download the file content
+          // Download the file content as buffer
           const [content] = await objectFile.download();
-          textContent = content.toString('utf-8');
+          fileBuffer = content;
         } catch (error) {
           console.error("Error reading from object storage:", error);
           return res.status(400).json({ error: "Failed to read file from storage" });
@@ -242,7 +243,30 @@ export async function registerRoutes(
         if (!fileResponse.ok) {
           return res.status(400).json({ error: "Failed to fetch file content" });
         }
-        textContent = await fileResponse.text();
+        const arrayBuffer = await fileResponse.arrayBuffer();
+        fileBuffer = Buffer.from(arrayBuffer);
+      }
+      
+      if (!fileBuffer) {
+        return res.status(400).json({ error: "Failed to read file" });
+      }
+
+      // Check if it's a PDF by looking at the magic bytes
+      const isPDF = fileBuffer.slice(0, 4).toString() === '%PDF';
+      
+      if (isPDF) {
+        // Parse PDF and extract text
+        const pdfParse = (await import('pdf-parse')).default;
+        try {
+          const pdfData = await pdfParse(fileBuffer);
+          textContent = pdfData.text;
+        } catch (error) {
+          console.error("Error parsing PDF:", error);
+          return res.status(400).json({ error: "Failed to parse PDF" });
+        }
+      } else {
+        // Treat as plain text
+        textContent = fileBuffer.toString('utf-8');
       }
       
       if (!textContent || textContent.trim().length === 0) {
@@ -251,29 +275,16 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Strip common skill trigger phrases from ANYWHERE in the text to prevent skill invocation
+      // Clean up the text for TTS
       let cleanedContent = textContent.trim();
-      const skillTriggers = [
-        /simon\s+says?\s*/gi,
-        /alexa,?\s*/gi,
-        /hey\s+alexa\s*/gi,
-      ];
-      for (const trigger of skillTriggers) {
-        cleanedContent = cleanedContent.replace(trigger, '');
+      // Remove excessive whitespace and newlines
+      cleanedContent = cleanedContent.replace(/\s+/g, ' ');
+      // Limit length to avoid TTS timeout (Alexa has limits)
+      if (cleanedContent.length > 8000) {
+        cleanedContent = cleanedContent.substring(0, 8000) + "... Content truncated due to length.";
       }
       
-      // Log the first 200 chars to debug
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
-      
-      // Escape any special XML characters in the content
-      const escapedContent = cleanedContent
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
-      
-      const ssmlMessage = `<speak><prosody rate="medium">${escapedContent}</prosody></speak>`;
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
@@ -282,7 +293,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: ssmlMessage,
+          message: cleanedContent,
           target: BATHROOM_ECHO_ENTITY,
           data: {
             type: "tts"
@@ -296,7 +307,7 @@ export async function registerRoutes(
         return res.status(response.status).json({ error: "Failed to read file content" });
       }
 
-      res.json({ success: true, message: "Reading file content aloud" });
+      res.json({ success: true, message: "Reading PDF content aloud" });
     } catch (error) {
       console.error("Play media error:", error);
       res.status(500).json({ error: "Failed to play media" });
