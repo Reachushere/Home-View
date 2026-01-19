@@ -302,10 +302,19 @@ export async function registerRoutes(
       let cleanedContent = textContent.trim();
       // Remove excessive whitespace and newlines
       cleanedContent = cleanedContent.replace(/\s+/g, ' ');
+      // Escape SSML special characters
+      cleanedContent = cleanedContent
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
       // Limit length to avoid TTS timeout (Alexa has limits)
-      if (cleanedContent.length > 8000) {
-        cleanedContent = cleanedContent.substring(0, 8000) + "... Content truncated due to length.";
+      if (cleanedContent.length > 6000) {
+        cleanedContent = cleanedContent.substring(0, 6000) + " Content truncated due to length.";
       }
+      // Wrap in SSML speak tags to force direct speech (avoid skill invocation)
+      const ssmlMessage = `<speak>${cleanedContent}</speak>`;
       
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
       
@@ -316,7 +325,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: cleanedContent,
+          message: ssmlMessage,
           target: BATHROOM_ECHO_ENTITY,
           data: {
             type: "tts"
