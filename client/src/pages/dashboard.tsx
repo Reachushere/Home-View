@@ -678,10 +678,13 @@ export default function Dashboard() {
             
             {/* Time Slots */}
             <div>
-                {timeSlots.map((hour, hourIdx) => (
+                {timeSlots.map((hour, hourIdx) => {
+                  const currentHour = new Date().getHours();
+                  const isCurrentHour = hour === currentHour;
+                  return (
                   <div 
                     key={hour} 
-                    className="grid border-b border-border/50" 
+                    className={`grid border-b border-border/50 ${isCurrentHour ? "bg-blue-500/10" : ""}`}
                     style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '40px' }}
                   >
                     <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
@@ -726,7 +729,8 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
-                ))}
+                  );
+                })}
             </div>
           </CardContent>
           </Card>
