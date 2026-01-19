@@ -608,7 +608,7 @@ export default function Dashboard() {
                                   className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${borderStyle} ${
                                     task.isCompleted 
                                       ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                      : colors ? `${colors.prepBg} ${colors.prepText} border ${colors.border}` : "bg-gray-100 text-gray-500 border border-gray-400"
+                                      : colors ? `${colors.prepBg} text-black border ${colors.border}` : "bg-gray-100 text-black border border-gray-400"
                                   }`}
                                   data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                                 >
@@ -636,7 +636,7 @@ export default function Dashboard() {
                                 className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
                                   task.isCompleted 
                                     ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                    : colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200 text-gray-700 border border-gray-400"
+                                    : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
                                 }`}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
@@ -685,7 +685,7 @@ export default function Dashboard() {
                               className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                  : colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200 text-gray-700 border border-gray-400"
+                                  : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
                               }`}
                               data-testid={`all-day-task-${task.id}`}
                             >
@@ -774,7 +774,7 @@ export default function Dashboard() {
                                   <div 
                                     onClick={() => setEditingTask(task)}
                                     className={`text-[8px] font-semibold truncate cursor-pointer ${
-                                      task.isCompleted ? "text-gray-400 line-through" : colors?.text || "text-gray-700"
+                                      task.isCompleted ? "text-gray-400 line-through" : "text-black"
                                     }`}
                                   >
                                     {task.title}
