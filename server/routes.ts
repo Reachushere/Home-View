@@ -313,9 +313,16 @@ export async function registerRoutes(
       let cleanedContent = textContent.trim();
       // Remove excessive whitespace and newlines
       cleanedContent = cleanedContent.replace(/\s+/g, ' ');
-      // Limit length to avoid TTS timeout (Alexa has limits)
-      if (cleanedContent.length > 5500) {
-        cleanedContent = cleanedContent.substring(0, 5500);
+      // Remove special Unicode characters that cause Simon Says error
+      cleanedContent = cleanedContent
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2013\u2014]/g, "-")
+        .replace(/[^\x20-\x7E]/g, ' ');
+      cleanedContent = cleanedContent.replace(/\s+/g, ' ').trim();
+      // Start with very short length to test
+      if (cleanedContent.length > 300) {
+        cleanedContent = cleanedContent.substring(0, 300);
       }
       // Add a clear prefix so Alexa knows this is content to read, not a command
       cleanedContent = "Now reading your document. " + cleanedContent;
