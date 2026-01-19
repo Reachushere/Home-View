@@ -329,18 +329,21 @@ export async function registerRoutes(
         isPlaying: true
       };
       
-      // Use tts.speak service directly for longer content
+      // Use announce type which bypasses skill invocation
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
       
-      const response = await fetch(`${haUrl}/api/services/tts/speak`, {
+      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: BATHROOM_ECHO_ENTITY,
-          message: cleanedContent
+          message: cleanedContent,
+          target: BATHROOM_ECHO_ENTITY,
+          data: {
+            type: "announce"
+          }
         }),
       });
 
