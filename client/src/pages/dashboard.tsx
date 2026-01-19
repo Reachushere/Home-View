@@ -582,12 +582,12 @@ export default function Dashboard() {
                               >
                                 <span className="font-medium">Prep:</span> {task.title}
                               </div>
-                              <div className={`w-2 border-t-2 border-dashed ${colors ? colors.prepBorder : "border-gray-300"}`} />
+                              <div className={`w-2 border-t-4 border-dashed ${colors ? colors.prepBorder : "border-gray-300"}`} />
                             </div>
                           )}
                           {isDueDay && (
                             <div className="flex items-center w-full">
-                              <div className={`w-2 border-t-2 border-dashed ${colors ? colors.prepBorder : "border-gray-300"}`} />
+                              <div className={`w-2 border-t-4 border-dashed ${colors ? colors.prepBorder : "border-gray-300"}`} />
                               <div
                                 onClick={() => setEditingTask(task)}
                                 className={`flex-1 text-xs px-2 py-0.5 rounded-r cursor-pointer hover:opacity-80 truncate ${
