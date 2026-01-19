@@ -1100,7 +1100,7 @@ function TaskCard({
             {isSendingTTS ? (
               <Loader2 className="h-3 w-3 animate-spin" />
             ) : (
-              <Play className="h-3 w-3" />
+              <Play className="h-3 w-3 fill-current" />
             )}
           </Button>
           <Button
