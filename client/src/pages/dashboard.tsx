@@ -720,7 +720,7 @@ export default function Dashboard() {
                                 <div className={`text-xs font-semibold truncate ${colors?.text || "text-gray-700"}`}>
                                   {task.title}
                                 </div>
-                                <div className="text-[10px] text-muted-foreground mt-0.5 mb-1">
+                                <div className="text-[10px] text-muted-foreground mt-0.5 mb-3">
                                   {format(new Date(task.dueDate), "h:mm a")}
                                 </div>
                               </div>
