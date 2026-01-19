@@ -975,7 +975,7 @@ function TaskCard({
 
   const cardElement = (
     <Card
-      className={`transition-all rounded-xl shadow-md border-2 ${
+      className={`transition-all rounded-xl shadow-md border ${
         colors ? `${colors.bg} ${colors.border}` : "border-gray-400"
       } ${isMissed ? "border-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
@@ -1087,7 +1087,7 @@ function TaskCard({
     return (
       <div className="relative pt-9">
         {/* Media Controls - positioned absolutely at top, same height as header */}
-        <div className={`absolute top-0 left-0 right-0 h-8 flex items-center justify-around rounded-lg px-2 border-2 ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
+        <div className={`absolute top-0 left-0 right-0 h-8 flex items-center justify-around rounded-lg px-2 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
           <Button
             size="icon"
             variant="ghost"
