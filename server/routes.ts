@@ -321,29 +321,36 @@ export async function registerRoutes(
   app.post("/api/tasks/sync-all-calendar", async (req, res) => {
     try {
       const tasks = await storage.getTasks({});
-      const results = { synced: 0, failed: 0, skipped: 0 };
+      const results = { created: 0, updated: 0, failed: 0 };
       
       for (const task of tasks) {
-        if (task.calendarEventId) {
-          results.skipped++;
-          continue;
-        }
-        
         try {
-          const event = await createCalendarEvent({
-            id: task.id,
-            title: task.title,
-            description: task.description,
-            dueDate: task.dueDate,
-            courseName: task.courseName,
-          });
-          
-          await storage.updateTask(task.id, {
-            calendarEventId: event.id,
-            calendarProvider: "google",
-          });
-          
-          results.synced++;
+          if (task.calendarEventId) {
+            // Update existing calendar event
+            await updateCalendarEvent(task.calendarEventId, {
+              title: task.title,
+              description: task.description,
+              dueDate: task.dueDate,
+              courseName: task.courseName,
+            });
+            results.updated++;
+          } else {
+            // Create new calendar event
+            const event = await createCalendarEvent({
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              dueDate: task.dueDate,
+              courseName: task.courseName,
+            });
+            
+            await storage.updateTask(task.id, {
+              calendarEventId: event.id,
+              calendarProvider: "google",
+            });
+            
+            results.created++;
+          }
         } catch (err) {
           console.error(`Failed to sync task ${task.id}:`, err);
           results.failed++;
