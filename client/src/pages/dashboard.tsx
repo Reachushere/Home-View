@@ -732,7 +732,7 @@ export default function Dashboard() {
         {/* Selected Date / Week Header */}
         <div className="flex items-center justify-between mb-0">
           <div>
-            <h3 className="text-lg font-semibold text-[#5979CC]" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h3 className="text-lg font-semibold text-[#5979CC] pl-4" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               {selectedDate 
                 ? format(selectedDate, "EEEE, MMMM d, yyyy")
                 : `Week ${selectedWeek} Tasks`}
