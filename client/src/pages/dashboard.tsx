@@ -39,6 +39,8 @@ import {
   CircleX,
   MinusCircle,
   PlusCircle,
+  Rewind,
+  FastForward,
 } from "lucide-react";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
@@ -953,6 +955,21 @@ function TaskCard({
     }
   };
 
+  const handleSeek = async (direction: "forward" | "backward") => {
+    setIsControlling(true);
+    try {
+      await fetch('/api/media/seek', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ direction }),
+      });
+    } catch (error) {
+      console.error('Seek error:', error);
+    } finally {
+      setIsControlling(false);
+    }
+  };
+
   return (
     <Card
       className={`transition-all h-full rounded-xl shadow-md border-2 ${
@@ -1067,6 +1084,28 @@ function TaskCard({
                 title="Stop"
               >
                 <CircleX className="h-3 w-3" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={() => handleSeek("backward")}
+                disabled={isControlling}
+                data-testid={`button-rewind-${task.id}`}
+                title="Rewind"
+              >
+                <Rewind className="h-3 w-3" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6"
+                onClick={() => handleSeek("forward")}
+                disabled={isControlling}
+                data-testid={`button-forward-${task.id}`}
+                title="Fast Forward"
+              >
+                <FastForward className="h-3 w-3" />
               </Button>
               <Button
                 size="icon"

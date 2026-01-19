@@ -238,6 +238,44 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/media/seek - Skip forward or backward on Echo device
+  app.post("/api/media/seek", async (req, res) => {
+    try {
+      const { direction } = req.body; // "forward" or "backward"
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Use Alexa Media Player's skip commands
+      const service = direction === "forward" ? "media_next_track" : "media_previous_track";
+      
+      const response = await fetch(`${haUrl}/api/services/media_player/${service}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: BATHROOM_ECHO_ENTITY,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Home Assistant seek error:", errorText);
+        return res.status(response.status).json({ error: "Failed to seek" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Seek error:", error);
+      res.status(500).json({ error: "Failed to seek" });
+    }
+  });
+
   // POST /api/media/volume - Set volume on Echo device
   app.post("/api/media/volume", async (req, res) => {
     try {
