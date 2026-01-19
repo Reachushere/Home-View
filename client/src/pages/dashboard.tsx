@@ -545,14 +545,11 @@ export default function Dashboard() {
                     }`}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    <div className={`text-2xl font-bold ${
+                    <div className={`text-xs font-bold tracking-wide ${
                       isToday ? "text-white" : "text-foreground"
                     }`}>
-                      {dayNum}
+                      {dayName} {dayNum}
                     </div>
-                    <div className={`text-xs font-medium tracking-wide ${
-                      isToday ? "text-white/80" : "text-muted-foreground"
-                    }`}>{dayName}</div>
                   </div>
                 );
               })}
