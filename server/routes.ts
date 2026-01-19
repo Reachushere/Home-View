@@ -176,15 +176,19 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      const response = await fetch(`${haUrl}/api/services/tts/speak`, {
+      // Use notify.alexa_media for Echo devices via Alexa Media Player integration
+      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: BATHROOM_ECHO_ENTITY,
           message: message,
+          target: BATHROOM_ECHO_ENTITY,
+          data: {
+            type: "tts"
+          }
         }),
       });
 
