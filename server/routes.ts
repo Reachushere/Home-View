@@ -314,9 +314,11 @@ export async function registerRoutes(
       // Remove excessive whitespace and newlines
       cleanedContent = cleanedContent.replace(/\s+/g, ' ');
       // Limit length to avoid TTS timeout (Alexa has limits)
-      if (cleanedContent.length > 6000) {
-        cleanedContent = cleanedContent.substring(0, 6000) + " Content truncated due to length.";
+      if (cleanedContent.length > 5900) {
+        cleanedContent = cleanedContent.substring(0, 5900) + " Content truncated due to length.";
       }
+      // Add prefix to prevent Alexa from interpreting text as a command
+      cleanedContent = "Reading document. " + cleanedContent;
       // Save session for resume functionality (store cleaned text without SSML escaping)
       // Store the original cleaned content for position tracking
       const textForSession = textContent.trim().replace(/\s+/g, ' ');
