@@ -338,24 +338,35 @@ export default function Dashboard() {
     ? allTasks.filter(t => isSameDay(new Date(t.dueDate), selectedDate))
     : tasks;
 
-  const missedTasks = displayTasks.filter(t => t.isMissed && !t.isCompleted);
+  // Sort tasks so ones with attachments come first (for media control alignment)
+  const sortByAttachments = (tasks: Task[]) => {
+    return [...tasks].sort((a, b) => {
+      const aHasAttachments = a.attachments && a.attachments.length > 0;
+      const bHasAttachments = b.attachments && b.attachments.length > 0;
+      if (aHasAttachments && !bHasAttachments) return -1;
+      if (!aHasAttachments && bHasAttachments) return 1;
+      return 0;
+    });
+  };
+
+  const missedTasks = sortByAttachments(displayTasks.filter(t => t.isMissed && !t.isCompleted));
   const today = new Date();
   // Do Today shows ALL tasks due today OR prep tasks starting today (from all tasks, not just selected week)
-  const todayTasks = allTasks.filter(t => {
+  const todayTasks = sortByAttachments(allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
     const isDueToday = t.dueDate && isSameDay(new Date(t.dueDate), today);
     const isPrepToday = t.startDate && isSameDay(new Date(t.startDate), today);
     return isDueToday || isPrepToday;
-  });
+  }));
   
   // Update ref for jiggle effect
   todayTaskCountRef.current = todayTasks.length;
   // Upcoming shows tasks from selected week/date that are NOT due today
-  const upcomingTasks = displayTasks.filter(t => {
+  const upcomingTasks = sortByAttachments(displayTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
     if (!t.dueDate) return true;
     return !isSameDay(new Date(t.dueDate), today);
-  });
+  }));
   const completedTasks = displayTasks.filter(t => t.isCompleted);
 
   // Weekly view - get the current selected week's days
@@ -1645,9 +1656,9 @@ function TaskCard({
         </div>
       );
     }
-    // Compact without attachments - just make clickable
+    // Compact without attachments - add pt-5 to align with cards that have media controls
     return (
-      <div className="cursor-pointer" onClick={onEdit}>
+      <div className="pt-5 cursor-pointer" onClick={onEdit}>
         {cardElement}
       </div>
     );
