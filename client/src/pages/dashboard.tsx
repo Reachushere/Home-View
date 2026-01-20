@@ -116,6 +116,18 @@ export default function Dashboard() {
     return null;
   });
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem('checkedCourses');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const toggleCourse = (courseId: string) => {
+    setCheckedCourses(prev => {
+      const updated = { ...prev, [courseId]: !prev[courseId] };
+      localStorage.setItem('checkedCourses', JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   // Create jiggle sound using Web Audio API
   const playJiggleSound = useCallback(() => {
@@ -662,34 +674,34 @@ export default function Dashboard() {
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
             </div>
             <div className="border-b border-black px-1 py-0.5 font-bold">COURSES</div>
-            <div className="flex border-b border-black">
+            <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                <input type="checkbox" className="h-3 w-3" />
+                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
             </div>
-            <div className="flex border-b border-black">
+            <div className={`flex border-b border-black ${checkedCourses['PPA102'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                <input type="checkbox" className="h-3 w-3" />
+                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
             </div>
-            <div className="flex border-b border-black">
+            <div className={`flex border-b border-black ${checkedCourses['PPA125'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                <input type="checkbox" className="h-3 w-3" />
+                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
               <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
             </div>
-            <div className="flex border-b border-black">
+            <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] && checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex flex-col items-center justify-center gap-1">
-                <input type="checkbox" className="h-3 w-3" />
-                <input type="checkbox" className="h-3 w-3" />
+                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
+                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
