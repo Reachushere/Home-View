@@ -951,7 +951,7 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="px-1 pt-0.5 text-[8px]">
-                  OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.
+                  OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800">PR Table I</a>.
                 </div>
                 <div className="px-1 pt-2 pb-5 flex items-end">
                   <input 
