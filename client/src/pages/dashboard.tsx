@@ -2060,11 +2060,11 @@ export default function Dashboard() {
                           compact
                         />
                       </div>
-                      <div className="flip-card w-8 flex flex-col items-center justify-center">
-                        <span className="flip-number text-2xl text-amber-400 relative z-10">
+                      <div className="flip-card w-8 h-10 flex flex-col items-center justify-center">
+                        <span className="flip-number text-2xl text-amber-400 relative z-10 leading-none">
                           {daysUntilDue}
                         </span>
-                        <span className="text-[7px] text-gray-400 uppercase tracking-wider relative z-10">
+                        <span className="text-[7px] text-white uppercase tracking-wider relative z-10">
                           {daysUntilDue === 1 ? 'day' : 'days'}
                         </span>
                       </div>
