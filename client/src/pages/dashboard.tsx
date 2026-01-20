@@ -1290,7 +1290,8 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
+              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5 leading-tight">
+                Select <span className="font-bold">THREE</span> courses not previously taken:
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
