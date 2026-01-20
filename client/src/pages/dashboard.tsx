@@ -1702,12 +1702,12 @@ export default function Dashboard() {
           </Button>
           {/* All buttons with equal spacing */}
           <div className="flex-1 flex items-center justify-end gap-2 ml-2">
-            <Button size="sm" className="h-[12px] w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 py-0" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+            <Button size="sm" className="!h-[12px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0" onClick={() => setSelectedWeek(2)} data-testid="button-today">
               TODAY
             </Button>
             <Button 
               size="sm" 
-              className="h-[12px] w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 py-0" 
+              className="!h-[12px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0" 
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
@@ -1722,7 +1722,7 @@ export default function Dashboard() {
             <RouterLink href="/files">
               <Button 
                 size="sm" 
-                className="h-[12px] w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 py-0" 
+                className="!h-[12px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0" 
                 data-testid="button-files-link"
               >
                 <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
@@ -1731,7 +1731,7 @@ export default function Dashboard() {
             </RouterLink>
             <Button 
               size="sm"
-              className="h-[12px] w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 py-0" 
+              className="!h-[12px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 !py-0" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
@@ -1740,7 +1740,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-[12px] w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 py-0" 
+              className="!h-[12px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 !py-0" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
@@ -1749,7 +1749,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-[12px] w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 py-0" 
+              className="!h-[12px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 !py-0" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
@@ -1758,7 +1758,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-[12px] w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 py-0" 
+              className="!h-[12px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 !py-0" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
@@ -1767,7 +1767,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-[12px] w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 py-0" 
+              className="!h-[12px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 !py-0" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
