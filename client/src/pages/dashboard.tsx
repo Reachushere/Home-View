@@ -1323,6 +1323,7 @@ function TaskCard({
           <Button 
             size="sm" 
             variant={task.calendarEventId ? "default" : "outline"}
+            className={task.calendarEventId ? "bg-[#5979CC] hover:bg-[#4a68b3]" : ""}
             onClick={handleGoogleCalendarSync}
             disabled={isSyncingCalendar}
             data-testid={`button-gcal-${task.id}`}
