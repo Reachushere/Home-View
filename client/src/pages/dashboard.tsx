@@ -986,7 +986,7 @@ export default function Dashboard() {
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
-                <div>Select <span className="font-bold">TWO</span> from the following:</div>
+                <div>Select <span className="font-bold">THREE</span> from the following:</div>
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 flex border-b border-black">
