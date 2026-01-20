@@ -1266,7 +1266,8 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
-            <div className="flex border-t border-b border-black">
+            <div className="h-px bg-black"></div>
+            <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
                 <div className="flex items-center justify-center pb-1">
@@ -1292,6 +1293,7 @@ export default function Dashboard() {
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
+            <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="px-1 pt-0.5 text-[8px] invisible">X</div>
