@@ -485,7 +485,7 @@ export default function Dashboard() {
                 </span>
               </div>
               {week.taskCount > 0 && (
-                <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0">
+                <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0 min-w-5 text-center justify-center">
                   {week.taskCount}
                 </Badge>
               )}
