@@ -601,7 +601,19 @@ export default function Dashboard() {
       <main className="flex-1 p-6 overflow-auto flex flex-col">
         {/* Title Row */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
+            <Button
+              variant={isMuted ? "default" : "ghost"}
+              size="lg"
+              onClick={toggleMute}
+              className={`h-14 w-14 p-0 ${isMuted ? "bg-red-500 hover:bg-red-600 text-white" : ""}`}
+              data-testid="button-mute-toggle"
+              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+            >
+              {isMuted ? <BellOff className="h-8 w-8" /> : <Bell className="h-8 w-8" />}
+            </Button>
+          </div>
           
           {/* Rainbow Digital Clock */}
           <div className="bg-black px-6 py-3 rounded-lg" data-testid="digital-clock">
@@ -612,19 +624,7 @@ export default function Dashboard() {
             </span>
           </div>
           
-          <div className="flex items-center gap-3">
-            <Button
-              variant={isMuted ? "default" : "ghost"}
-              size="lg"
-              onClick={toggleMute}
-              className={`h-12 w-12 p-0 ${isMuted ? "bg-red-500 hover:bg-red-600 text-white" : ""}`}
-              data-testid="button-mute-toggle"
-              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-            >
-              {isMuted ? <BellOff className="h-7 w-7" /> : <Bell className="h-7 w-7" />}
-            </Button>
-            <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
-          </div>
+          <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
         </div>
         
         {/* Calendar Header */}
