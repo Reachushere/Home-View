@@ -528,11 +528,11 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <Button variant="outline" size="sm" className="h-6 w-[82px] text-[10px] border border-foreground/60 font-semibold ml-2" onClick={() => setSelectedWeek(2)} data-testid="button-today">
-            TODAY
-          </Button>
-          {/* Middle buttons - evenly spaced with equal gaps */}
-          <div className="flex-1 flex items-center justify-center gap-3">
+          {/* All buttons with equal spacing */}
+          <div className="flex-1 flex items-center justify-between ml-2">
+            <Button variant="outline" size="sm" className="h-6 w-[82px] text-[10px] border border-foreground/60 font-semibold" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+              TODAY
+            </Button>
             <Button 
               variant="outline" 
               size="sm" 
@@ -595,16 +595,16 @@ export default function Dashboard() {
               <Plus className="h-2.5 w-2.5" />
               Assign
             </Button>
+            <Button 
+              size="sm"
+              className="h-6 w-[82px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border border-blue-800" 
+              data-testid="button-add-exam"
+              onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
+            >
+              <Plus className="h-2.5 w-2.5" />
+              Exam
+            </Button>
           </div>
-          <Button 
-            size="sm"
-            className="h-6 w-[82px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border border-blue-800" 
-            data-testid="button-add-exam"
-            onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
-          >
-            <Plus className="h-2.5 w-2.5" />
-            Exam
-          </Button>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
