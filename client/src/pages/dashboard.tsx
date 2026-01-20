@@ -1651,10 +1651,16 @@ export default function Dashboard() {
           
           {/* Rainbow Digital Clock */}
           <div className="bg-[#5979CC] px-2 py-0.5 rounded-md w-[125px] flex justify-center items-center" data-testid="digital-clock">
-            <span className="text-sm font-black font-mono tracking-wider text-white w-[68px] text-right tabular-nums">
+            <span 
+              className="text-sm font-bold text-white w-[68px] text-right tabular-nums"
+              style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif", letterSpacing: '0.05em' }}
+            >
               {format(currentTime, "hh:mm:ss")}
             </span>
-            <span className="text-sm font-black font-mono tracking-wider text-white w-[24px] text-left ml-3">
+            <span 
+              className="text-xs font-semibold text-white w-[24px] text-left ml-2"
+              style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif" }}
+            >
               {format(currentTime, "a")}
             </span>
           </div>
