@@ -1226,6 +1226,50 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 322</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
                 </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                </div>
                 <div className="h-10 flex">
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 324</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
