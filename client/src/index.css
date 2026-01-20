@@ -118,6 +118,21 @@
   animation: today-blink 1.5s ease-in-out infinite;
 }
 
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-gentle-bounce {
+  animation: gentle-bounce 0.5s ease-in-out;
+  animation-iteration-count: 2;
+  animation-delay: 0s;
+}
+
+.animate-bounce-interval {
+  animation: gentle-bounce 0.5s ease-in-out 2;
+}
+
 .today-popup {
   cursor: pointer;
 }

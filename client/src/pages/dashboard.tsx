@@ -94,6 +94,16 @@ export default function Dashboard() {
   const [calendarHeight, setCalendarHeight] = useState(400);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
+  const [doTodayBounce, setDoTodayBounce] = useState(false);
+
+  // Bounce the Do Today box every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDoTodayBounce(true);
+      setTimeout(() => setDoTodayBounce(false), 1000);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Calendar resize handlers
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
@@ -993,7 +1003,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section */}
-          <section className="w-[240px] flex-shrink-0 bg-orange-200/70 dark:bg-orange-900/35 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 bg-orange-200/70 dark:bg-orange-900/35 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
             <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Calendar className="h-3.5 w-3.5" />
               Do Today ({todayTasks.length})
