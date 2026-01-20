@@ -1215,7 +1215,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
+              <div className="w-28 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
                 <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
               </div>
