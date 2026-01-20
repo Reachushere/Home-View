@@ -691,8 +691,8 @@ export default function Dashboard() {
                 <input type="checkbox" className="h-3 w-3" />
                 <input type="checkbox" className="h-3 w-3" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black text-[7px] flex flex-col justify-center">
-                <div>Core Electives:</div>
+              <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] flex flex-col justify-center">
+                <div className="font-semibold">Core Electives:</div>
                 <div>Select <span className="font-bold">TWO</span> from the following:</div>
               </div>
               <div className="flex-1 flex flex-col">
