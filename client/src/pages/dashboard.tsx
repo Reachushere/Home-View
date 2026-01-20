@@ -1260,7 +1260,7 @@ export default function Dashboard() {
                 <div className="px-1 py-0.5 text-[8px]">CORE REQUIRED:</div>
                 <div className="flex flex-col">
                   <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
-                  <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 Core Elective and 6 OE</div>
+                  <div className="h-11 px-1 flex items-start pt-1 text-[9px]">Course Base Option: Need 3 RG2 Core Elective and 6 OE</div>
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
