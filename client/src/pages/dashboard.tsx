@@ -607,7 +607,7 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               onClick={toggleMute}
-              className={`h-6 w-8 p-0 mt-1 bg-blue-500 hover:bg-blue-600 border-[1.75px] border-blue-600 text-white ${isMuted ? "bg-red-500 hover:bg-red-600 border-red-500" : ""}`}
+              className={`h-6 w-8 p-0 mt-1 bg-purple-500 hover:bg-purple-600 border-[1.75px] border-purple-600 text-white ${isMuted ? "bg-red-500 hover:bg-red-600 border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
@@ -616,9 +616,9 @@ export default function Dashboard() {
           </div>
           
           {/* Rainbow Digital Clock */}
-          <div className="bg-black px-4 py-2 rounded-lg" data-testid="digital-clock">
+          <div className="bg-black px-3 py-1 rounded-md" data-testid="digital-clock">
             <span 
-              className="text-2xl font-bold font-mono tracking-wider bg-clip-text text-transparent"
+              className="text-lg font-bold font-mono tracking-wider bg-clip-text text-transparent"
               style={{ backgroundImage: "linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #a855f7)" }}
             >
               {format(currentTime, "hh:mm:ss a")}
