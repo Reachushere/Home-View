@@ -990,15 +990,15 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 220</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 120</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
                 </div>
                 <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 221</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 121</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 222</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 122</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
