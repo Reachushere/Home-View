@@ -1198,24 +1198,52 @@ export default function Dashboard() {
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-                        <div className="flex border-b border-black">
+            <div className="flex border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-11 flex items-center justify-center">
+                  <input type="checkbox" className="checkbox-black" />
+                </div>
               </div>
-              <div className="w-28 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
+              <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
                 <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
               </div>
@@ -1278,60 +1306,88 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                <div className="h-11 flex flex-col items-center justify-center gap-1.5">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
               </div>
