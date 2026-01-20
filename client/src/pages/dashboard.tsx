@@ -1614,9 +1614,9 @@ function TaskCard({
               title="Play"
             >
               {isSendingTTS ? (
-                <Loader2 className="h-2 w-2 animate-spin" />
+                <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                <Play className="h-2 w-2 fill-current" />
+                <Play className="h-3 w-3 fill-current" />
               )}
             </div>
             <div
@@ -1625,7 +1625,7 @@ function TaskCard({
               data-testid={`button-stop-${task.id}`}
               title="Stop"
             >
-              <Square className="h-2 w-2 fill-current" />
+              <Square className="h-3 w-3 fill-current" />
             </div>
             <div
               className="cursor-pointer hover:opacity-70"
@@ -1633,7 +1633,7 @@ function TaskCard({
               data-testid={`button-resume-${task.id}`}
               title="Resume"
             >
-              <RefreshCw className="h-2 w-2" />
+              <RefreshCw className="h-3 w-3" />
             </div>
             <div
               className="cursor-pointer hover:opacity-70"
@@ -1641,7 +1641,7 @@ function TaskCard({
               data-testid={`button-voldown-${task.id}`}
               title="Volume Down"
             >
-              <MinusCircle className="h-2 w-2" />
+              <MinusCircle className="h-3 w-3" />
             </div>
             <div
               className="cursor-pointer hover:opacity-70"
@@ -1649,7 +1649,7 @@ function TaskCard({
               data-testid={`button-volup-${task.id}`}
               title="Volume Up"
             >
-              <PlusCircle className="h-2 w-2" />
+              <PlusCircle className="h-3 w-3" />
             </div>
           </div>
           {cardElement}
@@ -1676,9 +1676,9 @@ function TaskCard({
             title="Play"
           >
             {isSendingTTS ? (
-              <Loader2 className="h-2.5 w-2.5 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <Play className="h-2.5 w-2.5 fill-current" />
+              <Play className="h-3.5 w-3.5 fill-current" />
             )}
           </div>
           <div
@@ -1687,7 +1687,7 @@ function TaskCard({
             data-testid={`button-stop-${task.id}`}
             title="Stop"
           >
-            <Square className="h-2.5 w-2.5 fill-current" />
+            <Square className="h-3.5 w-3.5 fill-current" />
           </div>
           <div
             className="cursor-pointer hover:opacity-70"
@@ -1695,7 +1695,7 @@ function TaskCard({
             data-testid={`button-resume-${task.id}`}
             title="Resume"
           >
-            <RefreshCw className="h-2.5 w-2.5" />
+            <RefreshCw className="h-3.5 w-3.5" />
           </div>
           <div
             className="cursor-pointer hover:opacity-70"
@@ -1703,7 +1703,7 @@ function TaskCard({
             data-testid={`button-voldown-${task.id}`}
             title="Volume Down"
           >
-            <MinusCircle className="h-2.5 w-2.5" />
+            <MinusCircle className="h-3.5 w-3.5" />
           </div>
           <div
             className="cursor-pointer hover:opacity-70"
@@ -1711,7 +1711,7 @@ function TaskCard({
             data-testid={`button-volup-${task.id}`}
             title="Volume Up"
           >
-            <PlusCircle className="h-2.5 w-2.5" />
+            <PlusCircle className="h-3.5 w-3.5" />
           </div>
         </div>
         {cardElement}
