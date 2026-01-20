@@ -865,7 +865,7 @@ export default function Dashboard() {
             <div>
               <div className="flex">
                 <div className="w-5 border-r border-black"></div>
-                <div className="flex-1 px-1 py-0.5 text-[8px]">
+                <div className="flex-1 px-1 py-0.5 pb-0 text-[8px]">
                   <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
                 </div>
                 <div className="w-12 border-l border-black"></div>
@@ -874,7 +874,7 @@ export default function Dashboard() {
                 <div className={`w-5 border-r border-black flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['LIBERAL'] || false} disabled={!openElectives['LIBERAL']?.trim()} onChange={() => toggleCourse('LIBERAL')} />
                 </div>
-                <div className="flex-1 px-1 py-1 flex items-end">
+                <div className="flex-1 px-1 pt-0 pb-1 flex items-end">
                   <input 
                     type="text" 
                     className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
