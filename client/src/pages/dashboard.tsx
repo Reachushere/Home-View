@@ -531,8 +531,8 @@ export default function Dashboard() {
           <Button variant="outline" size="sm" className="h-6 w-[72px] text-[10px] border border-foreground/60 font-semibold ml-2" onClick={() => setSelectedWeek(2)} data-testid="button-today">
             TODAY
           </Button>
-          {/* Buttons - right-aligned to calendar edge */}
-          <div className="flex-1 flex items-center justify-end gap-1.5">
+          {/* Buttons - evenly spaced between TODAY and Exam */}
+          <div className="flex-1 flex items-center justify-between">
             <Button 
               variant="outline" 
               size="sm" 
