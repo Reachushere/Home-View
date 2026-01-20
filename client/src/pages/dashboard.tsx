@@ -1974,9 +1974,9 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Do Today Section */}
           <section className={`w-[240px] flex-shrink-0 bg-orange-300/60 dark:bg-orange-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Calendar className="h-3.5 w-3.5 text-yellow-500" />
-              <span className="text-black dark:text-white">Do Today</span> <span className="text-yellow-500">(Urgent)</span> <span className="text-black dark:text-white">({todayTasks.length})</span>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Calendar className="h-3.5 w-3.5 text-black dark:text-white" />
+              Urgent: Do Today ({todayTasks.length})
             </h4>
             {isLoading ? (
               <div className="text-muted-foreground text-xs">Loading...</div>
