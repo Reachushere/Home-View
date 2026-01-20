@@ -67,6 +67,8 @@ function formatDate(dateValue: string | Date | null) {
   });
 }
 
+type SortOption = "name-asc" | "name-desc" | "date-newest" | "date-oldest" | "size-largest" | "size-smallest";
+
 export default function FilesPage() {
   const { toast } = useToast();
   const [editingFile, setEditingFile] = useState<FileRecord | null>(null);
@@ -75,6 +77,7 @@ export default function FilesPage() {
   const [selectedTaskId, setSelectedTaskId] = useState<string>("");
   const [showAssignAfterUpload, setShowAssignAfterUpload] = useState(false);
   const [lastUploadedObjectPath, setLastUploadedObjectPath] = useState<string>("");
+  const [sortBy, setSortBy] = useState<SortOption>("date-newest");
 
   const { getUploadParameters } = useUpload();
 
@@ -175,6 +178,25 @@ export default function FilesPage() {
     );
   };
 
+  const sortedFiles = [...files].sort((a, b) => {
+    switch (sortBy) {
+      case "name-asc":
+        return (a.displayName || "").localeCompare(b.displayName || "");
+      case "name-desc":
+        return (b.displayName || "").localeCompare(a.displayName || "");
+      case "date-newest":
+        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+      case "date-oldest":
+        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+      case "size-largest":
+        return (b.size || 0) - (a.size || 0);
+      case "size-smallest":
+        return (a.size || 0) - (b.size || 0);
+      default:
+        return 0;
+    }
+  });
+
   if (filesLoading || tasksLoading) {
     return (
       <div className="min-h-screen bg-background p-6">
@@ -205,6 +227,19 @@ export default function FilesPage() {
           <Badge variant="secondary">
             {files.length} {files.length === 1 ? "file" : "files"}
           </Badge>
+          <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+            <SelectTrigger className="w-[160px]" data-testid="select-sort">
+              <SelectValue placeholder="Sort by..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date-newest">Newest first</SelectItem>
+              <SelectItem value="date-oldest">Oldest first</SelectItem>
+              <SelectItem value="name-asc">Name A-Z</SelectItem>
+              <SelectItem value="name-desc">Name Z-A</SelectItem>
+              <SelectItem value="size-largest">Largest first</SelectItem>
+              <SelectItem value="size-smallest">Smallest first</SelectItem>
+            </SelectContent>
+          </Select>
           <ObjectUploader
             maxNumberOfFiles={5}
             onGetUploadParameters={getUploadParameters}
@@ -231,7 +266,7 @@ export default function FilesPage() {
           </Card>
         ) : (
           <div className="grid gap-4">
-            {files.map((file) => {
+            {sortedFiles.map((file) => {
               const FileIcon = getFileIcon(file.contentType);
               const assignedTasks = getTasksForFile(file);
               
