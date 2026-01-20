@@ -2079,9 +2079,9 @@ export default function Dashboard() {
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
           <section className="bg-green-200/70 dark:bg-green-900/35 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 h-[210px]" data-testid="section-todo">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <ClipboardCheck className="h-3.5 w-3.5 text-green-600" />
-              <span className="text-black dark:text-white">To Do</span>
+            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <ClipboardCheck className="h-3 w-3 text-black dark:text-white" />
+              To Do
             </h4>
             <div className="grid grid-cols-4 gap-4 h-[calc(100%-32px)]">
               <div className="flex flex-col gap-1.5 overflow-auto">
