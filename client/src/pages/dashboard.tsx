@@ -1193,22 +1193,22 @@ export default function Dashboard() {
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
               <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
-            <div className="flex border-b border-black">
-              <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
+            <div className="grid border-b border-black" style={{ gridTemplateColumns: '1.25rem 3.5rem 3.5rem 1fr 3rem' }}>
+              <div className="px-0.5 py-0.5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 333</div>
-              <div className="flex-1 px-1 py-0.5">Research Methods in Public Administration</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="px-1 py-0.5 border-r border-black">Core Req</div>
+              <div className="px-1 py-0.5 border-r border-black">PPA 333</div>
+              <div className="px-1 py-0.5">Research Methods in Public Administration</div>
+              <div className="border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-black">
-              <div className="w-5 border-r border-black flex flex-col">
+            <div className="grid border-b border-black" style={{ gridTemplateColumns: '1.25rem 3.5rem 3.5rem 1fr 3rem' }}>
+              <div className="border-r border-black flex flex-col">
                 <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
@@ -1224,11 +1224,11 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
+              <div className="px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
                 <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
               </div>
-              <div className="w-14 border-r border-black flex flex-col">
+              <div className="border-r border-black flex flex-col">
                 <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 235</div>
                 <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 301</div>
                 <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 303</div>
@@ -1244,7 +1244,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 490</div>
                 <div className="h-11 px-1 py-0.5 flex items-center">PPA 501</div>
               </div>
-              <div className="flex-1 flex flex-col">
+              <div className="flex flex-col">
                 <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Theories of the State</div>
                 <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Administrative Law T</div>
                 <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Public Budget Policy/Politics</div>
@@ -1260,7 +1260,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Public Admin Themes</div>
                 <div className="h-11 px-1 py-0.5 flex items-center">Public Sector Leadership</div>
               </div>
-              <div className="w-12 border-l border-black flex flex-col">
+              <div className="border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
