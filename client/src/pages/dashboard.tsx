@@ -71,7 +71,7 @@ const typeColors: Record<string, string> = {
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
   "CPPA122": { bg: "bg-blue-500/10", border: "border-blue-500", text: "text-blue-700 dark:text-blue-300", dot: "bg-blue-500", prepBg: "bg-blue-200/50", prepBorder: "border-blue-300", prepText: "text-blue-600 dark:text-blue-400" },
   "CFNF400": { bg: "bg-green-500/30", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-green-200/50", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
-  "CASL101": { bg: "bg-yellow-500/30", border: "border-yellow-500", text: "text-yellow-700 dark:text-yellow-300", dot: "bg-yellow-500", prepBg: "bg-yellow-200/50", prepBorder: "border-yellow-300", prepText: "text-yellow-600 dark:text-yellow-400" },
+  "CASL101": { bg: "bg-amber-700/30", border: "border-amber-700", text: "text-amber-800 dark:text-amber-300", dot: "bg-amber-700", prepBg: "bg-amber-300/50", prepBorder: "border-amber-400", prepText: "text-amber-700 dark:text-amber-400" },
 };
 
 interface WeekInfo {
@@ -192,7 +192,19 @@ export default function Dashboard() {
     : tasks;
 
   const missedTasks = displayTasks.filter(t => t.isMissed && !t.isCompleted);
-  const upcomingTasks = displayTasks.filter(t => !t.isMissed && !t.isCompleted);
+  const today = new Date();
+  // Due Today shows ALL tasks due today (from all tasks, not just selected week)
+  const todayTasks = allTasks.filter(t => {
+    if (t.isMissed || t.isCompleted) return false;
+    if (!t.dueDate) return false;
+    return isSameDay(new Date(t.dueDate), today);
+  });
+  // Upcoming shows tasks from selected week/date that are NOT due today
+  const upcomingTasks = displayTasks.filter(t => {
+    if (t.isMissed || t.isCompleted) return false;
+    if (!t.dueDate) return true;
+    return !isSameDay(new Date(t.dueDate), today);
+  });
   const completedTasks = displayTasks.filter(t => t.isCompleted);
 
   // Weekly view - get the current selected week's days
@@ -944,10 +956,39 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Upcoming and Missed Tasks Side by Side */}
-        <div className="flex gap-6 mb-6 items-start">
+        {/* Due Today, Upcoming, and Missed Tasks Side by Side */}
+        <div className="flex gap-4 mb-6 items-start">
+          {/* Due Today Section */}
+          <section className="w-[280px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black" data-testid="section-due-today">
+            <h4 className="text-md font-semibold text-orange-600 mb-0 h-8 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Calendar className="h-4 w-4" />
+              Due Today ({todayTasks.length})
+            </h4>
+            {isLoading ? (
+              <div className="text-muted-foreground">Loading tasks...</div>
+            ) : todayTasks.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No tasks due today
+              </div>
+            ) : (
+              <div className="space-y-3 -mt-8">
+                {todayTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                    cardBgClass="bg-orange-100 dark:bg-orange-900/30"
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+
           {/* Upcoming Tasks Section */}
-          <section className="flex-1 bg-card rounded-xl shadow-md p-4 border border-black">
+          <section className="w-[400px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black" data-testid="section-upcoming">
             <h4 className="text-md font-semibold text-foreground mb-0 h-8 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               Upcoming ({upcomingTasks.length})
             </h4>
@@ -958,17 +999,17 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-stretch -mt-8">
+              <div className="space-y-3 -mt-8">
                 {upcomingTasks.map((task) => (
-                  <div key={task.id}>
-                    <TaskCard
-                      task={task}
-                      onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                      onReschedule={() => setRescheduleTask(task)}
-                      onEdit={() => setEditingTask(task)}
-                      onDelete={() => deleteMutation.mutate(task.id)}
-                    />
-                  </div>
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                    cardBgClass="bg-yellow-50 dark:bg-yellow-900/20"
+                  />
                 ))}
               </div>
             )}
@@ -976,12 +1017,12 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section */}
           {missedTasks.length > 0 && (
-            <section className="w-[300px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black">
+            <section className="w-[280px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black" data-testid="section-missed">
               <h4 className="text-md font-semibold text-destructive mb-0 h-8 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
                 <Clock className="h-4 w-4" />
                 Missed ({missedTasks.length})
               </h4>
-              <div className="space-y-4 -mt-8">
+              <div className="space-y-3 -mt-8">
                 {missedTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1059,12 +1100,14 @@ function TaskCard({
   onReschedule,
   onEdit,
   onDelete,
+  cardBgClass,
 }: {
   task: Task;
   onComplete: (isCompleted: boolean) => void;
   onReschedule: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  cardBgClass?: string;
 }) {
   const Icon = iconMap[task.type] || ClipboardCheck;
   const isMissed = task.isMissed && !task.isCompleted;
@@ -1168,10 +1211,10 @@ function TaskCard({
   const cardElement = (
     <Card
       className={`transition-all rounded-xl shadow-md border flex-1 ${
-        colors ? `${colors.bg} ${colors.border}` : "border-gray-400"
-      } ${isMissed ? "border-destructive bg-destructive/5" : ""} ${
-        task.isCompleted ? "opacity-60" : ""
-      }`}
+        cardBgClass ? cardBgClass : colors ? colors.bg : ""
+      } ${colors ? colors.border : "border-gray-400"} ${
+        isMissed ? "border-destructive bg-destructive/5" : ""
+      } ${task.isCompleted ? "opacity-60" : ""}`}
       data-testid={`card-task-${task.id}`}
     >
       <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 pb-1 pt-3 px-3">

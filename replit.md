@@ -55,8 +55,10 @@ Preferred communication style: Simple, everyday language.
 ### Features
 - **Planning Periods**: Tasks can have optional start dates to show when to begin preparation
 - **File Attachments**: Upload files directly to Replit object storage or paste URLs
-- **Course Color Coding**: CPPA122 (blue), CFNF400 (green), CASL101 (yellow)
+- **File Management**: Dedicated /files page for viewing, renaming, and assigning files to tasks
+- **Course Color Coding**: CPPA122 (blue), CFNF400 (green), CASL101 (brown/amber)
 - **Calendar Export**: Download .ics files for individual tasks
+- **Dashboard Layout**: Three task sections - Due Today (orange cards), Upcoming (pale yellow cards), Missed (red styling)
 
 ### Key Design Patterns
 - **Type Safety**: End-to-end TypeScript with shared types between frontend and backend
