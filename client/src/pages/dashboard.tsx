@@ -1112,7 +1112,7 @@ export default function Dashboard() {
                 <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
                 <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
                 <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
-                <div className="h-5 border-b border-black"></div>
+                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
                 <div className="h-5 border-b border-black"></div>
                 <div className="h-5 border-b border-black"></div>
                 <div className="h-5"></div>
