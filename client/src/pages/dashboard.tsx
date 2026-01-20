@@ -599,21 +599,9 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto flex flex-col">
-        {/* Title Row */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
-            <Button
-              variant={isMuted ? "default" : "ghost"}
-              size="lg"
-              onClick={toggleMute}
-              className={`h-14 w-14 p-0 ${isMuted ? "bg-red-500 hover:bg-red-600 text-white" : ""}`}
-              data-testid="button-mute-toggle"
-              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-            >
-              {isMuted ? <BellOff className="h-8 w-8" /> : <Bell className="h-8 w-8" />}
-            </Button>
-          </div>
+        {/* Title Row - aligned with sidebar header */}
+        <div className="flex items-start justify-between mb-2">
+          <h1 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
           
           {/* Rainbow Digital Clock */}
           <div className="bg-black px-6 py-3 rounded-lg" data-testid="digital-clock">
@@ -626,6 +614,20 @@ export default function Dashboard() {
           </div>
           
           <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
+        </div>
+        
+        {/* Mute Button Row */}
+        <div className="mb-4">
+          <Button
+            variant={isMuted ? "default" : "ghost"}
+            size="lg"
+            onClick={toggleMute}
+            className={`h-14 w-14 p-0 ${isMuted ? "bg-red-500 hover:bg-red-600 text-white" : ""}`}
+            data-testid="button-mute-toggle"
+            title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+          >
+            {isMuted ? <BellOff className="h-8 w-8" /> : <Bell className="h-8 w-8" />}
+          </Button>
         </div>
         
         {/* Calendar Header */}
