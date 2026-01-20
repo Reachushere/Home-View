@@ -74,6 +74,10 @@ export async function createCalendarEvent(task: {
   if (isAllDay) {
     // All-day event uses date (not dateTime)
     const dateStr = dueDate.toISOString().split('T')[0]; // YYYY-MM-DD format
+    // Google Calendar uses exclusive end date, so add 1 day for single-day events
+    const nextDay = new Date(dueDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const endDateStr = nextDay.toISOString().split('T')[0];
     event = {
       summary,
       description: task.description || '',
@@ -81,7 +85,7 @@ export async function createCalendarEvent(task: {
         date: dateStr,
       },
       end: {
-        date: dateStr,
+        date: endDateStr,
       },
       reminders: {
         useDefault: false,
@@ -184,11 +188,14 @@ export async function updateCalendarEvent(eventId: string, task: {
     let event: any;
     if (isAllDay) {
       const dateStr = dueDate.toISOString().split('T')[0];
+      const nextDay = new Date(dueDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const endDateStr = nextDay.toISOString().split('T')[0];
       event = {
         summary,
         description: task.description || '',
         start: { date: dateStr },
-        end: { date: dateStr },
+        end: { date: endDateStr },
         reminders: { useDefault: false, overrides: [] },
       };
     } else {
@@ -222,11 +229,14 @@ export async function updateCalendarEvent(eventId: string, task: {
   let event: any;
   if (isAllDay) {
     const dateStr = dueDate.toISOString().split('T')[0];
+    const nextDay = new Date(dueDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const endDateStr = nextDay.toISOString().split('T')[0];
     event = {
       summary,
       description: task.description || '',
       start: { date: dateStr },
-      end: { date: dateStr },
+      end: { date: endDateStr },
     };
   } else {
     const startTime = dueDate.toISOString();
@@ -270,11 +280,14 @@ export async function createPrepCalendarEvent(task: {
   
   if (isAllDay) {
     const dateStr = startDate.toISOString().split('T')[0];
+    const nextDay = new Date(startDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const endDateStr = nextDay.toISOString().split('T')[0];
     event = {
       summary,
       description,
       start: { date: dateStr },
-      end: { date: dateStr },
+      end: { date: endDateStr },
       reminders: { useDefault: false, overrides: [] },
     };
   } else {
@@ -342,11 +355,14 @@ export async function updatePrepCalendarEvent(eventId: string, task: {
     let event: any;
     if (isAllDay) {
       const dateStr = startDate.toISOString().split('T')[0];
+      const nextDay = new Date(startDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      const endDateStr = nextDay.toISOString().split('T')[0];
       event = {
         summary,
         description,
         start: { date: dateStr },
-        end: { date: dateStr },
+        end: { date: endDateStr },
         reminders: { useDefault: false, overrides: [] },
       };
     } else {
@@ -374,11 +390,14 @@ export async function updatePrepCalendarEvent(eventId: string, task: {
   let event: any;
   if (isAllDay) {
     const dateStr = startDate.toISOString().split('T')[0];
+    const nextDay = new Date(startDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const endDateStr = nextDay.toISOString().split('T')[0];
     event = {
       summary,
       description,
       start: { date: dateStr },
-      end: { date: dateStr },
+      end: { date: endDateStr },
     };
   } else {
     const startTime = startDate.toISOString();
