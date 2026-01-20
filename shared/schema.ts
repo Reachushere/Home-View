@@ -47,6 +47,8 @@ export const tasks = pgTable("tasks", {
   courseName: text("course_name"),
   startDate: timestamp("start_date"), // Optional: when to start working on the task (planning/prep period)
   dueDate: timestamp("due_date").notNull(),
+  eventStartTime: text("event_start_time"), // Time the task/event starts (e.g., "09:00")
+  eventEndTime: text("event_end_time"), // Time the task/event ends (e.g., "10:00")
   weekNumber: integer("week_number").notNull(), // 2-13
   isCompleted: boolean("is_completed").default(false),
   isMissed: boolean("is_missed").default(false),

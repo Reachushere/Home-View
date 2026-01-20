@@ -530,7 +530,14 @@ export default function Dashboard() {
     return allTasks.filter(t => {
       if (t.startDate) return false; // Tasks with planning periods show in ALL DAY row
       const dueDate = new Date(t.dueDate);
-      return isSameDay(dueDate, day) && dueDate.getHours() === hour;
+      if (!isSameDay(dueDate, day)) return false;
+      
+      // Use eventStartTime if set, otherwise use dueDate hour
+      if (t.eventStartTime) {
+        const [startHour] = t.eventStartTime.split(':').map(Number);
+        return startHour === hour;
+      }
+      return dueDate.getHours() === hour;
     });
   };
   
@@ -556,6 +563,7 @@ export default function Dashboard() {
   const getAllDayTasks = (day: Date) => {
     return allTasks.filter(t => {
       if (t.startDate) return false; // Tasks with planning periods have their own rows
+      if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
       const dueDate = new Date(t.dueDate);
       // Only show in ALL DAY if it's exactly midnight (hour 0, minute 0)
       return isSameDay(dueDate, day) && dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
@@ -2703,6 +2711,8 @@ function TaskForm({
     courseName: task?.courseName || "",
     prepDays: getDefaultPrepDays(),
     dueDate: getDefaultDate(),
+    eventStartTime: task?.eventStartTime || "",
+    eventEndTime: task?.eventEndTime || "",
     priority: task?.priority || "medium",
     weekNumber: task?.weekNumber || weekNumber,
     referenceLink: task?.referenceLink || "",
@@ -2741,6 +2751,8 @@ function TaskForm({
         type: data.type,
         courseName: data.courseName,
         dueDate: new Date(data.dueDate).toISOString(),
+        eventStartTime: data.eventStartTime || null,
+        eventEndTime: data.eventEndTime || null,
         priority: data.priority,
         weekNumber: data.weekNumber,
         referenceLink: data.referenceLink,
@@ -2826,7 +2838,7 @@ function TaskForm({
       </div>
 
       <div>
-        <Label htmlFor="dueDate">Due Date & Time</Label>
+        <Label htmlFor="dueDate">Due Date</Label>
         <Input
           id="dueDate"
           type="datetime-local"
@@ -2835,6 +2847,29 @@ function TaskForm({
           required
           data-testid="input-duedate"
         />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <Label htmlFor="eventStartTime">Start Time (optional)</Label>
+          <Input
+            id="eventStartTime"
+            type="time"
+            value={formData.eventStartTime}
+            onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
+            data-testid="input-start-time"
+          />
+        </div>
+        <div>
+          <Label htmlFor="eventEndTime">End Time (optional)</Label>
+          <Input
+            id="eventEndTime"
+            type="time"
+            value={formData.eventEndTime}
+            onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
+            data-testid="input-end-time"
+          />
+        </div>
       </div>
 
       <div>
