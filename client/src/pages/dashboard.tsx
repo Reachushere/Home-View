@@ -1094,7 +1094,7 @@ export default function Dashboard() {
                 <input type="checkbox" className="checkbox-black" />
               </div>
               <div className="w-14 border-r border-black h-11 flex items-start justify-center text-[8px] text-center px-0.5">
-                <span className="leading-none -mt-1"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
+                <span className="leading-none -mt-2"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
               </div>
               <div className="flex-1 h-11 px-1 flex items-center">
                 <input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course..." />
