@@ -1281,7 +1281,7 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]">Core Elective</div>
+              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">Core Elective</div>
               <div className="w-12 border-l border-black"></div>
             </div>
             <div className="flex">
@@ -1317,7 +1317,7 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]">Core Elective</div>
+              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">Core Elective</div>
               <div className="w-12 border-l border-black"></div>
             </div>
             <div className="flex">
