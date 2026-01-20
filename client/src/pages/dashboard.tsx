@@ -2390,20 +2390,22 @@ function TaskCard({
             className={compact ? "h-3.5 w-3.5" : ""}
           />
           <div>
-            <CardTitle className={`font-medium ${task.isCompleted ? "line-through" : ""} ${compact ? "text-[10px] leading-tight line-clamp-1" : "text-xs"}`}>
+            <CardTitle className={`font-medium ${task.isCompleted ? "line-through" : ""} ${compact ? "text-[10px] leading-tight" : "text-xs"}`}>
               {task.title}
             </CardTitle>
             {task.courseName && (
               <p className={`font-medium ${colors?.text || "text-muted-foreground"} ${compact ? "text-[8px]" : "text-[10px]"}`}>
-                {task.courseName.split(" - ")[0]}
+                {compact ? (task.courseName.split(" - ")[1] || task.courseName) : task.courseName.split(" - ")[0]}
               </p>
             )}
           </div>
         </div>
-        <Badge className={`${typeColors[task.type]} ${compact ? "text-[7px] px-1 py-0 flex-shrink-0" : ""}`}>
-          <Icon className={compact ? "h-2 w-2 mr-0.5" : "h-3 w-3 mr-1"} />
-          {task.type}
-        </Badge>
+        {!compact && (
+          <Badge className={`${typeColors[task.type]}`}>
+            <Icon className="h-3 w-3 mr-1" />
+            {task.type}
+          </Badge>
+        )}
       </CardHeader>
       <CardContent className={`space-y-1 ${compact ? "px-2 pb-1 pt-0 mt-auto" : "px-3 pb-3 pt-0"}`}>
         {!compact && task.description && (
@@ -2413,9 +2415,15 @@ function TaskCard({
         )}
         
         {compact ? (
-          <div className="flex items-center gap-1 text-black dark:text-white text-[10px] justify-end">
-            <Clock className="h-2.5 w-2.5" />
-            <span className="font-bold">DUE</span> {format(new Date(task.dueDate), "MMM d")}
+          <div className="flex items-center justify-between">
+            <Badge className={`${typeColors[task.type]} text-[7px] px-1 py-0`}>
+              <Icon className="h-2 w-2 mr-0.5" />
+              {task.type}
+            </Badge>
+            <div className="flex items-center gap-1 text-black dark:text-white text-[10px]">
+              <Clock className="h-2.5 w-2.5" />
+              <span className="font-bold">DUE</span> {format(new Date(task.dueDate), "MMM d")}
+            </div>
           </div>
         ) : (
           <>
