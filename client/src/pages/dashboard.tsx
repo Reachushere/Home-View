@@ -1543,13 +1543,13 @@ export default function Dashboard() {
           </Button>
           <div className="flex flex-col mx-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             {selectedWeek === 2 ? (
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5">
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5 -ml-1">
                 <Home className="h-2.5 w-2.5" />
                 <span className="underline font-bold">CURRENT</span>
               </span>
             ) : (
               <span 
-                className="text-[10px] text-blue-500 uppercase tracking-wide cursor-pointer hover:underline flex items-center gap-0.5"
+                className="text-[10px] text-blue-500 uppercase tracking-wide cursor-pointer hover:underline flex items-center gap-0.5 -ml-1"
                 onClick={() => setSelectedWeek(2)}
                 data-testid="link-current-week"
               >
