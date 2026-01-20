@@ -1351,61 +1351,61 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3 p-0 min-h-0"
+            className="h-2.5 w-2.5 p-0 min-h-0"
             onClick={handlePlayTTS}
             disabled={isSendingTTS}
             data-testid={`button-play-${task.id}`}
             title="Play"
           >
             {isSendingTTS ? (
-              <Loader2 className="h-2 w-2 animate-spin" />
+              <Loader2 className="h-1.5 w-1.5 animate-spin" />
             ) : (
-              <Play className="h-2 w-2 fill-current" />
+              <Play className="h-1.5 w-1.5 fill-current" />
             )}
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3 p-0 min-h-0"
+            className="h-2.5 w-2.5 p-0 min-h-0"
             onClick={handleStop}
             disabled={isControlling}
             data-testid={`button-stop-${task.id}`}
             title="Stop"
           >
-            <Square className="h-2 w-2 fill-current" />
+            <Square className="h-1.5 w-1.5 fill-current" />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3 p-0 min-h-0"
+            className="h-2.5 w-2.5 p-0 min-h-0"
             onClick={handleResume}
             disabled={isControlling}
             data-testid={`button-resume-${task.id}`}
             title="Resume"
           >
-            <RefreshCw className="h-2 w-2" />
+            <RefreshCw className="h-1.5 w-1.5" />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3 p-0 min-h-0"
+            className="h-2.5 w-2.5 p-0 min-h-0"
             onClick={() => handleVolume("down")}
             disabled={isControlling}
             data-testid={`button-voldown-${task.id}`}
             title="Volume Down"
           >
-            <MinusCircle className="h-2 w-2" />
+            <MinusCircle className="h-1.5 w-1.5" />
           </Button>
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3 p-0 min-h-0"
+            className="h-2.5 w-2.5 p-0 min-h-0"
             onClick={() => handleVolume("up")}
             disabled={isControlling}
             data-testid={`button-volup-${task.id}`}
             title="Volume Up"
           >
-            <PlusCircle className="h-2 w-2" />
+            <PlusCircle className="h-1.5 w-1.5" />
           </Button>
         </div>
         {cardElement}
