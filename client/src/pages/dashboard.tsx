@@ -1316,7 +1316,7 @@ export default function Dashboard() {
                     placeholder="Course 1..."
                   />
                 </div>
-                <div className="px-1 pt-1 pb-1 flex items-end">
+                <div className="px-1 pt-1 pb-4 flex items-end">
                   <input 
                     type="text" 
                     className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white"
@@ -1339,7 +1339,7 @@ export default function Dashboard() {
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex flex-col items-center justify-center gap-0.5 py-1">
+                <div className="flex flex-col items-center justify-center gap-0.5 py-1 pb-3">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
@@ -1382,7 +1382,7 @@ export default function Dashboard() {
                     placeholder="Course 1..."
                   />
                 </div>
-                <div className="px-1 pt-1 pb-1 flex items-end">
+                <div className="px-1 pt-1 pb-4 flex items-end">
                   <input 
                     type="text" 
                     className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white"
@@ -1405,7 +1405,7 @@ export default function Dashboard() {
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex flex-col items-center justify-center gap-0.5 py-1">
+                <div className="flex flex-col items-center justify-center gap-0.5 py-1 pb-3">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
