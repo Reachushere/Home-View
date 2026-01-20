@@ -985,7 +985,7 @@ export default function Dashboard() {
                 No missed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 pt-5">
+              <div className="grid grid-cols-1 gap-1 pt-5">
                 {missedTasks.map((task) => (
                   <div key={task.id} className="animate-urgent-blink">
                     <TaskCard
