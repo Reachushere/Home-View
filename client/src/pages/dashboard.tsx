@@ -1004,7 +1004,7 @@ export default function Dashboard() {
                   <input type="checkbox" className="checkbox-black" />
                 </div>
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
+              <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] flex flex-col justify-center">
                 <div className="font-semibold">CORE ELECTIVES:</div>
                 <div>Select <span className="font-bold">THREE</span> from the following:</div>
               </div>
