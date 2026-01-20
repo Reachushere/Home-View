@@ -932,33 +932,31 @@ export default function Dashboard() {
             <div className="w-16 h-1.5 rounded-full bg-muted-foreground/40" />
           </div>
         </div>
-        {/* Do Today, Upcoming, and Missed Tasks Side by Side */}
+        {/* Missed, Upcoming, and Do Today Tasks Side by Side */}
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
-          {/* Do Today Section */}
-          <section className="w-[240px] flex-shrink-0 bg-orange-100 dark:bg-orange-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-due-today">
-            <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Calendar className="h-3.5 w-3.5" />
-              Do Today ({todayTasks.length})
+          {/* Missed Tasks Section */}
+          <section className={`w-[240px] flex-shrink-0 bg-red-100 dark:bg-red-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
+            <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3.5 w-3.5" />
+              Missed ({missedTasks.length})
             </h4>
-            {isLoading ? (
-              <div className="text-muted-foreground text-xs">Loading...</div>
-            ) : todayTasks.length === 0 ? (
+            {missedTasks.length === 0 ? (
               <div className="text-center py-4 text-muted-foreground text-xs">
-                No tasks for today
+                No missed tasks
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-2">
-                {todayTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                    onReschedule={() => setRescheduleTask(task)}
-                    onEdit={() => setEditingTask(task)}
-                    onDelete={() => deleteMutation.mutate(task.id)}
-                    cardBgClass="bg-orange-100 dark:bg-orange-900/30"
-                    compact
-                  />
+                {missedTasks.map((task) => (
+                  <div key={task.id} className="animate-urgent-blink">
+                    <TaskCard
+                      task={task}
+                      onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                      onReschedule={() => setRescheduleTask(task)}
+                      onEdit={() => setEditingTask(task)}
+                      onDelete={() => deleteMutation.mutate(task.id)}
+                      compact
+                    />
+                  </div>
                 ))}
               </div>
             )}
@@ -993,29 +991,31 @@ export default function Dashboard() {
             )}
           </section>
 
-          {/* Missed Tasks Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-red-100 dark:bg-red-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
-            <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3.5 w-3.5" />
-              Missed ({missedTasks.length})
+          {/* Do Today Section */}
+          <section className="w-[240px] flex-shrink-0 bg-orange-100 dark:bg-orange-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-due-today">
+            <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Calendar className="h-3.5 w-3.5" />
+              Do Today ({todayTasks.length})
             </h4>
-            {missedTasks.length === 0 ? (
+            {isLoading ? (
+              <div className="text-muted-foreground text-xs">Loading...</div>
+            ) : todayTasks.length === 0 ? (
               <div className="text-center py-4 text-muted-foreground text-xs">
-                No missed tasks
+                No tasks for today
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-2">
-                {missedTasks.map((task) => (
-                  <div key={task.id} className="animate-urgent-blink">
-                    <TaskCard
-                      task={task}
-                      onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                      onReschedule={() => setRescheduleTask(task)}
-                      onEdit={() => setEditingTask(task)}
-                      onDelete={() => deleteMutation.mutate(task.id)}
-                      compact
-                    />
-                  </div>
+                {todayTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                    cardBgClass="bg-orange-100 dark:bg-orange-900/30"
+                    compact
+                  />
                 ))}
               </div>
             )}
