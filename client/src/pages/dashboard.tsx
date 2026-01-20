@@ -927,14 +927,15 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
-                <div className="flex-1"></div>
-                <div className={`h-[46px] flex flex-col items-center justify-start -mt-8 gap-0.5 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                <div className="pt-3"></div>
+                <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
                 </div>
-                <div className={`h-[26px] flex flex-col items-center justify-start -mt-6 gap-0.5 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                <div className="flex-1"></div>
+                <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN2']?.grade || ''} onChange={(e) => updateGrade('OPEN2', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
