@@ -99,6 +99,13 @@ export default function Dashboard() {
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    const saved = localStorage.getItem('sidebarWidth');
+    return saved ? parseInt(saved, 10) : 288; // 288px = w-72
+  });
+  const [isResizingSidebar, setIsResizingSidebar] = useState(false);
+  const sidebarResizeRef = useRef<{ startX: number; startWidth: number } | null>(null);
+
   const [isMuted, setIsMuted] = useState(() => {
     const saved = localStorage.getItem('alarmMuteUntil');
     if (saved) {
@@ -275,6 +282,40 @@ export default function Dashboard() {
     }, 30000);
     return () => clearInterval(interval);
   }, [playJiggleSound, isMuted]);
+
+  // Sidebar resize handlers
+  const handleSidebarResizeStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizingSidebar(true);
+    sidebarResizeRef.current = { startX: e.clientX, startWidth: sidebarWidth };
+  }, [sidebarWidth]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isResizingSidebar || !sidebarResizeRef.current) return;
+      const delta = e.clientX - sidebarResizeRef.current.startX;
+      const newWidth = Math.max(200, Math.min(600, sidebarResizeRef.current.startWidth + delta));
+      setSidebarWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      if (isResizingSidebar) {
+        localStorage.setItem('sidebarWidth', sidebarWidth.toString());
+      }
+      setIsResizingSidebar(false);
+      sidebarResizeRef.current = null;
+    };
+
+    if (isResizingSidebar) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizingSidebar, sidebarWidth]);
 
   // Calendar resize handlers
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
@@ -588,7 +629,13 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className="w-72 bg-black text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto">
+      <aside className="bg-black text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto relative" style={{ width: sidebarWidth }}>
+        {/* Drag handle for resizing */}
+        <div 
+          className="absolute top-0 right-0 w-2 h-full cursor-ew-resize hover:bg-white/20 transition-colors rounded-r-xl"
+          onMouseDown={handleSidebarResizeStart}
+          data-testid="sidebar-resize-handle"
+        />
         <div className="flex items-center gap-2 px-2 pt-3 pb-0">
           <CalendarDays className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
