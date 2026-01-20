@@ -2390,7 +2390,7 @@ function TaskCard({
             className={compact ? "h-3.5 w-3.5" : ""}
           />
           <div>
-            <CardTitle className={`font-medium ${task.isCompleted ? "line-through" : ""} ${compact ? "text-[10px] leading-tight" : "text-xs"}`}>
+            <CardTitle className={`${compact ? "font-semibold" : "font-medium"} ${task.isCompleted ? "line-through" : ""} ${compact ? "text-[10px] leading-tight" : "text-xs"}`}>
               {task.title}
             </CardTitle>
             {task.courseName && (
