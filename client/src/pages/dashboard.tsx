@@ -678,24 +678,28 @@ export default function Dashboard() {
               <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
             </div>
             <div className="flex border-b border-black">
-              <div className="w-16 px-1 py-0.5 border-r border-black">Core Electives:</div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
-              <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
-            </div>
-            <div className="flex border-b border-black">
-              <div className="w-16 px-1 py-0.5 border-r border-black text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
-              <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
-            </div>
-            <div className="flex border-b border-black">
-              <div className="w-16 px-1 py-0.5 border-r border-black"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
-              <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
-            </div>
-            <div className="flex border-b border-black">
-              <div className="w-16 px-1 py-0.5 border-r border-black"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
-              <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
+              <div className="w-16 px-1 py-0.5 border-r border-black text-[7px] flex flex-col justify-center">
+                <div>Core Electives:</div>
+                <div>Select <span className="font-bold">TWO</span> from the following:</div>
+              </div>
+              <div className="flex-1 flex flex-col">
+                <div className="flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
+                  <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
+                  <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
+                  <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
+                </div>
+                <div className="flex">
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
+                  <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
+                </div>
+              </div>
             </div>
             <div className="border-b border-black px-1 py-0.5 text-[8px]">
               LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.
