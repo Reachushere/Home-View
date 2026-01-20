@@ -141,6 +141,26 @@ export default function Dashboard() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [openElectives, setOpenElectives] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('openElectives');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const updateOpenElective = (id: string, value: string) => {
+    setOpenElectives(prev => {
+      const updated = { ...prev, [id]: value };
+      localStorage.setItem('openElectives', JSON.stringify(updated));
+      if (!value.trim() && checkedCourses[id]) {
+        setCheckedCourses(prevChecked => {
+          const updatedChecked = { ...prevChecked, [id]: false };
+          localStorage.setItem('checkedCourses', JSON.stringify(updatedChecked));
+          return updatedChecked;
+        });
+      }
+      return updated;
+    });
+  };
+
   const updateGrade = (courseId: string, grade: string) => {
     setCourseGrades(prev => {
       const updated = { ...prev, [courseId]: { ...prev[courseId], grade } };
@@ -866,13 +886,15 @@ export default function Dashboard() {
               </div>
               <div className="flex border-b border-black">
                 <div className={`w-5 border-r border-black flex items-center justify-center ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
-                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN1'] || false} onChange={() => toggleCourse('OPEN1')} />
+                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
                 </div>
                 <div className="flex-1 px-1 py-1">
                   <input 
                     type="text" 
                     className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
                     placeholder="Course 1..."
+                    value={openElectives['OPEN1'] || ''}
+                    onChange={(e) => updateOpenElective('OPEN1', e.target.value)}
                     data-testid="input-pag-open1"
                   />
                 </div>
@@ -885,13 +907,15 @@ export default function Dashboard() {
               </div>
               <div className="flex">
                 <div className={`w-5 border-r border-black flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
-                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN2'] || false} onChange={() => toggleCourse('OPEN2')} />
+                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN2'] || false} disabled={!openElectives['OPEN2']?.trim()} onChange={() => toggleCourse('OPEN2')} />
                 </div>
                 <div className="flex-1 px-1 py-1">
                   <input 
                     type="text" 
                     className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
                     placeholder="Course 2..."
+                    value={openElectives['OPEN2'] || ''}
+                    onChange={(e) => updateOpenElective('OPEN2', e.target.value)}
                     data-testid="input-pag-open2"
                   />
                 </div>
