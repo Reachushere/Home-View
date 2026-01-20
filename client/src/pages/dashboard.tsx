@@ -1292,6 +1292,7 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
+              <div className="w-[55px] border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE REQUIRED:</div>
               <div className="w-12 border-l border-black"></div>
             </div>
@@ -1303,8 +1304,12 @@ export default function Dashboard() {
               <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
                 Select&nbsp;<span className="font-bold">ONE</span>
               </div>
+              <div className="w-[55px] border-r border-black flex flex-col">
+                <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B</div>
+                <div className="h-11 px-1 flex items-center text-[9px]"></div>
+              </div>
               <div className="flex-1 flex flex-col">
-                <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
+                <div className="h-11 px-1 flex items-center text-[9px]">(Formerly PPA030) ***Practicum1</div>
                 <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
@@ -1322,6 +1327,7 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
+              <div className="w-[55px] border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
               <div className="w-12 border-l border-black"></div>
             </div>
@@ -1333,6 +1339,11 @@ export default function Dashboard() {
               </div>
               <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
+              </div>
+              <div className="w-[55px] border-r border-black flex flex-col">
+                <div className="h-11 px-1 flex items-center text-[9px]"></div>
+                <div className="h-11 px-1 flex items-center text-[9px]"></div>
+                <div className="h-11 px-1 flex items-center text-[9px]"></div>
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
