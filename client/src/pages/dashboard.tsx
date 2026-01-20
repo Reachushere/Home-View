@@ -1676,7 +1676,7 @@ export default function Dashboard() {
               {/* Single row for all planning tasks */}
               {weekPlanningTasks.length > 0 && (
                 <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-                  <div className="p-1 text-xs text-foreground font-bold tracking-wide flex items-center justify-center bg-white dark:bg-card">
+                  <div className="p-1 text-xs text-foreground font-bold tracking-wide flex items-center justify-center bg-white dark:bg-card min-h-[40px]">
                     ALL DAY
                   </div>
                   {weekDays.map((day, dayIdx) => {
@@ -1688,7 +1688,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5"
+                        className="p-0.5 border-l border-border min-h-[40px] flex flex-col gap-0.5"
                         data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                       >
                         {tasksForDay.map(task => {
@@ -1763,7 +1763,7 @@ export default function Dashboard() {
               {/* All-day tasks row (non-planning) */}
               {weekDays.some(day => getAllDayTasks(day).length > 0 || getAllDayCalendarEvents(day).length > 0) && (
                 <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3 bg-white dark:bg-card">
+                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3 bg-white dark:bg-card min-h-[40px]">
                     {weekPlanningTasks.length === 0 ? "ALL DAY" : ""}
                   </div>
                   {weekDays.map((day, idx) => {
@@ -1774,7 +1774,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={idx} 
-                        className="p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5"
+                        className="p-0.5 border-l border-border min-h-[40px] flex flex-col gap-0.5"
                         data-testid={`all-day-${format(day, "yyyy-MM-dd")}`}
                       >
                         {allDayTasks.map(task => {
@@ -1826,11 +1826,11 @@ export default function Dashboard() {
               {/* Empty row if no tasks */}
               {weekPlanningTasks.length === 0 && !weekDays.some(day => getAllDayTasks(day).length > 0) && (
                 <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3 bg-white dark:bg-card">
+                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3 bg-white dark:bg-card min-h-[40px]">
                     ALL DAY
                   </div>
                   {weekDays.map((day, idx) => (
-                    <div key={idx} className="p-1 border-l border-border min-h-[24px]" />
+                    <div key={idx} className="p-1 border-l border-border min-h-[40px]" />
                   ))}
                 </div>
               )}
