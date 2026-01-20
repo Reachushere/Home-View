@@ -598,13 +598,13 @@ export default function Dashboard() {
           <div className="flex items-center gap-3">
             <Button
               variant={isMuted ? "default" : "ghost"}
-              size="icon"
+              size="lg"
               onClick={toggleMute}
-              className={isMuted ? "bg-red-500 hover:bg-red-600 text-white" : ""}
+              className={`h-12 w-12 p-0 ${isMuted ? "bg-red-500 hover:bg-red-600 text-white" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
-              {isMuted ? <BellOff className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
+              {isMuted ? <BellOff className="h-7 w-7" /> : <Bell className="h-7 w-7" />}
             </Button>
             <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
           </div>
