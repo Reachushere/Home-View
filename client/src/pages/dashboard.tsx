@@ -1045,7 +1045,7 @@ export default function Dashboard() {
                 No tasks for today
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 pt-3">
+              <div className="grid grid-cols-1 gap-3 pt-5">
                 {todayTasks.map((task) => (
                   <TaskCard
                     key={task.id}
