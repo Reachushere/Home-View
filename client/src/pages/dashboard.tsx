@@ -2048,7 +2048,7 @@ export default function Dashboard() {
                 {upcomingTasks.map((task) => {
                   const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
                   return (
-                    <div key={task.id} className="flex gap-2 items-stretch">
+                    <div key={task.id} className="flex gap-2 items-center">
                       <div className="flex-1">
                         <TaskCard
                           task={task}
