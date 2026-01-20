@@ -520,7 +520,7 @@ export default function Dashboard() {
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
           <div className="flex items-center gap-1.5" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-            <span className="text-sm font-bold text-[#5979CC]">Week {selectedWeek}</span>
+            <span className="text-[15px] font-bold text-[#5979CC]">Week {selectedWeek}</span>
             <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
             <span className="text-xs text-muted-foreground">to</span>
             <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
