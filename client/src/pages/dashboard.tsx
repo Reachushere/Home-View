@@ -1006,7 +1006,7 @@ export default function Dashboard() {
           {/* Upcoming Tasks Section */}
           <section className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-1" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <span className="text-black dark:text-white">Upcoming</span> <span className="text-yellow-600 dark:text-yellow-400">(Be Prepared)</span> <span className="text-black dark:text-white">({upcomingTasks.length})</span>
+              <span className="text-black dark:text-white">Upcoming</span> <span className="text-yellow-500 dark:text-yellow-300">(Be Prepared)</span> <span className="text-black dark:text-white">({upcomingTasks.length})</span>
             </h4>
             {isLoading ? (
               <div className="text-muted-foreground text-xs">Loading...</div>
