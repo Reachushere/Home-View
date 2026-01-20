@@ -954,6 +954,7 @@ export default function Dashboard() {
                       onReschedule={() => setRescheduleTask(task)}
                       onEdit={() => setEditingTask(task)}
                       onDelete={() => deleteMutation.mutate(task.id)}
+                      cardBgClass="bg-orange-50 dark:bg-orange-900/20"
                       compact
                     />
                   </div>
@@ -1013,7 +1014,7 @@ export default function Dashboard() {
                     onReschedule={() => setRescheduleTask(task)}
                     onEdit={() => setEditingTask(task)}
                     onDelete={() => deleteMutation.mutate(task.id)}
-                    cardBgClass="bg-orange-100 dark:bg-orange-900/30"
+                    cardBgClass="bg-orange-50 dark:bg-orange-900/20"
                     compact
                   />
                 ))}
