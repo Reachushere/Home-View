@@ -15,7 +15,7 @@ export const TASK_TYPES = [
 
 export const COURSES = [
   { code: "CPPA122", name: "Local Politics", color: "blue" },
-  { code: "CFNF400", name: "Human Sexuality", color: "green" },
+  { code: "CFNF400", name: "Human Sexuality", color: "pink" },
   { code: "CASL101", name: "American Sign Language", color: "yellow" },
 ] as const;
 
