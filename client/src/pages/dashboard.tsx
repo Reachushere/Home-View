@@ -1042,8 +1042,8 @@ export default function Dashboard() {
         {/* Completed Tasks by Course */}
         <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
           {/* CPPA122 Completed */}
-          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cppa122">
-            <h4 className="text-sm font-semibold text-green-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <section className="flex-1 bg-blue-100 dark:bg-blue-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cppa122">
+            <h4 className="text-sm font-semibold text-blue-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5" />
               Completed - CPPA122 ({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})
             </h4>
@@ -1098,8 +1098,8 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
-            <h4 className="text-sm font-semibold text-green-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <section className="flex-1 bg-purple-100 dark:bg-purple-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
+            <h4 className="text-sm font-semibold text-purple-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5" />
               Completed - CASL101 ({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})
             </h4>
