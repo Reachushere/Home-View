@@ -651,7 +651,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - with consistent row slots for multi-day tasks */}
-            <div className="border-b border-border sticky top-[52px] bg-card z-10">
+            <div className="border-b border-border sticky top-[52px] bg-gray-100 dark:bg-gray-800 z-10">
               {/* Render each planning task as its own row */}
               {weekPlanningTasks.length > 0 && weekPlanningTasks.map((task, rowIdx) => {
                 const colors = getCourseColor(task.courseName);
