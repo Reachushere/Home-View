@@ -894,10 +894,10 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
-                <div className={`flex items-center justify-center ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[22px] flex items-center justify-center ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
                 </div>
-                <div className={`flex items-center justify-center pb-1 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN2'] || false} disabled={!openElectives['OPEN2']?.trim()} onChange={() => toggleCourse('OPEN2')} />
                 </div>
               </div>
