@@ -528,11 +528,11 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <Button variant="outline" size="sm" className="h-6 w-[72px] text-[10px] border border-foreground/60 font-semibold ml-2" onClick={() => setSelectedWeek(2)} data-testid="button-today">
-            TODAY
-          </Button>
-          {/* Buttons - evenly spaced between TODAY and Exam */}
-          <div className="flex-1 flex items-center justify-between ml-3">
+          {/* All action buttons with equal spacing */}
+          <div className="flex-1 flex items-center justify-evenly">
+            <Button variant="outline" size="sm" className="h-6 w-[72px] text-[10px] border border-foreground/60 font-semibold" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+              TODAY
+            </Button>
             <Button 
               variant="outline" 
               size="sm" 
