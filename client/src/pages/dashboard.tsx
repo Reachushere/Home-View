@@ -673,7 +673,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`p-0.5 border-l border-border min-h-[24px] flex items-center ${isFriday ? "bg-destructive/20" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
+                          className={`p-0.5 border-l border-border min-h-[24px] flex items-center ${isFriday ? "bg-destructive/20" : ""}`}
                           data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}-${rowIdx}`}
                         >
                           {isInPlanningPeriod && (() => {
@@ -757,7 +757,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={idx} 
-                        className={`p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5 ${isFriday ? "bg-destructive/20" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
+                        className={`p-0.5 border-l border-border min-h-[24px] flex flex-col gap-0.5 ${isFriday ? "bg-destructive/20" : ""}`}
                         data-testid={`all-day-${format(day, "yyyy-MM-dd")}`}
                       >
                         {allDayTasks.map(task => {
@@ -813,7 +813,7 @@ export default function Dashboard() {
                     ALL DAY
                   </div>
                   {weekDays.map((day, idx) => (
-                    <div key={idx} className={`p-1 border-l border-border min-h-[24px] ${day.getDay() === 5 ? "bg-destructive/5" : ""} ${isSameDay(day, new Date()) ? "bg-blue-500/10" : ""}`} />
+                    <div key={idx} className={`p-1 border-l border-border min-h-[24px] ${day.getDay() === 5 ? "bg-destructive/5" : ""}`} />
                   ))}
                 </div>
               )}
