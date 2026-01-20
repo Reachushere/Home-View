@@ -1146,7 +1146,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-[55px] border-r border-black h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
                 <span className="leading-tight"><span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.</span>
               </div>
               <div className="flex-1 flex flex-col">
