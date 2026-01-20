@@ -552,12 +552,13 @@ export default function Dashboard() {
     });
   };
   
-  // Get all-day tasks (tasks without specific time, or 12 AM) - exclude tasks with planning periods
+  // Get all-day tasks (tasks without specific time - only midnight) - exclude tasks with planning periods
   const getAllDayTasks = (day: Date) => {
     return allTasks.filter(t => {
       if (t.startDate) return false; // Tasks with planning periods have their own rows
       const dueDate = new Date(t.dueDate);
-      return isSameDay(dueDate, day) && (dueDate.getHours() === 0 || dueDate.getHours() === 23);
+      // Only show in ALL DAY if it's exactly midnight (hour 0, minute 0)
+      return isSameDay(dueDate, day) && dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
     });
   };
 
