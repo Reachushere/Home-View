@@ -1209,110 +1209,56 @@ export default function Dashboard() {
             </div>
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-11 flex items-center justify-center">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
+              <div className="w-14 border-r border-black text-[9px] flex flex-col justify-center px-1">
                 <div className="font-semibold">Core Electives:</div>
                 <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
               </div>
+              <div className="w-14 border-r border-black flex flex-col">
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 235</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 301</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 303</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 319</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 335</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 401</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 402</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 403</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 404</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 411</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 414</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 425</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">PPA 490</div>
+                <div className="h-11 px-1 py-0.5 flex items-center">PPA 501</div>
+              </div>
               <div className="flex-1 flex flex-col">
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 235</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Theories of the State</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 301</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Administrative Law T</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 303</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Public Budget Policy/Politics</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 319</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Politics of Work and Labour</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 335</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Theories of Bureaucracy</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 401</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Collaborative Governance</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 402</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Program Planning and Evaluation</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 403</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">e-Government</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 404</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Issues in Public Administration</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 411</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Advanced Public Policy</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 414</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Comparative Public Policy</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 425</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Intergovernmental Relations</div>
-                </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 490</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Public Admin Themes</div>
-                </div>
-                <div className="h-11 flex">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 501</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Public Sector Leadership</div>
-                </div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Theories of the State</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Administrative Law T</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Public Budget Policy/Politics</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Politics of Work and Labour</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Theories of Bureaucracy</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Collaborative Governance</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Program Planning and Evaluation</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">e-Government</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Issues in Public Administration</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Advanced Public Policy</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Comparative Public Policy</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Intergovernmental Relations</div>
+                <div className="h-11 px-1 py-0.5 flex items-center border-b border-black">Public Admin Themes</div>
+                <div className="h-11 px-1 py-0.5 flex items-center">Public Sector Leadership</div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
