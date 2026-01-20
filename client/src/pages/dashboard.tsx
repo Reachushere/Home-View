@@ -666,13 +666,13 @@ export default function Dashboard() {
             </div>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={toggleMute}
-              className={`h-6 w-6 p-0 mt-1 bg-[#5979CC] hover:bg-[#4a68b3] border-[1.75px] border-blue-800 text-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              className={`!h-6 !w-6 !min-h-0 p-0 mt-1 bg-[#5979CC] hover:bg-[#4a68b3] border-[1.75px] border-blue-800 text-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
-              {isMuted ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+              {isMuted ? <BellOff className="h-3.5 w-3.5" /> : <Bell className="h-3.5 w-3.5" />}
             </Button>
           </div>
           
@@ -1594,9 +1594,9 @@ function TaskCard({
   if (compact) {
     if (hasAttachments) {
       return (
-        <div className="relative h-full flex flex-col cursor-pointer" onClick={onEdit}>
+        <div className="relative pt-5 h-full flex flex-col cursor-pointer" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className={`absolute -top-5 left-0 right-0 h-4 flex items-center justify-around rounded-xl px-1 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
+          <div className={`absolute top-0 left-0 right-0 h-4 flex items-center justify-around rounded-sm px-1 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
