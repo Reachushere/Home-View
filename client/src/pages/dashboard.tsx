@@ -962,8 +962,8 @@ export default function Dashboard() {
                 <input type="checkbox" className="checkbox-black" />
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 201</div>
-              <div className="flex-1 px-1 py-0.5">Course Title</div>
+              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 211</div>
+              <div className="flex-1 px-1 py-0.5">Public Policy</div>
               <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
