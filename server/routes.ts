@@ -812,8 +812,8 @@ export async function registerRoutes(
         autoTimer: null
       };
       
-      // Add a clear prefix so Alexa knows this is content to read, not a command
-      cleanedContent = "Now reading your document. " + cleanedContent;
+      // Use simple message without prefix for Simon Says compatibility
+      // cleanedContent = "Now reading your document. " + cleanedContent;
       
       // Use TTS type like the working /api/tts endpoint
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
