@@ -1925,7 +1925,7 @@ export default function Dashboard() {
         {/* Missed, Upcoming, and Do Today Tasks Side by Side */}
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Missed Tasks Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-red-200/70 dark:bg-red-900/35 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
+          <section className={`w-[240px] flex-shrink-0 bg-red-400/70 dark:bg-red-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Clock className="h-3.5 w-3.5 text-destructive" />
               <span className="text-black dark:text-white">Missed</span> <span className="text-destructive">(Overdue)</span> <span className="text-black dark:text-white">({missedTasks.length})</span>
@@ -2011,6 +2011,46 @@ export default function Dashboard() {
                 ))}
               </div>
             )}
+          </section>
+        </div>
+
+        {/* To Do Section - Random tasks */}
+        <div className="mb-3 flex-shrink-0">
+          <section className="bg-red-200/70 dark:bg-red-900/35 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 h-[180px]" data-testid="section-todo">
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <ClipboardCheck className="h-3.5 w-3.5 text-red-600" />
+              <span className="text-black dark:text-white">To Do</span>
+            </h4>
+            <div className="grid grid-cols-4 gap-4 h-[calc(100%-32px)]">
+              <div className="flex flex-col gap-1.5 overflow-auto">
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+              </div>
+              <div className="flex flex-col gap-1.5 overflow-auto">
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+              </div>
+              <div className="flex flex-col gap-1.5 overflow-auto">
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+              </div>
+              <div className="flex flex-col gap-1.5 overflow-auto">
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
+              </div>
+            </div>
           </section>
         </div>
 
