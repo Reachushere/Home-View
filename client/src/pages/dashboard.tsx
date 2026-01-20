@@ -1671,7 +1671,7 @@ export default function Dashboard() {
         {/* Calendar Header */}
         <div className="flex items-end mb-2">
           {/* Week navigation */}
-          <Button variant="ghost" size="icon" className="h-3 w-3 mb-1.5" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+          <Button variant="ghost" size="icon" className="h-3 w-3 mb-0" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
           <div className="flex flex-col mx-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
@@ -1696,7 +1696,7 @@ export default function Dashboard() {
               <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="h-3 w-3 mb-1.5" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+          <Button variant="ghost" size="icon" className="h-3 w-3 mb-0" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
           {/* All buttons with equal spacing */}
