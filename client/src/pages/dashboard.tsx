@@ -2179,7 +2179,7 @@ function TaskCard({
   const cardElement = (
     <Card
       className={`transition-all rounded-xl shadow-sm border ${
-        compact ? "h-[60px]" : "flex-1"
+        compact ? "h-[60px] flex flex-col" : "flex-1"
       } ${cardBgClass ? cardBgClass : colors ? colors.bg : ""} ${
         colors ? colors.border : "border-gray-400"
       } ${isMissed && !cardBgClass ? "border-destructive bg-destructive/5" : ""} ${
@@ -2187,7 +2187,7 @@ function TaskCard({
       }`}
       data-testid={`card-task-${task.id}`}
     >
-      <CardHeader className={`flex flex-row items-start justify-between gap-1 space-y-0 ${compact ? "pb-0.5 pt-2 px-2" : "pb-1 pt-3 px-3"}`}>
+      <CardHeader className={`flex flex-row items-start justify-between gap-1 space-y-0 ${compact ? "pb-0 pt-1.5 px-2 flex-shrink-0" : "pb-1 pt-3 px-3"}`}>
         <div className="flex items-start gap-1.5">
           <Checkbox
             checked={task.isCompleted || false}
@@ -2196,7 +2196,7 @@ function TaskCard({
             className={compact ? "h-3.5 w-3.5" : ""}
           />
           <div>
-            <CardTitle className={`font-medium ${task.isCompleted ? "line-through" : ""} ${compact ? "text-[10px] leading-tight" : "text-xs"}`}>
+            <CardTitle className={`font-medium ${task.isCompleted ? "line-through" : ""} ${compact ? "text-[10px] leading-tight line-clamp-1" : "text-xs"}`}>
               {task.title}
             </CardTitle>
             {task.courseName && (
@@ -2206,12 +2206,12 @@ function TaskCard({
             )}
           </div>
         </div>
-        <Badge className={`${typeColors[task.type]} ${compact ? "text-[7px] px-1 py-0" : ""}`}>
+        <Badge className={`${typeColors[task.type]} ${compact ? "text-[7px] px-1 py-0 flex-shrink-0" : ""}`}>
           <Icon className={compact ? "h-2 w-2 mr-0.5" : "h-3 w-3 mr-1"} />
           {task.type}
         </Badge>
       </CardHeader>
-      <CardContent className={`space-y-1 ${compact ? "px-2 pb-1 pt-0" : "px-3 pb-3 pt-0"}`}>
+      <CardContent className={`space-y-1 ${compact ? "px-2 pb-1 pt-0 mt-auto" : "px-3 pb-3 pt-0"}`}>
         {!compact && task.description && (
           <p className="text-xs text-muted-foreground line-clamp-2">
             {task.description}
