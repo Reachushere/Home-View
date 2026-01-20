@@ -927,7 +927,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
-                <div className="pt-3"></div>
+                <div className="pt-5"></div>
                 <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
