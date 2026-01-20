@@ -1109,8 +1109,8 @@ export default function Dashboard() {
                   CORE ELECTIVE: <span className="font-bold ml-1">ONE</span>&nbsp;course required
                 </div>
                 <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
-                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
                 <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
+                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
                 <div className="h-5 border-b border-black"></div>
                 <div className="h-5 border-b border-black"></div>
                 <div className="h-5 border-b border-black"></div>
