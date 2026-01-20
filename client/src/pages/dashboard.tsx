@@ -957,9 +957,9 @@ export default function Dashboard() {
         </div>
 
         {/* Do Today, Upcoming, and Missed Tasks Side by Side */}
-        <div className="flex gap-4 mb-6 items-start">
+        <div className="flex gap-4 mb-6 items-stretch h-[200px]">
           {/* Do Today Section */}
-          <section className="w-[240px] flex-shrink-0 bg-card rounded-xl shadow-md p-3 border border-black" data-testid="section-due-today">
+          <section className="w-[240px] flex-shrink-0 bg-card rounded-xl shadow-md p-3 border border-black overflow-auto" data-testid="section-due-today">
             <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Calendar className="h-3.5 w-3.5" />
               Do Today ({todayTasks.length})
@@ -971,7 +971,7 @@ export default function Dashboard() {
                 No tasks for today
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 gap-2">
                 {todayTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -989,7 +989,7 @@ export default function Dashboard() {
           </section>
 
           {/* Upcoming Tasks Section */}
-          <section className="flex-1 bg-card rounded-xl shadow-md p-3 border border-black" data-testid="section-upcoming">
+          <section className="flex-1 bg-card rounded-xl shadow-md p-3 border border-black overflow-auto" data-testid="section-upcoming">
             <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               Upcoming ({upcomingTasks.length})
             </h4>
@@ -1000,7 +1000,7 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 {upcomingTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1018,13 +1018,17 @@ export default function Dashboard() {
           </section>
 
           {/* Missed Tasks Section */}
-          {missedTasks.length > 0 && (
-            <section className="w-[240px] flex-shrink-0 bg-card rounded-xl shadow-md p-3 border border-black ml-auto" data-testid="section-missed">
-              <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                <Clock className="h-3.5 w-3.5" />
-                Missed ({missedTasks.length})
-              </h4>
-              <div className="space-y-2">
+          <section className={`w-[240px] flex-shrink-0 bg-card rounded-xl shadow-md p-3 border border-black overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
+            <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3.5 w-3.5" />
+              Missed ({missedTasks.length})
+            </h4>
+            {missedTasks.length === 0 ? (
+              <div className="text-center py-4 text-muted-foreground text-xs">
+                No missed tasks
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-2">
                 {missedTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1037,8 +1041,8 @@ export default function Dashboard() {
                   />
                 ))}
               </div>
-            </section>
-          )}
+            )}
+          </section>
         </div>
 
         {/* Completed Tasks Section */}
@@ -1215,11 +1219,13 @@ function TaskCard({
 
   const cardElement = (
     <Card
-      className={`transition-all rounded-lg shadow-sm border flex-1 ${
-        cardBgClass ? cardBgClass : colors ? colors.bg : ""
-      } ${colors ? colors.border : "border-gray-400"} ${
-        isMissed ? "border-destructive bg-destructive/5" : ""
-      } ${task.isCompleted ? "opacity-60" : ""}`}
+      className={`transition-all rounded-lg shadow-sm border ${
+        compact ? "h-[60px]" : "flex-1"
+      } ${cardBgClass ? cardBgClass : colors ? colors.bg : ""} ${
+        colors ? colors.border : "border-gray-400"
+      } ${isMissed ? "border-destructive bg-destructive/5" : ""} ${
+        task.isCompleted ? "opacity-60" : ""
+      }`}
       data-testid={`card-task-${task.id}`}
     >
       <CardHeader className={`flex flex-row items-start justify-between gap-1 space-y-0 ${compact ? "pb-0.5 pt-2 px-2" : "pb-1 pt-3 px-3"}`}>
