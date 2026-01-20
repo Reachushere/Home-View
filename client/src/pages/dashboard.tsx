@@ -1328,7 +1328,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
               <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
-                <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED - <span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
+                <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED,<br/><br/><span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/><br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
