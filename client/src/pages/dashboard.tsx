@@ -519,7 +519,7 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <div className="flex items-center gap-1.5" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <div className="flex items-center gap-1.5 mx-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             <span className="text-[15px] font-bold text-[#5979CC]">Week {selectedWeek}</span>
             <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
             <span className="text-xs text-muted-foreground">to</span>
