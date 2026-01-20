@@ -193,11 +193,12 @@ export default function Dashboard() {
 
   const missedTasks = displayTasks.filter(t => t.isMissed && !t.isCompleted);
   const today = new Date();
-  // Due Today shows ALL tasks due today (from all tasks, not just selected week)
+  // Do Today shows ALL tasks due today OR prep tasks starting today (from all tasks, not just selected week)
   const todayTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
-    if (!t.dueDate) return false;
-    return isSameDay(new Date(t.dueDate), today);
+    const isDueToday = t.dueDate && isSameDay(new Date(t.dueDate), today);
+    const isPrepToday = t.startDate && isSameDay(new Date(t.startDate), today);
+    return isDueToday || isPrepToday;
   });
   // Upcoming shows tasks from selected week/date that are NOT due today
   const upcomingTasks = displayTasks.filter(t => {
@@ -961,13 +962,13 @@ export default function Dashboard() {
           <section className="w-[280px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black" data-testid="section-due-today">
             <h4 className="text-md font-semibold text-orange-600 mb-0 h-8 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Calendar className="h-4 w-4" />
-              Due Today ({todayTasks.length})
+              Do Today ({todayTasks.length})
             </h4>
             {isLoading ? (
               <div className="text-muted-foreground">Loading tasks...</div>
             ) : todayTasks.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                No tasks due today
+                No tasks for today
               </div>
             ) : (
               <div className="space-y-3 -mt-8">
