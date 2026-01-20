@@ -1003,7 +1003,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-orange-200/70 dark:bg-orange-900/35 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 bg-orange-200/70 dark:bg-orange-900/35 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
             <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Calendar className="h-3.5 w-3.5" />
               Do Today ({todayTasks.length})
