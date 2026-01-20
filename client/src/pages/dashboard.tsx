@@ -701,7 +701,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-6 w-[104px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
+              className="h-6 w-[104px] bg-[#4A68B3] hover:bg-[#3a5899] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
