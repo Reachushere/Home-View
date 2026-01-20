@@ -751,32 +751,36 @@ export default function Dashboard() {
 
         <nav className="flex flex-col gap-0.5 mt-2">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-2 mb-0.5">Weeks</h3>
-          {weeks.map((week) => (
-            <Button
-              key={week.weekNumber}
-              variant={selectedWeek === week.weekNumber && !selectedDate ? "secondary" : "ghost"}
-              className="justify-between gap-1 h-auto py-1 px-2"
-              size="sm"
-              onClick={() => {
-                setSelectedWeek(week.weekNumber);
-                setSelectedDate(null);
-              }}
-              data-testid={`button-week-${week.weekNumber}`}
-            >
-              <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                <span className="text-xs">Week {week.weekNumber}</span>
-                <span className="text-[9px] text-white font-bold">
-                  ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
-                </span>
-              </div>
-              {week.taskCount > 0 && (
-                <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0 min-w-5 text-center justify-center">
-                  {week.taskCount}
-                </Badge>
-              )}
-            </Button>
-          ))}
+          {weeks.map((week) => {
+            const weekEndDate = parseISO(week.endDate);
+            const isWeekFinished = weekEndDate < new Date();
+            return (
+              <Button
+                key={week.weekNumber}
+                variant={selectedWeek === week.weekNumber && !selectedDate ? "secondary" : "ghost"}
+                className={`justify-between gap-1 h-auto py-1 px-2 ${isWeekFinished ? "opacity-60" : ""}`}
+                size="sm"
+                onClick={() => {
+                  setSelectedWeek(week.weekNumber);
+                  setSelectedDate(null);
+                }}
+                data-testid={`button-week-${week.weekNumber}`}
+              >
+                <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
+                  <Calendar className="h-3 w-3" />
+                  <span className="text-xs">Week {week.weekNumber}</span>
+                  <span className="text-[9px] text-white font-bold">
+                    ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
+                  </span>
+                </div>
+                {week.taskCount > 0 && (
+                  <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0 min-w-5 text-center justify-center">
+                    {week.taskCount}
+                  </Badge>
+                )}
+              </Button>
+            );
+          })}
         </nav>
 
         {/* PAG Level Carousel */}
