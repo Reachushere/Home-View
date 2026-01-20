@@ -1292,7 +1292,7 @@ export default function Dashboard() {
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-black">
+            <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
                 <div className="h-[46px] flex items-start justify-center pt-2">
@@ -1338,6 +1338,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+            <div className="border-t border-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
