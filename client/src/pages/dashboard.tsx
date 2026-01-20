@@ -530,7 +530,7 @@ export default function Dashboard() {
           </Button>
           {/* All buttons with equal spacing */}
           <div className="flex-1 flex items-center justify-between ml-2">
-            <Button variant="outline" size="sm" className="h-6 w-[98px] text-[10px] border border-foreground/60 font-semibold" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+            <Button variant="outline" size="sm" className="h-6 w-[98px] text-[10px] bg-white dark:bg-white border border-blue-800 font-semibold text-foreground" onClick={() => setSelectedWeek(2)} data-testid="button-today">
               TODAY
             </Button>
             <Button 
