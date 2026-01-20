@@ -73,6 +73,38 @@ function formatDate(dateValue: string | Date | null) {
 
 type SortOption = "name-asc" | "name-desc" | "date-newest" | "date-oldest" | "size-largest" | "size-smallest";
 
+const SPEAKERS = [
+  { id: "media_player.byhome", name: "Apartment" },
+  { id: "media_player.cat_wr", name: "Cat Washroom Speakers" },
+  { id: "media_player.echo_cat_left_am", name: "Cat Washroom Left" },
+  { id: "media_player.echo_cat_right_am", name: "Cat Washroom Right" },
+  { id: "media_player.echo_cat_washroom_middle", name: "Cat Washroom Middle" },
+  { id: "media_player.echo_closet_am", name: "Closet" },
+  { id: "media_player.echo_lr_couch_r_am", name: "Hallway Corner" },
+  { id: "media_player.echo_hallway_entrance_am", name: "Hallway Entrance" },
+  { id: "media_player.echo_king_l_am", name: "King Left" },
+  { id: "media_player.echo_king_r_am", name: "King Right" },
+  { id: "media_player.echo_king_tv_am", name: "King TV" },
+  { id: "media_player.echo_kitchen_cupboards_left_am", name: "Kitchen Cupboards Left" },
+  { id: "media_player.echo_kitchen_cupboards_r_am", name: "Kitchen Cupboards Right" },
+  { id: "media_player.echo_kitchen_fridge_am", name: "Kitchen Fridge" },
+  { id: "media_player.echo_kitchen_hutch_am", name: "Kitchen Hutch" },
+  { id: "media_player.echo_kitchen_island_corner_am", name: "Kitchen Island Corner" },
+  { id: "media_player.echo_kitchen_studio_black_am", name: "Kitchen Studio Black" },
+  { id: "media_player.echo_lr_couch_l_am", name: "Living Room Couch Left" },
+  { id: "media_player.echo_lr_hub_am", name: "Living Room Hub" },
+  { id: "media_player.echo_lr_studio_white_am", name: "Living Room Studio White" },
+  { id: "media_player.echo_lr_tv_shelf_am", name: "Living Room TV Shelf" },
+  { id: "media_player.echo_queen_balcony_am", name: "Queen Balcony" },
+  { id: "media_player.echo_queen_bed_l_am", name: "Queen Bed Left" },
+  { id: "media_player.echo_queen_bed_r_am", name: "Queen Bed Right" },
+  { id: "media_player.echo_show_pug_am", name: "Echo Show Pug" },
+  { id: "media_player.everywhere_2", name: "Everywhere" },
+  { id: "media_player.hallway", name: "Hallway" },
+  { id: "media_player.king_bedroom", name: "King Bedroom" },
+  { id: "media_player.queen_bedroom", name: "Queen Bedroom" },
+];
+
 export default function FilesPage() {
   const { toast } = useToast();
   const [editingFile, setEditingFile] = useState<FileRecord | null>(null);
@@ -82,6 +114,7 @@ export default function FilesPage() {
   const [showAssignAfterUpload, setShowAssignAfterUpload] = useState(false);
   const [lastUploadedObjectPath, setLastUploadedObjectPath] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortOption>("date-newest");
+  const [selectedSpeaker, setSelectedSpeaker] = useState<string>("media_player.cat_wr");
 
   const { getUploadParameters } = useUpload();
 
@@ -142,10 +175,11 @@ export default function FilesPage() {
       const response = await fetch("/api/home-assistant/read-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pdfUrl: fileUrl }),
+        body: JSON.stringify({ pdfUrl: fileUrl, entityId: selectedSpeaker }),
       });
       if (response.ok) {
-        toast({ title: `Playing: ${fileName}` });
+        const speakerName = SPEAKERS.find(s => s.id === selectedSpeaker)?.name || selectedSpeaker;
+        toast({ title: `Playing on ${speakerName}: ${fileName}` });
       } else {
         toast({ title: "Failed to play file", variant: "destructive" });
       }
@@ -160,7 +194,7 @@ export default function FilesPage() {
       await fetch("/api/home-assistant/media-control", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "stop" }),
+        body: JSON.stringify({ action: "stop", entityId: selectedSpeaker }),
       });
     } catch (error) {
       console.error("Stop error:", error);
@@ -172,7 +206,7 @@ export default function FilesPage() {
       await fetch("/api/home-assistant/media-control", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: `volume_${action}` }),
+        body: JSON.stringify({ action: `volume_${action}`, entityId: selectedSpeaker }),
       });
     } catch (error) {
       console.error("Volume error:", error);
@@ -287,6 +321,19 @@ export default function FilesPage() {
               <SelectItem value="size-smallest">Smallest first</SelectItem>
             </SelectContent>
           </Select>
+          <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
+            <SelectTrigger className="w-[200px]" data-testid="select-speaker">
+              <Volume2 className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Select speaker..." />
+            </SelectTrigger>
+            <SelectContent>
+              {SPEAKERS.map(speaker => (
+                <SelectItem key={speaker.id} value={speaker.id}>
+                  {speaker.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <ObjectUploader
             maxNumberOfFiles={5}
             onGetUploadParameters={getUploadParameters}
@@ -371,22 +418,22 @@ export default function FilesPage() {
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-8 w-8 bg-green-500 hover:bg-green-600 text-white"
+                          className="h-8 w-8"
                           onClick={() => handlePlayFile(file.objectPath, file.displayName)}
                           title="Play"
                           data-testid={`button-play-${file.id}`}
                         >
-                          <Play className="h-4 w-4 fill-current" />
+                          <Play className="h-4 w-4 fill-black text-black dark:fill-white dark:text-white" />
                         </Button>
                         <Button 
                           variant="ghost" 
                           size="icon"
-                          className="h-8 w-8 bg-red-500 hover:bg-red-600 text-white"
+                          className="h-8 w-8"
                           onClick={handleStop}
                           title="Stop"
                           data-testid={`button-stop-${file.id}`}
                         >
-                          <Square className="h-4 w-4 fill-current" />
+                          <Square className="h-4 w-4 fill-black text-black dark:fill-white dark:text-white" />
                         </Button>
                         <Button 
                           variant="ghost" 
