@@ -95,15 +95,42 @@ export default function Dashboard() {
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
+  const todayTaskCountRef = useRef(0);
 
-  // Bounce the Do Today box every 5 seconds
+  // Create jiggle sound using Web Audio API
+  const playJiggleSound = useCallback(() => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.15);
+    } catch (e) {
+      console.log('Audio not available');
+    }
+  }, []);
+
+  // Jiggle the Do Today box every 5 seconds (only if there are tasks)
   useEffect(() => {
     const interval = setInterval(() => {
-      setDoTodayBounce(true);
-      setTimeout(() => setDoTodayBounce(false), 1000);
+      if (todayTaskCountRef.current > 0) {
+        setDoTodayBounce(true);
+        playJiggleSound();
+        setTimeout(() => setDoTodayBounce(false), 1000);
+      }
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [playJiggleSound]);
 
   // Calendar resize handlers
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
@@ -211,6 +238,9 @@ export default function Dashboard() {
     const isPrepToday = t.startDate && isSameDay(new Date(t.startDate), today);
     return isDueToday || isPrepToday;
   });
+  
+  // Update ref for jiggle effect
+  todayTaskCountRef.current = todayTasks.length;
   // Upcoming shows tasks from selected week/date that are NOT due today
   const upcomingTasks = displayTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
