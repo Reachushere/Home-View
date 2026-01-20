@@ -740,7 +740,7 @@ export default function Dashboard() {
                 LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.
               </div>
             </div>
-            <div className={`flex ${checkedCourses['OPEN1'] && checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+            <div className={`flex border-b border-black ${checkedCourses['OPEN1'] && checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex flex-col items-center justify-center gap-0.5">
                 <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN1'] || false} onChange={() => toggleCourse('OPEN1')} />
                 <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN2'] || false} onChange={() => toggleCourse('OPEN2')} />
@@ -748,6 +748,14 @@ export default function Dashboard() {
               <div className="flex-1 px-1 py-0.5 text-[8px]">
                 OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.
               </div>
+            </div>
+            <div className="px-1 py-1">
+              <input 
+                type="text" 
+                className="w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm bg-white"
+                placeholder="Notes..."
+                data-testid="input-pag-notes"
+              />
             </div>
           </div>
         </div>
