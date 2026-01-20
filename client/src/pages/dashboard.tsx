@@ -935,7 +935,7 @@ export default function Dashboard() {
         {/* Missed, Upcoming, and Do Today Tasks Side by Side */}
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Missed Tasks Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-red-200 dark:bg-red-900/40 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
+          <section className={`w-[240px] flex-shrink-0 bg-red-100 dark:bg-red-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
             <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Clock className="h-3.5 w-3.5" />
               Missed ({missedTasks.length})
