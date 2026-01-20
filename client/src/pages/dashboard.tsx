@@ -129,6 +129,29 @@ export default function Dashboard() {
     });
   };
 
+  const [courseGrades, setCourseGrades] = useState<Record<string, { grade: string; percent: string }>>(() => {
+    const saved = localStorage.getItem('courseGrades');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const updateGrade = (courseId: string, grade: string) => {
+    setCourseGrades(prev => {
+      const updated = { ...prev, [courseId]: { ...prev[courseId], grade } };
+      localStorage.setItem('courseGrades', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const updatePercent = (courseId: string, percent: string) => {
+    setCourseGrades(prev => {
+      const updated = { ...prev, [courseId]: { ...prev[courseId], percent } };
+      localStorage.setItem('courseGrades', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const gradeOptions = ['', 'A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
+
   // Create jiggle sound using Web Audio API
   const playJiggleSound = useCallback(() => {
     try {
@@ -673,7 +696,10 @@ export default function Dashboard() {
               <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL I</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
             </div>
-            <div className="border-b border-black px-1 py-0.5 font-bold">COURSES</div>
+            <div className="flex border-b border-black">
+              <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
+              <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+            </div>
             <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="h-3 w-3" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
@@ -681,6 +707,12 @@ export default function Dashboard() {
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
+              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
+                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center" placeholder="%" value={courseGrades['PPA101']?.percent || ''} onChange={(e) => updatePercent('PPA101', e.target.value)} />
+              </div>
             </div>
             <div className={`flex border-b border-black ${checkedCourses['PPA102'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
@@ -689,6 +721,12 @@ export default function Dashboard() {
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
+              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white" value={courseGrades['PPA102']?.grade || ''} onChange={(e) => updateGrade('PPA102', e.target.value)}>
+                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center" placeholder="%" value={courseGrades['PPA102']?.percent || ''} onChange={(e) => updatePercent('PPA102', e.target.value)} />
+              </div>
             </div>
             <div className={`flex border-b border-black ${checkedCourses['PPA125'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
@@ -697,6 +735,12 @@ export default function Dashboard() {
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
               <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
+              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white" value={courseGrades['PPA125']?.grade || ''} onChange={(e) => updateGrade('PPA125', e.target.value)}>
+                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center" placeholder="%" value={courseGrades['PPA125']?.percent || ''} onChange={(e) => updatePercent('PPA125', e.target.value)} />
+              </div>
             </div>
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
@@ -731,6 +775,22 @@ export default function Dashboard() {
                   <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
                 </div>
               </div>
+              <div className="w-12 border-l border-black flex flex-col">
+                <div className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300' : ''}`}>
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
+                </div>
+                <div className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300' : ''}`}>
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
+                </div>
+                <div className="flex-1 border-b border-black"></div>
+                <div className="flex-1"></div>
+              </div>
             </div>
             <div className={`flex border-b border-black ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
@@ -738,6 +798,12 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 px-1 py-0.5 text-[8px]">
                 LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.
+              </div>
+              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>
+                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center" placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} />
               </div>
             </div>
             <div className="flex">
@@ -764,6 +830,21 @@ export default function Dashboard() {
                   placeholder="Course 2..."
                   data-testid="input-pag-open2"
                 />
+              </div>
+              <div className="w-12 border-l border-black flex flex-col">
+                <div className="flex-1 py-0.5"></div>
+                <div className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
+                </div>
+                <div className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white" value={courseGrades['OPEN2']?.grade || ''} onChange={(e) => updateGrade('OPEN2', e.target.value)}>
+                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                  </select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center" placeholder="%" value={courseGrades['OPEN2']?.percent || ''} onChange={(e) => updatePercent('OPEN2', e.target.value)} />
+                </div>
               </div>
             </div>
           </div>
