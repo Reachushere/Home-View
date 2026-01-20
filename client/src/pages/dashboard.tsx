@@ -698,21 +698,27 @@ export default function Dashboard() {
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
               <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
             </div>
-            <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] && checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-black flex flex-col items-center justify-center gap-1">
-                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
-                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
+            <div className="flex border-b border-black">
+              <div className="w-5 border-r border-black flex flex-col">
+                <div className={`flex-1 flex items-center justify-center border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300' : ''}`}>
+                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
+                </div>
+                <div className={`flex-1 flex items-center justify-center border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300' : ''}`}>
+                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
+                </div>
+                <div className="flex-1 border-b border-black"></div>
+                <div className="flex-1"></div>
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
                 <div>Select <span className="font-bold">TWO</span> from the following:</div>
               </div>
               <div className="flex-1 flex flex-col">
-                <div className="flex border-b border-black">
+                <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300 text-gray-500' : ''}`}>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
                   <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
                 </div>
-                <div className="flex border-b border-black">
+                <div className={`flex border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
                   <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
                   <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
                 </div>
