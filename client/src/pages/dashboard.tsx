@@ -797,8 +797,8 @@ export default function Dashboard() {
                 <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
                 </div>
-                <div className="h-7 border-b border-black"></div>
-                <div className="h-7"></div>
+                <div className="h-9 border-b border-black"></div>
+                <div className="h-9"></div>
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
@@ -813,11 +813,11 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 121</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Ontario Politics and Government</div>
                 </div>
-                <div className="h-7 flex border-b border-black">
+                <div className="h-9 flex border-b border-black">
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 122</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Local Politics and Government</div>
                 </div>
-                <div className="h-7 flex">
+                <div className="h-9 flex">
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 124</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Indigenous Politics and Government</div>
                 </div>
@@ -835,8 +835,8 @@ export default function Dashboard() {
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
                 </div>
-                <div className="h-7 border-b border-black"></div>
-                <div className="h-7"></div>
+                <div className="h-9 border-b border-black"></div>
+                <div className="h-9"></div>
               </div>
             </div>
             <div className={`flex border-b border-black ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : ''}`}>
