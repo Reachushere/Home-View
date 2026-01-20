@@ -107,35 +107,36 @@ export default function Dashboard() {
       
       const now = audioContext.currentTime;
       
-      // Two-tone alert beep (like a gentle notification)
-      const playBeep = (startTime: number, freq: number) => {
-        const osc = audioContext.createOscillator();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, startTime);
-        osc.connect(gainNode);
-        osc.start(startTime);
-        osc.stop(startTime + 0.12);
-      };
+      // Doorbell-style ding-dong
+      const osc1 = audioContext.createOscillator();
+      const osc2 = audioContext.createOscillator();
+      osc1.type = 'sine';
+      osc2.type = 'sine';
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+      
+      // Ding (high note)
+      osc1.frequency.setValueAtTime(988, now); // B5
+      osc1.start(now);
+      osc1.stop(now + 0.25);
+      
+      // Dong (lower note)
+      osc2.frequency.setValueAtTime(784, now + 0.3); // G5
+      osc2.start(now + 0.3);
+      osc2.stop(now + 0.55);
       
       // Envelope
-      gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(0.15, now + 0.01);
-      gainNode.gain.setValueAtTime(0.15, now + 0.11);
-      gainNode.gain.linearRampToValueAtTime(0, now + 0.13);
-      gainNode.gain.linearRampToValueAtTime(0.15, now + 0.21);
-      gainNode.gain.setValueAtTime(0.15, now + 0.31);
-      gainNode.gain.linearRampToValueAtTime(0, now + 0.35);
-      
-      // Two beeps: high-low pattern
-      playBeep(now, 880);       // A5
-      playBeep(now + 0.2, 698); // F5
+      gainNode.gain.setValueAtTime(0.2, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.05, now + 0.25);
+      gainNode.gain.setValueAtTime(0.2, now + 0.3);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
       
     } catch (e) {
       console.log('Audio not available');
     }
   }, []);
 
-  // Jiggle the Do Today box every 10 seconds (only if there are tasks)
+  // Jiggle the Do Today box every 7 seconds (only if there are tasks)
   useEffect(() => {
     const interval = setInterval(() => {
       if (todayTaskCountRef.current > 0) {
@@ -143,7 +144,7 @@ export default function Dashboard() {
         playJiggleSound();
         setTimeout(() => setDoTodayBounce(false), 1000);
       }
-    }, 10000);
+    }, 7000);
     return () => clearInterval(interval);
   }, [playJiggleSound]);
 
