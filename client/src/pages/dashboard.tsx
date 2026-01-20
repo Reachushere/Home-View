@@ -1347,11 +1347,11 @@ function TaskCard({
     return (
       <div className="relative pt-5 h-full flex flex-col">
         {/* Media Controls - positioned absolutely at top, half height */}
-        <div className={`absolute top-0 left-0 right-0 h-4 flex items-center justify-around rounded-lg px-2 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
+        <div className={`absolute top-0 left-0 right-0 h-4 flex items-center justify-around rounded-sm px-1 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3"
+            className="h-3 w-3 p-0 min-h-0"
             onClick={handlePlayTTS}
             disabled={isSendingTTS}
             data-testid={`button-play-${task.id}`}
@@ -1366,7 +1366,7 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3"
+            className="h-3 w-3 p-0 min-h-0"
             onClick={handleStop}
             disabled={isControlling}
             data-testid={`button-stop-${task.id}`}
@@ -1377,7 +1377,7 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3"
+            className="h-3 w-3 p-0 min-h-0"
             onClick={handleResume}
             disabled={isControlling}
             data-testid={`button-resume-${task.id}`}
@@ -1388,7 +1388,7 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3"
+            className="h-3 w-3 p-0 min-h-0"
             onClick={() => handleVolume("down")}
             disabled={isControlling}
             data-testid={`button-voldown-${task.id}`}
@@ -1399,7 +1399,7 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-3 w-3"
+            className="h-3 w-3 p-0 min-h-0"
             onClick={() => handleVolume("up")}
             disabled={isControlling}
             data-testid={`button-volup-${task.id}`}
