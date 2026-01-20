@@ -1248,100 +1248,112 @@ function TaskCard({
           {compact ? task.type.slice(0, 4) : task.type}
         </Badge>
       </CardHeader>
-      <CardContent className={`space-y-1 ${compact ? "px-2 pb-2 pt-0" : "px-3 pb-3 pt-0"}`}>
+      <CardContent className={`space-y-1 ${compact ? "px-2 pb-1 pt-0" : "px-3 pb-3 pt-0"}`}>
         {!compact && task.description && (
           <p className="text-xs text-muted-foreground line-clamp-2">
             {task.description}
           </p>
         )}
         
-        <div className={`flex items-center gap-1 text-muted-foreground ${compact ? "text-[8px]" : "text-[10px]"}`}>
-          <Clock className={compact ? "h-2.5 w-2.5" : "h-3 w-3"} />
-          {format(new Date(task.dueDate), compact ? "MMM d" : "MMM d, h:mm a")}
-        </div>
-
-        {!compact && (
-          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-            <Bell className="h-3 w-3" />
-            <span>Reminders: 12h, 6h, 2h, 30min before</span>
+        {compact ? (
+          <div className="flex items-center gap-1 text-muted-foreground text-[8px]">
+            <Clock className="h-2.5 w-2.5" />
+            {format(new Date(task.dueDate), "MMM d")}
           </div>
-        )}
+        ) : (
+          <>
+            <div className="flex items-center gap-1 text-muted-foreground text-[10px]">
+              <Clock className="h-3 w-3" />
+              {format(new Date(task.dueDate), "MMM d, h:mm a")}
+            </div>
 
-        {task.referenceLink && (
-          <div className="flex items-center gap-1 text-[10px]">
-            <Link className="h-3 w-3 text-primary" />
-            <a 
-              href={task.referenceLink} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-primary hover:underline truncate"
-              data-testid={`link-reference-${task.id}`}
-            >
-              {task.referenceLink}
-            </a>
-          </div>
-        )}
-
-        {task.attachments && task.attachments.length > 0 && (
-          <div className="space-y-1">
             <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-              <Paperclip className="h-3 w-3" />
-              <span>{task.attachments.length} attachment{task.attachments.length > 1 ? "s" : ""}</span>
+              <Bell className="h-3 w-3" />
+              <span>Reminders: 12h, 6h, 2h, 30min before</span>
             </div>
-            <div className="flex flex-wrap gap-1">
-              {task.attachments.map((attachment, idx) => {
-                const attachmentName = attachment.split('/').pop() || attachment;
-                return (
-                  <div key={idx} className="flex items-center gap-1">
-                    <a
-                      href={attachment}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[10px] text-primary hover:underline truncate max-w-[150px]"
-                      data-testid={`link-attachment-${task.id}-${idx}`}
-                    >
-                      {attachmentName}
-                    </a>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
-        <div className="flex items-center gap-2 pt-1 flex-wrap">
-          {isMissed && (
-            <Button size="sm" variant="destructive" onClick={onReschedule} data-testid={`button-reschedule-${task.id}`}>
-              <RefreshCw className="h-3 w-3 mr-1" />
-              Reschedule
-            </Button>
-          )}
-          <Button size="sm" variant="outline" onClick={handleExportCalendar} data-testid={`button-export-${task.id}`}>
-            <Download className="h-3 w-3 mr-1" />
-            .ics
-          </Button>
-          <Button 
-            size="sm" 
-            variant={task.calendarEventId ? "default" : "outline"}
-            className={task.calendarEventId ? "bg-[#5979CC] hover:bg-[#4a68b3]" : ""}
-            onClick={handleGoogleCalendarSync}
-            disabled={isSyncingCalendar}
-            data-testid={`button-gcal-${task.id}`}
-          >
-            {isSyncingCalendar ? (
-              <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-            ) : (
-              <CalendarDays className="h-3 w-3 mr-1" />
+            {task.referenceLink && (
+              <div className="flex items-center gap-1 text-[10px]">
+                <Link className="h-3 w-3 text-primary" />
+                <a 
+                  href={task.referenceLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-primary hover:underline truncate"
+                  data-testid={`link-reference-${task.id}`}
+                >
+                  {task.referenceLink}
+                </a>
+              </div>
             )}
-            {task.calendarEventId ? "On Calendar" : "Google Cal"}
-          </Button>
-          <Button size="sm" variant="ghost" onClick={onEdit} data-testid={`button-edit-${task.id}`}>
-            Edit
-          </Button>
-        </div>
+
+            {task.attachments && task.attachments.length > 0 && (
+              <div className="space-y-1">
+                <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                  <Paperclip className="h-3 w-3" />
+                  <span>{task.attachments.length} attachment{task.attachments.length > 1 ? "s" : ""}</span>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {task.attachments.map((attachment, idx) => {
+                    const attachmentName = attachment.split('/').pop() || attachment;
+                    return (
+                      <div key={idx} className="flex items-center gap-1">
+                        <a
+                          href={attachment}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] text-primary hover:underline truncate max-w-[150px]"
+                          data-testid={`link-attachment-${task.id}-${idx}`}
+                        >
+                          {attachmentName}
+                        </a>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 pt-1 flex-wrap">
+              {isMissed && (
+                <Button size="sm" variant="destructive" onClick={onReschedule} data-testid={`button-reschedule-${task.id}`}>
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Reschedule
+                </Button>
+              )}
+              <Button size="sm" variant="outline" onClick={handleExportCalendar} data-testid={`button-export-${task.id}`}>
+                <Download className="h-3 w-3 mr-1" />
+                .ics
+              </Button>
+              <Button 
+                size="sm" 
+                variant={task.calendarEventId ? "default" : "outline"}
+                className={task.calendarEventId ? "bg-[#5979CC] hover:bg-[#4a68b3]" : ""}
+                onClick={handleGoogleCalendarSync}
+                disabled={isSyncingCalendar}
+                data-testid={`button-gcal-${task.id}`}
+              >
+                {isSyncingCalendar ? (
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                ) : (
+                  <CalendarDays className="h-3 w-3 mr-1" />
+                )}
+                {task.calendarEventId ? "On Calendar" : "Google Cal"}
+              </Button>
+              <Button size="sm" variant="ghost" onClick={onEdit} data-testid={`button-edit-${task.id}`}>
+                Edit
+              </Button>
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
+
+  // For compact mode, just return the card directly
+  if (compact) {
+    return cardElement;
+  }
 
   if (hasAttachments) {
     return (
