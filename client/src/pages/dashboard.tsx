@@ -2033,9 +2033,9 @@ export default function Dashboard() {
 
           {/* Upcoming Tasks Section */}
           <section className="flex-1 bg-yellow-200/60 dark:bg-yellow-800/40 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3.5 w-3.5" style={{ color: '#ffff00' }} />
-              <span style={{ color: '#ffff00' }}>Be Prepared:</span> <span className="text-black dark:text-white">Upcoming Tasks ({upcomingTasks.length})</span>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3.5 w-3.5 text-black dark:text-white" />
+              Be Prepared: Upcoming Tasks ({upcomingTasks.length})
             </h4>
             {isLoading ? (
               <div className="text-muted-foreground text-xs">Loading...</div>
