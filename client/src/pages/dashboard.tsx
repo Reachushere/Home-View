@@ -651,7 +651,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - with consistent row slots for multi-day tasks */}
-            <div className="border-b border-border sticky top-[52px] bg-gray-100 dark:bg-gray-800 z-10">
+            <div className="border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10">
               {/* Render each planning task as its own row */}
               {weekPlanningTasks.length > 0 && weekPlanningTasks.map((task, rowIdx) => {
                 const colors = getCourseColor(task.courseName);
@@ -662,7 +662,7 @@ export default function Dashboard() {
                     className="grid" 
                     style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}
                   >
-                    <div className="p-1 text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
+                    <div className="p-1 text-xs text-foreground font-bold tracking-wide flex items-center justify-center bg-white dark:bg-card">
                       {rowIdx === 0 ? "ALL DAY" : ""}
                     </div>
                     {weekDays.map((day, dayIdx) => {
@@ -746,7 +746,7 @@ export default function Dashboard() {
               {/* All-day tasks row (non-planning) */}
               {weekDays.some(day => getAllDayTasks(day).length > 0 || getAllDayCalendarEvents(day).length > 0) && (
                 <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
+                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3 bg-white dark:bg-card">
                     {weekPlanningTasks.length === 0 ? "ALL DAY" : ""}
                   </div>
                   {weekDays.map((day, idx) => {
@@ -809,7 +809,7 @@ export default function Dashboard() {
               {/* Empty row if no tasks */}
               {weekPlanningTasks.length === 0 && !weekDays.some(day => getAllDayTasks(day).length > 0) && (
                 <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3">
+                  <div className="p-1 text-xs text-muted-foreground font-medium flex items-center justify-end pr-3 bg-white dark:bg-card">
                     ALL DAY
                   </div>
                   {weekDays.map((day, idx) => (
