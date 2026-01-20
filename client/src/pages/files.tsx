@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useUpload } from "@/hooks/use-upload";
+import { ObjectUploader } from "@/components/ObjectUploader";
 import { Link } from "wouter";
 import { 
   FileText, 
@@ -22,7 +24,8 @@ import {
   ArrowLeft,
   Download,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  Upload
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 
@@ -70,6 +73,10 @@ export default function FilesPage() {
   const [newName, setNewName] = useState("");
   const [assigningFile, setAssigningFile] = useState<FileRecord | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<string>("");
+  const [showAssignAfterUpload, setShowAssignAfterUpload] = useState(false);
+  const [lastUploadedObjectPath, setLastUploadedObjectPath] = useState<string>("");
+
+  const { getUploadParameters } = useUpload();
 
   const { data: files = [], isLoading: filesLoading } = useQuery<FileRecord[]>({
     queryKey: ["/api/files"],
@@ -134,6 +141,34 @@ export default function FilesPage() {
     }
   };
 
+  const assignByPathMutation = useMutation({
+    mutationFn: async ({ objectPath, taskId }: { objectPath: string; taskId: number }) => {
+      return await apiRequest("POST", `/api/files/assign-by-path`, { objectPath, taskId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      setShowAssignAfterUpload(false);
+      setSelectedTaskId("");
+      setLastUploadedObjectPath("");
+      toast({ title: "File assigned to task" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to assign file", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const handleAssignAfterUpload = () => {
+    if (lastUploadedObjectPath && selectedTaskId) {
+      assignByPathMutation.mutate({ objectPath: lastUploadedObjectPath, taskId: parseInt(selectedTaskId) });
+    }
+  };
+
+  const handleUploadComplete = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+    toast({ title: "File uploaded successfully" });
+  };
+
   const getTasksForFile = (file: FileRecord): Task[] => {
     return tasks.filter(task => 
       task.attachments && task.attachments.includes(file.objectPath)
@@ -167,9 +202,18 @@ export default function FilesPage() {
             </Button>
           </Link>
           <h1 className="text-2xl font-bold">File Manager</h1>
-          <Badge variant="secondary" className="ml-auto">
+          <Badge variant="secondary">
             {files.length} {files.length === 1 ? "file" : "files"}
           </Badge>
+          <ObjectUploader
+            maxNumberOfFiles={5}
+            onGetUploadParameters={getUploadParameters}
+            onComplete={handleUploadComplete}
+            buttonClassName="ml-auto"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Upload File
+          </ObjectUploader>
         </div>
 
         {files.length === 0 ? (

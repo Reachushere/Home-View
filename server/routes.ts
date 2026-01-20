@@ -327,6 +327,40 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/files/assign-by-path - Assign file to a task by object path
+  app.post("/api/files/assign-by-path", async (req, res) => {
+    try {
+      const { objectPath, taskId } = req.body;
+      if (!objectPath || !taskId) {
+        return res.status(400).json({ error: "objectPath and taskId are required" });
+      }
+
+      const file = await storage.getFileByPath(objectPath);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      const task = await storage.getTask(Number(taskId));
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+
+      // Add file to task attachments if not already there
+      const currentAttachments = task.attachments || [];
+      if (!currentAttachments.includes(file.objectPath)) {
+        const updatedTask = await storage.updateTask(task.id, {
+          attachments: [...currentAttachments, file.objectPath],
+        });
+        res.json({ success: true, task: updatedTask, file });
+      } else {
+        res.json({ success: true, message: "File already attached to task", task, file });
+      }
+    } catch (err) {
+      console.error("Error assigning file by path:", err);
+      res.status(500).json({ error: "Failed to assign file to task" });
+    }
+  });
+
   // DELETE /api/files/:id - Delete file and remove from all task attachments
   app.delete("/api/files/:id", async (req, res) => {
     try {
