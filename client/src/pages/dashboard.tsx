@@ -1084,25 +1084,22 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-black flex flex-col">
-                <div className="flex-1"></div>
-                <div className="flex items-center justify-center pb-1">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
+              <div className="w-5 border-r border-black"></div>
+              <div className="w-14 border-r border-black"></div>
+              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A:</div>
+              <div className="w-12 border-l border-black"></div>
+            </div>
+            <div className="flex items-stretch">
+              <div className="w-5 border-r border-black flex items-center justify-center">
+                <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="flex-1 flex flex-col">
-                <div className="px-1 pt-0.5 text-[8px]">
-                  <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
-                </div>
-                <div className="px-1 pb-1 flex items-end">
-                  <input 
-                    type="text" 
-                    className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white"
-                    placeholder="Course..."
-                  />
-                </div>
+              <div className="w-14 border-r border-black h-11 flex items-center justify-center text-[8px] text-center px-0.5">
+                <span className="leading-tight"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
               </div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-end gap-1.5 pb-1">
+              <div className="flex-1 h-11 px-1 flex items-center">
+                <input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course..." />
+              </div>
+              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1111,13 +1108,19 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
+              <div className="w-5 border-r border-black"></div>
+              <div className="w-14 border-r border-black"></div>
+              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE:</div>
+              <div className="w-12 border-l border-black"></div>
+            </div>
+            <div className="flex items-stretch">
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
+              <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+                <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
+              </div>
               <div className="flex-1 flex flex-col">
-                <div className="h-4 px-1 text-[8px] flex items-center border-b border-black">
-                  CORE ELECTIVE: <span className="font-bold ml-1">ONE</span>&nbsp;course required
-                </div>
                 <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
                 <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
                 <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
@@ -1137,7 +1140,7 @@ export default function Dashboard() {
             <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
-              <div className="w-[55px] border-r border-black"></div>
+              <div className="w-14 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE</div>
               <div className="w-12 border-l border-black"></div>
             </div>
@@ -1146,7 +1149,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-[55px] border-r border-black h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-black h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
                 <span className="leading-tight"><span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.</span>
               </div>
               <div className="flex-1 flex flex-col">
