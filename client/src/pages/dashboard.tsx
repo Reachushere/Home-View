@@ -105,28 +105,31 @@ export default function Dashboard() {
       const gainNode = audioContext.createGain();
       gainNode.connect(audioContext.destination);
       
-      // Create a pleasant chime/bell sound
-      const osc = audioContext.createOscillator();
-      osc.type = 'sine';
-      osc.connect(gainNode);
-      
-      // Ascending chime pattern
       const now = audioContext.currentTime;
-      osc.frequency.setValueAtTime(523, now);        // C5
-      osc.frequency.setValueAtTime(659, now + 0.15); // E5
-      osc.frequency.setValueAtTime(784, now + 0.3);  // G5
       
-      // Bell-like envelope with quick attack and decay
+      // Two-tone alert beep (like a gentle notification)
+      const playBeep = (startTime: number, freq: number) => {
+        const osc = audioContext.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime);
+        osc.connect(gainNode);
+        osc.start(startTime);
+        osc.stop(startTime + 0.12);
+      };
+      
+      // Envelope
       gainNode.gain.setValueAtTime(0, now);
-      gainNode.gain.linearRampToValueAtTime(0.2, now + 0.02);
-      gainNode.gain.exponentialRampToValueAtTime(0.1, now + 0.15);
-      gainNode.gain.linearRampToValueAtTime(0.2, now + 0.17);
-      gainNode.gain.exponentialRampToValueAtTime(0.1, now + 0.3);
-      gainNode.gain.linearRampToValueAtTime(0.25, now + 0.32);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+      gainNode.gain.linearRampToValueAtTime(0.15, now + 0.01);
+      gainNode.gain.setValueAtTime(0.15, now + 0.11);
+      gainNode.gain.linearRampToValueAtTime(0, now + 0.13);
+      gainNode.gain.linearRampToValueAtTime(0.15, now + 0.21);
+      gainNode.gain.setValueAtTime(0.15, now + 0.31);
+      gainNode.gain.linearRampToValueAtTime(0, now + 0.35);
       
-      osc.start(now);
-      osc.stop(now + 0.6);
+      // Two beeps: high-low pattern
+      playBeep(now, 880);       // A5
+      playBeep(now + 0.2, 698); // F5
+      
     } catch (e) {
       console.log('Audio not available');
     }
