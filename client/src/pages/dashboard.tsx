@@ -2508,7 +2508,7 @@ function TaskCard({
         const response = await fetch('/api/media/play', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mediaUrl }),
+          body: JSON.stringify({ mediaUrl, entityId: 'media_player.echo_lr_studio_white_am' }),
         });
         
         if (!response.ok) {
@@ -2525,7 +2525,11 @@ function TaskCard({
   const handleStop = async () => {
     setIsControlling(true);
     try {
-      await fetch('/api/media/stop', { method: 'POST' });
+      await fetch('/api/media/stop', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entityId: 'media_player.echo_lr_studio_white_am' }),
+      });
     } catch (error) {
       console.error('Stop error:', error);
     } finally {
@@ -2536,7 +2540,11 @@ function TaskCard({
   const handleResume = async () => {
     setIsControlling(true);
     try {
-      await fetch('/api/media/resume', { method: 'POST' });
+      await fetch('/api/media/resume', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entityId: 'media_player.echo_lr_studio_white_am' }),
+      });
     } catch (error) {
       console.error('Resume error:', error);
     } finally {
@@ -2550,7 +2558,7 @@ function TaskCard({
       await fetch('/api/media/volume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action, entityId: 'media_player.echo_lr_studio_white_am' }),
       });
     } catch (error) {
       console.error('Volume error:', error);
