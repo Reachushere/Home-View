@@ -327,9 +327,23 @@ export async function registerRoutes(
     }
   });
 
-  // DELETE /api/files/:id - Delete file (metadata only, object storage deletion not implemented)
+  // DELETE /api/files/:id - Delete file and remove from all task attachments
   app.delete("/api/files/:id", async (req, res) => {
     try {
+      const file = await storage.getFile(Number(req.params.id));
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      // Remove file reference from all tasks that have it attached
+      const allTasks = await storage.getTasks({});
+      for (const task of allTasks) {
+        if (task.attachments && task.attachments.includes(file.objectPath)) {
+          const updatedAttachments = task.attachments.filter(a => a !== file.objectPath);
+          await storage.updateTask(task.id, { attachments: updatedAttachments });
+        }
+      }
+
       await storage.deleteFile(Number(req.params.id));
       res.status(204).end();
     } catch (err) {
