@@ -1297,13 +1297,13 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="px-1 pt-0.5 text-[8px] invisible">X</div>
-                <div className="px-1 pt-2 pb-5 flex items-end justify-center">
+                <div className="px-1 pt-2 pb-5 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="px-1 pt-1 pb-4 flex items-end justify-center">
+                <div className="px-1 pt-1 pb-4 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="px-1 pt-1 pb-1 flex items-end justify-center">
+                <div className="px-1 pt-1 pb-1 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
               </div>
@@ -1359,13 +1359,13 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="px-1 pt-0.5 text-[8px] invisible">X</div>
-                <div className="px-1 pt-2 pb-5 flex items-end justify-center">
+                <div className="px-1 pt-2 pb-5 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="px-1 pt-1 pb-4 flex items-end justify-center">
+                <div className="px-1 pt-1 pb-4 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="px-1 pt-1 pb-1 flex items-end justify-center">
+                <div className="px-1 pt-1 pb-1 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
               </div>
