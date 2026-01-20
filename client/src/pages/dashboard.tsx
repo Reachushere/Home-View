@@ -1015,7 +1015,7 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-3 pt-3">
+              <div className="grid grid-cols-3 gap-3 pt-5">
                 {upcomingTasks.map((task) => (
                   <TaskCard
                     key={task.id}
