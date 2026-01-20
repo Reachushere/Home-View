@@ -1541,7 +1541,20 @@ export default function Dashboard() {
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
           <div className="flex items-center gap-1.5 mx-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-            <span className="text-[15px] font-bold text-[#5979CC]">Week {selectedWeek}</span>
+            <div className="flex flex-col items-center">
+              {selectedWeek === 2 ? (
+                <span className="text-[8px] text-muted-foreground uppercase tracking-wide">(this)</span>
+              ) : (
+                <span 
+                  className="text-[8px] text-blue-500 uppercase tracking-wide cursor-pointer hover:underline"
+                  onClick={() => setSelectedWeek(2)}
+                  data-testid="link-current-week"
+                >
+                  (this)
+                </span>
+              )}
+              <span className="text-[15px] font-bold text-[#5979CC]">Week {selectedWeek}</span>
+            </div>
             <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
             <span className="text-xs text-muted-foreground">to</span>
             <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
