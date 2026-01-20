@@ -550,7 +550,7 @@ export default function Dashboard() {
             <RouterLink href="/files">
               <Button 
                 size="sm" 
-                className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border-2 border-blue-800 font-semibold text-blue-600" 
+                className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border-2 border-blue-800 font-semibold text-blue-800" 
                 data-testid="button-files-link"
               >
                 <FolderOpen className="h-2.5 w-2.5 mr-0.5" />
