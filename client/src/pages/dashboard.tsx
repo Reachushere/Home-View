@@ -562,7 +562,7 @@ export default function Dashboard() {
             <div className="flex gap-1.5">
             <Button 
               size="sm"
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border-2 border-blue-800" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
@@ -571,7 +571,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border-2 border-blue-800" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
@@ -580,7 +580,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border-2 border-blue-800" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
@@ -589,7 +589,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border-2 border-blue-800" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
@@ -598,7 +598,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2" 
+              className="bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border-2 border-blue-800" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
