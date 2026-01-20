@@ -2268,11 +2268,11 @@ export default function Dashboard() {
                         cardBgClass="bg-orange-50 dark:bg-orange-900/20"
                         compact
                       />
-                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-black rounded-full flex flex-col items-center justify-center z-10">
-                        <span className="text-sm font-bold text-white leading-none">
+                      <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-black rounded-full flex flex-col items-center justify-center z-10">
+                        <span className="text-xs font-bold text-white leading-none">
                           {daysUntilDue}
                         </span>
-                        <span className="text-[6px] text-white uppercase tracking-tight">
+                        <span className="text-[7px] text-white uppercase tracking-tight">
                           {daysUntilDue === 1 ? 'day' : 'days'}
                         </span>
                       </div>
