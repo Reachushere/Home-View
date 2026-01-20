@@ -107,29 +107,35 @@ export default function Dashboard() {
       
       const now = audioContext.currentTime;
       
-      // Doorbell-style ding-dong
-      const osc1 = audioContext.createOscillator();
-      const osc2 = audioContext.createOscillator();
-      osc1.type = 'sine';
-      osc2.type = 'sine';
-      osc1.connect(gainNode);
-      osc2.connect(gainNode);
+      // Classic doorbell - rapid alternating tones
+      const createTone = (freq: number, startTime: number, duration: number) => {
+        const osc = audioContext.createOscillator();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+        osc.connect(gainNode);
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+      };
       
-      // Ding (high note)
-      osc1.frequency.setValueAtTime(988, now); // B5
-      osc1.start(now);
-      osc1.stop(now + 0.25);
+      // Rapid ding-ding-ding pattern (like a classic doorbell)
+      const highFreq = 1047; // C6
+      const lowFreq = 880;   // A5
       
-      // Dong (lower note)
-      osc2.frequency.setValueAtTime(784, now + 0.3); // G5
-      osc2.start(now + 0.3);
-      osc2.stop(now + 0.55);
+      createTone(highFreq, now, 0.08);
+      createTone(lowFreq, now + 0.1, 0.08);
+      createTone(highFreq, now + 0.2, 0.08);
+      createTone(lowFreq, now + 0.3, 0.15);
       
-      // Envelope
-      gainNode.gain.setValueAtTime(0.2, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.05, now + 0.25);
-      gainNode.gain.setValueAtTime(0.2, now + 0.3);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
+      // Envelope for the ring
+      gainNode.gain.setValueAtTime(0.25, now);
+      gainNode.gain.setValueAtTime(0.25, now + 0.08);
+      gainNode.gain.setValueAtTime(0.02, now + 0.09);
+      gainNode.gain.setValueAtTime(0.25, now + 0.1);
+      gainNode.gain.setValueAtTime(0.02, now + 0.19);
+      gainNode.gain.setValueAtTime(0.25, now + 0.2);
+      gainNode.gain.setValueAtTime(0.02, now + 0.29);
+      gainNode.gain.setValueAtTime(0.25, now + 0.3);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
       
     } catch (e) {
       console.log('Audio not available');
