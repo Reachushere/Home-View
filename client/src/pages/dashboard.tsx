@@ -1126,7 +1126,7 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="flex-1 flex border-b border-black">
-                  <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">CORE ELECTIVE:</span> <span className="font-bold">ONE</span> course required from the following:</div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">ONE</span> course required from the following:</div>
                 </div>
                 <div className="flex-1 flex border-b border-black">
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 101</div>
