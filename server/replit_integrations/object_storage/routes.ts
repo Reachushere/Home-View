@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { storage } from "../../storage";
 
 /**
  * Register object storage routes for file uploads.
@@ -49,6 +50,15 @@ export function registerObjectStorageRoutes(app: Express): void {
 
       // Extract object path from the presigned URL for later reference
       const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+
+      // Save file metadata to database
+      await storage.createFile({
+        originalName: name,
+        displayName: name,
+        objectPath,
+        contentType: contentType || "application/octet-stream",
+        size: size || null,
+      });
 
       res.json({
         uploadURL,

@@ -248,6 +248,118 @@ export async function registerRoutes(
     res.json(task);
   });
 
+  // ============= FILE MANAGEMENT ROUTES =============
+
+  // GET /api/files - List all uploaded files
+  app.get("/api/files", async (_req, res) => {
+    try {
+      const files = await storage.getFiles();
+      res.json(files);
+    } catch (err) {
+      console.error("Error fetching files:", err);
+      res.status(500).json({ error: "Failed to fetch files" });
+    }
+  });
+
+  // GET /api/files/:id - Get single file
+  app.get("/api/files/:id", async (req, res) => {
+    try {
+      const file = await storage.getFile(Number(req.params.id));
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      res.json(file);
+    } catch (err) {
+      console.error("Error fetching file:", err);
+      res.status(500).json({ error: "Failed to fetch file" });
+    }
+  });
+
+  // PATCH /api/files/:id - Rename a file
+  app.patch("/api/files/:id", async (req, res) => {
+    try {
+      const { displayName } = req.body;
+      if (!displayName) {
+        return res.status(400).json({ error: "displayName is required" });
+      }
+      const file = await storage.updateFileName(Number(req.params.id), displayName);
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      res.json(file);
+    } catch (err) {
+      console.error("Error renaming file:", err);
+      res.status(500).json({ error: "Failed to rename file" });
+    }
+  });
+
+  // POST /api/files/:id/assign - Assign file to a task
+  app.post("/api/files/:id/assign", async (req, res) => {
+    try {
+      const { taskId } = req.body;
+      if (!taskId) {
+        return res.status(400).json({ error: "taskId is required" });
+      }
+
+      const file = await storage.getFile(Number(req.params.id));
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      const task = await storage.getTask(Number(taskId));
+      if (!task) {
+        return res.status(404).json({ error: "Task not found" });
+      }
+
+      // Add file to task attachments if not already there
+      const currentAttachments = task.attachments || [];
+      if (!currentAttachments.includes(file.objectPath)) {
+        const updatedTask = await storage.updateTask(task.id, {
+          attachments: [...currentAttachments, file.objectPath],
+        });
+        res.json({ success: true, task: updatedTask, file });
+      } else {
+        res.json({ success: true, message: "File already attached to task", task, file });
+      }
+    } catch (err) {
+      console.error("Error assigning file:", err);
+      res.status(500).json({ error: "Failed to assign file to task" });
+    }
+  });
+
+  // DELETE /api/files/:id - Delete file (metadata only, object storage deletion not implemented)
+  app.delete("/api/files/:id", async (req, res) => {
+    try {
+      await storage.deleteFile(Number(req.params.id));
+      res.status(204).end();
+    } catch (err) {
+      console.error("Error deleting file:", err);
+      res.status(500).json({ error: "Failed to delete file" });
+    }
+  });
+
+  // GET /api/files/:id/tasks - Get tasks that have this file attached
+  app.get("/api/files/:id/tasks", async (req, res) => {
+    try {
+      const file = await storage.getFile(Number(req.params.id));
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      const allTasks = await storage.getTasks({});
+      const tasksWithFile = allTasks.filter(task => 
+        task.attachments && task.attachments.includes(file.objectPath)
+      );
+      
+      res.json(tasksWithFile);
+    } catch (err) {
+      console.error("Error fetching tasks for file:", err);
+      res.status(500).json({ error: "Failed to fetch tasks" });
+    }
+  });
+
+  // ============= END FILE MANAGEMENT ROUTES =============
+
   // GET /api/calendar/debug - Debug Google Calendar connection
   app.get("/api/calendar/debug", async (_req, res) => {
     try {
