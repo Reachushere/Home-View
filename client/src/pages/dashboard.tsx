@@ -1219,6 +1219,7 @@ export default function Dashboard() {
               <colgroup>
                 <col style={{ width: '1.25rem' }} />
                 <col style={{ width: '55px' }} />
+                <col style={{ width: '55px' }} />
                 <col />
                 <col style={{ width: '3rem' }} />
               </colgroup>
@@ -1228,7 +1229,8 @@ export default function Dashboard() {
                     <input type="checkbox" className="checkbox-black" />
                   </td>
                   <td className="px-1 py-0.5 border-r border-black align-middle text-[8px]">Core Req</td>
-                  <td className="px-1 py-0.5 align-middle text-[9px]">PPA 333 - Research Methods in Public Administration</td>
+                  <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">PPA 333</td>
+                  <td className="px-1 py-0.5 align-middle text-[9px]">Research Methods in Public Administration</td>
                   <td className="border-l border-black align-middle">
                     <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
                       <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -1272,7 +1274,8 @@ export default function Dashboard() {
                         </td>
                       </>
                     )}
-                    <td className={`h-11 px-1 py-0.5 align-middle text-[9px]`}>{course.code} - {course.title}</td>
+                    <td className={`h-11 px-1 py-0.5 border-r border-black align-middle text-[9px]`}>{course.code}</td>
+                    <td className={`h-11 px-1 py-0.5 align-middle text-[9px]`}>{course.title}</td>
                     <td className="border-l border-black align-middle">
                       <div className="flex flex-col items-center justify-center gap-1.5">
                         <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
