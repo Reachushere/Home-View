@@ -1353,11 +1353,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="flex border-t border-black">
-              <div className="w-5 border-r border-black"></div>
-              <div className="flex-1"></div>
-              <div className="w-12 border-l border-black"></div>
-            </div>
+            <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
