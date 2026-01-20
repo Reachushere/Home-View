@@ -1495,7 +1495,7 @@ function TaskCard({
         </div>
         <Badge className={`${typeColors[task.type]} ${compact ? "text-[7px] px-1 py-0" : ""}`}>
           <Icon className={compact ? "h-2 w-2 mr-0.5" : "h-3 w-3 mr-1"} />
-          {compact ? task.type.slice(0, 4) : task.type}
+          {task.type}
         </Badge>
       </CardHeader>
       <CardContent className={`space-y-1 ${compact ? "px-2 pb-1 pt-0" : "px-3 pb-3 pt-0"}`}>
