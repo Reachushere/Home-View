@@ -1541,28 +1541,28 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <div className="flex items-center gap-1.5 mx-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-            <div className="flex flex-col items-center">
-              {selectedWeek === 2 ? (
-                <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5 -ml-2">
-                  <Home className="h-2.5 w-2.5" />
-                  <span className="underline font-bold">CURRENT</span>
-                </span>
-              ) : (
-                <span 
-                  className="text-[10px] text-blue-500 uppercase tracking-wide cursor-pointer hover:underline flex items-center gap-0.5 -ml-2"
-                  onClick={() => setSelectedWeek(2)}
-                  data-testid="link-current-week"
-                >
-                  <Home className="h-2.5 w-2.5" />
-                  <span className="underline font-bold">CURRENT</span>
-                </span>
-              )}
+          <div className="flex flex-col mx-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            {selectedWeek === 2 ? (
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5">
+                <Home className="h-2.5 w-2.5" />
+                <span className="underline font-bold">CURRENT</span>
+              </span>
+            ) : (
+              <span 
+                className="text-[10px] text-blue-500 uppercase tracking-wide cursor-pointer hover:underline flex items-center gap-0.5"
+                onClick={() => setSelectedWeek(2)}
+                data-testid="link-current-week"
+              >
+                <Home className="h-2.5 w-2.5" />
+                <span className="underline font-bold">CURRENT</span>
+              </span>
+            )}
+            <div className="flex items-center gap-1.5">
               <span className="text-[15px] font-bold text-[#5979CC]">Week {selectedWeek}</span>
+              <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
+              <span className="text-xs text-muted-foreground">to</span>
+              <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
             </div>
-            <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
-            <span className="text-xs text-muted-foreground">to</span>
-            <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
           </div>
           <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
