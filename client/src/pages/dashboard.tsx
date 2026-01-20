@@ -100,6 +100,7 @@ export default function Dashboard() {
   const todayTaskCountRef = useRef(0);
   const [isMuted, setIsMuted] = useState(false);
   const [muteUntil, setMuteUntil] = useState<number | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Create jiggle sound using Web Audio API
   const playJiggleSound = useCallback(() => {
@@ -136,6 +137,12 @@ export default function Dashboard() {
     } catch (e) {
       console.log('Audio not available');
     }
+  }, []);
+
+  // Update clock every second
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
 
   // Check if mute period has expired
@@ -593,8 +600,21 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 p-6 overflow-auto flex flex-col">
         {/* Title Row */}
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
+          
+          {/* Rainbow Digital Clock */}
+          <div className="text-4xl font-bold font-mono tracking-wider" data-testid="digital-clock">
+            {format(currentTime, "hh:mm:ss a").split("").map((char, i) => {
+              const rainbowColors = ["text-red-500", "text-orange-500", "text-yellow-500", "text-green-500", "text-blue-500", "text-indigo-500", "text-purple-500"];
+              return (
+                <span key={i} className={char === " " || char === ":" ? "text-foreground" : rainbowColors[i % rainbowColors.length]}>
+                  {char}
+                </span>
+              );
+            })}
+          </div>
+          
           <div className="flex items-center gap-3">
             <Button
               variant={isMuted ? "default" : "ghost"}
