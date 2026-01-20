@@ -153,11 +153,49 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Update clock every second
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
+  // Speak "New Day" at midnight with a female voice
+  const speakNewDay = useCallback(() => {
+    try {
+      const utterance = new SpeechSynthesisUtterance("New Day");
+      utterance.rate = 0.9;
+      utterance.pitch = 1.1;
+      // Try to find a female voice
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(v => 
+        v.name.toLowerCase().includes('female') || 
+        v.name.toLowerCase().includes('samantha') ||
+        v.name.toLowerCase().includes('victoria') ||
+        v.name.toLowerCase().includes('karen') ||
+        v.name.toLowerCase().includes('moira') ||
+        v.name.toLowerCase().includes('fiona') ||
+        v.name.toLowerCase().includes('zira') ||
+        v.name.includes('Google UK English Female') ||
+        v.name.includes('Google US English')
+      );
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.log('Speech synthesis not available');
+    }
   }, []);
+
+  // Update clock every second and detect midnight
+  const lastDateRef = useRef(new Date().getDate());
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      const currentDate = now.getDate();
+      // Check if we crossed midnight (date changed)
+      if (currentDate !== lastDateRef.current) {
+        lastDateRef.current = currentDate;
+        speakNewDay();
+      }
+      setCurrentTime(now);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [speakNewDay]);
 
   // Check if mute period has expired
   useEffect(() => {
