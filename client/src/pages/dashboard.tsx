@@ -980,7 +980,9 @@ export default function Dashboard() {
                   <input type="checkbox" className="checkbox-black" />
                 </div>
                 <div className="h-9 border-b border-black"></div>
-                <div className="h-9"></div>
+                <div className="h-9 border-b border-black"></div>
+                <div className="h-9 border-b border-black"></div>
+                <div className="h-10"></div>
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
@@ -999,8 +1001,16 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 222</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
                 </div>
-                <div className="h-10 flex">
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 223</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
+                </div>
+                <div className="h-9 flex border-b border-black">
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 224</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
+                </div>
+                <div className="h-10 flex">
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 225</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
                 </div>
               </div>
@@ -1017,6 +1027,8 @@ export default function Dashboard() {
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
+                <div className="h-9 border-b border-black"></div>
+                <div className="h-9 border-b border-black"></div>
                 <div className="h-9 border-b border-black"></div>
                 <div className="h-10"></div>
               </div>
