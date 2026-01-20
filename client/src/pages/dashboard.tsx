@@ -1254,13 +1254,13 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
               <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
-                Select ONE
+                Select <span className="font-bold">ONE</span>
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="px-1 py-0.5 text-[8px]">CORE REQUIRED:</div>
                 <div className="flex flex-col">
                   <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
-                  <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
+                  <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 Core Elective and 6 OE</div>
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
