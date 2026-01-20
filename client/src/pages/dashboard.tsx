@@ -1008,7 +1008,7 @@ export default function Dashboard() {
                 </div>
                 <div className="h-9 flex border-b border-black">
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 235</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Theories of the State</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 303</div>
