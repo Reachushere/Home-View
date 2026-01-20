@@ -177,4 +177,37 @@
   .task-completed {
     @apply opacity-60;
   }
+  
+  .checkbox-black {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border: 1.5px solid black;
+    border-radius: 2px;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .checkbox-black:checked {
+    background-color: black;
+  }
+  
+  .checkbox-black:checked::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  
+  .checkbox-black:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
