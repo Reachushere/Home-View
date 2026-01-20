@@ -102,20 +102,38 @@ export default function Dashboard() {
   const playJiggleSound = useCallback(() => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
+      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
       
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+      // Create two oscillators for telephone ring dual-tone
+      const osc1 = audioContext.createOscillator();
+      const osc2 = audioContext.createOscillator();
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
       
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+      // Standard telephone ring frequencies (440Hz and 480Hz)
+      osc1.frequency.setValueAtTime(440, audioContext.currentTime);
+      osc2.frequency.setValueAtTime(480, audioContext.currentTime);
       
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.15);
+      // Ring pattern: on-off-on-off
+      const ringDuration = 0.1;
+      const pauseDuration = 0.05;
+      
+      osc1.start(audioContext.currentTime);
+      osc2.start(audioContext.currentTime);
+      
+      // Create ring pattern with gain modulation
+      let time = audioContext.currentTime;
+      for (let i = 0; i < 3; i++) {
+        gainNode.gain.setValueAtTime(0.15, time);
+        time += ringDuration;
+        gainNode.gain.setValueAtTime(0, time);
+        time += pauseDuration;
+      }
+      
+      osc1.stop(time);
+      osc2.stop(time);
     } catch (e) {
       console.log('Audio not available');
     }
