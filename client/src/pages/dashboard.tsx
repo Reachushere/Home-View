@@ -1527,7 +1527,7 @@ export default function Dashboard() {
             >
               {format(currentTime, "hh:mm:ss")}
             </span>
-            <span className="text-sm font-bold font-mono tracking-wider text-white w-[24px] text-left ml-1">
+            <span className="text-sm font-bold font-mono tracking-wider text-white w-[24px] text-left ml-2">
               {format(currentTime, "a")}
             </span>
           </div>
