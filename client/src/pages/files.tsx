@@ -374,9 +374,15 @@ export default function FilesPage() {
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-medium truncate" data-testid={`text-filename-${file.id}`}>
+                          <a 
+                            href={file.objectPath} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="font-medium truncate hover:underline cursor-pointer text-primary"
+                            data-testid={`text-filename-${file.id}`}
+                          >
                             {file.displayName}
-                          </h3>
+                          </a>
                           {file.displayName !== file.originalName && (
                             <span className="text-xs text-muted-foreground truncate">
                               (was: {file.originalName})
