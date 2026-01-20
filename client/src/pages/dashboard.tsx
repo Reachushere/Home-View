@@ -1695,77 +1695,77 @@ export default function Dashboard() {
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
           {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-center justify-between gap-2 ml-2">
-            <Button size="sm" className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border-[1.75px] border-blue-800 font-semibold text-blue-800" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+          <div className="flex-1 flex items-center justify-end gap-2 ml-2">
+            <Button size="sm" className="h-5 w-[70px] text-[9px] bg-white hover:bg-gray-50 border-[1.75px] border-blue-800 font-semibold text-blue-800" onClick={() => setSelectedWeek(2)} data-testid="button-today">
               TODAY
             </Button>
             <Button 
               size="sm" 
-              className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border-[1.75px] border-blue-800 font-semibold text-blue-800" 
+              className="h-5 w-[70px] text-[9px] bg-white hover:bg-gray-50 border-[1.75px] border-blue-800 font-semibold text-blue-800" 
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
             >
               {syncAllCalendarMutation.isPending ? (
-                <Loader2 className="h-2.5 w-2.5 mr-0.5 animate-spin" />
+                <Loader2 className="h-2 w-2 mr-0.5 animate-spin" />
               ) : (
-                <CalendarDays className="h-2.5 w-2.5 mr-0.5" />
+                <CalendarDays className="h-2 w-2 mr-0.5" />
               )}
               Sync
             </Button>
             <RouterLink href="/files">
               <Button 
                 size="sm" 
-                className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border-[1.75px] border-blue-800 font-semibold text-blue-800" 
+                className="h-5 w-[70px] text-[9px] bg-white hover:bg-gray-50 border-[1.75px] border-blue-800 font-semibold text-blue-800" 
                 data-testid="button-files-link"
               >
-                <FolderOpen className="h-2.5 w-2.5 mr-0.5" />
+                <FolderOpen className="h-2 w-2 mr-0.5" />
                 Files
               </Button>
             </RouterLink>
             <Button 
               size="sm"
-              className="h-6 w-[98px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
+              className="h-5 w-[70px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[9px] border-[1.75px] border-blue-800" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5" />
+              <Plus className="h-2 w-2" />
               Module
             </Button>
             <Button 
               size="sm"
-              className="h-6 w-[98px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
+              className="h-5 w-[70px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[9px] border-[1.75px] border-blue-800" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5" />
+              <Plus className="h-2 w-2" />
               Reading
             </Button>
             <Button 
               size="sm"
-              className="h-6 w-[98px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
+              className="h-5 w-[70px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[9px] border-[1.75px] border-blue-800" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5" />
+              <Plus className="h-2 w-2" />
               Discuss
             </Button>
             <Button 
               size="sm"
-              className="h-6 w-[98px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
+              className="h-5 w-[70px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[9px] border-[1.75px] border-blue-800" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5" />
+              <Plus className="h-2 w-2" />
               Assign
             </Button>
             <Button 
               size="sm"
-              className="h-6 w-[98px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
+              className="h-5 w-[70px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[9px] border-[1.75px] border-blue-800" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5" />
+              <Plus className="h-2 w-2" />
               Exam
             </Button>
           </div>
