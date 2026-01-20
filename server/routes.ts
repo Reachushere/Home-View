@@ -791,9 +791,9 @@ export async function registerRoutes(
         .replace(/[\u2013\u2014]/g, "-")
         .replace(/[^\x20-\x7E]/g, ' ');
       cleanedContent = cleanedContent.replace(/\s+/g, ' ').trim();
-      // Limit length for TTS (about 4 minutes of reading at ~12 chars/second)
-      if (cleanedContent.length > 3000) {
-        cleanedContent = cleanedContent.substring(0, 3000);
+      // Limit length for TTS - Simon Says has ~250 char limit per message
+      if (cleanedContent.length > 250) {
+        cleanedContent = cleanedContent.substring(0, 250);
       }
       // Save session for resume functionality - store full cleaned text (up to 100,000 chars)
       const fullCleanedText = textContent.trim()
