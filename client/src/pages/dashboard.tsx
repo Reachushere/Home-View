@@ -1668,22 +1668,38 @@ export default function Dashboard() {
                 const isToday = isSameDay(day, new Date());
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
+                
+                // Calculate next task due (excluding prep tasks, only actual due dates)
+                const nextTaskDue = isToday ? allTasks
+                  .filter(t => !t.isCompleted && !t.isMissed && new Date(t.dueDate) > new Date())
+                  .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0] : null;
+                const daysUntilNextTask = nextTaskDue 
+                  ? differenceInDays(startOfDay(new Date(nextTaskDue.dueDate)), startOfDay(new Date()))
+                  : null;
+                
                 return (
                   <div 
                     key={idx} 
-                    className={`p-2 border-l border-border flex items-center justify-center gap-1.5 ${
+                    className={`p-1 border-l border-border flex flex-col items-center justify-center ${
                       isToday ? "bg-[#5979CC]" : ""
                     }`}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    <div className={`text-2xl font-bold ${
-                      isToday ? "text-white" : "text-foreground"
-                    }`}>
-                      {dayNum}
+                    <div className="flex items-center gap-1.5">
+                      <div className={`text-2xl font-bold ${
+                        isToday ? "text-white" : "text-foreground"
+                      }`}>
+                        {dayNum}
+                      </div>
+                      <div className={`text-xs font-medium tracking-wide ${
+                        isToday ? "text-white/80" : "text-muted-foreground"
+                      }`}>{dayName}</div>
                     </div>
-                    <div className={`text-xs font-medium tracking-wide ${
-                      isToday ? "text-white/80" : "text-muted-foreground"
-                    }`}>{dayName}</div>
+                    {isToday && daysUntilNextTask !== null && (
+                      <div className="text-[8px] text-white text-center leading-tight">
+                        Next task due in <span className="font-bold">{daysUntilNextTask}</span> {daysUntilNextTask === 1 ? 'day' : 'days'}
+                      </div>
+                    )}
                   </div>
                 );
               })}
