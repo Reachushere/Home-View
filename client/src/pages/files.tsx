@@ -114,7 +114,7 @@ export default function FilesPage() {
   const [showAssignAfterUpload, setShowAssignAfterUpload] = useState(false);
   const [lastUploadedObjectPath, setLastUploadedObjectPath] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortOption>("date-newest");
-  const [selectedSpeaker, setSelectedSpeaker] = useState<string>("media_player.cat_wr");
+  const [fileSpeakers, setFileSpeakers] = useState<Record<number, string>>({});
 
   const { getUploadParameters } = useUpload();
 
@@ -169,16 +169,24 @@ export default function FilesPage() {
     },
   });
 
+  // Helper to get speaker for a file
+  const getSpeakerForFile = (fileId: number) => fileSpeakers[fileId] || "media_player.cat_wr";
+  
+  const setSpeakerForFile = (fileId: number, speakerId: string) => {
+    setFileSpeakers(prev => ({ ...prev, [fileId]: speakerId }));
+  };
+
   // Media control functions
-  const handlePlayFile = async (fileUrl: string, fileName: string) => {
+  const handlePlayFile = async (fileId: number, fileUrl: string, fileName: string) => {
+    const speaker = getSpeakerForFile(fileId);
     try {
       const response = await fetch("/api/media/play", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mediaUrl: fileUrl, entityId: selectedSpeaker }),
+        body: JSON.stringify({ mediaUrl: fileUrl, entityId: speaker }),
       });
       if (response.ok) {
-        const speakerName = SPEAKERS.find(s => s.id === selectedSpeaker)?.name || selectedSpeaker;
+        const speakerName = SPEAKERS.find(s => s.id === speaker)?.name || speaker;
         toast({ title: `Playing on ${speakerName}: ${fileName}` });
       } else {
         toast({ title: "Failed to play file", variant: "destructive" });
@@ -189,24 +197,26 @@ export default function FilesPage() {
     }
   };
 
-  const handleStop = async () => {
+  const handleStop = async (fileId: number) => {
+    const speaker = getSpeakerForFile(fileId);
     try {
       await fetch("/api/media/stop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ entityId: selectedSpeaker }),
+        body: JSON.stringify({ entityId: speaker }),
       });
     } catch (error) {
       console.error("Stop error:", error);
     }
   };
 
-  const handleVolume = async (action: "up" | "down") => {
+  const handleVolume = async (fileId: number, action: "up" | "down") => {
+    const speaker = getSpeakerForFile(fileId);
     try {
       await fetch("/api/media/volume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, entityId: selectedSpeaker }),
+        body: JSON.stringify({ action, entityId: speaker }),
       });
     } catch (error) {
       console.error("Volume error:", error);
@@ -305,6 +315,16 @@ export default function FilesPage() {
             </Button>
           </Link>
           <h1 className="text-2xl font-bold">File Manager</h1>
+          <ObjectUploader
+            maxNumberOfFiles={5}
+            onGetUploadParameters={getUploadParameters}
+            onComplete={handleUploadComplete}
+            buttonClassName="bg-[#5979CC] hover:bg-[#4a68b3] text-white border-[1.75px] border-blue-800"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            Upload File
+          </ObjectUploader>
+          <div className="flex-1" />
           <Badge variant="secondary">
             {files.length} {files.length === 1 ? "file" : "files"}
           </Badge>
@@ -321,28 +341,6 @@ export default function FilesPage() {
               <SelectItem value="size-smallest">Smallest first</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
-            <SelectTrigger className="w-[200px]" data-testid="select-speaker">
-              <Volume2 className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Select speaker..." />
-            </SelectTrigger>
-            <SelectContent>
-              {SPEAKERS.map(speaker => (
-                <SelectItem key={speaker.id} value={speaker.id}>
-                  {speaker.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <ObjectUploader
-            maxNumberOfFiles={5}
-            onGetUploadParameters={getUploadParameters}
-            onComplete={handleUploadComplete}
-            buttonClassName="ml-auto bg-[#5979CC] hover:bg-[#4a68b3] text-white border-[1.75px] border-blue-800"
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            Upload File
-          </ObjectUploader>
         </div>
 
         {files.length === 0 ? (
@@ -420,12 +418,29 @@ export default function FilesPage() {
                       </div>
 
                       <div className="flex items-center gap-1">
+                        {/* Speaker Selection */}
+                        <Select 
+                          value={getSpeakerForFile(file.id)} 
+                          onValueChange={(value) => setSpeakerForFile(file.id, value)}
+                        >
+                          <SelectTrigger className="w-[140px] h-8 text-xs" data-testid={`select-speaker-${file.id}`}>
+                            <SelectValue placeholder="Speaker..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {SPEAKERS.map(speaker => (
+                              <SelectItem key={speaker.id} value={speaker.id}>
+                                {speaker.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        
                         {/* Media Controls */}
                         <Button 
                           variant="ghost" 
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => handlePlayFile(file.objectPath, file.displayName)}
+                          onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
                           title="Play"
                           data-testid={`button-play-${file.id}`}
                         >
@@ -435,7 +450,7 @@ export default function FilesPage() {
                           variant="ghost" 
                           size="icon"
                           className="h-8 w-8"
-                          onClick={handleStop}
+                          onClick={() => handleStop(file.id)}
                           title="Stop"
                           data-testid={`button-stop-${file.id}`}
                         >
@@ -445,7 +460,7 @@ export default function FilesPage() {
                           variant="ghost" 
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => handleVolume("down")}
+                          onClick={() => handleVolume(file.id, "down")}
                           title="Volume Down"
                           data-testid={`button-vol-down-${file.id}`}
                         >
@@ -455,7 +470,7 @@ export default function FilesPage() {
                           variant="ghost" 
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => handleVolume("up")}
+                          onClick={() => handleVolume(file.id, "up")}
                           title="Volume Up"
                           data-testid={`button-vol-up-${file.id}`}
                         >
