@@ -132,7 +132,7 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Jiggle the Do Today box every 5 seconds (only if there are tasks)
+  // Jiggle the Do Today box every 10 seconds (only if there are tasks)
   useEffect(() => {
     const interval = setInterval(() => {
       if (todayTaskCountRef.current > 0) {
@@ -140,7 +140,7 @@ export default function Dashboard() {
         playJiggleSound();
         setTimeout(() => setDoTodayBounce(false), 1000);
       }
-    }, 5000);
+    }, 10000);
     return () => clearInterval(interval);
   }, [playJiggleSound]);
 
