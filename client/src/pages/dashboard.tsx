@@ -772,7 +772,7 @@ export default function Dashboard() {
             </div>
             <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
+                <input type="checkbox" className="h-3 w-3 accent-black border border-black" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
@@ -786,7 +786,7 @@ export default function Dashboard() {
             </div>
             <div className={`flex border-b border-black ${checkedCourses['PPA102'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
+                <input type="checkbox" className="h-3 w-3 accent-black border border-black" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
@@ -800,7 +800,7 @@ export default function Dashboard() {
             </div>
             <div className={`flex border-b border-black ${checkedCourses['PPA125'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                <input type="checkbox" className="h-3 w-3" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
+                <input type="checkbox" className="h-3 w-3 accent-black border border-black" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
@@ -815,10 +815,10 @@ export default function Dashboard() {
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className={`h-11 flex items-center justify-center border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300' : ''}`}>
-                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
+                  <input type="checkbox" className="h-3 w-3 accent-black border border-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
                 </div>
                 <div className={`h-11 flex items-center justify-center border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300' : ''}`}>
-                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
+                  <input type="checkbox" className="h-3 w-3 accent-black border border-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
                 </div>
                 <div className="h-9 border-b border-black"></div>
                 <div className="h-9"></div>
@@ -866,7 +866,7 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
                 <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-300' : ''}`}>
-                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['LIBERAL'] || false} disabled={!openElectives['LIBERAL']?.trim()} onChange={() => toggleCourse('LIBERAL')} />
+                  <input type="checkbox" className="h-3 w-3 accent-black border border-black" checked={checkedCourses['LIBERAL'] || false} disabled={!openElectives['LIBERAL']?.trim()} onChange={() => toggleCourse('LIBERAL')} />
                 </div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -895,10 +895,10 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
                 <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
-                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
+                  <input type="checkbox" className="h-3 w-3 accent-black border border-black" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
                 </div>
                 <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
-                  <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN2'] || false} disabled={!openElectives['OPEN2']?.trim()} onChange={() => toggleCourse('OPEN2')} />
+                  <input type="checkbox" className="h-3 w-3 accent-black border border-black" checked={checkedCourses['OPEN2'] || false} disabled={!openElectives['OPEN2']?.trim()} onChange={() => toggleCourse('OPEN2')} />
                 </div>
               </div>
               <div className="flex-1 flex flex-col">
