@@ -655,44 +655,81 @@ export default function Dashboard() {
           ))}
         </nav>
 
-        <div className="mt-auto">
-          <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-2 mb-1">PAG Requirements</h3>
-          <div className="space-y-1 px-2 text-[10px]">
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">PPA 101 - CDN Public Admin I</span>
+        <div className="mt-auto bg-white rounded-md p-2 text-black text-[9px]">
+          <div className="border border-black">
+            <div className="flex border-b border-black">
+              <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL I</div>
+              <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
+            </div>
+            <div className="border-b border-black px-1 py-0.5 font-bold">COURSES</div>
+            <label className="flex border-b border-black cursor-pointer hover:bg-gray-100">
+              <div className="w-16 px-1 py-0.5 border-r border-black flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+                <span>Core Req</span>
+              </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
+              <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">PPA 102 - CDN Public Admin II</span>
+            <label className="flex border-b border-black cursor-pointer hover:bg-gray-100">
+              <div className="w-16 px-1 py-0.5 border-r border-black flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+                <span>Core Req</span>
+              </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
+              <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">PPA 125 - Rights, Equity & State</span>
+            <label className="flex border-b border-black cursor-pointer hover:bg-gray-100">
+              <div className="w-16 px-1 py-0.5 border-r border-black flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+                <span>Core Req</span>
+              </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
+              <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">PPA 120 - CDN Politics & Gov't</span>
+            <label className="flex border-b border-black cursor-pointer hover:bg-gray-100">
+              <div className="w-16 px-1 py-0.5 border-r border-black flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+                <span>Core</span>
+              </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
+              <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">PPA 122 - Local Politics & Gov't</span>
+            <div className="flex border-b border-black">
+              <div className="w-16 px-1 py-0.5 border-r border-black text-[8px]">Electives: Select <span className="font-bold">TWO</span> from the following:</div>
+              <div className="flex-1 px-1 py-0.5 text-[8px]">(Anti-req POL332, POG210 and POL302)</div>
+            </div>
+            <label className="flex border-b border-black cursor-pointer hover:bg-gray-100">
+              <div className="w-16 px-1 py-0.5 border-r border-black flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+              </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
+              <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">Elective 2 (PPA 121/124)</span>
+            <label className="flex border-b border-black cursor-pointer hover:bg-gray-100">
+              <div className="w-16 px-1 py-0.5 border-r border-black flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+              </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
+              <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">Liberal Studies (Table A)</span>
+            <label className="flex border-b border-black cursor-pointer hover:bg-gray-100">
+              <div className="w-16 px-1 py-0.5 border-r border-black flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+              </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
+              <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">Open Elective 1</span>
+            <label className="flex border-b border-black cursor-pointer hover:bg-gray-100">
+              <div className="px-1 py-0.5 flex-1 flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+                <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
+              </div>
             </label>
-            <label className="flex items-center gap-1.5 cursor-pointer">
-              <input type="checkbox" className="h-3 w-3 rounded" />
-              <span className="text-white">Open Elective 2</span>
+            <label className="flex cursor-pointer hover:bg-gray-100">
+              <div className="px-1 py-0.5 flex-1 flex items-center gap-1">
+                <input type="checkbox" className="h-2.5 w-2.5" />
+                <span>OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.</span>
+              </div>
             </label>
           </div>
         </div>
