@@ -863,7 +863,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <div className="flex border-b border-black">
+              <div className="flex">
                 <div className="w-5 border-r border-black"></div>
                 <div className="flex-1 px-1 py-0.5 text-[8px]">
                   <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
