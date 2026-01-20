@@ -1125,7 +1125,7 @@ export default function Dashboard() {
                 <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
               </div>
               <div className="flex-1 flex flex-col">
-                <div className="h-7 px-1 py-0.5 text-[8px] flex items-center border-b border-black"><span className="font-bold">CORE ELECTIVE:</span> <span className="font-bold">ONE</span> course required from the following:</div>
+                <div className="h-7 px-1 text-[8px] flex items-center border-b border-black"><span className="font-bold">CORE ELECTIVE: ONE</span> course required from the following:</div>
                 <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
                 <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
                 <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
