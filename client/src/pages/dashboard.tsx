@@ -294,7 +294,7 @@ export default function Dashboard() {
     }
   }, [isMuted]);
 
-  // Jiggle the Do Today box every 30 seconds (only if there are tasks and not muted)
+  // Jiggle the Do Today box every 2 minutes (only if there are tasks and not muted)
   useEffect(() => {
     const interval = setInterval(() => {
       if (todayTaskCountRef.current > 0 && !isMuted) {
@@ -302,7 +302,7 @@ export default function Dashboard() {
         playJiggleSound();
         setTimeout(() => setDoTodayBounce(false), 1000);
       }
-    }, 30000);
+    }, 120000);
     return () => clearInterval(interval);
   }, [playJiggleSound, isMuted]);
 
