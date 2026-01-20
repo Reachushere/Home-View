@@ -43,6 +43,7 @@ import {
   PlusCircle,
   FolderOpen,
   Trash2,
+  Sun,
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
 import type { Task } from "@shared/schema";
@@ -1137,8 +1138,8 @@ export default function Dashboard() {
           {/* Upcoming Tasks Section */}
           <section className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3.5 w-3.5" style={{ color: '#ffe600' }} />
-              <span className="text-black dark:text-white">Upcoming</span> <span style={{ color: '#ffe600' }}>(Be Prepared)</span> <span className="text-black dark:text-white">({upcomingTasks.length})</span>
+              <Sun className="h-3.5 w-3.5" style={{ color: '#ffff00', fill: '#ffff00' }} />
+              <span className="text-black dark:text-white">Upcoming</span> <span style={{ color: '#ffff00' }}>(Be Prepared)</span> <span className="text-black dark:text-white">({upcomingTasks.length})</span>
             </h4>
             {isLoading ? (
               <div className="text-muted-foreground text-xs">Loading...</div>
