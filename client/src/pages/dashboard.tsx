@@ -1691,7 +1691,6 @@ export default function Dashboard() {
               </span>
             )}
             <div className="flex items-center gap-1.5">
-              <span className="text-[15px] font-bold text-[#5979CC]">Week {selectedWeek}</span>
               <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
               <span className="text-xs text-muted-foreground">to</span>
               <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
@@ -1796,7 +1795,9 @@ export default function Dashboard() {
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers */}
             <div className="grid border-b border-border sticky top-0 bg-card z-10 h-[52px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-              <div className="p-2"></div>
+              <div className="p-2 flex items-center justify-center">
+                <span className="text-sm font-bold text-[#5979CC]">Week {selectedWeek}</span>
+              </div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
                 const dayName = format(day, "EEE").toUpperCase();
