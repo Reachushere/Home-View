@@ -1101,32 +1101,8 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-black">
-              <div className="w-5 border-r border-black flex flex-col">
-                <div className="h-4 border-b border-black"></div>
-                <div className="h-5 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-5 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-5 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-5 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-5 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-5 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-5 flex items-center justify-center border-b border-black">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
-                <div className="h-5 flex items-center justify-center">
-                  <input type="checkbox" className="checkbox-black" />
-                </div>
+              <div className="w-5 border-r border-black flex items-center justify-center">
+                <input type="checkbox" className="checkbox-black" />
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-4 px-1 text-[8px] flex items-center border-b border-black">
