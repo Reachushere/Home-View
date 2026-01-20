@@ -1931,8 +1931,38 @@ export default function Dashboard() {
             <div className="w-16 h-1.5 rounded-full bg-muted-foreground/40" />
           </div>
         </div>
-        {/* Missed, Upcoming, and Do Today Tasks Side by Side */}
+        {/* Do Today, Missed, and Upcoming Tasks Side by Side */}
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
+          {/* Do Today Section */}
+          <section className={`w-[240px] flex-shrink-0 bg-orange-400/70 dark:bg-orange-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Calendar className="h-3.5 w-3.5 text-yellow-500" />
+              <span className="text-black dark:text-white">Do Today</span> <span className="text-yellow-500">(Urgent)</span> <span className="text-black dark:text-white">({todayTasks.length})</span>
+            </h4>
+            {isLoading ? (
+              <div className="text-muted-foreground text-xs">Loading...</div>
+            ) : todayTasks.length === 0 ? (
+              <div className="text-center py-4 text-muted-foreground text-xs">
+                No tasks for today
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-1 pt-5">
+                {todayTasks.map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                    cardBgClass="bg-orange-50 dark:bg-orange-900/20"
+                    compact
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+
           {/* Missed Tasks Section */}
           <section className={`w-[240px] flex-shrink-0 bg-red-400/70 dark:bg-red-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
@@ -1977,36 +2007,6 @@ export default function Dashboard() {
             ) : (
               <div className="grid grid-cols-3 gap-3 pt-5">
                 {upcomingTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                    onReschedule={() => setRescheduleTask(task)}
-                    onEdit={() => setEditingTask(task)}
-                    onDelete={() => deleteMutation.mutate(task.id)}
-                    cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                    compact
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* Do Today Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-orange-400/70 dark:bg-orange-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Calendar className="h-3.5 w-3.5 text-yellow-500" />
-              <span className="text-black dark:text-white">Do Today</span> <span className="text-yellow-500">(Urgent)</span> <span className="text-black dark:text-white">({todayTasks.length})</span>
-            </h4>
-            {isLoading ? (
-              <div className="text-muted-foreground text-xs">Loading...</div>
-            ) : todayTasks.length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-xs">
-                No tasks for today
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-1 pt-5">
-                {todayTasks.map((task) => (
                   <TaskCard
                     key={task.id}
                     task={task}
