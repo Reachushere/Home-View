@@ -1427,14 +1427,14 @@ export default function Dashboard() {
           </div>
           
           {/* Rainbow Digital Clock */}
-          <div className="bg-black px-3 py-1 rounded-md" data-testid="digital-clock">
+          <div className="bg-black px-2 py-0.5 rounded-md" data-testid="digital-clock">
             <span 
-              className="text-lg font-bold font-mono tracking-wider bg-clip-text text-transparent"
+              className="text-sm font-bold font-mono tracking-wider bg-clip-text text-transparent"
               style={{ backgroundImage: "linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #a855f7)" }}
             >
               {format(currentTime, "hh:mm:ss")}
             </span>
-            <span className="text-lg font-bold font-mono tracking-wider text-white ml-1">
+            <span className="text-sm font-bold font-mono tracking-wider text-white ml-1">
               {format(currentTime, "a")}
             </span>
           </div>
