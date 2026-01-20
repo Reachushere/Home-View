@@ -876,7 +876,7 @@ export default function Dashboard() {
                 <div className="px-1 pb-1 flex items-end">
                   <input 
                     type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
                     placeholder="Course..."
                     value={openElectives['LIBERAL'] || ''}
                     onChange={(e) => updateOpenElective('LIBERAL', e.target.value)}
@@ -908,7 +908,7 @@ export default function Dashboard() {
                 <div className="px-1 pt-1 flex items-end">
                   <input 
                     type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
                     placeholder="Course 1..."
                     value={openElectives['OPEN1'] || ''}
                     onChange={(e) => updateOpenElective('OPEN1', e.target.value)}
@@ -918,7 +918,7 @@ export default function Dashboard() {
                 <div className="px-1 pt-1 pb-1 flex items-end">
                   <input 
                     type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
                     placeholder="Course 2..."
                     value={openElectives['OPEN2'] || ''}
                     onChange={(e) => updateOpenElective('OPEN2', e.target.value)}
