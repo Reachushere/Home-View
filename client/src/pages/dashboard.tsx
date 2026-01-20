@@ -2617,7 +2617,14 @@ function TaskForm({
 }) {
   const getDefaultDate = () => {
     if (task?.dueDate) return format(new Date(task.dueDate), "yyyy-MM-dd'T'HH:mm");
-    if (initialDate) return format(initialDate, "yyyy-MM-dd'T'HH:mm");
+    if (initialDate) {
+      // Set default time to 9 AM if the initialDate is at midnight
+      const date = new Date(initialDate);
+      if (date.getHours() === 0 && date.getMinutes() === 0) {
+        date.setHours(9, 0, 0, 0);
+      }
+      return format(date, "yyyy-MM-dd'T'HH:mm");
+    }
     return "";
   };
 
@@ -2688,6 +2695,9 @@ function TaskForm({
         const startDate = new Date(dueDate);
         startDate.setDate(startDate.getDate() - data.prepDays);
         payload.startDate = startDate.toISOString();
+      } else {
+        // Clear startDate if prepDays is 0
+        payload.startDate = null;
       }
       if (task) {
         return apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
