@@ -773,8 +773,15 @@ export default function Dashboard() {
 
         {/* PAG Level Carousel */}
         <div className="mt-auto">
-          {/* Navigation dots */}
-          <div className="flex justify-center gap-2 mb-2">
+          {/* Navigation with arrows and dots */}
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <button
+              onClick={() => setCurrentPagLevel(prev => prev > 1 ? prev - 1 : 3)}
+              className="w-5 h-5 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
+              data-testid="button-pag-prev"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </button>
             {[1, 2, 3].map((level) => (
               <button
                 key={level}
@@ -783,6 +790,13 @@ export default function Dashboard() {
                 data-testid={`button-pag-level-${level}`}
               />
             ))}
+            <button
+              onClick={() => setCurrentPagLevel(prev => prev < 3 ? prev + 1 : 1)}
+              className="w-5 h-5 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
+              data-testid="button-pag-next"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
           </div>
           
           {/* Level I */}
