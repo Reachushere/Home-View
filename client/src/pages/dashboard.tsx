@@ -2007,7 +2007,7 @@ export default function Dashboard() {
                 { name: 'CASL101', bg: 'bg-purple-200', label: 'bg-purple-300' }
               ].map(course => (
                 <div key={course.name} className="grid border-b border-border/50" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-                  <div className={`p-1 text-[10px] font-bold tracking-wide flex items-center justify-center ${course.label} text-black min-h-[32px]`}>
+                  <div className={`px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center ${course.label} text-black min-h-[20px]`}>
                     {course.name}
                   </div>
                   {weekDays.map((day, dayIdx) => {
@@ -2018,7 +2018,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className={`p-0.5 border-l border-border/50 min-h-[32px] flex flex-col gap-0.5 ${course.bg}`}
+                        className={`px-0.5 py-0 border-l border-border/50 min-h-[20px] flex flex-col ${course.bg}`}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
                         {courseTasks.map(task => (
