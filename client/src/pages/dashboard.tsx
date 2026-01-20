@@ -985,7 +985,7 @@ export default function Dashboard() {
                 No missed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-1 pt-5">
+              <div className="grid grid-cols-1 gap-1 pt-3">
                 {missedTasks.map((task) => (
                   <div key={task.id} className="animate-urgent-blink">
                     <TaskCard
@@ -1015,7 +1015,7 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-3 pt-5">
+              <div className="grid grid-cols-3 gap-3 pt-3">
                 {upcomingTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1045,7 +1045,7 @@ export default function Dashboard() {
                 No tasks for today
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 pt-5">
+              <div className="grid grid-cols-1 gap-3 pt-3">
                 {todayTasks.map((task) => (
                   <TaskCard
                     key={task.id}
