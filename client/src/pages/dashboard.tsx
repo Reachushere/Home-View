@@ -1352,7 +1352,7 @@ export default function Dashboard() {
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
           {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-center justify-between gap-3 ml-2">
+          <div className="flex-1 flex items-center justify-between ml-2">
             <Button size="sm" className="h-6 w-[104px] text-[10px] bg-white hover:bg-gray-50 border-[1.75px] border-blue-800 font-semibold text-blue-800" onClick={() => setSelectedWeek(2)} data-testid="button-today">
               TODAY
             </Button>
