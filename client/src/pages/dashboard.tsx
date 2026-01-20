@@ -982,25 +982,25 @@ export default function Dashboard() {
             </div>
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
-                <div className="h-11 flex items-center justify-center border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="h-11 flex items-center justify-center border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="h-11 flex items-center justify-center">
+                <div className="h-9 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
               </div>
@@ -1009,77 +1009,70 @@ export default function Dashboard() {
                 <div>Select <span className="font-bold">THREE</span> from the following:</div>
               </div>
               <div className="flex-1 flex flex-col">
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 120</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Canadian Politics and Government</div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 border-r border-black flex items-center text-[9px]">PPA 120</div>
+                  <div className="flex-1 px-1 flex items-center text-[9px]">Canadian Politics and Government</div>
                 </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 121</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Ontario Politics and Government</div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 border-r border-black flex items-center text-[9px]">PPA 121</div>
+                  <div className="flex-1 px-1 flex items-center text-[9px]">Ontario Politics and Government</div>
                 </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 122</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Local Politics and Government</div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 border-r border-black flex items-center text-[9px]">PPA 122</div>
+                  <div className="flex-1 px-1 flex items-center text-[9px]">Local Politics and Government</div>
                 </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 124</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Indigenous Politics and Government</div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 border-r border-black flex items-center text-[9px]">PPA 124</div>
+                  <div className="flex-1 px-1 flex items-center text-[9px]">Indigenous Politics and Government</div>
                 </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 235</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Theories of the State</div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 border-r border-black flex items-center text-[9px]">PPA 235</div>
+                  <div className="flex-1 px-1 flex items-center text-[9px]">Theories of the State</div>
                 </div>
-                <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 303</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Public Budget Policy/Politics</div>
+                <div className="h-9 flex border-b border-black">
+                  <div className="w-14 px-1 border-r border-black flex items-center text-[9px]">PPA 303</div>
+                  <div className="flex-1 px-1 flex items-center text-[9px]">Public Budget Policy/Politics</div>
                 </div>
-                <div className="h-11 flex">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 319</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Politics of Work and Labour</div>
+                <div className="h-9 flex">
+                  <div className="w-14 px-1 border-r border-black flex items-center text-[9px]">PPA 319</div>
+                  <div className="flex-1 px-1 flex items-center text-[9px]">Politics of Work and Labour</div>
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
-                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-1.5 border-b border-black">
+                <div className="h-9 flex items-center justify-center border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-1.5">
+                <div className="h-9 flex items-center justify-center">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
               </div>
             </div>
