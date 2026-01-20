@@ -150,6 +150,29 @@ export default function Dashboard() {
   const [currentPagLevel, setCurrentPagLevel] = useState(1);
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+
+  // Keyboard delete handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedTaskId !== null) {
+        // Don't delete if user is typing in an input
+        if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+          return;
+        }
+        e.preventDefault();
+        deleteMutation.mutate(selectedTaskId);
+        setSelectedTaskId(null);
+      }
+      // Escape to deselect
+      if (e.key === 'Escape') {
+        setSelectedTaskId(null);
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedTaskId]);
 
   const updateOpenElective = (id: string, value: string) => {
     setOpenElectives(prev => {
@@ -1767,7 +1790,7 @@ export default function Dashboard() {
         {/* Weekly Time-Slot Calendar */}
         <div className="mb-3 relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
-            <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto">
+            <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers */}
             <div className="grid border-b border-border sticky top-0 bg-card z-10 h-[52px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="p-2"></div>
@@ -2015,10 +2038,24 @@ export default function Dashboard() {
                               <div
                                 key={task.id}
                                 draggable
+                                tabIndex={0}
                                 onDragStart={(e) => handleDragStart(e, task)}
                                 onDragEnd={handleDragEnd}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTaskId(task.id);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Delete' || e.key === 'Backspace') {
+                                    e.preventDefault();
+                                    deleteMutation.mutate(task.id);
+                                    setSelectedTaskId(null);
+                                  }
+                                }}
                                 className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
+                                } ${
+                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
@@ -2030,7 +2067,7 @@ export default function Dashboard() {
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: '40px',
                                   maxHeight: '40px',
-                                  zIndex: draggedTask?.id === task.id ? 10 : 1
+                                  zIndex: selectedTaskId === task.id ? 20 : (draggedTask?.id === task.id ? 10 : 1)
                                 }}
                                 data-testid={`time-task-${task.id}`}
                               >
