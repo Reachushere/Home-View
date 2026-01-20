@@ -934,7 +934,7 @@ export default function Dashboard() {
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
                 </div>
-                <div className={`h-[26px] flex flex-col items-center justify-start gap-0.5 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[26px] flex flex-col items-center justify-start -mt-1 gap-0.5 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN2']?.grade || ''} onChange={(e) => updateGrade('OPEN2', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
