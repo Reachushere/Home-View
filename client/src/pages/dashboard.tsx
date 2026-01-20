@@ -1161,7 +1161,7 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-3 pt-5">
+              <div className="grid grid-cols-3 gap-1 pt-5">
                 {upcomingTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1191,7 +1191,7 @@ export default function Dashboard() {
                 No tasks for today
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 pt-5">
+              <div className="grid grid-cols-1 gap-1 pt-5">
                 {todayTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1222,7 +1222,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 pt-5">
+              <div className="grid grid-cols-1 gap-1 pt-5">
                 {completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1250,7 +1250,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 pt-5">
+              <div className="grid grid-cols-1 gap-1 pt-5">
                 {completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1278,7 +1278,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 pt-5">
+              <div className="grid grid-cols-1 gap-1 pt-5">
                 {completedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                   <TaskCard
                     key={task.id}
