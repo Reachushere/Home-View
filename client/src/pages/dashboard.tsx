@@ -1845,9 +1845,10 @@ export default function Dashboard() {
                   </div>
                   {weekDays.map((day, dayIdx) => {
                     const tasksForDay = weekPlanningTasks.filter(task => {
-                      const isInPlanningPeriod = isPlanningDayForTask(task, day);
+                      // Only show prep on the FIRST prep day (startDate), not every day in the range
+                      const isFirstPrepDay = task.startDate && isSameDay(new Date(task.startDate), day);
                       const isDueDay = isSameDay(new Date(task.dueDate), day);
-                      return isInPlanningPeriod || isDueDay;
+                      return isFirstPrepDay || isDueDay;
                     });
                     return (
                       <div 
@@ -1858,14 +1859,14 @@ export default function Dashboard() {
                         {tasksForDay.map(task => {
                           const colors = getCourseColor(task.courseName);
                           const taskDueDate = new Date(task.dueDate);
-                          const isInPlanningPeriod = isPlanningDayForTask(task, day);
+                          const isFirstPrepDay = task.startDate && isSameDay(new Date(task.startDate), day);
                           const isDueDay = isSameDay(taskDueDate, day);
                           const dayBeforeDue = new Date(taskDueDate);
                           dayBeforeDue.setDate(dayBeforeDue.getDate() - 1);
                           const isDayBeforeDue = isSameDay(day, dayBeforeDue);
-                          const borderStyle = isDayBeforeDue && isInPlanningPeriod ? "border border-red-500" : "";
+                          const borderStyle = isDayBeforeDue && isFirstPrepDay ? "border border-red-500" : "";
                           
-                          if (isInPlanningPeriod && !isDueDay) {
+                          if (isFirstPrepDay && !isDueDay) {
                             return (
                               <div
                                 key={`prep-${task.id}`}
