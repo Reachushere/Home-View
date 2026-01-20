@@ -1974,8 +1974,8 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Do Today Section */}
           <section className={`w-[240px] flex-shrink-0 bg-orange-300/60 dark:bg-orange-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Calendar className="h-3.5 w-3.5 text-black dark:text-white" />
+            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Calendar className="h-3 w-3 text-black dark:text-white" />
               Urgent: Do Today ({todayTasks.length})
             </h4>
             {isLoading ? (
@@ -2004,8 +2004,8 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section */}
           <section className={`w-[240px] flex-shrink-0 bg-red-400/70 dark:bg-red-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3.5 w-3.5 text-black dark:text-white" />
+            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3 w-3 text-black dark:text-white" />
               Overdue: Missed Tasks ({missedTasks.length})
             </h4>
             {missedTasks.length === 0 ? (
@@ -2033,8 +2033,8 @@ export default function Dashboard() {
 
           {/* Upcoming Tasks Section */}
           <section className="flex-1 bg-yellow-200/60 dark:bg-yellow-800/40 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3.5 w-3.5 text-black dark:text-white" />
+            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3 w-3 text-black dark:text-white" />
               Be Prepared: Upcoming Tasks ({upcomingTasks.length})
             </h4>
             {isLoading ? (
