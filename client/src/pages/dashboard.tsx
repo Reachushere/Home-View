@@ -975,7 +975,7 @@ export default function Dashboard() {
         {/* Missed, Upcoming, and Do Today Tasks Side by Side */}
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Missed Tasks Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-red-200/70 dark:bg-red-900/35 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
+          <section className={`w-[240px] flex-shrink-0 bg-red-200/70 dark:bg-red-900/35 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
             <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Clock className="h-3.5 w-3.5" />
               Missed ({missedTasks.length})
@@ -1004,7 +1004,7 @@ export default function Dashboard() {
           </section>
 
           {/* Upcoming Tasks Section */}
-          <section className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
+          <section className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
             <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               Upcoming ({upcomingTasks.length})
             </h4>
@@ -1033,7 +1033,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-orange-200/70 dark:bg-orange-900/35 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 bg-orange-200/70 dark:bg-orange-900/35 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
             <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Calendar className="h-3.5 w-3.5" />
               Do Today ({todayTasks.length})
