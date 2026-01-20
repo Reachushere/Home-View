@@ -98,8 +98,22 @@ export default function Dashboard() {
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
-  const [isMuted, setIsMuted] = useState(false);
-  const [muteUntil, setMuteUntil] = useState<number | null>(null);
+  const [isMuted, setIsMuted] = useState(() => {
+    const saved = localStorage.getItem('alarmMuteUntil');
+    if (saved) {
+      const muteTime = parseInt(saved, 10);
+      return Date.now() < muteTime;
+    }
+    return false;
+  });
+  const [muteUntil, setMuteUntil] = useState<number | null>(() => {
+    const saved = localStorage.getItem('alarmMuteUntil');
+    if (saved) {
+      const muteTime = parseInt(saved, 10);
+      return Date.now() < muteTime ? muteTime : null;
+    }
+    return null;
+  });
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Create jiggle sound using Web Audio API
@@ -150,11 +164,13 @@ export default function Dashboard() {
     if (muteUntil && Date.now() >= muteUntil) {
       setIsMuted(false);
       setMuteUntil(null);
+      localStorage.removeItem('alarmMuteUntil');
     }
     const checkInterval = setInterval(() => {
       if (muteUntil && Date.now() >= muteUntil) {
         setIsMuted(false);
         setMuteUntil(null);
+        localStorage.removeItem('alarmMuteUntil');
       }
     }, 10000); // Check every 10 seconds
     return () => clearInterval(checkInterval);
@@ -165,9 +181,12 @@ export default function Dashboard() {
     if (isMuted) {
       setIsMuted(false);
       setMuteUntil(null);
+      localStorage.removeItem('alarmMuteUntil');
     } else {
+      const muteTime = Date.now() + 30 * 60 * 1000; // 30 minutes
       setIsMuted(true);
-      setMuteUntil(Date.now() + 30 * 60 * 1000); // 30 minutes
+      setMuteUntil(muteTime);
+      localStorage.setItem('alarmMuteUntil', muteTime.toString());
     }
   }, [isMuted]);
 
