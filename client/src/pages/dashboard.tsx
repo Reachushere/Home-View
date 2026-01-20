@@ -1604,7 +1604,7 @@ function TaskCard({
   if (compact) {
     if (hasAttachments) {
       return (
-        <div className="relative pt-5 h-full flex flex-col cursor-pointer" onClick={onEdit}>
+        <div className="relative pt-7 h-full flex flex-col cursor-pointer" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
           <div className="absolute top-0 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 bg-[#5979CC] text-white border-[1.75px] border-blue-800">
             <div
@@ -1656,9 +1656,9 @@ function TaskCard({
         </div>
       );
     }
-    // Compact without attachments - add pt-5 to align with cards that have media controls
+    // Compact without attachments - add pt-7 to align with cards that have media controls
     return (
-      <div className="pt-5 cursor-pointer" onClick={onEdit}>
+      <div className="pt-7 cursor-pointer" onClick={onEdit}>
         {cardElement}
       </div>
     );
@@ -1666,7 +1666,7 @@ function TaskCard({
 
   if (hasAttachments) {
     return (
-      <div className="relative pt-5 h-full flex flex-col">
+      <div className="relative pt-7 h-full flex flex-col">
         {/* Media Controls - positioned absolutely at top, half height */}
         <div className="absolute top-0 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 bg-[#5979CC] text-white border-[1.75px] border-blue-800">
           <div
