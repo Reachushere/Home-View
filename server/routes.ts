@@ -26,6 +26,7 @@ interface TTSSession {
   startTime: number;
   isPlaying: boolean;
   autoTimer: ReturnType<typeof setTimeout> | null;
+  targetEntity?: string;
 }
 let currentTTSSession: TTSSession | null = null;
 // Average reading speed: ~150 words per minute, ~750 characters per minute
@@ -692,7 +693,8 @@ export async function registerRoutes(
   // POST /api/media/play - Extract text from PDF and read it aloud via TTS
   app.post("/api/media/play", async (req, res) => {
     try {
-      const { mediaUrl } = req.body;
+      const { mediaUrl, entityId } = req.body;
+      const targetEntity = entityId || BATHROOM_ECHO_ENTITY;
       
       if (!mediaUrl) {
         return res.status(400).json({ error: "Media URL is required" });
@@ -817,6 +819,9 @@ export async function registerRoutes(
       console.log("TTS content preview:", cleanedContent.substring(0, 200));
       console.log("Total document length:", fullCleanedText.length, "characters");
       
+      // Store the target entity in session for resume
+      currentTTSSession.targetEntity = targetEntity;
+      
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -825,7 +830,7 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           message: cleanedContent,
-          target: BATHROOM_ECHO_ENTITY,
+          target: targetEntity,
           data: {
             type: "tts"
           }
@@ -842,7 +847,7 @@ export async function registerRoutes(
       // Schedule automatic continuation for the rest of the document
       scheduleNextChunk();
 
-      res.json({ success: true, message: "Reading PDF content aloud" });
+      res.json({ success: true, message: "Reading PDF content aloud", targetEntity });
     } catch (error) {
       console.error("Play media error:", error);
       res.status(500).json({ error: "Failed to play media" });
@@ -850,8 +855,11 @@ export async function registerRoutes(
   });
 
   // POST /api/media/stop - Stop media playback on Echo device
-  app.post("/api/media/stop", async (_req, res) => {
+  app.post("/api/media/stop", async (req, res) => {
     try {
+      const { entityId } = req.body || {};
+      const targetEntity = entityId || currentTTSSession?.targetEntity || BATHROOM_ECHO_ENTITY;
+      
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
       }
@@ -888,7 +896,7 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           message: "stop",
-          target: BATHROOM_ECHO_ENTITY,
+          target: targetEntity,
           data: {
             type: "tts"
           }
@@ -903,7 +911,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: BATHROOM_ECHO_ENTITY,
+          entity_id: targetEntity,
         }),
       });
 
@@ -1029,7 +1037,8 @@ export async function registerRoutes(
   // POST /api/media/volume - Set volume on Echo device
   app.post("/api/media/volume", async (req, res) => {
     try {
-      const { action } = req.body; // "up", "down", or a number 0-1
+      const { action, entityId } = req.body; // "up", "down", or a number 0-1
+      const targetEntity = entityId || currentTTSSession?.targetEntity || BATHROOM_ECHO_ENTITY;
       
       if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
         return res.status(500).json({ error: "Home Assistant not configured" });
@@ -1038,7 +1047,7 @@ export async function registerRoutes(
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
       let service = "volume_up";
-      let body: any = { entity_id: BATHROOM_ECHO_ENTITY };
+      let body: any = { entity_id: targetEntity };
       
       if (action === "down") {
         service = "volume_down";

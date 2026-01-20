@@ -172,10 +172,10 @@ export default function FilesPage() {
   // Media control functions
   const handlePlayFile = async (fileUrl: string, fileName: string) => {
     try {
-      const response = await fetch("/api/home-assistant/read-pdf", {
+      const response = await fetch("/api/media/play", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pdfUrl: fileUrl, entityId: selectedSpeaker }),
+        body: JSON.stringify({ mediaUrl: fileUrl, entityId: selectedSpeaker }),
       });
       if (response.ok) {
         const speakerName = SPEAKERS.find(s => s.id === selectedSpeaker)?.name || selectedSpeaker;
@@ -191,10 +191,10 @@ export default function FilesPage() {
 
   const handleStop = async () => {
     try {
-      await fetch("/api/home-assistant/media-control", {
+      await fetch("/api/media/stop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "stop", entityId: selectedSpeaker }),
+        body: JSON.stringify({ entityId: selectedSpeaker }),
       });
     } catch (error) {
       console.error("Stop error:", error);
@@ -203,10 +203,10 @@ export default function FilesPage() {
 
   const handleVolume = async (action: "up" | "down") => {
     try {
-      await fetch("/api/home-assistant/media-control", {
+      await fetch("/api/media/volume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: `volume_${action}`, entityId: selectedSpeaker }),
+        body: JSON.stringify({ action, entityId: selectedSpeaker }),
       });
     } catch (error) {
       console.error("Volume error:", error);
