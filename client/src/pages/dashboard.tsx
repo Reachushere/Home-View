@@ -1109,14 +1109,9 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="h-px bg-black"></div>
-            <div className="flex border-b border-black">
-              <div className="w-5 border-r border-black"></div>
-              <div className="w-14 border-r border-black"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">CORE ELECTIVE:</span> <span className="font-bold">ONE</span> course required from the following:</div>
-              <div className="w-12 border-l border-black"></div>
-            </div>
             <div className="flex items-stretch border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
+                <div className="flex-1 flex items-center justify-center border-b border-black"></div>
                 <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
@@ -1130,6 +1125,9 @@ export default function Dashboard() {
                 <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
               </div>
               <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex border-b border-black">
+                  <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">CORE ELECTIVE:</span> <span className="font-bold">ONE</span> course required from the following:</div>
+                </div>
                 <div className="flex-1 flex border-b border-black">
                   <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 101</div>
                   <div className="flex-1 px-1 py-0.5 text-[8px]">Principles of Microeconomics ** (Anti-req ECN104)</div>
@@ -1164,6 +1162,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
+                <div className="flex-1 border-b border-black"></div>
                 <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
