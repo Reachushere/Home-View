@@ -894,7 +894,7 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
-                <div className={`h-[30px] flex items-center justify-center ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[34px] flex items-center justify-center ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
                 </div>
                 <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
@@ -905,7 +905,7 @@ export default function Dashboard() {
                 <div className="px-1 pt-0.5 text-[8px]">
                   OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.
                 </div>
-                <div className="px-1 pt-2 pb-1 flex items-end">
+                <div className="px-1 pt-2 pb-2 flex items-end">
                   <input 
                     type="text" 
                     className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
