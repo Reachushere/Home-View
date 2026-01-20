@@ -621,7 +621,7 @@ export default function Dashboard() {
 
         {/* Weekly Time-Slot Calendar */}
         <div className="mb-6 relative" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-none overflow-hidden h-full border-[1.75px] border-blue-800">
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto">
             {/* Day Headers */}
             <div className="grid border-b border-border sticky top-0 bg-card z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
@@ -952,7 +952,7 @@ export default function Dashboard() {
         {/* Do Today, Upcoming, and Missed Tasks Side by Side */}
         <div className="flex gap-4 mb-6 items-stretch h-[200px] flex-shrink-0">
           {/* Do Today Section */}
-          <section className="w-[240px] flex-shrink-0 bg-orange-100 dark:bg-orange-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-due-today">
+          <section className="w-[240px] flex-shrink-0 bg-orange-100 dark:bg-orange-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-due-today">
             <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Calendar className="h-3.5 w-3.5" />
               Do Today ({todayTasks.length})
@@ -982,7 +982,7 @@ export default function Dashboard() {
           </section>
 
           {/* Upcoming Tasks Section */}
-          <section className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
+          <section className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
             <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               Upcoming ({upcomingTasks.length})
             </h4>
@@ -1011,7 +1011,7 @@ export default function Dashboard() {
           </section>
 
           {/* Missed Tasks Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-red-100 dark:bg-red-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
+          <section className={`w-[240px] flex-shrink-0 bg-red-100 dark:bg-red-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
             <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Clock className="h-3.5 w-3.5" />
               Missed ({missedTasks.length})
@@ -1042,7 +1042,7 @@ export default function Dashboard() {
         {/* Completed Tasks by Course */}
         <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
           {/* CPPA122 Completed */}
-          <section className="flex-1 bg-blue-100 dark:bg-blue-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cppa122">
+          <section className="flex-1 bg-blue-100 dark:bg-blue-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cppa122">
             <h4 className="text-sm font-semibold text-blue-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5" />
               Completed - CPPA122 ({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})
@@ -1070,7 +1070,7 @@ export default function Dashboard() {
           </section>
 
           {/* CFNF400 Completed */}
-          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cfnf400">
+          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cfnf400">
             <h4 className="text-sm font-semibold text-green-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5" />
               Completed - CFNF400 ({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})
@@ -1098,7 +1098,7 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 bg-purple-100 dark:bg-purple-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
+          <section className="flex-1 bg-purple-100 dark:bg-purple-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
             <h4 className="text-sm font-semibold text-purple-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5" />
               Completed - CASL101 ({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})
@@ -1295,7 +1295,7 @@ function TaskCard({
 
   const cardElement = (
     <Card
-      className={`transition-all rounded-none shadow-sm border ${
+      className={`transition-all rounded-xl shadow-sm border ${
         compact ? "h-[60px]" : "flex-1"
       } ${cardBgClass ? cardBgClass : colors ? colors.bg : ""} ${
         colors ? colors.border : "border-gray-400"
