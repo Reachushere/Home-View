@@ -822,7 +822,7 @@ export async function registerRoutes(
       // Store the target entity in session for resume
       currentTTSSession.targetEntity = targetEntity;
       
-      // Use notify.alexa_media without specifying type (uses default)
+      // Use notify.alexa_media with announce type (bypasses Simon Says)
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -831,7 +831,11 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           message: cleanedContent,
-          target: targetEntity
+          target: targetEntity,
+          data: {
+            type: "announce",
+            method: "speak"
+          }
         }),
       });
 
