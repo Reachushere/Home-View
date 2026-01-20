@@ -159,6 +159,9 @@ export default function Dashboard() {
 
   const gradeOptions = ['', 'A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'F'];
 
+  const allCoursesChecked = ['PPA101', 'PPA102', 'PPA125', 'ELECTIVE1', 'ELECTIVE2', 'LIBERAL', 'OPEN1', 'OPEN2']
+    .every(id => checkedCourses[id]);
+
   // Create jiggle sound using Web Audio API
   const playJiggleSound = useCallback(() => {
     try {
@@ -737,7 +740,7 @@ export default function Dashboard() {
           ))}
         </nav>
 
-        <div className="mt-auto bg-white rounded-md p-2 text-black text-[9px]">
+        <div className={`mt-auto rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
           <div className="border-2 border-black">
             <div className="flex border-b border-black">
               <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL I</div>
