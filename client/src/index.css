@@ -210,4 +210,44 @@
     opacity: 0.5;
     cursor: not-allowed;
   }
+  
+  .flip-card {
+    background: linear-gradient(180deg, #1a1a1a 0%, #1a1a1a 48%, #0d0d0d 50%, #1a1a1a 52%, #1a1a1a 100%);
+    border-radius: 4px;
+    box-shadow: 
+      inset 0 1px 0 rgba(255,255,255,0.1),
+      inset 0 -1px 0 rgba(0,0,0,0.3),
+      0 2px 4px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .flip-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: rgba(0,0,0,0.6);
+    z-index: 2;
+  }
+  
+  .flip-card::after {
+    content: '';
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: calc(50% - 2px);
+    height: 4px;
+    background: #0a0a0a;
+    border-radius: 2px;
+    z-index: 1;
+  }
+  
+  .flip-number {
+    font-family: 'Segment7', 'Digital-7', 'DSEG7 Classic', 'Courier New', monospace;
+    font-weight: bold;
+    text-shadow: 0 0 10px currentColor;
+  }
 }

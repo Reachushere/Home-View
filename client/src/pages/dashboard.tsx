@@ -49,7 +49,7 @@ import {
 import { Link as RouterLink } from "wouter";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
-import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay } from "date-fns";
+import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   reading: BookOpen,
@@ -2045,18 +2045,32 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-3 pt-5">
-                {upcomingTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                    onReschedule={() => setRescheduleTask(task)}
-                    onEdit={() => setEditingTask(task)}
-                    onDelete={() => deleteMutation.mutate(task.id)}
-                    cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                    compact
-                  />
-                ))}
+                {upcomingTasks.map((task) => {
+                  const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+                  return (
+                    <div key={task.id} className="flex gap-2 items-stretch">
+                      <div className="flex-1">
+                        <TaskCard
+                          task={task}
+                          onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                          onReschedule={() => setRescheduleTask(task)}
+                          onEdit={() => setEditingTask(task)}
+                          onDelete={() => deleteMutation.mutate(task.id)}
+                          cardBgClass="bg-orange-50 dark:bg-orange-900/20"
+                          compact
+                        />
+                      </div>
+                      <div className="flip-card w-12 flex flex-col items-center justify-center px-1">
+                        <span className="flip-number text-xl text-amber-400 relative z-10">
+                          {daysUntilDue}
+                        </span>
+                        <span className="text-[8px] text-gray-400 uppercase tracking-wider relative z-10 mt-0.5">
+                          {daysUntilDue === 1 ? 'day' : 'days'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </section>
