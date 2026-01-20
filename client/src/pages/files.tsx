@@ -319,10 +319,10 @@ export default function FilesPage() {
             maxNumberOfFiles={5}
             onGetUploadParameters={getUploadParameters}
             onComplete={handleUploadComplete}
-            buttonClassName="bg-[#5979CC] hover:bg-[#4a68b3] text-white border-[1.75px] border-blue-800"
+            buttonClassName="h-8 text-xs px-3 bg-[#5979CC] hover:bg-[#4a68b3] text-white border-[1.75px] border-blue-800"
           >
-            <Upload className="h-4 w-4 mr-2" />
-            Upload File
+            <Upload className="h-3 w-3 mr-1" />
+            Upload
           </ObjectUploader>
           <div className="flex-1" />
           <Badge variant="secondary">
