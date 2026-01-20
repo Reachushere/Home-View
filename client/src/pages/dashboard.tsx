@@ -493,15 +493,23 @@ export default function Dashboard() {
   const timeSlots = Array.from({ length: 24 }, (_, i) => i); // 0-23 (full 24 hours)
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
-  // Auto-scroll to 8 AM on mount
+  // Auto-scroll to current hour on mount and every minute
   useEffect(() => {
-    if (calendarScrollRef.current) {
-      const hourHeight = 40; // height of each time slot
-      const headerHeight = 52; // approximate header height
-      const scrollTo = (8 * hourHeight); // scroll to 8 AM
-      calendarScrollRef.current.scrollTop = scrollTo;
-    }
-  }, []);
+    const scrollToCurrentTime = () => {
+      if (calendarScrollRef.current) {
+        const hourHeight = 40; // height of each time slot
+        const currentHour = new Date().getHours();
+        const scrollTo = currentHour * hourHeight;
+        calendarScrollRef.current.scrollTop = scrollTo;
+      }
+    };
+    
+    scrollToCurrentTime();
+    
+    // Update scroll position every minute to keep current time at top
+    const interval = setInterval(scrollToCurrentTime, 60000);
+    return () => clearInterval(interval);
+  }, [selectedWeek]);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
