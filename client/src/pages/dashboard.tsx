@@ -1999,6 +1999,45 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
+              
+              {/* Course Rows - CPPA122, CFNF400, CASL101 */}
+              {[
+                { name: 'CPPA122', bg: 'bg-green-200', label: 'bg-green-300' },
+                { name: 'CFNF400', bg: 'bg-pink-200', label: 'bg-pink-300' },
+                { name: 'CASL101', bg: 'bg-purple-200', label: 'bg-purple-300' }
+              ].map(course => (
+                <div key={course.name} className="grid border-b border-border/50" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+                  <div className={`p-1 text-[10px] font-bold tracking-wide flex items-center justify-center ${course.label} text-black min-h-[32px]`}>
+                    {course.name}
+                  </div>
+                  {weekDays.map((day, dayIdx) => {
+                    const courseTasks = allTasks.filter(t => 
+                      t.courseName?.startsWith(course.name) && 
+                      isSameDay(new Date(t.dueDate), day)
+                    );
+                    return (
+                      <div 
+                        key={dayIdx} 
+                        className={`p-0.5 border-l border-border/50 min-h-[32px] flex flex-col gap-0.5 ${course.bg}`}
+                        data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
+                      >
+                        {courseTasks.map(task => (
+                          <div
+                            key={task.id}
+                            onClick={() => setEditingTask(task)}
+                            className={`text-[8px] px-1 py-0.5 truncate cursor-pointer hover:opacity-80 ${
+                              task.isCompleted ? "text-gray-500 line-through" : "text-black font-medium"
+                            }`}
+                            data-testid={`course-task-${task.id}`}
+                          >
+                            {task.title}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
             
             {/* Time Slots */}
