@@ -1606,7 +1606,7 @@ function TaskCard({
       return (
         <div className="relative pt-7 h-full flex flex-col cursor-pointer" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="absolute -top-2 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 bg-[#5979CC] text-white border-[1.75px] border-blue-800">
+          <div className="absolute -top-4 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 bg-[#5979CC] text-white border-[1.75px] border-blue-800">
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
@@ -1668,7 +1668,7 @@ function TaskCard({
     return (
       <div className="relative pt-7 h-full flex flex-col">
         {/* Media Controls - positioned absolutely at top, half height */}
-        <div className="absolute -top-2 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 bg-[#5979CC] text-white border-[1.75px] border-blue-800">
+        <div className="absolute -top-4 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 bg-[#5979CC] text-white border-[1.75px] border-blue-800">
           <div
             className="cursor-pointer hover:opacity-70"
             onClick={handlePlayTTS}
