@@ -604,15 +604,12 @@ export default function Dashboard() {
           <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
           
           {/* Rainbow Digital Clock */}
-          <div className="text-4xl font-bold font-mono tracking-wider" data-testid="digital-clock">
-            {format(currentTime, "hh:mm:ss a").split("").map((char, i) => {
-              const rainbowColors = ["text-red-500", "text-orange-500", "text-yellow-500", "text-green-500", "text-blue-500", "text-indigo-500", "text-purple-500"];
-              return (
-                <span key={i} className={char === " " || char === ":" ? "text-foreground" : rainbowColors[i % rainbowColors.length]}>
-                  {char}
-                </span>
-              );
-            })}
+          <div className="bg-black px-6 py-3 rounded-lg" data-testid="digital-clock">
+            <span 
+              className="text-4xl font-bold font-mono tracking-wider bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent"
+            >
+              {format(currentTime, "hh:mm:ss a")}
+            </span>
           </div>
           
           <div className="flex items-center gap-3">
