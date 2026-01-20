@@ -107,35 +107,28 @@ export default function Dashboard() {
       
       const now = audioContext.currentTime;
       
-      // Classic doorbell - rapid alternating tones
-      const createTone = (freq: number, startTime: number, duration: number) => {
+      // Westminster chime style - two notes
+      const playChime = (freq: number, startTime: number, duration: number) => {
         const osc = audioContext.createOscillator();
+        const oscGain = audioContext.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, startTime);
-        osc.connect(gainNode);
+        osc.connect(oscGain);
+        oscGain.connect(gainNode);
+        
+        // Bell-like decay
+        oscGain.gain.setValueAtTime(0.3, startTime);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        
         osc.start(startTime);
         osc.stop(startTime + duration);
       };
       
-      // Rapid ding-ding-ding pattern (like a classic doorbell)
-      const highFreq = 1047; // C6
-      const lowFreq = 880;   // A5
+      gainNode.gain.setValueAtTime(1, now);
       
-      createTone(highFreq, now, 0.08);
-      createTone(lowFreq, now + 0.1, 0.08);
-      createTone(highFreq, now + 0.2, 0.08);
-      createTone(lowFreq, now + 0.3, 0.15);
-      
-      // Envelope for the ring
-      gainNode.gain.setValueAtTime(0.25, now);
-      gainNode.gain.setValueAtTime(0.25, now + 0.08);
-      gainNode.gain.setValueAtTime(0.02, now + 0.09);
-      gainNode.gain.setValueAtTime(0.25, now + 0.1);
-      gainNode.gain.setValueAtTime(0.02, now + 0.19);
-      gainNode.gain.setValueAtTime(0.25, now + 0.2);
-      gainNode.gain.setValueAtTime(0.02, now + 0.29);
-      gainNode.gain.setValueAtTime(0.25, now + 0.3);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+      // Classic "ding-dong" two-note chime
+      playChime(659, now, 0.4);        // E5 - ding
+      playChime(523, now + 0.4, 0.5);  // C5 - dong
       
     } catch (e) {
       console.log('Audio not available');
