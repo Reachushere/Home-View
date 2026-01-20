@@ -1199,10 +1199,11 @@ export default function Dashboard() {
               </div>
             </div>
                         <div className="flex border-b border-black">
-              <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
-                <div className="font-semibold">Core Electives:</div>
-                <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
+              <div className="w-5 border-r border-black"></div>
+              <div className="flex-1 px-1 py-0.5 text-[9px]">
+                <span className="font-semibold">Core Electives:</span> Select <span className="font-bold">EIGHT</span> from the following:
               </div>
+              <div className="w-12 border-l border-black"></div>
             </div>
             <div className="flex border-b border-black">
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
