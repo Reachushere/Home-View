@@ -884,11 +884,11 @@ export default function Dashboard() {
                 </div>
                 <div className="w-12 border-l border-black"></div>
               </div>
-              <div className="flex border-b border-black">
-                <div className={`w-5 border-r border-black flex items-center justify-center ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+              <div className="flex border-b border-black items-end">
+                <div className={`w-5 border-r border-black flex items-center justify-center pb-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
                 </div>
-                <div className="flex-1 px-1 py-1">
+                <div className="flex-1 px-1 py-1 flex items-end">
                   <input 
                     type="text" 
                     className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
@@ -905,11 +905,11 @@ export default function Dashboard() {
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
                 </div>
               </div>
-              <div className="flex">
-                <div className={`w-5 border-r border-black flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+              <div className="flex items-end">
+                <div className={`w-5 border-r border-black flex items-center justify-center pb-1 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN2'] || false} disabled={!openElectives['OPEN2']?.trim()} onChange={() => toggleCourse('OPEN2')} />
                 </div>
-                <div className="flex-1 px-1 py-1">
+                <div className="flex-1 px-1 py-1 flex items-end">
                   <input 
                     type="text" 
                     className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
