@@ -462,6 +462,33 @@ export default function Dashboard() {
     },
   });
 
+  // File upload hook for drag and drop
+  const { uploadFile: uploadDroppedFile } = useUpload({
+    onSuccess: () => {},
+  });
+
+  // Mutation for creating task from dropped file
+  const createTaskFromFileMutation = useMutation({
+    mutationFn: async ({ day, hour, attachmentPath, fileName }: { day: Date; hour: number; attachmentPath: string; fileName: string }) => {
+      const dueDate = new Date(day);
+      dueDate.setHours(hour, 0, 0, 0);
+      const weekNum = getWeekNumber(dueDate);
+      return apiRequest("POST", "/api/tasks", {
+        title: fileName,
+        type: "reading",
+        dueDate: dueDate.toISOString(),
+        eventStartTime: `${hour.toString().padStart(2, '0')}:00`,
+        weekNumber: Math.max(2, Math.min(13, weekNum)),
+        attachments: [attachmentPath],
+        priority: "medium",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+    },
+  });
+
   // Drag and drop handlers
   const handleDragStart = (e: React.DragEvent, task: Task) => {
     setDraggedTask(task);
@@ -476,7 +503,8 @@ export default function Dashboard() {
 
   const handleDragOver = (e: React.DragEvent, day: Date, hour: number) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    // Allow both move (for tasks) and copy (for files)
+    e.dataTransfer.dropEffect = e.dataTransfer.types.includes('Files') ? 'copy' : 'move';
     setDragOverSlot({ day, hour });
   };
 
@@ -484,11 +512,32 @@ export default function Dashboard() {
     setDragOverSlot(null);
   };
 
-  const handleDrop = (e: React.DragEvent, day: Date, hour: number) => {
+  const handleDrop = async (e: React.DragEvent, day: Date, hour: number) => {
     e.preventDefault();
-    if (draggedTask) {
+    
+    // Check if files are being dropped from external app
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const file = e.dataTransfer.files[0];
+      try {
+        // Upload the file
+        const response = await uploadDroppedFile(file);
+        if (response?.objectPath) {
+          // Create a task with the file attached
+          createTaskFromFileMutation.mutate({
+            day,
+            hour,
+            attachmentPath: response.objectPath,
+            fileName: file.name.replace(/\.[^/.]+$/, ''), // Remove file extension for title
+          });
+        }
+      } catch (error) {
+        console.error('Failed to upload dropped file:', error);
+      }
+    } else if (draggedTask) {
+      // Moving an existing task
       updateTaskTimeMutation.mutate({ id: draggedTask.id, newDate: day, newHour: hour });
     }
+    
     setDraggedTask(null);
     setDragOverSlot(null);
   };
