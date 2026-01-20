@@ -833,7 +833,7 @@ export default function Dashboard() {
                 <div className="h-9"></div>
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
-                <div className="font-semibold">Core Electives:</div>
+                <div className="font-semibold">CORE ELECTIVEs:</div>
                 <div>Select <span className="font-bold">TWO</span> from the following:</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -1005,7 +1005,7 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
-                <div className="font-semibold">Core Electives:</div>
+                <div className="font-semibold">CORE ELECTIVEs:</div>
                 <div>Select <span className="font-bold">THREE</span> from the following:</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -1228,7 +1228,7 @@ export default function Dashboard() {
                           </div>
                         </td>
                         <td rowSpan={14} className="px-1 py-0.5 border-r border-black text-[9px] align-middle">
-                          <div className="font-semibold">Core Electives:</div>
+                          <div className="font-semibold">CORE ELECTIVEs:</div>
                           <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
                         </td>
                       </>
@@ -1264,7 +1264,7 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
-                <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 Core Elective and 6 OE</div>
+                <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
@@ -1281,7 +1281,7 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">Core Elective</div>
+              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
               <div className="w-12 border-l border-black"></div>
             </div>
             <div className="flex">
@@ -1317,7 +1317,7 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">Core Elective</div>
+              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
               <div className="w-12 border-l border-black"></div>
             </div>
             <div className="flex">
