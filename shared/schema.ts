@@ -23,7 +23,31 @@ export type Course = typeof COURSES[number];
 
 export type TaskType = typeof TASK_TYPES[number];
 
-export const REMINDER_OFFSETS = [30, 120, 360, 720] as const; // minutes: 30min, 2hr, 6hr, 12hr
+// Reminder options in minutes - lots of choices
+export const REMINDER_OPTIONS = [
+  { value: 0, label: "None" },
+  { value: 5, label: "5 minutes before" },
+  { value: 10, label: "10 minutes before" },
+  { value: 15, label: "15 minutes before" },
+  { value: 30, label: "30 minutes before" },
+  { value: 45, label: "45 minutes before" },
+  { value: 60, label: "1 hour before" },
+  { value: 90, label: "1.5 hours before" },
+  { value: 120, label: "2 hours before" },
+  { value: 180, label: "3 hours before" },
+  { value: 240, label: "4 hours before" },
+  { value: 360, label: "6 hours before" },
+  { value: 480, label: "8 hours before" },
+  { value: 720, label: "12 hours before" },
+  { value: 1440, label: "1 day before" },
+  { value: 2880, label: "2 days before" },
+  { value: 4320, label: "3 days before" },
+  { value: 10080, label: "1 week before" },
+] as const;
+
+// Default reminders: 30 min and 2 hours
+export const DEFAULT_REMINDER_1 = 30; // 30 minutes
+export const DEFAULT_REMINDER_2 = 120; // 2 hours
 
 export const files = pgTable("files", {
   id: serial("id").primaryKey(),
@@ -49,6 +73,10 @@ export const tasks = pgTable("tasks", {
   dueDate: timestamp("due_date").notNull(),
   eventStartTime: text("event_start_time"), // Time the task/event starts (e.g., "09:00")
   eventEndTime: text("event_end_time"), // Time the task/event ends (e.g., "10:00")
+  reminder1: integer("reminder_1").default(30), // Default: 30 minutes before
+  reminder2: integer("reminder_2").default(120), // Default: 2 hours before
+  reminder3: integer("reminder_3"), // Optional additional reminder
+  reminder4: integer("reminder_4"), // Optional additional reminder
   weekNumber: integer("week_number").notNull(), // 2-13
   isCompleted: boolean("is_completed").default(false),
   isMissed: boolean("is_missed").default(false),

@@ -48,7 +48,7 @@ import {
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
 import type { Task } from "@shared/schema";
-import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
+import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2 } from "@shared/schema";
 import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -2713,6 +2713,10 @@ function TaskForm({
     dueDate: getDefaultDate(),
     eventStartTime: task?.eventStartTime || "",
     eventEndTime: task?.eventEndTime || "",
+    reminder1: task?.reminder1 ?? DEFAULT_REMINDER_1,
+    reminder2: task?.reminder2 ?? DEFAULT_REMINDER_2,
+    reminder3: task?.reminder3 ?? 0,
+    reminder4: task?.reminder4 ?? 0,
     priority: task?.priority || "medium",
     weekNumber: task?.weekNumber || weekNumber,
     referenceLink: task?.referenceLink || "",
@@ -2753,6 +2757,10 @@ function TaskForm({
         dueDate: new Date(data.dueDate).toISOString(),
         eventStartTime: data.eventStartTime || null,
         eventEndTime: data.eventEndTime || null,
+        reminder1: data.reminder1 || null,
+        reminder2: data.reminder2 || null,
+        reminder3: data.reminder3 || null,
+        reminder4: data.reminder4 || null,
         priority: data.priority,
         weekNumber: data.weekNumber,
         referenceLink: data.referenceLink,
@@ -2869,6 +2877,86 @@ function TaskForm({
             onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
             data-testid="input-end-time"
           />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Reminders</Label>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-xs text-muted-foreground">Reminder 1</Label>
+            <Select 
+              value={String(formData.reminder1)} 
+              onValueChange={(v) => setFormData(prev => ({ ...prev, reminder1: parseInt(v) }))}
+            >
+              <SelectTrigger data-testid="select-reminder1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {REMINDER_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={String(opt.value)}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">Reminder 2</Label>
+            <Select 
+              value={String(formData.reminder2)} 
+              onValueChange={(v) => setFormData(prev => ({ ...prev, reminder2: parseInt(v) }))}
+            >
+              <SelectTrigger data-testid="select-reminder2">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {REMINDER_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={String(opt.value)}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-xs text-muted-foreground">Reminder 3 (optional)</Label>
+            <Select 
+              value={String(formData.reminder3)} 
+              onValueChange={(v) => setFormData(prev => ({ ...prev, reminder3: parseInt(v) }))}
+            >
+              <SelectTrigger data-testid="select-reminder3">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {REMINDER_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={String(opt.value)}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">Reminder 4 (optional)</Label>
+            <Select 
+              value={String(formData.reminder4)} 
+              onValueChange={(v) => setFormData(prev => ({ ...prev, reminder4: parseInt(v) }))}
+            >
+              <SelectTrigger data-testid="select-reminder4">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {REMINDER_OPTIONS.map(opt => (
+                  <SelectItem key={opt.value} value={String(opt.value)}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 

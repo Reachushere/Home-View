@@ -2,7 +2,7 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { getWeekDates, getWeekNumber, REMINDER_OFFSETS, FIRST_WEEK, LAST_WEEK } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2 } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent } from "./googleCalendar";
@@ -1171,12 +1171,15 @@ export async function registerRoutes(
   return httpServer;
 }
 
-function generateICS(title: string, description: string, dueDate: Date, type: string): string {
+function generateICS(title: string, description: string, dueDate: Date, type: string, reminderMinutes?: number[]): string {
   const formatDate = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
   const uid = `task-${Date.now()}@schoolplanner`;
   
-  // Create reminder lines for 30min, 2hr, 6hr, 12hr
-  const reminders = REMINDER_OFFSETS.map(minutes => 
+  // Use provided reminders or default to 30min and 2hr
+  const activeReminders = reminderMinutes?.filter(m => m > 0) || [DEFAULT_REMINDER_1, DEFAULT_REMINDER_2];
+  
+  // Create reminder lines
+  const reminders = activeReminders.map(minutes => 
     `VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Reminder\r\nTRIGGER:-PT${minutes}M\r\nEND:VALARM`
   ).join('\r\nBEGIN:');
 
