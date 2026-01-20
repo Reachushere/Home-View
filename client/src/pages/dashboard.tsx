@@ -809,7 +809,7 @@ export default function Dashboard() {
           onMouseDown={handleSidebarResizeStart}
           data-testid="sidebar-resize-handle"
         />
-        <div className="flex items-center gap-2 px-2 pt-3 pb-0">
+        <div className="flex items-center gap-2 px-2 pt-1 pb-0">
           <CalendarDays className="h-6 w-6 text-primary" />
           <h1 className="text-xl font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             School Planner
