@@ -146,6 +146,8 @@ export default function Dashboard() {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [currentPagLevel, setCurrentPagLevel] = useState(1);
+
   const updateOpenElective = (id: string, value: string) => {
     setOpenElectives(prev => {
       const updated = { ...prev, [id]: value };
@@ -769,7 +771,22 @@ export default function Dashboard() {
           ))}
         </nav>
 
-        <div className={`mt-auto rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+        {/* PAG Level Carousel */}
+        <div className="mt-auto">
+          {/* Navigation dots */}
+          <div className="flex justify-center gap-2 mb-2">
+            {[1, 2, 3].map((level) => (
+              <button
+                key={level}
+                onClick={() => setCurrentPagLevel(level)}
+                className={`w-2.5 h-2.5 rounded-full transition-colors ${currentPagLevel === level ? 'bg-white' : 'bg-white/30 hover:bg-white/50'}`}
+                data-testid={`button-pag-level-${level}`}
+              />
+            ))}
+          </div>
+          
+          {/* Level I */}
+          <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
           <div className="border-2 border-black">
             <div className="flex border-b border-black">
               <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL I</div>
@@ -963,12 +980,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Second PAG Certificate Box */}
-        <div className={`mt-2 rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'}`}>
+          {/* Level II */}
+          <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
           <div className="border-2 border-black">
             <div className="flex border-b border-black">
               <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL II</div>
-              <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
+              <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
             </div>
             <div className="flex border-b border-black">
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
@@ -1204,8 +1221,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Third PAG Certificate Box */}
-        <div className="mt-2 rounded-md p-2 text-[9px] bg-white text-black">
+        {/* Level III */}
+          <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 3 ? '' : 'hidden'}`}>
           <div className="border-2 border-black">
             <div className="flex border-b border-black">
               <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL III</div>
@@ -1451,6 +1468,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </aside>
 
