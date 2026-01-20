@@ -1697,7 +1697,7 @@ export default function Dashboard() {
                     </div>
                     {isToday && daysUntilNextTask !== null && (
                       <div className="text-xs text-white text-center leading-tight -mt-1">
-                        Next task due in <span className="font-bold text-[#1e3a8a] animate-blink text-sm">{daysUntilNextTask}</span> {daysUntilNextTask === 1 ? 'day' : 'days'}
+                        Next task due in <span className="font-bold text-black animate-blink text-sm">{daysUntilNextTask}</span> {daysUntilNextTask === 1 ? 'day' : 'days'}
                       </div>
                     )}
                   </div>
