@@ -1215,7 +1215,7 @@ function TaskCard({
 
   const cardElement = (
     <Card
-      className={`transition-all rounded-lg shadow-sm border ${
+      className={`transition-all rounded-none shadow-sm border ${
         compact ? "h-[60px]" : "flex-1"
       } ${cardBgClass ? cardBgClass : colors ? colors.bg : ""} ${
         colors ? colors.border : "border-gray-400"
