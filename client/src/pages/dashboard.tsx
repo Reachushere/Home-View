@@ -905,7 +905,7 @@ export default function Dashboard() {
                 <div className="px-1 pt-0.5 text-[8px]">
                   OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.
                 </div>
-                <div className="px-1 flex items-end">
+                <div className="px-1 pt-1 flex items-end">
                   <input 
                     type="text" 
                     className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
