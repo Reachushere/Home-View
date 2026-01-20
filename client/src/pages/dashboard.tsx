@@ -956,22 +956,22 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Due Today, Upcoming, and Missed Tasks Side by Side */}
+        {/* Do Today, Upcoming, and Missed Tasks Side by Side */}
         <div className="flex gap-4 mb-6 items-start">
-          {/* Due Today Section */}
-          <section className="w-[280px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black" data-testid="section-due-today">
-            <h4 className="text-md font-semibold text-orange-600 mb-0 h-8 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Calendar className="h-4 w-4" />
+          {/* Do Today Section */}
+          <section className="w-[240px] flex-shrink-0 bg-card rounded-xl shadow-md p-3 border border-black" data-testid="section-due-today">
+            <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Calendar className="h-3.5 w-3.5" />
               Do Today ({todayTasks.length})
             </h4>
             {isLoading ? (
-              <div className="text-muted-foreground">Loading tasks...</div>
+              <div className="text-muted-foreground text-xs">Loading...</div>
             ) : todayTasks.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-4 text-muted-foreground text-xs">
                 No tasks for today
               </div>
             ) : (
-              <div className="space-y-3 -mt-8">
+              <div className="space-y-2">
                 {todayTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -981,6 +981,7 @@ export default function Dashboard() {
                     onEdit={() => setEditingTask(task)}
                     onDelete={() => deleteMutation.mutate(task.id)}
                     cardBgClass="bg-orange-100 dark:bg-orange-900/30"
+                    compact
                   />
                 ))}
               </div>
@@ -988,18 +989,18 @@ export default function Dashboard() {
           </section>
 
           {/* Upcoming Tasks Section */}
-          <section className="w-[400px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black" data-testid="section-upcoming">
-            <h4 className="text-md font-semibold text-foreground mb-0 h-8 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <section className="flex-1 bg-card rounded-xl shadow-md p-3 border border-black" data-testid="section-upcoming">
+            <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               Upcoming ({upcomingTasks.length})
             </h4>
             {isLoading ? (
-              <div className="text-muted-foreground">Loading tasks...</div>
+              <div className="text-muted-foreground text-xs">Loading...</div>
             ) : upcomingTasks.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-4 text-muted-foreground text-xs">
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="space-y-3 -mt-8">
+              <div className="grid grid-cols-2 gap-2">
                 {upcomingTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1009,6 +1010,7 @@ export default function Dashboard() {
                     onEdit={() => setEditingTask(task)}
                     onDelete={() => deleteMutation.mutate(task.id)}
                     cardBgClass="bg-yellow-50 dark:bg-yellow-900/20"
+                    compact
                   />
                 ))}
               </div>
@@ -1017,12 +1019,12 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section */}
           {missedTasks.length > 0 && (
-            <section className="w-[280px] flex-shrink-0 bg-card rounded-xl shadow-md p-4 border border-black" data-testid="section-missed">
-              <h4 className="text-md font-semibold text-destructive mb-0 h-8 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                <Clock className="h-4 w-4" />
+            <section className="w-[240px] flex-shrink-0 bg-card rounded-xl shadow-md p-3 border border-black ml-auto" data-testid="section-missed">
+              <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+                <Clock className="h-3.5 w-3.5" />
                 Missed ({missedTasks.length})
               </h4>
-              <div className="space-y-3 -mt-8">
+              <div className="space-y-2">
                 {missedTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1031,6 +1033,7 @@ export default function Dashboard() {
                     onReschedule={() => setRescheduleTask(task)}
                     onEdit={() => setEditingTask(task)}
                     onDelete={() => deleteMutation.mutate(task.id)}
+                    compact
                   />
                 ))}
               </div>
@@ -1101,6 +1104,7 @@ function TaskCard({
   onEdit,
   onDelete,
   cardBgClass,
+  compact = false,
 }: {
   task: Task;
   onComplete: (isCompleted: boolean) => void;
@@ -1108,6 +1112,7 @@ function TaskCard({
   onEdit: () => void;
   onDelete: () => void;
   cardBgClass?: string;
+  compact?: boolean;
 }) {
   const Icon = iconMap[task.type] || ClipboardCheck;
   const isMissed = task.isMissed && !task.isCompleted;
@@ -1210,52 +1215,55 @@ function TaskCard({
 
   const cardElement = (
     <Card
-      className={`transition-all rounded-xl shadow-md border flex-1 ${
+      className={`transition-all rounded-lg shadow-sm border flex-1 ${
         cardBgClass ? cardBgClass : colors ? colors.bg : ""
       } ${colors ? colors.border : "border-gray-400"} ${
         isMissed ? "border-destructive bg-destructive/5" : ""
       } ${task.isCompleted ? "opacity-60" : ""}`}
       data-testid={`card-task-${task.id}`}
     >
-      <CardHeader className="flex flex-row items-start justify-between gap-2 space-y-0 pb-1 pt-3 px-3">
-        <div className="flex items-start gap-2">
+      <CardHeader className={`flex flex-row items-start justify-between gap-1 space-y-0 ${compact ? "pb-0.5 pt-2 px-2" : "pb-1 pt-3 px-3"}`}>
+        <div className="flex items-start gap-1.5">
           <Checkbox
             checked={task.isCompleted || false}
             onCheckedChange={(checked) => onComplete(!!checked)}
             data-testid={`checkbox-task-${task.id}`}
+            className={compact ? "h-3.5 w-3.5" : ""}
           />
           <div>
-            <CardTitle className={`text-xs font-medium ${task.isCompleted ? "line-through" : ""}`}>
+            <CardTitle className={`font-medium ${task.isCompleted ? "line-through" : ""} ${compact ? "text-[10px] leading-tight" : "text-xs"}`}>
               {task.title}
             </CardTitle>
             {task.courseName && (
-              <p className={`text-[10px] font-medium ${colors?.text || "text-muted-foreground"}`}>
-                {task.courseName}
+              <p className={`font-medium ${colors?.text || "text-muted-foreground"} ${compact ? "text-[8px]" : "text-[10px]"}`}>
+                {task.courseName.split(" - ")[0]}
               </p>
             )}
           </div>
         </div>
-        <Badge className={typeColors[task.type]}>
-          <Icon className="h-3 w-3 mr-1" />
-          {task.type}
+        <Badge className={`${typeColors[task.type]} ${compact ? "text-[7px] px-1 py-0" : ""}`}>
+          <Icon className={compact ? "h-2 w-2 mr-0.5" : "h-3 w-3 mr-1"} />
+          {compact ? task.type.slice(0, 4) : task.type}
         </Badge>
       </CardHeader>
-      <CardContent className="space-y-1.5 px-3 pb-3 pt-0">
-        {task.description && (
+      <CardContent className={`space-y-1 ${compact ? "px-2 pb-2 pt-0" : "px-3 pb-3 pt-0"}`}>
+        {!compact && task.description && (
           <p className="text-xs text-muted-foreground line-clamp-2">
             {task.description}
           </p>
         )}
         
-        <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-          <Clock className="h-3 w-3" />
-          {format(new Date(task.dueDate), "MMM d, h:mm a")}
+        <div className={`flex items-center gap-1 text-muted-foreground ${compact ? "text-[8px]" : "text-[10px]"}`}>
+          <Clock className={compact ? "h-2.5 w-2.5" : "h-3 w-3"} />
+          {format(new Date(task.dueDate), compact ? "MMM d" : "MMM d, h:mm a")}
         </div>
 
-        <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-          <Bell className="h-3 w-3" />
-          <span>Reminders: 12h, 6h, 2h, 30min before</span>
-        </div>
+        {!compact && (
+          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+            <Bell className="h-3 w-3" />
+            <span>Reminders: 12h, 6h, 2h, 30min before</span>
+          </div>
+        )}
 
         {task.referenceLink && (
           <div className="flex items-center gap-1 text-[10px]">
