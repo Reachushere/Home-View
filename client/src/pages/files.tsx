@@ -25,7 +25,11 @@ import {
   Download,
   Clock,
   CheckCircle2,
-  Upload
+  Upload,
+  Play,
+  Square,
+  Volume2,
+  VolumeX
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 
@@ -131,6 +135,49 @@ export default function FilesPage() {
       toast({ title: "Failed to delete file", description: String(err), variant: "destructive" });
     },
   });
+
+  // Media control functions
+  const handlePlayFile = async (fileUrl: string, fileName: string) => {
+    try {
+      const response = await fetch("/api/home-assistant/read-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pdfUrl: fileUrl }),
+      });
+      if (response.ok) {
+        toast({ title: `Playing: ${fileName}` });
+      } else {
+        toast({ title: "Failed to play file", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error("Play error:", error);
+      toast({ title: "Failed to play file", variant: "destructive" });
+    }
+  };
+
+  const handleStop = async () => {
+    try {
+      await fetch("/api/home-assistant/media-control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "stop" }),
+      });
+    } catch (error) {
+      console.error("Stop error:", error);
+    }
+  };
+
+  const handleVolume = async (action: "up" | "down") => {
+    try {
+      await fetch("/api/home-assistant/media-control", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: `volume_${action}` }),
+      });
+    } catch (error) {
+      console.error("Volume error:", error);
+    }
+  };
 
   const handleRename = () => {
     if (editingFile && newName.trim()) {
@@ -319,20 +366,66 @@ export default function FilesPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        {/* Media Controls */}
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="h-8 w-8 bg-green-500 hover:bg-green-600 text-white"
+                          onClick={() => handlePlayFile(file.objectPath, file.displayName)}
+                          title="Play"
+                          data-testid={`button-play-${file.id}`}
+                        >
+                          <Play className="h-4 w-4 fill-current" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="h-8 w-8 bg-red-500 hover:bg-red-600 text-white"
+                          onClick={handleStop}
+                          title="Stop"
+                          data-testid={`button-stop-${file.id}`}
+                        >
+                          <Square className="h-4 w-4 fill-current" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleVolume("down")}
+                          title="Volume Down"
+                          data-testid={`button-vol-down-${file.id}`}
+                        >
+                          <VolumeX className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleVolume("up")}
+                          title="Volume Up"
+                          data-testid={`button-vol-up-${file.id}`}
+                        >
+                          <Volume2 className="h-4 w-4" />
+                        </Button>
+                        
+                        <div className="w-px h-6 bg-border mx-1" />
+                        
+                        {/* File Actions */}
                         <a 
                           href={file.objectPath} 
                           target="_blank" 
                           rel="noopener noreferrer"
                           data-testid={`button-download-${file.id}`}
                         >
-                          <Button variant="ghost" size="icon">
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
                             <Download className="h-4 w-4" />
                           </Button>
                         </a>
                         <Button 
                           variant="ghost" 
                           size="icon"
+                          className="h-8 w-8"
                           onClick={() => {
                             setEditingFile(file);
                             setNewName(file.displayName);
@@ -344,6 +437,7 @@ export default function FilesPage() {
                         <Button 
                           variant="ghost" 
                           size="icon"
+                          className="h-8 w-8"
                           onClick={() => {
                             setAssigningFile(file);
                             setSelectedTaskId("");
@@ -355,6 +449,7 @@ export default function FilesPage() {
                         <Button 
                           variant="ghost" 
                           size="icon"
+                          className="h-8 w-8"
                           onClick={() => {
                             if (confirm("Are you sure you want to delete this file?")) {
                               deleteMutation.mutate(file.id);
