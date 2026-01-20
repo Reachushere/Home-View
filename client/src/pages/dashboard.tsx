@@ -1254,7 +1254,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
               <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
-                Select <span className="font-bold">ONE</span>
+                Select&nbsp;<span className="font-bold">ONE</span>
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="px-1 py-0.5 text-[8px]">CORE REQUIRED:</div>
