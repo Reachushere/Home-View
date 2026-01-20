@@ -1,0 +1,370 @@
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { Link } from "wouter";
+import { 
+  FileText, 
+  File, 
+  Image, 
+  Video, 
+  Music, 
+  Archive,
+  Edit2,
+  Link2,
+  Trash2,
+  ArrowLeft,
+  Download,
+  Clock,
+  CheckCircle2
+} from "lucide-react";
+import type { FileRecord } from "@shared/schema";
+
+interface Task {
+  id: number;
+  title: string;
+  courseName: string | null;
+  dueDate: string;
+  isCompleted: boolean;
+  attachments: string[] | null;
+}
+
+function getFileIcon(contentType: string | null) {
+  if (!contentType) return File;
+  if (contentType.startsWith("image/")) return Image;
+  if (contentType.startsWith("video/")) return Video;
+  if (contentType.startsWith("audio/")) return Music;
+  if (contentType.includes("pdf") || contentType.includes("document") || contentType.includes("text")) return FileText;
+  if (contentType.includes("zip") || contentType.includes("archive")) return Archive;
+  return File;
+}
+
+function formatFileSize(bytes: number | null) {
+  if (!bytes) return "Unknown size";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDate(dateValue: string | Date | null) {
+  if (!dateValue) return "Unknown date";
+  const date = typeof dateValue === "string" ? new Date(dateValue) : dateValue;
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export default function FilesPage() {
+  const { toast } = useToast();
+  const [editingFile, setEditingFile] = useState<FileRecord | null>(null);
+  const [newName, setNewName] = useState("");
+  const [assigningFile, setAssigningFile] = useState<FileRecord | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string>("");
+
+  const { data: files = [], isLoading: filesLoading } = useQuery<FileRecord[]>({
+    queryKey: ["/api/files"],
+  });
+
+  const { data: tasks = [], isLoading: tasksLoading } = useQuery<Task[]>({
+    queryKey: ["/api/tasks"],
+  });
+
+  const renameMutation = useMutation({
+    mutationFn: async ({ id, displayName }: { id: number; displayName: string }) => {
+      return await apiRequest("PATCH", `/api/files/${id}`, { displayName });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      setEditingFile(null);
+      toast({ title: "File renamed successfully" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to rename file", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const assignMutation = useMutation({
+    mutationFn: async ({ fileId, taskId }: { fileId: number; taskId: number }) => {
+      return await apiRequest("POST", `/api/files/${fileId}/assign`, { taskId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      setAssigningFile(null);
+      setSelectedTaskId("");
+      toast({ title: "File assigned to task" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to assign file", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/files/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      toast({ title: "File deleted" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to delete file", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const handleRename = () => {
+    if (editingFile && newName.trim()) {
+      renameMutation.mutate({ id: editingFile.id, displayName: newName.trim() });
+    }
+  };
+
+  const handleAssign = () => {
+    if (assigningFile && selectedTaskId) {
+      assignMutation.mutate({ fileId: assigningFile.id, taskId: parseInt(selectedTaskId) });
+    }
+  };
+
+  const getTasksForFile = (file: FileRecord): Task[] => {
+    return tasks.filter(task => 
+      task.attachments && task.attachments.includes(file.objectPath)
+    );
+  };
+
+  if (filesLoading || tasksLoading) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-muted rounded w-48" />
+            <div className="grid gap-4">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-24 bg-muted rounded" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="flex items-center gap-4">
+          <Link href="/">
+            <Button variant="ghost" size="icon" data-testid="button-back">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold">File Manager</h1>
+          <Badge variant="secondary" className="ml-auto">
+            {files.length} {files.length === 1 ? "file" : "files"}
+          </Badge>
+        </div>
+
+        {files.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">No files uploaded yet</h3>
+              <p className="text-muted-foreground mb-4">
+                Upload files when creating or editing tasks to see them here.
+              </p>
+              <Link href="/">
+                <Button data-testid="button-go-to-dashboard">Go to Dashboard</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4">
+            {files.map((file) => {
+              const FileIcon = getFileIcon(file.contentType);
+              const assignedTasks = getTasksForFile(file);
+              
+              return (
+                <Card key={file.id} className="hover-elevate" data-testid={`card-file-${file.id}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-muted rounded-md">
+                        <FileIcon className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-medium truncate" data-testid={`text-filename-${file.id}`}>
+                            {file.displayName}
+                          </h3>
+                          {file.displayName !== file.originalName && (
+                            <span className="text-xs text-muted-foreground truncate">
+                              (was: {file.originalName})
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-2">
+                          <span>{formatFileSize(file.size)}</span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            {formatDate(file.createdAt)}
+                          </span>
+                          {file.contentType && (
+                            <Badge variant="outline" className="text-xs">
+                              {file.contentType.split("/")[1] || file.contentType}
+                            </Badge>
+                          )}
+                        </div>
+
+                        {assignedTasks.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {assignedTasks.map(task => (
+                              <Badge 
+                                key={task.id} 
+                                variant={task.isCompleted ? "secondary" : "default"}
+                                className="text-xs"
+                              >
+                                {task.isCompleted && <CheckCircle2 className="h-3 w-3 mr-1" />}
+                                {task.title}
+                              </Badge>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <a 
+                          href={file.objectPath} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          data-testid={`button-download-${file.id}`}
+                        >
+                          <Button variant="ghost" size="icon">
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </a>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => {
+                            setEditingFile(file);
+                            setNewName(file.displayName);
+                          }}
+                          data-testid={`button-rename-${file.id}`}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => {
+                            setAssigningFile(file);
+                            setSelectedTaskId("");
+                          }}
+                          data-testid={`button-assign-${file.id}`}
+                        >
+                          <Link2 className="h-4 w-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => {
+                            if (confirm("Are you sure you want to delete this file?")) {
+                              deleteMutation.mutate(file.id);
+                            }
+                          }}
+                          data-testid={`button-delete-${file.id}`}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      <Dialog open={!!editingFile} onOpenChange={() => setEditingFile(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rename File</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              value={newName}
+              onChange={(e) => setNewName(e.target.value)}
+              placeholder="Enter new file name"
+              data-testid="input-rename"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingFile(null)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleRename} 
+              disabled={renameMutation.isPending}
+              data-testid="button-confirm-rename"
+            >
+              {renameMutation.isPending ? "Renaming..." : "Rename"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!assigningFile} onOpenChange={() => setAssigningFile(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign File to Task</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              Select a task to attach "{assigningFile?.displayName}" to:
+            </p>
+            <Select value={selectedTaskId} onValueChange={setSelectedTaskId}>
+              <SelectTrigger data-testid="select-task">
+                <SelectValue placeholder="Select a task" />
+              </SelectTrigger>
+              <SelectContent>
+                {tasks.map(task => (
+                  <SelectItem key={task.id} value={task.id.toString()}>
+                    <div className="flex items-center gap-2">
+                      {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-green-500" />}
+                      <span>{task.title}</span>
+                      {task.courseName && (
+                        <span className="text-xs text-muted-foreground">({task.courseName})</span>
+                      )}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssigningFile(null)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAssign} 
+              disabled={!selectedTaskId || assignMutation.isPending}
+              data-testid="button-confirm-assign"
+            >
+              {assignMutation.isPending ? "Assigning..." : "Assign"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

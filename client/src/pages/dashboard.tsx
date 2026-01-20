@@ -39,7 +39,9 @@ import {
   Square,
   MinusCircle,
   PlusCircle,
+  FolderOpen,
 } from "lucide-react";
+import { Link as RouterLink } from "wouter";
 import type { Task } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber } from "@shared/schema";
 import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay } from "date-fns";
@@ -384,6 +386,18 @@ export default function Dashboard() {
             School Planner
           </h1>
         </div>
+
+        {/* Files Link */}
+        <RouterLink href="/files">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-2 text-white/80 hover:text-white hover:bg-white/10"
+            data-testid="button-files-link"
+          >
+            <FolderOpen className="h-4 w-4" />
+            Manage Files
+          </Button>
+        </RouterLink>
 
         {/* Mini Calendar */}
         <div className="px-2">
