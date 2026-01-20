@@ -1258,7 +1258,7 @@ export default function Dashboard() {
               <div className="flex-1 flex flex-col">
                 <div className="px-1 py-0.5 text-[8px]">CORE REQUIRED:</div>
                 <div className="flex flex-col">
-                  <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
+                  <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
                   <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
                 </div>
               </div>
