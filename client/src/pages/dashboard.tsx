@@ -661,19 +661,18 @@ export default function Dashboard() {
         <div className="flex items-start justify-between mb-4">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <Sun className="h-6 w-6" style={{ color: '#ffff00', fill: '#ffff00' }} />
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleMute}
+                className={`!h-6 !w-6 !min-h-0 p-0 bg-[#5979CC] hover:bg-[#4a68b3] border-[1.75px] border-blue-800 text-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+                data-testid="button-mute-toggle"
+                title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+              >
+                {isMuted ? <BellOff className="h-3.5 w-3.5" /> : <Bell className="h-3.5 w-3.5" />}
+              </Button>
               <h1 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMute}
-              className={`!h-6 !w-6 !min-h-0 p-0 mt-1 bg-[#5979CC] hover:bg-[#4a68b3] border-[1.75px] border-blue-800 text-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
-              data-testid="button-mute-toggle"
-              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-            >
-              {isMuted ? <BellOff className="h-3.5 w-3.5" /> : <Bell className="h-3.5 w-3.5" />}
-            </Button>
           </div>
           
           {/* Rainbow Digital Clock */}
