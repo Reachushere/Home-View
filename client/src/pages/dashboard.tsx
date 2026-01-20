@@ -2269,7 +2269,7 @@ export default function Dashboard() {
                         compact
                       />
                       <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-black rounded-full flex flex-col items-center justify-center z-10">
-                        <span className="text-xs font-bold text-white leading-none">
+                        <span className="text-xs font-bold text-white leading-none mt-0.5">
                           {daysUntilDue}
                         </span>
                         <span className="text-[7px] text-white uppercase tracking-tight">
