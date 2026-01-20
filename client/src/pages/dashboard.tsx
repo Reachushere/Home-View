@@ -104,36 +104,29 @@ export default function Dashboard() {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const gainNode = audioContext.createGain();
       gainNode.connect(audioContext.destination);
-      gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
       
-      // Create two oscillators for telephone ring dual-tone
-      const osc1 = audioContext.createOscillator();
-      const osc2 = audioContext.createOscillator();
-      osc1.connect(gainNode);
-      osc2.connect(gainNode);
+      // Create a pleasant chime/bell sound
+      const osc = audioContext.createOscillator();
+      osc.type = 'sine';
+      osc.connect(gainNode);
       
-      // Standard telephone ring frequencies (440Hz and 480Hz)
-      osc1.frequency.setValueAtTime(440, audioContext.currentTime);
-      osc2.frequency.setValueAtTime(480, audioContext.currentTime);
+      // Ascending chime pattern
+      const now = audioContext.currentTime;
+      osc.frequency.setValueAtTime(523, now);        // C5
+      osc.frequency.setValueAtTime(659, now + 0.15); // E5
+      osc.frequency.setValueAtTime(784, now + 0.3);  // G5
       
-      // Ring pattern: on-off-on-off
-      const ringDuration = 0.1;
-      const pauseDuration = 0.05;
+      // Bell-like envelope with quick attack and decay
+      gainNode.gain.setValueAtTime(0, now);
+      gainNode.gain.linearRampToValueAtTime(0.2, now + 0.02);
+      gainNode.gain.exponentialRampToValueAtTime(0.1, now + 0.15);
+      gainNode.gain.linearRampToValueAtTime(0.2, now + 0.17);
+      gainNode.gain.exponentialRampToValueAtTime(0.1, now + 0.3);
+      gainNode.gain.linearRampToValueAtTime(0.25, now + 0.32);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
       
-      osc1.start(audioContext.currentTime);
-      osc2.start(audioContext.currentTime);
-      
-      // Create ring pattern with gain modulation
-      let time = audioContext.currentTime;
-      for (let i = 0; i < 3; i++) {
-        gainNode.gain.setValueAtTime(0.15, time);
-        time += ringDuration;
-        gainNode.gain.setValueAtTime(0, time);
-        time += pauseDuration;
-      }
-      
-      osc1.stop(time);
-      osc2.stop(time);
+      osc.start(now);
+      osc.stop(now + 0.6);
     } catch (e) {
       console.log('Audio not available');
     }
