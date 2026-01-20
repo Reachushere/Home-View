@@ -1348,65 +1348,50 @@ function TaskCard({
       <div className="relative pt-5 h-full flex flex-col">
         {/* Media Controls - positioned absolutely at top, half height */}
         <div className={`absolute top-0 left-0 right-0 h-4 flex items-center justify-around rounded-sm px-1 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-2.5 w-2.5 p-0 min-h-0"
+          <div
+            className="cursor-pointer hover:opacity-70"
             onClick={handlePlayTTS}
-            disabled={isSendingTTS}
             data-testid={`button-play-${task.id}`}
             title="Play"
           >
             {isSendingTTS ? (
-              <Loader2 className="h-1.5 w-1.5 animate-spin" />
+              <Loader2 className="h-2.5 w-2.5 animate-spin" />
             ) : (
-              <Play className="h-1.5 w-1.5 fill-current" />
+              <Play className="h-2.5 w-2.5 fill-current" />
             )}
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-2.5 w-2.5 p-0 min-h-0"
+          </div>
+          <div
+            className="cursor-pointer hover:opacity-70"
             onClick={handleStop}
-            disabled={isControlling}
             data-testid={`button-stop-${task.id}`}
             title="Stop"
           >
-            <Square className="h-1.5 w-1.5 fill-current" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-2.5 w-2.5 p-0 min-h-0"
+            <Square className="h-2.5 w-2.5 fill-current" />
+          </div>
+          <div
+            className="cursor-pointer hover:opacity-70"
             onClick={handleResume}
-            disabled={isControlling}
             data-testid={`button-resume-${task.id}`}
             title="Resume"
           >
-            <RefreshCw className="h-1.5 w-1.5" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-2.5 w-2.5 p-0 min-h-0"
+            <RefreshCw className="h-2.5 w-2.5" />
+          </div>
+          <div
+            className="cursor-pointer hover:opacity-70"
             onClick={() => handleVolume("down")}
-            disabled={isControlling}
             data-testid={`button-voldown-${task.id}`}
             title="Volume Down"
           >
-            <MinusCircle className="h-1.5 w-1.5" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-2.5 w-2.5 p-0 min-h-0"
+            <MinusCircle className="h-2.5 w-2.5" />
+          </div>
+          <div
+            className="cursor-pointer hover:opacity-70"
             onClick={() => handleVolume("up")}
-            disabled={isControlling}
             data-testid={`button-volup-${task.id}`}
             title="Volume Up"
           >
-            <PlusCircle className="h-1.5 w-1.5" />
-          </Button>
+            <PlusCircle className="h-2.5 w-2.5" />
+          </div>
         </div>
         {cardElement}
       </div>
