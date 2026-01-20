@@ -928,7 +928,7 @@ export default function Dashboard() {
               </div>
               <div className="w-12 border-l border-black flex flex-col">
                 <div className="flex-1"></div>
-                <div className={`h-[38px] flex flex-col items-center justify-start pt-1 gap-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[38px] flex flex-col items-center justify-start gap-0.5 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
