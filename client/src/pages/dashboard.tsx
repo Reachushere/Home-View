@@ -844,7 +844,7 @@ export default function Dashboard() {
                 <input type="checkbox" className="h-3 w-3" checked={checkedCourses['LIBERAL'] || false} onChange={() => toggleCourse('LIBERAL')} />
               </div>
               <div className="flex-1 px-1 py-0.5 text-[8px] flex items-center">
-                LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.
+                <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
               </div>
               <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>
