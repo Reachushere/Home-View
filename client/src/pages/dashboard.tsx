@@ -40,6 +40,7 @@ import {
   MinusCircle,
   PlusCircle,
   FolderOpen,
+  Trash2,
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
 import type { Task } from "@shared/schema";
@@ -1081,8 +1082,24 @@ export default function Dashboard() {
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
           <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
+            <DialogHeader className="flex flex-row items-center justify-between gap-2">
               <DialogTitle>Edit Task</DialogTitle>
+              {editingTask && (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    if (confirm("Are you sure you want to delete this task?")) {
+                      deleteMutation.mutate(editingTask.id);
+                      setEditingTask(null);
+                    }
+                  }}
+                  data-testid="button-delete-task-dialog"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
+              )}
             </DialogHeader>
             {editingTask && (
               <TaskForm 
