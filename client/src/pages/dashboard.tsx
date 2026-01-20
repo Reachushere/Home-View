@@ -1015,7 +1015,7 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section */}
           <section className={`w-[240px] flex-shrink-0 bg-red-100 dark:bg-red-900/30 rounded-xl shadow-md p-3 border border-black overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
-            <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2 animate-urgent-blink" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-sm font-semibold text-destructive mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Clock className="h-3.5 w-3.5" />
               Missed ({missedTasks.length})
             </h4>
@@ -1026,15 +1026,16 @@ export default function Dashboard() {
             ) : (
               <div className="grid grid-cols-1 gap-2">
                 {missedTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                    onReschedule={() => setRescheduleTask(task)}
-                    onEdit={() => setEditingTask(task)}
-                    onDelete={() => deleteMutation.mutate(task.id)}
-                    compact
-                  />
+                  <div key={task.id} className="animate-urgent-blink">
+                    <TaskCard
+                      task={task}
+                      onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                      onReschedule={() => setRescheduleTask(task)}
+                      onEdit={() => setEditingTask(task)}
+                      onDelete={() => deleteMutation.mutate(task.id)}
+                      compact
+                    />
+                  </div>
                 ))}
               </div>
             )}
