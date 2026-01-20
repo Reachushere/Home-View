@@ -2219,23 +2219,21 @@ export default function Dashboard() {
                 {upcomingTasks.map((task) => {
                   const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
                   return (
-                    <div key={task.id} className="flex gap-2 items-center">
-                      <div className="flex-1">
-                        <TaskCard
-                          task={task}
-                          onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                          onReschedule={() => setRescheduleTask(task)}
-                          onEdit={() => setEditingTask(task)}
-                          onDelete={() => deleteMutation.mutate(task.id)}
-                          cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                          compact
-                        />
-                      </div>
-                      <div className="flip-card w-8 h-12 flex flex-col items-center justify-center">
-                        <span className="flip-number text-2xl text-white relative z-10 leading-none">
+                    <div key={task.id} className="relative">
+                      <TaskCard
+                        task={task}
+                        onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                        onReschedule={() => setRescheduleTask(task)}
+                        onEdit={() => setEditingTask(task)}
+                        onDelete={() => deleteMutation.mutate(task.id)}
+                        cardBgClass="bg-orange-50 dark:bg-orange-900/20"
+                        compact
+                      />
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-black rounded-full flex flex-col items-center justify-center z-10">
+                        <span className="text-sm font-bold text-white leading-none">
                           {daysUntilDue}
                         </span>
-                        <span className="text-[9px] text-white uppercase tracking-wider relative z-10">
+                        <span className="text-[6px] text-white uppercase tracking-tight">
                           {daysUntilDue === 1 ? 'day' : 'days'}
                         </span>
                       </div>
