@@ -1111,8 +1111,8 @@ export default function Dashboard() {
             <div className="h-px bg-black"></div>
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] font-bold">CORE ELECTIVE:</div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">ONE</span> course required from the following:</div>
+              <div className="w-14 border-r border-black"></div>
+              <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">CORE ELECTIVE:</span> <span className="font-bold">ONE</span> course required from the following:</div>
               <div className="w-12 border-l border-black"></div>
             </div>
             <div className="flex items-stretch border-b border-black">
