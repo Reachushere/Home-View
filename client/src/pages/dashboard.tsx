@@ -1650,7 +1650,7 @@ export default function Dashboard() {
           </div>
           
           {/* Rainbow Digital Clock */}
-          <div className="bg-black px-2 py-0.5 rounded-md w-[125px] flex justify-center items-center" data-testid="digital-clock">
+          <div className="bg-[#5979CC] px-2 py-0.5 rounded-md w-[125px] flex justify-center items-center" data-testid="digital-clock">
             <span className="text-sm font-black font-mono tracking-wider text-white w-[68px] text-right tabular-nums">
               {format(currentTime, "hh:mm:ss")}
             </span>
