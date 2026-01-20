@@ -604,14 +604,14 @@ export default function Dashboard() {
           <div className="flex flex-col">
             <h1 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
             <Button
-              variant={isMuted ? "default" : "ghost"}
-              size="lg"
+              variant="ghost"
+              size="sm"
               onClick={toggleMute}
-              className={`h-9 w-9 p-0 mt-1 rounded-md border-2 border-foreground ${isMuted ? "bg-red-500 hover:bg-red-600 text-white border-red-500" : ""}`}
+              className={`h-6 w-8 p-0 mt-1 bg-white hover:bg-gray-50 border-[1.75px] border-blue-800 text-blue-800 ${isMuted ? "bg-red-500 hover:bg-red-600 text-white border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
-              {isMuted ? <BellOff className="h-7 w-7" /> : <Bell className="h-7 w-7" />}
+              {isMuted ? <BellOff className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
             </Button>
           </div>
           
