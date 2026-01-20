@@ -2416,8 +2416,8 @@ function TaskCard({
         
         {compact ? (
           <div className="flex items-center justify-between">
-            <Badge className={`${colors ? `${colors.bg} ${colors.border} ${colors.text}` : typeColors[task.type]} text-[7px] px-1 py-0`}>
-              <Icon className="h-2 w-2 mr-0.5" />
+            <Badge className={`${colors ? `${colors.bg} ${colors.border} ${colors.text}` : typeColors[task.type]} text-[8px] px-1.5 py-0.5`}>
+              <Icon className="h-2.5 w-2.5 mr-0.5" />
               {task.type}
             </Badge>
             <div className="flex items-center gap-1 text-black dark:text-white text-[10px]">
