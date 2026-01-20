@@ -794,7 +794,7 @@ export default function Dashboard() {
                 <div className={`h-11 flex items-center justify-center border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
                 </div>
-                <div className={`h-9 flex items-center justify-center border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-11 flex items-center justify-center border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
                 </div>
                 <div className="h-9 border-b border-black"></div>
@@ -809,7 +809,7 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 120</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Canadian Politics & Government **</div>
                 </div>
-                <div className={`h-9 flex border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                <div className={`h-11 flex border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 121</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Ontario Politics and Government</div>
                 </div>
@@ -829,7 +829,7 @@ export default function Dashboard() {
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
                 </div>
-                <div className={`h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-11 flex flex-col items-center justify-center gap-0.5 border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
@@ -839,11 +839,11 @@ export default function Dashboard() {
                 <div className="h-9"></div>
               </div>
             </div>
-            <div className={`flex border-b border-black ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+            <div className={`flex border-b border-black h-11 ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="h-3 w-3" checked={checkedCourses['LIBERAL'] || false} onChange={() => toggleCourse('LIBERAL')} />
               </div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]">
+              <div className="flex-1 px-1 py-0.5 text-[8px] flex items-center">
                 LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.
               </div>
               <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
