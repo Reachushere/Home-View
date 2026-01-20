@@ -1043,26 +1043,92 @@ export default function Dashboard() {
           </section>
         </div>
 
-        {/* Completed Tasks Section */}
-        {completedTasks.length > 0 && (
-          <section>
-            <h4 className="text-md font-semibold text-muted-foreground mb-3">
-              Completed ({completedTasks.length})
+        {/* Completed Tasks by Course */}
+        <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
+          {/* CPPA122 Completed */}
+          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cppa122">
+            <h4 className="text-sm font-semibold text-green-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <ClipboardCheck className="h-3.5 w-3.5" />
+              Completed - CPPA122 ({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})
             </h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {completedTasks.map((task) => (
-                <TaskCard
-                  key={task.id}
-                  task={task}
-                  onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                  onReschedule={() => setRescheduleTask(task)}
-                  onEdit={() => setEditingTask(task)}
-                  onDelete={() => deleteMutation.mutate(task.id)}
-                />
-              ))}
-            </div>
+            {completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 ? (
+              <div className="text-center py-4 text-muted-foreground text-xs">
+                No completed tasks
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-2">
+                {completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                    cardBgClass="bg-green-50 dark:bg-green-900/20"
+                    compact
+                  />
+                ))}
+              </div>
+            )}
           </section>
-        )}
+
+          {/* CFNF400 Completed */}
+          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cfnf400">
+            <h4 className="text-sm font-semibold text-green-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <ClipboardCheck className="h-3.5 w-3.5" />
+              Completed - CFNF400 ({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})
+            </h4>
+            {completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 ? (
+              <div className="text-center py-4 text-muted-foreground text-xs">
+                No completed tasks
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-2">
+                {completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                    cardBgClass="bg-green-50 dark:bg-green-900/20"
+                    compact
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* CASL101 Completed */}
+          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-none shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
+            <h4 className="text-sm font-semibold text-green-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <ClipboardCheck className="h-3.5 w-3.5" />
+              Completed - CASL101 ({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})
+            </h4>
+            {completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 ? (
+              <div className="text-center py-4 text-muted-foreground text-xs">
+                No completed tasks
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-2">
+                {completedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                    onReschedule={() => setRescheduleTask(task)}
+                    onEdit={() => setEditingTask(task)}
+                    onDelete={() => deleteMutation.mutate(task.id)}
+                    cardBgClass="bg-green-50 dark:bg-green-900/20"
+                    compact
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
 
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
