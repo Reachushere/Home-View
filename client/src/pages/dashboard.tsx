@@ -1644,7 +1644,7 @@ export default function Dashboard() {
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto">
             {/* Day Headers */}
-            <div className="grid border-b border-border sticky top-0 bg-card z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+            <div className="grid border-b border-border sticky top-0 bg-card z-10 h-[52px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="p-2"></div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
