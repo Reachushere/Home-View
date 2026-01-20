@@ -514,39 +514,37 @@ export default function Dashboard() {
         </div>
         
         {/* Calendar Header */}
-        <div className="flex flex-col gap-2 mb-2">
-          {/* Week navigation row */}
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-              <ChevronLeft className="h-5 w-5" strokeWidth={3} />
-            </Button>
-            <div className="flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <span className="text-sm font-bold text-[#5979CC]">Week {selectedWeek}</span>
-              <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
-              <span className="text-xs text-muted-foreground">to</span>
-              <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
-            </div>
-            <Button variant="ghost" size="icon" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-              <ChevronRight className="h-5 w-5" strokeWidth={3} />
-            </Button>
+        <div className="flex items-center mb-2">
+          {/* Week navigation */}
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+            <ChevronLeft className="h-4 w-4" strokeWidth={3} />
+          </Button>
+          <div className="flex items-center gap-1.5" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <span className="text-sm font-bold text-[#5979CC]">Week {selectedWeek}</span>
+            <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
+            <span className="text-xs text-muted-foreground">to</span>
+            <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
           </div>
-          {/* Buttons row - evenly spaced */}
-          <div className="flex items-center justify-evenly gap-1">
-            <Button variant="outline" size="sm" className="h-7 text-xs border border-foreground/60 font-semibold px-2" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+            <ChevronRight className="h-4 w-4" strokeWidth={3} />
+          </Button>
+          {/* Buttons - evenly spaced to the right */}
+          <div className="flex-1 flex items-center justify-evenly">
+            <Button variant="outline" size="sm" className="h-6 text-[10px] border border-foreground/60 font-semibold px-1.5" onClick={() => setSelectedWeek(2)} data-testid="button-today">
               TODAY
             </Button>
             <Button 
               variant="outline" 
               size="sm" 
-              className="h-7 text-xs border border-purple-500 text-purple-600 font-semibold px-2" 
+              className="h-6 text-[10px] border border-purple-500 text-purple-600 font-semibold px-1.5" 
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
             >
               {syncAllCalendarMutation.isPending ? (
-                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                <Loader2 className="h-2.5 w-2.5 mr-0.5 animate-spin" />
               ) : (
-                <CalendarDays className="h-3 w-3 mr-1" />
+                <CalendarDays className="h-2.5 w-2.5 mr-0.5" />
               )}
               Sync
             </Button>
@@ -554,56 +552,56 @@ export default function Dashboard() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-7 text-xs border border-blue-500 text-blue-600 font-semibold px-2" 
+                className="h-6 text-[10px] border border-blue-500 text-blue-600 font-semibold px-1.5" 
                 data-testid="button-files-link"
               >
-                <FolderOpen className="h-3 w-3 mr-1" />
+                <FolderOpen className="h-2.5 w-2.5 mr-0.5" />
                 Files
               </Button>
             </RouterLink>
             <Button 
               size="sm"
-              className="h-7 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-3 w-3 mr-0.5" />
+              <Plus className="h-2.5 w-2.5" />
               Module
             </Button>
             <Button 
               size="sm"
-              className="h-7 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-3 w-3 mr-0.5" />
+              <Plus className="h-2.5 w-2.5" />
               Reading
             </Button>
             <Button 
               size="sm"
-              className="h-7 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-3 w-3 mr-0.5" />
+              <Plus className="h-2.5 w-2.5" />
               Discussion
             </Button>
             <Button 
               size="sm"
-              className="h-7 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-3 w-3 mr-0.5" />
+              <Plus className="h-2.5 w-2.5" />
               Assignment
             </Button>
             <Button 
               size="sm"
-              className="h-7 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs px-2 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-3 w-3 mr-0.5" />
+              <Plus className="h-2.5 w-2.5" />
               Exam/Test
             </Button>
           </div>
