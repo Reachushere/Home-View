@@ -1283,7 +1283,7 @@ function TaskCard({
         compact ? "h-[60px]" : "flex-1"
       } ${cardBgClass ? cardBgClass : colors ? colors.bg : ""} ${
         colors ? colors.border : "border-gray-400"
-      } ${isMissed ? "border-destructive bg-destructive/5" : ""} ${
+      } ${isMissed && !cardBgClass ? "border-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
       }`}
       data-testid={`card-task-${task.id}`}
