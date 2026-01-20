@@ -535,7 +535,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm" 
-              className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border border-blue-800 font-semibold text-foreground" 
+              className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border border-blue-800 font-semibold text-purple-600" 
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
@@ -550,7 +550,7 @@ export default function Dashboard() {
             <RouterLink href="/files">
               <Button 
                 size="sm" 
-                className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border border-blue-800 font-semibold text-foreground" 
+                className="h-6 w-[98px] text-[10px] bg-white hover:bg-gray-50 border border-blue-800 font-semibold text-blue-600" 
                 data-testid="button-files-link"
               >
                 <FolderOpen className="h-2.5 w-2.5 mr-0.5" />
