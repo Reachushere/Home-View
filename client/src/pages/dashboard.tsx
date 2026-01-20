@@ -1109,7 +1109,7 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="px-1 pt-0.5 text-[8px]">
-                  <span>LIBERAL STUDIES ELECTIVE TABLE B: <span className="font-bold">ONE</span> one-term course (UPPER LEVEL) required.</span>
+                  CORE ELECTIVE: <span className="font-bold">ONE</span> course required
                 </div>
                 <div className="px-1 pb-1 flex items-end">
                   <input 
