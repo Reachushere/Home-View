@@ -1358,9 +1358,9 @@ function TaskCard({
             title="Play"
           >
             {isSendingTTS ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
+              <Loader2 className="h-2 w-2 animate-spin" />
             ) : (
-              <Play className="h-3 w-3 fill-current" />
+              <Play className="h-2 w-2 fill-current" />
             )}
           </Button>
           <Button
@@ -1372,7 +1372,7 @@ function TaskCard({
             data-testid={`button-stop-${task.id}`}
             title="Stop"
           >
-            <Square className="h-3 w-3 fill-current" />
+            <Square className="h-2 w-2 fill-current" />
           </Button>
           <Button
             size="icon"
@@ -1383,7 +1383,7 @@ function TaskCard({
             data-testid={`button-resume-${task.id}`}
             title="Resume"
           >
-            <RefreshCw className="h-3 w-3" />
+            <RefreshCw className="h-2 w-2" />
           </Button>
           <Button
             size="icon"
@@ -1394,7 +1394,7 @@ function TaskCard({
             data-testid={`button-voldown-${task.id}`}
             title="Volume Down"
           >
-            <MinusCircle className="h-3 w-3" />
+            <MinusCircle className="h-2 w-2" />
           </Button>
           <Button
             size="icon"
@@ -1405,7 +1405,7 @@ function TaskCard({
             data-testid={`button-volup-${task.id}`}
             title="Volume Up"
           >
-            <PlusCircle className="h-3 w-3" />
+            <PlusCircle className="h-2 w-2" />
           </Button>
         </div>
         {cardElement}
