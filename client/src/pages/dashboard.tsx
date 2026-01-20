@@ -532,7 +532,7 @@ export default function Dashboard() {
             TODAY
           </Button>
           {/* Buttons - evenly spaced between TODAY and Exam */}
-          <div className="flex-1 flex items-center justify-between">
+          <div className="flex-1 flex items-center justify-between ml-3">
             <Button 
               variant="outline" 
               size="sm" 
