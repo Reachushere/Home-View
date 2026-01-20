@@ -985,7 +985,7 @@ export default function Dashboard() {
                 No missed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2 pt-3">
+              <div className="grid grid-cols-1 gap-3 pt-4">
                 {missedTasks.map((task) => (
                   <div key={task.id} className="animate-urgent-blink">
                     <TaskCard
@@ -1015,7 +1015,7 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-2 pt-3">
+              <div className="grid grid-cols-3 gap-3 pt-4">
                 {upcomingTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1045,7 +1045,7 @@ export default function Dashboard() {
                 No tasks for today
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2 pt-3">
+              <div className="grid grid-cols-1 gap-3 pt-4">
                 {todayTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1076,7 +1076,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2 pt-3">
+              <div className="grid grid-cols-1 gap-3 pt-4">
                 {completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1104,7 +1104,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2 pt-3">
+              <div className="grid grid-cols-1 gap-3 pt-4">
                 {completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1132,7 +1132,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2 pt-3">
+              <div className="grid grid-cols-1 gap-3 pt-4">
                 {completedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1460,7 +1460,7 @@ function TaskCard({
       return (
         <div className="relative h-full flex flex-col cursor-pointer" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className={`absolute -top-3 left-0 right-0 h-3 flex items-center justify-around rounded-sm px-0.5 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
+          <div className={`absolute -top-4 left-0 right-0 h-3 flex items-center justify-around rounded-xl px-1 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
