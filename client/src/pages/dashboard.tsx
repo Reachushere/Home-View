@@ -607,7 +607,7 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               onClick={toggleMute}
-              className={`h-6 w-8 p-0 mt-1 bg-purple-500/20 hover:bg-purple-500/30 border-[1.75px] border-purple-500/40 text-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              className={`h-6 w-8 p-0 mt-1 bg-[#5979CC] hover:bg-[#4a68b3] border-[1.75px] border-blue-800 text-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
@@ -701,7 +701,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-6 w-[104px] bg-[#4A68B3] hover:bg-[#3a5899] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
+              className="h-6 w-[104px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.75px] border-blue-800" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
