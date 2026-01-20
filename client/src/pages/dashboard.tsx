@@ -972,34 +972,6 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-black">
-              <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 202</div>
-              <div className="flex-1 px-1 py-0.5">Course Title</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-black">
-              <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-black">PPA 203</div>
-              <div className="flex-1 px-1 py-0.5">Course Title</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="h-11 flex items-center justify-center border-b border-black">
                   <input type="checkbox" className="checkbox-black" />
