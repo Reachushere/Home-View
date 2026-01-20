@@ -1136,11 +1136,14 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
+              <div className="w-[55px] border-r border-black"></div>
               <div className="w-5 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px]">OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.</div>
               <div className="w-12 border-l border-black"></div>
             </div>
             <div className="flex">
+              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+              </div>
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
