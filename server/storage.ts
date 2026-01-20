@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, type Task, type InsertTask, type UpdateTaskRequest, getWeekNumber } from "@shared/schema";
+import { tasks, files, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte } from "drizzle-orm";
 
 export interface IStorage {
@@ -9,6 +9,12 @@ export interface IStorage {
   updateTask(id: number, updates: UpdateTaskRequest): Promise<Task>;
   deleteTask(id: number): Promise<void>;
   getTaskCountByWeek(): Promise<Record<number, number>>;
+  getFiles(): Promise<FileRecord[]>;
+  getFile(id: number): Promise<FileRecord | undefined>;
+  getFileByPath(objectPath: string): Promise<FileRecord | undefined>;
+  createFile(file: InsertFile): Promise<FileRecord>;
+  updateFileName(id: number, displayName: string): Promise<FileRecord>;
+  deleteFile(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -63,6 +69,38 @@ export class DatabaseStorage implements IStorage {
       counts[task.weekNumber] = (counts[task.weekNumber] || 0) + 1;
     }
     return counts;
+  }
+
+  async getFiles(): Promise<FileRecord[]> {
+    return await db.select().from(files).orderBy(files.createdAt);
+  }
+
+  async getFile(id: number): Promise<FileRecord | undefined> {
+    const [file] = await db.select().from(files).where(eq(files.id, id));
+    return file;
+  }
+
+  async getFileByPath(objectPath: string): Promise<FileRecord | undefined> {
+    const [file] = await db.select().from(files).where(eq(files.objectPath, objectPath));
+    return file;
+  }
+
+  async createFile(insertFile: InsertFile): Promise<FileRecord> {
+    const [file] = await db.insert(files).values(insertFile).returning();
+    return file;
+  }
+
+  async updateFileName(id: number, displayName: string): Promise<FileRecord> {
+    const [updated] = await db
+      .update(files)
+      .set({ displayName })
+      .where(eq(files.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteFile(id: number): Promise<void> {
+    await db.delete(files).where(eq(files.id, id));
   }
 }
 

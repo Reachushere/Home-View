@@ -25,6 +25,20 @@ export type TaskType = typeof TASK_TYPES[number];
 
 export const REMINDER_OFFSETS = [30, 120, 360, 720] as const; // minutes: 30min, 2hr, 6hr, 12hr
 
+export const files = pgTable("files", {
+  id: serial("id").primaryKey(),
+  originalName: text("original_name").notNull(),
+  displayName: text("display_name").notNull(),
+  objectPath: text("object_path").notNull().unique(),
+  contentType: text("content_type"),
+  size: integer("size"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertFileSchema = createInsertSchema(files).omit({ id: true, createdAt: true });
+export type FileRecord = typeof files.$inferSelect;
+export type InsertFile = z.infer<typeof insertFileSchema>;
+
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
