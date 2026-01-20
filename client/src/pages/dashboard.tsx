@@ -928,13 +928,13 @@ export default function Dashboard() {
               </div>
               <div className="w-12 border-l border-black flex flex-col">
                 <div className="flex-1"></div>
-                <div className={`flex flex-col items-center justify-center gap-1.5 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[34px] flex flex-col items-center justify-center gap-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
                 </div>
-                <div className={`flex flex-col items-center justify-center gap-1.5 pb-1 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[26px] flex flex-col items-center justify-center gap-1 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN2']?.grade || ''} onChange={(e) => updateGrade('OPEN2', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
