@@ -1137,11 +1137,11 @@ export default function Dashboard() {
             <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
-                <div className="flex-1"></div>
-                <div className="h-[46px] flex items-start justify-center pt-2">
+                <div className="px-1 pt-0.5 text-[8px] invisible">X</div>
+                <div className="px-1 pt-2 pb-5 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
-                <div className="h-[26px] flex items-center justify-center">
+                <div className="px-1 pt-1 pb-1 flex items-center justify-center">
                   <input type="checkbox" className="checkbox-black" />
                 </div>
               </div>
@@ -1165,15 +1165,14 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
-                <div className="pt-5"></div>
-                <div className="flex flex-col items-center justify-center gap-0.5 py-1">
+                <div className="px-1 pt-0.5 text-[8px] invisible">X</div>
+                <div className="px-1 pt-2 pb-5 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex-1"></div>
-                <div className="flex flex-col items-center justify-center gap-0.5 py-1">
+                <div className="px-1 pt-1 pb-1 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
