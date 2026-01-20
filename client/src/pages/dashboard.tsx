@@ -148,6 +148,8 @@ export default function Dashboard() {
   });
 
   const [currentPagLevel, setCurrentPagLevel] = useState(1);
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
 
   const updateOpenElective = (id: string, value: string) => {
     setOpenElectives(prev => {
@@ -443,6 +445,53 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
     },
   });
+
+  // Mutation for updating task time when dragged to new slot
+  const updateTaskTimeMutation = useMutation({
+    mutationFn: async ({ id, newDate, newHour }: { id: number; newDate: Date; newHour: number }) => {
+      const updatedDueDate = new Date(newDate);
+      updatedDueDate.setHours(newHour, 0, 0, 0);
+      return apiRequest("PATCH", `/api/tasks/${id}`, { 
+        dueDate: updatedDueDate.toISOString(),
+        eventStartTime: `${newHour.toString().padStart(2, '0')}:00`
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+    },
+  });
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, task: Task) => {
+    setDraggedTask(task);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', task.id.toString());
+  };
+
+  const handleDragEnd = () => {
+    setDraggedTask(null);
+    setDragOverSlot(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, day: Date, hour: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverSlot({ day, hour });
+  };
+
+  const handleDragLeave = () => {
+    setDragOverSlot(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, day: Date, hour: number) => {
+    e.preventDefault();
+    if (draggedTask) {
+      updateTaskTimeMutation.mutate({ id: draggedTask.id, newDate: day, newHour: hour });
+    }
+    setDraggedTask(null);
+    setDragOverSlot(null);
+  };
 
   // Filter tasks by selected date if a date is clicked
   const displayTasks = selectedDate 
@@ -1903,15 +1952,23 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 ${isFriday ? "bg-destructive/20" : ""} ${isToday ? "bg-blue-500/10" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors ${isFriday ? "bg-destructive/20" : ""} ${isToday ? "bg-blue-500/10" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
+                          onDragOver={(e) => handleDragOver(e, day, hour)}
+                          onDragLeave={handleDragLeave}
+                          onDrop={(e) => handleDrop(e, day, hour)}
                         >
                           {hourTasks.map((task, taskIdx) => {
                             const colors = getCourseColor(task.courseName);
                             return (
                               <div
                                 key={task.id}
-                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden ${
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, task)}
+                                onDragEnd={handleDragEnd}
+                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden cursor-grab active:cursor-grabbing ${
+                                  draggedTask?.id === task.id ? "opacity-50" : ""
+                                } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
                                     : colors ? `${colors.bg} border ${colors.border}` : "bg-gray-200 border border-gray-400"
@@ -1922,7 +1979,7 @@ export default function Dashboard() {
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: '40px',
                                   maxHeight: '40px',
-                                  zIndex: 1
+                                  zIndex: draggedTask?.id === task.id ? 10 : 1
                                 }}
                                 data-testid={`time-task-${task.id}`}
                               >
