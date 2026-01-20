@@ -655,13 +655,45 @@ export default function Dashboard() {
           ))}
         </nav>
 
-        <div className="mt-auto p-4 rounded-md bg-card border border-card-border">
-          <div className="text-sm text-muted-foreground">This Week</div>
-          <div className="text-lg font-semibold text-foreground">
-            {tasks.filter(t => !t.isCompleted).length} tasks remaining
-          </div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {completedTasks.length} completed
+        <div className="mt-auto">
+          <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-2 mb-1">PAG Requirements</h3>
+          <div className="space-y-1 px-2 text-[10px]">
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">PPA 101 - CDN Public Admin I</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">PPA 102 - CDN Public Admin II</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">PPA 125 - Rights, Equity & State</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">PPA 120 - CDN Politics & Gov't</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">PPA 122 - Local Politics & Gov't</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">Elective 2 (PPA 121/124)</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">Liberal Studies (Table A)</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">Open Elective 1</span>
+            </label>
+            <label className="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" className="h-3 w-3 rounded" />
+              <span className="text-white">Open Elective 2</span>
+            </label>
           </div>
         </div>
       </aside>
