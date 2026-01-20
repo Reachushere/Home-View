@@ -1266,7 +1266,7 @@ export default function Dashboard() {
                 ))}
               </tbody>
             </table>
-            <div className="flex border-b border-black">
+            <div className="flex border-t border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
                 <div className="flex items-center justify-center pb-1">
