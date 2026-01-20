@@ -620,7 +620,7 @@ export default function Dashboard() {
         </div>
 
         {/* Weekly Time-Slot Calendar */}
-        <div className="mb-1 relative" style={{ height: calendarHeight }}>
+        <div className="mb-3 relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto">
             {/* Day Headers */}
