@@ -604,9 +604,9 @@ export default function Dashboard() {
           <h1 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
           
           {/* Rainbow Digital Clock */}
-          <div className="bg-black px-6 py-3 rounded-lg" data-testid="digital-clock">
+          <div className="bg-black px-4 py-2 rounded-lg" data-testid="digital-clock">
             <span 
-              className="text-4xl font-bold font-mono tracking-wider bg-clip-text text-transparent"
+              className="text-2xl font-bold font-mono tracking-wider bg-clip-text text-transparent"
               style={{ backgroundImage: "linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #a855f7)" }}
             >
               {format(currentTime, "hh:mm:ss a")}
