@@ -832,7 +832,7 @@ export async function registerRoutes(
           message: cleanedContent,
           target: targetEntity,
           data: {
-            type: "tts"
+            type: "announce"
           }
         }),
       });
