@@ -1508,7 +1508,7 @@ function TaskCard({
         {compact ? (
           <div className="flex items-center gap-1 text-black dark:text-white text-[8px]">
             <Clock className="h-2.5 w-2.5" />
-            Due {format(new Date(task.dueDate), "MMM d")}
+            <span className="font-bold">DUE</span> {format(new Date(task.dueDate), "MMM d")}
           </div>
         ) : (
           <>
