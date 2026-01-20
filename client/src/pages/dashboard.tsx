@@ -1630,9 +1630,9 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 overflow-auto flex flex-col">
+      <main className="flex-1 pt-2 px-6 pb-6 overflow-auto flex flex-col">
         {/* Title Row - aligned with sidebar header */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-2">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <Button
