@@ -1958,6 +1958,8 @@ export default function Dashboard() {
                           onDragLeave={handleDragLeave}
                           onDrop={(e) => handleDrop(e, day, hour)}
                         >
+                          {/* Half-hour dotted line */}
+                          <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50" />
                           {hourTasks.map((task, taskIdx) => {
                             const colors = getCourseColor(task.courseName);
                             return (
