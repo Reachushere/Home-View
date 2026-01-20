@@ -71,7 +71,7 @@ const typeColors: Record<string, string> = {
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
   "CPPA122": { bg: "bg-blue-500/10", border: "border-blue-500", text: "text-blue-700 dark:text-blue-300", dot: "bg-blue-500", prepBg: "bg-blue-200/50", prepBorder: "border-blue-300", prepText: "text-blue-600 dark:text-blue-400" },
   "CFNF400": { bg: "bg-green-500/30", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-green-200/50", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
-  "CASL101": { bg: "bg-amber-700/30", border: "border-amber-700", text: "text-amber-800 dark:text-amber-300", dot: "bg-amber-700", prepBg: "bg-amber-300/50", prepBorder: "border-amber-400", prepText: "text-amber-700 dark:text-amber-400" },
+  "CASL101": { bg: "bg-purple-500/30", border: "border-purple-500", text: "text-purple-700 dark:text-purple-300", dot: "bg-purple-500", prepBg: "bg-purple-200/50", prepBorder: "border-purple-300", prepText: "text-purple-600 dark:text-purple-400" },
 };
 
 interface WeekInfo {
@@ -798,10 +798,10 @@ export default function Dashboard() {
                             href={event.htmlLink}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-purple-500/20 text-black border border-purple-500 cursor-pointer hover:opacity-80"
+                            className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80"
                             data-testid={`all-day-gcal-${event.id}`}
                           >
-                            <CalendarDays className="h-3 w-3 shrink-0 text-purple-600" />
+                            <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
                             <span className="truncate">{event.title}</span>
                           </a>
                         ))}
@@ -899,7 +899,7 @@ export default function Dashboard() {
                               href={event.htmlLink}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden bg-purple-500/20 border border-purple-500 cursor-pointer"
+                              className="absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden bg-gray-200 dark:bg-gray-700 border border-gray-500 cursor-pointer"
                               style={{
                                 top: '2px',
                                 left: `calc(${(hourTasks.length + eventIdx) * columnWidth}% + 2px)`,
@@ -911,7 +911,7 @@ export default function Dashboard() {
                               data-testid={`gcal-event-${event.id}`}
                             >
                               <div className="flex items-center gap-0.5">
-                                <CalendarDays className="h-3 w-3 shrink-0 text-purple-600" />
+                                <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
                                 <div className="text-[8px] font-semibold truncate text-black">
                                   {event.title}
                                 </div>
