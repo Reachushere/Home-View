@@ -1650,7 +1650,7 @@ export default function Dashboard() {
           </div>
           
           {/* Rainbow Digital Clock */}
-          <div className="bg-[#5979CC] px-2 py-0.5 rounded-md w-[125px] flex justify-center items-center" data-testid="digital-clock">
+          <div className="bg-[#5979CC] px-2 py-0.5 rounded-md w-[125px] flex justify-center items-center border-[1.5px] border-blue-800" data-testid="digital-clock">
             <span 
               className="text-sm font-bold text-white w-[68px] text-right tabular-nums"
               style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif", letterSpacing: '0.05em' }}
