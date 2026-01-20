@@ -399,18 +399,6 @@ export default function Dashboard() {
           </h1>
         </div>
 
-        {/* Files Link */}
-        <RouterLink href="/files">
-          <Button 
-            variant="ghost" 
-            className="w-full justify-start gap-2 text-white/80 hover:text-white hover:bg-white/10"
-            data-testid="button-files-link"
-          >
-            <FolderOpen className="h-4 w-4" />
-            Manage Files
-          </Button>
-        </RouterLink>
-
         {/* Mini Calendar */}
         <div className="px-2">
           <div className="flex items-center justify-between mb-2">
@@ -557,6 +545,17 @@ export default function Dashboard() {
               )}
               Sync to Google
             </Button>
+            <RouterLink href="/files">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border border-blue-500 text-blue-600 font-semibold" 
+                data-testid="button-files-link"
+              >
+                <FolderOpen className="h-3 w-3 mr-1" />
+                Manage Files
+              </Button>
+            </RouterLink>
           </div>
           <div className="flex flex-col items-end gap-1">
             <div className="flex gap-1.5">
