@@ -1294,9 +1294,9 @@ export default function Dashboard() {
                 <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
               </div>
               <div className="flex-1 flex flex-col">
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
+                <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
+                <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
+                <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
