@@ -1546,7 +1546,7 @@ export default function Dashboard() {
               {selectedWeek === 2 ? (
                 <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5">
                   <Home className="h-2.5 w-2.5" />
-                  <span className="underline">CURRENT</span>
+                  <span className="underline font-bold">CURRENT</span>
                 </span>
               ) : (
                 <span 
@@ -1555,7 +1555,7 @@ export default function Dashboard() {
                   data-testid="link-current-week"
                 >
                   <Home className="h-2.5 w-2.5" />
-                  <span className="underline">CURRENT</span>
+                  <span className="underline font-bold">CURRENT</span>
                 </span>
               )}
               <span className="text-[15px] font-bold text-[#5979CC]">Week {selectedWeek}</span>
