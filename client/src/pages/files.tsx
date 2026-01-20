@@ -386,9 +386,9 @@ export default function FilesPage() {
                     <div className="flex items-center gap-2">
                       {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-green-500" />}
                       <span>{task.title}</span>
-                      {task.courseName && (
-                        <span className="text-xs text-muted-foreground">({task.courseName})</span>
-                      )}
+                      <span className="text-xs text-muted-foreground">
+                        ({new Date(task.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })})
+                      </span>
                     </div>
                   </SelectItem>
                 ))}
