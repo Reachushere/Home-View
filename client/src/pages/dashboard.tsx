@@ -1215,64 +1215,60 @@ export default function Dashboard() {
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 320</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 235</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Theories of the State</div>
                 </div>
                 <div className="h-11 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 321</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 301</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Administrative Law T</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 322</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 303</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Public Budget Policy/Politics</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 319</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Politics of Work and Labour</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 335</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Theories of Bureaucracy</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 401</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Collaborative Governance</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 402</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Program Planning and Evaluation</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 403</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">e-Government</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 404</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Issues in Public Administration</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 411</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Advanced Public Policy</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 414</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Comparative Public Policy</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 425</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Intergovernmental Relations</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 490</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Public Admin Themes</div>
                 </div>
                 <div className="h-9 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center"></div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center"></div>
-                </div>
-                <div className="h-10 flex">
-                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 324</div>
-                  <div className="flex-1 px-1 py-0.5 flex items-center">Course Title</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 501</div>
+                  <div className="flex-1 px-1 py-0.5 flex items-center">Public Sector Leadership</div>
                 </div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
