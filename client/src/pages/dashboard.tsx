@@ -1109,14 +1109,9 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="h-px bg-black"></div>
-            <div className="flex border-b border-black">
-              <div className="w-5 border-r border-black"></div>
-              <div className="w-14 border-r border-black"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">CORE ELECTIVE:</span> <span className="font-bold">ONE</span> course required from the following:</div>
-              <div className="w-12 border-l border-black"></div>
-            </div>
             <div className="flex items-stretch">
               <div className="w-5 border-r border-black flex flex-col">
+                <div className="h-5 border-b border-black"></div>
                 <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
@@ -1130,6 +1125,7 @@ export default function Dashboard() {
                 <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
               </div>
               <div className="flex-1 flex flex-col">
+                <div className="h-5 px-1 py-0.5 text-[8px] border-b border-black"><span className="font-bold">CORE ELECTIVE:</span> <span className="font-bold">ONE</span> course required from the following:</div>
                 <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
                 <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
                 <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
@@ -1140,6 +1136,7 @@ export default function Dashboard() {
                 <div className="h-9 px-1 text-[8px] flex items-center">ECN 320 Introduction to Financial Economics</div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
+                <div className="h-5 border-b border-black"></div>
                 <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
