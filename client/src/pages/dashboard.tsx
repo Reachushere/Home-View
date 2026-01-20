@@ -823,7 +823,7 @@ export default function Dashboard() {
                 <div className="h-9 border-b border-black"></div>
                 <div className="h-9"></div>
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] flex flex-col justify-center">
+              <div className="w-14 px-1 py-0.5 border-r border-black text-[9px] flex flex-col justify-center">
                 <div className="font-semibold">Core Electives:</div>
                 <div>Select <span className="font-bold">TWO</span> from the following:</div>
               </div>
@@ -915,7 +915,7 @@ export default function Dashboard() {
                     data-testid="input-pag-open1"
                   />
                 </div>
-                <div className="px-1 pb-1 flex items-end">
+                <div className="px-1 pt-1 pb-1 flex items-end">
                   <input 
                     type="text" 
                     className={`w-full text-[10px] px-1 py-0.5 border border-gray-400 rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
