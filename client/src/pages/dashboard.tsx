@@ -1532,7 +1532,7 @@ export default function Dashboard() {
             </span>
           </div>
           
-          <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
+          <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-10 object-contain rounded" />
         </div>
         
         {/* Calendar Header */}
