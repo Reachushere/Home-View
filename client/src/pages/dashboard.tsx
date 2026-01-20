@@ -1329,7 +1329,10 @@ export default function Dashboard() {
               className="text-lg font-bold font-mono tracking-wider bg-clip-text text-transparent"
               style={{ backgroundImage: "linear-gradient(to right, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #6366f1, #a855f7)" }}
             >
-              {format(currentTime, "hh:mm:ss a")}
+              {format(currentTime, "hh:mm:ss")}
+            </span>
+            <span className="text-lg font-bold font-mono tracking-wider text-white ml-1">
+              {format(currentTime, "a")}
             </span>
           </div>
           
