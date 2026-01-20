@@ -1355,6 +1355,53 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
+            <div className="h-px bg-black"></div>
+            <div className="flex">
+              <div className="w-5 border-r border-black flex flex-col">
+                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+              </div>
+              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+              </div>
+              <div className="flex-1 flex flex-col">
+                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
+                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
+                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
+                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
+                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 5..." /></div>
+                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 6..." /></div>
+              </div>
+              <div className="w-12 border-l border-black flex flex-col">
+                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                </div>
+                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                </div>
+                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                </div>
+                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                </div>
+                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                </div>
+                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </aside>
