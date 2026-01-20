@@ -561,7 +561,7 @@ export default function Dashboard() {
             </RouterLink>
             <Button 
               size="sm"
-              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
@@ -570,7 +570,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
@@ -579,7 +579,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
@@ -588,7 +588,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
@@ -597,7 +597,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-white text-[10px] px-1.5 border border-blue-800" 
+              className="h-6 bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] px-1.5 border border-blue-800" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
