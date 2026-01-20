@@ -1178,7 +1178,7 @@ export default function Dashboard() {
           <div className="border-2 border-black">
             <div className="flex border-b border-black">
               <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL III</div>
-              <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
+              <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
             </div>
             <div className="flex border-b border-black">
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
