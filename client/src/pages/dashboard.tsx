@@ -607,7 +607,7 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               onClick={toggleMute}
-              className={`h-6 w-8 p-0 mt-1 bg-purple-500 hover:bg-purple-600 border-[1.75px] border-purple-600 text-white ${isMuted ? "bg-red-500 hover:bg-red-600 border-red-500" : ""}`}
+              className={`h-6 w-8 p-0 mt-1 bg-blue-600 hover:bg-blue-700 border-[1.75px] border-blue-700 text-white ${isMuted ? "bg-red-500 hover:bg-red-600 border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
