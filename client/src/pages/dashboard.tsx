@@ -1109,89 +1109,66 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="h-px bg-black"></div>
-            <div className="flex items-stretch border-b border-black">
+            <div className="flex border-b border-black">
+              <div className="w-5 border-r border-black"></div>
+              <div className="w-14 border-r border-black"></div>
+              <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">ONE</span> course required from the following:</div>
+              <div className="w-12 border-l border-black"></div>
+            </div>
+            <div className="flex items-stretch">
               <div className="w-5 border-r border-black flex flex-col">
-                <div className="flex-1 flex items-center justify-center border-b border-black"></div>
-                <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="flex-1 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="flex-1 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-6 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-6 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-6 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-6 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-6 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-6 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-6 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-6 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
               <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                 <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
               </div>
               <div className="flex-1 flex flex-col">
-                <div className="flex-1 flex border-b border-black">
-                  <div className="flex-1 px-1 py-0.5 text-[8px]"><span className="font-bold">ONE</span> course required from the following:</div>
-                </div>
-                <div className="flex-1 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 101</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">Principles of Microeconomics ** (Anti-req ECN104)</div>
-                </div>
-                <div className="flex-1 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 104</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">Introductory Microeconomics ** (Anti-req ECN110)</div>
-                </div>
-                <div className="flex-1 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 110</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">The Economy and Society ** (Anti-req ECN104)</div>
-                </div>
-                <div className="flex-1 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 201</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">Principles of Macroeconomics ** (Anti-req ECN204)</div>
-                </div>
-                <div className="flex-1 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 204</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">Introductory Macroeconomics ** (Anti-req ECN210)</div>
-                </div>
-                <div className="flex-1 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 210</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
-                </div>
-                <div className="flex-1 flex border-b border-black">
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 220</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">Evolution of the Global Economy</div>
-                </div>
-                <div className="flex-1 flex">
-                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px]">ECN 320</div>
-                  <div className="flex-1 px-1 py-0.5 text-[8px]">Introduction to Financial Economics</div>
-                </div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 220 Evolution of the Global Economy</div>
+                <div className="h-6 px-1 text-[8px] flex items-center">ECN 320 Introduction to Financial Economics</div>
               </div>
               <div className="w-12 border-l border-black flex flex-col">
-                <div className="flex-1 border-b border-black"></div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black">
+                <div className="h-6 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black">
+                <div className="h-6 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black">
+                <div className="h-6 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black">
+                <div className="h-6 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black">
+                <div className="h-6 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black">
+                <div className="h-6 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5 border-b border-black">
+                <div className="h-6 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center gap-0.5 py-0.5">
+                <div className="h-6 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
