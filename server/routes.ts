@@ -831,7 +831,7 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           message: cleanedContent,
-          target: BATHROOM_ECHO_ENTITY,
+          target: targetEntity,
           data: {
             type: "tts"
           }
