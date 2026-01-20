@@ -964,7 +964,7 @@ export default function Dashboard() {
           </section>
 
           {/* Upcoming Tasks Section */}
-          <section className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
+          <section className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
             <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               Upcoming ({upcomingTasks.length})
             </h4>
