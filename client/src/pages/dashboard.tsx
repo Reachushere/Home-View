@@ -840,7 +840,7 @@ export default function Dashboard() {
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 122</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Local Politics and Government</div>
                 </div>
-                <div className="h-9 flex">
+                <div className="h-10 flex">
                   <div className="w-14 px-1 py-0.5 border-r border-black flex items-center">PPA 124</div>
                   <div className="flex-1 px-1 py-0.5 flex items-center">Indigenous Politics and Government</div>
                 </div>
@@ -859,7 +859,7 @@ export default function Dashboard() {
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
                 </div>
                 <div className="h-9 border-b border-black"></div>
-                <div className="h-9"></div>
+                <div className="h-10"></div>
               </div>
             </div>
             <div className="flex border-b border-black">
