@@ -933,7 +933,7 @@ export default function Dashboard() {
           </div>
         </div>
         {/* Do Today, Upcoming, and Missed Tasks Side by Side */}
-        <div className="flex gap-4 mb-2 items-stretch h-[200px] flex-shrink-0">
+        <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Do Today Section */}
           <section className="w-[240px] flex-shrink-0 bg-orange-100 dark:bg-orange-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-due-today">
             <h4 className="text-sm font-semibold text-orange-600 mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
