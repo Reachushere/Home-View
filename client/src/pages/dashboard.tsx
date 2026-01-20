@@ -1250,7 +1250,7 @@ export default function Dashboard() {
             <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]">CORE REQUIRED: <span className="font-bold">TWO</span> one-term courses (LOWER LEVEL) required.</div>
+              <div className="flex-1 px-1 py-0.5 text-[8px]">CORE REQUIRED:</div>
               <div className="w-12 border-l border-black"></div>
             </div>
             <div className="flex">
