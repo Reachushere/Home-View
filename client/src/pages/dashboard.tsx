@@ -985,7 +985,7 @@ export default function Dashboard() {
                 No missed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-2 pt-3">
                 {missedTasks.map((task) => (
                   <div key={task.id} className="animate-urgent-blink">
                     <TaskCard
@@ -1015,7 +1015,7 @@ export default function Dashboard() {
                 No upcoming tasks {selectedDate ? "for this date" : "for this week"}
               </div>
             ) : (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-3 gap-2 pt-3">
                 {upcomingTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1045,7 +1045,7 @@ export default function Dashboard() {
                 No tasks for today
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-2 pt-3">
                 {todayTasks.map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1076,7 +1076,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-2 pt-3">
                 {completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1104,7 +1104,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-2 pt-3">
                 {completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1132,7 +1132,7 @@ export default function Dashboard() {
                 No completed tasks
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-2 pt-3">
                 {completedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                   <TaskCard
                     key={task.id}
@@ -1454,9 +1454,68 @@ function TaskCard({
     </Card>
   );
 
-  // For compact mode, just return the card directly
+  // For compact mode with attachments, add media controls
   if (compact) {
-    return cardElement;
+    if (hasAttachments) {
+      return (
+        <div className="relative h-full flex flex-col cursor-pointer" onClick={onEdit}>
+          {/* Mini Media Controls for compact cards */}
+          <div className={`absolute -top-3 left-0 right-0 h-3 flex items-center justify-around rounded-sm px-0.5 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
+            <div
+              className="cursor-pointer hover:opacity-70"
+              onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
+              data-testid={`button-play-${task.id}`}
+              title="Play"
+            >
+              {isSendingTTS ? (
+                <Loader2 className="h-2 w-2 animate-spin" />
+              ) : (
+                <Play className="h-2 w-2 fill-current" />
+              )}
+            </div>
+            <div
+              className="cursor-pointer hover:opacity-70"
+              onClick={(e) => { e.stopPropagation(); handleStop(); }}
+              data-testid={`button-stop-${task.id}`}
+              title="Stop"
+            >
+              <Square className="h-2 w-2 fill-current" />
+            </div>
+            <div
+              className="cursor-pointer hover:opacity-70"
+              onClick={(e) => { e.stopPropagation(); handleResume(); }}
+              data-testid={`button-resume-${task.id}`}
+              title="Resume"
+            >
+              <RefreshCw className="h-2 w-2" />
+            </div>
+            <div
+              className="cursor-pointer hover:opacity-70"
+              onClick={(e) => { e.stopPropagation(); handleVolume("down"); }}
+              data-testid={`button-voldown-${task.id}`}
+              title="Volume Down"
+            >
+              <MinusCircle className="h-2 w-2" />
+            </div>
+            <div
+              className="cursor-pointer hover:opacity-70"
+              onClick={(e) => { e.stopPropagation(); handleVolume("up"); }}
+              data-testid={`button-volup-${task.id}`}
+              title="Volume Up"
+            >
+              <PlusCircle className="h-2 w-2" />
+            </div>
+          </div>
+          {cardElement}
+        </div>
+      );
+    }
+    // Compact without attachments - just make clickable
+    return (
+      <div className="cursor-pointer" onClick={onEdit}>
+        {cardElement}
+      </div>
+    );
   }
 
   if (hasAttachments) {
