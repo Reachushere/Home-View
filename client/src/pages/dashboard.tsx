@@ -403,11 +403,11 @@ export default function Dashboard() {
         {/* Mini Calendar */}
         <div className="px-2">
           <div className="flex items-center justify-between mb-2">
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handlePrevMonth}>
+            <Button variant="ghost" size="icon" className="h-3 w-3" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
             <span className="text-base font-bold bg-[#5979CC] text-white px-4 py-1.5 rounded-full" style={{ fontFamily: "'Open Sans', sans-serif" }}>{format(currentMonth, "MMMM")}</span>
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleNextMonth}>
+            <Button variant="ghost" size="icon" className="h-3 w-3" onClick={handleNextMonth}>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -516,7 +516,7 @@ export default function Dashboard() {
         {/* Calendar Header */}
         <div className="flex items-center mb-2">
           {/* Week navigation */}
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+          <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
           <div className="flex items-center gap-1.5" style={{ fontFamily: "'Open Sans', sans-serif" }}>
@@ -525,7 +525,7 @@ export default function Dashboard() {
             <span className="text-xs text-muted-foreground">to</span>
             <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
           </div>
-          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+          <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
           {/* All buttons with equal spacing */}
@@ -1345,13 +1345,13 @@ function TaskCard({
 
   if (hasAttachments) {
     return (
-      <div className="relative pt-9 h-full flex flex-col">
-        {/* Media Controls - positioned absolutely at top, same height as header */}
-        <div className={`absolute top-0 left-0 right-0 h-8 flex items-center justify-around rounded-lg px-2 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
+      <div className="relative pt-5 h-full flex flex-col">
+        {/* Media Controls - positioned absolutely at top, half height */}
+        <div className={`absolute top-0 left-0 right-0 h-4 flex items-center justify-around rounded-lg px-2 border ${colors ? `${colors.bg} ${colors.border}` : "bg-muted/50 border-muted"}`}>
           <Button
             size="icon"
             variant="ghost"
-            className="h-6 w-6"
+            className="h-3 w-3"
             onClick={handlePlayTTS}
             disabled={isSendingTTS}
             data-testid={`button-play-${task.id}`}
@@ -1366,7 +1366,7 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-6 w-6"
+            className="h-3 w-3"
             onClick={handleStop}
             disabled={isControlling}
             data-testid={`button-stop-${task.id}`}
@@ -1377,7 +1377,7 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-6 w-6"
+            className="h-3 w-3"
             onClick={handleResume}
             disabled={isControlling}
             data-testid={`button-resume-${task.id}`}
@@ -1388,7 +1388,7 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-6 w-6"
+            className="h-3 w-3"
             onClick={() => handleVolume("down")}
             disabled={isControlling}
             data-testid={`button-voldown-${task.id}`}
@@ -1399,7 +1399,7 @@ function TaskCard({
           <Button
             size="icon"
             variant="ghost"
-            className="h-6 w-6"
+            className="h-3 w-3"
             onClick={() => handleVolume("up")}
             disabled={isControlling}
             data-testid={`button-volup-${task.id}`}
@@ -1415,7 +1415,7 @@ function TaskCard({
 
   // For cards without attachments, add padding to align with cards that have media controls
   return (
-    <div className="pt-9 h-full flex flex-col">
+    <div className="pt-5 h-full flex flex-col">
       {cardElement}
     </div>
   );
