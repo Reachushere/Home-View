@@ -17,7 +17,7 @@ const HOME_ASSISTANT_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.cas
 const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
 const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
-const BATHROOM_ECHO_ENTITY = "media_player.echo_lr_studio_white_am";
+const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
 
 // Track TTS reading session for resume functionality
 interface TTSSession {
