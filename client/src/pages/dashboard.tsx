@@ -900,7 +900,7 @@ export default function Dashboard() {
                 </div>
                 <div className="w-12 border-l border-black"></div>
               </div>
-              <div className="flex border-b border-black items-end">
+              <div className="flex border-b border-black items-end -mt-2">
                 <div className={`w-5 border-r border-black flex items-center justify-center pb-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <input type="checkbox" className="h-3 w-3" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
                 </div>
