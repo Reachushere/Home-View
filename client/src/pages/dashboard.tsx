@@ -28,6 +28,7 @@ import {
   Download,
   RefreshCw,
   Bell,
+  BellOff,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
@@ -97,6 +98,8 @@ export default function Dashboard() {
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
+  const [isMuted, setIsMuted] = useState(false);
+  const [muteUntil, setMuteUntil] = useState<number | null>(null);
 
   // Create jiggle sound using Web Audio API
   const playJiggleSound = useCallback(() => {
@@ -135,17 +138,43 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Jiggle the Do Today box every 7 seconds (only if there are tasks)
+  // Check if mute period has expired
+  useEffect(() => {
+    if (muteUntil && Date.now() >= muteUntil) {
+      setIsMuted(false);
+      setMuteUntil(null);
+    }
+    const checkInterval = setInterval(() => {
+      if (muteUntil && Date.now() >= muteUntil) {
+        setIsMuted(false);
+        setMuteUntil(null);
+      }
+    }, 10000); // Check every 10 seconds
+    return () => clearInterval(checkInterval);
+  }, [muteUntil]);
+
+  // Toggle mute for 30 minutes
+  const toggleMute = useCallback(() => {
+    if (isMuted) {
+      setIsMuted(false);
+      setMuteUntil(null);
+    } else {
+      setIsMuted(true);
+      setMuteUntil(Date.now() + 30 * 60 * 1000); // 30 minutes
+    }
+  }, [isMuted]);
+
+  // Jiggle the Do Today box every 7 seconds (only if there are tasks and not muted)
   useEffect(() => {
     const interval = setInterval(() => {
-      if (todayTaskCountRef.current > 0) {
+      if (todayTaskCountRef.current > 0 && !isMuted) {
         setDoTodayBounce(true);
         playJiggleSound();
         setTimeout(() => setDoTodayBounce(false), 1000);
       }
     }, 7000);
     return () => clearInterval(interval);
-  }, [playJiggleSound]);
+  }, [playJiggleSound, isMuted]);
 
   // Calendar resize handlers
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
@@ -566,7 +595,19 @@ export default function Dashboard() {
         {/* Title Row */}
         <div className="flex items-start justify-between mb-6">
           <h1 className="text-xl font-bold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule</h1>
-          <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
+          <div className="flex items-center gap-3">
+            <Button
+              variant={isMuted ? "default" : "ghost"}
+              size="icon"
+              onClick={toggleMute}
+              className={isMuted ? "bg-red-500 hover:bg-red-600 text-white" : ""}
+              data-testid="button-mute-toggle"
+              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+            >
+              {isMuted ? <BellOff className="h-5 w-5" /> : <Bell className="h-5 w-5" />}
+            </Button>
+            <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-14 object-contain rounded" />
+          </div>
         </div>
         
         {/* Calendar Header */}
