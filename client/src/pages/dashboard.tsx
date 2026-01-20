@@ -933,22 +933,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Selected Date / Week Header */}
-        <div className="flex items-center justify-between mb-0">
-          <div>
-            <h3 className="text-lg font-semibold text-[#5979CC]" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              {selectedDate 
-                ? format(selectedDate, "EEEE, MMMM d, yyyy")
-                : `Week ${selectedWeek} Tasks`}
-            </h3>
-            {selectedDate && (
-              <Button variant="ghost" className="p-0 h-auto text-primary" onClick={() => setSelectedDate(null)}>
-                Clear date filter
-              </Button>
-            )}
-          </div>
-        </div>
-
         {/* Do Today, Upcoming, and Missed Tasks Side by Side */}
         <div className="flex gap-4 mb-6 items-stretch h-[200px] flex-shrink-0">
           {/* Do Today Section */}
