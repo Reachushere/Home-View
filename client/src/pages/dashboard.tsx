@@ -75,7 +75,7 @@ const typeColors: Record<string, string> = {
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
   "CPPA122": { bg: "bg-blue-500/10", border: "border-blue-500", text: "text-blue-700 dark:text-blue-300", dot: "bg-blue-500", prepBg: "bg-blue-200/50", prepBorder: "border-blue-300", prepText: "text-blue-600 dark:text-blue-400" },
   "CFNF400": { bg: "bg-green-500/30", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-green-200/50", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
-  "CASL101": { bg: "bg-purple-500/30", border: "border-purple-500", text: "text-purple-700 dark:text-purple-300", dot: "bg-purple-500", prepBg: "bg-purple-200/50", prepBorder: "border-purple-300", prepText: "text-purple-600 dark:text-purple-400" },
+  "CASL101": { bg: "bg-pink-500/30", border: "border-pink-500", text: "text-pink-700 dark:text-pink-300", dot: "bg-pink-500", prepBg: "bg-pink-200/50", prepBorder: "border-pink-300", prepText: "text-pink-600 dark:text-pink-400" },
 };
 
 interface WeekInfo {
@@ -2122,10 +2122,10 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 bg-purple-100 dark:bg-purple-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
+          <section className="flex-1 bg-pink-100 dark:bg-pink-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <ClipboardCheck className="h-3.5 w-3.5 text-purple-600" />
-              <span className="text-purple-600">Completed - CASL101</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
+              <ClipboardCheck className="h-3.5 w-3.5 text-pink-600" />
+              <span className="text-pink-600">Completed - CASL101</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
             </h4>
             {completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 ? (
               <div className="text-center py-4 text-muted-foreground text-xs">
@@ -2141,7 +2141,7 @@ export default function Dashboard() {
                     onReschedule={() => setRescheduleTask(task)}
                     onEdit={() => setEditingTask(task)}
                     onDelete={() => deleteMutation.mutate(task.id)}
-                    cardBgClass="bg-green-50 dark:bg-green-900/20"
+                    cardBgClass="bg-pink-50 dark:bg-pink-900/20"
                     compact
                   />
                 ))}
