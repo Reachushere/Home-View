@@ -1108,14 +1108,14 @@ export default function Dashboard() {
                 <div className="h-4 px-1 text-[8px] flex items-center border-b border-black">
                   CORE ELECTIVE: <span className="font-bold ml-1">ONE</span>&nbsp;course required
                 </div>
-                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
-                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
-                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
-                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
-                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
-                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
-                <div className="h-5 px-1 text-[8px] flex items-center border-b border-black">ECN 220 Evolution of the Global Economy</div>
-                <div className="h-5 px-1 text-[8px] flex items-center">ECN 320 Introduction to Financial Economics</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
+                <div className="h-6 px-1 text-[8px] flex items-center border-b border-black">ECN 220 Evolution of the Global Economy</div>
+                <div className="h-6 px-1 text-[8px] flex items-center">ECN 320 Introduction to Financial Economics</div>
               </div>
               <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
