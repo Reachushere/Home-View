@@ -839,6 +839,7 @@ export default function FilesPage() {
           <div className="flex items-center px-4 py-2 border-b border-[#3d3d3d] text-xs text-gray-400 bg-[#202020]">
             <div className="w-8"></div>
             <div className="flex-1">Name</div>
+            <div className="w-20 text-center">Actions</div>
             <div className="w-20 text-center">Status</div>
             <div className="w-36">Date modified</div>
             <div className="w-28">Type</div>
@@ -899,6 +900,48 @@ export default function FilesPage() {
                       >
                         {file.displayName}
                       </a>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="w-20 flex items-center justify-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-gray-400 hover:text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingFile(file);
+                          setNewName(file.displayName);
+                        }}
+                        data-testid={`button-rename-${file.id}`}
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-gray-400 hover:text-white"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigator.clipboard.writeText(file.objectPath);
+                          toast({ title: "Link copied to clipboard" });
+                        }}
+                        data-testid={`button-link-${file.id}`}
+                      >
+                        <Link2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-gray-400 hover:text-red-500"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteMutation.mutate(file.id);
+                        }}
+                        data-testid={`button-delete-${file.id}`}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
                     </div>
 
                     {/* Status */}
