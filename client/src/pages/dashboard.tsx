@@ -1717,22 +1717,22 @@ export default function Dashboard() {
           <Button size="sm" className="!h-[20px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2" onClick={() => setSelectedWeek(2)} data-testid="button-today">
             TODAY
           </Button>
+          <Button 
+            size="sm" 
+            className="!h-[20px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2" 
+            onClick={() => syncAllCalendarMutation.mutate()}
+            disabled={syncAllCalendarMutation.isPending}
+            data-testid="button-sync-calendar"
+          >
+            {syncAllCalendarMutation.isPending ? (
+              <Loader2 className="h-1.5 w-1.5 mr-0.5 animate-spin" />
+            ) : (
+              <CalendarDays className="h-1.5 w-1.5 mr-0.5" />
+            )}
+            Sync
+          </Button>
           {/* All buttons with equal spacing */}
           <div className="flex-1 flex items-center justify-end gap-2 ml-2">
-            <Button 
-              size="sm" 
-              className="!h-[20px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0" 
-              onClick={() => syncAllCalendarMutation.mutate()}
-              disabled={syncAllCalendarMutation.isPending}
-              data-testid="button-sync-calendar"
-            >
-              {syncAllCalendarMutation.isPending ? (
-                <Loader2 className="h-1.5 w-1.5 mr-0.5 animate-spin" />
-              ) : (
-                <CalendarDays className="h-1.5 w-1.5 mr-0.5" />
-              )}
-              Sync
-            </Button>
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
