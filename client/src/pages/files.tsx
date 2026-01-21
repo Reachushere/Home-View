@@ -509,27 +509,27 @@ export default function FilesPage() {
         <div className="flex items-center justify-between w-[calc(100%+16px)] bg-black dark:bg-black rounded-b-[2px] -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
           <div className="flex items-center gap-[18px]">
             <Play 
-              className="h-2.5 w-2.5 fill-white text-white cursor-pointer hover:opacity-70" 
+              className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
               onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
               data-testid={`button-play-${file.id}`}
             />
             <Square 
-              className="h-2.5 w-2.5 fill-white text-white cursor-pointer hover:opacity-70" 
+              className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
               onClick={() => handleStop(file.id)}
               data-testid={`button-stop-${file.id}`}
             />
             <VolumeX 
-              className="h-2.5 w-2.5 text-white cursor-pointer hover:opacity-70" 
+              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
               onClick={() => handleVolume(file.id, "down")}
               data-testid={`button-vol-down-${file.id}`}
             />
             <Volume2 
-              className="h-2.5 w-2.5 text-white cursor-pointer hover:opacity-70" 
+              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
               onClick={() => handleVolume(file.id, "up")}
               data-testid={`button-vol-up-${file.id}`}
             />
             <Edit2 
-              className="h-2.5 w-2.5 text-white cursor-pointer hover:opacity-70" 
+              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
               onClick={() => {
                 setEditingFile(file);
                 setNewName(file.displayName);
@@ -537,7 +537,7 @@ export default function FilesPage() {
               data-testid={`button-rename-${file.id}`}
             />
             <Link2 
-              className="h-2.5 w-2.5 text-white cursor-pointer hover:opacity-70" 
+              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
               onClick={() => {
                 setAssigningFile(file);
                 setSelectedTaskId("");
@@ -545,7 +545,7 @@ export default function FilesPage() {
               data-testid={`button-assign-${file.id}`}
             />
             <Trash2 
-              className="h-2.5 w-2.5 text-red-400 cursor-pointer hover:opacity-70" 
+              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
               onClick={() => {
                 if (confirm("Are you sure you want to delete this file?")) {
                   deleteMutation.mutate(file.id);
