@@ -1664,25 +1664,25 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Professional Digital Clock */}
-          <div className="bg-[#0a0a0a] px-5 py-2.5 rounded border border-[#2a2a2a] flex items-center gap-4" style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)' }} data-testid="digital-clock">
+          {/* Digital Clock */}
+          <div className="flex items-center gap-3" data-testid="digital-clock">
             <div className="flex items-baseline">
               <span 
-                className="text-[28px] font-light text-[#4fc3f7] tabular-nums tracking-wide"
-                style={{ fontFamily: "'Segment7Standard', 'Consolas', monospace" }}
+                className="text-[28px] font-light text-foreground tabular-nums tracking-wide"
+                style={{ fontFamily: "'Consolas', monospace" }}
               >
                 {format(currentTime, "h:mm:ss")}
               </span>
               <span 
-                className="text-sm font-normal text-[#4fc3f7] ml-1.5 opacity-80"
+                className="text-sm font-normal text-muted-foreground ml-1.5"
                 style={{ fontFamily: "'Consolas', monospace" }}
               >
                 {format(currentTime, "a").toUpperCase()}
               </span>
             </div>
-            <div className="h-6 w-px bg-[#333]" />
+            <div className="h-5 w-px bg-border" />
             <span 
-              className="text-sm font-normal text-[#81d4fa] tracking-wide"
+              className="text-sm font-normal text-muted-foreground tracking-wide"
               style={{ fontFamily: "'Consolas', monospace" }}
             >
               {format(currentTime, "EEE, MMM d")}
