@@ -1664,29 +1664,34 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Digital Clock */}
-          <div className="flex items-center gap-3" data-testid="digital-clock">
-            <span 
-              className="text-sm font-normal text-muted-foreground tracking-wide"
-              style={{ fontFamily: "'Consolas', monospace" }}
-            >
-              {format(currentTime, "EEE, MMM d")}
-            </span>
-            <div className="h-5 w-px bg-border" />
-            <div className="flex items-baseline">
+          {/* Sleek Clock Display */}
+          <div className="flex flex-col items-end" data-testid="digital-clock">
+            <div className="flex items-baseline gap-1">
               <span 
-                className="text-[28px] font-light text-foreground tabular-nums tracking-wide"
-                style={{ fontFamily: "'Consolas', monospace" }}
+                className="text-3xl font-extralight text-foreground tabular-nums"
+                style={{ fontFamily: "'SF Pro Display', 'Helvetica Neue', sans-serif", letterSpacing: '-0.5px' }}
               >
-                {format(currentTime, "h:mm:ss")}
+                {format(currentTime, "h:mm")}
               </span>
               <span 
-                className="text-sm font-normal text-muted-foreground ml-1.5"
-                style={{ fontFamily: "'Consolas', monospace" }}
+                className="text-lg font-extralight text-foreground tabular-nums"
+                style={{ fontFamily: "'SF Pro Display', 'Helvetica Neue', sans-serif" }}
               >
-                {format(currentTime, "a").toUpperCase()}
+                {format(currentTime, "ss")}
+              </span>
+              <span 
+                className="text-xs font-medium text-muted-foreground ml-0.5 uppercase"
+                style={{ fontFamily: "'SF Pro Display', 'Helvetica Neue', sans-serif" }}
+              >
+                {format(currentTime, "a")}
               </span>
             </div>
+            <span 
+              className="text-xs font-medium text-muted-foreground -mt-0.5"
+              style={{ fontFamily: "'SF Pro Display', 'Helvetica Neue', sans-serif", letterSpacing: '0.5px' }}
+            >
+              {format(currentTime, "EEEE, MMMM d")}
+            </span>
           </div>
           
           <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-10 object-contain rounded" />
