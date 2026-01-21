@@ -310,21 +310,21 @@ export async function registerRoutes(
     }
   });
 
-  // PATCH /api/files/:id - Rename a file
+  // PATCH /api/files/:id - Update file (rename or change folder)
   app.patch("/api/files/:id", async (req, res) => {
     try {
-      const { displayName } = req.body;
-      if (!displayName) {
-        return res.status(400).json({ error: "displayName is required" });
+      const { displayName, folder } = req.body;
+      if (!displayName && folder === undefined) {
+        return res.status(400).json({ error: "displayName or folder is required" });
       }
-      const file = await storage.updateFileName(Number(req.params.id), displayName);
+      const file = await storage.updateFile(Number(req.params.id), { displayName, folder });
       if (!file) {
         return res.status(404).json({ error: "File not found" });
       }
       res.json(file);
     } catch (err) {
-      console.error("Error renaming file:", err);
-      res.status(500).json({ error: "Failed to rename file" });
+      console.error("Error updating file:", err);
+      res.status(500).json({ error: "Failed to update file" });
     }
   });
 

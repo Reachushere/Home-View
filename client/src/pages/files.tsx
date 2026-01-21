@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, DragEvent } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +29,9 @@ import {
   Play,
   Square,
   Volume2,
-  VolumeX
+  VolumeX,
+  Folder,
+  FolderOpen
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 
@@ -41,6 +43,22 @@ interface Task {
   isCompleted: boolean;
   attachments: string[] | null;
 }
+
+const FOLDERS = [
+  { id: "folder-1", name: "Week 2" },
+  { id: "folder-2", name: "Week 3" },
+  { id: "folder-3", name: "Week 4" },
+  { id: "folder-4", name: "Week 5" },
+  { id: "folder-5", name: "Week 6" },
+  { id: "folder-6", name: "Week 7" },
+  { id: "folder-7", name: "Week 8" },
+  { id: "folder-8", name: "Week 9" },
+  { id: "folder-9", name: "Week 10" },
+  { id: "folder-10", name: "Week 11" },
+  { id: "folder-11", name: "Week 12" },
+  { id: "folder-12", name: "Week 13" },
+  { id: "folder-13", name: "General" },
+];
 
 function getFileIcon(contentType: string | null) {
   if (!contentType) return File;
@@ -115,6 +133,9 @@ export default function FilesPage() {
   const [lastUploadedObjectPath, setLastUploadedObjectPath] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortOption>("date-newest");
   const [fileSpeakers, setFileSpeakers] = useState<Record<number, string>>({});
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["folder-13"]));
+  const [draggedFileId, setDraggedFileId] = useState<number | null>(null);
+  const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
 
   const { getUploadParameters } = useUpload();
 
@@ -137,6 +158,19 @@ export default function FilesPage() {
     },
     onError: (err) => {
       toast({ title: "Failed to rename file", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const moveFolderMutation = useMutation({
+    mutationFn: async ({ id, folder }: { id: number; folder: string | null }) => {
+      return await apiRequest("PATCH", `/api/files/${id}`, { folder });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      toast({ title: "File moved to folder" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to move file", description: String(err), variant: "destructive" });
     },
   });
 
@@ -169,14 +203,12 @@ export default function FilesPage() {
     },
   });
 
-  // Helper to get speaker for a file
   const getSpeakerForFile = (fileId: number) => fileSpeakers[fileId] || "media_player.cat_wr";
   
   const setSpeakerForFile = (fileId: number, speakerId: string) => {
     setFileSpeakers(prev => ({ ...prev, [fileId]: speakerId }));
   };
 
-  // Media control functions
   const handlePlayFile = async (fileId: number, fileUrl: string, fileName: string) => {
     const speaker = getSpeakerForFile(fileId);
     try {
@@ -269,24 +301,231 @@ export default function FilesPage() {
     );
   };
 
-  const sortedFiles = [...files].sort((a, b) => {
-    switch (sortBy) {
-      case "name-asc":
-        return (a.displayName || "").localeCompare(b.displayName || "");
-      case "name-desc":
-        return (b.displayName || "").localeCompare(a.displayName || "");
-      case "date-newest":
-        return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-      case "date-oldest":
-        return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
-      case "size-largest":
-        return (b.size || 0) - (a.size || 0);
-      case "size-smallest":
-        return (a.size || 0) - (b.size || 0);
-      default:
-        return 0;
+  const toggleFolder = (folderId: string) => {
+    setExpandedFolders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(folderId)) {
+        newSet.delete(folderId);
+      } else {
+        newSet.add(folderId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, fileId: number) => {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", fileId.toString());
+    setDraggedFileId(fileId);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedFileId(null);
+    setDragOverFolder(null);
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>, folderId: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverFolder(folderId);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverFolder(null);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>, folderId: string) => {
+    e.preventDefault();
+    const fileId = parseInt(e.dataTransfer.getData("text/plain"));
+    if (fileId) {
+      moveFolderMutation.mutate({ id: fileId, folder: folderId });
     }
-  });
+    setDraggedFileId(null);
+    setDragOverFolder(null);
+  };
+
+  const handleDropOnUnfiled = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const fileId = parseInt(e.dataTransfer.getData("text/plain"));
+    if (fileId) {
+      moveFolderMutation.mutate({ id: fileId, folder: null });
+    }
+    setDraggedFileId(null);
+    setDragOverFolder(null);
+  };
+
+  const getFilesInFolder = (folderId: string) => {
+    return files.filter(f => f.folder === folderId);
+  };
+
+  const unfiledFiles = files.filter(f => !f.folder);
+
+  const sortedFiles = (fileList: FileRecord[]) => {
+    return [...fileList].sort((a, b) => {
+      switch (sortBy) {
+        case "name-asc":
+          return (a.displayName || "").localeCompare(b.displayName || "");
+        case "name-desc":
+          return (b.displayName || "").localeCompare(a.displayName || "");
+        case "date-newest":
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        case "date-oldest":
+          return new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+        case "size-largest":
+          return (b.size || 0) - (a.size || 0);
+        case "size-smallest":
+          return (a.size || 0) - (b.size || 0);
+        default:
+          return 0;
+      }
+    });
+  };
+
+  const renderFileRow = (file: FileRecord) => {
+    const FileIcon = getFileIcon(file.contentType);
+    const assignedTasks = getTasksForFile(file);
+    const isDragging = draggedFileId === file.id;
+
+    return (
+      <div
+        key={file.id}
+        draggable
+        onDragStart={(e) => handleDragStart(e, file.id)}
+        onDragEnd={handleDragEnd}
+        className={`flex items-center gap-3 p-3 bg-card border rounded-md hover-elevate cursor-move ${
+          isDragging ? "opacity-50" : ""
+        }`}
+        data-testid={`file-row-${file.id}`}
+      >
+        <div className="p-2 bg-muted rounded">
+          <FileIcon className="h-4 w-4 text-muted-foreground" />
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <a 
+            href={file.objectPath} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="font-medium text-sm truncate hover:underline cursor-pointer text-primary block"
+            onClick={(e) => e.stopPropagation()}
+            data-testid={`text-filename-${file.id}`}
+          >
+            {file.displayName}
+          </a>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span>{formatFileSize(file.size)}</span>
+            {assignedTasks.length > 0 && (
+              <Badge variant="secondary" className="text-xs py-0">
+                {assignedTasks.length} task{assignedTasks.length > 1 ? "s" : ""}
+              </Badge>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <Select 
+            value={getSpeakerForFile(file.id)} 
+            onValueChange={(value) => setSpeakerForFile(file.id, value)}
+          >
+            <SelectTrigger className="w-[100px] h-7 text-xs bg-[#5979CC] hover:bg-[#4a68b3] text-white border-[1.75px] border-blue-800" data-testid={`select-speaker-${file.id}`}>
+              <SelectValue placeholder="Speaker" />
+            </SelectTrigger>
+            <SelectContent>
+              {SPEAKERS.map(speaker => (
+                <SelectItem key={speaker.id} value={speaker.id}>
+                  {speaker.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
+            title="Play"
+            data-testid={`button-play-${file.id}`}
+          >
+            <Play className="h-3 w-3 fill-black text-black dark:fill-white dark:text-white" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => handleStop(file.id)}
+            title="Stop"
+            data-testid={`button-stop-${file.id}`}
+          >
+            <Square className="h-3 w-3 fill-black text-black dark:fill-white dark:text-white" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => handleVolume(file.id, "down")}
+            title="Volume Down"
+            data-testid={`button-vol-down-${file.id}`}
+          >
+            <VolumeX className="h-3 w-3" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => handleVolume(file.id, "up")}
+            title="Volume Up"
+            data-testid={`button-vol-up-${file.id}`}
+          >
+            <Volume2 className="h-3 w-3" />
+          </Button>
+          
+          <div className="w-px h-5 bg-border mx-1" />
+          
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => {
+              setEditingFile(file);
+              setNewName(file.displayName);
+            }}
+            title="Rename"
+            data-testid={`button-rename-${file.id}`}
+          >
+            <Edit2 className="h-3 w-3" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => {
+              setAssigningFile(file);
+              setSelectedTaskId("");
+            }}
+            title="Assign to task"
+            data-testid={`button-assign-${file.id}`}
+          >
+            <Link2 className="h-3 w-3" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => {
+              if (confirm("Are you sure you want to delete this file?")) {
+                deleteMutation.mutate(file.id);
+              }
+            }}
+            title="Delete"
+            data-testid={`button-delete-${file.id}`}
+          >
+            <Trash2 className="h-3 w-3 text-destructive" />
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   if (filesLoading || tasksLoading) {
     return (
@@ -343,7 +582,76 @@ export default function FilesPage() {
           </Select>
         </div>
 
-        {files.length === 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {FOLDERS.map((folder) => {
+            const folderFiles = getFilesInFolder(folder.id);
+            const isExpanded = expandedFolders.has(folder.id);
+            const isDragOver = dragOverFolder === folder.id;
+            
+            return (
+              <Card 
+                key={folder.id}
+                className={`hover-elevate transition-all ${isDragOver ? "ring-2 ring-primary" : ""}`}
+                onDragOver={(e) => handleDragOver(e, folder.id)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, folder.id)}
+                data-testid={`folder-${folder.id}`}
+              >
+                <CardHeader 
+                  className="cursor-pointer pb-2"
+                  onClick={() => toggleFolder(folder.id)}
+                >
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    {isExpanded ? (
+                      <FolderOpen className="h-5 w-5 text-amber-500" />
+                    ) : (
+                      <Folder className="h-5 w-5 text-amber-500" />
+                    )}
+                    {folder.name}
+                    <Badge variant="secondary" className="ml-auto">
+                      {folderFiles.length}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                {isExpanded && (
+                  <CardContent className="space-y-2 pt-0">
+                    {folderFiles.length === 0 ? (
+                      <div className="text-center py-4 text-muted-foreground text-sm">
+                        Drop files here
+                      </div>
+                    ) : (
+                      sortedFiles(folderFiles).map(file => renderFileRow(file))
+                    )}
+                  </CardContent>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+
+        {unfiledFiles.length > 0 && (
+          <Card
+            className={`mt-6 ${dragOverFolder === "unfiled" ? "ring-2 ring-primary" : ""}`}
+            onDragOver={(e) => { e.preventDefault(); setDragOverFolder("unfiled"); }}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDropOnUnfiled}
+          >
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Unfiled
+                <Badge variant="secondary" className="ml-2">
+                  {unfiledFiles.length}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {sortedFiles(unfiledFiles).map(file => renderFileRow(file))}
+            </CardContent>
+          </Card>
+        )}
+
+        {files.length === 0 && (
           <Card>
             <CardContent className="py-12 text-center">
               <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -356,184 +664,6 @@ export default function FilesPage() {
               </Link>
             </CardContent>
           </Card>
-        ) : (
-          <div className="grid gap-4">
-            {sortedFiles.map((file) => {
-              const FileIcon = getFileIcon(file.contentType);
-              const assignedTasks = getTasksForFile(file);
-              
-              return (
-                <Card key={file.id} className="hover-elevate" data-testid={`card-file-${file.id}`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 bg-muted rounded-md">
-                        <FileIcon className="h-6 w-6 text-muted-foreground" />
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <a 
-                            href={file.objectPath} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="font-medium truncate hover:underline cursor-pointer text-primary"
-                            data-testid={`text-filename-${file.id}`}
-                          >
-                            {file.displayName}
-                          </a>
-                          {file.displayName !== file.originalName && (
-                            <span className="text-xs text-muted-foreground truncate">
-                              (was: {file.originalName})
-                            </span>
-                          )}
-                        </div>
-                        
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-2">
-                          <span>{formatFileSize(file.size)}</span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {formatDate(file.createdAt)}
-                          </span>
-                          {file.contentType && (
-                            <Badge variant="outline" className="text-xs">
-                              {file.contentType.split("/")[1] || file.contentType}
-                            </Badge>
-                          )}
-                        </div>
-
-                        {assignedTasks.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            {assignedTasks.map(task => (
-                              <Badge 
-                                key={task.id} 
-                                variant={task.isCompleted ? "secondary" : "default"}
-                                className="text-xs"
-                              >
-                                {task.isCompleted && <CheckCircle2 className="h-3 w-3 mr-1" />}
-                                {task.title}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-1">
-                        {/* Speaker Selection */}
-                        <Select 
-                          value={getSpeakerForFile(file.id)} 
-                          onValueChange={(value) => setSpeakerForFile(file.id, value)}
-                        >
-                          <SelectTrigger className="w-[140px] h-8 text-xs bg-[#5979CC] hover:bg-[#4a68b3] text-white border-[1.75px] border-blue-800" data-testid={`select-speaker-${file.id}`}>
-                            <SelectValue placeholder="Speaker..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {SPEAKERS.map(speaker => (
-                              <SelectItem key={speaker.id} value={speaker.id}>
-                                {speaker.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        
-                        {/* Media Controls */}
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
-                          title="Play"
-                          data-testid={`button-play-${file.id}`}
-                        >
-                          <Play className="h-4 w-4 fill-black text-black dark:fill-white dark:text-white" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleStop(file.id)}
-                          title="Stop"
-                          data-testid={`button-stop-${file.id}`}
-                        >
-                          <Square className="h-4 w-4 fill-black text-black dark:fill-white dark:text-white" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleVolume(file.id, "down")}
-                          title="Volume Down"
-                          data-testid={`button-vol-down-${file.id}`}
-                        >
-                          <VolumeX className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => handleVolume(file.id, "up")}
-                          title="Volume Up"
-                          data-testid={`button-vol-up-${file.id}`}
-                        >
-                          <Volume2 className="h-4 w-4" />
-                        </Button>
-                        
-                        <div className="w-px h-6 bg-border mx-1" />
-                        
-                        {/* File Actions */}
-                        <a 
-                          href={file.objectPath} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          data-testid={`button-download-${file.id}`}
-                        >
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </a>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => {
-                            setEditingFile(file);
-                            setNewName(file.displayName);
-                          }}
-                          data-testid={`button-rename-${file.id}`}
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => {
-                            setAssigningFile(file);
-                            setSelectedTaskId("");
-                          }}
-                          data-testid={`button-assign-${file.id}`}
-                        >
-                          <Link2 className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => {
-                            if (confirm("Are you sure you want to delete this file?")) {
-                              deleteMutation.mutate(file.id);
-                            }
-                          }}
-                          data-testid={`button-delete-${file.id}`}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
         )}
       </div>
 
@@ -568,26 +698,18 @@ export default function FilesPage() {
       <Dialog open={!!assigningFile} onOpenChange={() => setAssigningFile(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Assign File to Task</DialogTitle>
+            <DialogTitle>Assign to Task</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              Select a task to attach "{assigningFile?.displayName}" to:
-            </p>
             <Select value={selectedTaskId} onValueChange={setSelectedTaskId}>
               <SelectTrigger data-testid="select-task">
-                <SelectValue placeholder="Select a task" />
+                <SelectValue placeholder="Select a task..." />
               </SelectTrigger>
               <SelectContent>
                 {tasks.map(task => (
                   <SelectItem key={task.id} value={task.id.toString()}>
-                    <div className="flex items-center gap-2">
-                      {task.isCompleted && <CheckCircle2 className="h-3 w-3 text-green-500" />}
-                      <span>{task.title}</span>
-                      <span className="text-xs text-muted-foreground">
-                        ({new Date(task.dueDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })})
-                      </span>
-                    </div>
+                    {task.title}
+                    {task.courseName && ` (${task.courseName})`}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -598,11 +720,46 @@ export default function FilesPage() {
               Cancel
             </Button>
             <Button 
-              onClick={handleAssign} 
+              onClick={handleAssign}
               disabled={!selectedTaskId || assignMutation.isPending}
               data-testid="button-confirm-assign"
             >
               {assignMutation.isPending ? "Assigning..." : "Assign"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAssignAfterUpload} onOpenChange={setShowAssignAfterUpload}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Uploaded File to Task</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Select value={selectedTaskId} onValueChange={setSelectedTaskId}>
+              <SelectTrigger data-testid="select-task-after-upload">
+                <SelectValue placeholder="Select a task..." />
+              </SelectTrigger>
+              <SelectContent>
+                {tasks.map(task => (
+                  <SelectItem key={task.id} value={task.id.toString()}>
+                    {task.title}
+                    {task.courseName && ` (${task.courseName})`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAssignAfterUpload(false)}>
+              Skip
+            </Button>
+            <Button 
+              onClick={handleAssignAfterUpload}
+              disabled={!selectedTaskId || assignByPathMutation.isPending}
+              data-testid="button-confirm-assign-after-upload"
+            >
+              {assignByPathMutation.isPending ? "Assigning..." : "Assign"}
             </Button>
           </DialogFooter>
         </DialogContent>
