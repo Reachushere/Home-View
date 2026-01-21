@@ -62,9 +62,9 @@ const WEEKS = [
 ];
 
 const SUBFOLDERS = [
-  { id: "cppa122", name: "CPPA122" },
-  { id: "cfnf400", name: "CFNF400" },
-  { id: "casl101", name: "CASL101" },
+  { id: "cppa122", name: "CPPA122", color: "text-green-500" },
+  { id: "cfnf400", name: "CFNF400", color: "text-pink-500" },
+  { id: "casl101", name: "CASL101", color: "text-purple-500" },
 ];
 
 function getFileIcon(contentType: string | null) {
@@ -642,11 +642,11 @@ export default function FilesPage() {
                             onClick={() => toggleFolder(subfolderFullId)}
                           >
                             {isSubfolderExpanded ? (
-                              <FolderOpen className="h-4 w-4 text-blue-500" />
+                              <FolderOpen className={`h-4 w-4 ${subfolder.color}`} />
                             ) : (
-                              <Folder className="h-4 w-4 text-blue-500" />
+                              <Folder className={`h-4 w-4 ${subfolder.color}`} />
                             )}
-                            <span className="text-sm font-medium">{subfolder.name}</span>
+                            <span className={`text-sm font-medium ${subfolder.color}`}>{subfolder.name}</span>
                             <Badge variant="outline" className="ml-auto text-xs">
                               {subfolderFiles.length}
                             </Badge>
