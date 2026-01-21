@@ -819,8 +819,8 @@ export default function Dashboard() {
           data-testid="sidebar-resize-handle"
         />
         <div className="flex items-center gap-2 px-2 pt-1 pb-0">
-          <CalendarDays className="h-6 w-6 text-white" />
-          <h1 className="text-xl font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <CalendarDays className="h-5 w-5 text-white" />
+          <h1 className="text-lg font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             School Planner
           </h1>
         </div>
