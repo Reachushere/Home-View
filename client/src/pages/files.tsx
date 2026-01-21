@@ -943,8 +943,8 @@ export default function FilesPage() {
 
         {/* Right Panel - File Details/Controls */}
         {sortedFiles(getCurrentFolderFiles()).length > 0 && (
-          <div className="w-64 border-l border-[#3d3d3d] bg-[#5979CC] overflow-y-auto p-3">
-            <h3 className="text-sm font-medium mb-3 text-white">Quick Actions</h3>
+          <div className="w-64 border-l border-[#3d3d3d] bg-white overflow-y-auto p-3">
+            <h3 className="text-sm font-medium mb-3 text-black">Quick Actions</h3>
             {sortedFiles(getCurrentFolderFiles()).map((file) => (
               <div 
                 key={file.id}
