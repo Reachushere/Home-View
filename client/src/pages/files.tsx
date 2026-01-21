@@ -794,6 +794,7 @@ export default function FilesPage() {
             {WEEKS.map((week) => {
               const weekFiles = getFilesInWeek(week.id);
               const isWeekExpanded = expandedFolders.has(week.id);
+              const allFilesListened = weekFiles.length > 0 && weekFiles.every(f => f.listened);
               
               return (
                 <div key={week.id}>
@@ -812,7 +813,7 @@ export default function FilesPage() {
                     ) : (
                       <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                     )}
-                    <span className="text-sm flex-1">{week.name}</span>
+                    <span className={`text-sm flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{week.name}</span>
                     <span className="text-xs text-gray-500">{weekFiles.length}</span>
                   </div>
                   
