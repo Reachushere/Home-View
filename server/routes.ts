@@ -832,9 +832,18 @@ export async function registerRoutes(
         .replace(/\s+/g, ' ')
         .trim();
       
-      // Limit to 500 chars for reliability
-      if (cleanedContent.length > 500) {
-        cleanedContent = cleanedContent.substring(0, 500);
+      // Limit to 2000 chars per chunk, break at sentence boundary
+      if (cleanedContent.length > 2000) {
+        let cutoff = 2000;
+        // Find last sentence boundary before cutoff
+        const lastPeriod = cleanedContent.lastIndexOf('.', cutoff);
+        const lastQuestion = cleanedContent.lastIndexOf('?', cutoff);
+        const lastExclaim = cleanedContent.lastIndexOf('!', cutoff);
+        const bestBreak = Math.max(lastPeriod, lastQuestion, lastExclaim);
+        if (bestBreak > 1000) {
+          cutoff = bestBreak + 1;
+        }
+        cleanedContent = cleanedContent.substring(0, cutoff);
       }
       
       console.log("Sending TTS to:", targetEntity);
