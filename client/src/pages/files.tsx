@@ -507,7 +507,7 @@ export default function FilesPage() {
         </div>
 
         <div className="flex items-center justify-between w-[calc(100%+16px)] bg-black dark:bg-black rounded-b-[2px] -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
-          <div className="flex items-center gap-[15px]">
+          <div className="flex items-center gap-[16px]">
             <Play 
               className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
               onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
