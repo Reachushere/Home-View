@@ -826,7 +826,7 @@ export default function Dashboard() {
         </div>
 
         {/* Mini Calendar */}
-        <div className="px-2">
+        <div className="px-2 mb-4">
           <div className="flex items-center justify-between mb-2">
             <Button variant="ghost" size="icon" className="h-3 w-3" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
@@ -873,7 +873,7 @@ export default function Dashboard() {
         </div>
 
         {/* Course Legend */}
-        <div className="pl-0.5 pr-1 space-y-2">
+        <div className="pl-0.5 pr-1 space-y-2 mb-4">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {COURSES.map((course) => {
             const colors = courseColors[course.code];
