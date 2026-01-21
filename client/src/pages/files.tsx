@@ -508,7 +508,7 @@ export default function FilesPage() {
             value={getSpeakerForFile(file.id)} 
             onValueChange={(value) => setSpeakerForFile(file.id, value)}
           >
-            <SelectTrigger className="w-[70px] h-4 text-[10px] bg-black hover:bg-gray-800 text-white border border-black px-1" data-testid={`select-speaker-${file.id}`}>
+            <SelectTrigger className="w-[75px] h-5 text-xs font-medium bg-black hover:bg-gray-800 text-white border border-black px-1" data-testid={`select-speaker-${file.id}`}>
               <SelectValue placeholder="Spkr" />
             </SelectTrigger>
             <SelectContent>
