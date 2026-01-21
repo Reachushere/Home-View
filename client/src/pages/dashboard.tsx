@@ -1664,18 +1664,28 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Sleek One-Line Clock */}
-          <div className="flex items-center gap-2" data-testid="digital-clock">
-            <span className="text-sm text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
-              {format(currentTime, "EEEE, MMMM d, yyyy")}
-            </span>
-            <span className="text-muted-foreground/40">•</span>
-            <span className="text-xl font-medium text-foreground tabular-nums" style={{ fontFamily: "'Inter', sans-serif" }}>
-              {format(currentTime, "h:mm:ss")}
-            </span>
-            <span className="text-xs font-medium text-muted-foreground uppercase">
-              {format(currentTime, "a")}
-            </span>
+          {/* Professional Clock */}
+          <div className="flex items-center gap-4 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-border/50" data-testid="digital-clock">
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+                {format(currentTime, "EEEE")}
+              </span>
+              <span className="text-sm font-medium text-foreground -mt-0.5">
+                {format(currentTime, "MMMM d, yyyy")}
+              </span>
+            </div>
+            <div className="w-px h-8 bg-border/70" />
+            <div className="flex items-baseline">
+              <span className="text-2xl font-semibold text-foreground tabular-nums tracking-tight">
+                {format(currentTime, "h:mm")}
+              </span>
+              <span className="text-base font-medium text-muted-foreground tabular-nums ml-0.5">
+                :{format(currentTime, "ss")}
+              </span>
+              <span className="text-[10px] font-bold text-muted-foreground ml-1 uppercase">
+                {format(currentTime, "a")}
+              </span>
+            </div>
           </div>
           
           <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-10 object-contain rounded" />
