@@ -839,7 +839,7 @@ export default function FilesPage() {
           <div className="flex items-center px-4 py-2 border-b border-[#3d3d3d] text-xs text-gray-400 bg-[#202020]">
             <div className="w-8"></div>
             <div className="flex-1">Name</div>
-            <div className="w-20 text-center">Actions</div>
+            <div className="w-24 pl-2">Actions</div>
             <div className="w-20 text-center">Status</div>
             <div className="w-36">Date modified</div>
             <div className="w-28">Type</div>
@@ -903,7 +903,7 @@ export default function FilesPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="w-20 flex items-center justify-center gap-1">
+                    <div className="w-24 flex items-center gap-3 pl-2">
                       <Button
                         variant="ghost"
                         size="icon"
