@@ -968,8 +968,11 @@ export default function Dashboard() {
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
             </div>
             <div className="flex border-b border-black">
+              <div className="w-5 px-0.5 py-0.5 border-r border-black"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-black font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r border-black font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-              <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+              <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
             <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
@@ -978,7 +981,7 @@ export default function Dashboard() {
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -992,7 +995,7 @@ export default function Dashboard() {
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA102']?.grade || ''} onChange={(e) => updateGrade('PPA102', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1006,7 +1009,7 @@ export default function Dashboard() {
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
               <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA125']?.grade || ''} onChange={(e) => updateGrade('PPA125', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1016,16 +1019,18 @@ export default function Dashboard() {
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black"></div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] font-semibold">CORE ELECTIVES:</div>
+              <div className="w-14 px-1 py-0.5 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
-              <div className="w-12 border-l border-black"></div>
+              <div className="w-14 border-l border-black"></div>
             </div>
             <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300 text-gray-500' : ''}`}>
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
               </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black"></div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
               <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1036,9 +1041,10 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
               </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black"></div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
               <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1049,9 +1055,10 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black"></div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
               <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1062,9 +1069,10 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black"></div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
               <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1093,7 +1101,7 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
-              <div className={`w-12 border-l border-black flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-300' : ''}`}>
+              <div className={`w-14 border-l border-black flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-300' : ''}`}>
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1135,7 +1143,7 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
-              <div className="w-12 border-l border-black flex flex-col">
+              <div className="w-14 border-l border-black flex flex-col">
                 <div className="pt-5"></div>
                 <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
@@ -1163,8 +1171,11 @@ export default function Dashboard() {
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
             </div>
             <div className="flex border-b border-black">
+              <div className="w-5 px-0.5 py-0.5 border-r border-black"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-black font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r border-black font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-              <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+              <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
             <div className="flex border-b border-black">
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
@@ -1173,7 +1184,7 @@ export default function Dashboard() {
               <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 211</div>
               <div className="flex-1 px-1 py-0.5">Public Policy</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1183,8 +1194,9 @@ export default function Dashboard() {
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black"></div>
               <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] font-semibold">CORE ELECTIVES:</div>
+              <div className="w-14 px-1 py-0.5 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">THREE</span> from the following:</div>
-              <div className="w-12 border-l border-black"></div>
+              <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black flex items-center justify-center">
@@ -1192,7 +1204,7 @@ export default function Dashboard() {
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
               <div className="flex-1 px-1 py-0.5">Canadian Politics and Government</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1205,7 +1217,7 @@ export default function Dashboard() {
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
               <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1216,9 +1228,10 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black"></div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
               <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1229,9 +1242,10 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
+              <div className="w-14 px-1 py-0.5 border-r border-black"></div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
               <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1244,7 +1258,7 @@ export default function Dashboard() {
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 235</div>
               <div className="flex-1 px-1 py-0.5">Theories of the State</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1257,7 +1271,7 @@ export default function Dashboard() {
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 303</div>
               <div className="flex-1 px-1 py-0.5">Public Budget Policy/Politics</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1270,7 +1284,7 @@ export default function Dashboard() {
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-black">PPA 319</div>
               <div className="flex-1 px-1 py-0.5">Politics of Work and Labour</div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1281,7 +1295,7 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black"></div>
               <div className="w-14 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A:</div>
-              <div className="w-12 border-l border-black"></div>
+              <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex items-stretch">
               <div className="w-5 border-r border-black flex items-center justify-center">
@@ -1293,7 +1307,7 @@ export default function Dashboard() {
               <div className="flex-1 h-11 px-1 flex items-center">
                 <input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course..." />
               </div>
-              <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5">
+              <div className="w-14 border-l border-black flex flex-col items-center justify-center gap-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1327,7 +1341,7 @@ export default function Dashboard() {
                 <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 220 Evolution of the Global Economy</div>
                 <div className="h-9 px-1 text-[8px] flex items-center">ECN 320 Introduction to Financial Economics</div>
               </div>
-              <div className="w-12 border-l border-black flex flex-col">
+              <div className="w-14 border-l border-black flex flex-col">
                 <div className="h-7 border-b border-black"></div>
                 <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
@@ -1368,7 +1382,7 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black"></div>
               <div className="w-14 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE</div>
-              <div className="w-12 border-l border-black"></div>
+              <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex items-stretch">
               <div className="w-5 border-r border-black flex flex-col">
@@ -1382,7 +1396,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
               </div>
-              <div className="w-12 border-l border-black flex flex-col">
+              <div className="w-14 border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -1404,8 +1418,11 @@ export default function Dashboard() {
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
             </div>
             <div className="flex border-b border-black">
+              <div className="w-5 px-0.5 py-0.5 border-r border-black"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-black font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r border-black font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-              <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+              <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
             <table className="w-full border-collapse">
               <colgroup>
@@ -1413,7 +1430,7 @@ export default function Dashboard() {
                 <col style={{ width: '55px' }} />
                 <col style={{ width: '55px' }} />
                 <col />
-                <col style={{ width: '3rem' }} />
+                <col style={{ width: '3.5rem' }} />
               </colgroup>
               <tbody>
                 <tr className="border-b border-black">
@@ -1485,7 +1502,7 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE REQUIRED:</div>
-              <div className="w-12 border-l border-black"></div>
+              <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
@@ -1499,7 +1516,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
                 <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
               </div>
-              <div className="w-12 border-l border-black flex flex-col">
+              <div className="w-14 border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -1515,7 +1532,7 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
-              <div className="w-12 border-l border-black"></div>
+              <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
@@ -1531,7 +1548,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
                 <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
               </div>
-              <div className="w-12 border-l border-black flex flex-col">
+              <div className="w-14 border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -1551,7 +1568,7 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A / B:</div>
-              <div className="w-12 border-l border-black"></div>
+              <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
@@ -1569,7 +1586,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
               </div>
-              <div className="w-12 border-l border-black flex flex-col">
+              <div className="w-14 border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -1593,7 +1610,7 @@ export default function Dashboard() {
               <div className="w-5 border-r border-black"></div>
               <div className="w-[55px] border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE:</div>
-              <div className="w-12 border-l border-black"></div>
+              <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
@@ -1615,7 +1632,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 5..." /></div>
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 6..." /></div>
               </div>
-              <div className="w-12 border-l border-black flex flex-col">
+              <div className="w-14 border-l border-black flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
