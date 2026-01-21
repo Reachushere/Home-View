@@ -873,7 +873,7 @@ export default function Dashboard() {
         </div>
 
         {/* Course Legend */}
-        <div className="px-2 space-y-2">
+        <div className="px-1 space-y-2">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {COURSES.map((course) => {
             const colors = courseColors[course.code];
@@ -889,6 +889,7 @@ export default function Dashboard() {
                 <span className="text-[11px]">
                   <span className="font-medium">{course.code}</span>
                   <span className="text-white"> - {course.name}</span>
+                  {course.code === "CASL101" && <span className="text-[9px] text-gray-300"> (Christina Moreau)</span>}
                 </span>
               </div>
             );
@@ -896,7 +897,7 @@ export default function Dashboard() {
         </div>
 
         <nav className="flex flex-col gap-0.5 mt-2">
-          <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-2 mb-0.5">Weeks</h3>
+          <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-1 mb-0.5">Weeks</h3>
           {weeks.map((week) => {
             const weekEndDate = parseISO(week.endDate);
             const isWeekFinished = weekEndDate < new Date();
@@ -904,7 +905,7 @@ export default function Dashboard() {
               <Button
                 key={week.weekNumber}
                 variant={selectedWeek === week.weekNumber && !selectedDate ? "secondary" : "ghost"}
-                className={`justify-between gap-1 h-auto py-1 px-2 ${isWeekFinished ? "opacity-60" : ""}`}
+                className={`justify-between gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""}`}
                 size="sm"
                 onClick={() => {
                   setSelectedWeek(week.weekNumber);
