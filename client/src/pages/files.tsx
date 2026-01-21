@@ -338,16 +338,25 @@ export default function FilesPage() {
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>, folderId: string) => {
     e.preventDefault();
+    e.stopPropagation();
     e.dataTransfer.dropEffect = "move";
-    setDragOverFolder(folderId);
+    if (dragOverFolder !== folderId) {
+      setDragOverFolder(folderId);
+    }
   };
 
-  const handleDragLeave = () => {
-    setDragOverFolder(null);
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    // Only clear if we're leaving to a non-child element
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    if (!e.currentTarget.contains(relatedTarget)) {
+      setDragOverFolder(null);
+    }
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>, folderId: string) => {
     e.preventDefault();
+    e.stopPropagation();
     const fileId = parseInt(e.dataTransfer.getData("text/plain"));
     if (fileId) {
       moveFolderMutation.mutate({ id: fileId, folder: folderId });
@@ -669,7 +678,7 @@ export default function FilesPage() {
                                     key={contentFolderId}
                                     className={`border rounded-md p-2 transition-all ${isDragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
                                     onDragOver={(e) => handleDragOver(e, contentFolderId)}
-                                    onDragLeave={handleDragLeave}
+                                    onDragLeave={(e) => handleDragLeave(e)}
                                     onDrop={(e) => handleDrop(e, contentFolderId)}
                                     data-testid={`content-folder-${contentFolderId}`}
                                   >
@@ -716,8 +725,8 @@ export default function FilesPage() {
         {unfiledFiles.length > 0 && (
           <Card
             className={`mt-6 ${dragOverFolder === "unfiled" ? "ring-2 ring-primary" : ""}`}
-            onDragOver={(e) => { e.preventDefault(); setDragOverFolder("unfiled"); }}
-            onDragLeave={handleDragLeave}
+            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDragOverFolder("unfiled"); }}
+            onDragLeave={(e) => handleDragLeave(e)}
             onDrop={handleDropOnUnfiled}
           >
             <CardHeader>
