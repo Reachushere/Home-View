@@ -1731,18 +1731,18 @@ export default function Dashboard() {
             )}
             Sync
           </Button>
+          <RouterLink href="/files" className="flex items-center ml-2">
+            <Button 
+              size="sm" 
+              className="!h-[20px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0" 
+              data-testid="button-files-link"
+            >
+              <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
+              Files
+            </Button>
+          </RouterLink>
           {/* All buttons with equal spacing */}
           <div className="flex-1 flex items-center justify-end gap-2 ml-2">
-            <RouterLink href="/files" className="flex items-center">
-              <Button 
-                size="sm" 
-                className="!h-[20px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0" 
-                data-testid="button-files-link"
-              >
-                <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
-                Files
-              </Button>
-            </RouterLink>
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[8px] border-[1.5px] border-blue-800 !py-0" 
