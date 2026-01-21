@@ -889,6 +889,7 @@ export default function Dashboard() {
                 <span className="text-[11px]">
                   <span className="font-medium">{course.code}</span>
                   <span className="text-white"> - {course.name}</span>
+                  {course.code === "CFNF400" && <span className="text-[9px] text-gray-300"> (Alex McKay)</span>}
                   {course.code === "CASL101" && <span className="text-[9px] text-gray-300"> (Christina Moreau)</span>}
                 </span>
               </div>
