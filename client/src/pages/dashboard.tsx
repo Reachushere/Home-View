@@ -2203,8 +2203,8 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-upcoming">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-yellow-200/60 dark:bg-yellow-800/40" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3 w-3 text-black dark:text-white" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-yellow-400 dark:bg-yellow-400" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3 w-3 text-black dark:text-black" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
             </h4>
             <div className="flex-1 flex overflow-hidden">
