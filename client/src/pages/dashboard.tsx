@@ -2310,28 +2310,48 @@ export default function Dashboard() {
               <Calendar className="h-3 w-3 text-black dark:text-white" />
               Urgent: Do Today ({todayTasks.length})
             </h4>
-            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
+            <div className="flex-1 flex flex-col overflow-hidden">
               {isLoading ? (
-                <div className="text-muted-foreground text-xs pt-2">Loading...</div>
-              ) : todayTasks.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground text-xs">
-                  No tasks for today
-                </div>
+                <div className="text-muted-foreground text-xs p-2">Loading...</div>
               ) : (
-                <div className="grid grid-cols-1 gap-1 pt-2">
-                  {todayTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                      onReschedule={() => setRescheduleTask(task)}
-                      onEdit={() => setEditingTask(task)}
-                      onDelete={() => deleteMutation.mutate(task.id)}
-                      cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                      compact
-                    />
-                  ))}
-                </div>
+                <>
+                  {/* CPPA122 Row - Green */}
+                  <div className="flex-1 bg-green-200 dark:bg-green-900/40 px-2 py-1 overflow-auto border-b border-green-300 dark:border-green-700">
+                    <div className="text-[8px] font-bold text-green-700 dark:text-green-300 mb-0.5">CPPA122</div>
+                    <div className="space-y-1">
+                      {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
+                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
+                      ))}
+                      {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
+                        <div className="text-[9px] text-green-600 dark:text-green-400 opacity-60">-</div>
+                      )}
+                    </div>
+                  </div>
+                  {/* CFNF400 Row - Pink */}
+                  <div className="flex-1 bg-pink-200 dark:bg-pink-900/40 px-2 py-1 overflow-auto border-b border-pink-300 dark:border-pink-700">
+                    <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
+                    <div className="space-y-1">
+                      {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
+                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
+                      ))}
+                      {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
+                        <div className="text-[9px] text-pink-600 dark:text-pink-400 opacity-60">-</div>
+                      )}
+                    </div>
+                  </div>
+                  {/* CASL101 Row - Purple */}
+                  <div className="flex-1 bg-purple-200 dark:bg-purple-900/40 px-2 py-1 overflow-auto">
+                    <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
+                    <div className="space-y-1">
+                      {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
+                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-purple-50 dark:bg-purple-900/20" compact />
+                      ))}
+                      {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
+                        <div className="text-[9px] text-purple-600 dark:text-purple-400 opacity-60">-</div>
+                      )}
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </section>
@@ -2342,28 +2362,49 @@ export default function Dashboard() {
               <Clock className="h-3 w-3 text-black dark:text-white" />
               Overdue: Missed Tasks ({missedTasks.length})
             </h4>
-            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
-              {missedTasks.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground text-xs">
-                  No missed tasks
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-1 pt-2">
-                  {missedTasks.map((task) => (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {/* CPPA122 Row - Green */}
+              <div className="flex-1 bg-green-200 dark:bg-green-900/40 px-2 py-1 overflow-auto border-b border-green-300 dark:border-green-700">
+                <div className="text-[8px] font-bold text-green-700 dark:text-green-300 mb-0.5">CPPA122</div>
+                <div className="space-y-1">
+                  {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
-                      <TaskCard
-                        task={task}
-                        onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                        onReschedule={() => setRescheduleTask(task)}
-                        onEdit={() => setEditingTask(task)}
-                        onDelete={() => deleteMutation.mutate(task.id)}
-                        cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                        compact
-                      />
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
                     </div>
                   ))}
+                  {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
+                    <div className="text-[9px] text-green-600 dark:text-green-400 opacity-60">-</div>
+                  )}
                 </div>
-              )}
+              </div>
+              {/* CFNF400 Row - Pink */}
+              <div className="flex-1 bg-pink-200 dark:bg-pink-900/40 px-2 py-1 overflow-auto border-b border-pink-300 dark:border-pink-700">
+                <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
+                <div className="space-y-1">
+                  {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
+                    <div key={task.id} className="animate-urgent-blink">
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
+                    </div>
+                  ))}
+                  {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
+                    <div className="text-[9px] text-pink-600 dark:text-pink-400 opacity-60">-</div>
+                  )}
+                </div>
+              </div>
+              {/* CASL101 Row - Purple */}
+              <div className="flex-1 bg-purple-200 dark:bg-purple-900/40 px-2 py-1 overflow-auto">
+                <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
+                <div className="space-y-1">
+                  {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
+                    <div key={task.id} className="animate-urgent-blink">
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-purple-50 dark:bg-purple-900/20" compact />
+                    </div>
+                  ))}
+                  {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
+                    <div className="text-[9px] text-purple-600 dark:text-purple-400 opacity-60">-</div>
+                  )}
+                </div>
+              </div>
             </div>
           </section>
         </div>
