@@ -1664,27 +1664,27 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Digital LCD Clock */}
-          <div className="bg-[#1a1a1a] px-3 py-1.5 rounded-md w-[160px] flex flex-col justify-center items-center border-2 border-[#333] shadow-inner" style={{ boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6)' }} data-testid="digital-clock">
-            <div className="flex items-center">
+          {/* Digital Clock - Red LED Style */}
+          <div className="bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] px-4 py-2 rounded-lg flex justify-center items-baseline gap-3 border border-[#444] shadow-lg" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)' }} data-testid="digital-clock">
+            <div className="flex items-baseline">
               <span 
-                className="text-xl font-bold text-[#00ff00] w-[85px] text-right tabular-nums tracking-wider"
-                style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 8px #00ff00, 0 0 12px #00ff00' }}
+                className="text-2xl font-bold text-[#ff3333] tabular-nums"
+                style={{ fontFamily: "'DS-Digital', 'Orbitron', 'Consolas', monospace", textShadow: '0 0 10px #ff3333, 0 0 20px #ff0000', letterSpacing: '2px' }}
               >
                 {format(currentTime, "h:mm:ss")}
               </span>
               <span 
-                className="text-sm font-bold text-[#00ff00] w-[28px] text-left ml-1"
-                style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 8px #00ff00' }}
+                className="text-xs font-bold text-[#ff3333] ml-1"
+                style={{ fontFamily: "'Orbitron', 'Consolas', monospace", textShadow: '0 0 8px #ff3333' }}
               >
                 {format(currentTime, "a").toUpperCase()}
               </span>
             </div>
             <span 
-              className="text-[10px] font-bold text-[#00ff00] tracking-wide mt-0.5"
-              style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 6px #00ff00' }}
+              className="text-[11px] font-semibold text-[#ff6666] tracking-wider"
+              style={{ fontFamily: "'Orbitron', 'Consolas', monospace", textShadow: '0 0 4px #ff3333' }}
             >
-              {format(currentTime, "EEE MMM d, yyyy").toUpperCase()}
+              {format(currentTime, "EEE, MMM d yyyy").toUpperCase()}
             </span>
           </div>
           
