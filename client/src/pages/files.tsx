@@ -61,10 +61,15 @@ const WEEKS = [
   { id: "other", name: "Other" },
 ];
 
-const SUBFOLDERS = [
+const COURSE_FOLDERS = [
   { id: "cppa122", name: "CPPA122", color: "text-green-500" },
   { id: "cfnf400", name: "CFNF400", color: "text-pink-500" },
   { id: "casl101", name: "CASL101", color: "text-purple-500" },
+];
+
+const CONTENT_FOLDERS = [
+  { id: "module", name: "Module" },
+  { id: "reading", name: "Reading" },
 ];
 
 function getFileIcon(contentType: string | null) {
@@ -369,6 +374,10 @@ export default function FilesPage() {
     return files.filter(f => f.folder?.startsWith(weekId + "-"));
   };
 
+  const getFilesInCourse = (weekId: string, courseId: string) => {
+    return files.filter(f => f.folder?.startsWith(`${weekId}-${courseId}-`));
+  };
+
   const unfiledFiles = files.filter(f => !f.folder);
 
   const sortedFiles = (fileList: FileRecord[]) => {
@@ -622,44 +631,76 @@ export default function FilesPage() {
                 </CardHeader>
                 {isWeekExpanded && (
                   <CardContent className="space-y-3 pt-0">
-                    {SUBFOLDERS.map((subfolder) => {
-                      const subfolderFullId = `${week.id}-${subfolder.id}`;
-                      const subfolderFiles = getFilesInFolder(subfolderFullId);
-                      const isSubfolderExpanded = expandedFolders.has(subfolderFullId);
-                      const isDragOver = dragOverFolder === subfolderFullId;
+                    {COURSE_FOLDERS.map((course) => {
+                      const courseFolderId = `${week.id}-${course.id}`;
+                      const courseFiles = getFilesInCourse(week.id, course.id);
+                      const isCourseExpanded = expandedFolders.has(courseFolderId);
                       
                       return (
                         <div
-                          key={subfolderFullId}
-                          className={`border rounded-md p-2 transition-all ${isDragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
-                          onDragOver={(e) => handleDragOver(e, subfolderFullId)}
-                          onDragLeave={handleDragLeave}
-                          onDrop={(e) => handleDrop(e, subfolderFullId)}
-                          data-testid={`subfolder-${subfolderFullId}`}
+                          key={courseFolderId}
+                          className="border rounded-md p-2"
+                          data-testid={`course-folder-${courseFolderId}`}
                         >
                           <div 
                             className="flex items-center gap-2 cursor-pointer p-1"
-                            onClick={() => toggleFolder(subfolderFullId)}
+                            onClick={() => toggleFolder(courseFolderId)}
                           >
-                            {isSubfolderExpanded ? (
-                              <FolderOpen className={`h-4 w-4 ${subfolder.color}`} />
+                            {isCourseExpanded ? (
+                              <FolderOpen className={`h-4 w-4 ${course.color}`} />
                             ) : (
-                              <Folder className={`h-4 w-4 ${subfolder.color}`} />
+                              <Folder className={`h-4 w-4 ${course.color}`} />
                             )}
-                            <span className={`text-sm font-medium ${subfolder.color}`}>{subfolder.name}</span>
+                            <span className={`text-sm font-medium ${course.color}`}>{course.name}</span>
                             <Badge variant="outline" className="ml-auto text-xs">
-                              {subfolderFiles.length}
+                              {courseFiles.length}
                             </Badge>
                           </div>
-                          {isSubfolderExpanded && (
-                            <div className="mt-2 space-y-2 pl-2">
-                              {subfolderFiles.length === 0 ? (
-                                <div className="text-center py-2 text-muted-foreground text-xs">
-                                  Drop files here
-                                </div>
-                              ) : (
-                                sortedFiles(subfolderFiles).map(file => renderFileRow(file))
-                              )}
+                          {isCourseExpanded && (
+                            <div className="mt-2 space-y-2 pl-4">
+                              {CONTENT_FOLDERS.map((content) => {
+                                const contentFolderId = `${week.id}-${course.id}-${content.id}`;
+                                const contentFiles = getFilesInFolder(contentFolderId);
+                                const isContentExpanded = expandedFolders.has(contentFolderId);
+                                const isDragOver = dragOverFolder === contentFolderId;
+                                
+                                return (
+                                  <div
+                                    key={contentFolderId}
+                                    className={`border rounded-md p-2 transition-all ${isDragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
+                                    onDragOver={(e) => handleDragOver(e, contentFolderId)}
+                                    onDragLeave={handleDragLeave}
+                                    onDrop={(e) => handleDrop(e, contentFolderId)}
+                                    data-testid={`content-folder-${contentFolderId}`}
+                                  >
+                                    <div 
+                                      className="flex items-center gap-2 cursor-pointer p-1"
+                                      onClick={() => toggleFolder(contentFolderId)}
+                                    >
+                                      {isContentExpanded ? (
+                                        <FolderOpen className="h-3 w-3 text-muted-foreground" />
+                                      ) : (
+                                        <Folder className="h-3 w-3 text-muted-foreground" />
+                                      )}
+                                      <span className="text-xs font-medium">{content.name}</span>
+                                      <Badge variant="outline" className="ml-auto text-[10px] py-0">
+                                        {contentFiles.length}
+                                      </Badge>
+                                    </div>
+                                    {isContentExpanded && (
+                                      <div className="mt-2 space-y-2 pl-2">
+                                        {contentFiles.length === 0 ? (
+                                          <div className="text-center py-2 text-muted-foreground text-xs">
+                                            Drop files here
+                                          </div>
+                                        ) : (
+                                          sortedFiles(contentFiles).map(file => renderFileRow(file))
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
                           )}
                         </div>
