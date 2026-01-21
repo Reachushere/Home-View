@@ -493,7 +493,7 @@ export default function FilesPage() {
             href={file.objectPath} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="font-medium text-[10px] truncate hover:underline cursor-pointer text-primary"
+            className="font-medium text-[10px] truncate hover:underline cursor-pointer text-black"
             onClick={(e) => e.stopPropagation()}
             data-testid={`text-filename-${file.id}`}
           >
