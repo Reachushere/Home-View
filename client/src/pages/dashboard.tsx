@@ -1760,7 +1760,7 @@ export default function Dashboard() {
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-1.5 w-1.5" />
+              <Plus className="h-1 w-1" />
               Module
             </Button>
             <Button 
@@ -1769,7 +1769,7 @@ export default function Dashboard() {
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-1.5 w-1.5" />
+              <Plus className="h-1 w-1" />
               Reading
             </Button>
             <Button 
@@ -1778,7 +1778,7 @@ export default function Dashboard() {
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-1.5 w-1.5" />
+              <Plus className="h-1 w-1" />
               Discuss
             </Button>
             <Button 
@@ -1787,7 +1787,7 @@ export default function Dashboard() {
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-1.5 w-1.5" />
+              <Plus className="h-1 w-1" />
               Assign
             </Button>
             <Button 
@@ -1796,7 +1796,7 @@ export default function Dashboard() {
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-1.5 w-1.5" />
+              <Plus className="h-1 w-1" />
               Exam
             </Button>
           </div>
