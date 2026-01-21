@@ -2203,7 +2203,7 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-upcoming">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-yellow-300 dark:bg-yellow-300" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-yellow-200 dark:bg-yellow-200" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Clock className="h-3 w-3 text-black dark:text-black" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
             </h4>
@@ -2213,7 +2213,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Column - Green */}
-                  <div className="flex-1 bg-green-200 dark:bg-green-900/40 p-2 overflow-auto border-r border-green-300 dark:border-green-700">
+                  <div className="flex-1 bg-green-100 dark:bg-green-900/30 p-2 overflow-auto border-r border-green-200 dark:border-green-700">
                     <div className="text-[9px] font-bold text-green-700 dark:text-green-300 mb-1.5 text-center">CPPA122</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
@@ -2242,7 +2242,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 bg-pink-200 dark:bg-pink-900/40 p-2 overflow-auto border-r border-pink-300 dark:border-pink-700">
+                  <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 p-2 overflow-auto border-r border-pink-200 dark:border-pink-700">
                     <div className="text-[9px] font-bold text-pink-700 dark:text-pink-300 mb-1.5 text-center">CFNF400</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
@@ -2271,7 +2271,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Column - Purple */}
-                  <div className="flex-1 bg-purple-200 dark:bg-purple-900/40 p-2 overflow-auto">
+                  <div className="flex-1 bg-purple-100 dark:bg-purple-900/30 p-2 overflow-auto">
                     <div className="text-[9px] font-bold text-purple-700 dark:text-purple-300 mb-1.5 text-center">CASL101</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => {
@@ -2306,8 +2306,8 @@ export default function Dashboard() {
 
           {/* Do Today Section (Urgent) - Now in Middle */}
           <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-amber-400 dark:bg-amber-500" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Calendar className="h-3 w-3 text-black dark:text-white" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-amber-200 dark:bg-amber-200" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Calendar className="h-3 w-3 text-black dark:text-black" />
               URGENT: Do Today ({todayTasks.length})
             </h4>
             <div className="flex-1 flex flex-col overflow-hidden">
@@ -2316,7 +2316,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Row - Green */}
-                  <div className="flex-1 bg-green-200 dark:bg-green-900/40 px-2 py-1 overflow-auto border-b border-green-300 dark:border-green-700">
+                  <div className="flex-1 bg-green-100 dark:bg-green-900/30 px-2 py-1 overflow-auto border-b border-green-200 dark:border-green-700">
                     <div className="text-[8px] font-bold text-green-700 dark:text-green-300 mb-0.5">CPPA122</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -2328,7 +2328,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Row - Pink */}
-                  <div className="flex-1 bg-pink-200 dark:bg-pink-900/40 px-2 py-1 overflow-auto border-b border-pink-300 dark:border-pink-700">
+                  <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700">
                     <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -2340,7 +2340,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Row - Purple */}
-                  <div className="flex-1 bg-purple-200 dark:bg-purple-900/40 px-2 py-1 overflow-auto">
+                  <div className="flex-1 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 overflow-auto">
                     <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
@@ -2358,13 +2358,13 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
           <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-missed">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white dark:text-white bg-red-500 dark:bg-red-500" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3 w-3 text-white dark:text-white" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-red-200 dark:bg-red-200" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3 w-3 text-black dark:text-black" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
             <div className="flex-1 flex flex-col overflow-hidden">
               {/* CPPA122 Row - Green */}
-              <div className="flex-1 bg-green-200 dark:bg-green-900/40 px-2 py-1 overflow-auto border-b border-green-300 dark:border-green-700">
+              <div className="flex-1 bg-green-100 dark:bg-green-900/30 px-2 py-1 overflow-auto border-b border-green-200 dark:border-green-700">
                 <div className="text-[8px] font-bold text-green-700 dark:text-green-300 mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -2378,7 +2378,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="flex-1 bg-pink-200 dark:bg-pink-900/40 px-2 py-1 overflow-auto border-b border-pink-300 dark:border-pink-700">
+              <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700">
                 <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -2392,7 +2392,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CASL101 Row - Purple */}
-              <div className="flex-1 bg-purple-200 dark:bg-purple-900/40 px-2 py-1 overflow-auto">
+              <div className="flex-1 bg-purple-100 dark:bg-purple-900/30 px-2 py-1 overflow-auto">
                 <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
