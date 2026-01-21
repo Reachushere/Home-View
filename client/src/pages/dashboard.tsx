@@ -2306,7 +2306,7 @@ export default function Dashboard() {
 
           {/* Do Today Section (Urgent) - Now in Middle */}
           <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-orange-300/60 dark:bg-orange-800/50" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-orange-500 dark:bg-orange-600" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Calendar className="h-3 w-3 text-black dark:text-white" />
               URGENT: Do Today ({todayTasks.length})
             </h4>
@@ -2358,8 +2358,8 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
           <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-missed">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-red-400/70 dark:bg-red-800/50" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3 w-3 text-black dark:text-white" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white dark:text-white bg-red-600 dark:bg-red-700" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3 w-3 text-white dark:text-white" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
             <div className="flex-1 flex flex-col overflow-hidden">
