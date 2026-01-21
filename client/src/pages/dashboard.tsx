@@ -1664,33 +1664,17 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Sleek Clock Display */}
-          <div className="flex flex-col items-end" data-testid="digital-clock">
-            <div className="flex items-baseline gap-1">
-              <span 
-                className="text-3xl font-extralight text-foreground tabular-nums"
-                style={{ fontFamily: "'SF Pro Display', 'Helvetica Neue', sans-serif", letterSpacing: '-0.5px' }}
-              >
-                {format(currentTime, "h:mm")}
-              </span>
-              <span 
-                className="text-lg font-extralight text-foreground tabular-nums"
-                style={{ fontFamily: "'SF Pro Display', 'Helvetica Neue', sans-serif" }}
-              >
-                {format(currentTime, "ss")}
-              </span>
-              <span 
-                className="text-xs font-medium text-muted-foreground ml-0.5 uppercase"
-                style={{ fontFamily: "'SF Pro Display', 'Helvetica Neue', sans-serif" }}
-              >
-                {format(currentTime, "a")}
-              </span>
-            </div>
-            <span 
-              className="text-xs font-medium text-muted-foreground -mt-0.5"
-              style={{ fontFamily: "'SF Pro Display', 'Helvetica Neue', sans-serif", letterSpacing: '0.5px' }}
-            >
-              {format(currentTime, "EEEE, MMMM d")}
+          {/* Sleek One-Line Clock */}
+          <div className="flex items-center gap-2" data-testid="digital-clock">
+            <span className="text-sm text-muted-foreground" style={{ fontFamily: "'Inter', sans-serif" }}>
+              {format(currentTime, "EEEE, MMMM d, yyyy")}
+            </span>
+            <span className="text-muted-foreground/40">•</span>
+            <span className="text-xl font-medium text-foreground tabular-nums" style={{ fontFamily: "'Inter', sans-serif" }}>
+              {format(currentTime, "h:mm:ss")}
+            </span>
+            <span className="text-xs font-medium text-muted-foreground uppercase">
+              {format(currentTime, "a")}
             </span>
           </div>
           
