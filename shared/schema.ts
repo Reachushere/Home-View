@@ -56,6 +56,7 @@ export const files = pgTable("files", {
   objectPath: text("object_path").notNull().unique(),
   contentType: text("content_type"),
   size: integer("size"),
+  folder: text("folder"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
