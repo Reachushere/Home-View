@@ -822,16 +822,19 @@ export async function registerRoutes(
       // Store the target entity in session for resume
       currentTTSSession.targetEntity = targetEntity;
       
-      // Use alexa_media_player service for announcements (no Simon Says needed)
-      const response = await fetch(`${haUrl}/api/services/alexa_media/send_tts_message`, {
+      // Use notify.alexa_media with announce type (uses Alexa announcements, not Simon Says)
+      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: targetEntity,
-          message: cleanedContent
+          message: cleanedContent,
+          target: targetEntity,
+          data: {
+            type: "announce"
+          }
         }),
       });
 
