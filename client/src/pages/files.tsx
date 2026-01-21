@@ -483,7 +483,7 @@ export default function FilesPage() {
         draggable
         onDragStart={(e) => handleDragStart(e, file.id)}
         onDragEnd={handleDragEnd}
-        className={`flex flex-col gap-1 p-2 bg-card border-2 border-black dark:border-white rounded hover-elevate cursor-move ${
+        className={`flex flex-col gap-1 p-2 bg-card border-2 border-black dark:border-white rounded-[4px] hover-elevate cursor-move ${
           isDragging ? "opacity-50" : ""
         }`}
         data-testid={`file-row-${file.id}`}
@@ -506,7 +506,7 @@ export default function FilesPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-between w-[calc(100%+16px)] bg-black dark:bg-black rounded-b -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
+        <div className="flex items-center justify-between w-[calc(100%+16px)] bg-black dark:bg-black rounded-b-[2px] -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
           <div className="flex items-center gap-[18px]">
             <Play 
               className="h-2.5 w-2.5 fill-white text-white cursor-pointer hover:opacity-70" 
