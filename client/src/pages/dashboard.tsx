@@ -1916,10 +1916,15 @@ export default function Dashboard() {
                               />
                               <span 
                                 onClick={() => setEditingTask(task)}
-                                className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
                               >
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
+                              <Trash2 
+                                className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
+                                onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
+                                data-testid={`trash-prep-${task.id}`}
+                              />
                             </div>
                           );
                         }
@@ -1942,10 +1947,15 @@ export default function Dashboard() {
                               />
                               <span 
                                 onClick={() => setEditingTask(task)}
-                                className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
                               >
                                 <span className="font-bold">DUE:</span> {task.title}
                               </span>
+                              <Trash2 
+                                className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
+                                onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
+                                data-testid={`trash-due-${task.id}`}
+                              />
                             </div>
                           );
                         }
@@ -1972,10 +1982,15 @@ export default function Dashboard() {
                             />
                             <span 
                               onClick={() => setEditingTask(task)}
-                              className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                              className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
                             >
                               {task.title}
                             </span>
+                            <Trash2 
+                              className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
+                              onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
+                              data-testid={`trash-allday-${task.id}`}
+                            />
                           </div>
                         );
                       })}
@@ -2022,13 +2037,22 @@ export default function Dashboard() {
                         {courseTasks.map(task => (
                           <div
                             key={task.id}
-                            onClick={() => setEditingTask(task)}
-                            className={`text-[8px] px-1 py-0.5 truncate cursor-pointer hover:opacity-80 ${
+                            className={`flex items-center gap-0.5 text-[8px] px-1 py-0.5 ${
                               task.isCompleted ? "text-gray-500 line-through" : "text-black font-medium"
                             }`}
                             data-testid={`course-task-${task.id}`}
                           >
-                            {task.title}
+                            <span 
+                              onClick={() => setEditingTask(task)}
+                              className="truncate cursor-pointer hover:opacity-80 flex-1"
+                            >
+                              {task.title}
+                            </span>
+                            <Trash2 
+                              className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
+                              onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
+                              data-testid={`trash-course-${task.id}`}
+                            />
                           </div>
                         ))}
                       </div>
@@ -2118,12 +2142,17 @@ export default function Dashboard() {
                                   />
                                   <div 
                                     onClick={() => setEditingTask(task)}
-                                    className={`text-[8px] font-semibold truncate cursor-pointer ${
+                                    className={`text-[8px] font-semibold truncate cursor-pointer flex-1 ${
                                       task.isCompleted ? "text-gray-400 line-through" : "text-black"
                                     }`}
                                   >
                                     {task.title}
                                   </div>
+                                  <Trash2 
+                                    className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
+                                    onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
+                                    data-testid={`trash-time-${task.id}`}
+                                  />
                                 </div>
                                 <div className={`text-[8px] mt-0.5 mb-3 ml-4 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}>
                                   {format(new Date(task.dueDate), "h:mm a")}
