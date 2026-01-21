@@ -2202,50 +2202,23 @@ export default function Dashboard() {
         {/* Do Today, Missed, and Upcoming Tasks Side by Side */}
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Do Today Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-orange-300/60 dark:bg-orange-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-orange-300/60 dark:bg-orange-800/50" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Calendar className="h-3 w-3 text-black dark:text-white" />
               Urgent: Do Today ({todayTasks.length})
             </h4>
-            {isLoading ? (
-              <div className="text-muted-foreground text-xs">Loading...</div>
-            ) : todayTasks.length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-xs">
-                No tasks for today
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-1 pt-5">
-                {todayTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                    onReschedule={() => setRescheduleTask(task)}
-                    onEdit={() => setEditingTask(task)}
-                    onDelete={() => deleteMutation.mutate(task.id)}
-                    cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                    compact
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-
-          {/* Missed Tasks Section */}
-          <section className={`w-[240px] flex-shrink-0 bg-red-400/70 dark:bg-red-800/50 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto ${missedTasks.length === 0 ? "" : ""}`} data-testid="section-missed">
-            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3 w-3 text-black dark:text-white" />
-              Overdue: Missed Tasks ({missedTasks.length})
-            </h4>
-            {missedTasks.length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-xs">
-                No missed tasks
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-1 pt-5">
-                {missedTasks.map((task) => (
-                  <div key={task.id} className="animate-urgent-blink">
+            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
+              {isLoading ? (
+                <div className="text-muted-foreground text-xs pt-2">Loading...</div>
+              ) : todayTasks.length === 0 ? (
+                <div className="text-center py-4 text-muted-foreground text-xs">
+                  No tasks for today
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-1 pt-2">
+                  {todayTasks.map((task) => (
                     <TaskCard
+                      key={task.id}
                       task={task}
                       onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
                       onReschedule={() => setRescheduleTask(task)}
@@ -2254,30 +2227,27 @@ export default function Dashboard() {
                       cardBgClass="bg-orange-50 dark:bg-orange-900/20"
                       compact
                     />
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </section>
 
-          {/* Upcoming Tasks Section */}
-          <section className="flex-1 bg-yellow-200/60 dark:bg-yellow-800/40 rounded-xl shadow-md pt-1.5 px-3 pb-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-upcoming">
-            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          {/* Missed Tasks Section */}
+          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-missed">
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-red-400/70 dark:bg-red-800/50" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Clock className="h-3 w-3 text-black dark:text-white" />
-              Be Prepared: Upcoming Tasks ({upcomingTasks.length})
+              Overdue: Missed Tasks ({missedTasks.length})
             </h4>
-            {isLoading ? (
-              <div className="text-muted-foreground text-xs">Loading...</div>
-            ) : upcomingTasks.length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-xs">
-                No upcoming tasks {selectedDate ? "for this date" : "for this week"}
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 gap-3 pt-5">
-                {upcomingTasks.map((task) => {
-                  const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
-                  return (
-                    <div key={task.id} className="relative">
+            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
+              {missedTasks.length === 0 ? (
+                <div className="text-center py-4 text-muted-foreground text-xs">
+                  No missed tasks
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-1 pt-2">
+                  {missedTasks.map((task) => (
+                    <div key={task.id} className="animate-urgent-blink">
                       <TaskCard
                         task={task}
                         onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
@@ -2287,19 +2257,55 @@ export default function Dashboard() {
                         cardBgClass="bg-orange-50 dark:bg-orange-900/20"
                         compact
                       />
-                      <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-black rounded-full flex flex-col items-center justify-center z-10">
-                        <span className="text-xs font-bold text-white leading-none mt-0.5">
-                          {daysUntilDue}
-                        </span>
-                        <span className="text-[7px] text-white uppercase tracking-tight">
-                          {daysUntilDue === 1 ? 'day' : 'days'}
-                        </span>
-                      </div>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Upcoming Tasks Section */}
+          <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-upcoming">
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-yellow-200/60 dark:bg-yellow-800/40" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3 w-3 text-black dark:text-white" />
+              Be Prepared: Upcoming Tasks ({upcomingTasks.length})
+            </h4>
+            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
+              {isLoading ? (
+                <div className="text-muted-foreground text-xs pt-2">Loading...</div>
+              ) : upcomingTasks.length === 0 ? (
+                <div className="text-center py-4 text-muted-foreground text-xs">
+                  No upcoming tasks {selectedDate ? "for this date" : "for this week"}
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-3 pt-2">
+                  {upcomingTasks.map((task) => {
+                    const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+                    return (
+                      <div key={task.id} className="relative">
+                        <TaskCard
+                          task={task}
+                          onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                          onReschedule={() => setRescheduleTask(task)}
+                          onEdit={() => setEditingTask(task)}
+                          onDelete={() => deleteMutation.mutate(task.id)}
+                          cardBgClass="bg-orange-50 dark:bg-orange-900/20"
+                          compact
+                        />
+                        <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-black rounded-full flex flex-col items-center justify-center z-10">
+                          <span className="text-xs font-bold text-white leading-none mt-0.5">
+                            {daysUntilDue}
+                          </span>
+                          <span className="text-[7px] text-white uppercase tracking-tight">
+                            {daysUntilDue === 1 ? 'day' : 'days'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </section>
         </div>
 
