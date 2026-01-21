@@ -489,7 +489,6 @@ export default function FilesPage() {
         data-testid={`file-row-${file.id}`}
       >
         <div className="flex items-center justify-evenly w-full">
-          <FileIcon className="h-2 w-2 text-muted-foreground" />
           <Play 
             className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white cursor-pointer hover:opacity-70" 
             onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
