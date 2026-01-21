@@ -2411,6 +2411,20 @@ export default function Dashboard() {
                   )}
                 </div>
               </div>
+              {/* Other Row - Gray */}
+              <div className="flex-1 bg-gray-100 dark:bg-gray-800/30 px-2 py-1 overflow-auto">
+                <div className="text-[8px] font-bold text-gray-700 dark:text-gray-300 mb-0.5">Other</div>
+                <div className="space-y-1">
+                  {missedTasks.filter(t => !t.courseName?.startsWith("CPPA122") && !t.courseName?.startsWith("CFNF400") && !t.courseName?.startsWith("CASL101")).map((task) => (
+                    <div key={task.id} className="animate-urgent-blink">
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-gray-50 dark:bg-gray-800/20" compact />
+                    </div>
+                  ))}
+                  {missedTasks.filter(t => !t.courseName?.startsWith("CPPA122") && !t.courseName?.startsWith("CFNF400") && !t.courseName?.startsWith("CASL101")).length === 0 && (
+                    <div className="text-[9px] text-gray-600 dark:text-gray-400 opacity-60">-</div>
+                  )}
+                </div>
+              </div>
             </div>
           </section>
         </div>
