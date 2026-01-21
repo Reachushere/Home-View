@@ -535,12 +535,12 @@ export default function FilesPage() {
             />
             <VolumeX 
               className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
-              onClick={() => handleVolume(file.id, "down")}
+              onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "down"); }}
               data-testid={`button-vol-down-${file.id}`}
             />
             <Volume2 
               className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
-              onClick={() => handleVolume(file.id, "up")}
+              onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "up"); }}
               data-testid={`button-vol-up-${file.id}`}
             />
             <Edit2 
