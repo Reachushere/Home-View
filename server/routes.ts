@@ -31,7 +31,35 @@ interface TTSSession {
 let currentTTSSession: TTSSession | null = null;
 // Average reading speed: ~150 words per minute, ~750 characters per minute
 const CHARS_PER_SECOND = 12.5;
-const CHUNK_SIZE = 3000; // Characters per TTS chunk
+const CHUNK_SIZE = 2000; // Characters per TTS chunk
+
+// Clean text for TTS - remove special characters that cause errors
+function cleanTextForTTS(text: string): string {
+  return text
+    .replace(/&amp;/g, 'and')
+    .replace(/&/g, 'and')
+    .replace(/[<>]/g, '')
+    .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Get chunk with sentence boundary detection
+function getChunkWithSentenceBoundary(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  
+  let cutoff = maxLength;
+  const lastPeriod = text.lastIndexOf('.', cutoff);
+  const lastQuestion = text.lastIndexOf('?', cutoff);
+  const lastExclaim = text.lastIndexOf('!', cutoff);
+  const bestBreak = Math.max(lastPeriod, lastQuestion, lastExclaim);
+  
+  if (bestBreak > maxLength * 0.5) {
+    cutoff = bestBreak + 1;
+  }
+  
+  return text.substring(0, cutoff);
+}
 
 // Function to send next TTS chunk automatically
 async function sendNextChunk() {
@@ -49,23 +77,29 @@ async function sendNextChunk() {
     return;
   }
   
-  // Get next chunk
-  let nextChunk = currentTTSSession.fullText.substring(
+  // Get next chunk from cleaned text
+  let rawChunk = currentTTSSession.fullText.substring(
     currentTTSSession.currentPosition,
     currentTTSSession.currentPosition + CHUNK_SIZE
   );
   
-  if (nextChunk.trim().length === 0) {
+  if (rawChunk.trim().length === 0) {
     console.log("TTS auto-read complete - no more content");
     currentTTSSession.isPlaying = false;
     return;
   }
   
+  // Clean the chunk and apply sentence boundary
+  let nextChunk = cleanTextForTTS(rawChunk);
+  nextChunk = getChunkWithSentenceBoundary(nextChunk, CHUNK_SIZE);
+  
   // Update session
   currentTTSSession.startTime = Date.now();
   
+  const targetEntity = currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY;
   console.log("Auto-continuing TTS from position", currentTTSSession.currentPosition, 
-    "remaining:", currentTTSSession.fullText.length - currentTTSSession.currentPosition);
+    "remaining:", currentTTSSession.fullText.length - currentTTSSession.currentPosition,
+    "to:", targetEntity);
   
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
@@ -78,7 +112,7 @@ async function sendNextChunk() {
       },
       body: JSON.stringify({
         message: nextChunk,
-        target: BATHROOM_ECHO_ENTITY,
+        target: targetEntity,
         data: { type: "tts" }
       }),
     });
@@ -822,29 +856,9 @@ export async function registerRoutes(
       // Store the target entity in session for resume
       currentTTSSession.targetEntity = targetEntity;
       
-      // Additional cleaning - remove any remaining problematic characters
-      // Only allow basic ASCII letters, numbers, spaces, and common punctuation
-      cleanedContent = cleanedContent
-        .replace(/&amp;/g, 'and')
-        .replace(/&/g, 'and')
-        .replace(/[<>]/g, '')
-        .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-      
-      // Limit to 2000 chars per chunk, break at sentence boundary
-      if (cleanedContent.length > 2000) {
-        let cutoff = 2000;
-        // Find last sentence boundary before cutoff
-        const lastPeriod = cleanedContent.lastIndexOf('.', cutoff);
-        const lastQuestion = cleanedContent.lastIndexOf('?', cutoff);
-        const lastExclaim = cleanedContent.lastIndexOf('!', cutoff);
-        const bestBreak = Math.max(lastPeriod, lastQuestion, lastExclaim);
-        if (bestBreak > 1000) {
-          cutoff = bestBreak + 1;
-        }
-        cleanedContent = cleanedContent.substring(0, cutoff);
-      }
+      // Clean and chunk the content
+      cleanedContent = cleanTextForTTS(cleanedContent);
+      cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
       
       console.log("Sending TTS to:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
