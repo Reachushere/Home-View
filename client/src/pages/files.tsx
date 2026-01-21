@@ -58,6 +58,7 @@ const WEEKS = [
   { id: "week-11", name: "Week 11" },
   { id: "week-12", name: "Week 12" },
   { id: "week-13", name: "Week 13" },
+  { id: "other", name: "Other" },
 ];
 
 const SUBFOLDERS = [
