@@ -693,9 +693,9 @@ export default function FilesPage() {
 
   // Get breadcrumb path for selected folder
   const getBreadcrumb = () => {
-    if (!selectedFolder) return ["Files"];
+    if (!selectedFolder) return ["Bryn's Files"];
     const parts = selectedFolder.split("-");
-    const result = ["Files"];
+    const result = ["Bryn's Files"];
     if (parts[0]) {
       const week = WEEKS.find(w => w.id === parts[0]);
       if (week) result.push(week.name);
