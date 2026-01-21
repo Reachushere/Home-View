@@ -1,4 +1,5 @@
 import { useState, DragEvent } from "react";
+import quickActionsBg from "@assets/image_1769032581752.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -943,12 +944,20 @@ export default function FilesPage() {
 
         {/* Right Panel - File Details/Controls */}
         {sortedFiles(getCurrentFolderFiles()).length > 0 && (
-          <div className="w-64 border-l border-[#3d3d3d] bg-white overflow-y-auto p-3">
-            <h3 className="text-sm font-medium mb-3 text-black">Quick Actions</h3>
+          <div 
+            className="w-64 border-l border-[#3d3d3d] overflow-y-auto p-3 relative"
+            style={{
+              backgroundImage: `url(${quickActionsBg})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'right center'
+            }}
+          >
+            <div className="absolute inset-0 bg-black/30"></div>
+            <h3 className="text-sm font-medium mb-3 text-white relative z-10">Quick Actions</h3>
             {sortedFiles(getCurrentFolderFiles()).map((file) => (
               <div 
                 key={file.id}
-                className="mb-3 p-2 bg-[#2d2d2d] rounded-md"
+                className="mb-3 p-2 bg-[#2d2d2d]/90 rounded-md relative z-10"
               >
                 <div className="text-xs truncate mb-2 text-gray-300">{file.displayName}</div>
                 <div className="flex items-center gap-2 mb-2">
