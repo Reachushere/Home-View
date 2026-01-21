@@ -1866,8 +1866,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10">
-              <div className="grid" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+            <div className="grid border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
                 <div className="p-1 text-xs text-foreground font-bold tracking-wide flex items-center justify-center bg-white dark:bg-card min-h-[40px]">
                   ALL DAY
                 </div>
@@ -2011,7 +2010,7 @@ export default function Dashboard() {
                     </div>
                   );
                 })}
-              </div>
+            </div>
               
               {/* Course Rows - CPPA122, CFNF400, CASL101 */}
               {[
@@ -2060,7 +2059,6 @@ export default function Dashboard() {
                   })}
                 </div>
               ))}
-            </div>
             
             {/* Time Slots */}
             <div>
