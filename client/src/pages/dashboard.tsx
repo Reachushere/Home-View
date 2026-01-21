@@ -873,7 +873,7 @@ export default function Dashboard() {
         </div>
 
         {/* Course Legend */}
-        <div className="px-1 space-y-2">
+        <div className="pl-0.5 pr-1 space-y-2">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {COURSES.map((course) => {
             const colors = courseColors[course.code];
