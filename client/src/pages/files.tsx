@@ -707,7 +707,7 @@ export default function FilesPage() {
           maxNumberOfFiles={5}
           onGetUploadParameters={getUploadParameters}
           onComplete={handleUploadComplete}
-          buttonClassName="h-7 text-xs px-3 bg-red-500/20 hover:bg-red-500/30 text-red-400 border-0"
+          buttonClassName="h-7 text-xs px-3 bg-[#5979CC] hover:bg-[#6989DC] text-white border-0"
         >
           <Upload className="h-3 w-3 mr-1" />
           Upload
@@ -943,8 +943,8 @@ export default function FilesPage() {
 
         {/* Right Panel - File Details/Controls */}
         {sortedFiles(getCurrentFolderFiles()).length > 0 && (
-          <div className="w-64 border-l border-[#3d3d3d] bg-red-500/20 overflow-y-auto p-3">
-            <h3 className="text-sm font-medium mb-3 text-red-400">Quick Actions</h3>
+          <div className="w-64 border-l border-[#3d3d3d] bg-[#5979CC] overflow-y-auto p-3">
+            <h3 className="text-sm font-medium mb-3 text-white">Quick Actions</h3>
             {sortedFiles(getCurrentFolderFiles()).map((file) => (
               <div 
                 key={file.id}
