@@ -1665,24 +1665,24 @@ export default function Dashboard() {
           </div>
           
           {/* Professional Clock */}
-          <div className="flex items-center gap-4 bg-card/50 backdrop-blur-sm px-4 py-2 rounded-lg border border-border/50" data-testid="digital-clock">
+          <div className="flex items-center gap-4 bg-gradient-to-r from-slate-800 to-slate-900 px-4 py-2 rounded-lg border border-slate-700/50 shadow-md" data-testid="digital-clock">
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+              <span className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold">
                 {format(currentTime, "EEEE")}
               </span>
-              <span className="text-sm font-medium text-foreground -mt-0.5">
+              <span className="text-sm font-medium text-white -mt-0.5">
                 {format(currentTime, "MMMM d, yyyy")}
               </span>
             </div>
-            <div className="w-px h-8 bg-border/70" />
+            <div className="w-px h-8 bg-slate-600" />
             <div className="flex items-baseline">
-              <span className="text-2xl font-semibold text-foreground tabular-nums tracking-tight">
+              <span className="text-2xl font-semibold text-white tabular-nums tracking-tight">
                 {format(currentTime, "h:mm")}
               </span>
-              <span className="text-base font-medium text-muted-foreground tabular-nums ml-0.5">
+              <span className="text-base font-medium text-slate-400 tabular-nums ml-0.5">
                 :{format(currentTime, "ss")}
               </span>
-              <span className="text-[10px] font-bold text-muted-foreground ml-1 uppercase">
+              <span className="text-[10px] font-bold text-slate-400 ml-1 uppercase">
                 {format(currentTime, "a")}
               </span>
             </div>
