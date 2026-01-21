@@ -431,16 +431,7 @@ export default function FilesPage() {
             <FileIcon className="h-3.5 w-3.5 text-muted-foreground" />
           </div>
           
-          <a 
-            href={file.objectPath} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex-1 font-medium text-sm truncate hover:underline cursor-pointer text-primary"
-            onClick={(e) => e.stopPropagation()}
-            data-testid={`text-filename-${file.id}`}
-          >
-            {file.displayName}
-          </a>
+          <div className="flex-1" />
 
           <div className="flex items-center gap-0.5">
             <Button 
@@ -529,9 +520,18 @@ export default function FilesPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pl-8">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{formatFileSize(file.size)}</span>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <a 
+              href={file.objectPath} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="font-medium text-sm truncate hover:underline cursor-pointer text-primary"
+              onClick={(e) => e.stopPropagation()}
+              data-testid={`text-filename-${file.id}`}
+            >
+              {file.displayName}
+            </a>
             {assignedTasks.length > 0 && (
               <Badge variant="secondary" className="text-xs py-0">
                 {assignedTasks.length} task{assignedTasks.length > 1 ? "s" : ""}
