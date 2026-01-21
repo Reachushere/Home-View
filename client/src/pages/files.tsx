@@ -949,7 +949,7 @@ export default function FilesPage() {
             style={{
               backgroundImage: `url(${quickActionsBg})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'right center'
+              backgroundPosition: 'center center'
             }}
           >
             <div className="absolute inset-0 bg-black/30"></div>
