@@ -803,7 +803,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-[#191919]">
       {isTodayExpanded && (
         <div 
           className="today-backdrop"
