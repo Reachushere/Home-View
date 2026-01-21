@@ -1666,6 +1666,13 @@ export default function Dashboard() {
           
           {/* Digital Clock */}
           <div className="flex items-center gap-3" data-testid="digital-clock">
+            <span 
+              className="text-sm font-normal text-muted-foreground tracking-wide"
+              style={{ fontFamily: "'Consolas', monospace" }}
+            >
+              {format(currentTime, "EEE, MMM d")}
+            </span>
+            <div className="h-5 w-px bg-border" />
             <div className="flex items-baseline">
               <span 
                 className="text-[28px] font-light text-foreground tabular-nums tracking-wide"
@@ -1680,13 +1687,6 @@ export default function Dashboard() {
                 {format(currentTime, "a").toUpperCase()}
               </span>
             </div>
-            <div className="h-5 w-px bg-border" />
-            <span 
-              className="text-sm font-normal text-muted-foreground tracking-wide"
-              style={{ fontFamily: "'Consolas', monospace" }}
-            >
-              {format(currentTime, "EEE, MMM d")}
-            </span>
           </div>
           
           <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-10 object-contain rounded" />
