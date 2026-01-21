@@ -488,12 +488,12 @@ export default function FilesPage() {
         }`}
         data-testid={`file-row-${file.id}`}
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-1">
           <a 
             href={file.objectPath} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="font-medium text-[10px] truncate hover:underline cursor-pointer text-black"
+            className="font-medium text-[10px] truncate hover:underline cursor-pointer text-black flex-1"
             onClick={(e) => e.stopPropagation()}
             data-testid={`text-filename-${file.id}`}
           >
@@ -504,9 +504,24 @@ export default function FilesPage() {
               {assignedTasks.length}
             </Badge>
           )}
+          <Select 
+            value={getSpeakerForFile(file.id)} 
+            onValueChange={(value) => setSpeakerForFile(file.id, value)}
+          >
+            <SelectTrigger className="w-[50px] h-4 text-[8px] bg-white hover:bg-gray-100 text-black border border-black px-1" data-testid={`select-speaker-${file.id}`}>
+              <SelectValue placeholder="Spkr" />
+            </SelectTrigger>
+            <SelectContent>
+              {SPEAKERS.map(speaker => (
+                <SelectItem key={speaker.id} value={speaker.id}>
+                  {speaker.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        <div className="flex items-center justify-between w-[calc(100%+16px)] bg-black dark:bg-black rounded-b-[2px] -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
+        <div className="flex items-center w-[calc(100%+16px)] bg-black dark:bg-black rounded-b-[2px] -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
           <div className="flex items-center gap-[16px]">
             <Play 
               className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
@@ -554,21 +569,6 @@ export default function FilesPage() {
               data-testid={`button-delete-${file.id}`}
             />
           </div>
-          <Select 
-            value={getSpeakerForFile(file.id)} 
-            onValueChange={(value) => setSpeakerForFile(file.id, value)}
-          >
-            <SelectTrigger className="w-[50px] h-4 text-[8px] bg-white hover:bg-gray-100 text-black border border-black px-1 ml-auto" data-testid={`select-speaker-${file.id}`}>
-              <SelectValue placeholder="Spkr" />
-            </SelectTrigger>
-            <SelectContent>
-              {SPEAKERS.map(speaker => (
-                <SelectItem key={speaker.id} value={speaker.id}>
-                  {speaker.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
         </div>
       </div>
     );
