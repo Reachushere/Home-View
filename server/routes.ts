@@ -310,14 +310,14 @@ export async function registerRoutes(
     }
   });
 
-  // PATCH /api/files/:id - Update file (rename or change folder)
+  // PATCH /api/files/:id - Update file (rename, change folder, or mark listened)
   app.patch("/api/files/:id", async (req, res) => {
     try {
-      const { displayName, folder } = req.body;
-      if (!displayName && folder === undefined) {
-        return res.status(400).json({ error: "displayName or folder is required" });
+      const { displayName, folder, listened } = req.body;
+      if (!displayName && folder === undefined && listened === undefined) {
+        return res.status(400).json({ error: "displayName, folder, or listened is required" });
       }
-      const file = await storage.updateFile(Number(req.params.id), { displayName, folder });
+      const file = await storage.updateFile(Number(req.params.id), { displayName, folder, listened });
       if (!file) {
         return res.status(404).json({ error: "File not found" });
       }

@@ -13,7 +13,7 @@ export interface IStorage {
   getFile(id: number): Promise<FileRecord | undefined>;
   getFileByPath(objectPath: string): Promise<FileRecord | undefined>;
   createFile(file: InsertFile): Promise<FileRecord>;
-  updateFile(id: number, updates: { displayName?: string; folder?: string | null }): Promise<FileRecord>;
+  updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean }): Promise<FileRecord>;
   deleteFile(id: number): Promise<void>;
 }
 
@@ -90,13 +90,16 @@ export class DatabaseStorage implements IStorage {
     return file;
   }
 
-  async updateFile(id: number, updates: { displayName?: string; folder?: string | null }): Promise<FileRecord> {
+  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean }): Promise<FileRecord> {
     const setData: Record<string, unknown> = {};
     if (updates.displayName !== undefined) {
       setData.displayName = updates.displayName;
     }
     if (updates.folder !== undefined) {
       setData.folder = updates.folder;
+    }
+    if (updates.listened !== undefined) {
+      setData.listened = updates.listened;
     }
     const [updated] = await db
       .update(files)

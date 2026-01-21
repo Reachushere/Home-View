@@ -32,8 +32,11 @@ import {
   VolumeX,
   Folder,
   FolderOpen,
-  Loader2
+  Loader2,
+  ChevronRight,
+  ChevronDown
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { FileRecord } from "@shared/schema";
 
 interface Task {
@@ -177,6 +180,18 @@ export default function FilesPage() {
     },
     onError: (err) => {
       toast({ title: "Failed to rename file", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const listenedMutation = useMutation({
+    mutationFn: async ({ id, listened }: { id: number; listened: boolean }) => {
+      return await apiRequest("PATCH", `/api/files/${id}`, { listened });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to update file", description: String(err), variant: "destructive" });
     },
   });
 
@@ -488,12 +503,21 @@ export default function FilesPage() {
         }`}
         data-testid={`file-row-${file.id}`}
       >
-        <div className="flex items-center justify-between gap-1">
+        <div className="flex items-center justify-between gap-2">
+          <Checkbox
+            checked={file.listened || false}
+            onCheckedChange={(checked) => {
+              listenedMutation.mutate({ id: file.id, listened: checked === true });
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="h-4 w-4 border-2 border-black data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+            data-testid={`checkbox-listened-${file.id}`}
+          />
           <a 
             href={file.objectPath} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="font-medium text-[10px] truncate hover:underline cursor-pointer text-black flex-1"
+            className={`font-medium text-[10px] truncate hover:underline cursor-pointer text-black flex-1 ${file.listened ? 'line-through opacity-60' : ''}`}
             onClick={(e) => e.stopPropagation()}
             data-testid={`text-filename-${file.id}`}
           >
@@ -679,23 +703,28 @@ export default function FilesPage() {
             return (
               <Card 
                 key={week.id}
-                className="hover-elevate transition-all"
+                className="border border-border/40 bg-card/50 shadow-sm"
                 data-testid={`folder-${week.id}`}
               >
                 <CardHeader 
-                  className="cursor-pointer pb-2"
+                  className="cursor-pointer py-2 px-3 hover:bg-accent/30 transition-colors rounded-t-lg"
                   onClick={() => toggleFolder(week.id)}
                 >
-                  <CardTitle className="flex items-center gap-2 text-base">
+                  <CardTitle className="flex items-center gap-2 text-sm font-medium">
+                    {isWeekExpanded ? (
+                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    )}
                     {isWeekExpanded ? (
                       <FolderOpen className="h-5 w-5 text-yellow-500 fill-yellow-400" />
                     ) : (
                       <Folder className="h-5 w-5 text-yellow-600 fill-yellow-400" />
                     )}
                     {week.name}
-                    <Badge variant="secondary" className="ml-auto">
-                      {weekFiles.length}
-                    </Badge>
+                    <span className="ml-auto text-xs text-muted-foreground">
+                      {weekFiles.length} {weekFiles.length === 1 ? "file" : "files"}
+                    </span>
                   </CardTitle>
                 </CardHeader>
                 {isWeekExpanded && (
@@ -708,22 +737,27 @@ export default function FilesPage() {
                       return (
                         <div
                           key={courseFolderId}
-                          className="border rounded-md p-2"
+                          className="rounded-md"
                           data-testid={`course-folder-${courseFolderId}`}
                         >
                           <div 
-                            className="flex items-center gap-2 cursor-pointer p-1"
+                            className="flex items-center gap-2 cursor-pointer py-1 px-2 hover:bg-accent/30 transition-colors rounded-md"
                             onClick={() => toggleFolder(courseFolderId)}
                           >
+                            {isCourseExpanded ? (
+                              <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                            ) : (
+                              <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                            )}
                             {isCourseExpanded ? (
                               <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
                             ) : (
                               <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                             )}
                             <span className={`text-sm font-medium ${course.color}`}>{course.name}</span>
-                            <Badge variant="outline" className="ml-auto text-xs">
+                            <span className="ml-auto text-xs text-muted-foreground">
                               {courseFiles.length}
-                            </Badge>
+                            </span>
                           </div>
                           {isCourseExpanded && (
                             <div className="mt-2 space-y-2 pl-4">
@@ -736,25 +770,30 @@ export default function FilesPage() {
                                 return (
                                   <div
                                     key={contentFolderId}
-                                    className={`border rounded-md p-2 transition-all ${isDragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
+                                    className={`rounded-md transition-all ${isDragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
                                     onDragOver={(e) => handleDragOver(e, contentFolderId)}
                                     onDragLeave={(e) => handleDragLeave(e)}
                                     onDrop={(e) => handleDrop(e, contentFolderId)}
                                     data-testid={`content-folder-${contentFolderId}`}
                                   >
                                     <div 
-                                      className="flex items-center gap-2 cursor-pointer p-1"
+                                      className="flex items-center gap-2 cursor-pointer py-1 px-2 hover:bg-accent/30 transition-colors rounded-md"
                                       onClick={() => toggleFolder(contentFolderId)}
                                     >
                                       {isContentExpanded ? (
-                                        <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" />
+                                        <ChevronDown className="h-2.5 w-2.5 text-muted-foreground" />
                                       ) : (
-                                        <Folder className="h-3 w-3 text-yellow-600 fill-yellow-400" />
+                                        <ChevronRight className="h-2.5 w-2.5 text-muted-foreground" />
+                                      )}
+                                      {isContentExpanded ? (
+                                        <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
+                                      ) : (
+                                        <Folder className="h-3.5 w-3.5 text-yellow-600 fill-yellow-400" />
                                       )}
                                       <span className="text-xs font-medium">{content.name}</span>
-                                      <Badge variant="outline" className="ml-auto text-[10px] py-0">
+                                      <span className="ml-auto text-[10px] text-muted-foreground">
                                         {contentFiles.length}
-                                      </Badge>
+                                      </span>
                                     </div>
                                     {isContentExpanded && (
                                       <div className="mt-2 space-y-2 pl-2">
@@ -784,21 +823,21 @@ export default function FilesPage() {
 
         {unfiledFiles.length > 0 && (
           <Card
-            className={`mt-6 ${dragOverFolder === "unfiled" ? "ring-2 ring-primary" : ""}`}
+            className={`mt-6 border border-border/40 bg-card/50 shadow-sm ${dragOverFolder === "unfiled" ? "ring-2 ring-primary" : ""}`}
             onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDragOverFolder("unfiled"); }}
             onDragLeave={(e) => handleDragLeave(e)}
             onDrop={handleDropOnUnfiled}
           >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
+            <CardHeader className="py-2 px-3">
+              <CardTitle className="flex items-center gap-2 text-sm font-medium">
+                <FileText className="h-5 w-5 text-muted-foreground" />
                 Unfiled
-                <Badge variant="secondary" className="ml-2">
-                  {unfiledFiles.length}
-                </Badge>
+                <span className="ml-auto text-xs text-muted-foreground">
+                  {unfiledFiles.length} {unfiledFiles.length === 1 ? "file" : "files"}
+                </span>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 pt-0 px-3 pb-3">
               {sortedFiles(unfiledFiles).map(file => renderFileRow(file))}
             </CardContent>
           </Card>

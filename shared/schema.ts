@@ -57,6 +57,7 @@ export const files = pgTable("files", {
   contentType: text("content_type"),
   size: integer("size"),
   folder: text("folder"),
+  listened: boolean("listened").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
