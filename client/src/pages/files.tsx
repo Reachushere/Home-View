@@ -1001,7 +1001,7 @@ export default function FilesPage() {
             {sortedFiles(getCurrentFolderFiles()).map((file) => (
               <div 
                 key={file.id}
-                className="mb-3 p-2 bg-[#2d2d2d]/90 rounded-md relative z-10"
+                className="mb-3 p-2 bg-[#2d2d2d]/90 rounded-md relative z-10 border border-white/50"
               >
                 <div className="text-xs truncate mb-2 text-gray-300">{file.displayName}</div>
                 <div className="flex items-center gap-2 mb-2">
