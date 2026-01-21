@@ -1058,44 +1058,7 @@ export default function FilesPage() {
                   >
                     <Volume2 className="h-3 w-3" />
                   </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-[#4d4d4d]"
-                    onClick={() => {
-                      setEditingFile(file);
-                      setNewName(file.displayName);
-                    }}
-                    data-testid={`button-rename-${file.id}`}
-                  >
-                    <Edit2 className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-[#4d4d4d]"
-                    onClick={() => {
-                      setAssigningFile(file);
-                      setSelectedTaskId("");
-                    }}
-                    data-testid={`button-assign-${file.id}`}
-                  >
-                    <Link2 className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-red-900/50 text-red-400"
-                    onClick={() => {
-                      if (confirm("Delete this file?")) {
-                        deleteMutation.mutate(file.id);
-                      }
-                    }}
-                    data-testid={`button-delete-${file.id}`}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
+                                  </div>
               </div>
             ))}
           </div>
