@@ -888,35 +888,35 @@ export default function FilesPage() {
             <div className="relative flex items-center" style={{ width: columnWidths.name }}>
               <span>Name</span>
               <div 
-                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                className="absolute right-0 top-0 bottom-0 w-px bg-white/30 cursor-col-resize hover:bg-white/70"
                 onMouseDown={(e) => handleMouseDown(e, 'name')}
               />
             </div>
             <div className="relative flex items-center" style={{ width: columnWidths.actions }}>
               <span>Actions</span>
               <div 
-                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                className="absolute right-0 top-0 bottom-0 w-px bg-white/30 cursor-col-resize hover:bg-white/70"
                 onMouseDown={(e) => handleMouseDown(e, 'actions')}
               />
             </div>
             <div className="relative flex items-center justify-center" style={{ width: columnWidths.status }}>
               <span>Status</span>
               <div 
-                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                className="absolute right-0 top-0 bottom-0 w-px bg-white/30 cursor-col-resize hover:bg-white/70"
                 onMouseDown={(e) => handleMouseDown(e, 'status')}
               />
             </div>
             <div className="relative flex items-center" style={{ width: columnWidths.date }}>
               <span>Date modified</span>
               <div 
-                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                className="absolute right-0 top-0 bottom-0 w-px bg-white/30 cursor-col-resize hover:bg-white/70"
                 onMouseDown={(e) => handleMouseDown(e, 'date')}
               />
             </div>
             <div className="relative flex items-center" style={{ width: columnWidths.type }}>
               <span>Type</span>
               <div 
-                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                className="absolute right-0 top-0 bottom-0 w-px bg-white/30 cursor-col-resize hover:bg-white/70"
                 onMouseDown={(e) => handleMouseDown(e, 'type')}
               />
             </div>
