@@ -488,6 +488,24 @@ export default function FilesPage() {
         }`}
         data-testid={`file-row-${file.id}`}
       >
+        <div className="flex items-center justify-between">
+          <a 
+            href={file.objectPath} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="font-medium text-[10px] truncate hover:underline cursor-pointer text-primary"
+            onClick={(e) => e.stopPropagation()}
+            data-testid={`text-filename-${file.id}`}
+          >
+            {file.displayName}
+          </a>
+          {assignedTasks.length > 0 && (
+            <Badge variant="secondary" className="text-[8px] py-0 px-1">
+              {assignedTasks.length}
+            </Badge>
+          )}
+        </div>
+
         <div className="flex items-center justify-evenly w-full">
           <Play 
             className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white cursor-pointer hover:opacity-70" 
@@ -535,31 +553,12 @@ export default function FilesPage() {
             }}
             data-testid={`button-delete-${file.id}`}
           />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <a 
-              href={file.objectPath} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="font-medium text-[10px] truncate hover:underline cursor-pointer text-primary"
-              onClick={(e) => e.stopPropagation()}
-              data-testid={`text-filename-${file.id}`}
-            >
-              {file.displayName}
-            </a>
-            {assignedTasks.length > 0 && (
-              <Badge variant="secondary" className="text-xs py-0">
-                {assignedTasks.length} task{assignedTasks.length > 1 ? "s" : ""}
-              </Badge>
-            )}
-          </div>
+          <div className="w-px h-2 bg-border" />
           <Select 
             value={getSpeakerForFile(file.id)} 
             onValueChange={(value) => setSpeakerForFile(file.id, value)}
           >
-            <SelectTrigger className="w-[70px] h-6 text-[10px] bg-[#5979CC] hover:bg-[#4a68b3] text-white border border-blue-800 px-1.5" data-testid={`select-speaker-${file.id}`}>
+            <SelectTrigger className="w-[50px] h-4 text-[8px] bg-[#5979CC] hover:bg-[#4a68b3] text-white border border-blue-800 px-1" data-testid={`select-speaker-${file.id}`}>
               <SelectValue placeholder="Spkr" />
             </SelectTrigger>
             <SelectContent>
