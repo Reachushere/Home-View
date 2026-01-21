@@ -426,98 +426,91 @@ export default function FilesPage() {
         }`}
         data-testid={`file-row-${file.id}`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-evenly w-full gap-1">
           <div className="p-1.5 bg-muted rounded">
             <FileIcon className="h-3.5 w-3.5 text-muted-foreground" />
           </div>
-          
-          <div className="flex-1" />
-
-          <div className="flex items-center gap-0">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-5 w-5"
-              onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
-              title="Play"
-              data-testid={`button-play-${file.id}`}
-            >
-              <Play className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-5 w-5"
-              onClick={() => handleStop(file.id)}
-              title="Stop"
-              data-testid={`button-stop-${file.id}`}
-            >
-              <Square className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-5 w-5"
-              onClick={() => handleVolume(file.id, "down")}
-              title="Volume Down"
-              data-testid={`button-vol-down-${file.id}`}
-            >
-              <VolumeX className="h-2 w-2" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-5 w-5"
-              onClick={() => handleVolume(file.id, "up")}
-              title="Volume Up"
-              data-testid={`button-vol-up-${file.id}`}
-            >
-              <Volume2 className="h-2 w-2" />
-            </Button>
-            
-            <div className="w-px h-3 bg-border mx-0.5" />
-          
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-5 w-5"
-              onClick={() => {
-                setEditingFile(file);
-                setNewName(file.displayName);
-              }}
-              title="Rename"
-              data-testid={`button-rename-${file.id}`}
-            >
-              <Edit2 className="h-2 w-2" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-5 w-5"
-              onClick={() => {
-                setAssigningFile(file);
-                setSelectedTaskId("");
-              }}
-              title="Assign to task"
-              data-testid={`button-assign-${file.id}`}
-            >
-              <Link2 className="h-2 w-2" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-5 w-5"
-              onClick={() => {
-                if (confirm("Are you sure you want to delete this file?")) {
-                  deleteMutation.mutate(file.id);
-                }
-              }}
-              title="Delete"
-              data-testid={`button-delete-${file.id}`}
-            >
-              <Trash2 className="h-2 w-2 text-destructive" />
-            </Button>
-          </div>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-5 w-5"
+            onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
+            title="Play"
+            data-testid={`button-play-${file.id}`}
+          >
+            <Play className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-5 w-5"
+            onClick={() => handleStop(file.id)}
+            title="Stop"
+            data-testid={`button-stop-${file.id}`}
+          >
+            <Square className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-5 w-5"
+            onClick={() => handleVolume(file.id, "down")}
+            title="Volume Down"
+            data-testid={`button-vol-down-${file.id}`}
+          >
+            <VolumeX className="h-2 w-2" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-5 w-5"
+            onClick={() => handleVolume(file.id, "up")}
+            title="Volume Up"
+            data-testid={`button-vol-up-${file.id}`}
+          >
+            <Volume2 className="h-2 w-2" />
+          </Button>
+          <div className="w-px h-3 bg-border" />
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-5 w-5"
+            onClick={() => {
+              setEditingFile(file);
+              setNewName(file.displayName);
+            }}
+            title="Rename"
+            data-testid={`button-rename-${file.id}`}
+          >
+            <Edit2 className="h-2 w-2" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-5 w-5"
+            onClick={() => {
+              setAssigningFile(file);
+              setSelectedTaskId("");
+            }}
+            title="Assign to task"
+            data-testid={`button-assign-${file.id}`}
+          >
+            <Link2 className="h-2 w-2" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="h-5 w-5"
+            onClick={() => {
+              if (confirm("Are you sure you want to delete this file?")) {
+                deleteMutation.mutate(file.id);
+              }
+            }}
+            title="Delete"
+            data-testid={`button-delete-${file.id}`}
+          >
+            <Trash2 className="h-2 w-2 text-destructive" />
+          </Button>
         </div>
 
         <div className="flex items-center justify-between">
