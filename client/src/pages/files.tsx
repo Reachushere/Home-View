@@ -44,20 +44,25 @@ interface Task {
   attachments: string[] | null;
 }
 
-const FOLDERS = [
-  { id: "folder-1", name: "Week 2" },
-  { id: "folder-2", name: "Week 3" },
-  { id: "folder-3", name: "Week 4" },
-  { id: "folder-4", name: "Week 5" },
-  { id: "folder-5", name: "Week 6" },
-  { id: "folder-6", name: "Week 7" },
-  { id: "folder-7", name: "Week 8" },
-  { id: "folder-8", name: "Week 9" },
-  { id: "folder-9", name: "Week 10" },
-  { id: "folder-10", name: "Week 11" },
-  { id: "folder-11", name: "Week 12" },
-  { id: "folder-12", name: "Week 13" },
-  { id: "folder-13", name: "General" },
+const WEEKS = [
+  { id: "week-1", name: "Week 1" },
+  { id: "week-2", name: "Week 2" },
+  { id: "week-3", name: "Week 3" },
+  { id: "week-4", name: "Week 4" },
+  { id: "week-5", name: "Week 5" },
+  { id: "week-6", name: "Week 6" },
+  { id: "week-7", name: "Week 7" },
+  { id: "week-8", name: "Week 8" },
+  { id: "week-9", name: "Week 9" },
+  { id: "week-10", name: "Week 10" },
+  { id: "week-11", name: "Week 11" },
+  { id: "week-12", name: "Week 12" },
+  { id: "week-13", name: "Week 13" },
+];
+
+const SUBFOLDERS = [
+  { id: "module", name: "Module" },
+  { id: "reading", name: "Reading" },
 ];
 
 function getFileIcon(contentType: string | null) {
@@ -133,7 +138,7 @@ export default function FilesPage() {
   const [lastUploadedObjectPath, setLastUploadedObjectPath] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortOption>("date-newest");
   const [fileSpeakers, setFileSpeakers] = useState<Record<number, string>>({});
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(["folder-13"]));
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [draggedFileId, setDraggedFileId] = useState<number | null>(null);
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
 
@@ -356,6 +361,10 @@ export default function FilesPage() {
 
   const getFilesInFolder = (folderId: string) => {
     return files.filter(f => f.folder === folderId);
+  };
+
+  const getFilesInWeek = (weekId: string) => {
+    return files.filter(f => f.folder?.startsWith(weekId + "-"));
   };
 
   const unfiledFiles = files.filter(f => !f.folder);
@@ -583,45 +592,77 @@ export default function FilesPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {FOLDERS.map((folder) => {
-            const folderFiles = getFilesInFolder(folder.id);
-            const isExpanded = expandedFolders.has(folder.id);
-            const isDragOver = dragOverFolder === folder.id;
+          {WEEKS.map((week) => {
+            const weekFiles = getFilesInWeek(week.id);
+            const isWeekExpanded = expandedFolders.has(week.id);
             
             return (
               <Card 
-                key={folder.id}
-                className={`hover-elevate transition-all ${isDragOver ? "ring-2 ring-primary" : ""}`}
-                onDragOver={(e) => handleDragOver(e, folder.id)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, folder.id)}
-                data-testid={`folder-${folder.id}`}
+                key={week.id}
+                className="hover-elevate transition-all"
+                data-testid={`folder-${week.id}`}
               >
                 <CardHeader 
                   className="cursor-pointer pb-2"
-                  onClick={() => toggleFolder(folder.id)}
+                  onClick={() => toggleFolder(week.id)}
                 >
                   <CardTitle className="flex items-center gap-2 text-base">
-                    {isExpanded ? (
+                    {isWeekExpanded ? (
                       <FolderOpen className="h-5 w-5 text-amber-500" />
                     ) : (
                       <Folder className="h-5 w-5 text-amber-500" />
                     )}
-                    {folder.name}
+                    {week.name}
                     <Badge variant="secondary" className="ml-auto">
-                      {folderFiles.length}
+                      {weekFiles.length}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
-                {isExpanded && (
-                  <CardContent className="space-y-2 pt-0">
-                    {folderFiles.length === 0 ? (
-                      <div className="text-center py-4 text-muted-foreground text-sm">
-                        Drop files here
-                      </div>
-                    ) : (
-                      sortedFiles(folderFiles).map(file => renderFileRow(file))
-                    )}
+                {isWeekExpanded && (
+                  <CardContent className="space-y-3 pt-0">
+                    {SUBFOLDERS.map((subfolder) => {
+                      const subfolderFullId = `${week.id}-${subfolder.id}`;
+                      const subfolderFiles = getFilesInFolder(subfolderFullId);
+                      const isSubfolderExpanded = expandedFolders.has(subfolderFullId);
+                      const isDragOver = dragOverFolder === subfolderFullId;
+                      
+                      return (
+                        <div
+                          key={subfolderFullId}
+                          className={`border rounded-md p-2 transition-all ${isDragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
+                          onDragOver={(e) => handleDragOver(e, subfolderFullId)}
+                          onDragLeave={handleDragLeave}
+                          onDrop={(e) => handleDrop(e, subfolderFullId)}
+                          data-testid={`subfolder-${subfolderFullId}`}
+                        >
+                          <div 
+                            className="flex items-center gap-2 cursor-pointer p-1"
+                            onClick={() => toggleFolder(subfolderFullId)}
+                          >
+                            {isSubfolderExpanded ? (
+                              <FolderOpen className="h-4 w-4 text-blue-500" />
+                            ) : (
+                              <Folder className="h-4 w-4 text-blue-500" />
+                            )}
+                            <span className="text-sm font-medium">{subfolder.name}</span>
+                            <Badge variant="outline" className="ml-auto text-xs">
+                              {subfolderFiles.length}
+                            </Badge>
+                          </div>
+                          {isSubfolderExpanded && (
+                            <div className="mt-2 space-y-2 pl-2">
+                              {subfolderFiles.length === 0 ? (
+                                <div className="text-center py-2 text-muted-foreground text-xs">
+                                  Drop files here
+                                </div>
+                              ) : (
+                                sortedFiles(subfolderFiles).map(file => renderFileRow(file))
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </CardContent>
                 )}
               </Card>
