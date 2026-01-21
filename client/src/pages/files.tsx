@@ -506,7 +506,7 @@ export default function FilesPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-between w-full bg-black dark:bg-black rounded-b-md -mx-2 -mb-2 px-2 py-1 mt-1">
+        <div className="flex items-center justify-between w-[calc(100%+16px)] bg-black dark:bg-black rounded-b-md -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
           <div className="flex items-center gap-[18px]">
             <Play 
               className="h-2.5 w-2.5 fill-white text-white cursor-pointer hover:opacity-70" 
@@ -558,7 +558,7 @@ export default function FilesPage() {
             value={getSpeakerForFile(file.id)} 
             onValueChange={(value) => setSpeakerForFile(file.id, value)}
           >
-            <SelectTrigger className="w-[50px] h-4 text-[8px] bg-[#5979CC] hover:bg-[#4a68b3] text-white border border-blue-800 px-1" data-testid={`select-speaker-${file.id}`}>
+            <SelectTrigger className="w-[50px] h-4 text-[8px] bg-[#5979CC] hover:bg-[#4a68b3] text-white border border-blue-800 px-1 ml-auto" data-testid={`select-speaker-${file.id}`}>
               <SelectValue placeholder="Spkr" />
             </SelectTrigger>
             <SelectContent>
