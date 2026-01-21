@@ -2868,6 +2868,55 @@ function TaskCard({
   );
 }
 
+interface FileRecord {
+  id: number;
+  originalName: string;
+  displayName: string;
+  objectPath: string;
+  contentType: string;
+  size: number;
+  folder: string | null;
+}
+
+function FileSelector({ 
+  onSelect, 
+  excludePaths 
+}: { 
+  onSelect: (objectPath: string) => void;
+  excludePaths: string[];
+}) {
+  const { data: files = [] } = useQuery<FileRecord[]>({
+    queryKey: ["/api/files"],
+  });
+
+  const availableFiles = files.filter(f => !excludePaths.includes(f.objectPath));
+
+  if (availableFiles.length === 0) {
+    return (
+      <Button type="button" variant="outline" disabled className="flex-1" data-testid="button-select-file-empty">
+        <FolderOpen className="h-4 w-4 mr-2" />
+        No Files
+      </Button>
+    );
+  }
+
+  return (
+    <Select onValueChange={onSelect}>
+      <SelectTrigger className="flex-1" data-testid="select-existing-file">
+        <FolderOpen className="h-4 w-4 mr-2" />
+        <SelectValue placeholder="Select File" />
+      </SelectTrigger>
+      <SelectContent>
+        {availableFiles.map(file => (
+          <SelectItem key={file.id} value={file.objectPath}>
+            {file.displayName}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function TaskForm({ 
   task, 
   weekNumber,
@@ -3265,10 +3314,21 @@ function TaskForm({
               ) : (
                 <>
                   <Upload className="h-4 w-4 mr-2" />
-                  Upload File
+                  Upload New
                 </>
               )}
             </Button>
+            <FileSelector 
+              onSelect={(objectPath) => {
+                if (!formData.attachments.includes(objectPath)) {
+                  setFormData(prev => ({
+                    ...prev,
+                    attachments: [...prev.attachments, objectPath]
+                  }));
+                }
+              }}
+              excludePaths={formData.attachments}
+            />
           </div>
           
           <div className="flex gap-2">
