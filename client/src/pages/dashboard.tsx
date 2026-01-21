@@ -2207,40 +2207,99 @@ export default function Dashboard() {
               <Clock className="h-3 w-3 text-black dark:text-white" />
               Be Prepared: Upcoming Tasks ({upcomingTasks.length})
             </h4>
-            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
+            <div className="flex-1 flex overflow-hidden">
               {isLoading ? (
-                <div className="text-muted-foreground text-xs pt-2">Loading...</div>
-              ) : upcomingTasks.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground text-xs">
-                  No upcoming tasks {selectedDate ? "for this date" : "for this week"}
-                </div>
+                <div className="text-muted-foreground text-xs p-3">Loading...</div>
               ) : (
-                <div className="grid grid-cols-3 gap-3 pt-2">
-                  {upcomingTasks.map((task) => {
-                    const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
-                    return (
-                      <div key={task.id} className="relative">
-                        <TaskCard
-                          task={task}
-                          onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                          onReschedule={() => setRescheduleTask(task)}
-                          onEdit={() => setEditingTask(task)}
-                          onDelete={() => deleteMutation.mutate(task.id)}
-                          cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                          compact
-                        />
-                        <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-black rounded-full flex flex-col items-center justify-center z-10">
-                          <span className="text-xs font-bold text-white leading-none mt-0.5">
-                            {daysUntilDue}
-                          </span>
-                          <span className="text-[7px] text-white uppercase tracking-tight">
-                            {daysUntilDue === 1 ? 'day' : 'days'}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <>
+                  {/* CPPA122 Column - Green */}
+                  <div className="flex-1 bg-green-200 dark:bg-green-900/40 p-2 overflow-auto border-r border-green-300 dark:border-green-700">
+                    <div className="text-[9px] font-bold text-green-700 dark:text-green-300 mb-1.5 text-center">CPPA122</div>
+                    <div className="space-y-1.5">
+                      {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
+                        const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+                        return (
+                          <div key={task.id} className="relative">
+                            <TaskCard
+                              task={task}
+                              onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                              onReschedule={() => setRescheduleTask(task)}
+                              onEdit={() => setEditingTask(task)}
+                              onDelete={() => deleteMutation.mutate(task.id)}
+                              cardBgClass="bg-green-50 dark:bg-green-900/20"
+                              compact
+                            />
+                            <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-black rounded-full flex flex-col items-center justify-center z-10">
+                              <span className="text-xs font-bold text-white leading-none mt-0.5">{daysUntilDue}</span>
+                              <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
+                        <div className="text-center py-2 text-green-600 dark:text-green-400 text-[10px]">No tasks</div>
+                      )}
+                    </div>
+                  </div>
+                  {/* CFNF400 Column - Pink */}
+                  <div className="flex-1 bg-pink-200 dark:bg-pink-900/40 p-2 overflow-auto border-r border-pink-300 dark:border-pink-700">
+                    <div className="text-[9px] font-bold text-pink-700 dark:text-pink-300 mb-1.5 text-center">CFNF400</div>
+                    <div className="space-y-1.5">
+                      {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
+                        const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+                        return (
+                          <div key={task.id} className="relative">
+                            <TaskCard
+                              task={task}
+                              onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                              onReschedule={() => setRescheduleTask(task)}
+                              onEdit={() => setEditingTask(task)}
+                              onDelete={() => deleteMutation.mutate(task.id)}
+                              cardBgClass="bg-pink-50 dark:bg-pink-900/20"
+                              compact
+                            />
+                            <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-black rounded-full flex flex-col items-center justify-center z-10">
+                              <span className="text-xs font-bold text-white leading-none mt-0.5">{daysUntilDue}</span>
+                              <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
+                        <div className="text-center py-2 text-pink-600 dark:text-pink-400 text-[10px]">No tasks</div>
+                      )}
+                    </div>
+                  </div>
+                  {/* CASL101 Column - Purple */}
+                  <div className="flex-1 bg-purple-200 dark:bg-purple-900/40 p-2 overflow-auto">
+                    <div className="text-[9px] font-bold text-purple-700 dark:text-purple-300 mb-1.5 text-center">CASL101</div>
+                    <div className="space-y-1.5">
+                      {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => {
+                        const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+                        return (
+                          <div key={task.id} className="relative">
+                            <TaskCard
+                              task={task}
+                              onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                              onReschedule={() => setRescheduleTask(task)}
+                              onEdit={() => setEditingTask(task)}
+                              onDelete={() => deleteMutation.mutate(task.id)}
+                              cardBgClass="bg-purple-50 dark:bg-purple-900/20"
+                              compact
+                            />
+                            <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-black rounded-full flex flex-col items-center justify-center z-10">
+                              <span className="text-xs font-bold text-white leading-none mt-0.5">{daysUntilDue}</span>
+                              <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
+                        <div className="text-center py-2 text-purple-600 dark:text-purple-400 text-[10px]">No tasks</div>
+                      )}
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </section>
