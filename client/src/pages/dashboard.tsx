@@ -1820,7 +1820,7 @@ export default function Dashboard() {
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers */}
-            <div className="grid border-b border-border sticky top-0 bg-card z-10 h-[52px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+            <div className="grid border-b border-border sticky top-0 bg-card z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minWidth: 'max-content' }}>
               <div className="p-2 flex items-center justify-center">
                 <span className="text-sm font-bold text-[#5979CC]">Week {selectedWeek}</span>
               </div>
@@ -1866,7 +1866,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+            <div className="grid border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minWidth: 'max-content' }}>
                 <div className="p-1 text-xs text-foreground font-bold tracking-wide flex items-center justify-center bg-white dark:bg-card min-h-[40px]">
                   ALL DAY
                 </div>
@@ -2018,7 +2018,7 @@ export default function Dashboard() {
                 { name: 'CFNF400', bg: 'bg-pink-100', label: 'bg-pink-200' },
                 { name: 'CASL101', bg: 'bg-indigo-100', label: 'bg-indigo-200' }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minWidth: 'max-content' }}>
                   <div className={`px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center ${course.label} text-black min-h-[20px]`}>
                     {course.name}
                   </div>
@@ -2069,7 +2069,7 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className={`grid border-b border-border/50 ${isCurrentHour ? "bg-blue-500/10" : ""}`}
-                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}
+                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', minWidth: 'max-content' }}
                   >
                     <div className={`text-xs font-bold tracking-wide flex items-center justify-center ${isCurrentHour ? "bg-[#5979CC] text-white" : "text-foreground"}`}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
