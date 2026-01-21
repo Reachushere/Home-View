@@ -527,7 +527,6 @@ export default function FilesPage() {
             onClick={() => handleVolume(file.id, "up")}
             data-testid={`button-vol-up-${file.id}`}
           />
-          <div className="w-px h-2 bg-border" />
           <Edit2 
             className="h-2 w-2 cursor-pointer hover:opacity-70" 
             onClick={() => {
@@ -553,7 +552,6 @@ export default function FilesPage() {
             }}
             data-testid={`button-delete-${file.id}`}
           />
-          <div className="w-px h-2 bg-border" />
           <Select 
             value={getSpeakerForFile(file.id)} 
             onValueChange={(value) => setSpeakerForFile(file.id, value)}
