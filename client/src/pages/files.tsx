@@ -1096,7 +1096,7 @@ export default function FilesPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-evenly">
                   <Button
                     size="icon"
                     variant="ghost"
@@ -1133,7 +1133,7 @@ export default function FilesPage() {
                   >
                     <Volume2 className="h-3 w-3" />
                   </Button>
-                                  </div>
+                </div>
               </div>
             ))}
           </div>
