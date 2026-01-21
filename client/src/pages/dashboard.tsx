@@ -1654,7 +1654,7 @@ export default function Dashboard() {
                 variant="ghost"
                 size="icon"
                 onClick={toggleMute}
-                className={`!h-6 !w-6 !min-h-0 p-0 bg-[#5979CC] hover:bg-[#4a68b3] border-[1.75px] border-blue-800 text-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+                className={`!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
                 data-testid="button-mute-toggle"
                 title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
               >
