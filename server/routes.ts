@@ -6,10 +6,16 @@ import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1,
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent } from "./googleCalendar";
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-const pdfParseModule = require("pdf-parse");
-const pdfParse = pdfParseModule.PDFParse;
+
+// Dynamic import for pdf-parse to avoid CommonJS compatibility issues
+let pdfParse: any = null;
+async function getPdfParser() {
+  if (!pdfParse) {
+    const module = await import("pdf-parse");
+    pdfParse = (module as any).default || (module as any).PDFParse || module;
+  }
+  return pdfParse;
+}
 
 // Use Nabu Casa cloud URL for remote access
 const HOME_ASSISTANT_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
@@ -777,7 +783,8 @@ export async function registerRoutes(
       if (isPDF) {
         // Parse PDF and extract text using PDFParse class
         try {
-          const parser = new pdfParse({ data: new Uint8Array(fileBuffer) });
+          const PdfParser = await getPdfParser();
+          const parser = new PdfParser({ data: new Uint8Array(fileBuffer) });
           await parser.load();
           const pdfText = await parser.getText();
           // getText() returns an object with pages array containing text
