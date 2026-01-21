@@ -1072,7 +1072,7 @@ export default function FilesPage() {
                 filter: 'brightness(1.3)'
               }}
             ></div>
-            <h3 className="text-sm font-medium mb-3 text-white relative z-10">Audio Controls</h3>
+            <h3 className="text-sm font-medium mb-3 text-white relative z-10">Media Player</h3>
             {sortedFiles(getCurrentFolderFiles()).map((file) => (
               <div 
                 key={file.id}
