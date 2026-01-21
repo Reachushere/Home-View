@@ -822,7 +822,11 @@ export async function registerRoutes(
       // Store the target entity in session for resume
       currentTTSSession.targetEntity = targetEntity;
       
-      // Use notify.alexa_media with tts type
+      // Use notify.alexa_media with tts type - send simple test message first
+      const testMessage = "Test message from your task manager app.";
+      console.log("Sending TTS to:", targetEntity);
+      console.log("Message:", testMessage);
+      
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -830,7 +834,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: cleanedContent,
+          message: testMessage,
           target: targetEntity,
           data: {
             type: "tts"
