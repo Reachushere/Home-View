@@ -1664,27 +1664,28 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Digital Clock - Red LED Style */}
-          <div className="bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] px-4 py-2 rounded-lg flex justify-center items-baseline gap-3 border border-[#444] shadow-lg" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)' }} data-testid="digital-clock">
+          {/* Professional Digital Clock */}
+          <div className="bg-[#0a0a0a] px-5 py-2.5 rounded border border-[#2a2a2a] flex items-center gap-4" style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)' }} data-testid="digital-clock">
             <div className="flex items-baseline">
               <span 
-                className="text-2xl font-bold text-[#ff3333] tabular-nums"
-                style={{ fontFamily: "'DS-Digital', 'Orbitron', 'Consolas', monospace", textShadow: '0 0 10px #ff3333, 0 0 20px #ff0000', letterSpacing: '2px' }}
+                className="text-[28px] font-light text-[#4fc3f7] tabular-nums tracking-wide"
+                style={{ fontFamily: "'Segment7Standard', 'Consolas', monospace" }}
               >
                 {format(currentTime, "h:mm:ss")}
               </span>
               <span 
-                className="text-xs font-bold text-[#ff3333] ml-1"
-                style={{ fontFamily: "'Orbitron', 'Consolas', monospace", textShadow: '0 0 8px #ff3333' }}
+                className="text-sm font-normal text-[#4fc3f7] ml-1.5 opacity-80"
+                style={{ fontFamily: "'Consolas', monospace" }}
               >
                 {format(currentTime, "a").toUpperCase()}
               </span>
             </div>
+            <div className="h-6 w-px bg-[#333]" />
             <span 
-              className="text-[11px] font-semibold text-[#ff6666] tracking-wider"
-              style={{ fontFamily: "'Orbitron', 'Consolas', monospace", textShadow: '0 0 4px #ff3333' }}
+              className="text-sm font-normal text-[#81d4fa] tracking-wide"
+              style={{ fontFamily: "'Consolas', monospace" }}
             >
-              {format(currentTime, "EEE, MMM d yyyy").toUpperCase()}
+              {format(currentTime, "EEE, MMM d")}
             </span>
           </div>
           
