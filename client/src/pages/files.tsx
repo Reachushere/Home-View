@@ -1,4 +1,4 @@
-import { useState, DragEvent } from "react";
+import { useState, DragEvent, useRef, useCallback, useEffect } from "react";
 import quickActionsBg from "@assets/image_1769032847168.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -156,6 +156,51 @@ export default function FilesPage() {
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
   const [uploadingCount, setUploadingCount] = useState(0);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+
+  // Column widths state for draggable resizing
+  const [columnWidths, setColumnWidths] = useState({
+    name: 300,
+    actions: 96,
+    status: 80,
+    date: 144,
+    type: 112,
+    size: 80,
+  });
+  const resizingColumn = useRef<string | null>(null);
+  const startX = useRef<number>(0);
+  const startWidth = useRef<number>(0);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent, column: string) => {
+    e.preventDefault();
+    resizingColumn.current = column;
+    startX.current = e.clientX;
+    startWidth.current = columnWidths[column as keyof typeof columnWidths];
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [columnWidths]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!resizingColumn.current) return;
+    const diff = e.clientX - startX.current;
+    const newWidth = Math.max(50, startWidth.current + diff);
+    setColumnWidths(prev => ({
+      ...prev,
+      [resizingColumn.current!]: newWidth,
+    }));
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    resizingColumn.current = null;
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  }, [handleMouseMove]);
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [handleMouseMove, handleMouseUp]);
 
   const { getUploadParameters, uploadFile } = useUpload({
     onSuccess: () => {
@@ -836,14 +881,44 @@ export default function FilesPage() {
         {/* Main Content Area - File List */}
         <div className="flex-1 flex flex-col overflow-hidden bg-[#191919]">
           {/* Column Headers */}
-          <div className="flex items-center px-4 py-2 border-b border-[#3d3d3d] text-xs text-gray-400 bg-[#202020]">
-            <div className="w-8"></div>
-            <div className="flex-1">Name</div>
-            <div className="w-24 pl-2">Actions</div>
-            <div className="w-20 text-center">Status</div>
-            <div className="w-36">Date modified</div>
-            <div className="w-28">Type</div>
-            <div className="w-20 text-right">Size</div>
+          <div className="flex items-center px-4 py-2 border-b border-[#3d3d3d] text-xs text-gray-400 bg-[#202020] select-none">
+            <div className="w-8 flex-shrink-0"></div>
+            <div className="relative flex items-center" style={{ width: columnWidths.name }}>
+              <span>Name</span>
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                onMouseDown={(e) => handleMouseDown(e, 'name')}
+              />
+            </div>
+            <div className="relative flex items-center pl-2" style={{ width: columnWidths.actions }}>
+              <span>Actions</span>
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                onMouseDown={(e) => handleMouseDown(e, 'actions')}
+              />
+            </div>
+            <div className="relative flex items-center justify-center" style={{ width: columnWidths.status }}>
+              <span>Status</span>
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                onMouseDown={(e) => handleMouseDown(e, 'status')}
+              />
+            </div>
+            <div className="relative flex items-center" style={{ width: columnWidths.date }}>
+              <span>Date modified</span>
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                onMouseDown={(e) => handleMouseDown(e, 'date')}
+              />
+            </div>
+            <div className="relative flex items-center" style={{ width: columnWidths.type }}>
+              <span>Type</span>
+              <div 
+                className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
+                onMouseDown={(e) => handleMouseDown(e, 'type')}
+              />
+            </div>
+            <div className="text-right" style={{ width: columnWidths.size }}>Size</div>
           </div>
 
           {/* File List */}
@@ -875,7 +950,7 @@ export default function FilesPage() {
                     data-testid={`file-row-${file.id}`}
                   >
                     {/* Checkbox */}
-                    <div className="w-8">
+                    <div className="w-8 flex-shrink-0">
                       <Checkbox
                         checked={file.listened || false}
                         onCheckedChange={(checked) => {
@@ -888,7 +963,7 @@ export default function FilesPage() {
                     </div>
                     
                     {/* Name */}
-                    <div className="flex-1 flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0" style={{ width: columnWidths.name }}>
                       <FileIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
                       <a 
                         href={file.objectPath} 
@@ -903,7 +978,7 @@ export default function FilesPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="w-24 flex items-center gap-3 pl-2">
+                    <div className="flex items-center gap-3 pl-2" style={{ width: columnWidths.actions }}>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -945,7 +1020,7 @@ export default function FilesPage() {
                     </div>
 
                     {/* Status */}
-                    <div className="w-20 flex justify-center">
+                    <div className="flex justify-center" style={{ width: columnWidths.status }}>
                       {file.listened ? (
                         <CheckCircle2 className="h-4 w-4 text-green-500" />
                       ) : assignedTasks.length > 0 ? (
@@ -956,17 +1031,17 @@ export default function FilesPage() {
                     </div>
 
                     {/* Date modified */}
-                    <div className="w-36 text-xs text-gray-400">
+                    <div className="text-xs text-gray-400" style={{ width: columnWidths.date }}>
                       {formatDate(file.createdAt)}
                     </div>
 
                     {/* Type */}
-                    <div className="w-28 text-xs text-gray-400 truncate">
+                    <div className="text-xs text-gray-400 truncate" style={{ width: columnWidths.type }}>
                       {file.contentType?.split("/")[1]?.toUpperCase() || "File"}
                     </div>
 
                     {/* Size */}
-                    <div className="w-20 text-xs text-gray-400 text-right">
+                    <div className="text-xs text-gray-400 text-right" style={{ width: columnWidths.size }}>
                       {formatFileSize(file.size)}
                     </div>
                   </div>
