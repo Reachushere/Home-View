@@ -506,52 +506,54 @@ export default function FilesPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-evenly w-full">
-          <Play 
-            className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white cursor-pointer hover:opacity-70" 
-            onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
-            data-testid={`button-play-${file.id}`}
-          />
-          <Square 
-            className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white cursor-pointer hover:opacity-70" 
-            onClick={() => handleStop(file.id)}
-            data-testid={`button-stop-${file.id}`}
-          />
-          <VolumeX 
-            className="h-2 w-2 cursor-pointer hover:opacity-70" 
-            onClick={() => handleVolume(file.id, "down")}
-            data-testid={`button-vol-down-${file.id}`}
-          />
-          <Volume2 
-            className="h-2 w-2 cursor-pointer hover:opacity-70" 
-            onClick={() => handleVolume(file.id, "up")}
-            data-testid={`button-vol-up-${file.id}`}
-          />
-          <Edit2 
-            className="h-2 w-2 cursor-pointer hover:opacity-70" 
-            onClick={() => {
-              setEditingFile(file);
-              setNewName(file.displayName);
-            }}
-            data-testid={`button-rename-${file.id}`}
-          />
-          <Link2 
-            className="h-2 w-2 cursor-pointer hover:opacity-70" 
-            onClick={() => {
-              setAssigningFile(file);
-              setSelectedTaskId("");
-            }}
-            data-testid={`button-assign-${file.id}`}
-          />
-          <Trash2 
-            className="h-2 w-2 text-destructive cursor-pointer hover:opacity-70" 
-            onClick={() => {
-              if (confirm("Are you sure you want to delete this file?")) {
-                deleteMutation.mutate(file.id);
-              }
-            }}
-            data-testid={`button-delete-${file.id}`}
-          />
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-1.5">
+            <Play 
+              className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white cursor-pointer hover:opacity-70" 
+              onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
+              data-testid={`button-play-${file.id}`}
+            />
+            <Square 
+              className="h-2 w-2 fill-black text-black dark:fill-white dark:text-white cursor-pointer hover:opacity-70" 
+              onClick={() => handleStop(file.id)}
+              data-testid={`button-stop-${file.id}`}
+            />
+            <VolumeX 
+              className="h-2 w-2 cursor-pointer hover:opacity-70" 
+              onClick={() => handleVolume(file.id, "down")}
+              data-testid={`button-vol-down-${file.id}`}
+            />
+            <Volume2 
+              className="h-2 w-2 cursor-pointer hover:opacity-70" 
+              onClick={() => handleVolume(file.id, "up")}
+              data-testid={`button-vol-up-${file.id}`}
+            />
+            <Edit2 
+              className="h-2 w-2 cursor-pointer hover:opacity-70" 
+              onClick={() => {
+                setEditingFile(file);
+                setNewName(file.displayName);
+              }}
+              data-testid={`button-rename-${file.id}`}
+            />
+            <Link2 
+              className="h-2 w-2 cursor-pointer hover:opacity-70" 
+              onClick={() => {
+                setAssigningFile(file);
+                setSelectedTaskId("");
+              }}
+              data-testid={`button-assign-${file.id}`}
+            />
+            <Trash2 
+              className="h-2 w-2 text-destructive cursor-pointer hover:opacity-70" 
+              onClick={() => {
+                if (confirm("Are you sure you want to delete this file?")) {
+                  deleteMutation.mutate(file.id);
+                }
+              }}
+              data-testid={`button-delete-${file.id}`}
+            />
+          </div>
           <Select 
             value={getSpeakerForFile(file.id)} 
             onValueChange={(value) => setSpeakerForFile(file.id, value)}
