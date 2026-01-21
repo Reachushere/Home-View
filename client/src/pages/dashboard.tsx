@@ -1664,19 +1664,19 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Rainbow Digital Clock */}
-          <div className="bg-[#5979CC] px-2 py-0.5 rounded-md w-[125px] flex justify-center items-center border-[1.5px] border-blue-800" data-testid="digital-clock">
+          {/* Digital LCD Clock */}
+          <div className="bg-[#1a1a1a] px-3 py-1.5 rounded-md w-[140px] flex justify-center items-center border-2 border-[#333] shadow-inner" style={{ boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6)' }} data-testid="digital-clock">
             <span 
-              className="text-base font-bold text-white w-[72px] text-right tabular-nums"
-              style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif", letterSpacing: '0.05em' }}
+              className="text-xl font-bold text-[#00ff00] w-[85px] text-right tabular-nums tracking-wider"
+              style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 8px #00ff00, 0 0 12px #00ff00' }}
             >
               {format(currentTime, "h:mm:ss")}
             </span>
             <span 
-              className="text-xs font-semibold text-white w-[24px] text-left ml-1"
-              style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif" }}
+              className="text-sm font-bold text-[#00ff00] w-[28px] text-left ml-1"
+              style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 8px #00ff00' }}
             >
-              {format(currentTime, "a")}
+              {format(currentTime, "a").toUpperCase()}
             </span>
           </div>
           
