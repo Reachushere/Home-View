@@ -890,7 +890,7 @@ export default function FilesPage() {
                 onMouseDown={(e) => handleMouseDown(e, 'name')}
               />
             </div>
-            <div className="relative flex items-center pl-2" style={{ width: columnWidths.actions }}>
+            <div className="relative flex items-center" style={{ width: columnWidths.actions }}>
               <span>Actions</span>
               <div 
                 className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-500/50"
@@ -978,7 +978,7 @@ export default function FilesPage() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-3 pl-2" style={{ width: columnWidths.actions }}>
+                    <div className="flex items-center gap-3" style={{ width: columnWidths.actions }}>
                       <Button
                         variant="ghost"
                         size="icon"
