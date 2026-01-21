@@ -822,10 +822,23 @@ export async function registerRoutes(
       // Store the target entity in session for resume
       currentTTSSession.targetEntity = targetEntity;
       
-      // Use notify.alexa_media with tts type - send simple test message first
-      const testMessage = "Test message from your task manager app.";
+      // Additional cleaning - remove any remaining problematic characters
+      // Only allow basic ASCII letters, numbers, spaces, and common punctuation
+      cleanedContent = cleanedContent
+        .replace(/&amp;/g, 'and')
+        .replace(/&/g, 'and')
+        .replace(/[<>]/g, '')
+        .replace(/[^\w\s.,!?;:'"()-]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      
+      // Limit to 500 chars for reliability
+      if (cleanedContent.length > 500) {
+        cleanedContent = cleanedContent.substring(0, 500);
+      }
+      
       console.log("Sending TTS to:", targetEntity);
-      console.log("Message:", testMessage);
+      console.log("Cleaned message length:", cleanedContent.length);
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
@@ -834,7 +847,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: testMessage,
+          message: cleanedContent,
           target: targetEntity,
           data: {
             type: "tts"
