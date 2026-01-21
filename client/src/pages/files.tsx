@@ -1,5 +1,5 @@
 import { useState, DragEvent } from "react";
-import quickActionsBg from "@assets/image_1769032581752.png";
+import quickActionsBg from "@assets/image_1769032847168.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -949,7 +949,7 @@ export default function FilesPage() {
             style={{
               backgroundImage: `url(${quickActionsBg})`,
               backgroundSize: 'cover',
-              backgroundPosition: '15% center'
+              backgroundPosition: 'center center'
             }}
           >
             <div className="absolute inset-0 bg-black/30"></div>
