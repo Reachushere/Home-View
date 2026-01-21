@@ -828,8 +828,8 @@ export default function FilesPage() {
                               ) : (
                                 <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                               )}
-                              <span className={`text-xs flex-1 ${course.color}`}>{course.name.split(" - ")[0]}</span>
-                              <span className="text-xs text-gray-500">{courseFiles.length}</span>
+                              <span className={`text-sm flex-1 ${course.color}`}>{course.name.split(" - ")[0]}</span>
+                              <span className="text-sm text-gray-500">{courseFiles.length}</span>
                             </div>
                             
                             {isCourseExpanded && (
@@ -850,8 +850,8 @@ export default function FilesPage() {
                                       data-testid={`content-folder-${contentFolderId}`}
                                     >
                                       <Folder className="h-3.5 w-3.5 text-yellow-600 fill-yellow-400 ml-2" />
-                                      <span className="text-xs flex-1">{content.name}</span>
-                                      <span className="text-xs text-gray-500">{contentFiles.length}</span>
+                                      <span className="text-sm flex-1">{content.name}</span>
+                                      <span className="text-sm text-gray-500">{contentFiles.length}</span>
                                     </div>
                                   );
                                 })}
