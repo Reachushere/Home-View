@@ -154,6 +154,7 @@ export default function FilesPage() {
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
   const [uploadingCount, setUploadingCount] = useState(0);
+  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
 
   const { getUploadParameters, uploadFile } = useUpload({
     onSuccess: () => {
@@ -638,9 +639,35 @@ export default function FilesPage() {
     setIsExternalDragOver(false);
   };
 
+  // Get files for the currently selected folder
+  const getCurrentFolderFiles = () => {
+    if (!selectedFolder) return unfiledFiles;
+    return getFilesInFolder(selectedFolder);
+  };
+
+  // Get breadcrumb path for selected folder
+  const getBreadcrumb = () => {
+    if (!selectedFolder) return ["Files"];
+    const parts = selectedFolder.split("-");
+    const result = ["Files"];
+    if (parts[0]) {
+      const week = WEEKS.find(w => w.id === parts[0]);
+      if (week) result.push(week.name);
+    }
+    if (parts[1]) {
+      const course = COURSE_FOLDERS.find(c => c.id === parts[1]);
+      if (course) result.push(course.name);
+    }
+    if (parts[2]) {
+      const content = CONTENT_FOLDERS.find(c => c.id === parts[2]);
+      if (content) result.push(content.name);
+    }
+    return result;
+  };
+
   return (
     <div 
-      className={`min-h-screen bg-background p-6 transition-all ${isExternalDragOver ? "ring-4 ring-primary ring-inset bg-primary/5" : ""}`}
+      className={`h-screen flex flex-col bg-[#191919] text-white transition-all ${isExternalDragOver ? "ring-4 ring-primary ring-inset bg-primary/5" : ""}`}
       onDragOver={handlePageDragOver}
       onDragLeave={handlePageDragLeave}
       onDrop={handlePageDrop}
@@ -653,209 +680,372 @@ export default function FilesPage() {
       )}
       {isExternalDragOver && (
         <div className="fixed inset-0 bg-primary/10 pointer-events-none z-40 flex items-center justify-center">
-          <div className="bg-card border-2 border-dashed border-primary rounded-lg p-8 text-center">
-            <Upload className="h-12 w-12 mx-auto text-primary mb-2" />
+          <div className="bg-[#2d2d2d] border-2 border-dashed border-blue-500 rounded-lg p-8 text-center">
+            <Upload className="h-12 w-12 mx-auto text-blue-400 mb-2" />
             <p className="text-lg font-medium">Drop files here to upload</p>
           </div>
         </div>
       )}
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Button variant="ghost" size="icon" data-testid="button-back">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-bold">File Manager</h1>
-          <ObjectUploader
-            maxNumberOfFiles={5}
-            onGetUploadParameters={getUploadParameters}
-            onComplete={handleUploadComplete}
-            buttonClassName="h-8 text-xs px-3 bg-[#5979CC] hover:bg-[#4a68b3] text-white border-[1.75px] border-blue-800"
-          >
-            <Upload className="h-3 w-3 mr-1" />
-            Upload
-          </ObjectUploader>
-          <div className="flex-1" />
-          <Badge variant="secondary">
-            {files.length} {files.length === 1 ? "file" : "files"}
-          </Badge>
-          <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
-            <SelectTrigger className="w-[160px]" data-testid="select-sort">
-              <SelectValue placeholder="Sort by..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="date-newest">Newest first</SelectItem>
-              <SelectItem value="date-oldest">Oldest first</SelectItem>
-              <SelectItem value="name-asc">Name A-Z</SelectItem>
-              <SelectItem value="name-desc">Name Z-A</SelectItem>
-              <SelectItem value="size-largest">Largest first</SelectItem>
-              <SelectItem value="size-smallest">Smallest first</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {WEEKS.map((week) => {
-            const weekFiles = getFilesInWeek(week.id);
-            const isWeekExpanded = expandedFolders.has(week.id);
-            
-            return (
-              <Card 
-                key={week.id}
-                className="border border-border/40 bg-card/50 shadow-sm"
-                data-testid={`folder-${week.id}`}
-              >
-                <CardHeader 
-                  className="cursor-pointer py-2 px-3 hover:bg-accent/30 transition-colors rounded-t-lg"
-                  onClick={() => toggleFolder(week.id)}
-                >
-                  <CardTitle className="flex items-center gap-2 text-sm font-medium">
+      {/* Toolbar */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
+        <Link href="/">
+          <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-[#3d3d3d]" data-testid="button-back">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </Link>
+        <div className="flex items-center gap-1 text-sm text-gray-400">
+          {getBreadcrumb().map((part, idx) => (
+            <span key={idx} className="flex items-center gap-1">
+              {idx > 0 && <ChevronRight className="h-3 w-3" />}
+              <span className={idx === getBreadcrumb().length - 1 ? "text-white" : ""}>{part}</span>
+            </span>
+          ))}
+        </div>
+        <div className="flex-1" />
+        <ObjectUploader
+          maxNumberOfFiles={5}
+          onGetUploadParameters={getUploadParameters}
+          onComplete={handleUploadComplete}
+          buttonClassName="h-7 text-xs px-3 bg-[#0078d4] hover:bg-[#1084d8] text-white border-0"
+        >
+          <Upload className="h-3 w-3 mr-1" />
+          Upload
+        </ObjectUploader>
+        <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+          <SelectTrigger className="w-[130px] h-7 text-xs bg-[#2d2d2d] border-[#3d3d3d] text-white" data-testid="select-sort">
+            <SelectValue placeholder="Sort by..." />
+          </SelectTrigger>
+          <SelectContent className="bg-[#2d2d2d] border-[#3d3d3d]">
+            <SelectItem value="date-newest">Newest first</SelectItem>
+            <SelectItem value="date-oldest">Oldest first</SelectItem>
+            <SelectItem value="name-asc">Name A-Z</SelectItem>
+            <SelectItem value="name-desc">Name Z-A</SelectItem>
+            <SelectItem value="size-largest">Largest first</SelectItem>
+            <SelectItem value="size-smallest">Smallest first</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar - Tree Navigation */}
+        <div className="w-56 border-r border-[#3d3d3d] bg-[#202020] overflow-y-auto">
+          <div className="py-2">
+            {/* Unfiled files */}
+            <div
+              className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === null ? "bg-[#0078d4]/30" : ""}`}
+              onClick={() => setSelectedFolder(null)}
+              data-testid="folder-unfiled"
+            >
+              <FileText className="h-4 w-4 text-gray-400" />
+              <span className="text-sm">Unfiled</span>
+              <span className="ml-auto text-xs text-gray-500">{unfiledFiles.length}</span>
+            </div>
+
+            {/* Week folders */}
+            {WEEKS.map((week) => {
+              const weekFiles = getFilesInWeek(week.id);
+              const isWeekExpanded = expandedFolders.has(week.id);
+              
+              return (
+                <div key={week.id}>
+                  <div
+                    className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d]`}
+                    onClick={() => toggleFolder(week.id)}
+                    data-testid={`folder-${week.id}`}
+                  >
                     {isWeekExpanded ? (
-                      <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      <ChevronDown className="h-3 w-3 text-gray-500" />
                     ) : (
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      <ChevronRight className="h-3 w-3 text-gray-500" />
                     )}
                     {isWeekExpanded ? (
-                      <FolderOpen className="h-5 w-5 text-yellow-500 fill-yellow-400" />
+                      <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
                     ) : (
-                      <Folder className="h-5 w-5 text-yellow-600 fill-yellow-400" />
+                      <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                     )}
-                    {week.name}
-                    <span className="ml-auto text-xs text-muted-foreground">
-                      {weekFiles.length} {weekFiles.length === 1 ? "file" : "files"}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                {isWeekExpanded && (
-                  <CardContent className="space-y-3 pt-0">
-                    {COURSE_FOLDERS.map((course) => {
-                      const courseFolderId = `${week.id}-${course.id}`;
-                      const courseFiles = getFilesInCourse(week.id, course.id);
-                      const isCourseExpanded = expandedFolders.has(courseFolderId);
-                      
-                      return (
-                        <div
-                          key={courseFolderId}
-                          className="rounded-md"
-                          data-testid={`course-folder-${courseFolderId}`}
-                        >
-                          <div 
-                            className="flex items-center gap-2 cursor-pointer py-1 px-2 hover:bg-accent/30 transition-colors rounded-md"
-                            onClick={() => toggleFolder(courseFolderId)}
-                          >
-                            {isCourseExpanded ? (
-                              <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                            ) : (
-                              <ChevronRight className="h-3 w-3 text-muted-foreground" />
-                            )}
-                            {isCourseExpanded ? (
-                              <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
-                            ) : (
-                              <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
-                            )}
-                            <span className={`text-sm font-medium ${course.color}`}>{course.name}</span>
-                            <span className="ml-auto text-xs text-muted-foreground">
-                              {courseFiles.length}
-                            </span>
-                          </div>
-                          {isCourseExpanded && (
-                            <div className="mt-2 space-y-2 pl-4">
-                              {CONTENT_FOLDERS.map((content) => {
-                                const contentFolderId = `${week.id}-${course.id}-${content.id}`;
-                                const contentFiles = getFilesInFolder(contentFolderId);
-                                const isContentExpanded = expandedFolders.has(contentFolderId);
-                                const isDragOver = dragOverFolder === contentFolderId;
-                                
-                                return (
-                                  <div
-                                    key={contentFolderId}
-                                    className={`rounded-md transition-all ${isDragOver ? "ring-2 ring-primary bg-primary/5" : ""}`}
-                                    onDragOver={(e) => handleDragOver(e, contentFolderId)}
-                                    onDragLeave={(e) => handleDragLeave(e)}
-                                    onDrop={(e) => handleDrop(e, contentFolderId)}
-                                    data-testid={`content-folder-${contentFolderId}`}
-                                  >
-                                    <div 
-                                      className="flex items-center gap-2 cursor-pointer py-1 px-2 hover:bg-accent/30 transition-colors rounded-md"
-                                      onClick={() => toggleFolder(contentFolderId)}
-                                    >
-                                      {isContentExpanded ? (
-                                        <ChevronDown className="h-2.5 w-2.5 text-muted-foreground" />
-                                      ) : (
-                                        <ChevronRight className="h-2.5 w-2.5 text-muted-foreground" />
-                                      )}
-                                      {isContentExpanded ? (
-                                        <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
-                                      ) : (
-                                        <Folder className="h-3.5 w-3.5 text-yellow-600 fill-yellow-400" />
-                                      )}
-                                      <span className="text-xs font-medium">{content.name}</span>
-                                      <span className="ml-auto text-[10px] text-muted-foreground">
-                                        {contentFiles.length}
-                                      </span>
-                                    </div>
-                                    {isContentExpanded && (
-                                      <div className="mt-2 space-y-2 pl-2">
-                                        {contentFiles.length === 0 ? (
-                                          <div className="text-center py-2 text-muted-foreground text-xs">
-                                            Drop files here
-                                          </div>
-                                        ) : (
-                                          sortedFiles(contentFiles).map(file => renderFileRow(file))
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
+                    <span className="text-sm flex-1">{week.name}</span>
+                    <span className="text-xs text-gray-500">{weekFiles.length}</span>
+                  </div>
+                  
+                  {isWeekExpanded && (
+                    <div className="ml-3">
+                      {COURSE_FOLDERS.map((course) => {
+                        const courseFolderId = `${week.id}-${course.id}`;
+                        const courseFiles = getFilesInCourse(week.id, course.id);
+                        const isCourseExpanded = expandedFolders.has(courseFolderId);
+                        
+                        return (
+                          <div key={courseFolderId}>
+                            <div
+                              className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d]`}
+                              onClick={() => toggleFolder(courseFolderId)}
+                              data-testid={`course-folder-${courseFolderId}`}
+                            >
+                              {isCourseExpanded ? (
+                                <ChevronDown className="h-3 w-3 text-gray-500" />
+                              ) : (
+                                <ChevronRight className="h-3 w-3 text-gray-500" />
+                              )}
+                              {isCourseExpanded ? (
+                                <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                              ) : (
+                                <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
+                              )}
+                              <span className={`text-xs flex-1 ${course.color}`}>{course.name.split(" - ")[0]}</span>
+                              <span className="text-xs text-gray-500">{courseFiles.length}</span>
                             </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </CardContent>
-                )}
-              </Card>
-            );
-          })}
+                            
+                            {isCourseExpanded && (
+                              <div className="ml-4">
+                                {CONTENT_FOLDERS.map((content) => {
+                                  const contentFolderId = `${week.id}-${course.id}-${content.id}`;
+                                  const contentFiles = getFilesInFolder(contentFolderId);
+                                  const isSelected = selectedFolder === contentFolderId;
+                                  
+                                  return (
+                                    <div
+                                      key={contentFolderId}
+                                      className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isSelected ? "bg-[#0078d4]/30" : ""}`}
+                                      onClick={() => setSelectedFolder(contentFolderId)}
+                                      onDragOver={(e) => handleDragOver(e, contentFolderId)}
+                                      onDragLeave={(e) => handleDragLeave(e)}
+                                      onDrop={(e) => handleDrop(e, contentFolderId)}
+                                      data-testid={`content-folder-${contentFolderId}`}
+                                    >
+                                      <Folder className="h-3.5 w-3.5 text-yellow-600 fill-yellow-400 ml-2" />
+                                      <span className="text-xs flex-1">{content.name}</span>
+                                      <span className="text-xs text-gray-500">{contentFiles.length}</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {unfiledFiles.length > 0 && (
-          <Card
-            className={`mt-6 border border-border/40 bg-card/50 shadow-sm ${dragOverFolder === "unfiled" ? "ring-2 ring-primary" : ""}`}
-            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setDragOverFolder("unfiled"); }}
-            onDragLeave={(e) => handleDragLeave(e)}
-            onDrop={handleDropOnUnfiled}
-          >
-            <CardHeader className="py-2 px-3">
-              <CardTitle className="flex items-center gap-2 text-sm font-medium">
-                <FileText className="h-5 w-5 text-muted-foreground" />
-                Unfiled
-                <span className="ml-auto text-xs text-muted-foreground">
-                  {unfiledFiles.length} {unfiledFiles.length === 1 ? "file" : "files"}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2 pt-0 px-3 pb-3">
-              {sortedFiles(unfiledFiles).map(file => renderFileRow(file))}
-            </CardContent>
-          </Card>
-        )}
+        {/* Main Content Area - File List */}
+        <div className="flex-1 flex flex-col overflow-hidden bg-[#191919]">
+          {/* Column Headers */}
+          <div className="flex items-center px-4 py-2 border-b border-[#3d3d3d] text-xs text-gray-400 bg-[#202020]">
+            <div className="w-8"></div>
+            <div className="flex-1">Name</div>
+            <div className="w-20 text-center">Status</div>
+            <div className="w-36">Date modified</div>
+            <div className="w-28">Type</div>
+            <div className="w-20 text-right">Size</div>
+          </div>
 
-        {files.length === 0 && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No files uploaded yet</h3>
-              <p className="text-muted-foreground mb-4">
-                Upload files when creating or editing tasks to see them here.
-              </p>
-              <Link href="/">
-                <Button data-testid="button-go-to-dashboard">Go to Dashboard</Button>
-              </Link>
-            </CardContent>
-          </Card>
+          {/* File List */}
+          <div 
+            className="flex-1 overflow-y-auto"
+            onDragOver={(e) => { if (selectedFolder) handleDragOver(e, selectedFolder); else { e.preventDefault(); setDragOverFolder("unfiled"); }}}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => selectedFolder ? handleDrop(e, selectedFolder) : handleDropOnUnfiled(e)}
+          >
+            {sortedFiles(getCurrentFolderFiles()).length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                <Folder className="h-16 w-16 text-gray-600 mb-4" />
+                <p className="text-sm">This folder is empty</p>
+                <p className="text-xs mt-1">Drop files here to add them</p>
+              </div>
+            ) : (
+              sortedFiles(getCurrentFolderFiles()).map((file) => {
+                const FileIcon = getFileIcon(file.contentType);
+                const assignedTasks = getTasksForFile(file);
+                const isDragging = draggedFileId === file.id;
+
+                return (
+                  <div
+                    key={file.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, file.id)}
+                    onDragEnd={handleDragEnd}
+                    className={`flex items-center px-4 py-1.5 hover:bg-[#2d2d2d] border-b border-[#2a2a2a] cursor-pointer ${isDragging ? "opacity-50" : ""}`}
+                    data-testid={`file-row-${file.id}`}
+                  >
+                    {/* Checkbox */}
+                    <div className="w-8">
+                      <Checkbox
+                        checked={file.listened || false}
+                        onCheckedChange={(checked) => {
+                          listenedMutation.mutate({ id: file.id, listened: checked === true });
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-4 w-4 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                        data-testid={`checkbox-listened-${file.id}`}
+                      />
+                    </div>
+                    
+                    {/* Name */}
+                    <div className="flex-1 flex items-center gap-2 min-w-0">
+                      <FileIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                      <a 
+                        href={file.objectPath} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={`text-sm truncate hover:underline ${file.listened ? 'line-through text-gray-500' : 'text-white'}`}
+                        onClick={(e) => e.stopPropagation()}
+                        data-testid={`text-filename-${file.id}`}
+                      >
+                        {file.displayName}
+                      </a>
+                    </div>
+
+                    {/* Status */}
+                    <div className="w-20 flex justify-center">
+                      {file.listened ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      ) : assignedTasks.length > 0 ? (
+                        <Badge variant="secondary" className="text-[10px] py-0 px-1.5 bg-blue-600">
+                          {assignedTasks.length}
+                        </Badge>
+                      ) : null}
+                    </div>
+
+                    {/* Date modified */}
+                    <div className="w-36 text-xs text-gray-400">
+                      {formatDate(file.createdAt)}
+                    </div>
+
+                    {/* Type */}
+                    <div className="w-28 text-xs text-gray-400 truncate">
+                      {file.contentType?.split("/")[1]?.toUpperCase() || "File"}
+                    </div>
+
+                    {/* Size */}
+                    <div className="w-20 text-xs text-gray-400 text-right">
+                      {formatFileSize(file.size)}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Bottom Action Bar */}
+          {sortedFiles(getCurrentFolderFiles()).length > 0 && (
+            <div className="border-t border-[#3d3d3d] bg-[#202020] px-4 py-2">
+              <div className="text-xs text-gray-400">
+                {sortedFiles(getCurrentFolderFiles()).length} items
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Panel - File Details/Controls */}
+        {sortedFiles(getCurrentFolderFiles()).length > 0 && (
+          <div className="w-64 border-l border-[#3d3d3d] bg-[#202020] overflow-y-auto p-3">
+            <h3 className="text-sm font-medium mb-3 text-gray-300">Quick Actions</h3>
+            {sortedFiles(getCurrentFolderFiles()).map((file) => (
+              <div 
+                key={file.id}
+                className="mb-3 p-2 bg-[#2d2d2d] rounded-md"
+              >
+                <div className="text-xs truncate mb-2 text-gray-300">{file.displayName}</div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Select 
+                    value={getSpeakerForFile(file.id)} 
+                    onValueChange={(value) => setSpeakerForFile(file.id, value)}
+                  >
+                    <SelectTrigger className="flex-1 h-6 text-[10px] bg-[#3d3d3d] border-[#4d4d4d] text-white" data-testid={`select-speaker-${file.id}`}>
+                      <SelectValue placeholder="Speaker" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#2d2d2d] border-[#3d3d3d]">
+                      {SPEAKERS.map(speaker => (
+                        <SelectItem key={speaker.id} value={speaker.id} className="text-xs">
+                          {speaker.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
+                    data-testid={`button-play-${file.id}`}
+                  >
+                    <Play className="h-3 w-3 fill-white" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    onClick={() => handleStop(file.id)}
+                    data-testid={`button-stop-${file.id}`}
+                  >
+                    <Square className="h-3 w-3 fill-white" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "down"); }}
+                    data-testid={`button-vol-down-${file.id}`}
+                  >
+                    <VolumeX className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "up"); }}
+                    data-testid={`button-vol-up-${file.id}`}
+                  >
+                    <Volume2 className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    onClick={() => {
+                      setEditingFile(file);
+                      setNewName(file.displayName);
+                    }}
+                    data-testid={`button-rename-${file.id}`}
+                  >
+                    <Edit2 className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    onClick={() => {
+                      setAssigningFile(file);
+                      setSelectedTaskId("");
+                    }}
+                    data-testid={`button-assign-${file.id}`}
+                  >
+                    <Link2 className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 hover:bg-red-900/50 text-red-400"
+                    onClick={() => {
+                      if (confirm("Delete this file?")) {
+                        deleteMutation.mutate(file.id);
+                      }
+                    }}
+                    data-testid={`button-delete-${file.id}`}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
