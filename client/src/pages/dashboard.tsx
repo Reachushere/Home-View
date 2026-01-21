@@ -1760,7 +1760,7 @@ export default function Dashboard() {
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5 text-white" strokeWidth={1.5} />
+              <Plus className="h-2.5 w-2.5" strokeWidth={1.5} stroke="white" />
               Module
             </Button>
             <Button 
@@ -1769,7 +1769,7 @@ export default function Dashboard() {
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5 text-white" strokeWidth={1.5} />
+              <Plus className="h-2.5 w-2.5" strokeWidth={1.5} stroke="white" />
               Reading
             </Button>
             <Button 
@@ -1778,7 +1778,7 @@ export default function Dashboard() {
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5 text-white" strokeWidth={1.5} />
+              <Plus className="h-2.5 w-2.5" strokeWidth={1.5} stroke="white" />
               Discuss
             </Button>
             <Button 
@@ -1787,7 +1787,7 @@ export default function Dashboard() {
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5 text-white" strokeWidth={1.5} />
+              <Plus className="h-2.5 w-2.5" strokeWidth={1.5} stroke="white" />
               Assign
             </Button>
             <Button 
@@ -1796,7 +1796,7 @@ export default function Dashboard() {
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              <Plus className="h-2.5 w-2.5 text-white" strokeWidth={1.5} />
+              <Plus className="h-2.5 w-2.5" strokeWidth={1.5} stroke="white" />
               Exam
             </Button>
           </div>
