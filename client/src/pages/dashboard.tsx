@@ -2199,72 +2199,9 @@ export default function Dashboard() {
             <div className="w-16 h-1.5 rounded-full bg-muted-foreground/40" />
           </div>
         </div>
-        {/* Do Today, Missed, and Upcoming Tasks Side by Side */}
+        {/* Be Prepared, Do Today, and Missed Tasks Side by Side */}
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
-          {/* Do Today Section */}
-          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-orange-300/60 dark:bg-orange-800/50" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Calendar className="h-3 w-3 text-black dark:text-white" />
-              Urgent: Do Today ({todayTasks.length})
-            </h4>
-            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
-              {isLoading ? (
-                <div className="text-muted-foreground text-xs pt-2">Loading...</div>
-              ) : todayTasks.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground text-xs">
-                  No tasks for today
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-1 pt-2">
-                  {todayTasks.map((task) => (
-                    <TaskCard
-                      key={task.id}
-                      task={task}
-                      onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                      onReschedule={() => setRescheduleTask(task)}
-                      onEdit={() => setEditingTask(task)}
-                      onDelete={() => deleteMutation.mutate(task.id)}
-                      cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                      compact
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Missed Tasks Section */}
-          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-missed">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-red-400/70 dark:bg-red-800/50" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              <Clock className="h-3 w-3 text-black dark:text-white" />
-              Overdue: Missed Tasks ({missedTasks.length})
-            </h4>
-            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
-              {missedTasks.length === 0 ? (
-                <div className="text-center py-4 text-muted-foreground text-xs">
-                  No missed tasks
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-1 pt-2">
-                  {missedTasks.map((task) => (
-                    <div key={task.id} className="animate-urgent-blink">
-                      <TaskCard
-                        task={task}
-                        onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                        onReschedule={() => setRescheduleTask(task)}
-                        onEdit={() => setEditingTask(task)}
-                        onDelete={() => deleteMutation.mutate(task.id)}
-                        cardBgClass="bg-orange-50 dark:bg-orange-900/20"
-                        compact
-                      />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-
-          {/* Upcoming Tasks Section */}
+          {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-yellow-200/60 dark:bg-yellow-800/40" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <Clock className="h-3 w-3 text-black dark:text-white" />
@@ -2303,6 +2240,69 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Do Today Section (Urgent) - Now in Middle */}
+          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-orange-300/60 dark:bg-orange-800/50" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Calendar className="h-3 w-3 text-black dark:text-white" />
+              Urgent: Do Today ({todayTasks.length})
+            </h4>
+            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
+              {isLoading ? (
+                <div className="text-muted-foreground text-xs pt-2">Loading...</div>
+              ) : todayTasks.length === 0 ? (
+                <div className="text-center py-4 text-muted-foreground text-xs">
+                  No tasks for today
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-1 pt-2">
+                  {todayTasks.map((task) => (
+                    <TaskCard
+                      key={task.id}
+                      task={task}
+                      onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                      onReschedule={() => setRescheduleTask(task)}
+                      onEdit={() => setEditingTask(task)}
+                      onDelete={() => deleteMutation.mutate(task.id)}
+                      cardBgClass="bg-orange-50 dark:bg-orange-900/20"
+                      compact
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Missed Tasks Section (Overdue) - Now on Right */}
+          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-missed">
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-white bg-red-400/70 dark:bg-red-800/50" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              <Clock className="h-3 w-3 text-black dark:text-white" />
+              Overdue: Missed Tasks ({missedTasks.length})
+            </h4>
+            <div className="flex-1 bg-blue-500/10 dark:bg-blue-500/20 px-3 pb-3 overflow-auto">
+              {missedTasks.length === 0 ? (
+                <div className="text-center py-4 text-muted-foreground text-xs">
+                  No missed tasks
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-1 pt-2">
+                  {missedTasks.map((task) => (
+                    <div key={task.id} className="animate-urgent-blink">
+                      <TaskCard
+                        task={task}
+                        onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
+                        onReschedule={() => setRescheduleTask(task)}
+                        onEdit={() => setEditingTask(task)}
+                        onDelete={() => deleteMutation.mutate(task.id)}
+                        cardBgClass="bg-orange-50 dark:bg-orange-900/20"
+                        compact
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
