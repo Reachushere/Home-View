@@ -868,9 +868,15 @@ export default function Dashboard() {
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {COURSES.map((course) => {
             const colors = courseColors[course.code];
+            const tomorrow = addDays(startOfDay(new Date()), 1);
+            const hasDueTomorrow = allTasks.some(task => 
+              task.courseName?.startsWith(course.code) && 
+              !task.isCompleted &&
+              isSameDay(new Date(task.dueDate), tomorrow)
+            );
             return (
               <div key={course.code} className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full ${colors?.dot}`} />
+                <div className={`w-2 h-2 rounded-full ${colors?.dot} ${hasDueTomorrow ? "animate-blink" : ""}`} />
                 <span className="text-[11px]">
                   <span className="font-medium">{course.code}</span>
                   <span className="text-white"> - {course.name}</span>
