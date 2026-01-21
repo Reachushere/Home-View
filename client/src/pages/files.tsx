@@ -800,7 +800,7 @@ export default function FilesPage() {
                     ) : (
                       <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                     )}
-                    <span className={`text-sm flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{week.name}</span>
+                    <span className={`text-xs flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{week.name}</span>
                     <span className="text-xs text-gray-500">{weekFiles.length}</span>
                   </div>
                   
