@@ -944,15 +944,17 @@ export default function FilesPage() {
 
         {/* Right Panel - File Details/Controls */}
         {sortedFiles(getCurrentFolderFiles()).length > 0 && (
-          <div 
-            className="w-64 border-l border-[#3d3d3d] overflow-y-auto p-3 relative"
-            style={{
-              backgroundImage: `url(${quickActionsBg})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center center'
-            }}
-          >
-                        <h3 className="text-sm font-medium mb-3 text-white relative z-10">Quick Actions</h3>
+          <div className="w-64 border-l border-[#3d3d3d] overflow-y-auto p-3 relative">
+            <div 
+              className="absolute inset-0" 
+              style={{
+                backgroundImage: `url(${quickActionsBg})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center',
+                filter: 'brightness(1.3)'
+              }}
+            ></div>
+            <h3 className="text-sm font-medium mb-3 text-white relative z-10">Quick Actions</h3>
             {sortedFiles(getCurrentFolderFiles()).map((file) => (
               <div 
                 key={file.id}
