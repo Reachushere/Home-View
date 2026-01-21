@@ -62,9 +62,9 @@ const WEEKS = [
 ];
 
 const COURSE_FOLDERS = [
-  { id: "cppa122", name: "CPPA122", color: "text-green-500" },
-  { id: "cfnf400", name: "CFNF400", color: "text-pink-500" },
-  { id: "casl101", name: "CASL101", color: "text-purple-500" },
+  { id: "cppa122", name: "CPPA122 - Local Politics", color: "text-green-500" },
+  { id: "cfnf400", name: "CFNF400 - Sexuality", color: "text-pink-500" },
+  { id: "casl101", name: "CASL101 - ASL", color: "text-purple-500" },
 ];
 
 const CONTENT_FOLDERS = [
