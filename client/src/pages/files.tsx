@@ -777,19 +777,6 @@ export default function FilesPage() {
         {/* Sidebar - Tree Navigation */}
         <div className="w-56 border-r border-[#3d3d3d] bg-[#202020] overflow-y-auto">
           <div className="py-2">
-            {/* Unfiled files */}
-            <div
-              className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === null ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""}`}
-              onClick={() => setSelectedFolder(null)}
-              data-testid="folder-unfiled"
-            >
-              <FileText className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-white">Unfiled</span>
-              {unfiledFiles.length > 0 && (
-                <span className="ml-auto text-xs bg-gray-600 px-1.5 py-0.5 rounded">{unfiledFiles.length}</span>
-              )}
-            </div>
-
             {/* Week folders */}
             {WEEKS.map((week) => {
               const weekFiles = getFilesInWeek(week.id);
@@ -878,6 +865,19 @@ export default function FilesPage() {
                 </div>
               );
             })}
+
+            {/* Unfiled files */}
+            <div
+              className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === null ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""}`}
+              onClick={() => setSelectedFolder(null)}
+              data-testid="folder-unfiled"
+            >
+              <FileText className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-white">Unfiled</span>
+              {unfiledFiles.length > 0 && (
+                <span className="ml-auto text-xs bg-gray-600 px-1.5 py-0.5 rounded">{unfiledFiles.length}</span>
+              )}
+            </div>
           </div>
         </div>
 
