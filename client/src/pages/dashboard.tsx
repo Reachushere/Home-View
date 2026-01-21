@@ -1426,11 +1426,11 @@ export default function Dashboard() {
             </div>
             <table className="w-full border-collapse">
               <colgroup>
-                <col style={{ width: '1.25rem' }} />
-                <col style={{ width: '55px' }} />
-                <col style={{ width: '55px' }} />
+                <col style={{ width: '20px' }} />
+                <col style={{ width: '56px' }} />
+                <col style={{ width: '56px' }} />
                 <col />
-                <col style={{ width: '3.5rem' }} />
+                <col style={{ width: '56px' }} />
               </colgroup>
               <tbody>
                 <tr className="border-b border-black">
@@ -1500,7 +1500,7 @@ export default function Dashboard() {
             <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
-              <div className="w-[55px] border-r border-black"></div>
+              <div className="w-14 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE REQUIRED:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
@@ -1509,7 +1509,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
+              <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center">
                 Select&nbsp;<span className="font-bold">ONE</span>
               </div>
               <div className="flex-1 flex flex-col">
@@ -1530,7 +1530,7 @@ export default function Dashboard() {
             <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
-              <div className="w-[55px] border-r border-black"></div>
+              <div className="w-14 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
               <div className="w-14 border-l border-black"></div>
             </div>
@@ -1540,7 +1540,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -1566,7 +1566,7 @@ export default function Dashboard() {
             <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
-              <div className="w-[55px] border-r border-black"></div>
+              <div className="w-14 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A / B:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
@@ -1577,7 +1577,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED,<br/><br/><span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/><br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -1608,7 +1608,7 @@ export default function Dashboard() {
             <div className="h-px bg-black"></div>
             <div className="flex">
               <div className="w-5 border-r border-black"></div>
-              <div className="w-[55px] border-r border-black"></div>
+              <div className="w-14 border-r border-black"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
@@ -1621,7 +1621,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight"><span className="font-bold">SIX</span> one-term level courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -1884,7 +1884,7 @@ export default function Dashboard() {
             
             {/* ALL DAY Row - single consolidated row */}
             <div className="grid border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minWidth: 'max-content' }}>
-                <div className="p-1 text-xs text-foreground font-bold tracking-wide flex items-center justify-center bg-white dark:bg-card min-h-[40px]">
+                <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center bg-white dark:bg-card min-h-[40px]">
                   ALL DAY
                 </div>
                 {weekDays.map((day, dayIdx) => {
