@@ -2032,9 +2032,9 @@ export default function Dashboard() {
               
               {/* Course Rows - CPPA122, CFNF400, CASL101 */}
               {[
-                { name: 'CPPA122', bg: 'bg-green-200', label: 'bg-green-300' },
-                { name: 'CFNF400', bg: 'bg-pink-200', label: 'bg-pink-300' },
-                { name: 'CASL101', bg: 'bg-indigo-200', label: 'bg-indigo-300' }
+                { name: 'CPPA122', bg: 'bg-green-100', label: 'bg-green-200' },
+                { name: 'CFNF400', bg: 'bg-pink-100', label: 'bg-pink-200' },
+                { name: 'CASL101', bg: 'bg-indigo-100', label: 'bg-indigo-200' }
               ].map(course => (
                 <div key={course.name} className="grid border-b border-border/50" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
                   <div className={`px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center ${course.label} text-black min-h-[20px]`}>
