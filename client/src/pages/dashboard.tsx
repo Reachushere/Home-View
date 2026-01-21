@@ -1670,7 +1670,7 @@ export default function Dashboard() {
               className="text-sm font-bold text-white w-[68px] text-right tabular-nums"
               style={{ fontFamily: "'Segoe UI', 'Roboto', sans-serif", letterSpacing: '0.05em' }}
             >
-              {format(currentTime, "hh:mm:ss")}
+              {format(currentTime, "h:mm:ss")}
             </span>
             <span 
               className="text-xs font-semibold text-white w-[24px] text-left ml-2"
