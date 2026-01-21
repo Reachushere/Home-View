@@ -662,20 +662,29 @@ export default function Dashboard() {
     });
   };
   
-  // Get Google Calendar events for a specific hour on a day
+  // Get Google Calendar events for a specific hour on a day (hide past events)
   const getCalendarEventsForHour = (day: Date, hour: number) => {
+    const now = new Date();
     return calendarEvents.filter(e => {
       if (e.isAllDay) return false;
       const eventDate = new Date(e.startDate);
+      const eventEndDate = new Date(e.endDate);
+      // Hide events that have already ended
+      if (eventEndDate < now) return false;
       return isSameDay(eventDate, day) && eventDate.getHours() === hour;
     });
   };
   
-  // Get all-day Google Calendar events for a day
+  // Get all-day Google Calendar events for a day (hide past events)
   const getAllDayCalendarEvents = (day: Date) => {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     return calendarEvents.filter(e => {
       if (!e.isAllDay) return false;
       const eventDate = new Date(e.startDate);
+      // Hide all-day events from days that have already passed
+      const eventDayStart = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+      if (eventDayStart < todayStart) return false;
       return isSameDay(eventDate, day);
     });
   };
