@@ -31,7 +31,8 @@ import {
   Volume2,
   VolumeX,
   Folder,
-  FolderOpen
+  FolderOpen,
+  Loader2
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 
@@ -148,8 +149,14 @@ export default function FilesPage() {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [draggedFileId, setDraggedFileId] = useState<number | null>(null);
   const [dragOverFolder, setDragOverFolder] = useState<string | null>(null);
+  const [isExternalDragOver, setIsExternalDragOver] = useState(false);
+  const [uploadingCount, setUploadingCount] = useState(0);
 
-  const { getUploadParameters } = useUpload();
+  const { getUploadParameters, uploadFile } = useUpload({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+    },
+  });
 
   const { data: files = [], isLoading: filesLoading } = useQuery<FileRecord[]>({
     queryKey: ["/api/files"],
@@ -339,7 +346,13 @@ export default function FilesPage() {
   const handleDragOver = (e: DragEvent<HTMLDivElement>, folderId: string) => {
     e.preventDefault();
     e.stopPropagation();
-    e.dataTransfer.dropEffect = "move";
+    // Check if this is an external file drop
+    if (e.dataTransfer.types.includes("Files")) {
+      e.dataTransfer.dropEffect = "copy";
+      setIsExternalDragOver(true);
+    } else {
+      e.dataTransfer.dropEffect = "move";
+    }
     if (dragOverFolder !== folderId) {
       setDragOverFolder(folderId);
     }
@@ -351,12 +364,51 @@ export default function FilesPage() {
     const relatedTarget = e.relatedTarget as HTMLElement;
     if (!e.currentTarget.contains(relatedTarget)) {
       setDragOverFolder(null);
+      setIsExternalDragOver(false);
     }
+  };
+
+  const handleExternalFileDrop = async (files: FileList, targetFolder: string | null) => {
+    const fileArray = Array.from(files);
+    setUploadingCount(fileArray.length);
+    
+    for (const file of fileArray) {
+      try {
+        const response = await uploadFile(file);
+        if (response && targetFolder) {
+          // Move the uploaded file to the target folder
+          // We need to find the file by objectPath after it's created
+          const filesResponse = await fetch("/api/files");
+          const allFiles = await filesResponse.json();
+          const uploadedFile = allFiles.find((f: FileRecord) => f.objectPath === response.objectPath);
+          if (uploadedFile) {
+            await apiRequest("PATCH", `/api/files/${uploadedFile.id}`, { folder: targetFolder });
+          }
+        }
+        queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      } catch (error) {
+        console.error("Upload error:", error);
+        toast({ title: "Failed to upload file", variant: "destructive" });
+      }
+    }
+    
+    setUploadingCount(0);
+    toast({ title: `${fileArray.length} file(s) uploaded successfully` });
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>, folderId: string) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Check if this is an external file drop
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleExternalFileDrop(e.dataTransfer.files, folderId);
+      setDragOverFolder(null);
+      setIsExternalDragOver(false);
+      return;
+    }
+    
+    // Internal drag-drop (moving existing files)
     const fileId = parseInt(e.dataTransfer.getData("text/plain"));
     if (fileId) {
       moveFolderMutation.mutate({ id: fileId, folder: folderId });
@@ -367,6 +419,16 @@ export default function FilesPage() {
 
   const handleDropOnUnfiled = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    // Check if this is an external file drop
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleExternalFileDrop(e.dataTransfer.files, null);
+      setDragOverFolder(null);
+      setIsExternalDragOver(false);
+      return;
+    }
+    
     const fileId = parseInt(e.dataTransfer.getData("text/plain"));
     if (fileId) {
       moveFolderMutation.mutate({ id: fileId, folder: null });
@@ -568,8 +630,50 @@ export default function FilesPage() {
     );
   }
 
+  const handlePageDragOver = (e: DragEvent<HTMLDivElement>) => {
+    if (e.dataTransfer.types.includes("Files")) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "copy";
+      setIsExternalDragOver(true);
+    }
+  };
+
+  const handlePageDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    if (!e.currentTarget.contains(relatedTarget)) {
+      setIsExternalDragOver(false);
+    }
+  };
+
+  const handlePageDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleExternalFileDrop(e.dataTransfer.files, null);
+    }
+    setIsExternalDragOver(false);
+  };
+
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div 
+      className={`min-h-screen bg-background p-6 transition-all ${isExternalDragOver ? "ring-4 ring-primary ring-inset bg-primary/5" : ""}`}
+      onDragOver={handlePageDragOver}
+      onDragLeave={handlePageDragLeave}
+      onDrop={handlePageDrop}
+    >
+      {uploadingCount > 0 && (
+        <div className="fixed top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-md shadow-lg flex items-center gap-2 z-50">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Uploading {uploadingCount} file(s)...
+        </div>
+      )}
+      {isExternalDragOver && (
+        <div className="fixed inset-0 bg-primary/10 pointer-events-none z-40 flex items-center justify-center">
+          <div className="bg-card border-2 border-dashed border-primary rounded-lg p-8 text-center">
+            <Upload className="h-12 w-12 mx-auto text-primary mb-2" />
+            <p className="text-lg font-medium">Drop files here to upload</p>
+          </div>
+        </div>
+      )}
       <div className="max-w-6xl mx-auto space-y-6">
         <div className="flex items-center gap-4">
           <Link href="/">
