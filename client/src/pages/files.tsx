@@ -952,7 +952,7 @@ export default function FilesPage() {
               backgroundPosition: 'center center'
             }}
           >
-            <div className="absolute inset-0 bg-black/15"></div>
+            <div className="absolute inset-0 bg-black/5"></div>
             <h3 className="text-sm font-medium mb-3 text-white relative z-10">Quick Actions</h3>
             {sortedFiles(getCurrentFolderFiles()).map((file) => (
               <div 
