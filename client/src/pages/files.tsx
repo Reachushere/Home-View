@@ -688,9 +688,9 @@ export default function FilesPage() {
                 >
                   <CardTitle className="flex items-center gap-2 text-base">
                     {isWeekExpanded ? (
-                      <FolderOpen className="h-5 w-5 text-amber-500" />
+                      <FolderOpen className="h-5 w-5 text-yellow-500 fill-yellow-400" />
                     ) : (
-                      <Folder className="h-5 w-5 text-amber-500" />
+                      <Folder className="h-5 w-5 text-yellow-600 fill-yellow-400" />
                     )}
                     {week.name}
                     <Badge variant="secondary" className="ml-auto">
@@ -716,9 +716,9 @@ export default function FilesPage() {
                             onClick={() => toggleFolder(courseFolderId)}
                           >
                             {isCourseExpanded ? (
-                              <FolderOpen className={`h-4 w-4 ${course.color}`} />
+                              <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
                             ) : (
-                              <Folder className={`h-4 w-4 ${course.color}`} />
+                              <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                             )}
                             <span className={`text-sm font-medium ${course.color}`}>{course.name}</span>
                             <Badge variant="outline" className="ml-auto text-xs">
@@ -747,9 +747,9 @@ export default function FilesPage() {
                                       onClick={() => toggleFolder(contentFolderId)}
                                     >
                                       {isContentExpanded ? (
-                                        <FolderOpen className="h-3 w-3 text-muted-foreground" />
+                                        <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" />
                                       ) : (
-                                        <Folder className="h-3 w-3 text-muted-foreground" />
+                                        <Folder className="h-3 w-3 text-yellow-600 fill-yellow-400" />
                                       )}
                                       <span className="text-xs font-medium">{content.name}</span>
                                       <Badge variant="outline" className="ml-auto text-[10px] py-0">
