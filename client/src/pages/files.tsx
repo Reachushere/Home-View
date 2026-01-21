@@ -483,7 +483,7 @@ export default function FilesPage() {
         draggable
         onDragStart={(e) => handleDragStart(e, file.id)}
         onDragEnd={handleDragEnd}
-        className={`flex flex-col gap-1 p-2 bg-card border-2 border-black dark:border-white rounded-[4px] hover-elevate cursor-move ${
+        className={`flex flex-col gap-1 p-2 bg-[#ffd251] border-2 border-black dark:border-white rounded-[4px] hover-elevate cursor-move ${
           isDragging ? "opacity-50" : ""
         }`}
         data-testid={`file-row-${file.id}`}
