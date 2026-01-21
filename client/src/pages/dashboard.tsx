@@ -1760,7 +1760,7 @@ export default function Dashboard() {
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none">+</span>
+              <span className="text-[14px] leading-none -mt-0.5">+</span>
               Module
             </Button>
             <Button 
@@ -1769,7 +1769,7 @@ export default function Dashboard() {
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none">+</span>
+              <span className="text-[14px] leading-none -mt-0.5">+</span>
               Reading
             </Button>
             <Button 
@@ -1778,7 +1778,7 @@ export default function Dashboard() {
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none">+</span>
+              <span className="text-[14px] leading-none -mt-0.5">+</span>
               Discuss
             </Button>
             <Button 
@@ -1787,7 +1787,7 @@ export default function Dashboard() {
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none">+</span>
+              <span className="text-[14px] leading-none -mt-0.5">+</span>
               Assign
             </Button>
             <Button 
@@ -1796,7 +1796,7 @@ export default function Dashboard() {
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none">+</span>
+              <span className="text-[14px] leading-none -mt-0.5">+</span>
               Exam
             </Button>
           </div>
