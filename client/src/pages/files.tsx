@@ -64,6 +64,9 @@ const WEEKS = [
 const SUBFOLDERS = [
   { id: "module", name: "Module" },
   { id: "reading", name: "Reading" },
+  { id: "cppa122", name: "CPPA122" },
+  { id: "cfnf400", name: "CFNF400" },
+  { id: "casl101", name: "CASL101" },
 ];
 
 function getFileIcon(contentType: string | null) {
