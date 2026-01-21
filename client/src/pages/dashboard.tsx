@@ -2242,7 +2242,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 bg-pink-100/80 dark:bg-pink-900/30 p-2 overflow-auto border-r border-pink-200 dark:border-pink-700">
+                  <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 p-2 overflow-auto border-r border-pink-200 dark:border-pink-700">
                     <div className="text-[9px] font-bold text-pink-700 dark:text-pink-300 mb-1.5 text-center">CFNF400</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
@@ -2328,7 +2328,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Row - Pink */}
-                  <div className="flex-1 bg-pink-100/80 dark:bg-pink-900/30 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700">
+                  <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700">
                     <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -2378,7 +2378,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="flex-1 bg-pink-100/80 dark:bg-pink-900/30 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700">
+              <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700">
                 <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -2480,7 +2480,7 @@ export default function Dashboard() {
           </section>
 
           {/* CFNF400 Completed */}
-          <section className="flex-1 bg-pink-100/80 dark:bg-pink-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cfnf400">
+          <section className="flex-1 bg-pink-100 dark:bg-pink-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cfnf400">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-pink-600" />
               <span className="text-pink-600">Completed - CFNF400</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})</span>
