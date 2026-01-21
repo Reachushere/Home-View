@@ -1665,18 +1665,26 @@ export default function Dashboard() {
           </div>
           
           {/* Digital LCD Clock */}
-          <div className="bg-[#1a1a1a] px-3 py-1.5 rounded-md w-[140px] flex justify-center items-center border-2 border-[#333] shadow-inner" style={{ boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6)' }} data-testid="digital-clock">
+          <div className="bg-[#1a1a1a] px-3 py-1.5 rounded-md w-[160px] flex flex-col justify-center items-center border-2 border-[#333] shadow-inner" style={{ boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.6)' }} data-testid="digital-clock">
+            <div className="flex items-center">
+              <span 
+                className="text-xl font-bold text-[#00ff00] w-[85px] text-right tabular-nums tracking-wider"
+                style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 8px #00ff00, 0 0 12px #00ff00' }}
+              >
+                {format(currentTime, "h:mm:ss")}
+              </span>
+              <span 
+                className="text-sm font-bold text-[#00ff00] w-[28px] text-left ml-1"
+                style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 8px #00ff00' }}
+              >
+                {format(currentTime, "a").toUpperCase()}
+              </span>
+            </div>
             <span 
-              className="text-xl font-bold text-[#00ff00] w-[85px] text-right tabular-nums tracking-wider"
-              style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 8px #00ff00, 0 0 12px #00ff00' }}
+              className="text-[10px] font-bold text-[#00ff00] tracking-wide mt-0.5"
+              style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 6px #00ff00' }}
             >
-              {format(currentTime, "h:mm:ss")}
-            </span>
-            <span 
-              className="text-sm font-bold text-[#00ff00] w-[28px] text-left ml-1"
-              style={{ fontFamily: "'Courier New', 'Consolas', monospace", textShadow: '0 0 8px #00ff00' }}
-            >
-              {format(currentTime, "a").toUpperCase()}
+              {format(currentTime, "EEE MMM d, yyyy").toUpperCase()}
             </span>
           </div>
           
