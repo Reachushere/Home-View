@@ -1714,7 +1714,7 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-3 w-3 mb-1" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <Button size="sm" className="!h-[20px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2 mb-1" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+          <Button size="sm" className="!h-[20px] !min-h-0 w-[78px] text-[8px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2" onClick={() => setSelectedWeek(2)} data-testid="button-today">
             TODAY
           </Button>
           {/* All buttons with equal spacing */}
