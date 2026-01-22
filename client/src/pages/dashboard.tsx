@@ -1922,12 +1922,11 @@ export default function Dashboard() {
                       {/* Planning tasks */}
                       {planningTasksForDay.map(task => {
                         const colors = getCourseColor(task.courseName);
-                        const taskDueDate = new Date(task.dueDate);
-                        taskDueDate.setHours(0, 0, 0, 0);
-                        const dayNormalized = new Date(day);
-                        dayNormalized.setHours(0, 0, 0, 0);
-                        const isFirstPrepDay = task.startDate && isSameDay(new Date(task.startDate), day);
-                        const isDueDay = isSameDay(taskDueDate, dayNormalized);
+                        const taskDueDate = startOfDay(new Date(task.dueDate));
+                        const dayStart = startOfDay(day);
+                        const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
+                        const isFirstPrepDay = taskStartDate && isSameDay(taskStartDate, dayStart);
+                        const isDueDay = isSameDay(taskDueDate, dayStart);
                         const lineColor = colors ? colors.border.replace('border-', 'bg-') : "bg-gray-400";
                         
                         // Due day takes priority - check first
@@ -1936,7 +1935,7 @@ export default function Dashboard() {
                           const tomorrow = addDays(today, 1);
                           const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
                           const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
-                          const hasPrepDays = task.startDate && !isSameDay(new Date(task.startDate), taskDueDate);
+                          const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
                             <div key={`due-${task.id}`} className="flex items-center w-full">
                               {hasPrepDays && <div className={`w-2 h-[2px] shrink-0 -ml-0.5 ${lineColor}`} />}
