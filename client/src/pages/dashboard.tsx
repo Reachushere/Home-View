@@ -2516,15 +2516,11 @@ export default function Dashboard() {
                               : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400";
                           return (
                             <div key={`due-${task.id}`} className="flex items-center w-full">
-                              {hasPrepDays && <div className="w-1 h-[2px] bg-orange-500 shrink-0" />}
+                              {hasPrepDays && <div className="w-2 h-[2px] bg-orange-500 shrink-0" />}
                               <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle} ${
+                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${baseStyle} ${
                                   isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                                 }`}
-                                style={{ 
-                                  borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px',
-                                  borderLeft: hasPrepDays ? 'none' : undefined
-                                }}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
                                 <Checkbox
@@ -2552,8 +2548,7 @@ export default function Dashboard() {
                           return (
                             <div key={`prep-${task.id}`} className="flex items-center w-full">
                               <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                                style={{ borderRadius: '4px 0 0 4px', borderRight: 'none' }}
+                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${baseStyle}`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
                                 <Checkbox
@@ -2569,7 +2564,7 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className="w-1 h-[2px] bg-orange-500 shrink-0" />
+                              <div className="w-2 h-[2px] bg-orange-500 shrink-0" />
                             </div>
                           );
                         }
@@ -2580,10 +2575,9 @@ export default function Dashboard() {
                           : `bg-orange-400 text-black border border-orange-500 ${shimmerClass}`;
                         return (
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                            <div className="w-1 h-[2px] bg-orange-500 shrink-0" />
+                            <div className="w-2 h-[2px] bg-orange-500 shrink-0" />
                             <div
-                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                              style={{ borderRadius: 0, borderLeft: 'none', borderRight: 'none' }}
+                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${baseStyle}`}
                               data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
                               <Checkbox
@@ -2599,7 +2593,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className="w-1 h-[2px] bg-orange-500 shrink-0" />
+                            <div className="w-2 h-[2px] bg-orange-500 shrink-0" />
                           </div>
                         );
                       })}
