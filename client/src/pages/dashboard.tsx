@@ -2323,10 +2323,21 @@ export default function Dashboard() {
         {/* Calendar Header */}
         <div className="flex items-center mb-0 bg-slate-100 border border-slate-200 rounded-t-md px-3 py-1 shadow-sm">
           {/* Sync button */}
+          {/* Week navigation */}
+          <Button variant="ghost" size="icon" className="h-3 w-3 mr-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+            <ChevronLeft className="h-4 w-4 text-black" strokeWidth={2} />
+          </Button>
+          <div className="flex items-center" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <div className="flex items-center gap-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
+              <span className="text-[11px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
+              <span className="text-[11px] font-semibold text-muted-foreground">to</span>
+              <span className="text-[11px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
+            </div>
+          </div>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-4 w-4 mr-3"
+            className="h-4 w-4 mx-2"
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
@@ -2337,17 +2348,6 @@ export default function Dashboard() {
               <RefreshCw className="text-black" style={{ height: '13px', width: '13px' }} />
             )}
           </Button>
-          {/* Week navigation */}
-          <Button variant="ghost" size="icon" className="h-3 w-3 mr-4" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-            <ChevronLeft className="h-4 w-4 text-black" strokeWidth={2} />
-          </Button>
-          <div className="flex items-center mr-6" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-            <div className="flex items-center gap-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
-              <span className="text-[11px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
-              <span className="text-[11px] font-semibold text-muted-foreground">to</span>
-              <span className="text-[11px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
-            </div>
-          </div>
           <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4 text-black" strokeWidth={2} />
           </Button>
