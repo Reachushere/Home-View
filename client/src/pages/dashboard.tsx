@@ -2330,7 +2330,7 @@ export default function Dashboard() {
           <div className="flex-1 flex items-center justify-between ml-24">
             <Button 
               variant="ghost"
-              className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
+              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
               onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
               data-testid="button-today"
             >
@@ -2339,7 +2339,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-300" />
             <Button 
               variant="ghost"
-              className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0"
+              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0"
               onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
               data-testid="button-month-view"
             >
@@ -2348,7 +2348,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm" 
-              className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
+              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
@@ -2362,7 +2362,7 @@ export default function Dashboard() {
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
-                className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
+                className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
                 data-testid="button-files-link"
               >
                 <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
@@ -2372,8 +2372,8 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-300" />
             
             {/* Pomodoro Timer */}
-            <div className="flex items-center gap-3 h-[20px]">
-              <div className={`text-[10px] font-mono font-bold ${
+            <div className="flex items-center gap-3 h-[22px]">
+              <div className={`text-[11px] font-mono font-bold ${
                 pomodoroMode === "work" ? "text-red-600" : 
                 pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
               }`} data-testid="pomodoro-timer">
@@ -2402,7 +2402,7 @@ export default function Dashboard() {
                   <SkipForward className="h-2.5 w-2.5" />
                 </button>
               </div>
-              <div className="text-[10px] text-muted-foreground font-semibold">
+              <div className="text-[11px] text-muted-foreground font-semibold">
                 {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"}
                 <span className="ml-0.5 font-bold">{pomodoroCount}</span>
               </div>
@@ -2410,7 +2410,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
@@ -2420,7 +2420,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
@@ -2430,7 +2430,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
@@ -2440,7 +2440,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
@@ -2450,7 +2450,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
