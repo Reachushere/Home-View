@@ -754,7 +754,41 @@ export default function Dashboard() {
     });
   };
   
-  // Get Google Calendar events for a specific hour on a day (hide past events)
+  // Check if a calendar event conflicts with any task
+  const eventConflictsWithTask = (event: CalendarEvent) => {
+    const eventStart = new Date(event.startDate);
+    const eventEnd = new Date(event.endDate);
+    
+    return allTasks.some(task => {
+      const taskDue = new Date(task.dueDate);
+      
+      // For all-day events, check if any task is due on that day
+      if (event.isAllDay) {
+        return isSameDay(eventStart, taskDue);
+      }
+      
+      // For timed events, check time overlap
+      // If task has eventStartTime and eventEndTime, use those
+      if (task.eventStartTime && task.eventEndTime) {
+        const taskStart = new Date(task.eventStartTime);
+        const taskEnd = new Date(task.eventEndTime);
+        // Check for overlap: event starts before task ends AND event ends after task starts
+        return eventStart < taskEnd && eventEnd > taskStart;
+      }
+      
+      // For tasks without specific times, check if event is on same day at same hour
+      if (isSameDay(eventStart, taskDue)) {
+        const taskHour = taskDue.getHours();
+        const eventHour = eventStart.getHours();
+        // Consider conflict if within same hour or adjacent hours
+        return Math.abs(taskHour - eventHour) <= 1;
+      }
+      
+      return false;
+    });
+  };
+
+  // Get Google Calendar events for a specific hour on a day (only conflicting events)
   const getCalendarEventsForHour = (day: Date, hour: number) => {
     const now = new Date();
     return calendarEvents.filter(e => {
@@ -763,11 +797,13 @@ export default function Dashboard() {
       const eventEndDate = new Date(e.endDate);
       // Hide events that have already ended
       if (eventEndDate < now) return false;
+      // Only show events that conflict with tasks
+      if (!eventConflictsWithTask(e)) return false;
       return isSameDay(eventDate, day) && eventDate.getHours() === hour;
     });
   };
   
-  // Get all-day Google Calendar events for a day (hide past events)
+  // Get all-day Google Calendar events for a day (only conflicting events)
   const getAllDayCalendarEvents = (day: Date) => {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -777,6 +813,8 @@ export default function Dashboard() {
       // Hide all-day events from days that have already passed
       const eventDayStart = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
       if (eventDayStart < todayStart) return false;
+      // Only show events that conflict with tasks
+      if (!eventConflictsWithTask(e)) return false;
       return isSameDay(eventDate, day);
     });
   };
@@ -1091,9 +1129,14 @@ export default function Dashboard() {
       <aside className="bg-black text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 350 }}>
         <div className="flex items-center gap-2 px-2 pt-1 pb-2">
           <CalendarDays className="h-5 w-5 text-white" />
-          <h1 className="text-lg font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-            School Planner
-          </h1>
+          <div className="flex flex-col">
+            <h1 className="text-lg font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              School Planner
+            </h1>
+            <span className="text-[10px] text-gray-400" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+              (January 12 to April 17)
+            </span>
+          </div>
         </div>
 
         {/* Mini Calendar */}
@@ -2234,7 +2277,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-visible"
+                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Planning tasks */}
@@ -2314,7 +2357,6 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className={`w-6 h-[2px] shrink-0 -mr-4 ${lineColor}`} />
                             </div>
                           );
                         }
@@ -2343,7 +2385,6 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className={`w-6 h-[2px] shrink-0 -mr-4 ${lineColor}`} />
                           </div>
                         );
                       })}
