@@ -459,6 +459,48 @@ export default function Dashboard() {
       });
     },
   });
+  
+  // Second Google Account status and mutation
+  const { data: secondAccountStatus, refetch: refetchSecondAccount } = useQuery<{ connected: boolean; email?: string }>({
+    queryKey: ['/api/google/second-account/status'],
+  });
+  
+  // Listen for OAuth callback message
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'SECOND_ACCOUNT_CONNECTED') {
+        refetchSecondAccount();
+        queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
+        toast({
+          title: "Second Account Connected",
+          description: `Connected to ${event.data.email}`,
+        });
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [refetchSecondAccount, queryClient, toast]);
+  
+  const disconnectSecondAccountMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("DELETE", "/api/google/second-account");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/google/second-account/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/calendar/events'] });
+      toast({
+        title: "Account Disconnected",
+        description: "Second Google account has been disconnected.",
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: "Error",
+        description: "Failed to disconnect second account",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Check if we're past Week 13 end date - show new semester prompt
   const week13EndDate = weeks.find(w => w.weekNumber === LAST_WEEK)?.endDate;
@@ -2169,10 +2211,55 @@ export default function Dashboard() {
                 <DialogTitle>Calendar Settings</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
+                {/* Second Google Account Connection */}
+                <div className="border rounded-lg p-3 space-y-2">
+                  <Label className="text-sm font-medium">Second Google Account</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Connect a second Google account to sync tasks to both accounts. Events from both accounts that conflict with your tasks will show in the calendar.
+                  </p>
+                  {secondAccountStatus?.connected ? (
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs text-green-600 dark:text-green-400 font-medium">
+                        Connected: {secondAccountStatus.email}
+                      </span>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => disconnectSecondAccountMutation.mutate()}
+                        disabled={disconnectSecondAccountMutation.isPending}
+                        data-testid="button-disconnect-second-account"
+                      >
+                        {disconnectSecondAccountMutation.isPending ? "Disconnecting..." : "Disconnect"}
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          const res = await fetch("/api/google/second-account/auth");
+                          const data = await res.json();
+                          if (data.authUrl) {
+                            window.open(data.authUrl, "_blank", "width=600,height=700");
+                          } else {
+                            toast({ title: "Error", description: data.error || "Failed to get auth URL", variant: "destructive" });
+                          }
+                        } catch (err) {
+                          toast({ title: "Error", description: "Failed to start OAuth flow", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-connect-second-account"
+                    >
+                      Connect Second Google Account
+                    </Button>
+                  )}
+                </div>
+
                 <div>
-                  <Label className="text-sm font-medium">Secondary Calendar</Label>
+                  <Label className="text-sm font-medium">Secondary Calendar (same account)</Label>
                   <p className="text-xs text-muted-foreground mb-2">
-                    Select a secondary calendar to sync tasks to. Tasks will be synced to both your primary and secondary calendars.
+                    Select a secondary calendar within your primary account to sync tasks to.
                   </p>
                   <Select
                     value={selectedSecondaryCalendar}
@@ -2195,8 +2282,9 @@ export default function Dashboard() {
                   </Select>
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  <p><strong>Current Primary:</strong> {availableCalendars?.find(c => c.primary)?.summary || "Not connected"}</p>
-                  <p><strong>Current Secondary:</strong> {selectedSecondaryCalendar && selectedSecondaryCalendar !== "none" ? availableCalendars?.find(c => c.id === selectedSecondaryCalendar)?.summary || selectedSecondaryCalendar : "None"}</p>
+                  <p><strong>Primary Account:</strong> {availableCalendars?.find(c => c.primary)?.summary || "Not connected"}</p>
+                  <p><strong>Secondary Calendar:</strong> {selectedSecondaryCalendar && selectedSecondaryCalendar !== "none" ? availableCalendars?.find(c => c.id === selectedSecondaryCalendar)?.summary || selectedSecondaryCalendar : "None"}</p>
+                  <p><strong>Second Account:</strong> {secondAccountStatus?.connected ? secondAccountStatus.email : "Not connected"}</p>
                 </div>
               </div>
             </DialogContent>

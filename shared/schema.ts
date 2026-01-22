@@ -88,6 +88,21 @@ export const insertSemesterSettingsSchema = createInsertSchema(semesterSettings)
 export type SemesterSettings = typeof semesterSettings.$inferSelect;
 export type InsertSemesterSettings = z.infer<typeof insertSemesterSettingsSchema>;
 
+// Store OAuth tokens for second Google account
+export const secondGoogleAccount = pgTable("second_google_account", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull(),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertSecondGoogleAccountSchema = createInsertSchema(secondGoogleAccount).omit({ id: true, createdAt: true, updatedAt: true });
+export type SecondGoogleAccount = typeof secondGoogleAccount.$inferSelect;
+export type InsertSecondGoogleAccount = z.infer<typeof insertSecondGoogleAccountSchema>;
+
 export const files = pgTable("files", {
   id: serial("id").primaryKey(),
   originalName: text("original_name").notNull(),
@@ -129,6 +144,8 @@ export const tasks = pgTable("tasks", {
   calendarProvider: text("calendar_provider"), // 'google' or 'outlook'
   prepCalendarEventId: text("prep_calendar_event_id"), // For synced prep/start date events
   secondaryCalendarEventId: text("secondary_calendar_event_id"), // For synced secondary calendar events
+  secondAccountCalendarEventId: text("second_account_calendar_event_id"), // For second Google account sync
+  secondAccountPrepEventId: text("second_account_prep_event_id"), // For second Google account prep events
   repeatType: text("repeat_type").default("none"), // none, daily, weekly, monthly, custom
   repeatInterval: integer("repeat_interval"), // For custom: every X units
   repeatIntervalUnit: text("repeat_interval_unit"), // days or weeks (for custom)

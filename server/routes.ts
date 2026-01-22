@@ -6,6 +6,7 @@ import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1,
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar } from "./googleCalendar";
+import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -245,7 +246,7 @@ export async function registerRoutes(
       const input = api.tasks.create.input.parse(req.body);
       const task = await storage.createTask(input);
       
-      // Auto-sync to Google Calendar
+      // Auto-sync to Google Calendar (primary account)
       try {
         const event = await createCalendarEvent({
           id: task.id,
@@ -280,6 +281,40 @@ export async function registerRoutes(
         }
       } catch (calErr) {
         console.error("Auto-sync to Google Calendar failed:", calErr);
+      }
+      
+      // Also sync to second Google account if connected
+      try {
+        const secondAccountStatus = await isSecondAccountConnected();
+        if (secondAccountStatus.connected) {
+          const secondEvent = await createEventInSecondAccount({
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            dueDate: task.dueDate,
+            courseName: task.courseName,
+          });
+          await storage.updateTask(task.id, {
+            secondAccountCalendarEventId: secondEvent.id,
+          });
+          
+          // Also sync prep event if task has startDate
+          if (task.startDate) {
+            const prepEvent = await createPrepEventInSecondAccount({
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              startDate: task.startDate,
+              dueDate: task.dueDate,
+              courseName: task.courseName,
+            });
+            await storage.updateTask(task.id, {
+              secondAccountPrepEventId: prepEvent.id,
+            });
+          }
+        }
+      } catch (secAccErr) {
+        console.error("Auto-sync to second Google account failed:", secAccErr);
       }
       
       // Generate repeated task instances if repeat is set
@@ -343,6 +378,25 @@ export async function registerRoutes(
               calendarEventId: childEvent.id,
               calendarProvider: "google",
             });
+            
+            // Also sync child to second Google account
+            const secondStatus = await isSecondAccountConnected();
+            if (secondStatus.connected) {
+              try {
+                const childSecondEvent = await createEventInSecondAccount({
+                  id: createdChild.id,
+                  title: createdChild.title,
+                  description: createdChild.description,
+                  dueDate: createdChild.dueDate,
+                  courseName: createdChild.courseName,
+                });
+                await storage.updateTask(createdChild.id, {
+                  secondAccountCalendarEventId: childSecondEvent.id,
+                });
+              } catch (secErr) {
+                console.error("Error syncing child task to second account:", secErr);
+              }
+            }
           } catch (childErr) {
             console.error("Error creating repeated task instance:", childErr);
           }
@@ -384,6 +438,20 @@ export async function registerRoutes(
           });
         } catch (calErr) {
           console.error("Auto-update Google Calendar failed:", calErr);
+        }
+      }
+      
+      // Also sync to second Google account if connected and has event
+      if (task.secondAccountCalendarEventId) {
+        try {
+          await updateEventInSecondAccount(task.secondAccountCalendarEventId, {
+            title: task.title,
+            description: task.description,
+            dueDate: task.dueDate,
+            courseName: task.courseName,
+          });
+        } catch (secAccErr) {
+          console.error("Auto-update second Google account failed:", secAccErr);
         }
       }
       
@@ -429,6 +497,22 @@ export async function registerRoutes(
       }
     }
     
+    // Delete from second Google account if synced
+    if (task.secondAccountCalendarEventId) {
+      try {
+        await deleteEventFromSecondAccount(task.secondAccountCalendarEventId);
+      } catch (secAccErr) {
+        console.error("Auto-delete from second Google account failed:", secAccErr);
+      }
+    }
+    if (task.secondAccountPrepEventId) {
+      try {
+        await deleteEventFromSecondAccount(task.secondAccountPrepEventId);
+      } catch (secAccErr) {
+        console.error("Auto-delete prep event from second account failed:", secAccErr);
+      }
+    }
+    
     // If this is a parent task with repeat, also delete all child tasks
     if (task.repeatType && task.repeatType !== "none") {
       const childTasks = await storage.getChildTasks(taskId);
@@ -439,6 +523,14 @@ export async function registerRoutes(
             await deleteCalendarEvent(child.calendarEventId);
           } catch (calErr) {
             console.error("Failed to delete child calendar event:", calErr);
+          }
+        }
+        // Delete child from second Google account
+        if (child.secondAccountCalendarEventId) {
+          try {
+            await deleteEventFromSecondAccount(child.secondAccountCalendarEventId);
+          } catch (secAccErr) {
+            console.error("Failed to delete child from second account:", secAccErr);
           }
         }
       }
@@ -711,6 +803,101 @@ export async function registerRoutes(
       res.status(500).json({ error: String(err) });
     }
   });
+
+  // ============= SECOND GOOGLE ACCOUNT ROUTES =============
+
+  // GET /api/google/second-account/status - Check if second account is connected
+  app.get("/api/google/second-account/status", async (_req, res) => {
+    try {
+      const status = await isSecondAccountConnected();
+      res.json(status);
+    } catch (err) {
+      console.error("Second account status error:", err);
+      res.json({ connected: false, error: String(err) });
+    }
+  });
+
+  // GET /api/google/second-account/auth - Start OAuth flow for second account
+  app.get("/api/google/second-account/auth", async (_req, res) => {
+    try {
+      const authUrl = getSecondAccountAuthUrl();
+      res.json({ authUrl });
+    } catch (err) {
+      console.error("Second account auth error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  // GET /api/google/second-account/callback - OAuth callback handler
+  app.get("/api/google/second-account/callback", async (req, res) => {
+    try {
+      const code = req.query.code as string;
+      if (!code) {
+        return res.status(400).send('Missing authorization code');
+      }
+      
+      const account = await exchangeCodeForTokens(code);
+      
+      // Redirect back to dashboard with success message
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+          <head><title>Success</title></head>
+          <body>
+            <h1>Second Google Account Connected!</h1>
+            <p>Connected email: ${account.email}</p>
+            <p>You can close this window and return to the app.</p>
+            <script>
+              setTimeout(() => {
+                window.opener?.postMessage({ type: 'SECOND_ACCOUNT_CONNECTED', email: '${account.email}' }, '*');
+                window.close();
+              }, 1500);
+            </script>
+          </body>
+        </html>
+      `);
+    } catch (err) {
+      console.error("Second account callback error:", err);
+      res.status(500).send(`
+        <!DOCTYPE html>
+        <html>
+          <head><title>Error</title></head>
+          <body>
+            <h1>Connection Failed</h1>
+            <p>Error: ${String(err)}</p>
+            <p>Please close this window and try again.</p>
+          </body>
+        </html>
+      `);
+    }
+  });
+
+  // DELETE /api/google/second-account - Disconnect second account
+  app.delete("/api/google/second-account", async (_req, res) => {
+    try {
+      await disconnectSecondAccount();
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Second account disconnect error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  // GET /api/google/second-account/events - Get events from second account
+  app.get("/api/google/second-account/events", async (req, res) => {
+    try {
+      const timeMin = new Date(req.query.timeMin as string || Date.now());
+      const timeMax = new Date(req.query.timeMax as string || Date.now() + 30 * 24 * 60 * 60 * 1000);
+      
+      const events = await getEventsFromSecondAccount(timeMin, timeMax);
+      res.json(events);
+    } catch (err) {
+      console.error("Second account events error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
+
+  // ============= END SECOND GOOGLE ACCOUNT ROUTES =============
 
   // POST /api/tasks/:id/sync-calendar - Manually sync task to Google Calendar
   app.post("/api/tasks/:id/sync-calendar", async (req, res) => {
@@ -1427,7 +1614,7 @@ export async function registerRoutes(
     }
   });
 
-  // GET /api/calendar/events - Fetch events from Google Calendar
+  // GET /api/calendar/events - Fetch events from both Google accounts
   app.get("/api/calendar/events", async (req, res) => {
     try {
       const activeSemester = await storage.getActiveSemesterSettings();
@@ -1435,14 +1622,40 @@ export async function registerRoutes(
       const weekNumber = Number(req.query.weekNumber) || getWeekNumber(new Date(), semesterStart);
       const { start, end } = getWeekDates(weekNumber, semesterStart);
       
-      const events = await listEvents(start, end);
+      // Fetch events from primary account
+      let primaryEvents: any[] = [];
+      try {
+        primaryEvents = await listEvents(start, end);
+      } catch (err) {
+        console.error("Failed to fetch primary account events:", err);
+      }
       
-      // Get all tasks to find which events are already synced
+      // Fetch events from second Google account
+      let secondAccountEvents: any[] = [];
+      try {
+        const secondStatus = await isSecondAccountConnected();
+        if (secondStatus.connected) {
+          secondAccountEvents = await getEventsFromSecondAccount(start, end);
+        }
+      } catch (err) {
+        console.error("Failed to fetch second account events:", err);
+      }
+      
+      // Combine events from both accounts
+      const allEvents = [...primaryEvents, ...secondAccountEvents];
+      
+      // Get all tasks to find which events are already synced from this app
       const tasks = await storage.getTasks({});
-      const syncedEventIds = new Set(tasks.map(t => t.calendarEventId).filter(Boolean));
+      const syncedEventIds = new Set([
+        ...tasks.map(t => t.calendarEventId).filter(Boolean),
+        ...tasks.map(t => t.secondAccountCalendarEventId).filter(Boolean),
+        ...tasks.map(t => t.secondAccountPrepEventId).filter(Boolean),
+        ...tasks.map(t => t.prepCalendarEventId).filter(Boolean),
+        ...tasks.map(t => t.secondaryCalendarEventId).filter(Boolean),
+      ]);
       
       // Filter out events that are already synced from this app
-      const externalEvents = events.filter(event => event.id && !syncedEventIds.has(event.id));
+      const externalEvents = allEvents.filter(event => event.id && !syncedEventIds.has(event.id));
       
       // Transform to a simpler format
       const formattedEvents = externalEvents.map(event => ({
@@ -1456,7 +1669,40 @@ export async function registerRoutes(
         source: 'google',
       }));
       
-      res.json(formattedEvents);
+      // Now filter to only show events that conflict with tasks in this app
+      // Get tasks for this week
+      const weekTasks = tasks.filter(t => {
+        const taskDue = new Date(t.dueDate);
+        return taskDue >= start && taskDue <= end;
+      });
+      
+      // Check for conflicts: all-day events conflict if task is due same day
+      // Timed events conflict if they overlap within 1 hour of task due time
+      const conflictingEvents = formattedEvents.filter(event => {
+        const eventStart = new Date(event.startDate);
+        const eventEnd = event.endDate ? new Date(event.endDate) : new Date(eventStart.getTime() + 60 * 60 * 1000);
+        
+        return weekTasks.some(task => {
+          const taskDue = new Date(task.dueDate);
+          
+          if (event.isAllDay) {
+            // All-day event: conflict if task is due on the same date
+            const eventDate = eventStart.toDateString();
+            const taskDate = taskDue.toDateString();
+            return eventDate === taskDate;
+          } else {
+            // Timed event: conflict if overlapping within 1 hour buffer
+            const buffer = 60 * 60 * 1000; // 1 hour
+            const taskStartWindow = new Date(taskDue.getTime() - buffer);
+            const taskEndWindow = new Date(taskDue.getTime() + buffer);
+            
+            // Check overlap
+            return eventStart < taskEndWindow && eventEnd > taskStartWindow;
+          }
+        });
+      });
+      
+      res.json(conflictingEvents);
     } catch (error) {
       console.error("Fetch Google Calendar events error:", error);
       res.status(500).json({ error: "Failed to fetch Google Calendar events" });

@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 export interface IStorage {
@@ -20,6 +20,10 @@ export interface IStorage {
   getActiveSemesterSettings(): Promise<SemesterSettings | undefined>;
   createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings>;
   updateSemesterSettings(id: number, updates: Partial<SemesterSettings>): Promise<SemesterSettings>;
+  getSecondGoogleAccount(): Promise<SecondGoogleAccount | undefined>;
+  saveSecondGoogleAccount(account: InsertSecondGoogleAccount): Promise<SecondGoogleAccount>;
+  updateSecondGoogleAccount(id: number, updates: Partial<SecondGoogleAccount>): Promise<SecondGoogleAccount>;
+  deleteSecondGoogleAccount(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -152,6 +156,35 @@ export class DatabaseStorage implements IStorage {
       .where(eq(semesterSettings.id, id))
       .returning();
     return updated;
+  }
+
+  async getSecondGoogleAccount(): Promise<SecondGoogleAccount | undefined> {
+    const [account] = await db
+      .select()
+      .from(secondGoogleAccount)
+      .orderBy(desc(secondGoogleAccount.createdAt))
+      .limit(1);
+    return account;
+  }
+
+  async saveSecondGoogleAccount(account: InsertSecondGoogleAccount): Promise<SecondGoogleAccount> {
+    // Delete any existing accounts first (only one second account allowed)
+    await db.delete(secondGoogleAccount);
+    const [newAccount] = await db.insert(secondGoogleAccount).values(account).returning();
+    return newAccount;
+  }
+
+  async updateSecondGoogleAccount(id: number, updates: Partial<SecondGoogleAccount>): Promise<SecondGoogleAccount> {
+    const [updated] = await db
+      .update(secondGoogleAccount)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(secondGoogleAccount.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteSecondGoogleAccount(): Promise<void> {
+    await db.delete(secondGoogleAccount);
   }
 }
 
