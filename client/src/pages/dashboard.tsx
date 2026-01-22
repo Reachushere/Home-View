@@ -2311,7 +2311,7 @@ export default function Dashboard() {
         </div>
         
         {/* Calendar Header */}
-        <div className="flex items-center mb-0 bg-slate-300 rounded-xl px-3 py-1 shadow-sm" style={{ border: '1px solid #94a3b8', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)' }}>
+        <div className="flex items-center mb-0 bg-slate-300 rounded-xl px-3 py-1 shadow-sm" style={{ border: '1px solid #94a3b8', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)', marginTop: '6px' }}>
           {/* Sync button */}
           {/* Week navigation */}
           <Button variant="ghost" size="icon" className="h-3 w-3 mr-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
@@ -2331,12 +2331,12 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-3.5 w-3.5 mx-1 text-black"
+            className="h-3 w-3 mx-1 text-black"
             onClick={() => setSelectedWeek(2)}
             data-testid="button-home-week"
             title="Go to current week"
           >
-            <Home className="h-2.5 w-2.5" />
+            <Home className="h-2 w-2" />
           </Button>
           <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           <Button 
