@@ -2540,6 +2540,12 @@ export default function Dashboard() {
                             </div>
                           );
                         }
+                        // Skip prep days that have already passed
+                        const today = startOfDay(new Date());
+                        if (!isDueDay && isBefore(dayStart, today)) {
+                          return null;
+                        }
+                        
                         // First prep day (not the due day)
                         if (isFirstPrepDay) {
                           const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
