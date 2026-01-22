@@ -2326,7 +2326,7 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-4 w-4 mr-2"
+            className="h-4 w-4 mr-3"
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
