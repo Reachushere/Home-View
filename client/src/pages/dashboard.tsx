@@ -2328,7 +2328,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" className="h-3 w-3 ml-2 mr-1" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
               <ChevronRight className="h-4 w-4 text-white" strokeWidth={2} />
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
+            <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost" 
               size="icon" 
@@ -2339,7 +2339,7 @@ export default function Dashboard() {
             >
               <Home className="text-white" style={{ height: '14px', width: '14px' }} />
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
+            <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost" 
               size="icon" 
@@ -2354,7 +2354,7 @@ export default function Dashboard() {
                 <RefreshCw className="text-white" style={{ height: '13px', width: '13px' }} />
               )}
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
+            <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2364,7 +2364,7 @@ export default function Dashboard() {
               <Sun className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
               Today
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
+            <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
@@ -2374,7 +2374,7 @@ export default function Dashboard() {
               <CalendarDays className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
               {calendarView === "month" ? "Week" : "Month"}
             </Button>
-            <div className="h-4 flex ml-1 mr-0"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
+            <div className="h-4 flex ml-1 mr-0"><div className="w-px bg-white" /></div>
           </div>
           
           {/* Gray section: remaining buttons */}
