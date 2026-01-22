@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import tmuLogo from "@assets/Chang-School_1768803262583.png";
+import unicalLogo from "@assets/unical-logo.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1380,7 +1381,7 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 350, backgroundColor: '#000000' }}>
         <div className="flex items-end gap-2 px-2 pt-1 pb-2">
-          <CalendarDays className="h-5 w-5 text-white mb-1" />
+          <img src={unicalLogo} alt="Uni-Cal" className="h-6 w-6 mb-0.5" />
           <h1 className="text-lg font-semibold text-white mt-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             School Planner
           </h1>
