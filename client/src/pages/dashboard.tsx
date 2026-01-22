@@ -2695,7 +2695,7 @@ export default function Dashboard() {
                           const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                           const baseStyle = task.isCompleted 
                             ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : `bg-slate-400 text-black border border-slate-500 ${shimmerClass}`;
+                            : `bg-slate-400 text-white border border-slate-500 ${shimmerClass}`;
                           return (
                             <div key={`prep-${task.id}`} className="flex items-center w-full">
                               <div
@@ -2724,7 +2724,7 @@ export default function Dashboard() {
                         const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                         const baseStyle = task.isCompleted 
                           ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                          : `bg-slate-400 text-black border border-slate-500 ${shimmerClass}`;
+                          : `bg-slate-400 text-white border border-slate-500 ${shimmerClass}`;
                         // Check if the previous day is visible (today or future)
                         const previousDay = addDays(dayStart, -1);
                         const hasPreviousVisibleDay = !isBefore(previousDay, today);
@@ -3139,7 +3139,7 @@ export default function Dashboard() {
                               cardBgClass="bg-green-50 dark:bg-green-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-violet-600 rounded-sm flex flex-col items-center justify-center z-10">
                               <span className={`text-xs font-bold text-white leading-none mt-0.5 ${daysUntilDue === 1 ? 'animate-blink' : ''}`}>{daysUntilDue}</span>
                               <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
                             </div>
@@ -3168,7 +3168,7 @@ export default function Dashboard() {
                               cardBgClass="bg-pink-50 dark:bg-pink-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-violet-600 rounded-sm flex flex-col items-center justify-center z-10">
                               <span className={`text-xs font-bold text-white leading-none mt-0.5 ${daysUntilDue === 1 ? 'animate-blink' : ''}`}>{daysUntilDue}</span>
                               <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
                             </div>
@@ -3197,7 +3197,7 @@ export default function Dashboard() {
                               cardBgClass="bg-indigo-50 dark:bg-indigo-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-violet-600 rounded-sm flex flex-col items-center justify-center z-10">
                               <span className={`text-xs font-bold text-white leading-none mt-0.5 ${daysUntilDue === 1 ? 'animate-blink' : ''}`}>{daysUntilDue}</span>
                               <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
                             </div>
