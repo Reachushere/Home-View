@@ -2353,10 +2353,8 @@ export default function Dashboard() {
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
             >
-              {syncAllCalendarMutation.isPending ? (
+              {syncAllCalendarMutation.isPending && (
                 <Loader2 className="h-1.5 w-1.5 mr-0.5 animate-spin" />
-              ) : (
-                <CalendarDays className="h-1.5 w-1.5 mr-0.5" />
               )}
               SYNC
             </Button>
