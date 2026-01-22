@@ -2109,7 +2109,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             size="icon"
-            className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-6"
+            className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-4"
             data-testid="button-hamburger-menu"
           >
             <Menu className="h-3.5 w-3.5" />
@@ -2131,19 +2131,19 @@ export default function Dashboard() {
               <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule - {currentSemesterName}</h1>
             </div>
             {/* Slightly bigger Clock below title */}
-            <div className="flex items-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 px-2.5 py-1 rounded border border-slate-700/50 shadow-sm mt-0.5" data-testid="digital-clock">
-              <span className="text-[8px] text-slate-400 font-medium">
+            <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
+              <span className="text-[8px] text-muted-foreground font-medium">
                 {format(currentTime, "EEE, MMM d")}
               </span>
-              <div className="w-px h-4 bg-slate-600" />
+              <div className="w-px h-4 bg-border" />
               <div className="flex items-baseline">
-                <span className="text-sm font-semibold text-white tabular-nums">
+                <span className="text-sm font-semibold text-foreground tabular-nums">
                   {format(currentTime, "h:mm")}
                 </span>
-                <span className="text-[10px] text-slate-400 tabular-nums">
+                <span className="text-[10px] text-muted-foreground tabular-nums">
                   :{format(currentTime, "ss")}
                 </span>
-                <span className="text-[7px] font-bold text-slate-400 ml-0.5 uppercase">
+                <span className="text-[7px] font-bold text-muted-foreground ml-0.5 uppercase">
                   {format(currentTime, "a")}
                 </span>
               </div>
