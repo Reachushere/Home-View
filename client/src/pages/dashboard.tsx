@@ -2221,30 +2221,30 @@ export default function Dashboard() {
           </RouterLink>
           
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2.5 ml-2 pl-[24px] pr-[36px] h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
+          <div className="flex items-center gap-2.5 ml-2 pl-[24px] pr-[30px] h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
             <div className={`text-[10px] font-mono font-bold -ml-3.5 ${
               pomodoroMode === "work" ? "text-red-600" : 
               pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center -mx-0.5">
               <button
-                className="p-0.5 hover:bg-gray-100 rounded mx-0.5"
+                className="p-0.5 hover:bg-gray-100 rounded"
                 onClick={togglePomodoro}
                 data-testid="button-pomodoro-toggle"
               >
                 {pomodoroRunning ? <Pause className="h-2.5 w-2.5" /> : <Play className="h-2.5 w-2.5" />}
               </button>
               <button
-                className="p-0.5 hover:bg-gray-100 rounded mx-0.5"
+                className="p-0.5 hover:bg-gray-100 rounded"
                 onClick={resetPomodoro}
                 data-testid="button-pomodoro-reset"
               >
                 <RotateCcw className="h-2.5 w-2.5" />
               </button>
               <button
-                className="p-0.5 hover:bg-gray-100 rounded mx-0.5"
+                className="p-0.5 hover:bg-gray-100 rounded"
                 onClick={skipPomodoro}
                 data-testid="button-pomodoro-skip"
               >
