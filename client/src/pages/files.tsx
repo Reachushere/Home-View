@@ -852,8 +852,11 @@ export default function FilesPage() {
                         return (
                           <div key={courseFolderId}>
                             <div
-                              className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d]`}
+                              className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${dragOverFolder === courseFolderId ? "bg-[#0078d4]/30" : ""}`}
                               onClick={() => toggleFolder(courseFolderId)}
+                              onDragOver={(e) => handleDragOver(e, courseFolderId)}
+                              onDragLeave={(e) => handleDragLeave(e)}
+                              onDrop={(e) => handleDrop(e, courseFolderId)}
                               data-testid={`course-folder-${courseFolderId}`}
                             >
                               {isCourseExpanded ? (
@@ -880,7 +883,7 @@ export default function FilesPage() {
                                   return (
                                     <div
                                       key={contentFolderId}
-                                      className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isSelected ? "bg-[#0078d4]/30" : ""}`}
+                                      className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isSelected ? "bg-[#0078d4]/30" : ""} ${dragOverFolder === contentFolderId ? "bg-[#0078d4]/50 ring-1 ring-[#0078d4]" : ""}`}
                                       onClick={() => setSelectedFolder(contentFolderId)}
                                       onDragOver={(e) => handleDragOver(e, contentFolderId)}
                                       onDragLeave={(e) => handleDragLeave(e)}
