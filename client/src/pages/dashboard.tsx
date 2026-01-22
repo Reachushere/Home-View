@@ -2325,94 +2325,94 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-3 w-3 mb-1" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <Button 
-            variant="ghost"
-            className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] leading-none bg-transparent hover:bg-gray-100 border-0 font-semibold text-black ml-2 rounded-md flex items-center justify-center" 
-            onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-            data-testid="button-today"
-          >
-            TODAY
-          </Button>
-          <div className="h-4 w-px bg-gray-500 ml-2" />
-          <Button 
-            variant="ghost"
-            className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] leading-none bg-transparent hover:bg-gray-100 border-0 font-semibold text-black ml-2 rounded-md flex items-center justify-center"
-            onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-            data-testid="button-month-view"
-          >
-            {calendarView === "month" ? "WEEK" : "MONTH"}
-          </Button>
-          <div className="h-4 w-px bg-gray-500 ml-2" />
-          <Button 
-            size="sm" 
-            className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0 ml-2" 
-            onClick={() => syncAllCalendarMutation.mutate()}
-            disabled={syncAllCalendarMutation.isPending}
-            data-testid="button-sync-calendar"
-          >
-            {syncAllCalendarMutation.isPending ? (
-              <Loader2 className="h-1.5 w-1.5 mr-0.5 animate-spin" />
-            ) : (
-              <CalendarDays className="h-1.5 w-1.5 mr-0.5" />
-            )}
-            SYNC
-          </Button>
-          <div className="h-4 w-px bg-gray-500 ml-2" />
-          <RouterLink href="/files" className="flex items-center ml-2">
-            <Button 
-              size="sm" 
-              className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
-              data-testid="button-files-link"
-            >
-              <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
-              FILES
-            </Button>
-          </RouterLink>
-          <div className="h-4 w-px bg-gray-500 ml-2" />
-          
-          {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2.5 ml-2 pl-[24px] pr-[36px] h-[20px] rounded-md border-0 bg-transparent">
-            <div className={`text-[10px] font-mono font-bold -ml-3.5 ${
-              pomodoroMode === "work" ? "text-red-600" : 
-              pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
-            }`} data-testid="pomodoro-timer">
-              {formatPomodoroTime(pomodoroTime)}
-            </div>
-            <div className="flex items-center -mx-0.5 translate-x-2">
-              <button
-                className="p-0.5 hover:bg-gray-100 rounded -translate-x-1"
-                onClick={togglePomodoro}
-                data-testid="button-pomodoro-toggle"
-              >
-                {pomodoroRunning ? <Pause className="h-2.5 w-2.5" /> : <Play className="h-2.5 w-2.5" />}
-              </button>
-              <button
-                className="p-0.5 hover:bg-gray-100 rounded"
-                onClick={resetPomodoro}
-                data-testid="button-pomodoro-reset"
-              >
-                <RotateCcw className="h-2.5 w-2.5" />
-              </button>
-              <button
-                className="p-0.5 hover:bg-gray-100 rounded translate-x-1"
-                onClick={skipPomodoro}
-                data-testid="button-pomodoro-skip"
-              >
-                <SkipForward className="h-2.5 w-2.5" />
-              </button>
-            </div>
-            <div className="text-[7px] text-muted-foreground -mr-2.5 translate-x-4 translate-y-0.5">
-              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"}
-              <span className="ml-0.5 font-bold">{pomodoroCount}</span>
-            </div>
-          </div>
-          <div className="h-4 w-px bg-gray-500 ml-2" />
           
           {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-center justify-end gap-0 ml-2">
+          <div className="flex-1 flex items-center justify-end gap-2 ml-4">
+            <Button 
+              variant="ghost"
+              className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
+              onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+              data-testid="button-today"
+            >
+              TODAY
+            </Button>
+            <div className="h-4 w-px bg-gray-500" />
+            <Button 
+              variant="ghost"
+              className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0"
+              onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+              data-testid="button-month-view"
+            >
+              {calendarView === "month" ? "WEEK" : "MONTH"}
+            </Button>
+            <div className="h-4 w-px bg-gray-500" />
+            <Button 
+              size="sm" 
+              className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
+              onClick={() => syncAllCalendarMutation.mutate()}
+              disabled={syncAllCalendarMutation.isPending}
+              data-testid="button-sync-calendar"
+            >
+              {syncAllCalendarMutation.isPending ? (
+                <Loader2 className="h-1.5 w-1.5 mr-0.5 animate-spin" />
+              ) : (
+                <CalendarDays className="h-1.5 w-1.5 mr-0.5" />
+              )}
+              SYNC
+            </Button>
+            <div className="h-4 w-px bg-gray-500" />
+            <RouterLink href="/files" className="flex items-center">
+              <Button 
+                size="sm" 
+                className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
+                data-testid="button-files-link"
+              >
+                <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
+                FILES
+              </Button>
+            </RouterLink>
+            <div className="h-4 w-px bg-gray-500" />
+            
+            {/* Pomodoro Timer */}
+            <div className="flex items-center gap-1 h-[20px]">
+              <div className={`text-[10px] font-mono font-bold ${
+                pomodoroMode === "work" ? "text-red-600" : 
+                pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
+              }`} data-testid="pomodoro-timer">
+                {formatPomodoroTime(pomodoroTime)}
+              </div>
+              <div className="flex items-center">
+                <button
+                  className="p-0.5 hover:bg-gray-100 rounded"
+                  onClick={togglePomodoro}
+                  data-testid="button-pomodoro-toggle"
+                >
+                  {pomodoroRunning ? <Pause className="h-2.5 w-2.5" /> : <Play className="h-2.5 w-2.5" />}
+                </button>
+                <button
+                  className="p-0.5 hover:bg-gray-100 rounded"
+                  onClick={resetPomodoro}
+                  data-testid="button-pomodoro-reset"
+                >
+                  <RotateCcw className="h-2.5 w-2.5" />
+                </button>
+                <button
+                  className="p-0.5 hover:bg-gray-100 rounded"
+                  onClick={skipPomodoro}
+                  data-testid="button-pomodoro-skip"
+                >
+                  <SkipForward className="h-2.5 w-2.5" />
+                </button>
+              </div>
+              <div className="text-[7px] text-muted-foreground">
+                {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"}
+                <span className="ml-0.5 font-bold">{pomodoroCount}</span>
+              </div>
+            </div>
+            <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
@@ -2422,7 +2422,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
@@ -2432,7 +2432,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
@@ -2442,7 +2442,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
@@ -2452,7 +2452,7 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
+              className="!h-[20px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
