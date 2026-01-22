@@ -1992,7 +1992,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                               >
-                                {task.title}
+                                <span className="font-bold">DUE:</span> {task.title}
                               </span>
                             </div>
                           </div>
