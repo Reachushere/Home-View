@@ -2331,12 +2331,12 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-2.5 w-2.5 mx-1 text-black"
+            className="h-3 w-3 mx-1 text-black"
             onClick={() => setSelectedWeek(2)}
             data-testid="button-home-week"
             title="Go to current week"
           >
-            <Home style={{ height: '9px', width: '9px' }} />
+            <Home style={{ height: '11px', width: '11px' }} />
           </Button>
           <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           <Button 
