@@ -134,6 +134,13 @@ export default function Dashboard() {
     const saved = localStorage.getItem('checkedCourses');
     return saved ? JSON.parse(saved) : {};
   });
+  
+  // Profile state
+  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string }>(() => {
+    const saved = localStorage.getItem('profileData');
+    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '' };
+  });
 
   const toggleCourse = (courseId: string) => {
     setCheckedCourses(prev => {
@@ -141,6 +148,13 @@ export default function Dashboard() {
       localStorage.setItem('checkedCourses', JSON.stringify(updated));
       return updated;
     });
+  };
+  
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string }) => {
+    setProfileData(data);
+    localStorage.setItem('profileData', JSON.stringify(data));
+    setIsProfileDialogOpen(false);
+    toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
 
   const [courseGrades, setCourseGrades] = useState<Record<string, { grade: string; percent: string }>>(() => {
@@ -2120,7 +2134,7 @@ export default function Dashboard() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem data-testid="menu-item-profile">
+              <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </DropdownMenuItem>
@@ -2140,7 +2154,7 @@ export default function Dashboard() {
               >
                 {isMuted ? <BellOff className="h-3 w-3 scale-[0.65]" /> : <Bell className="h-3 w-3 scale-[0.65]" />}
               </Button>
-              <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule - {currentSemesterName}</h1>
+              <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
             </div>
             {/* Slightly bigger Clock below title */}
             <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
@@ -2333,6 +2347,58 @@ export default function Dashboard() {
                 initialType={newTaskType}
                 onSuccess={() => setIsAddDialogOpen(false)} 
               />
+            </DialogContent>
+          </Dialog>
+          
+          {/* Profile Dialog */}
+          <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Profile</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                saveProfile({
+                  firstName: formData.get('firstName') as string,
+                  lastName: formData.get('lastName') as string,
+                  birthdate: formData.get('birthdate') as string,
+                });
+              }} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input 
+                    id="firstName" 
+                    name="firstName" 
+                    defaultValue={profileData.firstName}
+                    placeholder="Enter your first name"
+                    data-testid="input-profile-firstname"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input 
+                    id="lastName" 
+                    name="lastName" 
+                    defaultValue={profileData.lastName}
+                    placeholder="Enter your last name"
+                    data-testid="input-profile-lastname"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="birthdate">Birthdate</Label>
+                  <Input 
+                    id="birthdate" 
+                    name="birthdate" 
+                    type="date"
+                    defaultValue={profileData.birthdate}
+                    data-testid="input-profile-birthdate"
+                  />
+                </div>
+                <Button type="submit" className="w-full" data-testid="button-save-profile">
+                  Save Profile
+                </Button>
+              </form>
             </DialogContent>
           </Dialog>
           
