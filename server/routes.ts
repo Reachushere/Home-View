@@ -426,6 +426,37 @@ export async function registerRoutes(
     res.json(task);
   });
 
+  // ============= SEMESTER SETTINGS ROUTES =============
+
+  // GET /api/semester - Get active semester settings
+  app.get(api.semester.get.path, async (_req, res) => {
+    try {
+      const settings = await storage.getActiveSemesterSettings();
+      res.json(settings || null);
+    } catch (err) {
+      console.error("Error fetching semester settings:", err);
+      res.status(500).json({ error: "Failed to fetch semester settings" });
+    }
+  });
+
+  // POST /api/semester - Create new semester settings
+  app.post(api.semester.create.path, async (req, res) => {
+    try {
+      const input = api.semester.create.input.parse(req.body);
+      const settings = await storage.createSemesterSettings(input);
+      res.status(201).json(settings);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join('.'),
+        });
+      }
+      console.error("Error creating semester settings:", err);
+      res.status(500).json({ error: "Failed to create semester settings" });
+    }
+  });
+
   // ============= FILE MANAGEMENT ROUTES =============
 
   // GET /api/files - List all uploaded files

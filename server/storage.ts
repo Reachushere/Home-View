@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { tasks, files, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, getWeekNumber } from "@shared/schema";
-import { eq, and, gte, lte } from "drizzle-orm";
+import { tasks, files, semesterSettings, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, getWeekNumber } from "@shared/schema";
+import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 export interface IStorage {
   getTasks(filters?: { weekNumber?: number; type?: string; showCompleted?: boolean }): Promise<Task[]>;
@@ -17,6 +17,8 @@ export interface IStorage {
   createFile(file: InsertFile): Promise<FileRecord>;
   updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean }): Promise<FileRecord>;
   deleteFile(id: number): Promise<void>;
+  getActiveSemesterSettings(): Promise<SemesterSettings | undefined>;
+  createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -121,6 +123,25 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFile(id: number): Promise<void> {
     await db.delete(files).where(eq(files.id, id));
+  }
+
+  async getActiveSemesterSettings(): Promise<SemesterSettings | undefined> {
+    const [settings] = await db
+      .select()
+      .from(semesterSettings)
+      .where(eq(semesterSettings.isActive, true))
+      .orderBy(desc(semesterSettings.createdAt))
+      .limit(1);
+    return settings;
+  }
+
+  async createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings> {
+    await db.update(semesterSettings).set({ isActive: false });
+    const [newSettings] = await db.insert(semesterSettings).values({
+      ...settings,
+      isActive: true,
+    }).returning();
+    return newSettings;
   }
 }
 

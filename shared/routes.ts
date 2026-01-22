@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertTaskSchema, tasks } from './schema';
+import { insertTaskSchema, tasks, insertSemesterSettingsSchema, semesterSettings } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -115,6 +115,24 @@ export const api = {
           endDate: z.string(),
           taskCount: z.number(),
         })),
+      },
+    },
+  },
+  semester: {
+    get: {
+      method: 'GET' as const,
+      path: '/api/semester',
+      responses: {
+        200: z.custom<typeof semesterSettings.$inferSelect>().nullable(),
+      },
+    },
+    create: {
+      method: 'POST' as const,
+      path: '/api/semester',
+      input: insertSemesterSettingsSchema,
+      responses: {
+        201: z.custom<typeof semesterSettings.$inferSelect>(),
+        400: errorSchemas.validation,
       },
     },
   },

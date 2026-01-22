@@ -65,6 +65,27 @@ export const REMINDER_OPTIONS = [
 export const DEFAULT_REMINDER_1 = 30; // 30 minutes
 export const DEFAULT_REMINDER_2 = 120; // 2 hours
 
+// Semester settings table to store dynamic semester configuration
+export const semesterSettings = pgTable("semester_settings", {
+  id: serial("id").primaryKey(),
+  semesterStartDate: timestamp("semester_start_date").notNull(),
+  course1Code: text("course1_code").notNull(),
+  course1Name: text("course1_name").notNull(),
+  course1Professor: text("course1_professor"),
+  course2Code: text("course2_code").notNull(),
+  course2Name: text("course2_name").notNull(),
+  course2Professor: text("course2_professor"),
+  course3Code: text("course3_code").notNull(),
+  course3Name: text("course3_name").notNull(),
+  course3Professor: text("course3_professor"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSemesterSettingsSchema = createInsertSchema(semesterSettings).omit({ id: true, createdAt: true });
+export type SemesterSettings = typeof semesterSettings.$inferSelect;
+export type InsertSemesterSettings = z.infer<typeof insertSemesterSettingsSchema>;
+
 export const files = pgTable("files", {
   id: serial("id").primaryKey(),
   originalName: text("original_name").notNull(),
