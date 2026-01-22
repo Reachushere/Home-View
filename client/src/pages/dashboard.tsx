@@ -2339,7 +2339,7 @@ export default function Dashboard() {
           </Button>
           {/* Week navigation */}
           <Button variant="ghost" size="icon" className="h-3 w-3 mr-4" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-            <ChevronLeft className="h-4 w-4 text-blue-900" strokeWidth={3} />
+            <ChevronLeft className="h-4 w-4 text-black" strokeWidth={2} />
           </Button>
           <div className="flex items-center mr-6" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             <div className="flex items-center gap-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
@@ -2349,7 +2349,7 @@ export default function Dashboard() {
             </div>
           </div>
           <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-            <ChevronRight className="h-4 w-4 text-blue-900" strokeWidth={3} />
+            <ChevronRight className="h-4 w-4 text-black" strokeWidth={2} />
           </Button>
           
           {/* All buttons with equal spacing */}
