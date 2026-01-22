@@ -2230,7 +2230,7 @@ export default function Dashboard() {
             </div>
             <div className="flex items-center -mx-0.5">
               <button
-                className="p-0.5 hover:bg-gray-100 rounded"
+                className="p-0.5 hover:bg-gray-100 rounded -translate-x-1"
                 onClick={togglePomodoro}
                 data-testid="button-pomodoro-toggle"
               >
@@ -2244,7 +2244,7 @@ export default function Dashboard() {
                 <RotateCcw className="h-2.5 w-2.5" />
               </button>
               <button
-                className="p-0.5 hover:bg-gray-100 rounded"
+                className="p-0.5 hover:bg-gray-100 rounded translate-x-1"
                 onClick={skipPomodoro}
                 data-testid="button-pomodoro-skip"
               >
