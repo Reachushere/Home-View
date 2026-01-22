@@ -265,6 +265,9 @@ export async function registerRoutes(
       
       // Generate repeated task instances if repeat is set
       if (task.repeatType && task.repeatType !== "none") {
+        const activeSemester = await storage.getActiveSemesterSettings();
+        const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : undefined;
+        
         const repeatDates = generateRepeatDates(
           task.dueDate,
           task.repeatType as RepeatType,
@@ -298,7 +301,7 @@ export async function registerRoutes(
             reminder2: task.reminder2,
             reminder3: task.reminder3,
             reminder4: task.reminder4,
-            weekNumber: getWeekNumber(repeatDueDate),
+            weekNumber: getWeekNumber(repeatDueDate, semesterStart),
             priority: task.priority,
             notes: task.notes,
             referenceLink: task.referenceLink,
@@ -823,9 +826,11 @@ export async function registerRoutes(
 
   // GET /api/weeks/current
   app.get(api.weeks.current.path, async (_req, res) => {
+    const activeSemester = await storage.getActiveSemesterSettings();
+    const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : undefined;
     const now = new Date();
-    const weekNum = getWeekNumber(now);
-    const { start, end } = getWeekDates(weekNum);
+    const weekNum = getWeekNumber(now, semesterStart);
+    const { start, end } = getWeekDates(weekNum, semesterStart);
     res.json({
       weekNumber: weekNum,
       startDate: start.toISOString(),
@@ -835,11 +840,13 @@ export async function registerRoutes(
 
   // GET /api/weeks
   app.get(api.weeks.list.path, async (_req, res) => {
+    const activeSemester = await storage.getActiveSemesterSettings();
+    const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : undefined;
     const taskCounts = await storage.getTaskCountByWeek();
     const weeks = [];
     
     for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
-      const { start, end } = getWeekDates(w);
+      const { start, end } = getWeekDates(w, semesterStart);
       weeks.push({
         weekNumber: w,
         startDate: start.toISOString(),
@@ -1359,8 +1366,10 @@ export async function registerRoutes(
   // GET /api/calendar/events - Fetch events from Google Calendar
   app.get("/api/calendar/events", async (req, res) => {
     try {
-      const weekNumber = Number(req.query.weekNumber) || getWeekNumber(new Date());
-      const { start, end } = getWeekDates(weekNumber);
+      const activeSemester = await storage.getActiveSemesterSettings();
+      const semesterStart = activeSemester ? new Date(activeSemester.semesterStartDate) : undefined;
+      const weekNumber = Number(req.query.weekNumber) || getWeekNumber(new Date(), semesterStart);
+      const { start, end } = getWeekDates(weekNumber, semesterStart);
       
       const events = await listEvents(start, end);
       

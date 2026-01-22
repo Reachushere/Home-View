@@ -168,15 +168,15 @@ export const SEMESTER_START = new Date("2026-01-10T12:00:00"); // Week 1 Saturda
 export const FIRST_WEEK = 1;
 export const LAST_WEEK = 13;
 
-export function getWeekNumber(date: Date): number {
-  const startOfSemester = new Date(SEMESTER_START);
+export function getWeekNumber(date: Date, customSemesterStart?: Date): number {
+  const startOfSemester = new Date(customSemesterStart || SEMESTER_START);
   const diffTime = date.getTime() - startOfSemester.getTime();
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   return Math.floor(diffDays / 7) + 1;
 }
 
-export function getWeekDates(weekNum: number): { start: Date; end: Date } {
-  const startOfSemester = new Date(SEMESTER_START);
+export function getWeekDates(weekNum: number, customSemesterStart?: Date): { start: Date; end: Date } {
+  const startOfSemester = new Date(customSemesterStart || SEMESTER_START);
   const weekStart = new Date(startOfSemester);
   weekStart.setDate(startOfSemester.getDate() + (weekNum - 1) * 7);
   const weekEnd = new Date(weekStart);
