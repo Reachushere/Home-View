@@ -48,8 +48,8 @@ import {
   Repeat2,
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
-import type { Task } from "@shared/schema";
-import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS } from "@shared/schema";
+import type { Task, SemesterSettings } from "@shared/schema";
+import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
 import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -402,6 +402,31 @@ export default function Dashboard() {
     refetchInterval: 60000, // Refresh every minute
   });
 
+  // Semester settings query
+  const { data: semesterSettings } = useQuery<SemesterSettings | null>({
+    queryKey: ["/api/semester"],
+    queryFn: () => fetch("/api/semester").then(r => r.json()),
+  });
+
+  // State for new semester dialog
+  const [isNewSemesterDialogOpen, setIsNewSemesterDialogOpen] = useState(false);
+  const [newSemesterForm, setNewSemesterForm] = useState({
+    semesterStartDate: "2026-05-02",
+    course1Code: "",
+    course1Name: "",
+    course1Professor: "",
+    course2Code: "",
+    course2Name: "",
+    course2Professor: "",
+    course3Code: "",
+    course3Name: "",
+    course3Professor: "",
+  });
+
+  // Check if we're past Week 13 end date - show new semester prompt
+  const week13EndDate = weeks.find(w => w.weekNumber === LAST_WEEK)?.endDate;
+  const isPastSemester = week13EndDate ? new Date() > new Date(week13EndDate) : false;
+
   const completeMutation = useMutation({
     mutationFn: async ({ id, isCompleted }: { id: number; isCompleted: boolean }) => {
       return apiRequest("PATCH", `/api/tasks/${id}/complete`, { isCompleted });
@@ -444,6 +469,29 @@ export default function Dashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+    },
+  });
+
+  // Mutation for creating new semester
+  const createSemesterMutation = useMutation({
+    mutationFn: async (data: typeof newSemesterForm) => {
+      return apiRequest("POST", "/api/semester", {
+        semesterStartDate: new Date(data.semesterStartDate).toISOString(),
+        course1Code: data.course1Code,
+        course1Name: data.course1Name,
+        course1Professor: data.course1Professor || null,
+        course2Code: data.course2Code,
+        course2Name: data.course2Name,
+        course2Professor: data.course2Professor || null,
+        course3Code: data.course3Code,
+        course3Name: data.course3Name,
+        course3Professor: data.course3Professor || null,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+      setIsNewSemesterDialogOpen(false);
     },
   });
 
@@ -812,7 +860,178 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen flex-col">
+      {/* New Semester Banner - Shows when past Week 13 */}
+      {isPastSemester && (
+        <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <GraduationCap className="h-5 w-5" />
+            <span className="font-medium">Semester Complete! Ready to set up your next semester?</span>
+          </div>
+          <Button 
+            variant="outline" 
+            className="bg-white/20 border-white/40 text-white hover:bg-white/30"
+            onClick={() => setIsNewSemesterDialogOpen(true)}
+            data-testid="button-new-semester"
+          >
+            Set Up New Semester
+          </Button>
+        </div>
+      )}
+
+      {/* New Semester Setup Dialog */}
+      <Dialog open={isNewSemesterDialogOpen} onOpenChange={setIsNewSemesterDialogOpen}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GraduationCap className="h-5 w-5" />
+              Set Up New Semester
+            </DialogTitle>
+          </DialogHeader>
+          <form 
+            className="space-y-4" 
+            onSubmit={(e) => {
+              e.preventDefault();
+              createSemesterMutation.mutate(newSemesterForm);
+            }}
+          >
+            <div>
+              <Label htmlFor="semesterStartDate">Semester Start Date (Week 1 Saturday)</Label>
+              <Input
+                id="semesterStartDate"
+                type="date"
+                value={newSemesterForm.semesterStartDate}
+                onChange={(e) => setNewSemesterForm(prev => ({ ...prev, semesterStartDate: e.target.value }))}
+                required
+                data-testid="input-semester-start"
+              />
+            </div>
+
+            <div className="border rounded-lg p-3 space-y-3">
+              <Label className="font-medium text-green-600">Course 1 (Green)</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Course Code</Label>
+                  <Input
+                    placeholder="e.g., CPPA122"
+                    value={newSemesterForm.course1Code}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Code: e.target.value }))}
+                    required
+                    data-testid="input-course1-code"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Course Name</Label>
+                  <Input
+                    placeholder="e.g., Local Politics"
+                    value={newSemesterForm.course1Name}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Name: e.target.value }))}
+                    required
+                    data-testid="input-course1-name"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
+                <Input
+                  placeholder="e.g., Dr. Smith"
+                  value={newSemesterForm.course1Professor}
+                  onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Professor: e.target.value }))}
+                  data-testid="input-course1-professor"
+                />
+              </div>
+            </div>
+
+            <div className="border rounded-lg p-3 space-y-3">
+              <Label className="font-medium text-pink-600">Course 2 (Pink)</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Course Code</Label>
+                  <Input
+                    placeholder="e.g., CFNF400"
+                    value={newSemesterForm.course2Code}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2Code: e.target.value }))}
+                    required
+                    data-testid="input-course2-code"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Course Name</Label>
+                  <Input
+                    placeholder="e.g., Human Sexuality"
+                    value={newSemesterForm.course2Name}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2Name: e.target.value }))}
+                    required
+                    data-testid="input-course2-name"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
+                <Input
+                  placeholder="e.g., Prof. Johnson"
+                  value={newSemesterForm.course2Professor}
+                  onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2Professor: e.target.value }))}
+                  data-testid="input-course2-professor"
+                />
+              </div>
+            </div>
+
+            <div className="border rounded-lg p-3 space-y-3">
+              <Label className="font-medium text-indigo-600">Course 3 (Indigo)</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Course Code</Label>
+                  <Input
+                    placeholder="e.g., CASL101"
+                    value={newSemesterForm.course3Code}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3Code: e.target.value }))}
+                    required
+                    data-testid="input-course3-code"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Course Name</Label>
+                  <Input
+                    placeholder="e.g., Sign Language"
+                    value={newSemesterForm.course3Name}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3Name: e.target.value }))}
+                    required
+                    data-testid="input-course3-name"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
+                <Input
+                  placeholder="e.g., Dr. Williams"
+                  value={newSemesterForm.course3Professor}
+                  onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3Professor: e.target.value }))}
+                  data-testid="input-course3-professor"
+                />
+              </div>
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={createSemesterMutation.isPending}
+              data-testid="button-create-semester"
+            >
+              {createSemesterMutation.isPending ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Creating New Semester...
+                </>
+              ) : (
+                "Start New Semester"
+              )}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <div className="flex flex-1">
       {isTodayExpanded && (
         <div 
           className="today-backdrop"
@@ -2769,6 +2988,7 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
       </main>
+      </div>
     </div>
   );
 }
