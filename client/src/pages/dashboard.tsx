@@ -1531,7 +1531,7 @@ export default function Dashboard() {
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
               <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
-            <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+            <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-gray-500 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
               </div>
@@ -1545,7 +1545,7 @@ export default function Dashboard() {
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA101']?.percent || ''} onChange={(e) => updatePercent('PPA101', e.target.value)} />
               </div>
             </div>
-            <div className={`flex border-b border-black ${checkedCourses['PPA102'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+            <div className={`flex border-b border-black ${checkedCourses['PPA102'] ? 'bg-gray-500 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
               </div>
@@ -1559,7 +1559,7 @@ export default function Dashboard() {
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA102']?.percent || ''} onChange={(e) => updatePercent('PPA102', e.target.value)} />
               </div>
             </div>
-            <div className={`flex border-b border-black ${checkedCourses['PPA125'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+            <div className={`flex border-b border-black ${checkedCourses['PPA125'] ? 'bg-gray-500 text-gray-500' : ''}`}>
               <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
               </div>
@@ -1580,7 +1580,7 @@ export default function Dashboard() {
               <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
-            <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+            <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-500 text-gray-500' : ''}`}>
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
               </div>
@@ -1594,7 +1594,7 @@ export default function Dashboard() {
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
               </div>
             </div>
-            <div className={`flex border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+            <div className={`flex border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-500 text-gray-500' : ''}`}>
               <div className="w-5 border-r border-black flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
               </div>
@@ -1639,7 +1639,7 @@ export default function Dashboard() {
             <div className="flex border-b border-black">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
-                <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-300' : ''}`}>
+                <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-500' : ''}`}>
                   <input type="checkbox" className="checkbox-black" checked={checkedCourses['LIBERAL'] || false} disabled={!openElectives['LIBERAL']?.trim()} onChange={() => toggleCourse('LIBERAL')} />
                 </div>
               </div>
@@ -1650,7 +1650,7 @@ export default function Dashboard() {
                 <div className="px-1 pb-1 flex items-end">
                   <input 
                     type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-gray-500 text-gray-500' : 'bg-white'}`}
                     placeholder="Course..."
                     value={openElectives['LIBERAL'] || ''}
                     onChange={(e) => updateOpenElective('LIBERAL', e.target.value)}
@@ -1658,7 +1658,7 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
-              <div className={`w-14 border-l border-black flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-300' : ''}`}>
+              <div className={`w-14 border-l border-black flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-500' : ''}`}>
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -1668,10 +1668,10 @@ export default function Dashboard() {
             <div className="flex">
               <div className="w-5 border-r border-black flex flex-col">
                 <div className="flex-1"></div>
-                <div className={`h-[46px] flex items-start justify-center pt-2 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[46px] flex items-start justify-center pt-2 ${checkedCourses['OPEN1'] ? 'bg-gray-500' : ''}`}>
                   <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
                 </div>
-                <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-500' : ''}`}>
                   <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN2'] || false} disabled={!openElectives['OPEN2']?.trim()} onChange={() => toggleCourse('OPEN2')} />
                 </div>
               </div>
@@ -1682,7 +1682,7 @@ export default function Dashboard() {
                 <div className="px-1 pt-2 pb-5 flex items-end">
                   <input 
                     type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-500 text-gray-500' : 'bg-white'}`}
                     placeholder="Course 1..."
                     value={openElectives['OPEN1'] || ''}
                     onChange={(e) => updateOpenElective('OPEN1', e.target.value)}
@@ -1692,7 +1692,7 @@ export default function Dashboard() {
                 <div className="px-1 pt-1 pb-1 flex items-end">
                   <input 
                     type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-500 text-gray-500' : 'bg-white'}`}
                     placeholder="Course 2..."
                     value={openElectives['OPEN2'] || ''}
                     onChange={(e) => updateOpenElective('OPEN2', e.target.value)}
@@ -1702,14 +1702,14 @@ export default function Dashboard() {
               </div>
               <div className="w-14 border-l border-black flex flex-col">
                 <div className="pt-5"></div>
-                <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-gray-500' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
                 </div>
                 <div className="flex-1"></div>
-                <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN2'] ? 'bg-gray-500' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN2']?.grade || ''} onChange={(e) => updateGrade('OPEN2', e.target.value)}>
                     {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
@@ -1721,7 +1721,7 @@ export default function Dashboard() {
         </div>
 
           {/* Level II */}
-          <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
+          <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-500 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
           <div className="border-2 border-black">
             <div className="flex border-b border-black">
               <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL II</div>
@@ -2333,7 +2333,7 @@ export default function Dashboard() {
           >
             TODAY
           </Button>
-          <div className="h-4 w-px bg-gray-300 ml-2" />
+          <div className="h-4 w-px bg-gray-500 ml-2" />
           <Button 
             variant="ghost"
             className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] leading-none bg-transparent hover:bg-gray-100 border-0 font-semibold text-black ml-2 rounded-md flex items-center justify-center"
@@ -2342,7 +2342,7 @@ export default function Dashboard() {
           >
             {calendarView === "month" ? "WEEK" : "MONTH"}
           </Button>
-          <div className="h-4 w-px bg-gray-300 ml-2" />
+          <div className="h-4 w-px bg-gray-500 ml-2" />
           <Button 
             size="sm" 
             className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0 ml-2" 
@@ -2357,7 +2357,7 @@ export default function Dashboard() {
             )}
             Sync
           </Button>
-          <div className="h-4 w-px bg-gray-300 ml-2" />
+          <div className="h-4 w-px bg-gray-500 ml-2" />
           <RouterLink href="/files" className="flex items-center ml-2">
             <Button 
               size="sm" 
@@ -2368,7 +2368,7 @@ export default function Dashboard() {
               Files
             </Button>
           </RouterLink>
-          <div className="h-4 w-px bg-gray-300 ml-2" />
+          <div className="h-4 w-px bg-gray-500 ml-2" />
           
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2.5 ml-2 pl-[24px] pr-[36px] h-[20px] rounded-md border-0 bg-transparent">
@@ -2406,7 +2406,7 @@ export default function Dashboard() {
               <span className="ml-0.5 font-bold">{pomodoroCount}</span>
             </div>
           </div>
-          <div className="h-4 w-px bg-gray-300 ml-2" />
+          <div className="h-4 w-px bg-gray-500 ml-2" />
           
           {/* All buttons with equal spacing */}
           <div className="flex-1 flex items-center justify-end gap-0 ml-2">
@@ -2419,7 +2419,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               MODULE
             </Button>
-            <div className="h-4 w-px bg-gray-300" />
+            <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
@@ -2429,7 +2429,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               READING
             </Button>
-            <div className="h-4 w-px bg-gray-300" />
+            <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
@@ -2439,7 +2439,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               DISCUSS
             </Button>
-            <div className="h-4 w-px bg-gray-300" />
+            <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
@@ -2449,7 +2449,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               ASSIGN
             </Button>
-            <div className="h-4 w-px bg-gray-300" />
+            <div className="h-4 w-px bg-gray-500" />
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-black text-[10px] border-0 font-semibold !py-0" 
