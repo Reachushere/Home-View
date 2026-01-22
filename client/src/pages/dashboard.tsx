@@ -2165,7 +2165,7 @@ export default function Dashboard() {
                         const isDueDay = isSameDay(taskDueDate, dayStart);
                         const dayBeforeDue = addDays(taskDueDate, -1);
                         const isLastPrepDay = taskStartDate && !isDueDay && isSameDay(dayStart, dayBeforeDue);
-                        const lineColor = colors ? colors.border.replace('border-', 'bg-') : "bg-gray-400";
+                        const lineColor = "bg-black";
                         
                         // Due day takes priority - check first
                         if (isDueDay) {
