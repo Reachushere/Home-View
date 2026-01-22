@@ -1380,15 +1380,15 @@ export default function Dashboard() {
       )}
       {/* Sidebar */}
       <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 350, backgroundColor: '#000000' }}>
-        <div className="flex items-center gap-2 px-2 pt-1 pb-2">
+        <div className="flex items-end gap-2 px-2 pt-1 pb-2">
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '52px', width: '52px' }} />
           <h1 className="text-lg font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             University Planner
           </h1>
-          <span className="text-[10px] text-gray-400 mb-0.5" style={{ fontFamily: "Segoe UI, sans-serif", fontWeight: 400 }}>
+          <span className="text-[10px] text-gray-400 whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif", fontWeight: 400 }}>
             ({schoolData.week1StartDate 
               ? format(new Date(schoolData.week1StartDate), 'MMMM d') 
-              : 'January 17'} to {schoolData.week1StartDate 
+              : 'January 17'} - {schoolData.week1StartDate 
               ? format(addWeeks(new Date(schoolData.week1StartDate), schoolData.numberOfWeeks), 'MMMM d')
               : 'April 17'})
           </span>
