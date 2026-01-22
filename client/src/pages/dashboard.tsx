@@ -2311,71 +2311,73 @@ export default function Dashboard() {
         </div>
         
         {/* Calendar Header */}
-        <div className="flex items-center mb-0 bg-slate-300 rounded-xl px-3 py-1 shadow-sm" style={{ border: '1px solid #94a3b8', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)', marginTop: '24px' }}>
-          {/* Sync button */}
-          {/* Week navigation */}
-          <Button variant="ghost" size="icon" className="h-3 w-3 mr-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-            <ChevronLeft className="h-4 w-4 text-black" strokeWidth={2} />
-          </Button>
-          <div className="flex items-center" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-            <div className="flex items-center gap-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
-              <span className="text-[11px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
-              <span className="text-[11px] font-semibold text-muted-foreground">to</span>
-              <span className="text-[11px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
+        <div className="flex items-center mb-0 rounded-xl shadow-sm overflow-hidden" style={{ border: '1px solid #94a3b8', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)', marginTop: '24px' }}>
+          {/* Blue section: date, home, sync, today, month */}
+          <div className="flex items-center bg-[#5979CC] px-3 py-1">
+            {/* Week navigation */}
+            <Button variant="ghost" size="icon" className="h-3 w-3 mr-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2} />
+            </Button>
+            <div className="flex items-center" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+              <div className="flex items-center gap-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
+                <span className="text-[11px] font-semibold text-white">{format(weekStartDate, "EEE, MMM d")}</span>
+                <span className="text-[11px] font-semibold text-white/70">to</span>
+                <span className="text-[11px] font-semibold text-white">{format(weekEndDate, "EEE, MMM d")}</span>
+              </div>
             </div>
-          </div>
-          <Button variant="ghost" size="icon" className="h-3 w-3 ml-2 mr-1" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-            <ChevronRight className="h-4 w-4 text-black" strokeWidth={2} />
-          </Button>
-          <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-3 w-3 mx-1.5 text-black"
-            onClick={() => setSelectedWeek(2)}
-            data-testid="button-home-week"
-            title="Go to current week"
-          >
-            <Home style={{ height: '14px', width: '14px' }} />
-          </Button>
-          <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-4 w-4 mx-1.5"
-            onClick={() => syncAllCalendarMutation.mutate()}
-            disabled={syncAllCalendarMutation.isPending}
-            data-testid="button-sync-calendar"
-          >
-            {syncAllCalendarMutation.isPending ? (
-              <Loader2 className="text-black animate-spin" style={{ height: '13px', width: '13px' }} />
-            ) : (
-              <RefreshCw className="text-black" style={{ height: '13px', width: '13px' }} />
-            )}
-          </Button>
-          <div className="h-4 flex ml-0.5 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
-          
-          {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-center justify-between">
+            <Button variant="ghost" size="icon" className="h-3 w-3 ml-2 mr-1" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+              <ChevronRight className="h-4 w-4 text-white" strokeWidth={2} />
+            </Button>
+            <div className="h-4 flex mx-1"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-3 w-3 mx-1.5"
+              onClick={() => setSelectedWeek(2)}
+              data-testid="button-home-week"
+              title="Go to current week"
+            >
+              <Home className="text-white" style={{ height: '14px', width: '14px' }} />
+            </Button>
+            <div className="h-4 flex mx-1"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-4 w-4 mx-1.5"
+              onClick={() => syncAllCalendarMutation.mutate()}
+              disabled={syncAllCalendarMutation.isPending}
+              data-testid="button-sync-calendar"
+            >
+              {syncAllCalendarMutation.isPending ? (
+                <Loader2 className="text-white animate-spin" style={{ height: '13px', width: '13px' }} />
+              ) : (
+                <RefreshCw className="text-white" style={{ height: '13px', width: '13px' }} />
+              )}
+            </Button>
+            <div className="h-4 flex mx-1"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
             <Button 
               variant="ghost"
-              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
               onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
               data-testid="button-today"
             >
-              <Sun className="mr-0.5" style={{ height: '12px', width: '12px' }} />
+              <Sun className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
               Today
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex mx-1"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
             <Button 
               variant="ghost"
-              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
+              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
               onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
               data-testid="button-month-view"
             >
-              <CalendarDays className="mr-0.5" style={{ height: '12px', width: '12px' }} />
+              <CalendarDays className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
               {calendarView === "month" ? "Week" : "Month"}
             </Button>
+          </div>
+          
+          {/* Gray section: remaining buttons */}
+          <div className="flex-1 flex items-center justify-between bg-slate-300 px-3 py-1">
             <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <RouterLink href="/files" className="flex items-center">
               <Button 
