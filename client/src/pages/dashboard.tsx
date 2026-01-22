@@ -2163,6 +2163,8 @@ export default function Dashboard() {
                         const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
                         const isFirstPrepDay = taskStartDate && isSameDay(taskStartDate, dayStart);
                         const isDueDay = isSameDay(taskDueDate, dayStart);
+                        const dayBeforeDue = addDays(taskDueDate, -1);
+                        const isLastPrepDay = taskStartDate && !isDueDay && isSameDay(dayStart, dayBeforeDue);
                         const lineColor = colors ? colors.border.replace('border-', 'bg-') : "bg-gray-400";
                         
                         // Due day takes priority - check first
@@ -2206,13 +2208,14 @@ export default function Dashboard() {
                         }
                         // First prep day (not the due day)
                         if (isFirstPrepDay) {
+                          const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                           return (
                             <div key={`prep-${task.id}`} className="flex items-center w-full">
                               <div
                                 className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
                                   task.isCompleted 
                                     ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                    : colors ? `${colors.prepBg} text-black border ${colors.border} animate-shimmer` : "bg-gray-100 text-black border border-gray-400 animate-shimmer"
+                                    : colors ? `${colors.prepBg} text-black border ${colors.border} ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 ${shimmerClass}`
                                 }`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
@@ -2234,13 +2237,14 @@ export default function Dashboard() {
                           );
                         }
                         // Intermediate prep days (between start and due date)
+                        const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                         return (
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
                             <div
                               className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                  : colors ? `${colors.prepBg} text-black border ${colors.border}` : "bg-gray-100 text-black border border-gray-400"
+                                  : colors ? `${colors.prepBg} text-black border ${colors.border} ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 ${shimmerClass}`
                               }`}
                               data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
