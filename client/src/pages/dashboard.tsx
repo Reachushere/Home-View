@@ -2228,23 +2228,23 @@ export default function Dashboard() {
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center">
               <button
-                className="p-0.5 hover:bg-gray-100 rounded"
+                className="p-0.5 hover:bg-gray-100 rounded mx-0.5"
                 onClick={togglePomodoro}
                 data-testid="button-pomodoro-toggle"
               >
                 {pomodoroRunning ? <Pause className="h-2.5 w-2.5" /> : <Play className="h-2.5 w-2.5" />}
               </button>
               <button
-                className="p-0.5 hover:bg-gray-100 rounded"
+                className="p-0.5 hover:bg-gray-100 rounded mx-0.5"
                 onClick={resetPomodoro}
                 data-testid="button-pomodoro-reset"
               >
                 <RotateCcw className="h-2.5 w-2.5" />
               </button>
               <button
-                className="p-0.5 hover:bg-gray-100 rounded"
+                className="p-0.5 hover:bg-gray-100 rounded mx-0.5"
                 onClick={skipPomodoro}
                 data-testid="button-pomodoro-skip"
               >
