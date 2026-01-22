@@ -205,20 +205,61 @@ export default function Dashboard() {
   
   // Common timezones
   const timezones = [
+    // North America
     { value: 'America/Toronto', label: 'Eastern Time (Toronto)' },
+    { value: 'America/New_York', label: 'Eastern Time (New York)' },
     { value: 'America/Chicago', label: 'Central Time (Chicago)' },
     { value: 'America/Denver', label: 'Mountain Time (Denver)' },
+    { value: 'America/Phoenix', label: 'Arizona (Phoenix)' },
     { value: 'America/Los_Angeles', label: 'Pacific Time (Los Angeles)' },
     { value: 'America/Vancouver', label: 'Pacific Time (Vancouver)' },
-    { value: 'America/New_York', label: 'Eastern Time (New York)' },
+    { value: 'America/Anchorage', label: 'Alaska (Anchorage)' },
+    { value: 'Pacific/Honolulu', label: 'Hawaii (Honolulu)' },
+    // Central/South America
+    { value: 'America/Mexico_City', label: 'Mexico City' },
+    { value: 'America/Bogota', label: 'Bogota' },
+    { value: 'America/Lima', label: 'Lima' },
+    { value: 'America/Sao_Paulo', label: 'São Paulo' },
+    { value: 'America/Buenos_Aires', label: 'Buenos Aires' },
+    // Europe
     { value: 'Europe/London', label: 'London (GMT/BST)' },
+    { value: 'Europe/Dublin', label: 'Dublin' },
     { value: 'Europe/Paris', label: 'Paris (CET/CEST)' },
     { value: 'Europe/Berlin', label: 'Berlin (CET/CEST)' },
-    { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
-    { value: 'Asia/Shanghai', label: 'Shanghai (CST)' },
+    { value: 'Europe/Amsterdam', label: 'Amsterdam' },
+    { value: 'Europe/Rome', label: 'Rome' },
+    { value: 'Europe/Madrid', label: 'Madrid' },
+    { value: 'Europe/Zurich', label: 'Zurich' },
+    { value: 'Europe/Stockholm', label: 'Stockholm' },
+    { value: 'Europe/Vienna', label: 'Vienna' },
+    { value: 'Europe/Prague', label: 'Prague' },
+    { value: 'Europe/Warsaw', label: 'Warsaw' },
+    { value: 'Europe/Athens', label: 'Athens' },
+    { value: 'Europe/Istanbul', label: 'Istanbul' },
+    { value: 'Europe/Moscow', label: 'Moscow' },
+    // Middle East & Africa
     { value: 'Asia/Dubai', label: 'Dubai (GST)' },
+    { value: 'Asia/Jerusalem', label: 'Jerusalem' },
+    { value: 'Africa/Cairo', label: 'Cairo' },
+    { value: 'Africa/Johannesburg', label: 'Johannesburg' },
+    { value: 'Africa/Lagos', label: 'Lagos' },
+    // Asia
+    { value: 'Asia/Kolkata', label: 'India (Mumbai/Delhi)' },
+    { value: 'Asia/Bangkok', label: 'Bangkok' },
+    { value: 'Asia/Singapore', label: 'Singapore' },
+    { value: 'Asia/Hong_Kong', label: 'Hong Kong' },
+    { value: 'Asia/Shanghai', label: 'Shanghai (CST)' },
+    { value: 'Asia/Taipei', label: 'Taipei' },
+    { value: 'Asia/Seoul', label: 'Seoul' },
+    { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
+    // Oceania
+    { value: 'Australia/Perth', label: 'Perth (AWST)' },
+    { value: 'Australia/Adelaide', label: 'Adelaide (ACST/ACDT)' },
+    { value: 'Australia/Brisbane', label: 'Brisbane (AEST)' },
     { value: 'Australia/Sydney', label: 'Sydney (AEST/AEDT)' },
+    { value: 'Australia/Melbourne', label: 'Melbourne (AEST/AEDT)' },
     { value: 'Pacific/Auckland', label: 'Auckland (NZST/NZDT)' },
+    { value: 'Pacific/Fiji', label: 'Fiji' },
   ];
 
   const [courseGrades, setCourseGrades] = useState<Record<string, { grade: string; percent: string }>>(() => {
