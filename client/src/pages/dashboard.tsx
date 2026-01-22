@@ -2327,7 +2327,7 @@ export default function Dashboard() {
           </Button>
           
           {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-center justify-end gap-4 ml-4">
+          <div className="flex-1 flex items-center justify-end gap-3 ml-4">
             <Button 
               variant="ghost"
               className="!h-[20px] !min-h-0 !px-2 text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
@@ -2374,14 +2374,14 @@ export default function Dashboard() {
             <div className="h-4 w-px bg-gray-400" />
             
             {/* Pomodoro Timer */}
-            <div className="flex items-center gap-1 h-[20px]">
+            <div className="flex items-center gap-3 h-[20px]">
               <div className={`text-[10px] font-mono font-bold ${
                 pomodoroMode === "work" ? "text-red-600" : 
                 pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
               }`} data-testid="pomodoro-timer">
                 {formatPomodoroTime(pomodoroTime)}
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center gap-1.5">
                 <button
                   className="p-0.5 hover:bg-gray-100 rounded"
                   onClick={togglePomodoro}
