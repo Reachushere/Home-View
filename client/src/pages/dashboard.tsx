@@ -2333,6 +2333,7 @@ export default function Dashboard() {
           >
             TODAY
           </Button>
+          <div className="h-4 w-px bg-gray-300 ml-2" />
           <Button 
             variant="ghost"
             className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] leading-none bg-transparent hover:bg-gray-100 border-0 font-semibold text-blue-800 ml-2 rounded-md flex items-center justify-center"
@@ -2341,6 +2342,7 @@ export default function Dashboard() {
           >
             {calendarView === "month" ? "WEEK" : "MONTH"}
           </Button>
+          <div className="h-4 w-px bg-gray-300 ml-2" />
           <Button 
             size="sm" 
             className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-blue-800 !py-0 ml-2" 
@@ -2355,6 +2357,7 @@ export default function Dashboard() {
             )}
             Sync
           </Button>
+          <div className="h-4 w-px bg-gray-300 ml-2" />
           <RouterLink href="/files" className="flex items-center ml-2">
             <Button 
               size="sm" 
@@ -2365,6 +2368,7 @@ export default function Dashboard() {
               Files
             </Button>
           </RouterLink>
+          <div className="h-4 w-px bg-gray-300 ml-2" />
           
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2.5 ml-2 pl-[24px] pr-[36px] h-[20px] rounded-md border-0 bg-transparent">
@@ -2402,9 +2406,10 @@ export default function Dashboard() {
               <span className="ml-0.5 font-bold">{pomodoroCount}</span>
             </div>
           </div>
+          <div className="h-4 w-px bg-gray-300 ml-2" />
           
           {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-center justify-end gap-2 ml-2">
+          <div className="flex-1 flex items-center justify-end gap-0 ml-2">
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
@@ -2414,6 +2419,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Module
             </Button>
+            <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
@@ -2423,6 +2429,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Reading
             </Button>
+            <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
@@ -2432,6 +2439,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Discuss
             </Button>
+            <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
@@ -2441,6 +2449,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Assign
             </Button>
+            <div className="h-4 w-px bg-gray-300" />
             <Button 
               size="sm"
               className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
