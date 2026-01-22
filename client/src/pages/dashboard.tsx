@@ -48,6 +48,10 @@ import {
   Home,
   Repeat2,
   Settings,
+  Timer,
+  Pause,
+  SkipForward,
+  RotateCcw,
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -150,6 +154,13 @@ export default function Dashboard() {
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  
+  // Pomodoro Timer State
+  const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25 minutes in seconds
+  const [pomodoroRunning, setPomodoroRunning] = useState(false);
+  const [pomodoroMode, setPomodoroMode] = useState<"work" | "shortBreak" | "longBreak">("work");
+  const [pomodoroCount, setPomodoroCount] = useState(0);
+  const pomodoroIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Keyboard delete handler
   useEffect(() => {
@@ -172,6 +183,75 @@ export default function Dashboard() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTaskId]);
+
+  // Pomodoro Timer Effect
+  useEffect(() => {
+    if (pomodoroRunning && pomodoroTime > 0) {
+      pomodoroIntervalRef.current = setInterval(() => {
+        setPomodoroTime(prev => prev - 1);
+      }, 1000);
+    } else if (pomodoroTime === 0 && pomodoroRunning) {
+      setPomodoroRunning(false);
+      // Play notification sound
+      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2telehs');
+      audio.play().catch(() => {});
+      
+      if (pomodoroMode === "work") {
+        const newCount = pomodoroCount + 1;
+        setPomodoroCount(newCount);
+        toast({ title: "Pomodoro Complete!", description: newCount % 4 === 0 ? "Time for a long break!" : "Time for a short break!" });
+        if (newCount % 4 === 0) {
+          setPomodoroMode("longBreak");
+          setPomodoroTime(15 * 60);
+        } else {
+          setPomodoroMode("shortBreak");
+          setPomodoroTime(5 * 60);
+        }
+      } else {
+        toast({ title: "Break Over!", description: "Time to focus!" });
+        setPomodoroMode("work");
+        setPomodoroTime(25 * 60);
+      }
+    }
+    return () => {
+      if (pomodoroIntervalRef.current) clearInterval(pomodoroIntervalRef.current);
+    };
+  }, [pomodoroRunning, pomodoroTime, pomodoroMode, pomodoroCount, toast]);
+
+  const formatPomodoroTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const togglePomodoro = () => {
+    setPomodoroRunning(!pomodoroRunning);
+  };
+
+  const resetPomodoro = () => {
+    setPomodoroRunning(false);
+    if (pomodoroMode === "work") setPomodoroTime(25 * 60);
+    else if (pomodoroMode === "shortBreak") setPomodoroTime(5 * 60);
+    else setPomodoroTime(15 * 60);
+  };
+
+  const skipPomodoro = () => {
+    setPomodoroRunning(false);
+    if (pomodoroMode === "work") {
+      const newCount = pomodoroCount + 1;
+      setPomodoroCount(newCount);
+      if (newCount % 4 === 0) {
+        setPomodoroMode("longBreak");
+        setPomodoroTime(15 * 60);
+      } else {
+        setPomodoroMode("shortBreak");
+        setPomodoroTime(5 * 60);
+      }
+    } else {
+      setPomodoroMode("work");
+      setPomodoroTime(25 * 60);
+    }
+  };
 
   const updateOpenElective = (id: string, value: string) => {
     setOpenElectives(prev => {
@@ -2133,6 +2213,50 @@ export default function Dashboard() {
               Files
             </Button>
           </RouterLink>
+          
+          {/* Pomodoro Timer */}
+          <div className="flex items-center gap-1 ml-2 px-2 py-0.5 rounded border-[1.5px] border-blue-800 bg-white">
+            <div className={`text-xs font-mono font-bold ${
+              pomodoroMode === "work" ? "text-red-600" : 
+              pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
+            }`} data-testid="pomodoro-timer">
+              {formatPomodoroTime(pomodoroTime)}
+            </div>
+            <div className="flex items-center gap-0.5">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="!h-4 !w-4 !min-h-0 !p-0"
+                onClick={togglePomodoro}
+                data-testid="button-pomodoro-toggle"
+              >
+                {pomodoroRunning ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="!h-4 !w-4 !min-h-0 !p-0"
+                onClick={resetPomodoro}
+                data-testid="button-pomodoro-reset"
+              >
+                <RotateCcw className="h-3 w-3" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="!h-4 !w-4 !min-h-0 !p-0"
+                onClick={skipPomodoro}
+                data-testid="button-pomodoro-skip"
+              >
+                <SkipForward className="h-3 w-3" />
+              </Button>
+            </div>
+            <div className="text-[8px] text-muted-foreground ml-1">
+              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long Break"}
+              <span className="ml-1 font-bold">{pomodoroCount}</span>
+            </div>
+          </div>
+          
           {/* All buttons with equal spacing */}
           <div className="flex-1 flex items-center justify-end gap-2 ml-2">
             <Button 
