@@ -2374,11 +2374,11 @@ export default function Dashboard() {
               <CalendarDays className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
               {calendarView === "month" ? "Week" : "Month"}
             </Button>
+            <div className="h-4 flex ml-1 mr-0"><div className="w-px bg-white/30" /><div className="w-px bg-white/10" /></div>
           </div>
           
           {/* Gray section: remaining buttons */}
           <div className="flex-1 flex items-center justify-between bg-slate-300 px-2 py-1">
-            <div className="h-4 flex mx-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
