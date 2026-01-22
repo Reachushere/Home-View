@@ -2503,10 +2503,10 @@ export default function Dashboard() {
                           const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
-                            <div key={`due-${task.id}`} className="w-full">
-                              {hasPrepDays && <div className="h-[2px] bg-black dark:bg-white w-full mb-[1px]" />}
+                            <div key={`due-${task.id}`} className="w-full flex items-center">
+                              {hasPrepDays && <div className="h-[2px] bg-black dark:bg-white w-2 shrink-0" />}
                               <div
-                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r' : 'rounded'} truncate ${
+                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r' : 'rounded'} truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                               } ${
                                 task.isCompleted 
@@ -2539,9 +2539,9 @@ export default function Dashboard() {
                         if (isFirstPrepDay) {
                           const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                           return (
-                            <div key={`prep-${task.id}`} className="w-full">
+                            <div key={`prep-${task.id}`} className="w-full flex items-center">
                               <div
-                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
+                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
                                   task.isCompleted 
                                     ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                     : `bg-orange-400 text-black border border-orange-500 ${shimmerClass}`
@@ -2561,16 +2561,17 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className="h-[2px] bg-black dark:bg-white w-full mt-[1px]" />
+                              <div className="h-[2px] bg-black dark:bg-white w-2 shrink-0" />
                             </div>
                           );
                         }
                         // Intermediate prep days (between start and due date)
                         const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                         return (
-                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="w-full">
+                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="w-full flex items-center">
+                            <div className="h-[2px] bg-black dark:bg-white w-2 shrink-0" />
                             <div
-                              className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
+                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                   : `bg-orange-400 text-black border border-orange-500 ${shimmerClass}`
@@ -2590,7 +2591,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className="h-[2px] bg-black dark:bg-white w-full mt-[1px]" />
+                            <div className="h-[2px] bg-black dark:bg-white w-2 shrink-0" />
                           </div>
                         );
                       })}
