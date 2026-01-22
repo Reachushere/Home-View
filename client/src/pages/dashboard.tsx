@@ -2528,7 +2528,7 @@ export default function Dashboard() {
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Courses</DialogTitle>
               </DialogHeader>
