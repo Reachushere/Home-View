@@ -2244,10 +2244,10 @@ export default function Dashboard() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-1"
+                className="!h-7 !w-7 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-1"
                 data-testid="button-hamburger-menu"
               >
-                <Menu className="h-3.5 w-3.5" />
+                <Menu className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
