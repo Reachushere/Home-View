@@ -1386,7 +1386,7 @@ export default function Dashboard() {
             <h1 className="text-base font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               University Planner
             </h1>
-            <span className="text-[10px] text-gray-400 whitespace-nowrap font-bold" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <span className="text-[10px] text-gray-300 whitespace-nowrap font-semibold" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             ({schoolData.week1StartDate 
               ? format(new Date(schoolData.week1StartDate), 'MMM d') 
               : 'Jan 16'} to {schoolData.week1StartDate 
@@ -2311,7 +2311,7 @@ export default function Dashboard() {
         </div>
         
         {/* Current Week Indicator */}
-        <div className="-mb-3 ml-4 relative z-10">
+        <div className="-mb-5 ml-4 relative z-10">
           {selectedWeek === 2 ? (
             <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <Home className="h-2.5 w-2.5" />
