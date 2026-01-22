@@ -2307,7 +2307,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded" />
+          <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded mr-3" />
         </div>
         
         {/* Current Week Indicator */}
