@@ -2310,26 +2310,6 @@ export default function Dashboard() {
           <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded mr-3" />
         </div>
         
-        {/* Current Week Indicator */}
-        <div className="mb-0 ml-4 mt-2">
-          {selectedWeek === 2 ? (
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <Home className="h-2.5 w-2.5" />
-              <span className="underline font-bold">CURRENT</span>
-            </span>
-          ) : (
-            <span 
-              className="text-[10px] text-blue-500 uppercase tracking-wide cursor-pointer hover:underline flex items-center gap-0.5"
-              style={{ fontFamily: "Segoe UI, sans-serif" }}
-              onClick={() => setSelectedWeek(2)}
-              data-testid="link-current-week"
-            >
-              <Home className="h-2.5 w-2.5" />
-              <span className="underline font-bold">CURRENT</span>
-            </span>
-          )}
-        </div>
-        
         {/* Calendar Header */}
         <div className="flex items-center mb-0 bg-slate-300 border border-slate-400 rounded-xl px-3 py-1 shadow-sm">
           {/* Sync button */}
@@ -2344,8 +2324,19 @@ export default function Dashboard() {
               <span className="text-[11px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="h-3 w-3 ml-2 mr-3" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+          <Button variant="ghost" size="icon" className="h-3 w-3 ml-2" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4 text-black" strokeWidth={2} />
+          </Button>
+          <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={`h-4 w-4 mx-1 ${selectedWeek === 2 ? 'text-blue-600' : 'text-black'}`}
+            onClick={() => setSelectedWeek(2)}
+            data-testid="button-home-week"
+            title="Go to current week"
+          >
+            <Home className="h-3 w-3" />
           </Button>
           <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           <Button 
