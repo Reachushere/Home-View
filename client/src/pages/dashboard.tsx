@@ -1952,7 +1952,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
                                 >
-                                  <span className="font-bold">PREP:</span> {task.title}
+                                  {task.title}
                                 </span>
                                 <Trash2 
                                   className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
@@ -2031,7 +2031,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
                               >
-                                <span className="font-bold">PREP:</span> {task.title}
+                                {task.title}
                               </span>
                               <Trash2 
                                 className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
