@@ -2516,7 +2516,7 @@ export default function Dashboard() {
                               : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400";
                           return (
                             <div key={`due-${task.id}`} className="flex items-center w-full">
-                              {hasPrepDays && <div className="w-2 h-[2px] bg-orange-500 shrink-0" />}
+                              {hasPrepDays && <div className="w-2 h-[2px] bg-black shrink-0" />}
                               <div
                                 className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle} ${
                                   isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
@@ -2566,7 +2566,7 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className="w-2 h-[2px] bg-orange-500 shrink-0" />
+                              <div className="w-2 h-[2px] bg-black shrink-0" />
                             </div>
                           );
                         }
@@ -2577,7 +2577,7 @@ export default function Dashboard() {
                           : `bg-orange-400 text-black border border-orange-500 ${shimmerClass}`;
                         return (
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                            <div className="w-2 h-[2px] bg-orange-500 shrink-0" />
+                            <div className="w-2 h-[2px] bg-black shrink-0" />
                             <div
                               className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
                               style={{ borderRadius: 0 }}
@@ -2596,7 +2596,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className="w-2 h-[2px] bg-orange-500 shrink-0" />
+                            <div className="w-2 h-[2px] bg-black shrink-0" />
                           </div>
                         );
                       })}
