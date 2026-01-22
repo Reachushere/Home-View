@@ -2301,7 +2301,7 @@ export default function Dashboard() {
         </div>
         
         {/* Current Week Indicator */}
-        <div className="mb-1 ml-3">
+        <div className="mb-1 ml-4">
           {selectedWeek === 2 ? (
             <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <Home className="h-2.5 w-2.5" />
