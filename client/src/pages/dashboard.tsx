@@ -2222,7 +2222,7 @@ export default function Dashboard() {
           
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2.5 ml-2 px-[18px] h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
-            <div className={`text-[10px] font-mono font-bold -mr-1 ${
+            <div className={`text-[10px] font-mono font-bold -mr-2 ${
               pomodoroMode === "work" ? "text-red-600" : 
               pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
             }`} data-testid="pomodoro-timer">
