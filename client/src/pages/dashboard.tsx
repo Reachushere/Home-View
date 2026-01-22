@@ -2702,7 +2702,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5"
+                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Planning tasks */}
