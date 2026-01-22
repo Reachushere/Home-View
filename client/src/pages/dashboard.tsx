@@ -2109,7 +2109,7 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             size="icon"
-            className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-2"
+            className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-1"
             data-testid="button-hamburger-menu"
           >
             <Menu className="h-3.5 w-3.5" />
@@ -2126,7 +2126,7 @@ export default function Dashboard() {
                 data-testid="button-mute-toggle"
                 title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
               >
-                {isMuted ? <BellOff className="h-[5px] w-[5px]" /> : <Bell className="h-[5px] w-[5px]" />}
+                {isMuted ? <BellOff className="h-3 w-3 scale-50" /> : <Bell className="h-3 w-3 scale-50" />}
               </Button>
               <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule - {currentSemesterName}</h1>
             </div>
