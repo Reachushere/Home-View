@@ -2655,7 +2655,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border/50 sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}>
+            <div className="grid border-b border-border/50 sticky top-[52px] bg-gray-200/60 dark:bg-gray-700/60 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}>
                 <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
                   ALL DAY
                 </div>
