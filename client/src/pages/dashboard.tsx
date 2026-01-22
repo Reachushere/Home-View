@@ -2185,16 +2185,16 @@ export default function Dashboard() {
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
           <Button 
-            size="sm" 
-            className="!h-[20px] !min-h-0 !px-2 !py-0 text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2" 
+            variant="ghost"
+            className="!h-[20px] !min-h-[20px] !max-h-[20px] !px-2 !py-0 text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2 rounded-md" 
             onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
             data-testid="button-today"
           >
             TODAY
           </Button>
           <Button 
-            size="sm" 
-            className="!h-[20px] !min-h-0 !px-2 !py-0 text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2"
+            variant="ghost"
+            className="!h-[20px] !min-h-[20px] !max-h-[20px] !px-2 !py-0 text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2 rounded-md"
             onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
             data-testid="button-month-view"
           >
