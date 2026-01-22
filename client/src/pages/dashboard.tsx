@@ -2306,23 +2306,8 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-3 w-3 mb-0.5" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <div className="flex flex-col mx-3" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-            {selectedWeek === 2 ? (
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5 -ml-1">
-                <Home className="h-2.5 w-2.5" />
-                <span className="underline font-bold">CURRENT</span>
-              </span>
-            ) : (
-              <span 
-                className="text-[10px] text-blue-500 uppercase tracking-wide cursor-pointer hover:underline flex items-center gap-0.5 -ml-1"
-                onClick={() => setSelectedWeek(2)}
-                data-testid="link-current-week"
-              >
-                <Home className="h-2.5 w-2.5" />
-                <span className="underline font-bold">CURRENT</span>
-              </span>
-            )}
-            <div className="flex items-center gap-1.5 mt-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
+          <div className="flex flex-col mx-3 justify-center" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <div className="flex items-center gap-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
               <span className="text-[11px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
               <span className="text-[11px] font-semibold text-muted-foreground">to</span>
               <span className="text-[11px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
