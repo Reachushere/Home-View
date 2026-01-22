@@ -100,12 +100,6 @@ export default function Dashboard() {
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
-  const [sidebarWidth, setSidebarWidth] = useState(() => {
-    const saved = localStorage.getItem('sidebarWidth');
-    return saved ? parseInt(saved, 10) : 320; // 320px default - slightly wider
-  });
-  const [isResizingSidebar, setIsResizingSidebar] = useState(false);
-  const sidebarResizeRef = useRef<{ startX: number; startWidth: number } | null>(null);
 
   const [isMuted, setIsMuted] = useState(() => {
     const saved = localStorage.getItem('alarmMuteUntil');
@@ -342,40 +336,6 @@ export default function Dashboard() {
     }, 1800000); // 30 minutes
     return () => clearInterval(interval);
   }, [playJiggleSound, isMuted]);
-
-  // Sidebar resize handlers
-  const handleSidebarResizeStart = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsResizingSidebar(true);
-    sidebarResizeRef.current = { startX: e.clientX, startWidth: sidebarWidth };
-  }, [sidebarWidth]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isResizingSidebar || !sidebarResizeRef.current) return;
-      const delta = e.clientX - sidebarResizeRef.current.startX;
-      const newWidth = Math.max(200, Math.min(600, sidebarResizeRef.current.startWidth + delta));
-      setSidebarWidth(newWidth);
-    };
-
-    const handleMouseUp = () => {
-      if (isResizingSidebar) {
-        localStorage.setItem('sidebarWidth', sidebarWidth.toString());
-      }
-      setIsResizingSidebar(false);
-      sidebarResizeRef.current = null;
-    };
-
-    if (isResizingSidebar) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isResizingSidebar, sidebarWidth]);
 
   // Calendar resize handlers
   const handleResizeStart = useCallback((e: React.MouseEvent) => {
@@ -811,13 +771,7 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className="bg-black text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto relative" style={{ width: sidebarWidth }}>
-        {/* Drag handle for resizing */}
-        <div 
-          className="absolute top-0 right-0 w-2 h-full cursor-ew-resize hover:bg-white/20 transition-colors rounded-r-xl"
-          onMouseDown={handleSidebarResizeStart}
-          data-testid="sidebar-resize-handle"
-        />
+      <aside className="bg-black text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 320 }}>
         <div className="flex items-center gap-2 px-2 pt-1 pb-0">
           <CalendarDays className="h-5 w-5 text-white" />
           <h1 className="text-lg font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
@@ -1883,7 +1837,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', minWidth: 'max-content' }}>
+            <div className="grid border-b border-border/50 sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', minWidth: 'max-content' }}>
                 <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
                   ALL DAY
                 </div>
@@ -1899,7 +1853,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className="p-0.5 border-l border-border flex flex-col gap-0.5 overflow-hidden"
+                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Planning tasks */}
