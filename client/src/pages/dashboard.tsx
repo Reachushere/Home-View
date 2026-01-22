@@ -59,7 +59,7 @@ import {
 import { Link as RouterLink } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
-import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, isBefore } from "date-fns";
+import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, isBefore } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   reading: BookOpen,
@@ -142,9 +142,9 @@ export default function Dashboard() {
     const saved = localStorage.getItem('profileData');
     return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
   });
-  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null }>(() => {
+  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }>(() => {
     const saved = localStorage.getItem('schoolData');
-    return saved ? JSON.parse(saved) : { schoolLogo: null };
+    return saved ? JSON.parse(saved) : { schoolLogo: null, numberOfWeeks: 13, week1StartDate: '2026-01-11', firstDayOfWeek: 'saturday' };
   });
   
   // Get the display timezone (travel if set, otherwise home)
@@ -165,7 +165,7 @@ export default function Dashboard() {
     toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
   
-  const saveSchool = (data: { schoolLogo: string | null }) => {
+  const saveSchool = (data: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => {
     setSchoolData(data);
     localStorage.setItem('schoolData', JSON.stringify(data));
     setIsSchoolDialogOpen(false);
@@ -1306,11 +1306,11 @@ export default function Dashboard() {
               School Planner
             </h1>
             <span className="text-[10px] text-gray-400" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              ({semesterSettings?.semesterStartDate 
-                ? format(new Date(semesterSettings.semesterStartDate), 'MMMM d') 
-                : 'January 12'} to {semesterSettings?.semesterStartDate 
-                ? format(addWeeks(new Date(semesterSettings.semesterStartDate), 13), 'MMMM d')
-                : 'April 17'})
+              ({schoolData.week1StartDate 
+                ? format(new Date(schoolData.week1StartDate), 'MMMM d') 
+                : 'January 11'} to {schoolData.week1StartDate 
+                ? format(addWeeks(new Date(schoolData.week1StartDate), schoolData.numberOfWeeks), 'MMMM d')
+                : 'April 11'})
             </span>
           </div>
         </div>
@@ -4007,14 +4007,27 @@ function SchoolForm({
   semesterSettings,
   onSave 
 }: { 
-  schoolData: { schoolLogo: string | null };
+  schoolData: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string };
   semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { schoolLogo: string | null }) => void;
+  onSave: (data: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => void;
 }) {
   const [schoolLogo, setSchoolLogo] = useState<string | null>(schoolData.schoolLogo);
+  const [numberOfWeeks, setNumberOfWeeks] = useState(schoolData.numberOfWeeks);
+  const [week1StartDate, setWeek1StartDate] = useState(schoolData.week1StartDate);
+  const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
   const { upload } = useUpload();
+  
+  const daysOfWeek = [
+    { value: 'sunday', label: 'Sunday' },
+    { value: 'monday', label: 'Monday' },
+    { value: 'tuesday', label: 'Tuesday' },
+    { value: 'wednesday', label: 'Wednesday' },
+    { value: 'thursday', label: 'Thursday' },
+    { value: 'friday', label: 'Friday' },
+    { value: 'saturday', label: 'Saturday' },
+  ];
   
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -4035,14 +4048,11 @@ function SchoolForm({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ schoolLogo });
+    onSave({ schoolLogo, numberOfWeeks, week1StartDate, firstDayOfWeek });
   };
 
-  const semesterStart = semesterSettings?.semesterStartDate 
-    ? format(new Date(semesterSettings.semesterStartDate), 'MMMM d, yyyy')
-    : 'Not set';
-  const semesterEnd = semesterSettings?.semesterStartDate 
-    ? format(addWeeks(new Date(semesterSettings.semesterStartDate), 13), 'MMMM d, yyyy')
+  const semesterEnd = week1StartDate 
+    ? format(addWeeks(new Date(week1StartDate), numberOfWeeks), 'MMMM d, yyyy')
     : 'Not set';
   
   return (
@@ -4094,18 +4104,48 @@ function SchoolForm({
       </div>
       
       <div className="border rounded-lg p-3 space-y-3">
-        <Label className="text-sm font-medium">Semester Dates</Label>
-        <div className="grid grid-cols-2 gap-4">
+        <Label className="text-sm font-medium">School Schedule</Label>
+        <div className="space-y-3">
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">Start</Label>
-            <div className="text-sm font-medium">{semesterStart}</div>
+            <Label htmlFor="numberOfWeeks" className="text-xs">Number of School Weeks</Label>
+            <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
+              <SelectTrigger data-testid="select-number-of-weeks">
+                <SelectValue placeholder="Select weeks" />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 11, 12, 13, 14, 15, 16].map(w => (
+                  <SelectItem key={w} value={String(w)}>{w} weeks</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">End (Week 13)</Label>
-            <div className="text-sm font-medium">{semesterEnd}</div>
+            <Label htmlFor="week1StartDate" className="text-xs">Week 1, Day 1 Date</Label>
+            <Input 
+              id="week1StartDate"
+              type="date"
+              value={week1StartDate}
+              onChange={(e) => setWeek1StartDate(e.target.value)}
+              data-testid="input-week1-start-date"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="firstDayOfWeek" className="text-xs">First Day of School Week</Label>
+            <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
+              <SelectTrigger data-testid="select-first-day-of-week">
+                <SelectValue placeholder="Select day" />
+              </SelectTrigger>
+              <SelectContent>
+                {daysOfWeek.map(day => (
+                  <SelectItem key={day.value} value={day.value}>{day.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="text-xs text-muted-foreground pt-1">
+            Semester ends: {semesterEnd}
           </div>
         </div>
-        <p className="text-xs text-muted-foreground">Semester dates are set when starting a new semester.</p>
       </div>
       
       {semesterSettings && (
