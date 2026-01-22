@@ -151,16 +151,16 @@ export default function Dashboard() {
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string }> }>(() => {
     const saved = localStorage.getItem('coursesData');
     const defaultCourses = [
-      { name: 'CPPA122 - Local Politics', color: '#22c55e' },
-      { name: 'CFNF400 - Human Sexuality', color: '#ec4899' },
-      { name: 'CASL101 - American Sign Language', color: '#6366f1' },
-      { name: '', color: '#f59e0b' },
-      { name: '', color: '#06b6d4' },
-      { name: '', color: '#8b5cf6' },
-      { name: '', color: '#ef4444' },
-      { name: '', color: '#14b8a6' },
-      { name: '', color: '#f97316' },
-      { name: '', color: '#84cc16' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
+      { name: '', color: '#6b7280' },
     ];
     return saved ? JSON.parse(saved) : { courses: defaultCourses };
   });
@@ -4334,7 +4334,7 @@ function CoursesForm({
         ))}
       </div>
       
-      <Button type="submit" className="w-full" data-testid="button-save-courses">
+      <Button type="submit" className="w-full bg-[#5979CC] hover:bg-[#4a68b3] text-white" data-testid="button-save-courses">
         Save Courses
       </Button>
     </form>
