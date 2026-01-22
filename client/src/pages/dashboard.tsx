@@ -2334,10 +2334,13 @@ export default function Dashboard() {
               <span className="text-[11px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
             </div>
           </div>
+          <Button variant="ghost" size="icon" className="h-3 w-3 ml-2" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+            <ChevronRight className="h-4 w-4 text-black" strokeWidth={2} />
+          </Button>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-4 w-4 mx-2"
+            className="h-4 w-4 ml-2"
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
@@ -2347,9 +2350,6 @@ export default function Dashboard() {
             ) : (
               <RefreshCw className="text-black" style={{ height: '13px', width: '13px' }} />
             )}
-          </Button>
-          <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-            <ChevronRight className="h-4 w-4 text-black" strokeWidth={2} />
           </Button>
           
           {/* All buttons with equal spacing */}
