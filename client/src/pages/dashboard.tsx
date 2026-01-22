@@ -579,13 +579,19 @@ export default function Dashboard() {
   // Auto-scroll to show blinking tasks (due tomorrow) or current hour
   useEffect(() => {
     const scrollToRelevantPosition = () => {
-      if (calendarScrollRef.current) {
+      if (calendarScrollRef.current && calendarView === "week") {
         const tomorrow = addDays(startOfDay(new Date()), 1);
-        const hasDueTomorrowTask = allTasks.some(t => 
-          !t.isCompleted && isSameDay(new Date(t.dueDate), tomorrow)
-        );
+        // Check if any task due tomorrow is in the currently selected week
+        const weekInfo = weeks.find(w => w.weekNumber === selectedWeek);
+        const hasDueTomorrowTaskInWeek = weekInfo && allTasks.some(t => {
+          if (t.isCompleted) return false;
+          const dueDate = new Date(t.dueDate);
+          const weekStart = new Date(weekInfo.startDate);
+          const weekEnd = new Date(weekInfo.endDate);
+          return isSameDay(dueDate, tomorrow) && dueDate >= weekStart && dueDate <= weekEnd;
+        });
         
-        if (hasDueTomorrowTask) {
+        if (hasDueTomorrowTaskInWeek) {
           // Scroll to top to show ALL DAY row and blinking tasks
           calendarScrollRef.current.scrollTop = 0;
         } else {
@@ -598,12 +604,16 @@ export default function Dashboard() {
       }
     };
     
-    scrollToRelevantPosition();
+    // Small delay to ensure DOM is rendered
+    const timeout = setTimeout(scrollToRelevantPosition, 100);
     
     // Update scroll position every minute
     const interval = setInterval(scrollToRelevantPosition, 60000);
-    return () => clearInterval(interval);
-  }, [selectedWeek, allTasks]);
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [selectedWeek, allTasks, calendarView, weeks]);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
