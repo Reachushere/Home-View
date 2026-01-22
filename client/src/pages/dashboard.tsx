@@ -137,9 +137,9 @@ export default function Dashboard() {
   
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '' };
+    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto' };
   });
 
   const toggleCourse = (courseId: string) => {
@@ -150,12 +150,30 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
     toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
+  
+  // Common timezones
+  const timezones = [
+    { value: 'America/Toronto', label: 'Eastern Time (Toronto)' },
+    { value: 'America/Chicago', label: 'Central Time (Chicago)' },
+    { value: 'America/Denver', label: 'Mountain Time (Denver)' },
+    { value: 'America/Los_Angeles', label: 'Pacific Time (Los Angeles)' },
+    { value: 'America/Vancouver', label: 'Pacific Time (Vancouver)' },
+    { value: 'America/New_York', label: 'Eastern Time (New York)' },
+    { value: 'Europe/London', label: 'London (GMT/BST)' },
+    { value: 'Europe/Paris', label: 'Paris (CET/CEST)' },
+    { value: 'Europe/Berlin', label: 'Berlin (CET/CEST)' },
+    { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
+    { value: 'Asia/Shanghai', label: 'Shanghai (CST)' },
+    { value: 'Asia/Dubai', label: 'Dubai (GST)' },
+    { value: 'Australia/Sydney', label: 'Sydney (AEST/AEDT)' },
+    { value: 'Pacific/Auckland', label: 'Auckland (NZST/NZDT)' },
+  ];
 
   const [courseGrades, setCourseGrades] = useState<Record<string, { grade: string; percent: string }>>(() => {
     const saved = localStorage.getItem('courseGrades');
@@ -2159,18 +2177,18 @@ export default function Dashboard() {
             {/* Slightly bigger Clock below title */}
             <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
               <span className="text-[10px] text-muted-foreground font-medium">
-                {format(currentTime, "EEE, MMM d")}
+                {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: profileData.timezone }).format(currentTime)}
               </span>
               <div className="w-[2px] h-4 bg-muted-foreground/50" />
               <div className="flex items-baseline">
                 <span className="text-sm font-semibold text-foreground tabular-nums">
-                  {format(currentTime, "h:mm")}
+                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: profileData.timezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
                 </span>
                 <span className="text-[10px] text-muted-foreground tabular-nums">
-                  :{format(currentTime, "ss")}
+                  :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: profileData.timezone }).format(currentTime)}
                 </span>
                 <span className="text-[7px] font-bold text-muted-foreground ml-0.5 uppercase">
-                  {format(currentTime, "a")}
+                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: profileData.timezone }).format(currentTime).replace(/^\d+\s*/, '')}
                 </span>
               </div>
             </div>
@@ -2356,49 +2374,11 @@ export default function Dashboard() {
               <DialogHeader>
                 <DialogTitle>Profile</DialogTitle>
               </DialogHeader>
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                saveProfile({
-                  firstName: formData.get('firstName') as string,
-                  lastName: formData.get('lastName') as string,
-                  birthdate: formData.get('birthdate') as string,
-                });
-              }} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input 
-                    id="firstName" 
-                    name="firstName" 
-                    defaultValue={profileData.firstName}
-                    placeholder="Enter your first name"
-                    data-testid="input-profile-firstname"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input 
-                    id="lastName" 
-                    name="lastName" 
-                    defaultValue={profileData.lastName}
-                    placeholder="Enter your last name"
-                    data-testid="input-profile-lastname"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="birthdate">Birthdate</Label>
-                  <Input 
-                    id="birthdate" 
-                    name="birthdate" 
-                    type="date"
-                    defaultValue={profileData.birthdate}
-                    data-testid="input-profile-birthdate"
-                  />
-                </div>
-                <Button type="submit" className="w-full" data-testid="button-save-profile">
-                  Save Profile
-                </Button>
-              </form>
+              <ProfileForm 
+                profileData={profileData} 
+                timezones={timezones} 
+                onSave={saveProfile} 
+              />
             </DialogContent>
           </Dialog>
           
@@ -3879,6 +3859,77 @@ function FileSelector({
         ))}
       </SelectContent>
     </Select>
+  );
+}
+
+function ProfileForm({ 
+  profileData, 
+  timezones, 
+  onSave 
+}: { 
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string };
+  timezones: { value: string; label: string }[];
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string }) => void;
+}) {
+  const [firstName, setFirstName] = useState(profileData.firstName);
+  const [lastName, setLastName] = useState(profileData.lastName);
+  const [birthdate, setBirthdate] = useState(profileData.birthdate);
+  const [timezone, setTimezone] = useState(profileData.timezone);
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({ firstName, lastName, birthdate, timezone });
+  };
+  
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="firstName">First Name</Label>
+        <Input 
+          id="firstName" 
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          placeholder="Enter your first name"
+          data-testid="input-profile-firstname"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="lastName">Last Name</Label>
+        <Input 
+          id="lastName" 
+          value={lastName}
+          onChange={(e) => setLastName(e.target.value)}
+          placeholder="Enter your last name"
+          data-testid="input-profile-lastname"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="birthdate">Birthdate</Label>
+        <Input 
+          id="birthdate" 
+          type="date"
+          value={birthdate}
+          onChange={(e) => setBirthdate(e.target.value)}
+          data-testid="input-profile-birthdate"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="timezone">Time Zone</Label>
+        <Select value={timezone} onValueChange={setTimezone}>
+          <SelectTrigger data-testid="select-profile-timezone">
+            <SelectValue placeholder="Select time zone" />
+          </SelectTrigger>
+          <SelectContent>
+            {timezones.map(tz => (
+              <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <Button type="submit" className="w-full" data-testid="button-save-profile">
+        Save Profile
+      </Button>
+    </form>
   );
 }
 
