@@ -2135,7 +2135,7 @@ export default function Dashboard() {
               <span className="text-[10px] text-muted-foreground font-medium">
                 {format(currentTime, "EEE, MMM d")}
               </span>
-              <div className="w-[1.5px] h-4 bg-border" />
+              <div className="w-[2px] h-4 bg-border" />
               <div className="flex items-baseline">
                 <span className="text-sm font-semibold text-foreground tabular-nums">
                   {format(currentTime, "h:mm")}
