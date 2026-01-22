@@ -2535,6 +2535,8 @@ export default function Dashboard() {
             </div>
           </section>
         </div>
+          );
+        })()}
 
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
