@@ -137,10 +137,13 @@ export default function Dashboard() {
   
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto' };
+    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
   });
+  
+  // Get the display timezone (travel if set, otherwise home)
+  const displayTimezone = profileData.travelTimezone || profileData.timezone;
 
   const toggleCourse = (courseId: string) => {
     setCheckedCourses(prev => {
@@ -150,7 +153,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -2177,20 +2180,23 @@ export default function Dashboard() {
             {/* Slightly bigger Clock below title */}
             <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
               <span className="text-[10px] text-muted-foreground font-medium">
-                {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: profileData.timezone }).format(currentTime)}
+                {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
               </span>
               <div className="w-[2px] h-4 bg-muted-foreground/50" />
               <div className="flex items-baseline">
                 <span className="text-sm font-semibold text-foreground tabular-nums">
-                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: profileData.timezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
                 </span>
                 <span className="text-[10px] text-muted-foreground tabular-nums">
-                  :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: profileData.timezone }).format(currentTime)}
+                  :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
                 </span>
                 <span className="text-[7px] font-bold text-muted-foreground ml-0.5 uppercase">
-                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: profileData.timezone }).format(currentTime).replace(/^\d+\s*/, '')}
+                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
                 </span>
               </div>
+              {profileData.travelTimezone && (
+                <span className="text-[8px] text-orange-500 font-medium ml-1">✈️ Travel</span>
+              )}
             </div>
           </div>
           
@@ -3867,18 +3873,20 @@ function ProfileForm({
   timezones, 
   onSave 
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
   const [birthdate, setBirthdate] = useState(profileData.birthdate);
   const [timezone, setTimezone] = useState(profileData.timezone);
+  const [travelTimezone, setTravelTimezone] = useState<string | null>(profileData.travelTimezone);
+  const [isTraveling, setIsTraveling] = useState(!!profileData.travelTimezone);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null });
   };
   
   return (
@@ -3914,7 +3922,7 @@ function ProfileForm({
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="timezone">Time Zone</Label>
+        <Label htmlFor="timezone">Home Time Zone</Label>
         <Select value={timezone} onValueChange={setTimezone}>
           <SelectTrigger data-testid="select-profile-timezone">
             <SelectValue placeholder="Select time zone" />
@@ -3925,6 +3933,33 @@ function ProfileForm({
             ))}
           </SelectContent>
         </Select>
+      </div>
+      <div className="border rounded-lg p-3 space-y-3">
+        <div className="flex items-center gap-2">
+          <Checkbox 
+            id="traveling" 
+            checked={isTraveling}
+            onCheckedChange={(checked) => setIsTraveling(!!checked)}
+            data-testid="checkbox-traveling"
+          />
+          <Label htmlFor="traveling" className="text-sm font-medium cursor-pointer">I'm traveling</Label>
+        </div>
+        {isTraveling && (
+          <div className="space-y-2">
+            <Label htmlFor="travelTimezone" className="text-sm">Travel Time Zone</Label>
+            <p className="text-xs text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
+            <Select value={travelTimezone || timezone} onValueChange={setTravelTimezone}>
+              <SelectTrigger data-testid="select-travel-timezone">
+                <SelectValue placeholder="Select travel time zone" />
+              </SelectTrigger>
+              <SelectContent>
+                {timezones.map(tz => (
+                  <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
       <Button type="submit" className="w-full" data-testid="button-save-profile">
         Save Profile
