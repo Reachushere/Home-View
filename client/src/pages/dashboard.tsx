@@ -1468,7 +1468,7 @@ export default function Dashboard() {
           })}
         </div>
 
-        <nav className="flex flex-col gap-0.5 mt-2 pb-4">
+        <nav className="flex flex-col gap-0.5 mt-1 pb-4">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-1 mb-0.5">Weeks</h3>
           {weeks.map((week) => {
             const weekEndDate = parseISO(week.endDate);
