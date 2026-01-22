@@ -2337,10 +2337,11 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-3 w-3 ml-2" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4 text-black" strokeWidth={2} />
           </Button>
+          <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-4 w-4 ml-2"
+            className="h-4 w-4"
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
@@ -2351,6 +2352,7 @@ export default function Dashboard() {
               <RefreshCw className="text-black" style={{ height: '13px', width: '13px' }} />
             )}
           </Button>
+          <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           
           {/* All buttons with equal spacing */}
           <div className="flex-1 flex items-center justify-between ml-4">
