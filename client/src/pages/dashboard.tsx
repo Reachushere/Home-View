@@ -1793,7 +1793,7 @@ export default function Dashboard() {
             {/* Day Headers */}
             <div className="grid border-b border-border sticky top-0 bg-card z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="p-2 flex items-center justify-center">
-                <span className="text-sm font-bold text-[#5979CC]">Week {selectedWeek}</span>
+                <span className="text-sm font-bold text-black dark:text-white">Week {selectedWeek}</span>
               </div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
