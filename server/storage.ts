@@ -8,6 +8,8 @@ export interface IStorage {
   createTask(task: InsertTask): Promise<Task>;
   updateTask(id: number, updates: UpdateTaskRequest): Promise<Task>;
   deleteTask(id: number): Promise<void>;
+  deleteChildTasks(parentTaskId: number): Promise<void>;
+  getChildTasks(parentTaskId: number): Promise<Task[]>;
   getTaskCountByWeek(): Promise<Record<number, number>>;
   getFiles(): Promise<FileRecord[]>;
   getFile(id: number): Promise<FileRecord | undefined>;
@@ -60,6 +62,14 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTask(id: number): Promise<void> {
     await db.delete(tasks).where(eq(tasks.id, id));
+  }
+
+  async deleteChildTasks(parentTaskId: number): Promise<void> {
+    await db.delete(tasks).where(eq(tasks.parentTaskId, parentTaskId));
+  }
+
+  async getChildTasks(parentTaskId: number): Promise<Task[]> {
+    return await db.select().from(tasks).where(eq(tasks.parentTaskId, parentTaskId)).orderBy(tasks.dueDate);
   }
 
   async getTaskCountByWeek(): Promise<Record<number, number>> {
