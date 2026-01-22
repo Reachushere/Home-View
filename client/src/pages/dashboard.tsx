@@ -1955,7 +1955,7 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className={`w-2 h-[2px] shrink-0 ${lineColor}`} />
+                              <div className={`w-3 h-[2px] shrink-0 -mr-1 ${lineColor}`} />
                             </div>
                           );
                         }
@@ -1964,10 +1964,12 @@ export default function Dashboard() {
                           const tomorrow = addDays(today, 1);
                           const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
                           const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
+                          const lineColor = colors ? colors.border.replace('border-', 'bg-') : "bg-gray-400";
                           return (
-                            <div
-                              key={`due-${task.id}`}
-                              className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
+                            <div key={`due-${task.id}`} className="flex items-center w-full -ml-1">
+                              <div className={`w-3 h-[2px] shrink-0 ${lineColor}`} />
+                              <div
+                                className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                               } ${
                                 task.isCompleted 
@@ -1993,12 +1995,14 @@ export default function Dashboard() {
                                 {task.title}
                               </span>
                             </div>
+                          </div>
                           );
                         }
                         // Intermediate prep days (between start and due date)
                         const lineColor = colors ? colors.border.replace('border-', 'bg-') : "bg-gray-400";
                         return (
-                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
+                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full -ml-1">
+                            <div className={`w-3 h-[2px] shrink-0 ${lineColor}`} />
                             <div
                               className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
@@ -2020,7 +2024,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className={`w-2 h-[2px] shrink-0 ${lineColor}`} />
+                            <div className={`w-3 h-[2px] shrink-0 -mr-1 ${lineColor}`} />
                           </div>
                         );
                       })}
