@@ -2569,7 +2569,6 @@ export default function Dashboard() {
                         const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                         return (
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="w-full flex items-center">
-                            <div className="h-[2px] bg-black dark:bg-white w-2 shrink-0" />
                             <div
                               className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
