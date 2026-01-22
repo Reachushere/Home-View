@@ -1381,7 +1381,7 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 350, backgroundColor: '#000000' }}>
         <div className="flex items-end gap-2 px-2 pt-1 pb-2">
-          <img src={unicalLogo} alt="Uni-Cal" className="h-6 w-6 mb-0.5" />
+          <img src={unicalLogo} alt="Uni-Cal" className="h-8 w-8 mb-0.5" style={{ mixBlendMode: 'multiply' }} />
           <h1 className="text-lg font-semibold text-white mt-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             School Planner
           </h1>
