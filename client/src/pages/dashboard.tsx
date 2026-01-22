@@ -578,41 +578,52 @@ export default function Dashboard() {
   
   // Auto-scroll to show blinking tasks (due tomorrow) or current hour
   useEffect(() => {
+    // Only scroll when we have tasks loaded
+    if (allTasks.length === 0 || calendarView !== "week") return;
+    
     const scrollToRelevantPosition = () => {
-      if (calendarScrollRef.current && calendarView === "week") {
-        const tomorrow = addDays(startOfDay(new Date()), 1);
-        // Check if any task due tomorrow is in the currently selected week
-        const weekInfo = weeks.find(w => w.weekNumber === selectedWeek);
-        const hasDueTomorrowTaskInWeek = weekInfo && allTasks.some(t => {
-          if (t.isCompleted) return false;
+      if (!calendarScrollRef.current) return;
+      
+      const tomorrow = addDays(startOfDay(new Date()), 1);
+      // Check if any task due tomorrow is in the currently selected week
+      const weekInfo = weeks.find(w => w.weekNumber === selectedWeek);
+      const tasksDueTomorrowInWeek = weekInfo ? allTasks.filter(t => {
+        if (t.isCompleted) return false;
+        const dueDate = new Date(t.dueDate);
+        const weekStart = new Date(weekInfo.startDate);
+        const weekEnd = new Date(weekInfo.endDate);
+        return isSameDay(dueDate, tomorrow) && dueDate >= weekStart && dueDate <= weekEnd;
+      }) : [];
+      
+      const hourHeight = 40; // height of each time slot
+      
+      if (tasksDueTomorrowInWeek.length > 0) {
+        // Find the earliest hour among blinking tasks
+        const earliestHour = Math.min(...tasksDueTomorrowInWeek.map(t => {
           const dueDate = new Date(t.dueDate);
-          const weekStart = new Date(weekInfo.startDate);
-          const weekEnd = new Date(weekInfo.endDate);
-          return isSameDay(dueDate, tomorrow) && dueDate >= weekStart && dueDate <= weekEnd;
-        });
-        
-        if (hasDueTomorrowTaskInWeek) {
-          // Scroll to top to show ALL DAY row and blinking tasks
-          calendarScrollRef.current.scrollTop = 0;
-        } else {
-          // Scroll to current hour
-          const hourHeight = 40; // height of each time slot
-          const currentHour = new Date().getHours();
-          const scrollTo = currentHour * hourHeight;
-          calendarScrollRef.current.scrollTop = scrollTo;
-        }
+          // If it's midnight (ALL DAY), return 0
+          if (dueDate.getHours() === 0 && dueDate.getMinutes() === 0) return 0;
+          return dueDate.getHours();
+        }));
+        // Scroll to show that hour (with some padding to show it centered)
+        const scrollTo = Math.max(0, (earliestHour - 1) * hourHeight);
+        calendarScrollRef.current.scrollTop = scrollTo;
+      } else {
+        // Scroll to current hour
+        const currentHour = new Date().getHours();
+        const scrollTo = currentHour * hourHeight;
+        calendarScrollRef.current.scrollTop = scrollTo;
       }
     };
     
-    // Small delay to ensure DOM is rendered
-    const timeout = setTimeout(scrollToRelevantPosition, 100);
+    // Use requestAnimationFrame to ensure DOM is painted
+    requestAnimationFrame(() => {
+      requestAnimationFrame(scrollToRelevantPosition);
+    });
     
     // Update scroll position every minute
     const interval = setInterval(scrollToRelevantPosition, 60000);
-    return () => {
-      clearTimeout(timeout);
-      clearInterval(interval);
-    };
+    return () => clearInterval(interval);
   }, [selectedWeek, allTasks, calendarView, weeks]);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
