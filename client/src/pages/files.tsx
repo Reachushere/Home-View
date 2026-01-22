@@ -298,10 +298,23 @@ export default function FilesPage() {
     },
   });
 
+  const getFilesToDeleteInFolder = (folderId: string) => {
+    // Check if this is a week folder (e.g., "week1")
+    if (folderId.match(/^week\d+$/)) {
+      return files.filter(f => f.folder?.startsWith(folderId + "-"));
+    }
+    // Check if this is a course folder (e.g., "week1-cppa122")
+    if (folderId.match(/^week\d+-\w+$/) && !folderId.includes("-", folderId.indexOf("-") + 1)) {
+      return files.filter(f => f.folder?.startsWith(folderId + "-"));
+    }
+    // Content folder - exact match
+    return files.filter(f => f.folder === folderId);
+  };
+
   const handleDeleteFolder = async () => {
     if (!selectedFolder) return;
     
-    const folderFiles = files.filter(f => f.folder === selectedFolder);
+    const folderFiles = getFilesToDeleteInFolder(selectedFolder);
     if (folderFiles.length === 0) {
       toast({ title: "Folder is empty" });
       setShowDeleteFolderConfirm(false);
@@ -824,8 +837,14 @@ export default function FilesPage() {
               return (
                 <div key={week.id}>
                   <div
-                    className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d]`}
-                    onClick={() => toggleFolder(week.id)}
+                    className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === week.id ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""}`}
+                    onClick={(e) => {
+                      if (e.ctrlKey || e.metaKey) {
+                        setSelectedFolder(week.id);
+                      } else {
+                        toggleFolder(week.id);
+                      }
+                    }}
                     data-testid={`folder-${week.id}`}
                   >
                     {isWeekExpanded ? (
@@ -852,8 +871,14 @@ export default function FilesPage() {
                         return (
                           <div key={courseFolderId}>
                             <div
-                              className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${dragOverFolder === courseFolderId ? "bg-[#0078d4]/30" : ""}`}
-                              onClick={() => toggleFolder(courseFolderId)}
+                              className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === courseFolderId ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === courseFolderId ? "bg-[#0078d4]/50" : ""}`}
+                              onClick={(e) => {
+                                if (e.ctrlKey || e.metaKey) {
+                                  setSelectedFolder(courseFolderId);
+                                } else {
+                                  toggleFolder(courseFolderId);
+                                }
+                              }}
                               onDragOver={(e) => handleDragOver(e, courseFolderId)}
                               onDragLeave={(e) => handleDragLeave(e)}
                               onDrop={(e) => handleDrop(e, courseFolderId)}
@@ -1293,7 +1318,7 @@ export default function FilesPage() {
             </p>
             {selectedFolder && (
               <p className="text-sm font-medium mt-2">
-                Files to delete: {files.filter(f => f.folder === selectedFolder).length}
+                Files to delete: {getFilesToDeleteInFolder(selectedFolder).length}
               </p>
             )}
           </div>
