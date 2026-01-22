@@ -2123,15 +2123,6 @@ export default function Dashboard() {
             )}
             Sync
           </Button>
-          <Button 
-            size="sm" 
-            className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2" 
-            onClick={() => setIsCalendarSettingsOpen(true)}
-            data-testid="button-calendar-settings"
-          >
-            <Settings className="h-1.5 w-1.5 mr-0.5" />
-            Cal Set
-          </Button>
           <RouterLink href="/files" className="flex items-center ml-2">
             <Button 
               size="sm" 
@@ -2389,7 +2380,7 @@ export default function Dashboard() {
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
                             <div key={`due-${task.id}`} className="relative w-full">
-                              {hasPrepDays && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />}
+                              {hasPrepDays && <div className="absolute -top-[3px] left-0 right-0 h-[2px] bg-black dark:bg-white z-10" />}
                               <div
                                 className={`flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r' : 'rounded'} truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
@@ -2446,7 +2437,7 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                              <div className="absolute -bottom-[3px] left-0 right-0 h-[2px] bg-black dark:bg-white z-10" />
                             </div>
                           );
                         }
@@ -2475,7 +2466,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
+                            <div className="absolute -bottom-[3px] left-0 right-0 h-[2px] bg-black dark:bg-white z-10" />
                           </div>
                         );
                       })}
