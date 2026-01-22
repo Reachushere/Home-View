@@ -4277,7 +4277,7 @@ function SchoolForm({
         </div>
       )}
       
-      <Button type="submit" className="w-full" data-testid="button-save-school">
+      <Button type="submit" className="w-full bg-[#5979CC] hover:bg-[#4a68b3] text-white" data-testid="button-save-school">
         Save School Settings
       </Button>
     </form>
