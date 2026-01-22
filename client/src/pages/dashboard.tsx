@@ -772,7 +772,7 @@ export default function Dashboard() {
       )}
       {/* Sidebar */}
       <aside className="bg-black text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 350 }}>
-        <div className="flex items-center gap-2 px-2 pt-1 pb-0">
+        <div className="flex items-center gap-2 px-2 pt-1 pb-2">
           <CalendarDays className="h-5 w-5 text-white" />
           <h1 className="text-lg font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
             School Planner
