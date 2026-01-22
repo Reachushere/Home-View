@@ -726,7 +726,7 @@ export default function Dashboard() {
 
   // Get all planning tasks for the week and assign row slots
   const getAllWeekPlanningTasks = () => {
-    const tasksWithPlanningPeriods = allTasks.filter(t => t.startDate);
+    const tasksWithPlanningPeriods = allTasks.filter(t => t.startDate && !t.isCompleted);
     // Sort by start date to ensure consistent ordering
     return tasksWithPlanningPeriods.sort((a, b) => {
       const aStart = new Date(a.startDate!).getTime();
