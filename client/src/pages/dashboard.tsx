@@ -1383,7 +1383,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-2 px-2 pt-3 pb-2">
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '52px', width: '52px' }} />
           <div className="flex items-baseline gap-1.5">
-            <h1 className="text-lg font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h1 className="text-base font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               University Planner
             </h1>
             <span className="text-[10px] text-gray-400 whitespace-nowrap font-bold" style={{ fontFamily: "Segoe UI, sans-serif" }}>
