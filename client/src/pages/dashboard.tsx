@@ -1387,7 +1387,7 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" className="h-3 w-3" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-bold bg-[#5979CC] text-white px-3 py-0.5 rounded-full" style={{ fontFamily: "'Open Sans', sans-serif" }}>{format(currentMonth, "MMMM")}</span>
+            <span className="text-sm font-bold bg-[#5979CC] text-white px-3 py-0.5 rounded-full" style={{ fontFamily: "Segoe UI, sans-serif" }}>{format(currentMonth, "MMMM")}</span>
             <Button variant="ghost" size="icon" className="h-3 w-3" onClick={handleNextMonth}>
               <ChevronRight className="h-4 w-4" />
             </Button>
