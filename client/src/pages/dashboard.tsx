@@ -1910,9 +1910,9 @@ export default function Dashboard() {
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                   : isDueTomorrow 
-                                    ? (task.courseName?.startsWith("CPPA122") ? "bg-green-200 text-black border border-green-500" : 
-                                       task.courseName?.startsWith("CFNF400") ? "bg-pink-200 text-black border border-pink-500" : 
-                                       task.courseName?.startsWith("CASL101") ? "bg-indigo-200 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
+                                    ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
+                                       task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
+                                       task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
                                     : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
                               }`}
                               data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
@@ -1953,9 +1953,9 @@ export default function Dashboard() {
                               task.isCompleted 
                                 ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                 : isDueTomorrow 
-                                  ? (task.courseName?.startsWith("CPPA122") ? "bg-green-200 text-black border border-green-500" : 
-                                     task.courseName?.startsWith("CFNF400") ? "bg-pink-200 text-black border border-pink-500" : 
-                                     task.courseName?.startsWith("CASL101") ? "bg-indigo-200 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
+                                  ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
+                                     task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
+                                     task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
                                   : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
                             }`}
                             data-testid={`all-day-task-${task.id}`}
@@ -2111,9 +2111,9 @@ export default function Dashboard() {
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
                                     : isDueTomorrow 
-                                      ? (task.courseName?.startsWith("CPPA122") ? "bg-green-200 border border-green-500" : 
-                                         task.courseName?.startsWith("CFNF400") ? "bg-pink-200 border border-pink-500" : 
-                                         task.courseName?.startsWith("CASL101") ? "bg-indigo-200 border border-indigo-500" : "bg-gray-200 border border-gray-400")
+                                      ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 border border-green-500" : 
+                                         task.courseName?.startsWith("CFNF400") ? "bg-pink-50 border border-pink-500" : 
+                                         task.courseName?.startsWith("CASL101") ? "bg-indigo-50 border border-indigo-500" : "bg-gray-200 border border-gray-400")
                                       : colors ? `${colors.bg} border ${colors.border}` : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
