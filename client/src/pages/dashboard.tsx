@@ -2300,9 +2300,10 @@ export default function Dashboard() {
                           const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
-                            <div key={`due-${task.id}`} className="flex items-center w-full">
+                            <div key={`due-${task.id}`} className="relative w-full">
+                              {hasPrepDays && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />}
                               <div
-                                className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r border-l-[3px] border-l-black' : 'rounded'} truncate ${
+                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r' : 'rounded'} truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                               } ${
                                 task.isCompleted 
@@ -2312,7 +2313,7 @@ export default function Dashboard() {
                                        task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
                                        task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
                                     : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
-                              } ${hasPrepDays ? '!border-l-[3px] !border-l-black' : ''}`}
+                              }`}
                               data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
                               <Checkbox
@@ -2335,12 +2336,12 @@ export default function Dashboard() {
                         if (isFirstPrepDay) {
                           const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                           return (
-                            <div key={`prep-${task.id}`} className="flex items-center w-full">
+                            <div key={`prep-${task.id}`} className="relative w-full">
                               <div
-                                className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
+                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
                                   task.isCompleted 
-                                    ? "bg-gray-200 text-gray-400 border border-gray-300 !border-r-[3px] !border-r-black" 
-                                    : colors ? `${colors.prepBg} text-black border ${colors.border} !border-r-[3px] !border-r-black ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 !border-r-[3px] !border-r-black ${shimmerClass}`
+                                    ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                    : colors ? `${colors.prepBg} text-black border ${colors.border} ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 ${shimmerClass}`
                                 }`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
@@ -2357,18 +2358,19 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
+                              <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
                             </div>
                           );
                         }
                         // Intermediate prep days (between start and due date)
                         const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                         return (
-                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
+                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="relative w-full">
                             <div
-                              className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
+                              className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
-                                  ? "bg-gray-200 text-gray-400 border border-gray-300 !border-l-[3px] !border-l-black !border-r-[3px] !border-r-black" 
-                                  : colors ? `${colors.prepBg} text-black border ${colors.border} !border-l-[3px] !border-l-black !border-r-[3px] !border-r-black ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 !border-l-[3px] !border-l-black !border-r-[3px] !border-r-black ${shimmerClass}`
+                                  ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                  : colors ? `${colors.prepBg} text-black border ${colors.border} ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 ${shimmerClass}`
                               }`}
                               data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
@@ -2385,6 +2387,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
+                            <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
                           </div>
                         );
                       })}
