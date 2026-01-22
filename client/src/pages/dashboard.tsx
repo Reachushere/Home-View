@@ -1383,7 +1383,7 @@ export default function Dashboard() {
         <div className="flex items-end gap-2 px-2 pt-1 pb-2">
           <img src={unicalLogo} alt="Uni-Cal" className="h-13 w-13 mt-1.5 -ml-3 rounded" style={{ height: '52px', width: '52px' }} />
           <h1 className="text-lg font-semibold text-white mt-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-            School Planner
+            University Planner
           </h1>
           <span className="text-[10px] text-gray-400 mb-0.5" style={{ fontFamily: "Segoe UI, sans-serif", fontWeight: 400 }}>
             ({schoolData.week1StartDate 
