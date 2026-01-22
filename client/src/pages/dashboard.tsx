@@ -2318,7 +2318,16 @@ export default function Dashboard() {
         </div>
         )}
         {/* Be Prepared, Do Today, and Missed Tasks Side by Side */}
-        <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
+        {(() => {
+          // Calculate dynamic height based on max tasks in any course column
+          const cppa122Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).length;
+          const cfnf400Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).length;
+          const casl101Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).length;
+          const maxTasks = Math.max(cppa122Tasks, cfnf400Tasks, casl101Tasks, 2);
+          // Base height 200px for up to 2 tasks, add 70px per additional task
+          const dynamicHeight = maxTasks <= 2 ? 200 : 200 + (maxTasks - 2) * 70;
+          return (
+        <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-yellow-200 dark:bg-yellow-200" style={{ fontFamily: "'Open Sans', sans-serif" }}>
