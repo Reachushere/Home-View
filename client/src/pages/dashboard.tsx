@@ -1945,10 +1945,14 @@ export default function Dashboard() {
                           );
                         }
                         if (isDueDay) {
+                          const tomorrow = addDays(startOfDay(new Date()), 1);
+                          const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
                           return (
                             <div
                               key={`due-${task.id}`}
                               className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
+                                isDueTomorrow ? "animate-blink" : ""
+                              } ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                   : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
@@ -1980,10 +1984,14 @@ export default function Dashboard() {
                       {/* Regular all-day tasks */}
                       {allDayTasks.map(task => {
                         const colors = getCourseColor(task.courseName);
+                        const tomorrow = addDays(startOfDay(new Date()), 1);
+                        const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                         return (
                           <div
                             key={task.id}
                             className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
+                              isDueTomorrow ? "animate-blink" : ""
+                            } ${
                               task.isCompleted 
                                 ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                 : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
@@ -2111,6 +2119,8 @@ export default function Dashboard() {
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50" />
                           {hourTasks.map((task, taskIdx) => {
                             const colors = getCourseColor(task.courseName);
+                            const tomorrow = addDays(startOfDay(new Date()), 1);
+                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                             return (
                               <div
                                 key={task.id}
@@ -2133,6 +2143,8 @@ export default function Dashboard() {
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
+                                } ${
+                                  isDueTomorrow ? "animate-blink" : ""
                                 } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
