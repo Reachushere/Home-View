@@ -145,6 +145,7 @@ export const tasks = pgTable("tasks", {
   reminder4: integer("reminder_4"), // Optional additional reminder
   weekNumber: integer("week_number").notNull(), // 2-13
   isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"), // When the task was marked as completed
   isMissed: boolean("is_missed").default(false),
   priority: text("priority").default("medium"), // low, medium, high
   notes: text("notes"),

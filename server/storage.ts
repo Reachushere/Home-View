@@ -62,9 +62,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTask(id: number, updates: UpdateTaskRequest): Promise<Task> {
+    // If marking as completed, set completedAt timestamp
+    // If marking as not completed, clear completedAt
+    const modifiedUpdates = { ...updates } as typeof updates & { completedAt?: Date | null };
+    if ('isCompleted' in updates) {
+      if (updates.isCompleted === true) {
+        modifiedUpdates.completedAt = new Date();
+      } else if (updates.isCompleted === false) {
+        modifiedUpdates.completedAt = null;
+      }
+    }
+    
     const [updated] = await db
       .update(tasks)
-      .set(updates)
+      .set(modifiedUpdates)
       .where(eq(tasks.id, id))
       .returning();
     return updated;
