@@ -137,6 +137,15 @@
   animation: blink 0.8s step-start infinite;
 }
 
+@keyframes slow-blink {
+  0%, 2%, 100% { opacity: 1; }
+  1% { opacity: 0; }
+}
+
+.animate-slow-blink {
+  animation: slow-blink 60s ease-in-out infinite;
+}
+
 .today-popup {
   cursor: pointer;
 }

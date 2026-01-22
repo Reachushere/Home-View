@@ -584,9 +584,20 @@ export default function Dashboard() {
     const scrollToRelevantPosition = () => {
       if (!calendarScrollRef.current) return;
       
-      const tomorrow = addDays(startOfDay(new Date()), 1);
-      // Check if any task due tomorrow is in the currently selected week
+      const today = startOfDay(new Date());
+      const tomorrow = addDays(today, 1);
       const weekInfo = weeks.find(w => w.weekNumber === selectedWeek);
+      
+      // First check for tasks due today (they blink fast)
+      const tasksDueTodayInWeek = weekInfo ? allTasks.filter(t => {
+        if (t.isCompleted) return false;
+        const dueDate = new Date(t.dueDate);
+        const weekStart = new Date(weekInfo.startDate);
+        const weekEnd = new Date(weekInfo.endDate);
+        return isSameDay(dueDate, today) && dueDate >= weekStart && dueDate <= weekEnd;
+      }) : [];
+      
+      // Then check for tasks due tomorrow (they blink slow)
       const tasksDueTomorrowInWeek = weekInfo ? allTasks.filter(t => {
         if (t.isCompleted) return false;
         const dueDate = new Date(t.dueDate);
@@ -596,10 +607,11 @@ export default function Dashboard() {
       }) : [];
       
       const hourHeight = 40; // height of each time slot
+      const blinkingTasks = tasksDueTodayInWeek.length > 0 ? tasksDueTodayInWeek : tasksDueTomorrowInWeek;
       
-      if (tasksDueTomorrowInWeek.length > 0) {
+      if (blinkingTasks.length > 0) {
         // Find the earliest hour among blinking tasks
-        const earliestHour = Math.min(...tasksDueTomorrowInWeek.map(t => {
+        const earliestHour = Math.min(...blinkingTasks.map(t => {
           const dueDate = new Date(t.dueDate);
           // If it's midnight (ALL DAY), return 0
           if (dueDate.getHours() === 0 && dueDate.getMinutes() === 0) return 0;
@@ -1945,16 +1957,18 @@ export default function Dashboard() {
                         }
                         if (isDueDay) {
                           const today = startOfDay(new Date());
+                          const tomorrow = addDays(today, 1);
                           const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
+                          const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
                           return (
                             <div
                               key={`due-${task.id}`}
                               className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
-                                isDueToday ? "animate-blink" : ""
+                                isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                               } ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                  : isDueToday 
+                                  : (isDueToday || isDueTomorrow)
                                     ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
                                        task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
                                        task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
@@ -1987,17 +2001,19 @@ export default function Dashboard() {
                       {/* Regular all-day tasks */}
                       {allDayTasks.map(task => {
                         const colors = getCourseColor(task.courseName);
-                        const tomorrow = addDays(startOfDay(new Date()), 1);
+                        const today = startOfDay(new Date());
+                        const tomorrow = addDays(today, 1);
+                        const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                         const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                         return (
                           <div
                             key={task.id}
                             className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
-                              isDueTomorrow ? "animate-blink" : ""
+                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                             } ${
                               task.isCompleted 
                                 ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                : isDueTomorrow 
+                                : (isDueToday || isDueTomorrow)
                                   ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
                                      task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
                                      task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
@@ -2127,7 +2143,9 @@ export default function Dashboard() {
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50" />
                           {hourTasks.map((task, taskIdx) => {
                             const colors = getCourseColor(task.courseName);
-                            const tomorrow = addDays(startOfDay(new Date()), 1);
+                            const today = startOfDay(new Date());
+                            const tomorrow = addDays(today, 1);
+                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                             const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                             return (
                               <div
@@ -2152,11 +2170,11 @@ export default function Dashboard() {
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
-                                  isDueTomorrow ? "animate-blink" : ""
+                                  isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
-                                    : isDueTomorrow 
+                                    : (isDueToday || isDueTomorrow)
                                       ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 border border-green-500" : 
                                          task.courseName?.startsWith("CFNF400") ? "bg-pink-50 border border-pink-500" : 
                                          task.courseName?.startsWith("CASL101") ? "bg-indigo-50 border border-indigo-500" : "bg-gray-200 border border-gray-400")
