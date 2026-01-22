@@ -1900,9 +1900,15 @@ export default function Dashboard() {
                 </div>
                 {weekDays.map((day, dayIdx) => {
                   const planningTasksForDay = weekPlanningTasks.filter(task => {
-                    const isFirstPrepDay = task.startDate && isSameDay(new Date(task.startDate), day);
-                    const isDueDay = isSameDay(new Date(task.dueDate), day);
-                    return isFirstPrepDay || isDueDay;
+                    if (!task.startDate) return false;
+                    const startDate = new Date(task.startDate);
+                    const dueDate = new Date(task.dueDate);
+                    const dayStart = new Date(day);
+                    dayStart.setHours(0, 0, 0, 0);
+                    const dayEnd = new Date(day);
+                    dayEnd.setHours(23, 59, 59, 999);
+                    // Show task on all days from startDate through dueDate (inclusive)
+                    return startDate <= dayEnd && dayStart <= dueDate;
                   });
                   const allDayTasks = getAllDayTasks(day);
                   const allDayEvents = getAllDayCalendarEvents(day);
@@ -1996,7 +2002,36 @@ export default function Dashboard() {
                             </div>
                           );
                         }
-                        return null;
+                        // Intermediate prep days (between start and due date)
+                        return (
+                          <div
+                            key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${isDayBeforeDue ? "border-2 border-red-500" : ""} ${
+                              task.isCompleted 
+                                ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                : colors ? `${colors.prepBg} text-black border ${colors.border}` : "bg-gray-100 text-black border border-gray-400"
+                            }`}
+                            data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                          >
+                            <Checkbox
+                              checked={task.isCompleted || false}
+                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                              className="h-3 w-3 shrink-0"
+                              data-testid={`checkbox-prep-mid-${task.id}`}
+                            />
+                            <span 
+                              onClick={() => setEditingTask(task)}
+                              className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
+                            >
+                              {task.title}
+                            </span>
+                            <Trash2 
+                              className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
+                              onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
+                              data-testid={`trash-prep-mid-${task.id}`}
+                            />
+                          </div>
+                        );
                       })}
                       {/* Regular all-day tasks */}
                       {allDayTasks.map(task => {
