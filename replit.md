@@ -54,11 +54,16 @@ Preferred communication style: Simple, everyday language.
 
 ### Features
 - **Planning Periods**: Tasks can have optional start dates to show when to begin preparation
+- **Connecting Lines**: Visual lines connect prep tasks across days, showing the full planning period from startDate to dueDate
+  - First prep day: rounded-l corners with line extending right
+  - Intermediate prep days: no rounding, lines on both sides
+  - Due day: rounded-r corners with line extending from left
 - **File Attachments**: Upload files directly to Replit object storage or paste URLs
 - **File Management**: Dedicated /files page for viewing, renaming, and assigning files to tasks
-- **Course Color Coding**: CPPA122 (blue), CFNF400 (green), CASL101 (brown/amber)
+- **Course Color Coding**: CPPA122 (green), CFNF400 (pink), CASL101 (indigo)
 - **Calendar Export**: Download .ics files for individual tasks
 - **Dashboard Layout**: Three task sections - Due Today (orange cards), Upcoming (pale yellow cards), Missed (red styling)
+- **Blinking Animations**: Tasks due today blink fast (0.8s), tasks due tomorrow blink slowly (60s)
 
 ### Key Design Patterns
 - **Type Safety**: End-to-end TypeScript with shared types between frontend and backend
