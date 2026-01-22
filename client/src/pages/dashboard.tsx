@@ -2300,25 +2300,45 @@ export default function Dashboard() {
           <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded" />
         </div>
         
+        {/* Current Week Indicator */}
+        <div className="mb-1">
+          {selectedWeek === 2 ? (
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+              <Home className="h-2.5 w-2.5" />
+              <span className="underline font-bold">CURRENT</span>
+            </span>
+          ) : (
+            <span 
+              className="text-[10px] text-blue-500 uppercase tracking-wide cursor-pointer hover:underline flex items-center gap-0.5"
+              style={{ fontFamily: "Segoe UI, sans-serif" }}
+              onClick={() => setSelectedWeek(2)}
+              data-testid="link-current-week"
+            >
+              <Home className="h-2.5 w-2.5" />
+              <span className="underline font-bold">CURRENT</span>
+            </span>
+          )}
+        </div>
+        
         {/* Calendar Header */}
-        <div className="flex items-end mb-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2 shadow-sm">
+        <div className="flex items-center mb-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2 shadow-sm">
           {/* Week navigation */}
-          <Button variant="ghost" size="icon" className="h-3 w-3 mb-0.5" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+          <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <div className="flex flex-col mx-3 justify-center" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+          <div className="flex items-center mx-3" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             <div className="flex items-center gap-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
               <span className="text-[11px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
               <span className="text-[11px] font-semibold text-muted-foreground">to</span>
               <span className="text-[11px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
             </div>
           </div>
-          <Button variant="ghost" size="icon" className="h-3 w-3 mb-0.5" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+          <Button variant="ghost" size="icon" className="h-3 w-3" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
           
           {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-end justify-between ml-8 translate-y-1">
+          <div className="flex-1 flex items-center justify-between ml-8">
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2328,7 +2348,7 @@ export default function Dashboard() {
               <Sun className="h-2.5 w-2.5 mr-0.5" />
               Today
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
@@ -2338,7 +2358,7 @@ export default function Dashboard() {
               <CalendarDays className="h-2.5 w-2.5 mr-0.5" />
               {calendarView === "month" ? "Week" : "Month"}
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm" 
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2353,7 +2373,7 @@ export default function Dashboard() {
               )}
               Cal Sync
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
@@ -2364,7 +2384,7 @@ export default function Dashboard() {
                 Files
               </Button>
             </RouterLink>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             
             {/* Pomodoro Timer */}
             <div className="flex items-center gap-3 h-[22px]">
@@ -2402,7 +2422,7 @@ export default function Dashboard() {
                 <span className="ml-0.5 font-bold">{pomodoroCount}</span>
               </div>
             </div>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2412,7 +2432,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Module
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2422,7 +2442,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Reading
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2432,7 +2452,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Discuss
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2442,7 +2462,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Assign
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
