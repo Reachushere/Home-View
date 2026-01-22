@@ -2135,7 +2135,7 @@ export default function Dashboard() {
               <span className="text-[10px] text-muted-foreground font-medium">
                 {format(currentTime, "EEE, MMM d")}
               </span>
-              <div className="w-[2px] h-4 bg-border" />
+              <div className="w-[2px] h-4 bg-muted-foreground/50" />
               <div className="flex items-baseline">
                 <span className="text-sm font-semibold text-foreground tabular-nums">
                   {format(currentTime, "h:mm")}
@@ -2221,7 +2221,7 @@ export default function Dashboard() {
           </RouterLink>
           
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2.5 ml-2 px-4 h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
+          <div className="flex items-center gap-2.5 ml-2 px-[18px] h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
             <div className={`text-[10px] font-mono font-bold -mr-1 ${
               pomodoroMode === "work" ? "text-red-600" : 
               pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
