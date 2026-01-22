@@ -1368,10 +1368,10 @@ export default function Dashboard() {
         <div className="flex items-center gap-2 px-2 pt-1 pb-2">
           <CalendarDays className="h-5 w-5 text-white" />
           <div className="flex flex-col">
-            <h1 className="text-lg font-semibold text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h1 className="text-lg font-semibold text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               School Planner
             </h1>
-            <span className="text-[10px] text-gray-400" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <span className="text-[10px] text-gray-400" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               ({schoolData.week1StartDate 
                 ? format(new Date(schoolData.week1StartDate), 'MMMM d') 
                 : 'January 11'} to {schoolData.week1StartDate 
@@ -2266,7 +2266,7 @@ export default function Dashboard() {
               >
                 {isMuted ? <BellOff className="h-3 w-3 scale-[0.65]" /> : <Bell className="h-3 w-3 scale-[0.65]" />}
               </Button>
-              <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
+              <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
             </div>
             {/* Slightly bigger Clock below title */}
             <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
@@ -2300,7 +2300,7 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-3 w-3 mb-1" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <div className="flex flex-col mx-3" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+          <div className="flex flex-col mx-3" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             {selectedWeek === 2 ? (
               <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5 -ml-1">
                 <Home className="h-2.5 w-2.5" />
@@ -3162,7 +3162,7 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-upcoming">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-yellow-200 dark:bg-yellow-200" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-yellow-200 dark:bg-yellow-200" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <Clock className="h-3 w-3 text-black dark:text-black" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
             </h4>
@@ -3277,7 +3277,7 @@ export default function Dashboard() {
 
           {/* Do Today Section (Urgent) - Now in Middle */}
           <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-orange-300 dark:bg-orange-300" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-orange-300 dark:bg-orange-300" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <Calendar className="h-3 w-3 text-black dark:text-black" />
               URGENT: Do Today ({todayTasks.length})
             </h4>
@@ -3329,7 +3329,7 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
           <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-missed">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-red-300 dark:bg-red-300" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-red-300 dark:bg-red-300" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <Clock className="h-3 w-3 text-black dark:text-black" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
@@ -3385,7 +3385,7 @@ export default function Dashboard() {
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
           <section className="bg-blue-500/10 dark:bg-blue-500/20 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 h-[210px]" data-testid="section-todo">
-            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3 w-3 text-black dark:text-white" />
               To Do
             </h4>
@@ -3426,7 +3426,7 @@ export default function Dashboard() {
         <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
           {/* CPPA122 Completed */}
           <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cppa122">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-green-600" />
               <span className="text-green-600">Completed - CPPA122</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})</span>
             </h4>
@@ -3454,7 +3454,7 @@ export default function Dashboard() {
 
           {/* CFNF400 Completed */}
           <section className="flex-1 bg-pink-100 dark:bg-pink-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cfnf400">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-pink-600" />
               <span className="text-pink-600">Completed - CFNF400</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})</span>
             </h4>
@@ -3482,7 +3482,7 @@ export default function Dashboard() {
 
           {/* CASL101 Completed */}
           <section className="flex-1 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-purple-600" />
               <span className="text-purple-600">Completed - CASL101</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
             </h4>
