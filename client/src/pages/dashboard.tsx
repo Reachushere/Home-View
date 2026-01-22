@@ -145,7 +145,7 @@ export default function Dashboard() {
   });
   const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }>(() => {
     const saved = localStorage.getItem('schoolData');
-    return saved ? JSON.parse(saved) : { schoolLogo: null, numberOfWeeks: 13, week1StartDate: '2026-01-11', firstDayOfWeek: 'saturday' };
+    return saved ? JSON.parse(saved) : { schoolLogo: null, numberOfWeeks: 13, week1StartDate: '2026-01-17', firstDayOfWeek: 'saturday' };
   });
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string }> }>(() => {
