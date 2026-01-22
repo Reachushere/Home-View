@@ -2228,7 +2228,7 @@ export default function Dashboard() {
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center -mx-0.5">
+            <div className="flex-1 flex items-center justify-evenly">
               <button
                 className="p-0.5 hover:bg-gray-100 rounded"
                 onClick={togglePomodoro}
