@@ -2507,6 +2507,9 @@ export default function Dashboard() {
                           const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
                           const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
+                          // Only show connecting line if the previous prep day is still visible (today or future)
+                          const dayBeforeDue = addDays(taskDueDate, -1);
+                          const hasVisiblePrepDays = hasPrepDays && !isBefore(dayBeforeDue, today);
                           const baseStyle = task.isCompleted 
                             ? "bg-gray-200 text-gray-400 border border-gray-300" 
                             : (isDueToday || isDueTomorrow)
@@ -2516,12 +2519,12 @@ export default function Dashboard() {
                               : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400";
                           return (
                             <div key={`due-${task.id}`} className="flex items-center w-full">
-                              {hasPrepDays && <div className="w-2 h-[2px] bg-black shrink-0" />}
+                              {hasVisiblePrepDays && <div className="w-2 h-[2px] bg-black shrink-0" />}
                               <div
                                 className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle} ${
                                   isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                                 }`}
-                                style={{ borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px' }}
+                                style={{ borderRadius: hasVisiblePrepDays ? '0 4px 4px 0' : '4px' }}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
                                 <Checkbox
@@ -2581,12 +2584,15 @@ export default function Dashboard() {
                         const baseStyle = task.isCompleted 
                           ? "bg-gray-200 text-gray-400 border border-gray-300" 
                           : `bg-orange-400 text-black border border-orange-500 ${shimmerClass}`;
+                        // Check if the previous day is visible (today or future)
+                        const previousDay = addDays(dayStart, -1);
+                        const hasPreviousVisibleDay = !isBefore(previousDay, today);
                         return (
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                            <div className="w-2 h-[2px] bg-black shrink-0" />
+                            {hasPreviousVisibleDay && <div className="w-2 h-[2px] bg-black shrink-0" />}
                             <div
                               className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                              style={{ borderRadius: 0 }}
+                              style={{ borderRadius: hasPreviousVisibleDay ? 0 : '4px 0 0 4px' }}
                               data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
                               <Checkbox
