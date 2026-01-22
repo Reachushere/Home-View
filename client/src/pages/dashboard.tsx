@@ -1944,17 +1944,17 @@ export default function Dashboard() {
                           );
                         }
                         if (isDueDay) {
-                          const tomorrow = addDays(startOfDay(new Date()), 1);
-                          const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
+                          const today = startOfDay(new Date());
+                          const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
                           return (
                             <div
                               key={`due-${task.id}`}
                               className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
-                                isDueTomorrow ? "animate-blink" : ""
+                                isDueToday ? "animate-blink" : ""
                               } ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                  : isDueTomorrow 
+                                  : isDueToday 
                                     ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
                                        task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
                                        task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
