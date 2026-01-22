@@ -2104,12 +2104,12 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="flex-1 pt-2 px-6 pb-6 overflow-auto flex flex-col">
         {/* Title Row - aligned with sidebar header */}
-        <div className="flex items-start justify-between mb-2">
-          {/* Left: Hamburger Menu */}
+        <div className="flex items-start justify-between mb-0">
+          {/* Left: Hamburger Menu - positioned to align with planner box top */}
           <Button
             variant="ghost"
             size="icon"
-            className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md"
+            className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-6"
             data-testid="button-hamburger-menu"
           >
             <Menu className="h-3.5 w-3.5" />
@@ -2117,33 +2117,33 @@ export default function Dashboard() {
           
           {/* Center: Title with Bell + Clock below */}
           <div className="flex flex-col items-center">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleMute}
-                className={`!h-5 !w-5 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+                className={`!h-4 !w-4 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
                 data-testid="button-mute-toggle"
                 title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
               >
-                {isMuted ? <BellOff className="h-2.5 w-2.5" /> : <Bell className="h-2.5 w-2.5" />}
+                {isMuted ? <BellOff className="h-2 w-2" /> : <Bell className="h-2 w-2" />}
               </Button>
               <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule - {currentSemesterName}</h1>
             </div>
-            {/* Smaller Clock below title */}
-            <div className="flex items-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 px-2 py-0.5 rounded border border-slate-700/50 shadow-sm mt-0.5" data-testid="digital-clock">
-              <span className="text-[7px] text-slate-400 font-medium">
+            {/* Slightly bigger Clock below title */}
+            <div className="flex items-center gap-2 bg-gradient-to-r from-slate-800 to-slate-900 px-2.5 py-1 rounded border border-slate-700/50 shadow-sm mt-0.5" data-testid="digital-clock">
+              <span className="text-[8px] text-slate-400 font-medium">
                 {format(currentTime, "EEE, MMM d")}
               </span>
-              <div className="w-px h-3 bg-slate-600" />
+              <div className="w-px h-4 bg-slate-600" />
               <div className="flex items-baseline">
-                <span className="text-xs font-semibold text-white tabular-nums">
+                <span className="text-sm font-semibold text-white tabular-nums">
                   {format(currentTime, "h:mm")}
                 </span>
-                <span className="text-[9px] text-slate-400 tabular-nums">
+                <span className="text-[10px] text-slate-400 tabular-nums">
                   :{format(currentTime, "ss")}
                 </span>
-                <span className="text-[6px] font-bold text-slate-400 ml-0.5 uppercase">
+                <span className="text-[7px] font-bold text-slate-400 ml-0.5 uppercase">
                   {format(currentTime, "a")}
                 </span>
               </div>
