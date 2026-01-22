@@ -3180,7 +3180,7 @@ export default function Dashboard() {
                               cardBgClass="bg-green-50 dark:bg-green-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-blue-800">
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -3213,7 +3213,7 @@ export default function Dashboard() {
                               cardBgClass="bg-pink-50 dark:bg-pink-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-blue-800">
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -3246,7 +3246,7 @@ export default function Dashboard() {
                               cardBgClass="bg-indigo-50 dark:bg-indigo-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-blue-800">
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
