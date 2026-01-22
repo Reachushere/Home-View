@@ -151,9 +151,9 @@ export default function Dashboard() {
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string }> }>(() => {
     const saved = localStorage.getItem('coursesData');
     const defaultCourses = [
-      { name: '', color: '#6b7280' },
-      { name: '', color: '#6b7280' },
-      { name: '', color: '#6b7280' },
+      { name: 'CPPA122 - Local Politics and Government', color: '#22c55e' },
+      { name: 'CFNF400 - Human Sexuality', color: '#ec4899' },
+      { name: 'CASL101 - American Sign Language', color: '#6366f1' },
       { name: '', color: '#6b7280' },
       { name: '', color: '#6b7280' },
       { name: '', color: '#6b7280' },
@@ -162,7 +162,13 @@ export default function Dashboard() {
       { name: '', color: '#6b7280' },
       { name: '', color: '#6b7280' },
     ];
-    return saved ? JSON.parse(saved) : { courses: defaultCourses };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // If saved data has no courses with names, use defaults instead
+      const hasNamedCourses = parsed.courses?.some((c: { name: string }) => c.name.trim());
+      return hasNamedCourses ? parsed : { courses: defaultCourses };
+    }
+    return { courses: defaultCourses };
   });
   const [isCoursesDialogOpen, setIsCoursesDialogOpen] = useState(false);
   
