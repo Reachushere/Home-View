@@ -2251,7 +2251,7 @@ export default function Dashboard() {
                 <SkipForward className="h-2.5 w-2.5" />
               </button>
             </div>
-            <div className="text-[7px] text-muted-foreground ml-1">
+            <div className="text-[7px] text-muted-foreground -mr-2.5">
               {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"}
               <span className="ml-0.5 font-bold">{pomodoroCount}</span>
             </div>
