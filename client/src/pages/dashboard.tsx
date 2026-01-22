@@ -2056,6 +2056,7 @@ export default function Dashboard() {
                   </div>
                   {weekDays.map((day, dayIdx) => {
                     const courseTasks = allTasks.filter(t => 
+                      !t.isCompleted &&
                       t.courseName?.startsWith(course.name) && 
                       isSameDay(new Date(t.dueDate), day)
                     );
