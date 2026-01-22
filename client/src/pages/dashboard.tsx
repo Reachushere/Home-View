@@ -2511,7 +2511,7 @@ export default function Dashboard() {
                             <div
                               key={`due-${task.id}`}
                               className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${
-                                hasPrepDays ? 'rounded-r' : 'rounded'
+                                hasPrepDays ? 'rounded-r-md' : 'rounded-md'
                               } ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                               } ${
@@ -2523,6 +2523,7 @@ export default function Dashboard() {
                                        task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
                                     : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
                               }`}
+                              style={hasPrepDays ? { marginLeft: '-2px', borderTopLeftRadius: 0, borderBottomLeftRadius: 0 } : {}}
                               data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
                               <Checkbox
@@ -2546,11 +2547,12 @@ export default function Dashboard() {
                           return (
                             <div
                               key={`prep-${task.id}`}
-                              className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
+                              className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l-md truncate ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                   : `bg-orange-400 text-black border border-orange-500 ${shimmerClass}`
                               }`}
+                              style={{ marginRight: '-2px', borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                               data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
                               <Checkbox
@@ -2578,6 +2580,7 @@ export default function Dashboard() {
                                 ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                 : `bg-orange-400 text-black border border-orange-500 ${shimmerClass}`
                             }`}
+                            style={{ marginLeft: '-2px', marginRight: '-2px', borderRadius: 0 }}
                             data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                           >
                             <Checkbox
