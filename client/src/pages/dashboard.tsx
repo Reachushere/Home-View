@@ -2331,7 +2331,7 @@ export default function Dashboard() {
         </div>
         
         {/* Calendar Header */}
-        <div className="flex items-center mb-0 bg-slate-200 border border-slate-300 rounded-xl px-3 py-1 shadow-sm">
+        <div className="flex items-center mb-0 bg-slate-300 border border-slate-400 rounded-xl px-3 py-1 shadow-sm">
           {/* Sync button */}
           {/* Week navigation */}
           <Button variant="ghost" size="icon" className="h-3 w-3 mr-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
