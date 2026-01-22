@@ -2503,8 +2503,8 @@ export default function Dashboard() {
                           const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
-                            <div key={`due-${task.id}`} className="relative w-full">
-                              {hasPrepDays && <div className="absolute -top-[3px] left-0 right-0 h-[2px] bg-orange-400 z-10" />}
+                            <div key={`due-${task.id}`} className="w-full">
+                              {hasPrepDays && <div className="h-[2px] bg-orange-400 w-full mb-[1px]" />}
                               <div
                                 className={`flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r' : 'rounded'} truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
@@ -2539,7 +2539,7 @@ export default function Dashboard() {
                         if (isFirstPrepDay) {
                           const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                           return (
-                            <div key={`prep-${task.id}`} className="relative w-full">
+                            <div key={`prep-${task.id}`} className="w-full">
                               <div
                                 className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
                                   task.isCompleted 
@@ -2561,14 +2561,14 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className="absolute -bottom-[3px] left-0 right-0 h-[2px] bg-orange-400 z-10" />
+                              <div className="h-[2px] bg-orange-400 w-full mt-[1px]" />
                             </div>
                           );
                         }
                         // Intermediate prep days (between start and due date)
                         const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                         return (
-                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="relative w-full">
+                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="w-full">
                             <div
                               className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
@@ -2590,7 +2590,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className="absolute -bottom-[3px] left-0 right-0 h-[2px] bg-orange-400 z-10" />
+                            <div className="h-[2px] bg-orange-400 w-full mt-[1px]" />
                           </div>
                         );
                       })}
