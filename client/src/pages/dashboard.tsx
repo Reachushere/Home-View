@@ -3079,7 +3079,7 @@ export default function Dashboard() {
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-lg font-bold text-black dark:text-white">{format(currentMonth, "MMMM yyyy")}</span>
+                <span className="text-lg font-bold text-black dark:text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>{format(currentMonth, "MMMM yyyy")}</span>
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
