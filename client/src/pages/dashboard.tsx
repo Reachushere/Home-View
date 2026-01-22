@@ -1397,7 +1397,7 @@ export default function Dashboard() {
         </div>
 
         {/* Mini Calendar */}
-        <div className="px-2 mb-4">
+        <div className="px-2 mb-4 -mt-2">
           <div className="flex items-center justify-between mb-2">
             <Button variant="ghost" size="icon" className="h-3 w-3" onClick={handlePrevMonth}>
               <ChevronLeft className="h-4 w-4" />
