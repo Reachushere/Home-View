@@ -79,6 +79,7 @@ export const semesterSettings = pgTable("semester_settings", {
   course3Code: text("course3_code").notNull(),
   course3Name: text("course3_name").notNull(),
   course3Professor: text("course3_professor"),
+  secondaryCalendarId: text("secondary_calendar_id"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -127,6 +128,7 @@ export const tasks = pgTable("tasks", {
   calendarEventId: text("calendar_event_id"), // For synced calendar events (due date)
   calendarProvider: text("calendar_provider"), // 'google' or 'outlook'
   prepCalendarEventId: text("prep_calendar_event_id"), // For synced prep/start date events
+  secondaryCalendarEventId: text("secondary_calendar_event_id"), // For synced secondary calendar events
   repeatType: text("repeat_type").default("none"), // none, daily, weekly, monthly, custom
   repeatInterval: integer("repeat_interval"), // For custom: every X units
   repeatIntervalUnit: text("repeat_interval_unit"), // days or weeks (for custom)

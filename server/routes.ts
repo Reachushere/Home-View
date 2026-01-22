@@ -5,7 +5,7 @@ import { api } from "@shared/routes";
 import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, type RepeatType, type RepeatIntervalUnit, type InsertTask } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar } from "./googleCalendar";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -259,6 +259,25 @@ export async function registerRoutes(
           calendarEventId: event.id,
           calendarProvider: "google",
         });
+        
+        // Also sync to secondary calendar if configured
+        const activeSemester = await storage.getActiveSemesterSettings();
+        if (activeSemester?.secondaryCalendarId) {
+          try {
+            const secondaryEvent = await createEventInCalendar(activeSemester.secondaryCalendarId, {
+              id: task.id,
+              title: task.title,
+              description: task.description,
+              dueDate: task.dueDate,
+              courseName: task.courseName,
+            });
+            await storage.updateTask(task.id, {
+              secondaryCalendarEventId: secondaryEvent.id,
+            });
+          } catch (secErr) {
+            console.error("Auto-sync to secondary calendar failed:", secErr);
+          }
+        }
       } catch (calErr) {
         console.error("Auto-sync to Google Calendar failed:", calErr);
       }
@@ -398,6 +417,18 @@ export async function registerRoutes(
       }
     }
     
+    // Delete from secondary calendar if synced
+    if (task.secondaryCalendarEventId) {
+      const activeSemester = await storage.getActiveSemesterSettings();
+      if (activeSemester?.secondaryCalendarId) {
+        try {
+          await deleteEventFromCalendar(activeSemester.secondaryCalendarId, task.secondaryCalendarEventId);
+        } catch (secErr) {
+          console.error("Auto-delete from secondary calendar failed:", secErr);
+        }
+      }
+    }
+    
     // If this is a parent task with repeat, also delete all child tasks
     if (task.repeatType && task.repeatType !== "none") {
       const childTasks = await storage.getChildTasks(taskId);
@@ -457,6 +488,22 @@ export async function registerRoutes(
       }
       console.error("Error creating semester settings:", err);
       res.status(500).json({ error: "Failed to create semester settings" });
+    }
+  });
+
+  // PATCH /api/semester-settings/calendar - Update secondary calendar
+  app.patch("/api/semester-settings/calendar", async (req, res) => {
+    try {
+      const { secondaryCalendarId } = req.body;
+      const activeSemester = await storage.getActiveSemesterSettings();
+      if (!activeSemester) {
+        return res.status(404).json({ error: "No active semester settings found" });
+      }
+      const updated = await storage.updateSemesterSettings(activeSemester.id, { secondaryCalendarId });
+      res.json(updated);
+    } catch (err) {
+      console.error("Error updating secondary calendar:", err);
+      res.status(500).json({ error: "Failed to update secondary calendar" });
     }
   });
 
@@ -619,6 +666,23 @@ export async function registerRoutes(
   });
 
   // ============= END FILE MANAGEMENT ROUTES =============
+
+  // GET /api/calendar/list - List all available Google calendars for selection
+  app.get("/api/calendar/list", async (_req, res) => {
+    try {
+      const calendars = await listCalendars();
+      const formattedCalendars = calendars.map((c: any) => ({
+        id: c.id,
+        summary: c.summary,
+        primary: c.primary || false,
+        backgroundColor: c.backgroundColor,
+      }));
+      res.json(formattedCalendars);
+    } catch (err) {
+      console.error("List calendars error:", err);
+      res.status(500).json({ error: String(err) });
+    }
+  });
 
   // GET /api/calendar/debug - Debug Google Calendar connection
   app.get("/api/calendar/debug", async (_req, res) => {

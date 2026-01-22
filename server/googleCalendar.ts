@@ -130,6 +130,67 @@ export async function createCalendarEvent(task: {
   return response.data;
 }
 
+// Create event in a specific calendar (for secondary calendar sync)
+export async function createEventInCalendar(calendarId: string, task: {
+  id: number;
+  title: string;
+  description?: string | null;
+  dueDate: Date | string;
+  courseName?: string | null;
+}) {
+  const calendar = await getGoogleCalendarClient();
+  
+  const dueDate = new Date(task.dueDate);
+  const hour = dueDate.getHours();
+  const isAllDay = hour === 0 || hour === 23;
+  
+  const summary = `${task.courseName ? `[${task.courseName}] ` : ''}${task.title}`;
+  
+  let event: any;
+  
+  if (isAllDay) {
+    const dateStr = dueDate.toISOString().split('T')[0];
+    const nextDay = new Date(dueDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    const endDateStr = nextDay.toISOString().split('T')[0];
+    
+    event = {
+      summary,
+      description: task.description || '',
+      start: { date: dateStr },
+      end: { date: endDateStr },
+    };
+  } else {
+    const startTime = dueDate.toISOString();
+    const endDate = new Date(dueDate.getTime() + 60 * 60 * 1000);
+    const endTime = endDate.toISOString();
+    
+    event = {
+      summary,
+      description: task.description || '',
+      start: { dateTime: startTime, timeZone: 'America/Los_Angeles' },
+      end: { dateTime: endTime, timeZone: 'America/Los_Angeles' },
+    };
+  }
+
+  const response = await calendar.events.insert({
+    calendarId: calendarId,
+    requestBody: event,
+  });
+
+  return response.data;
+}
+
+// Delete event from a specific calendar
+export async function deleteEventFromCalendar(calendarId: string, eventId: string) {
+  const calendar = await getGoogleCalendarClient();
+  
+  await calendar.events.delete({
+    calendarId: calendarId,
+    eventId: eventId,
+  });
+}
+
 // Delete a calendar event
 export async function deleteCalendarEvent(eventId: string) {
   const calendar = await getGoogleCalendarClient();

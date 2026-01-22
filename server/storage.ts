@@ -19,6 +19,7 @@ export interface IStorage {
   deleteFile(id: number): Promise<void>;
   getActiveSemesterSettings(): Promise<SemesterSettings | undefined>;
   createSemesterSettings(settings: InsertSemesterSettings): Promise<SemesterSettings>;
+  updateSemesterSettings(id: number, updates: Partial<SemesterSettings>): Promise<SemesterSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -142,6 +143,15 @@ export class DatabaseStorage implements IStorage {
       isActive: true,
     }).returning();
     return newSettings;
+  }
+
+  async updateSemesterSettings(id: number, updates: Partial<SemesterSettings>): Promise<SemesterSettings> {
+    const [updated] = await db
+      .update(semesterSettings)
+      .set(updates)
+      .where(eq(semesterSettings.id, id))
+      .returning();
+    return updated;
   }
 }
 

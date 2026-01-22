@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useUpload } from "@/hooks/use-upload";
+import { useToast } from "@/hooks/use-toast";
 import {
   BookOpen,
   Layers,
@@ -46,6 +47,7 @@ import {
   Sun,
   Home,
   Repeat2,
+  Settings,
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -88,6 +90,7 @@ interface WeekInfo {
 }
 
 export default function Dashboard() {
+  const { toast } = useToast();
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 17)); // January 2026
@@ -422,10 +425,40 @@ export default function Dashboard() {
     course3Code: "",
     course3Name: "",
     course3Professor: "",
+    secondaryCalendarId: "",
+  });
+  
+  const [isCalendarSettingsOpen, setIsCalendarSettingsOpen] = useState(false);
+  const [selectedSecondaryCalendar, setSelectedSecondaryCalendar] = useState<string>("");
+  
+  // Fetch available Google calendars
+  const { data: availableCalendars } = useQuery<{ id: string; summary: string; primary: boolean }[]>({
+    queryKey: ['/api/calendar/list'],
   });
 
   // Get the current semester name from settings or use default
   const currentSemesterName = semesterSettings?.semesterName || "Winter 2026 Semester";
+  
+  // Initialize secondary calendar from semester settings
+  useEffect(() => {
+    if (semesterSettings?.secondaryCalendarId) {
+      setSelectedSecondaryCalendar(semesterSettings.secondaryCalendarId);
+    }
+  }, [semesterSettings?.secondaryCalendarId]);
+  
+  // Mutation to update secondary calendar
+  const updateSecondaryCalendarMutation = useMutation({
+    mutationFn: async (calendarId: string) => {
+      return apiRequest("PATCH", "/api/semester-settings/calendar", { secondaryCalendarId: calendarId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/semester-settings"] });
+      toast({
+        title: "Calendar Updated",
+        description: "Secondary calendar has been configured.",
+      });
+    },
+  });
 
   // Check if we're past Week 13 end date - show new semester prompt
   const week13EndDate = weeks.find(w => w.weekNumber === LAST_WEEK)?.endDate;
@@ -2005,6 +2038,15 @@ export default function Dashboard() {
             )}
             Sync
           </Button>
+          <Button 
+            size="sm" 
+            className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2" 
+            onClick={() => setIsCalendarSettingsOpen(true)}
+            data-testid="button-calendar-settings"
+          >
+            <Settings className="h-1.5 w-1.5 mr-0.5" />
+            Cal Set
+          </Button>
           <RouterLink href="/files" className="flex items-center ml-2">
             <Button 
               size="sm" 
@@ -2074,6 +2116,46 @@ export default function Dashboard() {
                 initialType={newTaskType}
                 onSuccess={() => setIsAddDialogOpen(false)} 
               />
+            </DialogContent>
+          </Dialog>
+          
+          {/* Calendar Settings Dialog */}
+          <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Calendar Settings</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium">Secondary Calendar</Label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Select a secondary calendar to sync tasks to. Tasks will be synced to both your primary and secondary calendars.
+                  </p>
+                  <Select
+                    value={selectedSecondaryCalendar}
+                    onValueChange={(value) => {
+                      setSelectedSecondaryCalendar(value);
+                      updateSecondaryCalendarMutation.mutate(value === "none" ? "" : value);
+                    }}
+                  >
+                    <SelectTrigger data-testid="select-secondary-calendar">
+                      <SelectValue placeholder="Select a calendar..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No secondary calendar</SelectItem>
+                      {availableCalendars?.filter(cal => !cal.primary).map(cal => (
+                        <SelectItem key={cal.id} value={cal.id}>
+                          {cal.summary}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  <p><strong>Current Primary:</strong> {availableCalendars?.find(c => c.primary)?.summary || "Not connected"}</p>
+                  <p><strong>Current Secondary:</strong> {selectedSecondaryCalendar && selectedSecondaryCalendar !== "none" ? availableCalendars?.find(c => c.id === selectedSecondaryCalendar)?.summary || selectedSecondaryCalendar : "None"}</p>
+                </div>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
