@@ -2336,7 +2336,7 @@ export default function Dashboard() {
             >
               TODAY
             </Button>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
@@ -2345,7 +2345,7 @@ export default function Dashboard() {
             >
               {calendarView === "month" ? "WEEK" : "MONTH"}
             </Button>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm" 
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2358,7 +2358,7 @@ export default function Dashboard() {
               )}
               SYNC
             </Button>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
@@ -2369,7 +2369,7 @@ export default function Dashboard() {
                 FILES
               </Button>
             </RouterLink>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             
             {/* Pomodoro Timer */}
             <div className="flex items-center gap-3 h-[22px]">
@@ -2407,7 +2407,7 @@ export default function Dashboard() {
                 <span className="ml-0.5 font-bold">{pomodoroCount}</span>
               </div>
             </div>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2417,7 +2417,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               MODULE
             </Button>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2427,7 +2427,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               READING
             </Button>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2437,7 +2437,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               DISCUSS
             </Button>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2447,7 +2447,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               ASSIGN
             </Button>
-            <div className="h-4 w-px bg-gray-400" />
+            <div className="h-4 w-px bg-gray-400/70" />
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
