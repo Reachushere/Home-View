@@ -2614,6 +2614,7 @@ export default function Dashboard() {
               </div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
+                const isFriday = day.getDay() === 5;
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
                 
@@ -2629,7 +2630,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`p-1 border-l border-border flex flex-col items-center justify-center ${
-                      isToday ? "bg-[#5979CC]" : ""
+                      isToday ? "bg-[#5979CC]" : isFriday ? "bg-destructive/45" : ""
                     }`}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
