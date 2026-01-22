@@ -2301,19 +2301,18 @@ export default function Dashboard() {
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
                             <div key={`due-${task.id}`} className="flex items-center w-full">
-                              {hasPrepDays && <div className="w-1 h-[2px] bg-black shrink-0" />}
                               <div
-                                className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r border-l-0' : 'rounded'} truncate ${
+                                className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r border-l-[3px] border-l-black' : 'rounded'} truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                               } ${
                                 task.isCompleted 
-                                  ? `bg-gray-200 text-gray-400 border border-gray-300 ${hasPrepDays ? 'border-l-0' : ''}` 
+                                  ? "bg-gray-200 text-gray-400 border border-gray-300" 
                                   : (isDueToday || isDueTomorrow)
-                                    ? (task.courseName?.startsWith("CPPA122") ? `bg-green-50 text-black border border-green-500 ${hasPrepDays ? 'border-l-0' : ''}` : 
-                                       task.courseName?.startsWith("CFNF400") ? `bg-pink-50 text-black border border-pink-500 ${hasPrepDays ? 'border-l-0' : ''}` : 
-                                       task.courseName?.startsWith("CASL101") ? `bg-indigo-50 text-black border border-indigo-500 ${hasPrepDays ? 'border-l-0' : ''}` : `bg-gray-200 text-black border border-gray-400 ${hasPrepDays ? 'border-l-0' : ''}`)
-                                    : colors ? `${colors.bg} text-black border ${colors.border} ${hasPrepDays ? 'border-l-0' : ''}` : `bg-gray-200 text-black border border-gray-400 ${hasPrepDays ? 'border-l-0' : ''}`
-                              }`}
+                                    ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
+                                       task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
+                                       task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
+                                    : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
+                              } ${hasPrepDays ? '!border-l-[3px] !border-l-black' : ''}`}
                               data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
                               <Checkbox
@@ -2335,14 +2334,13 @@ export default function Dashboard() {
                         // First prep day (not the due day)
                         if (isFirstPrepDay) {
                           const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
-                          const showConnector = !isLastPrepDay; // Show connector arrow if not the last prep day
                           return (
                             <div key={`prep-${task.id}`} className="flex items-center w-full">
                               <div
-                                className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l border-r-0 truncate ${
+                                className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
                                   task.isCompleted 
-                                    ? "bg-gray-200 text-gray-400 border border-gray-300 border-r-0" 
-                                    : colors ? `${colors.prepBg} text-black border ${colors.border} border-r-0 ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 border-r-0 ${shimmerClass}`
+                                    ? "bg-gray-200 text-gray-400 border border-gray-300 !border-r-[3px] !border-r-black" 
+                                    : colors ? `${colors.prepBg} text-black border ${colors.border} !border-r-[3px] !border-r-black ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 !border-r-[3px] !border-r-black ${shimmerClass}`
                                 }`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
@@ -2359,21 +2357,18 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              {showConnector && <div className="w-1 h-[2px] bg-black shrink-0" />}
                             </div>
                           );
                         }
                         // Intermediate prep days (between start and due date)
                         const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
-                        const showConnector = !isLastPrepDay; // Show connector if not the last prep day before due
                         return (
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                            <div className="w-1 h-[2px] bg-black shrink-0" />
                             <div
-                              className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none border-l-0 border-r-0 truncate ${
+                              className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
-                                  ? "bg-gray-200 text-gray-400 border border-gray-300 border-l-0 border-r-0" 
-                                  : colors ? `${colors.prepBg} text-black border ${colors.border} border-l-0 border-r-0 ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 border-l-0 border-r-0 ${shimmerClass}`
+                                  ? "bg-gray-200 text-gray-400 border border-gray-300 !border-l-[3px] !border-l-black !border-r-[3px] !border-r-black" 
+                                  : colors ? `${colors.prepBg} text-black border ${colors.border} !border-l-[3px] !border-l-black !border-r-[3px] !border-r-black ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 !border-l-[3px] !border-l-black !border-r-[3px] !border-r-black ${shimmerClass}`
                               }`}
                               data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
@@ -2390,7 +2385,6 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className="w-1 h-[2px] bg-black shrink-0" />
                           </div>
                         );
                       })}
