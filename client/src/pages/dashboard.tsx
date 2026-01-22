@@ -2334,7 +2334,7 @@ export default function Dashboard() {
               onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
               data-testid="button-today"
             >
-              TODAY
+              Today
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
             <Button 
@@ -2343,7 +2343,7 @@ export default function Dashboard() {
               onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
               data-testid="button-month-view"
             >
-              {calendarView === "month" ? "WEEK" : "MONTH"}
+              {calendarView === "month" ? "Week" : "Month"}
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
             <Button 
@@ -2356,7 +2356,7 @@ export default function Dashboard() {
               {syncAllCalendarMutation.isPending && (
                 <Loader2 className="h-1.5 w-1.5 mr-0.5 animate-spin" />
               )}
-              SYNC
+              Sync
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
             <RouterLink href="/files" className="flex items-center">
@@ -2366,7 +2366,7 @@ export default function Dashboard() {
                 data-testid="button-files-link"
               >
                 <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
-                FILES
+                Files
               </Button>
             </RouterLink>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
@@ -2415,7 +2415,7 @@ export default function Dashboard() {
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
               <span className="text-[14px] leading-none -mt-0.5">+</span>
-              MODULE
+              Module
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
             <Button 
@@ -2425,7 +2425,7 @@ export default function Dashboard() {
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
               <span className="text-[14px] leading-none -mt-0.5">+</span>
-              READING
+              Reading
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
             <Button 
@@ -2435,7 +2435,7 @@ export default function Dashboard() {
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
               <span className="text-[14px] leading-none -mt-0.5">+</span>
-              DISCUSS
+              Discuss
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
             <Button 
@@ -2445,7 +2445,7 @@ export default function Dashboard() {
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
               <span className="text-[14px] leading-none -mt-0.5">+</span>
-              ASSIGN
+              Assign
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
             <Button 
@@ -2455,7 +2455,7 @@ export default function Dashboard() {
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
               <span className="text-[14px] leading-none -mt-0.5">+</span>
-              EXAM
+              Exam
             </Button>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
