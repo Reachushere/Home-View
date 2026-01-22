@@ -2336,7 +2336,7 @@ export default function Dashboard() {
             data-testid="button-home-week"
             title="Go to current week"
           >
-            <Home style={{ height: '13px', width: '13px' }} />
+            <Home style={{ height: '14px', width: '14px' }} />
           </Button>
           <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           <Button 
