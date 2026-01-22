@@ -2218,7 +2218,7 @@ export default function Dashboard() {
                               cardBgClass="bg-green-50 dark:bg-green-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
                               <span className="text-xs font-bold text-white leading-none mt-0.5">{daysUntilDue}</span>
                               <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
                             </div>
@@ -2247,7 +2247,7 @@ export default function Dashboard() {
                               cardBgClass="bg-pink-50 dark:bg-pink-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
                               <span className="text-xs font-bold text-white leading-none mt-0.5">{daysUntilDue}</span>
                               <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
                             </div>
@@ -2276,7 +2276,7 @@ export default function Dashboard() {
                               cardBgClass="bg-indigo-50 dark:bg-indigo-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-black rounded-sm flex flex-col items-center justify-center z-10">
                               <span className="text-xs font-bold text-white leading-none mt-0.5">{daysUntilDue}</span>
                               <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
                             </div>
