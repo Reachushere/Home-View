@@ -1702,11 +1702,11 @@ export default function Dashboard() {
           </Button>
           <Button 
             size="sm" 
-            className={`!h-[20px] !min-h-0 w-[78px] text-[10px] border-[1.5px] border-blue-800 font-semibold !py-0 ml-2 ${calendarView === "month" ? "bg-blue-800 text-white hover:bg-blue-700" : "bg-white hover:bg-gray-50 text-blue-800"}`}
+            className="!h-[20px] !min-h-0 w-[78px] text-[10px] border-[1.5px] border-blue-800 font-semibold !py-0 ml-2 bg-white hover:bg-gray-50 text-blue-800"
             onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
             data-testid="button-month-view"
           >
-            MONTH
+            {calendarView === "month" ? "WEEK" : "MONTH"}
           </Button>
           <Button 
             size="sm" 
