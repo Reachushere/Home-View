@@ -1444,7 +1444,7 @@ export default function Dashboard() {
         </div>
 
         {/* Course Legend */}
-        <div className="pl-0.5 pr-1 space-y-3 mb-4">
+        <div className="pl-0.5 pr-1 space-y-3 mb-4 -mt-2">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
             const courseCode = course.name.split(' - ')[0];
