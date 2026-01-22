@@ -2518,9 +2518,10 @@ export default function Dashboard() {
                             <div key={`due-${task.id}`} className="flex items-center w-full">
                               {hasPrepDays && <div className="w-2 h-[2px] bg-orange-500 shrink-0" />}
                               <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${baseStyle} ${
+                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle} ${
                                   isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                                 }`}
+                                style={{ borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px' }}
                                 data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
                                 <Checkbox
@@ -2548,7 +2549,8 @@ export default function Dashboard() {
                           return (
                             <div key={`prep-${task.id}`} className="flex items-center w-full">
                               <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${baseStyle}`}
+                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
+                                style={{ borderRadius: '4px 0 0 4px' }}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
                                 <Checkbox
@@ -2577,7 +2579,8 @@ export default function Dashboard() {
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
                             <div className="w-2 h-[2px] bg-orange-500 shrink-0" />
                             <div
-                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${baseStyle}`}
+                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
+                              style={{ borderRadius: 0 }}
                               data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
                               <Checkbox
