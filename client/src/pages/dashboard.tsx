@@ -2316,10 +2316,10 @@ export default function Dashboard() {
                 <span className="underline font-bold">CURRENT</span>
               </span>
             )}
-            <div className="flex items-center gap-1.5 mt-1.5">
-              <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMMM d")}</span>
+            <div className="flex items-center gap-1.5 mt-1.5 whitespace-nowrap">
+              <span className="text-[15px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
               <span className="text-xs text-muted-foreground">to</span>
-              <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMMM d")}</span>
+              <span className="text-[15px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
             </div>
           </div>
           <Button variant="ghost" size="icon" className="h-3 w-3 mb-1" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
