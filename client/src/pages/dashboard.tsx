@@ -2340,6 +2340,7 @@ export default function Dashboard() {
               onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
               data-testid="button-today"
             >
+              <Sun className="h-2.5 w-2.5 mr-0.5" />
               Today
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
@@ -2349,6 +2350,7 @@ export default function Dashboard() {
               onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
               data-testid="button-month-view"
             >
+              <CalendarDays className="h-2.5 w-2.5 mr-0.5" />
               {calendarView === "month" ? "Week" : "Month"}
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
@@ -2359,8 +2361,10 @@ export default function Dashboard() {
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
             >
-              {syncAllCalendarMutation.isPending && (
-                <Loader2 className="h-1.5 w-1.5 mr-0.5 animate-spin" />
+              {syncAllCalendarMutation.isPending ? (
+                <Loader2 className="h-2.5 w-2.5 mr-0.5 animate-spin" />
+              ) : (
+                <RefreshCw className="h-2.5 w-2.5 mr-0.5" />
               )}
               Cal Sync
             </Button>
@@ -2371,6 +2375,7 @@ export default function Dashboard() {
                 className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
                 data-testid="button-files-link"
               >
+                <FolderOpen className="h-2.5 w-2.5 mr-0.5" />
                 Files
               </Button>
             </RouterLink>
