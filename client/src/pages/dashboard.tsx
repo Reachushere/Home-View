@@ -2355,7 +2355,7 @@ export default function Dashboard() {
           <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           
           {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-center justify-between ml-4">
+          <div className="flex-1 flex items-center justify-between ml-2">
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
