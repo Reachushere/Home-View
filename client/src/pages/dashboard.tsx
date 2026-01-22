@@ -137,9 +137,9 @@ export default function Dashboard() {
   
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }>(() => {
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; schoolLogo: string | null }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
+    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, schoolLogo: null };
   });
   
   // Get the display timezone (travel if set, otherwise home)
@@ -153,7 +153,7 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; schoolLogo: string | null }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
@@ -2200,7 +2200,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <img src={tmuLogo} alt="Toronto Metropolitan University" className="h-12 object-contain rounded" />
+          <img src={profileData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded" />
         </div>
         
         {/* Calendar Header */}
@@ -3873,9 +3873,9 @@ function ProfileForm({
   timezones, 
   onSave 
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; schoolLogo: string | null };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; schoolLogo: string | null }) => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
@@ -3883,10 +3883,31 @@ function ProfileForm({
   const [timezone, setTimezone] = useState(profileData.timezone);
   const [travelTimezone, setTravelTimezone] = useState<string | null>(profileData.travelTimezone);
   const [isTraveling, setIsTraveling] = useState(!!profileData.travelTimezone);
+  const [schoolLogo, setSchoolLogo] = useState<string | null>(profileData.schoolLogo);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const { upload } = useUpload();
+  
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploadingLogo(true);
+    try {
+      const result = await upload(file, { prefix: 'logos' });
+      if (result?.url) {
+        setSchoolLogo(result.url);
+      }
+    } catch (error) {
+      console.error('Logo upload failed:', error);
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, schoolLogo });
   };
   
   return (
@@ -3960,6 +3981,51 @@ function ProfileForm({
             </Select>
           </div>
         )}
+      </div>
+      <div className="space-y-2">
+        <Label>School Logo</Label>
+        <div className="flex items-center gap-3">
+          {schoolLogo ? (
+            <img src={schoolLogo} alt="School logo" className="h-12 w-auto object-contain rounded border" />
+          ) : (
+            <div className="h-12 w-20 bg-muted rounded border flex items-center justify-center text-xs text-muted-foreground">
+              No logo
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm"
+              onClick={() => logoInputRef.current?.click()}
+              disabled={isUploadingLogo}
+              data-testid="button-upload-logo"
+            >
+              {isUploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              <span className="ml-1">{schoolLogo ? 'Change' : 'Upload'}</span>
+            </Button>
+            {schoolLogo && (
+              <Button 
+                type="button" 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setSchoolLogo(null)}
+                data-testid="button-remove-logo"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+          <input
+            ref={logoInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleLogoUpload}
+            className="hidden"
+            data-testid="input-logo-file"
+          />
+        </div>
+        <p className="text-xs text-muted-foreground">Upload your school logo to replace the default.</p>
       </div>
       <Button type="submit" className="w-full" data-testid="button-save-profile">
         Save Profile
