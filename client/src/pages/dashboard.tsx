@@ -2228,34 +2228,28 @@ export default function Dashboard() {
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="!h-3 !w-3 !min-h-0 !p-0"
+            <div className="flex items-center -mx-0.5">
+              <button
+                className="p-0.5 hover:bg-gray-100 rounded"
                 onClick={togglePomodoro}
                 data-testid="button-pomodoro-toggle"
               >
-                {pomodoroRunning ? <Pause className="h-2 w-2" /> : <Play className="h-2 w-2" />}
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="!h-3 !w-3 !min-h-0 !p-0"
+                {pomodoroRunning ? <Pause className="h-2.5 w-2.5" /> : <Play className="h-2.5 w-2.5" />}
+              </button>
+              <button
+                className="p-0.5 hover:bg-gray-100 rounded"
                 onClick={resetPomodoro}
                 data-testid="button-pomodoro-reset"
               >
-                <RotateCcw className="h-2 w-2" />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="!h-3 !w-3 !min-h-0 !p-0"
+                <RotateCcw className="h-2.5 w-2.5" />
+              </button>
+              <button
+                className="p-0.5 hover:bg-gray-100 rounded"
                 onClick={skipPomodoro}
                 data-testid="button-pomodoro-skip"
               >
-                <SkipForward className="h-2 w-2" />
-              </Button>
+                <SkipForward className="h-2.5 w-2.5" />
+              </button>
             </div>
             <div className="text-[7px] text-muted-foreground">
               {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"}
