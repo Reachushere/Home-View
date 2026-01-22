@@ -2327,7 +2327,7 @@ export default function Dashboard() {
           </Button>
           
           {/* All buttons with equal spacing */}
-          <div className="flex-1 flex items-center justify-between ml-24">
+          <div className="flex-1 flex items-center justify-between ml-16">
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" 
