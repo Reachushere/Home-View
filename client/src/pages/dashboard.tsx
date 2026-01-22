@@ -2445,10 +2445,10 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Reading
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex mx-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
