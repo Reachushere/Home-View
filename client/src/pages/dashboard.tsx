@@ -1386,7 +1386,7 @@ export default function Dashboard() {
             <h1 className="text-lg font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               University Planner
             </h1>
-            <span className="text-[10px] text-gray-400 whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif", fontWeight: 400 }}>
+            <span className="text-[10px] text-gray-400 whitespace-nowrap font-bold" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             ({schoolData.week1StartDate 
               ? format(new Date(schoolData.week1StartDate), 'MMMM d') 
               : 'January 17'} - {schoolData.week1StartDate 
