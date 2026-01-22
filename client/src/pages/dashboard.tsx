@@ -1390,23 +1390,24 @@ export default function Dashboard() {
         {/* Course Legend */}
         <div className="pl-0.5 pr-1 space-y-3 mb-4">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
-          {COURSES.map((course) => {
-            const colors = courseColors[course.code];
+          {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
+            const courseCode = course.name.split(' - ')[0];
+            const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
             const tomorrow = addDays(startOfDay(new Date()), 1);
             const hasDueTomorrow = allTasks.some(task => 
-              task.courseName?.startsWith(course.code) && 
+              task.courseName?.includes(courseCode) && 
               !task.isCompleted &&
               isSameDay(new Date(task.dueDate), tomorrow)
             );
             return (
-              <div key={course.code} className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full ${colors?.dot} ${hasDueTomorrow ? "animate-blink" : ""}`} />
+              <div key={index} className="flex items-center gap-1.5">
+                <div 
+                  className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
+                  style={{ backgroundColor: course.color }}
+                />
                 <span className="text-[11px]">
-                  <span className="font-medium">{course.code}</span>
-                  <span className="text-white"> - {course.name}</span>
-                  {course.code === "CPPA122" && <span className="text-[9px] text-gray-300"> (Caryl Arundel)</span>}
-                  {course.code === "CFNF400" && <span className="text-[9px] text-gray-300"> (Alex McKay)</span>}
-                  {course.code === "CASL101" && <span className="text-[9px] text-gray-300"> (Christina Moreau)</span>}
+                  <span className="font-medium">{courseCode}</span>
+                  {courseName !== courseCode && <span className="text-white"> - {courseName}</span>}
                 </span>
               </div>
             );
