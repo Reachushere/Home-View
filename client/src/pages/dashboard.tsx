@@ -2332,9 +2332,9 @@ export default function Dashboard() {
             data-testid="button-sync-calendar"
           >
             {syncAllCalendarMutation.isPending ? (
-              <Loader2 className="h-3 w-3 text-blue-900 animate-spin" />
+              <Loader2 className="text-blue-900 animate-spin" style={{ height: '12px', width: '12px' }} />
             ) : (
-              <RefreshCw className="h-3 w-3 text-blue-900" />
+              <RefreshCw className="text-blue-900" style={{ height: '12px', width: '12px' }} />
             )}
           </Button>
           {/* Week navigation */}
