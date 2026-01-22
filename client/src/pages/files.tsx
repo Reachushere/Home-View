@@ -156,6 +156,7 @@ export default function FilesPage() {
   const [isExternalDragOver, setIsExternalDragOver] = useState(false);
   const [uploadingCount, setUploadingCount] = useState(0);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [showDeleteFolderConfirm, setShowDeleteFolderConfirm] = useState(false);
 
   // Column widths state for draggable resizing
   const [columnWidths, setColumnWidths] = useState({
@@ -201,6 +202,19 @@ export default function FilesPage() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [handleMouseMove, handleMouseUp]);
+
+  // Keyboard event listener for Delete key to delete selected folder
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Delete" && selectedFolder && !editingFile && !assigningFile) {
+        e.preventDefault();
+        setShowDeleteFolderConfirm(true);
+      }
+    };
+    
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [selectedFolder, editingFile, assigningFile]);
 
   const { getUploadParameters, uploadFile } = useUpload({
     onSuccess: () => {
@@ -283,6 +297,30 @@ export default function FilesPage() {
       toast({ title: "Failed to delete file", description: String(err), variant: "destructive" });
     },
   });
+
+  const handleDeleteFolder = async () => {
+    if (!selectedFolder) return;
+    
+    const folderFiles = files.filter(f => f.folder === selectedFolder);
+    if (folderFiles.length === 0) {
+      toast({ title: "Folder is empty" });
+      setShowDeleteFolderConfirm(false);
+      return;
+    }
+    
+    try {
+      // Delete all files in the folder
+      for (const file of folderFiles) {
+        await apiRequest("DELETE", `/api/files/${file.id}`);
+      }
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      toast({ title: `Deleted ${folderFiles.length} file(s) from folder` });
+      setSelectedFolder(null);
+    } catch (err) {
+      toast({ title: "Failed to delete folder contents", description: String(err), variant: "destructive" });
+    }
+    setShowDeleteFolderConfirm(false);
+  };
 
   const getSpeakerForFile = (fileId: number) => fileSpeakers[fileId] || "media_player.cat_wr";
   
@@ -1236,6 +1274,36 @@ export default function FilesPage() {
               data-testid="button-confirm-assign-after-upload"
             >
               {assignByPathMutation.isPending ? "Assigning..." : "Assign"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDeleteFolderConfirm} onOpenChange={setShowDeleteFolderConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Folder Contents</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to delete all files in this folder? This action cannot be undone.
+            </p>
+            {selectedFolder && (
+              <p className="text-sm font-medium mt-2">
+                Files to delete: {files.filter(f => f.folder === selectedFolder).length}
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDeleteFolderConfirm(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive"
+              onClick={handleDeleteFolder}
+              data-testid="button-confirm-delete-folder"
+            >
+              Delete All Files
             </Button>
           </DialogFooter>
         </DialogContent>
