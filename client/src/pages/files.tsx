@@ -555,11 +555,16 @@ export default function FilesPage() {
     e.preventDefault();
     e.stopPropagation();
     
-    // If dropping on a course folder (e.g., "week-1-cppa122"), redirect to "other" subfolder
     let targetFolder = folderId;
     const parts = folderId.split("-");
-    // Course folder has format: week-N-courseId (3 parts where first two are "week" and number)
-    if (parts.length === 3 && parts[0] === "week") {
+    
+    // If dropping on a week folder (e.g., "week-1"), redirect to first course's "other" subfolder
+    if (parts.length === 2 && parts[0] === "week") {
+      // Week folder - redirect to first available course's "other" folder
+      targetFolder = `${folderId}-${COURSE_FOLDERS[0].id}-other`;
+    }
+    // If dropping on a course folder (e.g., "week-1-cppa122"), redirect to "other" subfolder
+    else if (parts.length === 3 && parts[0] === "week") {
       // This is a course folder, redirect to "other" content folder
       targetFolder = `${folderId}-other`;
     }
@@ -888,7 +893,7 @@ export default function FilesPage() {
               return (
                 <div key={week.id}>
                   <div
-                    className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === week.id ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""}`}
+                    className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === week.id ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === week.id ? "bg-[#0078d4]/50" : ""}`}
                     onClick={(e) => {
                       if (e.ctrlKey || e.metaKey) {
                         setSelectedFolder(week.id);
@@ -896,6 +901,9 @@ export default function FilesPage() {
                         toggleFolder(week.id);
                       }
                     }}
+                    onDragOver={(e) => handleDragOver(e, week.id)}
+                    onDragLeave={(e) => handleDragLeave(e)}
+                    onDrop={(e) => handleDrop(e, week.id)}
                     data-testid={`folder-${week.id}`}
                   >
                     {isWeekExpanded ? (
