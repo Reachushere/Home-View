@@ -3140,8 +3140,12 @@ export default function Dashboard() {
                               compact
                             />
                             <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-violet-600 rounded-sm flex flex-col items-center justify-center z-10">
-                              <span className={`text-xs font-bold text-white leading-none mt-0.5 ${daysUntilDue === 1 ? 'animate-blink' : ''}`}>{daysUntilDue}</span>
-                              <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
+                              <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
+                              <div className="working-dots mt-0.5">
+                                <div className="working-dot"></div>
+                                <div className="working-dot"></div>
+                                <div className="working-dot"></div>
+                              </div>
                             </div>
                           </div>
                         );
@@ -3169,8 +3173,12 @@ export default function Dashboard() {
                               compact
                             />
                             <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-violet-600 rounded-sm flex flex-col items-center justify-center z-10">
-                              <span className={`text-xs font-bold text-white leading-none mt-0.5 ${daysUntilDue === 1 ? 'animate-blink' : ''}`}>{daysUntilDue}</span>
-                              <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
+                              <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
+                              <div className="working-dots mt-0.5">
+                                <div className="working-dot"></div>
+                                <div className="working-dot"></div>
+                                <div className="working-dot"></div>
+                              </div>
                             </div>
                           </div>
                         );
@@ -3198,8 +3206,12 @@ export default function Dashboard() {
                               compact
                             />
                             <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-violet-600 rounded-sm flex flex-col items-center justify-center z-10">
-                              <span className={`text-xs font-bold text-white leading-none mt-0.5 ${daysUntilDue === 1 ? 'animate-blink' : ''}`}>{daysUntilDue}</span>
-                              <span className="text-[7px] text-white uppercase tracking-tight">{daysUntilDue === 1 ? 'day' : 'days'}</span>
+                              <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
+                              <div className="working-dots mt-0.5">
+                                <div className="working-dot"></div>
+                                <div className="working-dot"></div>
+                                <div className="working-dot"></div>
+                              </div>
                             </div>
                           </div>
                         );
