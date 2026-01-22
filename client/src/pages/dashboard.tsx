@@ -1381,7 +1381,7 @@ export default function Dashboard() {
       <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 350, backgroundColor: '#000000' }}>
         <div className="flex items-end gap-2 px-2 pt-1 pb-2">
           <CalendarDays className="h-5 w-5 text-white mb-0.5" />
-          <h1 className="text-lg font-semibold text-white mt-0.5" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+          <h1 className="text-lg font-semibold text-white mt-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             School Planner
           </h1>
           <span className="text-[10px] text-gray-400 mb-0.5" style={{ fontFamily: "Segoe UI, sans-serif", fontWeight: 400 }}>
