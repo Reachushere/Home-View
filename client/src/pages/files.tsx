@@ -75,6 +75,7 @@ const COURSE_FOLDERS = [
 const CONTENT_FOLDERS = [
   { id: "module", name: "Module" },
   { id: "reading", name: "Reading" },
+  { id: "other", name: "Other" },
 ];
 
 function getFileIcon(contentType: string | null) {
@@ -513,9 +514,18 @@ export default function FilesPage() {
     e.preventDefault();
     e.stopPropagation();
     
+    // If dropping on a course folder (e.g., "week-1-cppa122"), redirect to "other" subfolder
+    let targetFolder = folderId;
+    const parts = folderId.split("-");
+    // Course folder has format: week-N-courseId (3 parts where first two are "week" and number)
+    if (parts.length === 3 && parts[0] === "week") {
+      // This is a course folder, redirect to "other" content folder
+      targetFolder = `${folderId}-other`;
+    }
+    
     // Check if this is an external file drop
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleExternalFileDrop(e.dataTransfer.files, folderId);
+      handleExternalFileDrop(e.dataTransfer.files, targetFolder);
       setDragOverFolder(null);
       setIsExternalDragOver(false);
       return;
@@ -524,7 +534,7 @@ export default function FilesPage() {
     // Internal drag-drop (moving existing files)
     const fileId = parseInt(e.dataTransfer.getData("text/plain"));
     if (fileId) {
-      moveFolderMutation.mutate({ id: fileId, folder: folderId });
+      moveFolderMutation.mutate({ id: fileId, folder: targetFolder });
     }
     setDraggedFileId(null);
     setDragOverFolder(null);
