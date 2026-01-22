@@ -148,25 +148,33 @@ export default function Dashboard() {
     return saved ? JSON.parse(saved) : { schoolLogo: null, numberOfWeeks: 13, week1StartDate: '2026-01-11', firstDayOfWeek: 'saturday' };
   });
   
-  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string }> }>(() => {
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string }> }>(() => {
     const saved = localStorage.getItem('coursesData');
     const defaultCourses = [
-      { name: 'CPPA122 - Local Politics and Government', color: '#22c55e' },
-      { name: 'CFNF400 - Human Sexuality', color: '#ec4899' },
-      { name: 'CASL101 - American Sign Language', color: '#6366f1' },
-      { name: '', color: '#6b7280' },
-      { name: '', color: '#6b7280' },
-      { name: '', color: '#6b7280' },
-      { name: '', color: '#6b7280' },
-      { name: '', color: '#6b7280' },
-      { name: '', color: '#6b7280' },
-      { name: '', color: '#6b7280' },
+      { name: 'CPPA122 - Local Politics and Government', color: '#22c55e', professor: 'R. Jenkins' },
+      { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'S. Miller' },
+      { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'T. Davis' },
+      { name: '', color: '#6b7280', professor: '' },
+      { name: '', color: '#6b7280', professor: '' },
+      { name: '', color: '#6b7280', professor: '' },
+      { name: '', color: '#6b7280', professor: '' },
+      { name: '', color: '#6b7280', professor: '' },
+      { name: '', color: '#6b7280', professor: '' },
+      { name: '', color: '#6b7280', professor: '' },
     ];
     if (saved) {
       const parsed = JSON.parse(saved);
       // If saved data has no courses with names, use defaults instead
       const hasNamedCourses = parsed.courses?.some((c: { name: string }) => c.name.trim());
-      return hasNamedCourses ? parsed : { courses: defaultCourses };
+      if (hasNamedCourses) {
+        // Ensure professor field exists for each course
+        const coursesWithProfessor = parsed.courses.map((c: { name: string; color: string; professor?: string }, i: number) => ({
+          ...c,
+          professor: c.professor ?? defaultCourses[i]?.professor ?? ''
+        }));
+        return { courses: coursesWithProfessor };
+      }
+      return { courses: defaultCourses };
     }
     return { courses: defaultCourses };
   });
@@ -197,7 +205,7 @@ export default function Dashboard() {
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
   
-  const saveCourses = (data: { courses: Array<{ name: string; color: string }> }) => {
+  const saveCourses = (data: { courses: Array<{ name: string; color: string; professor: string }> }) => {
     setCoursesData(data);
     localStorage.setItem('coursesData', JSON.stringify(data));
     setIsCoursesDialogOpen(false);
@@ -1455,6 +1463,7 @@ export default function Dashboard() {
                 <span className="text-[11px]">
                   <span className="font-medium">{courseCode}</span>
                   {courseName !== courseCode && <span className="text-white"> - {courseName}</span>}
+                  {course.professor && <span className="text-white/70"> ({course.professor})</span>}
                 </span>
               </div>
             );
@@ -4313,12 +4322,12 @@ function CoursesForm({
   coursesData, 
   onSave 
 }: { 
-  coursesData: { courses: Array<{ name: string; color: string }> };
-  onSave: (data: { courses: Array<{ name: string; color: string }> }) => void;
+  coursesData: { courses: Array<{ name: string; color: string; professor: string }> };
+  onSave: (data: { courses: Array<{ name: string; color: string; professor: string }> }) => void;
 }) {
   const [courses, setCourses] = useState(coursesData.courses);
   
-  const updateCourse = (index: number, field: 'name' | 'color', value: string) => {
+  const updateCourse = (index: number, field: 'name' | 'color' | 'professor', value: string) => {
     setCourses(prev => {
       const updated = [...prev];
       updated[index] = { ...updated[index], [field]: value };
@@ -4334,7 +4343,7 @@ function CoursesForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Enter your course names and select a color for each. Colors will be used throughout the app for tasks associated with each course.
+        Enter your course names, professor names, and select a color for each. Colors will be used throughout the app for tasks associated with each course.
       </p>
       
       <div className="space-y-3">
@@ -4351,9 +4360,16 @@ function CoursesForm({
             <Input
               value={course.name}
               onChange={(e) => updateCourse(index, 'name', e.target.value)}
-              placeholder={`Course ${index + 1} name (e.g., MATH101 - Calculus)`}
+              placeholder={`Course name (e.g., MATH101 - Calculus)`}
               className="flex-1"
               data-testid={`input-course-name-${index}`}
+            />
+            <Input
+              value={course.professor}
+              onChange={(e) => updateCourse(index, 'professor', e.target.value)}
+              placeholder={`Professor`}
+              className="w-28"
+              data-testid={`input-course-professor-${index}`}
             />
           </div>
         ))}
