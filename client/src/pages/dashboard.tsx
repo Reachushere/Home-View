@@ -2327,7 +2327,7 @@ export default function Dashboard() {
           </Button>
           <Button 
             variant="ghost"
-            className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] leading-none bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2 rounded-md flex items-center justify-center" 
+            className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] leading-none bg-transparent hover:bg-gray-100 border-0 font-semibold text-blue-800 ml-2 rounded-md flex items-center justify-center" 
             onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
             data-testid="button-today"
           >
@@ -2335,7 +2335,7 @@ export default function Dashboard() {
           </Button>
           <Button 
             variant="ghost"
-            className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] leading-none bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2 rounded-md flex items-center justify-center"
+            className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] leading-none bg-transparent hover:bg-gray-100 border-0 font-semibold text-blue-800 ml-2 rounded-md flex items-center justify-center"
             onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
             data-testid="button-month-view"
           >
@@ -2343,7 +2343,7 @@ export default function Dashboard() {
           </Button>
           <Button 
             size="sm" 
-            className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2" 
+            className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-blue-800 !py-0 ml-2" 
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
@@ -2358,7 +2358,7 @@ export default function Dashboard() {
           <RouterLink href="/files" className="flex items-center ml-2">
             <Button 
               size="sm" 
-              className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0" 
+              className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-blue-800 !py-0" 
               data-testid="button-files-link"
             >
               <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
@@ -2367,7 +2367,7 @@ export default function Dashboard() {
           </RouterLink>
           
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2.5 ml-2 pl-[24px] pr-[36px] h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
+          <div className="flex items-center gap-2.5 ml-2 pl-[24px] pr-[36px] h-[20px] rounded-md border-0 bg-transparent">
             <div className={`text-[10px] font-mono font-bold -ml-3.5 ${
               pomodoroMode === "work" ? "text-red-600" : 
               pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
@@ -2407,7 +2407,7 @@ export default function Dashboard() {
           <div className="flex-1 flex items-center justify-end gap-2 ml-2">
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.5px] border-blue-800 !py-0" 
+              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
@@ -2416,7 +2416,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.5px] border-blue-800 !py-0" 
+              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
@@ -2425,7 +2425,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.5px] border-blue-800 !py-0" 
+              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
@@ -2434,7 +2434,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.5px] border-blue-800 !py-0" 
+              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
@@ -2443,7 +2443,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="!h-[20px] !min-h-0 w-[78px] bg-[#5979CC] hover:bg-[#4a68b3] text-[#ffffff] text-[10px] border-[1.5px] border-blue-800 !py-0" 
+              className="!h-[20px] !min-h-0 w-[78px] bg-transparent hover:bg-gray-100 text-blue-800 text-[10px] border-0 font-semibold !py-0" 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
