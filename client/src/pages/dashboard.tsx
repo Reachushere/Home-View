@@ -2509,7 +2509,6 @@ export default function Dashboard() {
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
                             <div key={`due-${task.id}`} className="w-full flex items-center">
-                              {hasPrepDays && <div className="h-[2px] bg-black dark:bg-white w-2 shrink-0" />}
                               <div
                                 className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r' : 'rounded'} truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
