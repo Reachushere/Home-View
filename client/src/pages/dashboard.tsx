@@ -2221,45 +2221,45 @@ export default function Dashboard() {
           </RouterLink>
           
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-1 ml-2 px-2 py-0.5 rounded border-[1.5px] border-blue-800 bg-white">
-            <div className={`text-xs font-mono font-bold ${
+          <div className="flex items-center gap-1 ml-2 px-1.5 h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
+            <div className={`text-[10px] font-mono font-bold ${
               pomodoroMode === "work" ? "text-red-600" : 
               pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center">
               <Button
                 size="icon"
                 variant="ghost"
-                className="!h-4 !w-4 !min-h-0 !p-0"
+                className="!h-3 !w-3 !min-h-0 !p-0"
                 onClick={togglePomodoro}
                 data-testid="button-pomodoro-toggle"
               >
-                {pomodoroRunning ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                {pomodoroRunning ? <Pause className="h-2 w-2" /> : <Play className="h-2 w-2" />}
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="!h-4 !w-4 !min-h-0 !p-0"
+                className="!h-3 !w-3 !min-h-0 !p-0"
                 onClick={resetPomodoro}
                 data-testid="button-pomodoro-reset"
               >
-                <RotateCcw className="h-3 w-3" />
+                <RotateCcw className="h-2 w-2" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="!h-4 !w-4 !min-h-0 !p-0"
+                className="!h-3 !w-3 !min-h-0 !p-0"
                 onClick={skipPomodoro}
                 data-testid="button-pomodoro-skip"
               >
-                <SkipForward className="h-3 w-3" />
+                <SkipForward className="h-2 w-2" />
               </Button>
             </div>
-            <div className="text-[8px] text-muted-foreground ml-1">
-              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long Break"}
-              <span className="ml-1 font-bold">{pomodoroCount}</span>
+            <div className="text-[7px] text-muted-foreground">
+              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"}
+              <span className="ml-0.5 font-bold">{pomodoroCount}</span>
             </div>
           </div>
           
