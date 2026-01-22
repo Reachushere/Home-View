@@ -137,9 +137,14 @@ export default function Dashboard() {
   
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
-  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; schoolLogo: string | null }>(() => {
+  const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
+  const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }>(() => {
     const saved = localStorage.getItem('profileData');
-    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null, schoolLogo: null };
+    return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
+  });
+  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null }>(() => {
+    const saved = localStorage.getItem('schoolData');
+    return saved ? JSON.parse(saved) : { schoolLogo: null };
   });
   
   // Get the display timezone (travel if set, otherwise home)
@@ -153,11 +158,18 @@ export default function Dashboard() {
     });
   };
   
-  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; schoolLogo: string | null }) => {
+  const saveProfile = (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => {
     setProfileData(data);
     localStorage.setItem('profileData', JSON.stringify(data));
     setIsProfileDialogOpen(false);
     toast({ title: "Profile saved", description: "Your profile has been updated." });
+  };
+  
+  const saveSchool = (data: { schoolLogo: string | null }) => {
+    setSchoolData(data);
+    localStorage.setItem('schoolData', JSON.stringify(data));
+    setIsSchoolDialogOpen(false);
+    toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
   
   // Common timezones
@@ -1294,7 +1306,11 @@ export default function Dashboard() {
               School Planner
             </h1>
             <span className="text-[10px] text-gray-400" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-              (January 12 to April 17)
+              ({semesterSettings?.semesterStartDate 
+                ? format(new Date(semesterSettings.semesterStartDate), 'MMMM d') 
+                : 'January 12'} to {semesterSettings?.semesterStartDate 
+                ? format(addWeeks(new Date(semesterSettings.semesterStartDate), 13), 'MMMM d')
+                : 'April 17'})
             </span>
           </div>
         </div>
@@ -2159,6 +2175,10 @@ export default function Dashboard() {
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
+                <GraduationCap className="h-4 w-4 mr-2" />
+                School
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
@@ -2200,7 +2220,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <img src={profileData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded" />
+          <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded" />
         </div>
         
         {/* Calendar Header */}
@@ -2384,6 +2404,20 @@ export default function Dashboard() {
                 profileData={profileData} 
                 timezones={timezones} 
                 onSave={saveProfile} 
+              />
+            </DialogContent>
+          </Dialog>
+          
+          {/* School Dialog */}
+          <Dialog open={isSchoolDialogOpen} onOpenChange={setIsSchoolDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>School Settings</DialogTitle>
+              </DialogHeader>
+              <SchoolForm 
+                schoolData={schoolData}
+                semesterSettings={semesterSettings}
+                onSave={saveSchool} 
               />
             </DialogContent>
           </Dialog>
@@ -3873,9 +3907,9 @@ function ProfileForm({
   timezones, 
   onSave 
 }: { 
-  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; schoolLogo: string | null };
+  profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null };
   timezones: { value: string; label: string }[];
-  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null; schoolLogo: string | null }) => void;
+  onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
@@ -3883,31 +3917,10 @@ function ProfileForm({
   const [timezone, setTimezone] = useState(profileData.timezone);
   const [travelTimezone, setTravelTimezone] = useState<string | null>(profileData.travelTimezone);
   const [isTraveling, setIsTraveling] = useState(!!profileData.travelTimezone);
-  const [schoolLogo, setSchoolLogo] = useState<string | null>(profileData.schoolLogo);
-  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const logoInputRef = useRef<HTMLInputElement>(null);
-  const { upload } = useUpload();
-  
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    setIsUploadingLogo(true);
-    try {
-      const result = await upload(file, { prefix: 'logos' });
-      if (result?.url) {
-        setSchoolLogo(result.url);
-      }
-    } catch (error) {
-      console.error('Logo upload failed:', error);
-    } finally {
-      setIsUploadingLogo(false);
-    }
-  };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null, schoolLogo });
+    onSave({ firstName, lastName, birthdate, timezone, travelTimezone: isTraveling ? travelTimezone : null });
   };
   
   return (
@@ -3982,6 +3995,58 @@ function ProfileForm({
           </div>
         )}
       </div>
+      <Button type="submit" className="w-full" data-testid="button-save-profile">
+        Save Profile
+      </Button>
+    </form>
+  );
+}
+
+function SchoolForm({ 
+  schoolData, 
+  semesterSettings,
+  onSave 
+}: { 
+  schoolData: { schoolLogo: string | null };
+  semesterSettings: SemesterSettings | null | undefined;
+  onSave: (data: { schoolLogo: string | null }) => void;
+}) {
+  const [schoolLogo, setSchoolLogo] = useState<string | null>(schoolData.schoolLogo);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const { upload } = useUpload();
+  
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploadingLogo(true);
+    try {
+      const result = await upload(file, { prefix: 'logos' });
+      if (result?.url) {
+        setSchoolLogo(result.url);
+      }
+    } catch (error) {
+      console.error('Logo upload failed:', error);
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({ schoolLogo });
+  };
+
+  const semesterStart = semesterSettings?.semesterStartDate 
+    ? format(new Date(semesterSettings.semesterStartDate), 'MMMM d, yyyy')
+    : 'Not set';
+  const semesterEnd = semesterSettings?.semesterStartDate 
+    ? format(addWeeks(new Date(semesterSettings.semesterStartDate), 13), 'MMMM d, yyyy')
+    : 'Not set';
+  
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label>School Logo</Label>
         <div className="flex items-center gap-3">
@@ -4027,8 +4092,57 @@ function ProfileForm({
         </div>
         <p className="text-xs text-muted-foreground">Upload your school logo to replace the default.</p>
       </div>
-      <Button type="submit" className="w-full" data-testid="button-save-profile">
-        Save Profile
+      
+      <div className="border rounded-lg p-3 space-y-3">
+        <Label className="text-sm font-medium">Semester Dates</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">Start</Label>
+            <div className="text-sm font-medium">{semesterStart}</div>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">End (Week 13)</Label>
+            <div className="text-sm font-medium">{semesterEnd}</div>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">Semester dates are set when starting a new semester.</p>
+      </div>
+      
+      {semesterSettings && (
+        <div className="border rounded-lg p-3 space-y-3">
+          <Label className="text-sm font-medium">Courses</Label>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-green-500" />
+              <span className="text-sm font-medium">{semesterSettings.course1Code}</span>
+              <span className="text-sm text-muted-foreground">- {semesterSettings.course1Name}</span>
+              {semesterSettings.course1Professor && (
+                <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course1Professor}</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-pink-500" />
+              <span className="text-sm font-medium">{semesterSettings.course2Code}</span>
+              <span className="text-sm text-muted-foreground">- {semesterSettings.course2Name}</span>
+              {semesterSettings.course2Professor && (
+                <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course2Professor}</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-indigo-500" />
+              <span className="text-sm font-medium">{semesterSettings.course3Code}</span>
+              <span className="text-sm text-muted-foreground">- {semesterSettings.course3Name}</span>
+              {semesterSettings.course3Professor && (
+                <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course3Professor}</span>
+              )}
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">Course details are set when starting a new semester.</p>
+        </div>
+      )}
+      
+      <Button type="submit" className="w-full" data-testid="button-save-school">
+        Save School Settings
       </Button>
     </form>
   );
