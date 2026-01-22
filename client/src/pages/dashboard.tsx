@@ -642,6 +642,7 @@ export default function Dashboard() {
   // Get tasks for a specific hour on a day (exclude tasks with planning periods - they show in ALL DAY)
   const getTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
+      if (t.isCompleted) return false; // Completed tasks don't show on calendar
       if (t.startDate) return false; // Tasks with planning periods show in ALL DAY row
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
@@ -685,6 +686,7 @@ export default function Dashboard() {
   // Get all-day tasks (tasks without specific time - only midnight) - exclude tasks with planning periods
   const getAllDayTasks = (day: Date) => {
     return allTasks.filter(t => {
+      if (t.isCompleted) return false; // Completed tasks don't show on calendar
       if (t.startDate) return false; // Tasks with planning periods have their own rows
       if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
       const dueDate = new Date(t.dueDate);
@@ -696,6 +698,7 @@ export default function Dashboard() {
   // Get tasks with planning periods on a specific day (startDate <= day < dueDate)
   const getPlanningTasksForDay = (day: Date) => {
     return allTasks.filter(t => {
+      if (t.isCompleted) return false; // Completed tasks don't show on calendar
       if (!t.startDate) return false;
       const startDate = new Date(t.startDate);
       const dueDate = new Date(t.dueDate);
