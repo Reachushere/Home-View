@@ -2528,7 +2528,7 @@ export default function Dashboard() {
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Courses</DialogTitle>
               </DialogHeader>
@@ -4341,41 +4341,41 @@ function CoursesForm({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <p className="text-sm text-muted-foreground">
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <p className="text-xs text-muted-foreground">
         Enter your course names, professor names, and select a color for each. Colors will be used throughout the app for tasks associated with each course.
       </p>
       
-      <div className="space-y-3">
+      <div className="space-y-2">
         {courses.map((course, index) => (
           <div key={index} className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground w-4">{index + 1}.</span>
+            <span className="text-[10px] text-muted-foreground w-4">{index + 1}.</span>
             <input
               type="color"
               value={course.color}
               onChange={(e) => updateCourse(index, 'color', e.target.value)}
-              className="w-8 h-8 rounded cursor-pointer border-0 p-0"
+              className="w-6 h-6 rounded cursor-pointer border-0 p-0"
               data-testid={`input-course-color-${index}`}
             />
             <Input
               value={course.name}
               onChange={(e) => updateCourse(index, 'name', e.target.value)}
               placeholder={`Course name (e.g., MATH101 - Calculus)`}
-              className="flex-1"
+              className="flex-1 text-xs h-8"
               data-testid={`input-course-name-${index}`}
             />
             <Input
               value={course.professor}
               onChange={(e) => updateCourse(index, 'professor', e.target.value)}
               placeholder={`Professor`}
-              className="w-28"
+              className="w-32 text-xs h-8"
               data-testid={`input-course-professor-${index}`}
             />
           </div>
         ))}
       </div>
       
-      <Button type="submit" className="w-full bg-[#5979CC] hover:bg-[#4a68b3] text-white" data-testid="button-save-courses">
+      <Button type="submit" className="w-full bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs h-8" data-testid="button-save-courses">
         Save Courses
       </Button>
     </form>
