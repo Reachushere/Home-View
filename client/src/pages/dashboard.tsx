@@ -1935,10 +1935,10 @@ export default function Dashboard() {
                           return (
                             <div key={`prep-${task.id}`} className="flex items-center w-full">
                               <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l border-r-0 truncate ${borderStyle} ${
+                                className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${borderStyle} ${
                                   task.isCompleted 
-                                    ? "bg-gray-200 text-gray-400 border border-gray-300 border-r-0" 
-                                    : colors ? `${colors.prepBg} text-black border ${colors.border} border-r-0` : "bg-gray-100 text-black border border-gray-400 border-r-0"
+                                    ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                    : colors ? `${colors.prepBg} text-black border ${colors.border}` : "bg-gray-100 text-black border border-gray-400"
                                 }`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
@@ -1950,12 +1950,12 @@ export default function Dashboard() {
                                 />
                                 <span 
                                   onClick={() => setEditingTask(task)}
-                                  className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
+                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                                 >
                                   {task.title}
                                 </span>
                               </div>
-                              <div className={`w-2 h-[3px] ${lineColor}`} />
+                              <div className={`w-2 h-[2px] shrink-0 ${lineColor}`} />
                             </div>
                           );
                         }
@@ -1964,37 +1964,34 @@ export default function Dashboard() {
                           const tomorrow = addDays(today, 1);
                           const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
                           const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
-                          const lineColor = colors ? colors.border.replace('border-', 'bg-') : "bg-gray-400";
                           return (
-                            <div key={`due-${task.id}`} className="flex items-center w-full">
-                              <div className={`w-2 h-[3px] ${lineColor}`} />
-                              <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-r border-l-0 truncate ${
-                                  isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                                } ${
-                                  task.isCompleted 
-                                    ? "bg-gray-200 text-gray-400 border border-gray-300 border-l-0" 
-                                    : (isDueToday || isDueTomorrow)
-                                      ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500 border-l-0" : 
-                                         task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500 border-l-0" : 
-                                         task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500 border-l-0" : "bg-gray-200 text-black border border-gray-400 border-l-0")
-                                      : colors ? `${colors.bg} text-black border ${colors.border} border-l-0` : "bg-gray-200 text-black border border-gray-400 border-l-0"
-                                }`}
-                                data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                            <div
+                              key={`due-${task.id}`}
+                              className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
+                                isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                              } ${
+                                task.isCompleted 
+                                  ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                  : (isDueToday || isDueTomorrow)
+                                    ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
+                                       task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
+                                       task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
+                                    : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
+                              }`}
+                              data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                            >
+                              <Checkbox
+                                checked={task.isCompleted || false}
+                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                className="h-3 w-3 shrink-0"
+                                data-testid={`checkbox-due-${task.id}`}
+                              />
+                              <span 
+                                onClick={() => setEditingTask(task)}
+                                className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                               >
-                                <Checkbox
-                                  checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0"
-                                  data-testid={`checkbox-due-${task.id}`}
-                                />
-                                <span 
-                                  onClick={() => setEditingTask(task)}
-                                  className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
-                                >
-                                  <span className="font-bold">DUE:</span> {task.title}
-                                </span>
-                              </div>
+                                <span className="font-bold">DUE:</span> {task.title}
+                              </span>
                             </div>
                           );
                         }
@@ -2002,12 +1999,11 @@ export default function Dashboard() {
                         const lineColor = colors ? colors.border.replace('border-', 'bg-') : "bg-gray-400";
                         return (
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                            <div className={`w-2 h-[3px] ${lineColor}`} />
                             <div
-                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none border-l-0 border-r-0 truncate ${
+                              className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
-                                  ? "bg-gray-200 text-gray-400 border border-gray-300 border-l-0 border-r-0" 
-                                  : colors ? `${colors.prepBg} text-black border ${colors.border} border-l-0 border-r-0` : "bg-gray-100 text-black border border-gray-400 border-l-0 border-r-0"
+                                  ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                                  : colors ? `${colors.prepBg} text-black border ${colors.border}` : "bg-gray-100 text-black border border-gray-400"
                               }`}
                               data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
@@ -2019,12 +2015,12 @@ export default function Dashboard() {
                               />
                               <span 
                                 onClick={() => setEditingTask(task)}
-                                className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
+                                className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                               >
                                 {task.title}
                               </span>
                             </div>
-                            <div className={`w-2 h-[3px] ${lineColor}`} />
+                            <div className={`w-2 h-[2px] shrink-0 ${lineColor}`} />
                           </div>
                         );
                       })}
