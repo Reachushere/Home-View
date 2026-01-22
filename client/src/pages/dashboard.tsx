@@ -2380,7 +2380,7 @@ export default function Dashboard() {
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
                             <div key={`due-${task.id}`} className="relative w-full">
-                              {hasPrepDays && <div className="absolute -top-[3px] left-0 right-0 h-[2px] bg-black dark:bg-white z-10" />}
+                              {hasPrepDays && <div className="absolute -top-[3px] left-0 right-0 h-[2px] bg-orange-400 z-10" />}
                               <div
                                 className={`flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r' : 'rounded'} truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
@@ -2420,7 +2420,7 @@ export default function Dashboard() {
                                 className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
                                   task.isCompleted 
                                     ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                    : colors ? `${colors.prepBg} text-black border ${colors.border} ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 ${shimmerClass}`
+                                    : `bg-orange-100 text-black border border-orange-400 ${shimmerClass}`
                                 }`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
@@ -2437,7 +2437,7 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className="absolute -bottom-[3px] left-0 right-0 h-[2px] bg-black dark:bg-white z-10" />
+                              <div className="absolute -bottom-[3px] left-0 right-0 h-[2px] bg-orange-400 z-10" />
                             </div>
                           );
                         }
@@ -2449,7 +2449,7 @@ export default function Dashboard() {
                               className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                  : colors ? `${colors.prepBg} text-black border ${colors.border} ${shimmerClass}` : `bg-gray-100 text-black border border-gray-400 ${shimmerClass}`
+                                  : `bg-orange-100 text-black border border-orange-400 ${shimmerClass}`
                               }`}
                               data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                             >
@@ -2466,7 +2466,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className="absolute -bottom-[3px] left-0 right-0 h-[2px] bg-black dark:bg-white z-10" />
+                            <div className="absolute -bottom-[3px] left-0 right-0 h-[2px] bg-orange-400 z-10" />
                           </div>
                         );
                       })}
