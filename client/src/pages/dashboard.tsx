@@ -4368,7 +4368,7 @@ function CoursesForm({
               value={course.professor}
               onChange={(e) => updateCourse(index, 'professor', e.target.value)}
               placeholder={`Professor`}
-              className="flex-1 text-xs h-8"
+              className="w-40 text-xs h-8"
               data-testid={`input-course-professor-${index}`}
             />
           </div>
