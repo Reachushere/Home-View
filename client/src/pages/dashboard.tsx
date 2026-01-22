@@ -2543,7 +2543,7 @@ export default function Dashboard() {
                         if (isFirstPrepDay) {
                           const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                           return (
-                            <div key={`prep-${task.id}`} className="w-full flex items-center -mr-0.5">
+                            <div key={`prep-${task.id}`} className="w-full flex items-center">
                               <div
                                 className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
                                   task.isCompleted 
@@ -2565,14 +2565,14 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className="h-[2px] bg-black dark:bg-white flex-1 min-w-1" />
+                              <div className="h-[2px] bg-black dark:bg-white w-1 shrink-0 -mr-0.5" />
                             </div>
                           );
                         }
                         // Intermediate prep days (between start and due date)
                         const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                         return (
-                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="w-full flex items-center -mr-0.5">
+                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="w-full flex items-center">
                             <div
                               className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none truncate ${
                                 task.isCompleted 
@@ -2594,7 +2594,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className="h-[2px] bg-black dark:bg-white flex-1 min-w-1" />
+                            <div className="h-[2px] bg-black dark:bg-white w-1 shrink-0 -mr-0.5" />
                           </div>
                         );
                       })}
