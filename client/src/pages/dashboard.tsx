@@ -2323,9 +2323,9 @@ export default function Dashboard() {
               </span>
             )}
             <div className="flex items-center gap-1.5 mt-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
-              <span className="text-[12px] text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
-              <span className="text-[10px] text-muted-foreground">to</span>
-              <span className="text-[12px] text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
+              <span className="text-[11px] font-semibold text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
+              <span className="text-[11px] font-semibold text-muted-foreground">to</span>
+              <span className="text-[11px] font-semibold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
             </div>
           </div>
           <Button variant="ghost" size="icon" className="h-3 w-3 mb-0.5" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
