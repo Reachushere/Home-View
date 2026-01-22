@@ -2389,7 +2389,7 @@ export default function Dashboard() {
                 Files
               </Button>
             </RouterLink>
-            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex mx-2"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             
             {/* Pomodoro Timer */}
             <div className="flex items-center gap-3 h-[22px]">
