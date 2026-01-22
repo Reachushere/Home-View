@@ -2282,7 +2282,7 @@ export default function Dashboard() {
               >
                 {isMuted ? <BellOff className="h-3 w-3 scale-[0.65]" /> : <Bell className="h-3 w-3 scale-[0.65]" />}
               </Button>
-              <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
+              <h1 className="text-base font-semibold text-foreground" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
             </div>
             {/* Slightly bigger Clock below title */}
             <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
