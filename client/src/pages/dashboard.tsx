@@ -2232,7 +2232,7 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className={`w-4 h-[2px] shrink-0 -mr-2 ${lineColor}`} />
+                              <div className={`w-6 h-[2px] shrink-0 -mr-4 ${lineColor}`} />
                             </div>
                           );
                         }
@@ -2261,7 +2261,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            <div className={`w-4 h-[2px] shrink-0 -mr-2 ${lineColor}`} />
+                            <div className={`w-6 h-[2px] shrink-0 -mr-4 ${lineColor}`} />
                           </div>
                         );
                       })}
