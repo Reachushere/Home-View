@@ -2186,7 +2186,7 @@ export default function Dashboard() {
           </Button>
           <Button 
             variant="ghost"
-            className="!h-[20px] !min-h-[20px] !max-h-[20px] !px-2 !py-0 text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2 rounded-md" 
+            className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2 rounded-md" 
             onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
             data-testid="button-today"
           >
@@ -2194,7 +2194,7 @@ export default function Dashboard() {
           </Button>
           <Button 
             variant="ghost"
-            className="!h-[20px] !min-h-[20px] !max-h-[20px] !px-2 !py-0 text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2 rounded-md"
+            className="!h-[20px] !min-h-[20px] !max-h-[20px] w-[52px] !px-0 !py-0 text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 ml-2 rounded-md"
             onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
             data-testid="button-month-view"
           >
