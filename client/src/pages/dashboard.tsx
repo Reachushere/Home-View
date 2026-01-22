@@ -2316,7 +2316,7 @@ export default function Dashboard() {
                 <span className="underline font-bold">CURRENT</span>
               </span>
             )}
-            <div className="flex items-center gap-1.5 mt-1.5 whitespace-nowrap">
+            <div className="flex items-center gap-1.5 mt-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
               <span className="text-[12px] font-bold text-foreground">{format(weekStartDate, "EEE, MMM d")}</span>
               <span className="text-[10px] text-muted-foreground">to</span>
               <span className="text-[12px] font-bold text-foreground">{format(weekEndDate, "EEE, MMM d")}</span>
