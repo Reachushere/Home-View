@@ -1928,7 +1928,7 @@ export default function Dashboard() {
                         const dayBeforeDue = new Date(taskDueDate);
                         dayBeforeDue.setDate(dayBeforeDue.getDate() - 1);
                         const isDayBeforeDue = isSameDay(day, dayBeforeDue);
-                        const borderStyle = isDayBeforeDue && isFirstPrepDay ? "border border-red-500" : "";
+                        const borderStyle = "";
                         
                         if (isFirstPrepDay && !isDueDay) {
                           const lineColor = colors ? colors.border.replace('border-', 'bg-') : "bg-gray-400";
@@ -2004,7 +2004,7 @@ export default function Dashboard() {
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
                             <div className={`w-2 h-[3px] ${lineColor}`} />
                             <div
-                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none border-l-0 border-r-0 truncate ${isDayBeforeDue ? "border-2 border-red-500 border-l-0 border-r-0" : ""} ${
+                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none border-l-0 border-r-0 truncate ${
                                 task.isCompleted 
                                   ? "bg-gray-200 text-gray-400 border border-gray-300 border-l-0 border-r-0" 
                                   : colors ? `${colors.prepBg} text-black border ${colors.border} border-l-0 border-r-0` : "bg-gray-100 text-black border border-gray-400 border-l-0 border-r-0"
