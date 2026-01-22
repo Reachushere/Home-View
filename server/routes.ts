@@ -759,6 +759,48 @@ export async function registerRoutes(
 
   // ============= END FILE MANAGEMENT ROUTES =============
 
+  // ============= DELETED FOLDERS ROUTES =============
+  
+  // GET /api/deleted-folders - Get all deleted folders
+  app.get("/api/deleted-folders", async (_req, res) => {
+    try {
+      const folders = await storage.getDeletedFolders();
+      res.json(folders);
+    } catch (err) {
+      console.error("Error fetching deleted folders:", err);
+      res.status(500).json({ error: "Failed to fetch deleted folders" });
+    }
+  });
+
+  // POST /api/deleted-folders - Add a folder to deleted list
+  app.post("/api/deleted-folders", async (req, res) => {
+    try {
+      const { folderId } = req.body;
+      if (!folderId) {
+        return res.status(400).json({ error: "folderId is required" });
+      }
+      const folder = await storage.addDeletedFolder(folderId);
+      res.json(folder);
+    } catch (err) {
+      console.error("Error adding deleted folder:", err);
+      res.status(500).json({ error: "Failed to add deleted folder" });
+    }
+  });
+
+  // DELETE /api/deleted-folders/:folderId - Remove a folder from deleted list (restore it)
+  app.delete("/api/deleted-folders/:folderId", async (req, res) => {
+    try {
+      const folderId = decodeURIComponent(req.params.folderId);
+      await storage.removeDeletedFolder(folderId);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error removing deleted folder:", err);
+      res.status(500).json({ error: "Failed to remove deleted folder" });
+    }
+  });
+
+  // ============= END DELETED FOLDERS ROUTES =============
+
   // GET /api/calendar/list - List all available Google calendars for selection
   app.get("/api/calendar/list", async (_req, res) => {
     try {

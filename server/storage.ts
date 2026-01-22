@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 export interface IStorage {
@@ -24,6 +24,9 @@ export interface IStorage {
   saveSecondGoogleAccount(account: InsertSecondGoogleAccount): Promise<SecondGoogleAccount>;
   updateSecondGoogleAccount(id: number, updates: Partial<SecondGoogleAccount>): Promise<SecondGoogleAccount>;
   deleteSecondGoogleAccount(): Promise<void>;
+  getDeletedFolders(): Promise<DeletedFolder[]>;
+  addDeletedFolder(folderId: string): Promise<DeletedFolder>;
+  removeDeletedFolder(folderId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -185,6 +188,19 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSecondGoogleAccount(): Promise<void> {
     await db.delete(secondGoogleAccount);
+  }
+
+  async getDeletedFolders(): Promise<DeletedFolder[]> {
+    return await db.select().from(deletedFolders);
+  }
+
+  async addDeletedFolder(folderId: string): Promise<DeletedFolder> {
+    const [folder] = await db.insert(deletedFolders).values({ folderId }).returning();
+    return folder;
+  }
+
+  async removeDeletedFolder(folderId: string): Promise<void> {
+    await db.delete(deletedFolders).where(eq(deletedFolders.folderId, folderId));
   }
 }
 

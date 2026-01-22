@@ -204,19 +204,6 @@ export default function FilesPage() {
     };
   }, [handleMouseMove, handleMouseUp]);
 
-  // Keyboard event listener for Delete key to delete selected folder
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Delete" && selectedFolder && !editingFile && !assigningFile) {
-        e.preventDefault();
-        setShowDeleteFolderConfirm(true);
-      }
-    };
-    
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [selectedFolder, editingFile, assigningFile]);
-
   const { getUploadParameters, uploadFile } = useUpload({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/files"] });
@@ -230,6 +217,12 @@ export default function FilesPage() {
   const { data: tasks = [], isLoading: tasksLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
   });
+
+  const { data: deletedFoldersData = [] } = useQuery<{ id: number; folderId: string }[]>({
+    queryKey: ["/api/deleted-folders"],
+  });
+
+  const deletedFolderIds = new Set(deletedFoldersData.map(f => f.folderId));
 
   const renameMutation = useMutation({
     mutationFn: async ({ id, displayName }: { id: number; displayName: string }) => {
@@ -259,10 +252,15 @@ export default function FilesPage() {
 
   const moveFolderMutation = useMutation({
     mutationFn: async ({ id, folder }: { id: number; folder: string | null }) => {
+      // If moving to a folder that was deleted, restore it first
+      if (folder && deletedFolderIds.has(folder)) {
+        await apiRequest("DELETE", `/api/deleted-folders/${encodeURIComponent(folder)}`);
+      }
       return await apiRequest("PATCH", `/api/files/${id}`, { folder });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/deleted-folders"] });
       toast({ title: "File moved to folder" });
     },
     onError: (err) => {
@@ -299,36 +297,79 @@ export default function FilesPage() {
     },
   });
 
+  const addDeletedFolderMutation = useMutation({
+    mutationFn: async (folderId: string) => {
+      return await apiRequest("POST", "/api/deleted-folders", { folderId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/deleted-folders"] });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to delete folder", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const restoreFolderMutation = useMutation({
+    mutationFn: async (folderId: string) => {
+      return await apiRequest("DELETE", `/api/deleted-folders/${encodeURIComponent(folderId)}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/deleted-folders"] });
+    },
+  });
+
   const getFilesToDeleteInFolder = (folderId: string) => {
-    // Check if this is a week folder (e.g., "week1")
-    if (folderId.match(/^week\d+$/)) {
+    // Check if this is a week folder (e.g., "week-1")
+    if (folderId.match(/^week-\d+$/)) {
       return files.filter(f => f.folder?.startsWith(folderId + "-"));
     }
-    // Check if this is a course folder (e.g., "week1-cppa122")
-    if (folderId.match(/^week\d+-\w+$/) && !folderId.includes("-", folderId.indexOf("-") + 1)) {
+    // Check if this is a course folder (e.g., "week-1-cppa122")  
+    const parts = folderId.split("-");
+    if (parts.length === 3 && parts[0] === "week") {
       return files.filter(f => f.folder?.startsWith(folderId + "-"));
     }
     // Content folder - exact match
     return files.filter(f => f.folder === folderId);
   };
 
+  // Keyboard event listener for Delete key to delete selected folder
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Delete" && selectedFolder && !editingFile && !assigningFile) {
+        e.preventDefault();
+        // Check if folder has contents - if empty, delete immediately without confirmation
+        const folderFiles = getFilesToDeleteInFolder(selectedFolder);
+        if (folderFiles.length === 0) {
+          // Empty folder - delete immediately
+          addDeletedFolderMutation.mutate(selectedFolder);
+          toast({ title: "Folder deleted" });
+          setSelectedFolder(null);
+        } else {
+          // Folder has contents - show confirmation
+          setShowDeleteFolderConfirm(true);
+        }
+      }
+    };
+    
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [selectedFolder, editingFile, assigningFile, files, addDeletedFolderMutation, toast]);
+
   const handleDeleteFolder = async () => {
     if (!selectedFolder) return;
     
     const folderFiles = getFilesToDeleteInFolder(selectedFolder);
-    if (folderFiles.length === 0) {
-      toast({ title: "Folder is empty" });
-      setShowDeleteFolderConfirm(false);
-      return;
-    }
     
     try {
       // Delete all files in the folder
       for (const file of folderFiles) {
         await apiRequest("DELETE", `/api/files/${file.id}`);
       }
+      // Add folder to deleted list
+      await apiRequest("POST", "/api/deleted-folders", { folderId: selectedFolder });
       queryClient.invalidateQueries({ queryKey: ["/api/files"] });
-      toast({ title: `Deleted ${folderFiles.length} file(s) from folder` });
+      queryClient.invalidateQueries({ queryKey: ["/api/deleted-folders"] });
+      toast({ title: folderFiles.length > 0 ? `Deleted folder and ${folderFiles.length} file(s)` : "Folder deleted" });
       setSelectedFolder(null);
     } catch (err) {
       toast({ title: "Failed to delete folder contents", description: String(err), variant: "destructive" });
@@ -875,6 +916,8 @@ export default function FilesPage() {
                     <div className="ml-3">
                       {COURSE_FOLDERS.map((course) => {
                         const courseFolderId = `${week.id}-${course.id}`;
+                        // Skip deleted folders
+                        if (deletedFolderIds.has(courseFolderId)) return null;
                         const courseFiles = getFilesInCourse(week.id, course.id);
                         const isCourseExpanded = expandedFolders.has(courseFolderId);
                         
@@ -912,6 +955,8 @@ export default function FilesPage() {
                               <div className="ml-4">
                                 {CONTENT_FOLDERS.map((content) => {
                                   const contentFolderId = `${week.id}-${course.id}-${content.id}`;
+                                  // Skip deleted folders
+                                  if (deletedFolderIds.has(contentFolderId)) return null;
                                   const contentFiles = getFilesInFolder(contentFolderId);
                                   const isSelected = selectedFolder === contentFolderId;
                                   
