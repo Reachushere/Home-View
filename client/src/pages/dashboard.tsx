@@ -45,10 +45,11 @@ import {
   Trash2,
   Sun,
   Home,
+  Repeat2,
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
 import type { Task } from "@shared/schema";
-import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2 } from "@shared/schema";
+import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS } from "@shared/schema";
 import { format, addDays, subDays, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -3271,6 +3272,10 @@ function TaskForm({
     weekNumber: task?.weekNumber || weekNumber,
     referenceLink: task?.referenceLink || "",
     attachments: task?.attachments || [] as string[],
+    repeatType: (task?.repeatType as typeof REPEAT_TYPES[number]) || "none",
+    repeatInterval: task?.repeatInterval || 1,
+    repeatIntervalUnit: (task?.repeatIntervalUnit as typeof REPEAT_INTERVAL_UNITS[number]) || "weeks",
+    repeatEndDate: task?.repeatEndDate ? format(new Date(task.repeatEndDate), "yyyy-MM-dd") : "",
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -3315,6 +3320,10 @@ function TaskForm({
         weekNumber: data.weekNumber,
         referenceLink: data.referenceLink,
         attachments: data.attachments,
+        repeatType: data.repeatType,
+        repeatInterval: data.repeatType === "custom" ? data.repeatInterval : null,
+        repeatIntervalUnit: data.repeatType === "custom" ? data.repeatIntervalUnit : null,
+        repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
       };
       // Calculate startDate from prepDays if set
       if (data.prepDays > 0) {
@@ -3541,6 +3550,85 @@ function TaskForm({
             <SelectItem value="high">High</SelectItem>
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="space-y-3 border rounded-lg p-3 bg-muted/30">
+        <div className="flex items-center gap-2">
+          <Repeat2 className="h-4 w-4 text-muted-foreground" />
+          <Label className="font-medium">Repeat</Label>
+        </div>
+        
+        <div>
+          <Select 
+            value={formData.repeatType} 
+            onValueChange={(v) => setFormData(prev => ({ 
+              ...prev, 
+              repeatType: v as typeof REPEAT_TYPES[number]
+            }))}
+          >
+            <SelectTrigger data-testid="select-repeat-type">
+              <SelectValue placeholder="No repeat" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">No repeat</SelectItem>
+              <SelectItem value="daily">Daily</SelectItem>
+              <SelectItem value="weekly">Weekly</SelectItem>
+              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="custom">Custom...</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {formData.repeatType === "custom" && (
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-xs text-muted-foreground">Every</Label>
+              <Input
+                type="number"
+                min="1"
+                max="52"
+                value={formData.repeatInterval}
+                onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
+                data-testid="input-repeat-interval"
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Unit</Label>
+              <Select 
+                value={formData.repeatIntervalUnit} 
+                onValueChange={(v) => setFormData(prev => ({ 
+                  ...prev, 
+                  repeatIntervalUnit: v as typeof REPEAT_INTERVAL_UNITS[number]
+                }))}
+              >
+                <SelectTrigger data-testid="select-repeat-unit">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="days">Days</SelectItem>
+                  <SelectItem value="weeks">Weeks</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
+
+        {formData.repeatType !== "none" && (
+          <div>
+            <Label className="text-xs text-muted-foreground">End Repeat (optional)</Label>
+            <Input
+              type="date"
+              value={formData.repeatEndDate}
+              onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
+              data-testid="input-repeat-end-date"
+            />
+            {!formData.repeatEndDate && (
+              <p className="text-xs text-muted-foreground mt-1">
+                If no end date, repeats for 6 months
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       <div>
