@@ -2695,7 +2695,7 @@ export default function Dashboard() {
                           const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                           const baseStyle = task.isCompleted 
                             ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : `bg-slate-400 text-white border border-slate-500 ${shimmerClass}`;
+                            : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400 ${shimmerClass}`;
                           return (
                             <div key={`prep-${task.id}`} className="flex items-center w-full">
                               <div
@@ -2724,7 +2724,7 @@ export default function Dashboard() {
                         const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                         const baseStyle = task.isCompleted 
                           ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                          : `bg-slate-400 text-white border border-slate-500 ${shimmerClass}`;
+                          : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400 ${shimmerClass}`;
                         // Check if the previous day is visible (today or future)
                         const previousDay = addDays(dayStart, -1);
                         const hasPreviousVisibleDay = !isBefore(previousDay, today);
