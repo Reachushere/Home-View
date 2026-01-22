@@ -2126,7 +2126,7 @@ export default function Dashboard() {
                 data-testid="button-mute-toggle"
                 title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
               >
-                {isMuted ? <BellOff className="h-2 w-2" /> : <Bell className="h-2 w-2" />}
+                {isMuted ? <BellOff className="h-1.5 w-1.5" /> : <Bell className="h-1.5 w-1.5" />}
               </Button>
               <h1 className="text-sm font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule - {currentSemesterName}</h1>
             </div>
