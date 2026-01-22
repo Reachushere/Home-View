@@ -2355,7 +2355,7 @@ export default function Dashboard() {
             ) : (
               <CalendarDays className="h-1.5 w-1.5 mr-0.5" />
             )}
-            Sync
+            SYNC
           </Button>
           <div className="h-4 w-px bg-gray-500 ml-2" />
           <RouterLink href="/files" className="flex items-center ml-2">
@@ -2365,7 +2365,7 @@ export default function Dashboard() {
               data-testid="button-files-link"
             >
               <FolderOpen className="h-1.5 w-1.5 mr-0.5" />
-              Files
+              FILES
             </Button>
           </RouterLink>
           <div className="h-4 w-px bg-gray-500 ml-2" />
