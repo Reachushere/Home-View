@@ -1952,7 +1952,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                                 >
-                                  {task.title}
+                                  <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
                               <div className={`w-2 h-[2px] shrink-0 ${lineColor}`} />
@@ -1990,7 +1990,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                               >
-                                <span className="font-bold">DUE:</span> {task.title}
+                                {task.title}
                               </span>
                             </div>
                           );
@@ -2017,7 +2017,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                               >
-                                {task.title}
+                                <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
                             <div className={`w-2 h-[2px] shrink-0 ${lineColor}`} />
