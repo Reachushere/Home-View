@@ -2353,7 +2353,7 @@ export default function Dashboard() {
               <RefreshCw className="text-black" style={{ height: '13px', width: '13px' }} />
             )}
           </Button>
-          <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+          <div className="h-4 flex ml-0.5 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           
           {/* All buttons with equal spacing */}
           <div className="flex-1 flex items-center justify-between">
