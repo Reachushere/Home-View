@@ -2304,7 +2304,7 @@ export default function Dashboard() {
             {selectedWeek === 2 ? (
               <span className="text-[10px] text-muted-foreground uppercase tracking-wide flex items-center gap-0.5 -ml-1">
                 <Home className="h-2.5 w-2.5" />
-                <span className="underline font-bold">CURRENT</span>
+                <span className="underline">CURRENT</span>
               </span>
             ) : (
               <span 
@@ -2313,7 +2313,7 @@ export default function Dashboard() {
                 data-testid="link-current-week"
               >
                 <Home className="h-2.5 w-2.5" />
-                <span className="underline font-bold">CURRENT</span>
+                <span className="underline">CURRENT</span>
               </span>
             )}
             <div className="flex items-center gap-1.5 mt-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
