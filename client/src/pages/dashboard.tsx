@@ -90,6 +90,7 @@ export default function Dashboard() {
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 17)); // January 2026
+  const [calendarView, setCalendarView] = useState<"week" | "month">("week");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newTaskType, setNewTaskType] = useState<string>("module");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -1696,8 +1697,16 @@ export default function Dashboard() {
           <Button variant="ghost" size="icon" className="h-3 w-3 mb-1" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
             <ChevronRight className="h-4 w-4" strokeWidth={3} />
           </Button>
-          <Button size="sm" className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2" onClick={() => setSelectedWeek(2)} data-testid="button-today">
+          <Button size="sm" className="!h-[20px] !min-h-0 w-[78px] text-[10px] bg-white hover:bg-gray-50 border-[1.5px] border-blue-800 font-semibold text-blue-800 !py-0 ml-2" onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} data-testid="button-today">
             TODAY
+          </Button>
+          <Button 
+            size="sm" 
+            className={`!h-[20px] !min-h-0 w-[78px] text-[10px] border-[1.5px] border-blue-800 font-semibold !py-0 ml-2 ${calendarView === "month" ? "bg-blue-800 text-white hover:bg-blue-700" : "bg-white hover:bg-gray-50 text-blue-800"}`}
+            onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+            data-testid="button-month-view"
+          >
+            MONTH
           </Button>
           <Button 
             size="sm" 
@@ -1786,7 +1795,8 @@ export default function Dashboard() {
           </Dialog>
         </div>
 
-        {/* Weekly Time-Slot Calendar */}
+        {/* Calendar Views */}
+        {calendarView === "week" ? (
         <div className="mb-3 relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
@@ -2200,6 +2210,102 @@ export default function Dashboard() {
             <div className="w-16 h-1.5 rounded-full bg-muted-foreground/40" />
           </div>
         </div>
+        ) : (
+        <div className="mb-3" style={{ height: calendarHeight }}>
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
+            <CardContent className="p-0 h-full overflow-auto">
+              {/* Month Header */}
+              <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-card z-10">
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-lg font-bold text-black dark:text-white">{format(currentMonth, "MMMM yyyy")}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+              {/* Day of Week Headers */}
+              <div className="grid grid-cols-7 border-b border-border">
+                {["SAT", "SUN", "MON", "TUE", "WED", "THU", "FRI"].map((day) => (
+                  <div key={day} className="p-2 text-center text-xs font-bold text-muted-foreground border-r border-border last:border-r-0">
+                    {day}
+                  </div>
+                ))}
+              </div>
+              {/* Calendar Grid */}
+              <div className="grid grid-cols-7 flex-1">
+                {(() => {
+                  const monthStart = startOfMonth(currentMonth);
+                  const monthEnd = endOfMonth(currentMonth);
+                  const startDate = startOfWeek(monthStart, { weekStartsOn: 6 }); // Saturday
+                  const endDate = endOfWeek(monthEnd, { weekStartsOn: 6 });
+                  
+                  const days: Date[] = [];
+                  let day = startDate;
+                  while (day <= endDate) {
+                    days.push(day);
+                    day = addDays(day, 1);
+                  }
+                  
+                  return days.map((day, idx) => {
+                    const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
+                    const isToday = isSameDay(day, new Date());
+                    const dayTasks = allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
+                    
+                    return (
+                      <div
+                        key={idx}
+                        className={`min-h-[80px] p-1 border-r border-b border-border last:border-r-0 ${
+                          isCurrentMonth ? "bg-card" : "bg-muted/30"
+                        } ${isToday ? "bg-[#5979CC]/20" : ""}`}
+                        onClick={() => {
+                          // Find which week this day belongs to
+                          const weekInfo = weeks.find(w => {
+                            const wStart = new Date(w.startDate);
+                            const wEnd = new Date(w.endDate);
+                            return day >= wStart && day <= wEnd;
+                          });
+                          if (weekInfo) {
+                            setSelectedWeek(weekInfo.weekNumber);
+                            setCalendarView("week");
+                          }
+                        }}
+                      >
+                        <div className={`text-xs font-bold mb-1 ${
+                          isToday ? "text-[#5979CC]" : isCurrentMonth ? "text-foreground" : "text-muted-foreground"
+                        }`}>
+                          {format(day, "d")}
+                        </div>
+                        <div className="space-y-0.5">
+                          {dayTasks.slice(0, 3).map((task) => {
+                            const colors = getCourseColor(task.courseName);
+                            return (
+                              <div
+                                key={task.id}
+                                className={`text-[7px] px-1 py-0.5 rounded truncate ${
+                                  task.isCompleted 
+                                    ? "bg-gray-200 text-gray-500 line-through" 
+                                    : colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200"
+                                }`}
+                                title={task.title}
+                              >
+                                {task.title}
+                              </div>
+                            );
+                          })}
+                          {dayTasks.length > 3 && (
+                            <div className="text-[7px] text-muted-foreground text-center">+{dayTasks.length - 3} more</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        )}
         {/* Be Prepared, Do Today, and Missed Tasks Side by Side */}
         <div className="flex gap-4 mb-3 items-stretch h-[200px] flex-shrink-0">
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
