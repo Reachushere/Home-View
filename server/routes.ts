@@ -2,10 +2,61 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2 } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, type RepeatType, type RepeatIntervalUnit, type InsertTask } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent } from "./googleCalendar";
+
+// Helper function to generate repeated task due dates
+function generateRepeatDates(
+  startDueDate: Date,
+  repeatType: RepeatType,
+  repeatEndDate: Date | null,
+  repeatInterval?: number,
+  repeatIntervalUnit?: RepeatIntervalUnit
+): Date[] {
+  const dates: Date[] = [];
+  if (repeatType === "none") return dates;
+  
+  // Default end date: 6 months from start if not specified
+  const endDate = repeatEndDate || new Date(startDueDate.getTime() + 180 * 24 * 60 * 60 * 1000);
+  let currentDate = new Date(startDueDate);
+  
+  // Add interval based on repeat type
+  const addInterval = (date: Date): Date => {
+    const newDate = new Date(date);
+    switch (repeatType) {
+      case "daily":
+        newDate.setDate(newDate.getDate() + 1);
+        break;
+      case "weekly":
+        newDate.setDate(newDate.getDate() + 7);
+        break;
+      case "monthly":
+        newDate.setMonth(newDate.getMonth() + 1);
+        break;
+      case "custom":
+        if (repeatIntervalUnit === "days") {
+          newDate.setDate(newDate.getDate() + (repeatInterval || 1));
+        } else if (repeatIntervalUnit === "weeks") {
+          newDate.setDate(newDate.getDate() + (repeatInterval || 1) * 7);
+        }
+        break;
+    }
+    return newDate;
+  };
+  
+  // Generate dates until end date (max 100 to prevent infinite loops)
+  let count = 0;
+  while (count < 100) {
+    currentDate = addInterval(currentDate);
+    if (currentDate > endDate) break;
+    dates.push(new Date(currentDate));
+    count++;
+  }
+  
+  return dates;
+}
 
 // Dynamic import for pdf-parse to avoid CommonJS compatibility issues
 let pdfParse: any = null;
@@ -204,16 +255,81 @@ export async function registerRoutes(
           courseName: task.courseName,
         });
         // Update task with calendar event ID
-        const updatedTask = await storage.updateTask(task.id, {
+        await storage.updateTask(task.id, {
           calendarEventId: event.id,
           calendarProvider: "google",
         });
-        res.status(201).json(updatedTask);
       } catch (calErr) {
         console.error("Auto-sync to Google Calendar failed:", calErr);
-        // Still return the task even if calendar sync fails
-        res.status(201).json(task);
       }
+      
+      // Generate repeated task instances if repeat is set
+      if (task.repeatType && task.repeatType !== "none") {
+        const repeatDates = generateRepeatDates(
+          task.dueDate,
+          task.repeatType as RepeatType,
+          task.repeatEndDate,
+          task.repeatInterval ?? undefined,
+          task.repeatIntervalUnit as RepeatIntervalUnit | undefined
+        );
+        
+        // Calculate the duration of prep period (if any)
+        let prepDuration = 0;
+        if (task.startDate) {
+          prepDuration = task.dueDate.getTime() - task.startDate.getTime();
+        }
+        
+        // Create child tasks for each repeat date
+        for (const repeatDueDate of repeatDates) {
+          const childStartDate = prepDuration > 0 
+            ? new Date(repeatDueDate.getTime() - prepDuration) 
+            : null;
+          
+          const childTask: InsertTask = {
+            title: task.title,
+            description: task.description,
+            type: task.type,
+            courseName: task.courseName,
+            startDate: childStartDate,
+            dueDate: repeatDueDate,
+            eventStartTime: task.eventStartTime,
+            eventEndTime: task.eventEndTime,
+            reminder1: task.reminder1,
+            reminder2: task.reminder2,
+            reminder3: task.reminder3,
+            reminder4: task.reminder4,
+            weekNumber: getWeekNumber(repeatDueDate),
+            priority: task.priority,
+            notes: task.notes,
+            referenceLink: task.referenceLink,
+            attachments: task.attachments,
+            repeatType: "none", // Child tasks don't repeat
+            parentTaskId: task.id,
+          };
+          
+          try {
+            const createdChild = await storage.createTask(childTask);
+            // Sync child to calendar too
+            const childEvent = await createCalendarEvent({
+              id: createdChild.id,
+              title: createdChild.title,
+              description: createdChild.description,
+              dueDate: createdChild.dueDate,
+              courseName: createdChild.courseName,
+            });
+            await storage.updateTask(createdChild.id, {
+              calendarEventId: childEvent.id,
+              calendarProvider: "google",
+            });
+          } catch (childErr) {
+            console.error("Error creating repeated task instance:", childErr);
+          }
+        }
+      }
+      
+      // Fetch the updated parent task
+      const updatedTask = await storage.getTask(task.id);
+      res.status(201).json(updatedTask);
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({
@@ -263,11 +379,15 @@ export async function registerRoutes(
 
   // DELETE /api/tasks/:id
   app.delete(api.tasks.delete.path, async (req, res) => {
-    // Get task first to check for calendar event
-    const task = await storage.getTask(Number(req.params.id));
+    const taskId = Number(req.params.id);
+    const task = await storage.getTask(taskId);
+    
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
     
     // Delete from Google Calendar if synced
-    if (task?.calendarEventId) {
+    if (task.calendarEventId) {
       try {
         await deleteCalendarEvent(task.calendarEventId);
       } catch (calErr) {
@@ -275,7 +395,24 @@ export async function registerRoutes(
       }
     }
     
-    await storage.deleteTask(Number(req.params.id));
+    // If this is a parent task with repeat, also delete all child tasks
+    if (task.repeatType && task.repeatType !== "none") {
+      const childTasks = await storage.getChildTasks(taskId);
+      for (const child of childTasks) {
+        // Delete child from calendar
+        if (child.calendarEventId) {
+          try {
+            await deleteCalendarEvent(child.calendarEventId);
+          } catch (calErr) {
+            console.error("Failed to delete child calendar event:", calErr);
+          }
+        }
+      }
+      // Delete all child tasks
+      await storage.deleteChildTasks(taskId);
+    }
+    
+    await storage.deleteTask(taskId);
     res.status(204).end();
   });
 
@@ -1271,6 +1408,7 @@ async function seedDatabase() {
         dueDate: new Date("2026-01-19T23:59:00"),
         weekNumber: 3,
         priority: "high",
+        repeatType: "none" as const,
       },
       {
         title: "Module 2: Introduction to Algorithms",
@@ -1280,6 +1418,7 @@ async function seedDatabase() {
         dueDate: new Date("2026-01-20T23:59:00"),
         weekNumber: 3,
         priority: "medium",
+        repeatType: "none" as const,
       },
       {
         title: "Essay: Impact of AI on Society",
@@ -1289,6 +1428,7 @@ async function seedDatabase() {
         dueDate: new Date("2026-01-24T17:00:00"),
         weekNumber: 3,
         priority: "high",
+        repeatType: "none" as const,
       },
       {
         title: "Group Project: Database Design",
@@ -1298,6 +1438,7 @@ async function seedDatabase() {
         dueDate: new Date("2026-01-31T23:59:00"),
         weekNumber: 4,
         priority: "high",
+        repeatType: "none" as const,
       },
       {
         title: "Discussion: Ethics in Technology",
@@ -1307,6 +1448,7 @@ async function seedDatabase() {
         dueDate: new Date("2026-01-22T23:59:00"),
         weekNumber: 3,
         priority: "medium",
+        repeatType: "none" as const,
       },
       {
         title: "Weekly Poll: Study Habits",
@@ -1316,6 +1458,7 @@ async function seedDatabase() {
         dueDate: new Date("2026-01-17T18:00:00"),
         weekNumber: 2,
         priority: "low",
+        repeatType: "none" as const,
       },
       {
         title: "Midterm Exam: Computer Networks",
@@ -1325,6 +1468,7 @@ async function seedDatabase() {
         dueDate: new Date("2026-02-14T10:00:00"),
         weekNumber: 6,
         priority: "high",
+        repeatType: "none" as const,
       },
       {
         title: "Quiz: SQL Basics",
@@ -1334,6 +1478,7 @@ async function seedDatabase() {
         dueDate: new Date("2026-01-18T14:00:00"),
         weekNumber: 2,
         priority: "medium",
+        repeatType: "none" as const,
       },
     ];
 
