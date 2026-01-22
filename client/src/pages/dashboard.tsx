@@ -411,6 +411,7 @@ export default function Dashboard() {
   // State for new semester dialog
   const [isNewSemesterDialogOpen, setIsNewSemesterDialogOpen] = useState(false);
   const [newSemesterForm, setNewSemesterForm] = useState({
+    semesterName: "Spring/Summer 2026 Semester",
     semesterStartDate: "2026-05-02",
     course1Code: "",
     course1Name: "",
@@ -422,6 +423,9 @@ export default function Dashboard() {
     course3Name: "",
     course3Professor: "",
   });
+
+  // Get the current semester name from settings or use default
+  const currentSemesterName = semesterSettings?.semesterName || "Winter 2026 Semester";
 
   // Check if we're past Week 13 end date - show new semester prompt
   const week13EndDate = weeks.find(w => w.weekNumber === LAST_WEEK)?.endDate;
@@ -895,6 +899,18 @@ export default function Dashboard() {
               createSemesterMutation.mutate(newSemesterForm);
             }}
           >
+            <div>
+              <Label htmlFor="semesterName">Semester Name</Label>
+              <Input
+                id="semesterName"
+                placeholder="e.g., Spring/Summer 2026 Semester"
+                value={newSemesterForm.semesterName}
+                onChange={(e) => setNewSemesterForm(prev => ({ ...prev, semesterName: e.target.value }))}
+                required
+                data-testid="input-semester-name"
+              />
+            </div>
+
             <div>
               <Label htmlFor="semesterStartDate">Semester Start Date (Week 1 Saturday)</Label>
               <Input
@@ -1902,7 +1918,7 @@ export default function Dashboard() {
               >
                 {isMuted ? <BellOff className="h-3.5 w-3.5" /> : <Bell className="h-3.5 w-3.5" />}
               </Button>
-              <h1 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule - Winter 2026 Semester</h1>
+              <h1 className="text-xl font-semibold text-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Bryn's Schedule - {currentSemesterName}</h1>
             </div>
           </div>
           

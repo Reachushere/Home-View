@@ -68,6 +68,7 @@ export const DEFAULT_REMINDER_2 = 120; // 2 hours
 // Semester settings table to store dynamic semester configuration
 export const semesterSettings = pgTable("semester_settings", {
   id: serial("id").primaryKey(),
+  semesterName: text("semester_name").notNull().default("Winter 2026 Semester"),
   semesterStartDate: timestamp("semester_start_date").notNull(),
   course1Code: text("course1_code").notNull(),
   course1Name: text("course1_name").notNull(),
