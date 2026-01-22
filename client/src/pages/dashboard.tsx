@@ -1954,11 +1954,6 @@ export default function Dashboard() {
                                 >
                                   {task.title}
                                 </span>
-                                <Trash2 
-                                  className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
-                                  onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
-                                  data-testid={`trash-prep-${task.id}`}
-                                />
                               </div>
                               <div className={`w-2 h-[3px] ${lineColor}`} />
                             </div>
@@ -1999,11 +1994,6 @@ export default function Dashboard() {
                                 >
                                   <span className="font-bold">DUE:</span> {task.title}
                                 </span>
-                                <Trash2 
-                                  className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
-                                  onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
-                                  data-testid={`trash-due-${task.id}`}
-                                />
                               </div>
                             </div>
                           );
@@ -2033,11 +2023,6 @@ export default function Dashboard() {
                               >
                                 {task.title}
                               </span>
-                              <Trash2 
-                                className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
-                                onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
-                                data-testid={`trash-prep-mid-${task.id}`}
-                              />
                             </div>
                             <div className={`w-2 h-[3px] ${lineColor}`} />
                           </div>
@@ -2078,11 +2063,6 @@ export default function Dashboard() {
                             >
                               {task.title}
                             </span>
-                            <Trash2 
-                              className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
-                              onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
-                              data-testid={`trash-allday-${task.id}`}
-                            />
                           </div>
                         );
                       })}
@@ -2141,11 +2121,6 @@ export default function Dashboard() {
                             >
                               {task.title}
                             </span>
-                            <Trash2 
-                              className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
-                              onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
-                              data-testid={`trash-course-${task.id}`}
-                            />
                           </div>
                         ))}
                       </div>
@@ -2250,11 +2225,6 @@ export default function Dashboard() {
                                   >
                                     {task.title}
                                   </div>
-                                  <Trash2 
-                                    className="h-3 w-3 shrink-0 cursor-pointer hover:text-red-600 text-gray-500"
-                                    onClick={(e) => { e.stopPropagation(); deleteMutation.mutate(task.id); }}
-                                    data-testid={`trash-time-${task.id}`}
-                                  />
                                 </div>
                                 <div className={`text-[8px] mt-0.5 mb-3 ml-4 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}>
                                   {format(new Date(task.dueDate), "h:mm a")}
