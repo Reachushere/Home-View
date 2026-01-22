@@ -2213,7 +2213,7 @@ export default function Dashboard() {
                                 className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l truncate ${
                                   task.isCompleted 
                                     ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                    : colors ? `${colors.prepBg} text-black border ${colors.border}` : "bg-gray-100 text-black border border-gray-400"
+                                    : colors ? `${colors.prepBg} text-black border ${colors.border} animate-shimmer` : "bg-gray-100 text-black border border-gray-400 animate-shimmer"
                                 }`}
                                 data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
                               >
