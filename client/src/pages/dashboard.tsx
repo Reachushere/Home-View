@@ -55,6 +55,7 @@ import {
   RotateCcw,
   Menu,
   User,
+  Palette,
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -147,6 +148,24 @@ export default function Dashboard() {
     return saved ? JSON.parse(saved) : { schoolLogo: null, numberOfWeeks: 13, week1StartDate: '2026-01-11', firstDayOfWeek: 'saturday' };
   });
   
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string }> }>(() => {
+    const saved = localStorage.getItem('coursesData');
+    const defaultCourses = [
+      { name: 'CPPA122 - Local Politics', color: '#22c55e' },
+      { name: 'CFNF400 - Human Sexuality', color: '#ec4899' },
+      { name: 'CASL101 - American Sign Language', color: '#6366f1' },
+      { name: '', color: '#f59e0b' },
+      { name: '', color: '#06b6d4' },
+      { name: '', color: '#8b5cf6' },
+      { name: '', color: '#ef4444' },
+      { name: '', color: '#14b8a6' },
+      { name: '', color: '#f97316' },
+      { name: '', color: '#84cc16' },
+    ];
+    return saved ? JSON.parse(saved) : { courses: defaultCourses };
+  });
+  const [isCoursesDialogOpen, setIsCoursesDialogOpen] = useState(false);
+  
   // Get the display timezone (travel if set, otherwise home)
   const displayTimezone = profileData.travelTimezone || profileData.timezone;
 
@@ -170,6 +189,18 @@ export default function Dashboard() {
     localStorage.setItem('schoolData', JSON.stringify(data));
     setIsSchoolDialogOpen(false);
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
+  };
+  
+  const saveCourses = (data: { courses: Array<{ name: string; color: string }> }) => {
+    setCoursesData(data);
+    localStorage.setItem('coursesData', JSON.stringify(data));
+    setIsCoursesDialogOpen(false);
+    toast({ title: "Courses saved", description: "Your courses have been updated." });
+  };
+  
+  const getCourseColor = (courseName: string): string => {
+    const course = coursesData.courses.find(c => c.name && courseName.includes(c.name.split(' - ')[0]));
+    return course?.color || '#6b7280';
   };
   
   // Common timezones
@@ -1098,12 +1129,6 @@ export default function Dashboard() {
         setSelectedWeek(weekForDay.weekNumber);
       }
     }
-  };
-
-  const getCourseColor = (courseName: string | null) => {
-    if (!courseName) return null;
-    const courseCode = courseName.split(" ")[0];
-    return courseColors[courseCode] || null;
   };
 
   return (
@@ -2179,6 +2204,10 @@ export default function Dashboard() {
                 <GraduationCap className="h-4 w-4 mr-2" />
                 School
               </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
+                <Palette className="h-4 w-4 mr-2" />
+                Courses
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           
@@ -2418,6 +2447,19 @@ export default function Dashboard() {
                 schoolData={schoolData}
                 semesterSettings={semesterSettings}
                 onSave={saveSchool} 
+              />
+            </DialogContent>
+          </Dialog>
+          
+          {/* Courses Dialog */}
+          <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
+            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Courses</DialogTitle>
+              </DialogHeader>
+              <CoursesForm 
+                coursesData={coursesData}
+                onSave={saveCourses} 
               />
             </DialogContent>
           </Dialog>
@@ -4183,6 +4225,63 @@ function SchoolForm({
       
       <Button type="submit" className="w-full" data-testid="button-save-school">
         Save School Settings
+      </Button>
+    </form>
+  );
+}
+
+function CoursesForm({ 
+  coursesData, 
+  onSave 
+}: { 
+  coursesData: { courses: Array<{ name: string; color: string }> };
+  onSave: (data: { courses: Array<{ name: string; color: string }> }) => void;
+}) {
+  const [courses, setCourses] = useState(coursesData.courses);
+  
+  const updateCourse = (index: number, field: 'name' | 'color', value: string) => {
+    setCourses(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave({ courses });
+  };
+  
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Enter your course names and select a color for each. Colors will be used throughout the app for tasks associated with each course.
+      </p>
+      
+      <div className="space-y-3">
+        {courses.map((course, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground w-4">{index + 1}.</span>
+            <input
+              type="color"
+              value={course.color}
+              onChange={(e) => updateCourse(index, 'color', e.target.value)}
+              className="w-8 h-8 rounded cursor-pointer border-0 p-0"
+              data-testid={`input-course-color-${index}`}
+            />
+            <Input
+              value={course.name}
+              onChange={(e) => updateCourse(index, 'name', e.target.value)}
+              placeholder={`Course ${index + 1} name (e.g., MATH101 - Calculus)`}
+              className="flex-1"
+              data-testid={`input-course-name-${index}`}
+            />
+          </div>
+        ))}
+      </div>
+      
+      <Button type="submit" className="w-full" data-testid="button-save-courses">
+        Save Courses
       </Button>
     </form>
   );
