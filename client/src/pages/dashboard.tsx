@@ -2362,7 +2362,7 @@ export default function Dashboard() {
               {syncAllCalendarMutation.isPending && (
                 <Loader2 className="h-1.5 w-1.5 mr-0.5 animate-spin" />
               )}
-              Sync
+              Cal Sync
             </Button>
             <div className="h-4 w-px bg-gray-400/70 -translate-y-0.5" />
             <RouterLink href="/files" className="flex items-center">
