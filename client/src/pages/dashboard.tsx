@@ -95,14 +95,14 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(580);
+  const [calendarHeight, setCalendarHeight] = useState(640);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem('sidebarWidth');
-    return saved ? parseInt(saved, 10) : 288; // 288px = w-72
+    return saved ? parseInt(saved, 10) : 320; // 320px default - slightly wider
   });
   const [isResizingSidebar, setIsResizingSidebar] = useState(false);
   const sidebarResizeRef = useRef<{ startX: number; startWidth: number } | null>(null);
@@ -1883,8 +1883,8 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minWidth: 'max-content' }}>
-                <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center bg-white dark:bg-card min-h-[40px]">
+            <div className="grid border-b border-border sticky top-[52px] bg-gray-200 dark:bg-gray-700 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', minWidth: 'max-content' }}>
+                <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
                   ALL DAY
                 </div>
                 {weekDays.map((day, dayIdx) => {
@@ -1899,7 +1899,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className="p-0.5 border-l border-border min-h-[40px] flex flex-col gap-0.5"
+                      className="p-0.5 border-l border-border flex flex-col gap-0.5 overflow-hidden"
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Planning tasks */}
