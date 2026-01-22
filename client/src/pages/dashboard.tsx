@@ -2345,7 +2345,7 @@ export default function Dashboard() {
               onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
               data-testid="button-today"
             >
-              <Sun className="mr-0.5" style={{ height: '10px', width: '10px' }} />
+              <Sun className="mr-0.5" style={{ height: '11px', width: '11px' }} />
               Today
             </Button>
             <div className="h-4 w-px bg-gray-400/70" />
@@ -2355,7 +2355,7 @@ export default function Dashboard() {
               onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
               data-testid="button-month-view"
             >
-              <CalendarDays className="mr-0.5" style={{ height: '10px', width: '10px' }} />
+              <CalendarDays className="mr-0.5" style={{ height: '11px', width: '11px' }} />
               {calendarView === "month" ? "Week" : "Month"}
             </Button>
             <div className="h-4 w-px bg-gray-400/70" />
@@ -2369,7 +2369,7 @@ export default function Dashboard() {
               {syncAllCalendarMutation.isPending ? (
                 <Loader2 className="h-2.5 w-2.5 mr-0.5 animate-spin" />
               ) : (
-                <RefreshCw className="mr-0.5" style={{ height: '10px', width: '10px' }} />
+                <RefreshCw className="mr-0.5" style={{ height: '11px', width: '11px' }} />
               )}
               Cal Sync
             </Button>
@@ -2380,7 +2380,7 @@ export default function Dashboard() {
                 className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
                 data-testid="button-files-link"
               >
-                <FolderOpen className="mr-0.5" style={{ height: '10px', width: '10px' }} />
+                <FolderOpen className="mr-0.5" style={{ height: '11px', width: '11px' }} />
                 Files
               </Button>
             </RouterLink>
