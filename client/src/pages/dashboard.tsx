@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -53,6 +54,7 @@ import {
   SkipForward,
   RotateCcw,
   Menu,
+  User,
 } from "lucide-react";
 import { Link as RouterLink } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -2106,14 +2108,24 @@ export default function Dashboard() {
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0">
           {/* Left: Hamburger Menu - positioned to align with planner box top */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-1"
-            data-testid="button-hamburger-menu"
-          >
-            <Menu className="h-3.5 w-3.5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-1"
+                data-testid="button-hamburger-menu"
+              >
+                <Menu className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem data-testid="menu-item-profile">
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           {/* Center: Title with Bell + Clock below */}
           <div className="flex flex-col items-center">
