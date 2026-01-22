@@ -13,6 +13,22 @@ export const TASK_TYPES = [
   "quiz"
 ] as const;
 
+export const REPEAT_TYPES = [
+  "none",
+  "daily",
+  "weekly",
+  "monthly",
+  "custom"
+] as const;
+
+export const REPEAT_INTERVAL_UNITS = [
+  "days",
+  "weeks"
+] as const;
+
+export type RepeatType = typeof REPEAT_TYPES[number];
+export type RepeatIntervalUnit = typeof REPEAT_INTERVAL_UNITS[number];
+
 export const COURSES = [
   { code: "CPPA122", name: "Local Politics", color: "blue" },
   { code: "CFNF400", name: "Human Sexuality", color: "pink" },
@@ -89,6 +105,11 @@ export const tasks = pgTable("tasks", {
   calendarEventId: text("calendar_event_id"), // For synced calendar events (due date)
   calendarProvider: text("calendar_provider"), // 'google' or 'outlook'
   prepCalendarEventId: text("prep_calendar_event_id"), // For synced prep/start date events
+  repeatType: text("repeat_type").default("none"), // none, daily, weekly, monthly, custom
+  repeatInterval: integer("repeat_interval"), // For custom: every X units
+  repeatIntervalUnit: text("repeat_interval_unit"), // days or weeks (for custom)
+  repeatEndDate: timestamp("repeat_end_date"), // Optional: when to stop repeating
+  parentTaskId: integer("parent_task_id"), // Links repeated instances to original task
 });
 
 // Base schema from drizzle, then override date fields to accept ISO strings
@@ -110,6 +131,9 @@ const dateStringToDate = z.string().min(1).transform((s, ctx) => {
 export const insertTaskSchema = baseInsertSchema.extend({
   dueDate: z.union([z.date(), dateStringToDate]),
   startDate: z.union([z.date(), dateStringToDate]).optional().nullable(),
+  repeatEndDate: z.union([z.date(), dateStringToDate]).optional().nullable(),
+  repeatType: z.enum(REPEAT_TYPES).optional().default("none"),
+  repeatIntervalUnit: z.enum(REPEAT_INTERVAL_UNITS).optional().nullable(),
 });
 
 export type Task = typeof tasks.$inferSelect;
