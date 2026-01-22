@@ -64,6 +64,8 @@ Preferred communication style: Simple, everyday language.
 - **Calendar Export**: Download .ics files for individual tasks
 - **Dashboard Layout**: Three task sections - Due Today (orange cards), Upcoming (pale yellow cards), Missed (red styling)
 - **Blinking Animations**: Tasks due today blink fast (0.8s), tasks due tomorrow blink slowly (60s)
+- **Task Repeat**: Tasks can repeat daily, weekly, monthly, or at custom intervals with child task generation and Google Calendar sync
+- **Semester Transition**: When past Week 13 end date, a banner prompts user to set up a new semester with configurable start date and 3 color-coded courses (code, name, professor). Week calculations use the active semester's start date dynamically.
 
 ### Key Design Patterns
 - **Type Safety**: End-to-end TypeScript with shared types between frontend and backend
