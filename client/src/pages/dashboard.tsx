@@ -2322,6 +2322,21 @@ export default function Dashboard() {
         
         {/* Calendar Header */}
         <div className="flex items-center mb-0 bg-slate-100 border border-slate-200 rounded-t-md px-3 py-1 shadow-sm">
+          {/* Sync button */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-4 w-4 mr-2"
+            onClick={() => syncAllCalendarMutation.mutate()}
+            disabled={syncAllCalendarMutation.isPending}
+            data-testid="button-sync-calendar"
+          >
+            {syncAllCalendarMutation.isPending ? (
+              <Loader2 className="h-3 w-3 text-blue-900 animate-spin" />
+            ) : (
+              <RefreshCw className="h-3 w-3 text-blue-900" />
+            )}
+          </Button>
           {/* Week navigation */}
           <Button variant="ghost" size="icon" className="h-3 w-3 mr-4" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4 text-blue-900" strokeWidth={3} />
@@ -2357,21 +2372,6 @@ export default function Dashboard() {
             >
               <CalendarDays className="mr-0.5" style={{ height: '12px', width: '12px' }} />
               {calendarView === "month" ? "Week" : "Month"}
-            </Button>
-            <div className="h-4 w-px bg-gray-400/70" />
-            <Button 
-              size="sm" 
-              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
-              onClick={() => syncAllCalendarMutation.mutate()}
-              disabled={syncAllCalendarMutation.isPending}
-              data-testid="button-sync-calendar"
-            >
-              {syncAllCalendarMutation.isPending ? (
-                <Loader2 className="h-2.5 w-2.5 mr-0.5 animate-spin" />
-              ) : (
-                <RefreshCw className="mr-0.5" style={{ height: '12px', width: '12px' }} />
-              )}
-              Cal Sync
             </Button>
             <div className="h-4 w-px bg-gray-400/70" />
             <RouterLink href="/files" className="flex items-center">
