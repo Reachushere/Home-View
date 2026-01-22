@@ -2132,7 +2132,7 @@ export default function Dashboard() {
             </div>
             {/* Slightly bigger Clock below title */}
             <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
-              <span className="text-[8px] text-muted-foreground font-medium">
+              <span className="text-[10px] text-muted-foreground font-medium">
                 {format(currentTime, "EEE, MMM d")}
               </span>
               <div className="w-px h-4 bg-border" />
