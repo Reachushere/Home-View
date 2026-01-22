@@ -2363,7 +2363,7 @@ export default function Dashboard() {
               <Sun className="mr-0.5" style={{ height: '12px', width: '12px' }} />
               Today
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 mx-1" />
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
@@ -2373,7 +2373,7 @@ export default function Dashboard() {
               <CalendarDays className="mr-0.5" style={{ height: '12px', width: '12px' }} />
               {calendarView === "month" ? "Week" : "Month"}
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 mx-1" />
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
@@ -2384,7 +2384,7 @@ export default function Dashboard() {
                 Files
               </Button>
             </RouterLink>
-            <div className="h-4 w-px bg-gray-400/70 mx-1" />
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             
             {/* Pomodoro Timer */}
             <div className="flex items-center gap-3 h-[22px]">
@@ -2422,7 +2422,7 @@ export default function Dashboard() {
                 <span className="ml-0.5 font-bold">{pomodoroCount}</span>
               </div>
             </div>
-            <div className="h-4 w-px bg-gray-400/70 mx-1" />
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2432,7 +2432,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Module
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 mx-1" />
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2442,7 +2442,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Reading
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 mx-1" />
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2452,7 +2452,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Discuss
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 mx-1" />
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2462,7 +2462,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Assign
             </Button>
-            <div className="h-4 w-px bg-gray-400/70 mx-1" />
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-2 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
