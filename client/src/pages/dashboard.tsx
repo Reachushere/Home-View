@@ -576,23 +576,34 @@ export default function Dashboard() {
   const timeSlots = Array.from({ length: 24 }, (_, i) => i); // 0-23 (full 24 hours)
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
-  // Auto-scroll to current hour on mount and every minute
+  // Auto-scroll to show blinking tasks (due tomorrow) or current hour
   useEffect(() => {
-    const scrollToCurrentTime = () => {
+    const scrollToRelevantPosition = () => {
       if (calendarScrollRef.current) {
-        const hourHeight = 40; // height of each time slot
-        const currentHour = new Date().getHours();
-        const scrollTo = currentHour * hourHeight;
-        calendarScrollRef.current.scrollTop = scrollTo;
+        const tomorrow = addDays(startOfDay(new Date()), 1);
+        const hasDueTomorrowTask = allTasks.some(t => 
+          !t.isCompleted && isSameDay(new Date(t.dueDate), tomorrow)
+        );
+        
+        if (hasDueTomorrowTask) {
+          // Scroll to top to show ALL DAY row and blinking tasks
+          calendarScrollRef.current.scrollTop = 0;
+        } else {
+          // Scroll to current hour
+          const hourHeight = 40; // height of each time slot
+          const currentHour = new Date().getHours();
+          const scrollTo = currentHour * hourHeight;
+          calendarScrollRef.current.scrollTop = scrollTo;
+        }
       }
     };
     
-    scrollToCurrentTime();
+    scrollToRelevantPosition();
     
-    // Update scroll position every minute to keep current time at top
-    const interval = setInterval(scrollToCurrentTime, 60000);
+    // Update scroll position every minute
+    const interval = setInterval(scrollToRelevantPosition, 60000);
     return () => clearInterval(interval);
-  }, [selectedWeek]);
+  }, [selectedWeek, allTasks]);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
