@@ -1490,7 +1490,7 @@ export default function Dashboard() {
                 <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
                   <Calendar className="h-3 w-3" />
                   <span className="text-xs">Week {week.weekNumber}</span>
-                  <span className={`text-[9px] font-bold ${selectedWeek === week.weekNumber && !selectedDate ? 'text-black' : 'text-white'}`}>
+                  <span className={`text-[9px] font-bold ${selectedWeek === week.weekNumber && !selectedDate ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
                     ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                   </span>
                 </div>
