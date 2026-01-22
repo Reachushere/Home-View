@@ -2301,7 +2301,7 @@ export default function Dashboard() {
                           const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
                           return (
                             <div key={`due-${task.id}`} className="flex items-center w-full">
-                              {hasPrepDays && <div className="w-1 h-full bg-black shrink-0" />}
+                              {hasPrepDays && <div className="w-2 h-[3px] bg-black shrink-0" />}
                               <div
                                 className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 ${hasPrepDays ? 'rounded-r border-l-0' : 'rounded'} truncate ${
                                 isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
@@ -2359,7 +2359,7 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              {showConnector && <div className="w-1 h-full bg-black shrink-0" />}
+                              {showConnector && <div className="w-2 h-[3px] bg-black shrink-0" />}
                             </div>
                           );
                         }
@@ -2368,7 +2368,7 @@ export default function Dashboard() {
                         const showConnector = !isLastPrepDay; // Show connector if not the last prep day before due
                         return (
                           <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                            <div className="w-1 h-full bg-black shrink-0" />
+                            <div className="w-2 h-[3px] bg-black shrink-0" />
                             <div
                               className={`flex-1 min-w-0 flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-none border-l-0 border-r-0 truncate ${
                                 task.isCompleted 
@@ -2390,7 +2390,7 @@ export default function Dashboard() {
                                 <span className="font-bold">PREP:</span> {task.title}
                               </span>
                             </div>
-                            {showConnector && <div className="w-1 h-full bg-black shrink-0" />}
+                            <div className="w-2 h-[3px] bg-black shrink-0" />
                           </div>
                         );
                       })}
