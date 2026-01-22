@@ -2377,19 +2377,19 @@ export default function Dashboard() {
           </div>
           
           {/* Gray section: remaining buttons */}
-          <div className="flex-1 flex items-center justify-between bg-slate-300 px-3 py-1">
-            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+          <div className="flex-1 flex items-center justify-between bg-slate-300 px-2 py-1">
+            <div className="h-4 flex mx-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
-                className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+                className="!h-[22px] !min-h-0 !px-1.5 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
                 data-testid="button-files-link"
               >
                 <FolderOpen className="mr-0.5" style={{ height: '12px', width: '12px' }} />
                 Files
               </Button>
             </RouterLink>
-            <div className="h-4 flex mx-2"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex mx-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             
             {/* Pomodoro Timer */}
             <div className="flex items-center gap-3 h-[22px]">
