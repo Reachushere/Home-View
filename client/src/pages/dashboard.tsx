@@ -2301,7 +2301,7 @@ export default function Dashboard() {
         </div>
         
         {/* Calendar Header */}
-        <div className="flex items-end mb-2">
+        <div className="flex items-end mb-2 bg-gray-50 border border-gray-200 rounded-md px-3 py-2 shadow-sm">
           {/* Week navigation */}
           <Button variant="ghost" size="icon" className="h-3 w-3 mb-0.5" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
             <ChevronLeft className="h-4 w-4" strokeWidth={3} />
