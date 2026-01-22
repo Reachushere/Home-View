@@ -2221,7 +2221,7 @@ export default function Dashboard() {
           </RouterLink>
           
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2.5 ml-2 px-[24px] h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
+          <div className="flex items-center gap-2.5 ml-2 pl-[24px] pr-[28px] h-[20px] rounded-md border-[1.5px] border-blue-800 bg-white">
             <div className={`text-[10px] font-mono font-bold -ml-3.5 ${
               pomodoroMode === "work" ? "text-red-600" : 
               pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
