@@ -1883,14 +1883,14 @@ export default function Dashboard() {
                   data-testid={`button-week-${week.weekNumber}`}
                 >
                   <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
-                    <Calendar className="h-3 w-3" />
-                    <span className="text-xs">Week {week.weekNumber}</span>
+                    <Calendar className={`h-3 w-3 ${isSelected ? 'text-black' : ''}`} />
+                    <span className={`text-xs ${isSelected ? 'text-black' : ''}`}>Week {week.weekNumber}</span>
                     <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
                       ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                     </span>
                   </div>
-                  {!isSelected && week.taskCount > 0 && (
-                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto">
+                  {week.taskCount > 0 && (
+                    <Badge variant="outline" className={`text-[10px] px-1 py-0 min-w-5 text-center justify-center ${isSelected ? 'text-black border-black' : ''}`}>
                       {week.taskCount}
                     </Badge>
                   )}
