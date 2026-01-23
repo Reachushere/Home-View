@@ -2635,7 +2635,7 @@ export default function Dashboard() {
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800 bg-white/50 backdrop-blur-sm">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers */}
-            <div className="grid border-b border-border sticky top-0 z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.55)' }}>
+            <div className="grid border-b border-border sticky top-0 z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.50)' }}>
               <div className="p-2 flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 255, 255)' }}>
                 <span className="text-sm text-black dark:text-white">Week {selectedWeek}</span>
               </div>
