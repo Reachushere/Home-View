@@ -2373,8 +2373,8 @@ export default function Dashboard() {
             </Button>
           </div>
           
-          {/* Gray section: remaining buttons */}
-          <div className="flex-1 flex items-center justify-between bg-slate-300 px-2 py-1">
+          {/* Yellow section: remaining buttons */}
+          <div className="flex-1 flex items-center justify-between px-2 py-1" style={{backgroundColor: "#FFCD44"}}>
             <RouterLink href="/files" className="flex items-center ml-2">
               <Button 
                 size="sm" 
