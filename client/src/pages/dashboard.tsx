@@ -3198,61 +3198,6 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
-          {/* Weekly Files Flyout Tab */}
-          <div 
-            className="absolute top-1/2 z-50 flex items-center flex-row-reverse"
-            style={{ transform: 'translateY(-50%)', left: '0px' }}
-          >
-            {/* Flyout Panel */}
-            <div 
-              className={`bg-[#1a1a2e] border border-[#3d3d3d] rounded-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
-              style={{ height: '400px' }}
-            >
-              <div className="w-72 h-full flex flex-col">
-                <div className="p-3 border-b border-[#3d3d3d] flex items-center justify-between">
-                  <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
-                  <span className="text-xs text-gray-400">{currentWeekFiles.length} files</span>
-                </div>
-                <div className="flex-1 overflow-y-auto p-2">
-                  {currentWeekFiles.length === 0 ? (
-                    <div className="text-gray-500 text-sm text-center py-8">
-                      No files in Week {selectedWeek}
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      {currentWeekFiles.map(file => (
-                        <a
-                          key={file.id}
-                          href={`/api/files/download/${encodeURIComponent(file.objectPath)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-sm group"
-                          data-testid={`flyout-file-${file.id}`}
-                        >
-                          <FileText className="h-4 w-4 text-blue-400 shrink-0" />
-                          <span className="truncate flex-1">{file.displayName}</span>
-                          <ExternalLink className="h-3 w-3 text-gray-500 opacity-0 group-hover:opacity-100" />
-                        </a>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            {/* Tab Button */}
-            <button
-              onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="bg-[#1a1a2e] border border-r-0 border-[#3d3d3d] rounded-l-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
-              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-              data-testid="weekly-files-flyout-tab"
-            >
-              <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
-                <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
-                Weekly Files
-                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} /> : <ChevronLeft className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />}
-              </span>
-            </button>
-          </div>
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-white bg-white/50 backdrop-blur-sm">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers */}
@@ -4216,6 +4161,64 @@ export default function Dashboard() {
         <div className="fixed bottom-2 right-3 text-white text-xs font-medium" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
           © 2026
         </div>
+
+        {/* Weekly Files Flyout Tab - Fixed position outside overflow containers */}
+        {calendarView === "week" && (
+          <div 
+            className="fixed z-50 flex items-center flex-row-reverse"
+            style={{ top: '50%', transform: 'translateY(-50%)', left: '366px' }}
+          >
+            {/* Flyout Panel */}
+            <div 
+              className={`bg-[#1a1a2e] border border-[#3d3d3d] rounded-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
+              style={{ height: '400px' }}
+            >
+              <div className="w-72 h-full flex flex-col">
+                <div className="p-3 border-b border-[#3d3d3d] flex items-center justify-between">
+                  <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
+                  <span className="text-xs text-gray-400">{currentWeekFiles.length} files</span>
+                </div>
+                <div className="flex-1 overflow-y-auto p-2">
+                  {currentWeekFiles.length === 0 ? (
+                    <div className="text-gray-500 text-sm text-center py-8">
+                      No files in Week {selectedWeek}
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      {currentWeekFiles.map(file => (
+                        <a
+                          key={file.id}
+                          href={`/api/files/download/${encodeURIComponent(file.objectPath)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-sm group"
+                          data-testid={`flyout-file-${file.id}`}
+                        >
+                          <FileText className="h-4 w-4 text-blue-400 shrink-0" />
+                          <span className="truncate flex-1">{file.displayName}</span>
+                          <ExternalLink className="h-3 w-3 text-gray-500 opacity-0 group-hover:opacity-100" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Tab Button */}
+            <button
+              onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
+              className="bg-[#1a1a2e] border border-r-0 border-[#3d3d3d] rounded-l-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
+              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              data-testid="weekly-files-flyout-tab"
+            >
+              <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
+                <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
+                Weekly Files
+                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} /> : <ChevronLeft className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />}
+              </span>
+            </button>
+          </div>
+        )}
       </main>
       </div>
     </div>
