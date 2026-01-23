@@ -2760,42 +2760,6 @@ export default function Dashboard() {
       <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '127px', paddingRight: '24px' }}>
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
-          {/* Left: Hamburger Menu + Files Button + Title */}
-          <div className="flex items-start gap-3">
-            <div className="flex flex-col gap-1.5 mt-1">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="!h-10 !w-10 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md backdrop-blur-sm"
-                    data-testid="button-hamburger-menu"
-                  >
-                    <Menu className="h-8 w-8" stroke="white" strokeWidth={2.5} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
-                    <User className="h-4 w-4 mr-2" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
-                    <GraduationCap className="h-4 w-4 mr-2" />
-                    School
-                  </DropdownMenuItem>
-                  <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
-                    <Palette className="h-4 w-4 mr-2" />
-                    Courses
-                  </DropdownMenuItem>
-                  <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
-                    <Settings className="h-4 w-4 mr-2" />
-                    Settings
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            </div>
-          
           </div>
         
         {/* Menu Bar Container - clips scroll content */}
@@ -2808,6 +2772,37 @@ export default function Dashboard() {
         }}>
           {/* Navigation Section */}
           <div className="flex items-center px-4 py-2 gap-2">
+            {/* Hamburger Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 hover:bg-white/20 rounded-md"
+                  data-testid="button-hamburger-menu"
+                >
+                  <Menu className="h-5 w-5 text-white" strokeWidth={2.5} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
+                  <GraduationCap className="h-4 w-4 mr-2" />
+                  School
+                </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
+                  <Palette className="h-4 w-4 mr-2" />
+                  Courses
+                </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {/* Week navigation */}
             <div className="flex items-center bg-white/10 rounded-lg px-2 py-1 backdrop-blur-sm">
               <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
