@@ -4191,7 +4191,7 @@ export default function Dashboard() {
                           href={`/api/files/download/${encodeURIComponent(file.objectPath)}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-sm group"
+                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-xs group"
                           data-testid={`flyout-file-${file.id}`}
                         >
                           <FileText className="h-4 w-4 text-blue-400 shrink-0" />
