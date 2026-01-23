@@ -2656,9 +2656,14 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`p-1 border-l border-border flex flex-col items-center justify-center ${
-                      isToday ? "bg-[#2d4a6f]" : (isFriday && new Date().getDay() !== 5) ? "bg-red-200" : ""
-                    }`}
+                    className="p-1 border-l border-border flex flex-col items-center justify-center"
+                    style={{ 
+                      backgroundColor: isToday 
+                        ? "rgba(45, 74, 111, 0.5)" 
+                        : (isFriday && new Date().getDay() !== 5) 
+                          ? "rgba(254, 202, 202, 0.5)" 
+                          : "transparent" 
+                    }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -2682,7 +2687,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border/50 sticky top-[52px] bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}>
+            <div className="grid border-b border-border/50 sticky top-[52px] backdrop-blur-sm z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(200, 200, 200, 0.5)' }}>
                 <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
                   ALL DAY
                 </div>
@@ -2890,12 +2895,12 @@ export default function Dashboard() {
               
               {/* Course Rows - CPPA122, CFNF400, CASL101 */}
               {[
-                { name: 'CPPA122', bg: 'bg-green-100/50', label: 'bg-green-200/50' },
-                { name: 'CFNF400', bg: 'bg-pink-100/50', label: 'bg-pink-200/50' },
-                { name: 'CASL101', bg: 'bg-indigo-100/50', label: 'bg-indigo-200/50' }
+                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.5)', label: 'rgba(134, 239, 172, 0.7)' },
+                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.5)', label: 'rgba(249, 168, 212, 0.7)' },
+                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.5)', label: 'rgba(165, 180, 252, 0.7)' }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full backdrop-blur-sm" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-                  <div className={`px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center ${course.label} text-black min-h-[20px]`}>
+                <div key={course.name} className="grid border-b border-border/50 w-full backdrop-blur-sm" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg }}>
+                  <div className="px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center text-black min-h-[20px]" style={{ backgroundColor: course.label }}>
                     {course.name}
                   </div>
                   {weekDays.map((day, dayIdx) => {
@@ -2907,7 +2912,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className={`px-0.5 py-0 border-l border-border/50 min-h-[20px] flex flex-col ${course.bg}`}
+                        className="px-0.5 py-0 border-l border-border/50 min-h-[20px] flex flex-col"
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
                         {courseTasks.map(task => (
