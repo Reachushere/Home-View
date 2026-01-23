@@ -1512,7 +1512,7 @@ export default function Dashboard() {
                   </div>
                   {/* Hamburger menus inline for selected week */}
                   {isSelected && (
-                    <div className="flex items-center gap-0.5 mx-1" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-around flex-1 mx-2" onClick={(e) => e.stopPropagation()}>
                       {SIDEBAR_COURSES.map((course) => (
                         <DropdownMenu key={course.id}>
                           <DropdownMenuTrigger asChild>
