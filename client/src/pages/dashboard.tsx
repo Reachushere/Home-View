@@ -1902,6 +1902,38 @@ export default function Dashboard() {
                 <span className="text-[8px] text-orange-400 font-medium ml-1">✈️ Travel</span>
               )}
             </div>
+            {/* Pomodoro Timer */}
+            <div className="flex items-center gap-2 mt-1">
+              <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
+                pomodoroMode === "work" ? "bg-red-700 text-white" : 
+                pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+              }`} data-testid="pomodoro-timer">
+                {formatPomodoroTime(pomodoroTime)}
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  className="p-0.5 hover:bg-white/20 rounded transition-colors"
+                  onClick={togglePomodoro}
+                  data-testid="button-pomodoro-toggle"
+                >
+                  {pomodoroRunning ? <Pause className="h-3 w-3 text-white" strokeWidth={2.5} /> : <Play className="h-3 w-3 text-white" strokeWidth={2.5} />}
+                </button>
+                <button
+                  className="p-0.5 hover:bg-white/20 rounded transition-colors"
+                  onClick={resetPomodoro}
+                  data-testid="button-pomodoro-reset"
+                >
+                  <RotateCcw className="h-3 w-3 text-white" strokeWidth={2.5} />
+                </button>
+                <button
+                  className="p-0.5 hover:bg-white/20 rounded transition-colors"
+                  onClick={skipPomodoro}
+                  data-testid="button-pomodoro-skip"
+                >
+                  <SkipForward className="h-3 w-3 text-white" strokeWidth={2.5} />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -2764,41 +2796,7 @@ export default function Dashboard() {
             </div>
             </div>
           
-          <div className="flex items-center gap-3">
-            {/* Pomodoro Timer */}
-            <div className="flex items-center gap-4 px-4 py-1.5 rounded-lg bg-white/60 h-[60px]">
-              <div className={`text-sm font-mono font-bold px-2 py-1 rounded ${
-                pomodoroMode === "work" ? "bg-red-700 text-white" : 
-                pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-              }`} data-testid="pomodoro-timer">
-                {formatPomodoroTime(pomodoroTime)}
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-1 hover:bg-black/20 rounded transition-colors"
-                  onClick={togglePomodoro}
-                  data-testid="button-pomodoro-toggle"
-                >
-                  {pomodoroRunning ? <Pause className="h-4 w-4 text-black" strokeWidth={2.5} /> : <Play className="h-4 w-4 text-black" strokeWidth={2.5} />}
-                </button>
-                <button
-                  className="p-1 hover:bg-black/20 rounded transition-colors"
-                  onClick={resetPomodoro}
-                  data-testid="button-pomodoro-reset"
-                >
-                  <RotateCcw className="h-4 w-4 text-black" strokeWidth={2.5} />
-                </button>
-                <button
-                  className="p-1 hover:bg-black/20 rounded transition-colors"
-                  onClick={skipPomodoro}
-                  data-testid="button-pomodoro-skip"
-                >
-                  <SkipForward className="h-4 w-4 text-black" strokeWidth={2.5} />
-                </button>
-              </div>
-            </div>
-            </div>
-        </div>
+          </div>
         
         {/* Menu Bar Container - clips scroll content */}
         <div className="flex-shrink-0 relative z-10" style={{ marginTop: '24px', marginRight: '8px' }}>
