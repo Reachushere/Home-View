@@ -702,6 +702,8 @@ export default function Dashboard() {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [playStartTime, setPlayStartTime] = useState<number | null>(null);
   const highlightIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isPlayingRef = useRef(false);
 
   // Fetch text when file is selected for preview
   useEffect(() => {
@@ -730,18 +732,23 @@ export default function Dashboard() {
     }
   }, [previewFile]);
 
-  // Cleanup interval on unmount
+  // Cleanup interval and timeout on unmount
   useEffect(() => {
     return () => {
       if (highlightIntervalRef.current) {
         clearInterval(highlightIntervalRef.current);
       }
+      if (highlightTimeoutRef.current) {
+        clearTimeout(highlightTimeoutRef.current);
+      }
     };
   }, []);
 
-  // Word highlighting animation based on reading speed (~2.5 words per second / 150 wpm)
-  const WORDS_PER_SECOND = 2.5;
+  // Word highlighting animation based on reading speed (~2 words per second / 120 wpm for Alexa TTS)
+  // Also add delay to account for network + TTS processing time
+  const WORDS_PER_SECOND = 2.0;
   const MS_PER_WORD = 1000 / WORDS_PER_SECOND;
+  const TTS_START_DELAY_MS = 3000; // 3 second delay for TTS to start speaking
 
   const startHighlighting = () => {
     const words = previewText.split(/\s+/).filter(w => w.length > 0);
@@ -749,33 +756,49 @@ export default function Dashboard() {
     
     setPlayStartTime(Date.now());
     setIsPlaying(true);
-    setCurrentWordIndex(0);
+    isPlayingRef.current = true;
+    setCurrentWordIndex(-1); // Start at -1 to wait for delay
     
     if (highlightIntervalRef.current) {
       clearInterval(highlightIntervalRef.current);
     }
+    if (highlightTimeoutRef.current) {
+      clearTimeout(highlightTimeoutRef.current);
+    }
     
-    highlightIntervalRef.current = setInterval(() => {
-      setCurrentWordIndex(prev => {
-        const next = prev + 1;
-        if (next >= words.length) {
-          if (highlightIntervalRef.current) {
-            clearInterval(highlightIntervalRef.current);
-            highlightIntervalRef.current = null;
+    // Wait for TTS to actually start speaking before highlighting
+    highlightTimeoutRef.current = setTimeout(() => {
+      if (!isPlayingRef.current) return; // Stopped during delay
+      setCurrentWordIndex(0);
+      
+      highlightIntervalRef.current = setInterval(() => {
+        setCurrentWordIndex(prev => {
+          const next = prev + 1;
+          if (next >= words.length) {
+            if (highlightIntervalRef.current) {
+              clearInterval(highlightIntervalRef.current);
+              highlightIntervalRef.current = null;
+            }
+            setIsPlaying(false);
+            isPlayingRef.current = false;
+            return prev;
           }
-          setIsPlaying(false);
-          return prev;
-        }
-        return next;
-      });
-    }, MS_PER_WORD);
+          return next;
+        });
+      }, MS_PER_WORD);
+    }, TTS_START_DELAY_MS);
   };
 
   const stopHighlighting = () => {
     setIsPlaying(false);
+    isPlayingRef.current = false;
     if (highlightIntervalRef.current) {
       clearInterval(highlightIntervalRef.current);
       highlightIntervalRef.current = null;
+    }
+    if (highlightTimeoutRef.current) {
+      clearTimeout(highlightTimeoutRef.current);
+      highlightTimeoutRef.current = null;
     }
   };
 
