@@ -1871,33 +1871,10 @@ export default function Dashboard() {
             const isWeekFinished = weekEndDate < new Date();
             const isSelected = selectedWeek === week.weekNumber && !selectedDate;
             return (
-              <div key={week.weekNumber} className="flex items-center gap-0.5">
-                <Button
-                  variant={isSelected ? "secondary" : "ghost"}
-                  className={`justify-between gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "flex-shrink-0" : "flex-1"}`}
-                  size="sm"
-                  onClick={() => {
-                    setSelectedWeek(week.weekNumber);
-                    setSelectedDate(null);
-                  }}
-                  data-testid={`button-week-${week.weekNumber}`}
-                >
-                  <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
-                    <Calendar className="h-3 w-3" />
-                    <span className="text-xs">Week {week.weekNumber}</span>
-                    <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
-                      ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
-                    </span>
-                  </div>
-                  {week.taskCount > 0 && (
-                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center">
-                      {week.taskCount}
-                    </Badge>
-                  )}
-                </Button>
-                {/* Hamburger menus outside button for selected week */}
+              <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
+                {/* Hamburger menus on left for selected week */}
                 {isSelected && (
-                  <div className="flex items-center justify-around flex-1 mx-1">
+                  <div className="flex items-center gap-0.5 pl-1">
                     {SIDEBAR_COURSES.map((course) => {
                       const availableFolders = FOLDER_TYPES.filter(
                         (folder) => !deletedFolderIds.has(`week-${week.weekNumber}-${course.id}-${folder.id}`)
@@ -1906,10 +1883,10 @@ export default function Dashboard() {
                         <DropdownMenu key={course.id}>
                           <DropdownMenuTrigger asChild>
                             <button
-                              className={`p-1.5 rounded ${course.hoverBg} transition-colors ${availableFolders.length === 0 ? 'opacity-40' : ''}`}
+                              className={`p-1 rounded ${course.hoverBg} transition-colors ${availableFolders.length === 0 ? 'opacity-40' : ''}`}
                               data-testid={`menu-week-${week.weekNumber}-${course.id}`}
                             >
-                              <Menu className={course.color} style={{ width: '22px', height: '22px' }} strokeWidth={2} />
+                              <Menu className={course.color} style={{ width: '20px', height: '20px' }} strokeWidth={2} />
                             </button>
                           </DropdownMenuTrigger>
                           {availableFolders.length > 0 && (
@@ -1957,6 +1934,29 @@ export default function Dashboard() {
                     })}
                   </div>
                 )}
+                <Button
+                  variant="ghost"
+                  className={`justify-between gap-1 h-auto py-1 px-1 flex-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
+                  size="sm"
+                  onClick={() => {
+                    setSelectedWeek(week.weekNumber);
+                    setSelectedDate(null);
+                  }}
+                  data-testid={`button-week-${week.weekNumber}`}
+                >
+                  <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
+                    <Calendar className="h-3 w-3" />
+                    <span className="text-xs">Week {week.weekNumber}</span>
+                    <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
+                      ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
+                    </span>
+                  </div>
+                  {week.taskCount > 0 && (
+                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center">
+                      {week.taskCount}
+                    </Badge>
+                  )}
+                </Button>
               </div>
             );
           })}
