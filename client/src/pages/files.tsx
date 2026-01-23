@@ -166,7 +166,7 @@ export default function FilesPage() {
   const [editingFolderId, setEditingFolderId] = useState<number | null>(null);
   const [editingFolderName, setEditingFolderName] = useState("");
   const [foldersPanelWidth, setFoldersPanelWidth] = useState(224); // 224px = w-56
-  const [isResizingPanel, setIsResizingPanel] = useState(false);
+  const isResizingPanelRef = useRef(false);
 
   // Column widths state for draggable resizing
   const [columnWidths, setColumnWidths] = useState({
@@ -217,27 +217,27 @@ export default function FilesPage() {
   const panelStartX = useRef<number>(0);
   const panelStartWidth = useRef<number>(0);
 
+  const handlePanelMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizingPanelRef.current) return;
+    const diff = e.clientX - panelStartX.current;
+    const newWidth = Math.max(150, Math.min(500, panelStartWidth.current + diff));
+    setFoldersPanelWidth(newWidth);
+  }, []);
+
+  const handlePanelMouseUp = useCallback(() => {
+    isResizingPanelRef.current = false;
+    document.removeEventListener('mousemove', handlePanelMouseMove);
+    document.removeEventListener('mouseup', handlePanelMouseUp);
+  }, [handlePanelMouseMove]);
+
   const handlePanelMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    setIsResizingPanel(true);
+    isResizingPanelRef.current = true;
     panelStartX.current = e.clientX;
     panelStartWidth.current = foldersPanelWidth;
     document.addEventListener('mousemove', handlePanelMouseMove);
     document.addEventListener('mouseup', handlePanelMouseUp);
-  }, [foldersPanelWidth]);
-
-  const handlePanelMouseMove = useCallback((e: MouseEvent) => {
-    if (!isResizingPanel) return;
-    const diff = e.clientX - panelStartX.current;
-    const newWidth = Math.max(150, Math.min(500, panelStartWidth.current + diff));
-    setFoldersPanelWidth(newWidth);
-  }, [isResizingPanel]);
-
-  const handlePanelMouseUp = useCallback(() => {
-    setIsResizingPanel(false);
-    document.removeEventListener('mousemove', handlePanelMouseMove);
-    document.removeEventListener('mouseup', handlePanelMouseUp);
-  }, [handlePanelMouseMove]);
+  }, [foldersPanelWidth, handlePanelMouseMove, handlePanelMouseUp]);
 
   useEffect(() => {
     return () => {
