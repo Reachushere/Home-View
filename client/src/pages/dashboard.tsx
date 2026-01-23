@@ -2373,9 +2373,9 @@ export default function Dashboard() {
             </Button>
           </div>
           
-          {/* Gray section: remaining buttons */}
-          <div className="flex-1 flex items-center justify-between bg-slate-300 px-2 py-1">
-            <RouterLink href="/files" className="flex items-center ml-2">
+          {/* Yellow Files section */}
+          <div className="flex items-center py-1 px-2" style={{backgroundColor: "#FFCD44"}}>
+            <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
                 className="!h-[22px] !min-h-0 !px-1.5 text-[11px] hover:bg-[#e6b93d] border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif", backgroundColor: "#FFCD44"}} 
@@ -2385,7 +2385,10 @@ export default function Dashboard() {
                 Files
               </Button>
             </RouterLink>
-            <div className="h-4 flex ml-3 mr-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+          </div>
+          {/* Gray section: remaining buttons */}
+          <div className="flex-1 flex items-center justify-between bg-slate-300 px-2 py-1">
+            <div className="h-4 flex ml-1 mr-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             
             {/* Pomodoro Timer */}
             <div className="flex items-center gap-2 h-[22px]">
