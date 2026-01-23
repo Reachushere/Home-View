@@ -4186,18 +4186,15 @@ export default function Dashboard() {
                   ) : (
                     <div className="space-y-1">
                       {currentWeekFiles.map(file => (
-                        <a
+                        <button
                           key={file.id}
-                          href={`/api/files/download/${encodeURIComponent(file.objectPath)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-xs group"
+                          onClick={() => setPreviewFile(file)}
+                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-xs group w-full text-left"
                           data-testid={`flyout-file-${file.id}`}
                         >
                           <FileText className="h-4 w-4 text-blue-400 shrink-0" />
                           <span className="truncate flex-1">{file.displayName}</span>
-                          <ExternalLink className="h-3 w-3 text-gray-500 opacity-0 group-hover:opacity-100" />
-                        </a>
+                        </button>
                       ))}
                     </div>
                   )}
