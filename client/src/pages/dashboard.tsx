@@ -3460,7 +3460,7 @@ export default function Dashboard() {
         <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
           {/* CPPA122 Completed */}
           <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.50)' }} data-testid="section-completed-cppa122">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 bg-white/90 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-green-600" />
               <span className="text-green-600">Completed - CPPA122</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})</span>
             </h4>
@@ -3488,7 +3488,7 @@ export default function Dashboard() {
 
           {/* CFNF400 Completed */}
           <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.50)' }} data-testid="section-completed-cfnf400">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 bg-white/90 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-pink-600" />
               <span className="text-pink-600">Completed - CFNF400</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})</span>
             </h4>
@@ -3516,7 +3516,7 @@ export default function Dashboard() {
 
           {/* CASL101 Completed */}
           <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.50)' }} data-testid="section-completed-casl101">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 bg-white/90 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-purple-600" />
               <span className="text-purple-600">Completed - CASL101</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
             </h4>
