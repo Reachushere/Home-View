@@ -59,7 +59,7 @@ import {
   User,
   Palette,
 } from "lucide-react";
-import { Link as RouterLink } from "wouter";
+import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, isBefore } from "date-fns";
@@ -91,6 +91,19 @@ const courseColors: Record<string, { bg: string; border: string; text: string; d
   "CFNF400": { bg: "bg-pink-500/30", border: "border-pink-500", text: "text-pink-700 dark:text-pink-300", dot: "bg-pink-500", prepBg: "bg-pink-200/50", prepBorder: "border-pink-300", prepText: "text-pink-600 dark:text-pink-400" },
   "CASL101": { bg: "bg-indigo-500/30", border: "border-indigo-500", text: "text-indigo-700 dark:text-indigo-300", dot: "bg-indigo-500", prepBg: "bg-indigo-200/50", prepBorder: "border-indigo-300", prepText: "text-indigo-600 dark:text-indigo-400" },
 };
+
+// Course folder configuration for sidebar hamburger menus
+const SIDEBAR_COURSES = [
+  { id: "cppa122", name: "CPPA122", color: "text-green-500", hoverBg: "hover:bg-green-500/20" },
+  { id: "cfnf400", name: "CFNF400", color: "text-pink-500", hoverBg: "hover:bg-pink-500/20" },
+  { id: "casl101", name: "CASL101", color: "text-indigo-500", hoverBg: "hover:bg-indigo-500/20" },
+];
+
+const FOLDER_TYPES = [
+  { id: "module", name: "Module", icon: "📚" },
+  { id: "reading", name: "Reading", icon: "📖" },
+  { id: "other", name: "Other", icon: "📁" },
+];
 
 interface WeekInfo {
   weekNumber: number;
@@ -1477,31 +1490,67 @@ export default function Dashboard() {
           {weeks.map((week) => {
             const weekEndDate = parseISO(week.endDate);
             const isWeekFinished = weekEndDate < new Date();
+            const isSelected = selectedWeek === week.weekNumber && !selectedDate;
             return (
-              <Button
-                key={week.weekNumber}
-                variant={selectedWeek === week.weekNumber && !selectedDate ? "secondary" : "ghost"}
-                className={`justify-between gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""}`}
-                size="sm"
-                onClick={() => {
-                  setSelectedWeek(week.weekNumber);
-                  setSelectedDate(null);
-                }}
-                data-testid={`button-week-${week.weekNumber}`}
-              >
-                <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
-                  <Calendar className="h-3 w-3" />
-                  <span className="text-xs">Week {week.weekNumber}</span>
-                  <span className={`text-[9px] font-bold ${selectedWeek === week.weekNumber && !selectedDate ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
-                    ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
-                  </span>
-                </div>
-                {week.taskCount > 0 && (
-                  <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0 min-w-5 text-center justify-center">
-                    {week.taskCount}
-                  </Badge>
+              <div key={week.weekNumber} className="flex flex-col">
+                <Button
+                  variant={isSelected ? "secondary" : "ghost"}
+                  className={`justify-between gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""}`}
+                  size="sm"
+                  onClick={() => {
+                    setSelectedWeek(week.weekNumber);
+                    setSelectedDate(null);
+                  }}
+                  data-testid={`button-week-${week.weekNumber}`}
+                >
+                  <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
+                    <Calendar className="h-3 w-3" />
+                    <span className="text-xs">Week {week.weekNumber}</span>
+                    <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
+                      ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
+                    </span>
+                  </div>
+                  {week.taskCount > 0 && (
+                    <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0 min-w-5 text-center justify-center">
+                      {week.taskCount}
+                    </Badge>
+                  )}
+                </Button>
+                {/* Hamburger menus for selected week */}
+                {isSelected && (
+                  <div className="flex items-center gap-1 px-2 py-1 ml-4">
+                    {SIDEBAR_COURSES.map((course) => (
+                      <DropdownMenu key={course.id}>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className={`p-1 rounded ${course.hoverBg} transition-colors`}
+                            data-testid={`menu-week-${week.weekNumber}-${course.id}`}
+                          >
+                            <Menu className={`h-3 w-3 ${course.color}`} />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="min-w-[140px]">
+                          <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
+                            {course.name}
+                          </div>
+                          {FOLDER_TYPES.map((folder) => (
+                            <DropdownMenuItem
+                              key={folder.id}
+                              onClick={() => {
+                                window.location.href = `/files?folder=week-${week.weekNumber}-${course.id}-${folder.id}`;
+                              }}
+                              data-testid={`menu-item-${course.id}-${folder.id}`}
+                            >
+                              <span className="mr-2">{folder.icon}</span>
+                              {folder.name}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ))}
+                  </div>
                 )}
-              </Button>
+              </div>
             );
           })}
         </nav>
