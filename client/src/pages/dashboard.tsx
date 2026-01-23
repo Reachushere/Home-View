@@ -1890,7 +1890,7 @@ export default function Dashboard() {
                     </span>
                   </div>
                   {week.taskCount > 0 && (
-                    <Badge variant="outline" className={`text-[10px] px-1 py-0 min-w-5 text-center justify-center ${isSelected ? 'text-black border-black' : ''}`}>
+                    <Badge variant="outline" className={`text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto ${isSelected ? 'text-black border-black' : ''}`}>
                       {week.taskCount}
                     </Badge>
                   )}
