@@ -180,6 +180,33 @@ export default function Dashboard() {
   });
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isWeeklyFilesFlyoutOpen, setIsWeeklyFilesFlyoutOpen] = useState(true);
+  
+  // Calculate if it's nighttime in Toronto based on approximate sunrise/sunset
+  const isNighttime = useMemo(() => {
+    // Get current time in Toronto timezone
+    const torontoTime = new Date(currentTime.toLocaleString('en-US', { timeZone: 'America/Toronto' }));
+    const hours = torontoTime.getHours();
+    const minutes = torontoTime.getMinutes();
+    const currentMinutes = hours * 60 + minutes;
+    
+    // Approximate sunrise/sunset times for Toronto (varies by season)
+    // Winter: sunrise ~7:45am, sunset ~5:00pm
+    // Summer: sunrise ~5:30am, sunset ~9:00pm
+    // We'll interpolate based on day of year
+    const dayOfYear = Math.floor((torontoTime.getTime() - new Date(torontoTime.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Sine wave approximation for seasonal variation
+    // Peak daylight around day 172 (June 21), shortest around day 355 (Dec 21)
+    const seasonalFactor = Math.sin((dayOfYear - 80) * 2 * Math.PI / 365);
+    
+    // Sunrise: ranges from 5:30am (330 min) in summer to 7:45am (465 min) in winter
+    const sunriseMinutes = Math.round(397 - seasonalFactor * 67);
+    
+    // Sunset: ranges from 5:00pm (1020 min) in winter to 9:00pm (1260 min) in summer
+    const sunsetMinutes = Math.round(1140 + seasonalFactor * 120);
+    
+    return currentMinutes < sunriseMinutes || currentMinutes > sunsetMinutes;
+  }, [currentTime]);
   const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('checkedCourses');
     return saved ? JSON.parse(saved) : {};
@@ -1836,7 +1863,12 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-hidden" style={{ backgroundImage: `url(${customBackground || campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+      <div className="flex flex-1 overflow-hidden relative" style={{ backgroundImage: `url(${customBackground || campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+        {/* Night overlay - dims background based on Toronto sunrise/sunset */}
+        <div 
+          className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isNighttime ? 'opacity-100' : 'opacity-0'}`}
+          style={{ background: 'linear-gradient(to bottom, rgba(10, 15, 30, 0.6) 0%, rgba(5, 10, 25, 0.7) 100%)' }}
+        />
       {isTodayExpanded && (
         <div 
           className="today-backdrop"
