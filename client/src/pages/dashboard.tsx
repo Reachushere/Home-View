@@ -2808,7 +2808,7 @@ export default function Dashboard() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex flex-col bg-white/60 rounded-lg px-4 py-1.5 h-[60px] justify-center">
+            <div className="flex flex-col bg-white/40 rounded-lg px-4 py-1.5 h-[60px] justify-center">
               <h1 className="text-base font-semibold text-black" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
               {/* Clock below title */}
               <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
