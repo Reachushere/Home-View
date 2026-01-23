@@ -2727,54 +2727,68 @@ export default function Dashboard() {
       <main className="flex-1 pt-2 px-6 pb-6 flex flex-col overflow-hidden">
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
-          {/* Left: Hamburger Menu + Title */}
+          {/* Left: Hamburger Menu + Files Button + Title */}
           <div className="flex items-start gap-3">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="!h-8 !w-8 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md backdrop-blur-sm mt-1"
-                  data-testid="button-hamburger-menu"
+            <div className="flex flex-col gap-1.5 mt-1">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="!h-9 !w-9 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md backdrop-blur-sm"
+                    data-testid="button-hamburger-menu"
+                  >
+                    <Menu className="h-5 w-5" stroke="white" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
+                    <User className="h-4 w-4 mr-2" />
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
+                    <GraduationCap className="h-4 w-4 mr-2" />
+                    School
+                  </DropdownMenuItem>
+                  <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
+                    <Palette className="h-4 w-4 mr-2" />
+                    Courses
+                  </DropdownMenuItem>
+                  <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Settings
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <RouterLink href="/files">
+                <Button 
+                  className="!h-9 !w-9 !min-h-0 p-0 rounded-lg font-medium border-0" 
+                  style={{
+                    background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+                    color: '#1e3a5f'
+                  }}
+                  data-testid="button-files-link"
                 >
-                  <Menu className="h-4 w-4" stroke="white" />
+                  <FolderOpen className="h-5 w-5" />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
-                  <User className="h-4 w-4 mr-2" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  School
-                </DropdownMenuItem>
-                <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
-                  <Palette className="h-4 w-4 mr-2" />
-                  Courses
-                </DropdownMenuItem>
-                <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </RouterLink>
+            </div>
             <div className="flex flex-col">
               <h1 className="text-base font-semibold text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
               {/* Clock below title */}
               <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
-                <span className="text-[10px] text-white font-medium">
+                <span className="text-xs text-white font-medium">
                   {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
                 </span>
-                <div className="w-[2px] h-4 bg-white/50" />
+                <div className="w-[2px] h-5 bg-white/50" />
                 <div className="flex items-baseline">
-                  <span className="text-sm font-semibold text-white tabular-nums">
+                  <span className="text-base font-semibold text-white tabular-nums">
                     {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
                   </span>
-                  <span className="text-[10px] text-white/80 tabular-nums">
+                  <span className="text-xs text-white/80 tabular-nums">
                     :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
                   </span>
-                  <span className="text-[7px] font-bold text-white/80 ml-0.5 uppercase">
+                  <span className="text-[9px] font-bold text-white/80 ml-0.5 uppercase">
                     {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
                   </span>
                 </div>
@@ -2874,24 +2888,7 @@ export default function Dashboard() {
               </Button>
             </div>
 
-            {/* Files Button */}
-            <RouterLink href="/files" className="flex items-center">
-              <Button 
-                className="!h-7 !min-h-0 px-3 text-[11px] rounded-lg font-medium border-0" 
-                style={{
-                  background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
-                  color: '#1e3a5f'
-                }}
-                data-testid="button-files-link"
-              >
-                <FolderOpen className="h-3.5 w-3.5 mr-1.5" />
-                Files
-              </Button>
-            </RouterLink>
-          </div>
-
-          {/* Separator */}
-          <div className="w-px h-6 bg-white/20" />
+            </div>
 
           {/* Quick Add Section */}
           <div className="flex items-center pl-3 pr-10 py-2 gap-1 flex-1 justify-end">
