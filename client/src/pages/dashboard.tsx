@@ -3345,7 +3345,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Row - Purple */}
-                  <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.50)' }}>
+                  <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.70)' }}>
                     <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
@@ -3397,7 +3397,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CASL101 Row - Purple */}
-              <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.50)' }}>
+              <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.70)' }}>
                 <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
