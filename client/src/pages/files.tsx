@@ -357,19 +357,6 @@ export default function FilesPage() {
     },
   });
 
-  const clearAllCustomFoldersMutation = useMutation({
-    mutationFn: async () => {
-      return await apiRequest("DELETE", "/api/custom-folders");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/custom-folders"] });
-      toast({ title: "All custom folders cleared" });
-    },
-    onError: (err) => {
-      toast({ title: "Failed to clear folders", description: String(err), variant: "destructive" });
-    },
-  });
-
   // Delete all CASL101 folders across all weeks
   const deleteAllCaslFoldersMutation = useMutation({
     mutationFn: async () => {
@@ -1234,7 +1221,7 @@ export default function FilesPage() {
             </div>
 
             {/* Folder Management Buttons */}
-            <div className="px-2 pt-3 border-t border-[#3d3d3d] mt-2 space-y-2">
+            <div className="px-2 pt-3 border-t border-[#3d3d3d] mt-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -1245,17 +1232,6 @@ export default function FilesPage() {
               >
                 <Trash2 className="h-3 w-3 mr-1" />
                 {deleteAllCaslFoldersMutation.isPending ? "Deleting..." : "Delete All CASL101 Folders"}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-xs text-red-400 border-red-400/50 hover:bg-red-500/20"
-                onClick={() => clearAllCustomFoldersMutation.mutate()}
-                disabled={clearAllCustomFoldersMutation.isPending || customFoldersData.length === 0}
-                data-testid="button-clear-custom-folders"
-              >
-                <Trash2 className="h-3 w-3 mr-1" />
-                {clearAllCustomFoldersMutation.isPending ? "Clearing..." : `Clear Custom Folders (${customFoldersData.length})`}
               </Button>
             </div>
           </div>
