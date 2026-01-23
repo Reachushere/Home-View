@@ -4199,11 +4199,13 @@ export default function Dashboard() {
                         
                         return Object.entries(groupedFiles).map(([courseCode, files]) => {
                           const colors = courseColors[courseCode];
+                          const courseInfo = coursesData.courses.find(c => c.name.toUpperCase().startsWith(courseCode));
+                          const courseName = courseInfo?.name || courseCode;
                           return (
                             <div key={courseCode}>
                               {/* Course header */}
                               <div className="text-[10px] font-bold mb-1 text-white">
-                                {courseCode}
+                                {courseName}
                               </div>
                               {/* Files for this course */}
                               <div className="space-y-1">
