@@ -4165,12 +4165,12 @@ export default function Dashboard() {
         {/* Weekly Files Flyout Tab - Fixed position outside overflow containers */}
         {calendarView === "week" && (
           <div 
-            className="fixed z-50 flex items-center flex-row-reverse"
+            className="fixed z-50 flex items-center"
             style={{ top: '50%', transform: 'translateY(-50%)', left: '376px' }}
           >
-            {/* Flyout Panel */}
+            {/* Flyout Panel - slides left */}
             <div 
-              className={`bg-[#1a1a2e] border border-[#3d3d3d] rounded-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
+              className={`bg-[#1a1a2e] border border-[#3d3d3d] rounded-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden absolute right-full mr-0 ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
               style={{ height: '400px' }}
             >
               <div className="w-72 h-full flex flex-col">
@@ -4214,7 +4214,7 @@ export default function Dashboard() {
               <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
                 <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
                 Weekly Files
-                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+                {isWeeklyFilesFlyoutOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
               </span>
             </button>
           </div>
