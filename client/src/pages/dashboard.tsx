@@ -1874,7 +1874,7 @@ export default function Dashboard() {
               <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
                 <Button
                   variant="ghost"
-                  className={`justify-start gap-1 h-auto py-1 px-1 flex-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
+                  className={`justify-start gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent flex-shrink-0" : "flex-1"}`}
                   size="sm"
                   onClick={() => {
                     setSelectedWeek(week.weekNumber);
@@ -1889,15 +1889,15 @@ export default function Dashboard() {
                       ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                     </span>
                   </div>
-                  {week.taskCount > 0 && (
-                    <Badge variant="outline" className={`text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto ${isSelected ? 'text-black border-black' : ''}`}>
+                  {!isSelected && week.taskCount > 0 && (
+                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto">
                       {week.taskCount}
                     </Badge>
                   )}
                 </Button>
-                {/* Hamburger menus on right for selected week */}
+                {/* Hamburger menus for selected week */}
                 {isSelected && (
-                  <div className="flex items-center gap-0.5" style={{ marginRight: '40px' }}>
+                  <div className="flex items-center gap-0.5 ml-2">
                     {SIDEBAR_COURSES.map((course) => {
                       const availableFolders = FOLDER_TYPES.filter(
                         (folder) => !deletedFolderIds.has(`week-${week.weekNumber}-${course.id}-${folder.id}`)
@@ -1957,6 +1957,12 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
+                )}
+                {/* Task count for selected week - positioned at right edge */}
+                {isSelected && week.taskCount > 0 && (
+                  <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto mr-1 text-black border-black">
+                    {week.taskCount}
+                  </Badge>
                 )}
               </div>
             );
