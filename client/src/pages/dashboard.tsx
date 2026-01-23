@@ -265,6 +265,31 @@ export default function Dashboard() {
     toast({ title: "Courses saved", description: "Your courses have been updated." });
   };
   
+  // TTS settings for word highlighting synchronization
+  const [ttsSettings, setTtsSettings] = useState<{
+    startDelay: number; // seconds before TTS starts speaking
+    wordsPerMinute: number; // speech rate in words per minute
+    useSmartTiming: boolean; // adjust timing based on word length
+  }>(() => {
+    const saved = localStorage.getItem('ttsSettings');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {}
+    }
+    return {
+      startDelay: 27, // 27 seconds default delay
+      wordsPerMinute: 120, // 120 WPM default (2 words per second)
+      useSmartTiming: true, // enabled by default
+    };
+  });
+  
+  const saveTtsSettings = (settings: typeof ttsSettings) => {
+    setTtsSettings(settings);
+    localStorage.setItem('ttsSettings', JSON.stringify(settings));
+    toast({ title: "TTS settings saved", description: "Your text-to-speech highlighting settings have been updated." });
+  };
+  
   const getCourseColor = (courseName: string): string => {
     const course = coursesData.courses.find(c => c.name && courseName.includes(c.name.split(' - ')[0]));
     return course?.color || '#6b7280';
@@ -769,11 +794,25 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Word highlighting animation based on reading speed (~2 words per second / 120 wpm for Alexa TTS)
-  // Also add delay to account for network + TTS processing time
-  const WORDS_PER_SECOND = 2.0;
-  const MS_PER_WORD = 1000 / WORDS_PER_SECOND;
-  const TTS_START_DELAY_MS = 27000; // 27 second delay for TTS to start speaking
+  // Word highlighting animation with smart timing based on word length
+  // Uses ttsSettings for configurable delay and speech rate
+  
+  // Calculate word duration based on length (longer words take longer to say)
+  const getWordDuration = (word: string, baseMs: number): number => {
+    if (!ttsSettings.useSmartTiming) return baseMs;
+    
+    // Count syllables approximately (vowel groups)
+    const syllables = word.toLowerCase().replace(/[^aeiouy]/g, '').replace(/[aeiouy]+/g, 'x').length || 1;
+    // Longer words with more syllables take longer
+    // Average English word has ~1.5 syllables, so adjust based on that
+    const syllableFactor = Math.max(0.6, Math.min(2.0, syllables / 1.5));
+    
+    // Also consider word length (numbers, punctuation affect timing)
+    const lengthFactor = Math.max(0.7, Math.min(1.5, word.length / 5));
+    
+    // Combine factors with base timing
+    return Math.round(baseMs * (syllableFactor * 0.7 + lengthFactor * 0.3));
+  };
 
   const startHighlighting = () => {
     const words = previewText.split(/\s+/).filter(w => w.length > 0);
@@ -791,27 +830,37 @@ export default function Dashboard() {
       clearTimeout(highlightTimeoutRef.current);
     }
     
+    // Calculate base milliseconds per word from WPM setting
+    const baseMs = 60000 / ttsSettings.wordsPerMinute;
+    const startDelayMs = ttsSettings.startDelay * 1000;
+    
     // Wait for TTS to actually start speaking before highlighting
     highlightTimeoutRef.current = setTimeout(() => {
       if (!isPlayingRef.current) return; // Stopped during delay
       setCurrentWordIndex(0);
       
-      highlightIntervalRef.current = setInterval(() => {
-        setCurrentWordIndex(prev => {
-          const next = prev + 1;
-          if (next >= words.length) {
-            if (highlightIntervalRef.current) {
-              clearInterval(highlightIntervalRef.current);
-              highlightIntervalRef.current = null;
-            }
-            setIsPlaying(false);
-            isPlayingRef.current = false;
-            return prev;
-          }
-          return next;
-        });
-      }, MS_PER_WORD);
-    }, TTS_START_DELAY_MS);
+      // Use recursive setTimeout instead of setInterval for variable timing
+      const scheduleNextWord = (currentIdx: number) => {
+        if (!isPlayingRef.current) return;
+        if (currentIdx >= words.length - 1) {
+          setIsPlaying(false);
+          isPlayingRef.current = false;
+          return;
+        }
+        
+        const currentWord = words[currentIdx];
+        const duration = getWordDuration(currentWord, baseMs);
+        
+        highlightTimeoutRef.current = setTimeout(() => {
+          if (!isPlayingRef.current) return;
+          const nextIdx = currentIdx + 1;
+          setCurrentWordIndex(nextIdx);
+          scheduleNextWord(nextIdx);
+        }, duration);
+      };
+      
+      scheduleNextWord(0);
+    }, startDelayMs);
   };
 
   const stopHighlighting = () => {
@@ -3035,6 +3084,81 @@ export default function Dashboard() {
                     >
                       <Upload className="h-4 w-4 mr-2" />
                       {customBackground ? "Change Background" : "Upload Background"}
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* TTS Highlighting Settings */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Fine-tune word highlighting to sync with your Home Assistant TTS voice.
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Start Delay</Label>
+                        <span className="text-xs text-muted-foreground">{ttsSettings.startDelay}s</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="5"
+                        max="60"
+                        step="1"
+                        value={ttsSettings.startDelay}
+                        onChange={(e) => setTtsSettings(prev => ({ ...prev, startDelay: Number(e.target.value) }))}
+                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="input-tts-start-delay"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Time before highlighting begins (network + TTS processing)
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Speech Rate</Label>
+                        <span className="text-xs text-muted-foreground">{ttsSettings.wordsPerMinute} WPM</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="60"
+                        max="200"
+                        step="5"
+                        value={ttsSettings.wordsPerMinute}
+                        onChange={(e) => setTtsSettings(prev => ({ ...prev, wordsPerMinute: Number(e.target.value) }))}
+                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="input-tts-wpm"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Words per minute - match your TTS voice speed
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-xs">Smart Timing</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Adjust for word length (longer words = longer highlight)
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={ttsSettings.useSmartTiming}
+                        onChange={(e) => setTtsSettings(prev => ({ ...prev, useSmartTiming: e.target.checked }))}
+                        className="h-4 w-4 rounded border-gray-300"
+                        data-testid="input-tts-smart-timing"
+                      />
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => saveTtsSettings(ttsSettings)}
+                      data-testid="button-save-tts-settings"
+                    >
+                      Save TTS Settings
                     </Button>
                   </div>
                 </div>
