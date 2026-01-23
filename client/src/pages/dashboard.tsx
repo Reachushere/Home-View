@@ -3310,7 +3310,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section (Urgent) - Now in Middle */}
-          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(255,255,255,0.50)' }} data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-orange-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Calendar className="h-3 w-3 text-orange-500" />
               URGENT: Do Today ({todayTasks.length})
@@ -3362,7 +3362,7 @@ export default function Dashboard() {
           </section>
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
-          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.50)' }} data-testid="section-missed">
+          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col" data-testid="section-missed">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-red-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Clock className="h-3 w-3 text-red-500" />
               OVERDUE: Missed Tasks ({missedTasks.length})
