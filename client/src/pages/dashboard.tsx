@@ -2405,7 +2405,7 @@ export default function Dashboard() {
           <div className="w-px h-6 bg-white/20" />
 
           {/* Pomodoro Section */}
-          <div className="flex items-center pl-3 pr-1 py-2 gap-2 -ml-2">
+          <div className="flex items-center pl-3 pr-1 py-2 gap-2 -ml-[13px]">
             <div className={`text-sm font-mono font-bold px-2 h-7 flex items-center rounded-md ${
               pomodoroMode === "work" ? "bg-red-700 text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
