@@ -164,8 +164,8 @@ async function sendNextChunk() {
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
   try {
-    // Wrap in SSML to slow down the voice (80% speed)
-    const ssmlChunk = `<speak><prosody rate="80%">${nextChunk}</prosody></speak>`;
+    // Wrap in SSML to slow down the voice (90% speed)
+    const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
     
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
@@ -195,7 +195,7 @@ async function sendNextChunk() {
 }
 
 // Check if Alexa is still speaking by polling its state
-async function isAlexaSpeaking(entityId: string): Promise<boolean> {
+async function isAlexaSpeaking(entityId: string): Promise<boolean | null> {
   try {
     const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
     const response = await fetch(`${haUrl}/api/states/${entityId}`, {
@@ -205,14 +205,18 @@ async function isAlexaSpeaking(entityId: string): Promise<boolean> {
       },
     });
     
-    if (!response.ok) return false;
+    if (!response.ok) {
+      console.log("Failed to get Alexa state:", response.status);
+      return null; // Error - return null to indicate unknown
+    }
     
     const state = await response.json();
+    console.log(`Alexa state for ${entityId}: ${state.state}`);
     // Alexa media player states: playing, paused, idle, standby
     return state.state === 'playing';
   } catch (error) {
     console.error("Error checking Alexa state:", error);
-    return false;
+    return null; // Error - return null to indicate unknown
   }
 }
 
@@ -221,9 +225,13 @@ async function waitForAlexaAndSendNext() {
   if (!currentTTSSession || !currentTTSSession.isPlaying) return;
   
   const targetEntity = currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY;
+  let sawPlaying = false;
+  let pollCount = 0;
+  const maxPolls = 90; // 3 minutes max (90 * 2 seconds)
   
-  // Wait a bit for TTS to start (Alexa takes ~2 seconds to begin speaking)
-  await new Promise(resolve => setTimeout(resolve, 3000));
+  // Wait for TTS to start (Alexa takes ~3-5 seconds to begin speaking)
+  console.log("Waiting 5 seconds for Alexa to start speaking...");
+  await new Promise(resolve => setTimeout(resolve, 5000));
   
   // Poll every 2 seconds to check if Alexa finished speaking
   const pollInterval = setInterval(async () => {
@@ -232,20 +240,37 @@ async function waitForAlexaAndSendNext() {
       return;
     }
     
+    pollCount++;
     const speaking = await isAlexaSpeaking(targetEntity);
     
-    if (!speaking) {
+    if (speaking === true) {
+      sawPlaying = true;
+      console.log(`Poll ${pollCount}: Alexa is speaking...`);
+    } else if (speaking === false && sawPlaying) {
+      // Alexa was playing and now stopped
       clearInterval(pollInterval);
       console.log("Alexa finished speaking, sending next chunk immediately");
-      // Small delay to let Alexa fully transition to idle
       setTimeout(sendNextChunk, 500);
+    } else if (speaking === null) {
+      // Error polling - fall back to timer
+      console.log("Polling error, falling back to timer");
+      clearInterval(pollInterval);
+      // Estimate based on chunk size at 90% speed
+      const estimatedMs = (CHUNK_SIZE / CHARS_PER_SECOND) * 1000 / 0.9;
+      setTimeout(sendNextChunk, estimatedMs);
+    } else if (pollCount >= maxPolls) {
+      // Timeout - send anyway
+      clearInterval(pollInterval);
+      console.log("Polling timeout, sending next chunk");
+      sendNextChunk();
+    } else if (!sawPlaying && pollCount > 5) {
+      // Never saw playing after 10 seconds - Alexa might not report state, use fallback
+      clearInterval(pollInterval);
+      console.log("Never saw Alexa playing state, using fallback timer");
+      const estimatedMs = (CHUNK_SIZE / CHARS_PER_SECOND) * 1000 / 0.9;
+      setTimeout(sendNextChunk, Math.max(0, estimatedMs - 10000)); // Subtract time already waited
     }
   }, 2000);
-  
-  // Fallback: if polling takes too long (3 minutes), just send anyway
-  setTimeout(() => {
-    clearInterval(pollInterval);
-  }, 180000);
 }
 
 function scheduleNextChunk() {
@@ -1548,8 +1573,8 @@ export async function registerRoutes(
       cleanedContent = cleanTextForTTS(cleanedContent);
       cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
       
-      // Wrap in SSML to slow down the voice (80% speed)
-      const ssmlContent = `<speak><prosody rate="80%">${cleanedContent}</prosody></speak>`;
+      // Wrap in SSML to slow down the voice (90% speed)
+      const ssmlContent = `<speak><prosody rate="90%">${cleanedContent}</prosody></speak>`;
       
       console.log("Sending TTS to:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
@@ -1697,8 +1722,8 @@ export async function registerRoutes(
       
       console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
       
-      // Wrap in SSML to slow down the voice (80% speed)
-      const ssmlContent = `<speak><prosody rate="80%">${remainingText}</prosody></speak>`;
+      // Wrap in SSML to slow down the voice (90% speed)
+      const ssmlContent = `<speak><prosody rate="90%">${remainingText}</prosody></speak>`;
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
