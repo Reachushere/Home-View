@@ -1684,16 +1684,25 @@ export default function Dashboard() {
 
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-sm">
-              <FileText className="h-4 w-4" />
-              {previewFile?.displayName || previewFile?.originalName}
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden">
+          {(() => {
+            // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
+            const folderParts = previewFile?.folder?.split('-') || [];
+            const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
+            const colors = courseCodeFromFolder ? courseColors[courseCodeFromFolder] : null;
+            
+            return (
+              <DialogHeader className={`px-6 py-4 ${colors ? `${colors.bg} ${colors.border} border-b` : 'border-b'}`}>
+                <DialogTitle className={`flex items-center gap-2 text-sm ${colors ? colors.text : ''}`}>
+                  <FileText className="h-4 w-4" />
+                  {previewFile?.displayName || previewFile?.originalName}
+                </DialogTitle>
+              </DialogHeader>
+            );
+          })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-3 p-3 bg-black rounded-lg">
+          <div className="flex items-center gap-3 p-3 mx-6 mt-4 bg-black rounded-lg">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
               <SelectTrigger className="w-[180px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
@@ -1778,7 +1787,7 @@ export default function Dashboard() {
           </div>
           
           {/* Text Content with Word Highlighting */}
-          <div className="flex-1 min-h-[500px] max-h-[60vh] bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto p-4">
+          <div className="flex-1 min-h-[500px] max-h-[60vh] mx-6 mb-6 mt-4 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto p-4">
             {isLoadingText ? (
               <div className="flex items-center justify-center h-full">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
