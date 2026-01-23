@@ -2877,6 +2877,7 @@ export default function Dashboard() {
               <RouterLink href="/files">
                 <Button 
                   variant="ghost"
+                  size="icon"
                   className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
                   data-testid="button-files-link"
                 >
