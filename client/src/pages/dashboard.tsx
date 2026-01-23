@@ -1786,7 +1786,7 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col overflow-hidden border-[0.25px] border-white/70" style={{ width: 350, background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+      <aside className="text-white mt-3 mb-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col overflow-hidden border-[0.25px] border-white/70" style={{ width: 350, marginLeft: '5px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
         <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
           <div className="flex items-baseline gap-1.5 flex-1">
@@ -3194,7 +3194,7 @@ export default function Dashboard() {
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden pr-4 main-scrollbar" style={{ marginRight: '-5px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden pr-4 main-scrollbar" style={{ marginRight: '5px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
