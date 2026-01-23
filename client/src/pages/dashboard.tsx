@@ -2451,7 +2451,7 @@ export default function Dashboard() {
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              Module
+              + Module
             </Button>
             <Button 
               size="sm"
@@ -2459,7 +2459,7 @@ export default function Dashboard() {
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              Reading
+              + Reading
             </Button>
             <Button 
               size="sm"
@@ -2467,7 +2467,7 @@ export default function Dashboard() {
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              Discussion
+              + Discussion
             </Button>
             <Button 
               size="sm"
@@ -2475,7 +2475,7 @@ export default function Dashboard() {
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              Assignment
+              + Assignment
             </Button>
             <Button 
               size="sm"
@@ -2483,7 +2483,7 @@ export default function Dashboard() {
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              Exam
+              + Exam
             </Button>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
