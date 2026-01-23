@@ -2243,7 +2243,7 @@ export default function Dashboard() {
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0">
           {/* Left: Hamburger Menu + Title */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-start gap-3">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -2271,7 +2271,7 @@ export default function Dashboard() {
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="flex flex-col">
-              <h1 className="text-base font-semibold text-white -mt-3" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
+              <h1 className="text-base font-semibold text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
               {/* Clock below title */}
               <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
                 <span className="text-[10px] text-white font-medium">
