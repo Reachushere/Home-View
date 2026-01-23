@@ -4186,15 +4186,29 @@ export default function Dashboard() {
                   ) : (
                     <div className="space-y-1">
                       {currentWeekFiles.map(file => (
-                        <button
+                        <div
                           key={file.id}
-                          onClick={() => setPreviewFile(file)}
-                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-xs group w-full text-left"
+                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-xs group"
                           data-testid={`flyout-file-${file.id}`}
                         >
-                          <FileText className="h-4 w-4 text-blue-400 shrink-0" />
-                          <span className="truncate flex-1">{file.displayName}</span>
-                        </button>
+                          <Checkbox
+                            className="h-3 w-3 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                markFileCompletedMutation.mutate({ fileId: file.id });
+                              }
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            data-testid={`flyout-file-checkbox-${file.id}`}
+                          />
+                          <button
+                            onClick={() => setPreviewFile(file)}
+                            className="flex items-center gap-2 flex-1 text-left"
+                          >
+                            <FileText className="h-4 w-4 text-blue-400 shrink-0" />
+                            <span className="truncate flex-1">{file.displayName}</span>
+                          </button>
+                        </div>
                       ))}
                     </div>
                   )}
