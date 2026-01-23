@@ -1880,18 +1880,6 @@ export default function Dashboard() {
         {/* Header overlay - stays normal when flyout is open */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
-          <div className="flex items-baseline gap-1.5 flex-1">
-            <h1 className="text-base font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              University Planner
-            </h1>
-            <span className={`text-[10px] text-gray-300 whitespace-nowrap font-semibold transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              ({schoolData.week1StartDate 
-                ? format(new Date(schoolData.week1StartDate), 'MMM d') 
-                : 'Jan 16'} to {schoolData.week1StartDate 
-                ? format(addWeeks(new Date(schoolData.week1StartDate), schoolData.numberOfWeeks), 'MMM d')
-                : 'Apr 17'})
-            </span>
-          </div>
         </div>
         
         {/* Sidebar with blur/fade effect */}
@@ -1899,22 +1887,12 @@ export default function Dashboard() {
           {/* Header placeholder to maintain spacing */}
           <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0 opacity-0">
             <div style={{ height: '38px', width: '38px' }} />
-            <div className="flex items-baseline gap-1.5 flex-1">
-              <span className="text-base font-semibold">University Planner</span>
-              <span className="text-[10px] text-gray-300 whitespace-nowrap font-semibold" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              ({schoolData.week1StartDate 
-                ? format(new Date(schoolData.week1StartDate), 'MMM d') 
-                : 'Jan 16'} to {schoolData.week1StartDate 
-                ? format(addWeeks(new Date(schoolData.week1StartDate), schoolData.numberOfWeeks), 'MMM d')
-                : 'Apr 17'})
-              </span>
-            </div>
           </div>
 
           {/* Scrollable sidebar content */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
         {/* Course Legend */}
-        <div className="pl-0.5 pr-1 space-y-3 mb-4 -mt-2">
+        <div className="pl-0.5 pr-1 space-y-3 mb-4 mt-4">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
             const courseCode = course.name.split(' - ')[0];
