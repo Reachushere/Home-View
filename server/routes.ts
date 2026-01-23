@@ -626,6 +626,93 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/files/:id/text - Extract text content from a file (for PDF reading with highlighting)
+  app.get("/api/files/:id/text", async (req, res) => {
+    try {
+      const file = await storage.getFile(Number(req.params.id));
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      const mediaUrl = file.objectPath;
+      let textContent = "";
+      let fileBuffer: Buffer | null = null;
+      
+      if (mediaUrl.startsWith("/objects/")) {
+        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+        const objectStorage = new ObjectStorageService();
+        
+        try {
+          const objectFile = await objectStorage.getObjectEntityFile(mediaUrl);
+          const [content] = await objectFile.download();
+          fileBuffer = content;
+        } catch (error) {
+          console.error("Error reading from object storage:", error);
+          return res.status(400).json({ error: "Failed to read file from storage" });
+        }
+      } else {
+        const fileResponse = await fetch(mediaUrl);
+        if (!fileResponse.ok) {
+          return res.status(400).json({ error: "Failed to fetch file content" });
+        }
+        const arrayBuffer = await fileResponse.arrayBuffer();
+        fileBuffer = Buffer.from(arrayBuffer);
+      }
+      
+      if (!fileBuffer) {
+        return res.status(400).json({ error: "Failed to read file" });
+      }
+
+      const isPDF = fileBuffer.slice(0, 4).toString() === '%PDF';
+      
+      if (isPDF) {
+        try {
+          const PdfParser = await getPdfParser();
+          const parser = new PdfParser({ data: new Uint8Array(fileBuffer) });
+          await parser.load();
+          const pdfText = await parser.getText();
+          
+          if (pdfText && typeof pdfText === 'object') {
+            if (pdfText.pages && Array.isArray(pdfText.pages)) {
+              textContent = pdfText.pages.map((page: any) => page.text || '').join('\n\n');
+            } else if (Array.isArray(pdfText)) {
+              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join('\n\n');
+            } else if (pdfText.text) {
+              textContent = pdfText.text;
+            } else {
+              textContent = Object.values(pdfText).filter(v => typeof v === 'string').join('\n\n');
+            }
+          } else if (typeof pdfText === 'string') {
+            textContent = pdfText;
+          } else {
+            textContent = String(pdfText || '');
+          }
+          await parser.destroy();
+        } catch (error) {
+          console.error("Error parsing PDF:", error);
+          return res.status(400).json({ error: "Failed to parse PDF" });
+        }
+      } else {
+        textContent = fileBuffer.toString('utf-8');
+      }
+      
+      // Clean up the text but preserve paragraph structure
+      textContent = textContent
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2013\u2014]/g, "-")
+        .replace(/[^\x20-\x7E\n]/g, ' ')
+        .replace(/[ \t]+/g, ' ')
+        .replace(/\n\s*\n/g, '\n\n')
+        .trim();
+
+      res.json({ text: textContent, fileName: file.displayName || file.originalName });
+    } catch (err) {
+      console.error("Error extracting file text:", err);
+      res.status(500).json({ error: "Failed to extract file text" });
+    }
+  });
+
   // PATCH /api/files/:id - Update file (rename, change folder, or mark listened)
   app.patch("/api/files/:id", async (req, res) => {
     try {

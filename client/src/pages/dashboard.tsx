@@ -696,6 +696,88 @@ export default function Dashboard() {
   // File preview dialog state
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
   const [previewSpeaker, setPreviewSpeaker] = useState<string>("media_player.everywhere_2");
+  const [previewText, setPreviewText] = useState<string>("");
+  const [isLoadingText, setIsLoadingText] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [playStartTime, setPlayStartTime] = useState<number | null>(null);
+  const highlightIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Fetch text when file is selected for preview
+  useEffect(() => {
+    if (previewFile) {
+      setIsLoadingText(true);
+      setPreviewText("");
+      setCurrentWordIndex(0);
+      setIsPlaying(false);
+      fetch(`/api/files/${previewFile.id}/text`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.text) {
+            setPreviewText(data.text);
+          }
+        })
+        .catch(err => console.error("Error fetching text:", err))
+        .finally(() => setIsLoadingText(false));
+    } else {
+      setPreviewText("");
+      setCurrentWordIndex(0);
+      setIsPlaying(false);
+      if (highlightIntervalRef.current) {
+        clearInterval(highlightIntervalRef.current);
+        highlightIntervalRef.current = null;
+      }
+    }
+  }, [previewFile]);
+
+  // Cleanup interval on unmount
+  useEffect(() => {
+    return () => {
+      if (highlightIntervalRef.current) {
+        clearInterval(highlightIntervalRef.current);
+      }
+    };
+  }, []);
+
+  // Word highlighting animation based on reading speed (~2.5 words per second / 150 wpm)
+  const WORDS_PER_SECOND = 2.5;
+  const MS_PER_WORD = 1000 / WORDS_PER_SECOND;
+
+  const startHighlighting = () => {
+    const words = previewText.split(/\s+/).filter(w => w.length > 0);
+    if (words.length === 0) return;
+    
+    setPlayStartTime(Date.now());
+    setIsPlaying(true);
+    setCurrentWordIndex(0);
+    
+    if (highlightIntervalRef.current) {
+      clearInterval(highlightIntervalRef.current);
+    }
+    
+    highlightIntervalRef.current = setInterval(() => {
+      setCurrentWordIndex(prev => {
+        const next = prev + 1;
+        if (next >= words.length) {
+          if (highlightIntervalRef.current) {
+            clearInterval(highlightIntervalRef.current);
+            highlightIntervalRef.current = null;
+          }
+          setIsPlaying(false);
+          return prev;
+        }
+        return next;
+      });
+    }, MS_PER_WORD);
+  };
+
+  const stopHighlighting = () => {
+    setIsPlaying(false);
+    if (highlightIntervalRef.current) {
+      clearInterval(highlightIntervalRef.current);
+      highlightIntervalRef.current = null;
+    }
+  };
 
   // Media control functions for file preview
   const handlePlayFile = async (fileUrl: string, fileName: string) => {
@@ -708,6 +790,8 @@ export default function Dashboard() {
       if (response.ok) {
         const speakerName = SPEAKERS.find(s => s.id === previewSpeaker)?.name || previewSpeaker;
         toast({ title: `Playing on ${speakerName}: ${fileName}` });
+        // Start word highlighting when audio starts playing
+        startHighlighting();
       } else {
         toast({ title: "Failed to play file", variant: "destructive" });
       }
@@ -724,6 +808,8 @@ export default function Dashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ entityId: previewSpeaker }),
       });
+      // Stop word highlighting when audio stops
+      stopHighlighting();
     } catch (error) {
       console.error("Stop error:", error);
     }
@@ -1559,14 +1645,40 @@ export default function Dashboard() {
             </Button>
           </div>
           
-          {/* PDF/File Preview */}
-          <div className="flex-1 min-h-[500px] bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden">
-            {previewFile && (
-              <iframe
-                src={previewFile.objectPath}
-                className="w-full h-full border-0"
-                title={previewFile.displayName || previewFile.originalName}
-              />
+          {/* Text Content with Word Highlighting */}
+          <div className="flex-1 min-h-[500px] max-h-[60vh] bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto p-4">
+            {isLoadingText ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                <span className="ml-2 text-muted-foreground">Extracting text...</span>
+              </div>
+            ) : previewText ? (
+              <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                {(() => {
+                  const words = previewText.split(/(\s+)/);
+                  let wordIdx = 0;
+                  return words.map((segment, i) => {
+                    if (/^\s+$/.test(segment)) {
+                      return <span key={i}>{segment}</span>;
+                    }
+                    const isCurrentWord = isPlaying && wordIdx === currentWordIndex;
+                    const result = (
+                      <span
+                        key={i}
+                        className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded transition-colors" : ""}
+                      >
+                        {segment}
+                      </span>
+                    );
+                    wordIdx++;
+                    return result;
+                  });
+                })()}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full text-muted-foreground">
+                No text content available
+              </div>
             )}
           </div>
         </DialogContent>
