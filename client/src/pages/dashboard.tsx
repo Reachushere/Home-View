@@ -4312,7 +4312,7 @@ function TaskCard({
               <Icon className="h-2.5 w-2.5 mr-0.5" />
               {task.type}
             </Badge>
-            <div className="flex-1 flex items-center justify-center gap-1 text-black dark:text-white text-[10px]">
+            <div className="flex-1 flex items-center justify-end gap-1 text-black dark:text-white text-[10px]">
               <Clock className="h-2.5 w-2.5" />
               <span className="font-bold">DUE</span> {format(new Date(task.dueDate), "MMM d")}
             </div>
