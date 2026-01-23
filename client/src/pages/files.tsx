@@ -495,7 +495,7 @@ export default function FilesPage() {
     setShowDeleteFolderConfirm(false);
   };
 
-  const getSpeakerForFile = (fileId: number) => fileSpeakers[fileId] || "media_player.cat_wr";
+  const getSpeakerForFile = (fileId: number) => fileSpeakers[fileId] || "media_player.echo_cat_left_am";
   
   const setSpeakerForFile = (fileId: number, speakerId: string) => {
     setFileSpeakers(prev => ({ ...prev, [fileId]: speakerId }));

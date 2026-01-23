@@ -772,7 +772,7 @@ export default function Dashboard() {
 
   // File preview dialog state
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
-  const [previewSpeaker, setPreviewSpeaker] = useState<string>("media_player.everywhere_2");
+  const [previewSpeaker, setPreviewSpeaker] = useState<string>("media_player.echo_cat_left_am");
   const [previewText, setPreviewText] = useState<string>("");
   const [isLoadingText, setIsLoadingText] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
