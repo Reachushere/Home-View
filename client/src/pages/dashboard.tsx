@@ -4214,7 +4214,7 @@ export default function Dashboard() {
               <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
                 <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
                 Weekly Files
-                {isWeeklyFilesFlyoutOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
               </span>
             </button>
           </div>
