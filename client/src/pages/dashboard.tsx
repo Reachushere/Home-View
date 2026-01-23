@@ -2385,7 +2385,7 @@ export default function Dashboard() {
                 Files
               </Button>
             </RouterLink>
-            <div className="h-4 flex ml-3 mr-2"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex ml-3 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           </div>
           {/* Gray section: remaining buttons */}
           <div className="flex-1 flex items-center justify-between bg-slate-300 pl-1 pr-2 py-1">
