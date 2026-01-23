@@ -1844,7 +1844,7 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className={`text-white mt-3 mb-3 mr-0 rounded-xl shadow-lg pl-4 pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-opacity duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-40' : 'opacity-100'}`} style={{ width: 350, marginLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+      <aside className={`text-white mt-3 mb-3 mr-0 rounded-xl shadow-lg pl-4 pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, marginLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
         <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
           <div className="flex items-baseline gap-1.5 flex-1">
