@@ -4316,7 +4316,18 @@ export default function Dashboard() {
                           groupedFiles[courseCode].push(file);
                         });
                         
-                        return Object.entries(groupedFiles).map(([courseCode, files]) => {
+                        // Sort courses in order: CPPA122 (green), CFNF400 (pink), CASL101 (indigo), then others
+                        const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
+                        const sortedEntries = Object.entries(groupedFiles).sort(([a], [b]) => {
+                          const aIdx = courseOrder.indexOf(a);
+                          const bIdx = courseOrder.indexOf(b);
+                          if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
+                          if (aIdx === -1) return 1;
+                          if (bIdx === -1) return -1;
+                          return aIdx - bIdx;
+                        });
+                        
+                        return sortedEntries.map(([courseCode, files]) => {
                           const colors = courseColors[courseCode];
                           const courseInfo = coursesData.courses.find(c => c.name.toUpperCase().startsWith(courseCode));
                           const courseName = courseInfo?.name || courseCode;
