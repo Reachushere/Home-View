@@ -2242,39 +2242,39 @@ export default function Dashboard() {
       <main className="flex-1 pt-2 px-6 pb-6 overflow-auto flex flex-col">
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0">
-          {/* Left: Hamburger Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="!h-8 !w-8 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md mt-1 backdrop-blur-sm"
-                data-testid="button-hamburger-menu"
-              >
-                <Menu className="h-4 w-4" stroke="white" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
-                <GraduationCap className="h-4 w-4 mr-2" />
-                School
-              </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
-                <Palette className="h-4 w-4 mr-2" />
-                Courses
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Left: Hamburger Menu + Title */}
+          <div className="flex items-center gap-3">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="!h-8 !w-8 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md backdrop-blur-sm"
+                  data-testid="button-hamburger-menu"
+                >
+                  <Menu className="h-4 w-4" stroke="white" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
+                  <GraduationCap className="h-4 w-4 mr-2" />
+                  School
+                </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
+                  <Palette className="h-4 w-4 mr-2" />
+                  Courses
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <h1 className="text-base font-semibold text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
+          </div>
           
-          {/* Center: Title + Clock below */}
+          {/* Center: Clock */}
           <div className="flex flex-col items-center">
-            <div className="flex items-center gap-1">
-              <h1 className="text-base font-semibold text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
-            </div>
             {/* Slightly bigger Clock below title */}
             <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
               <span className="text-[10px] text-white font-medium">
