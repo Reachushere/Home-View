@@ -897,7 +897,7 @@ export default function FilesPage() {
                     onClick={(e) => {
                       if (e.ctrlKey || e.metaKey) {
                         setSelectedFolder(week.id);
-                      } else {
+                      } else if (weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`))) {
                         toggleFolder(week.id);
                       }
                     }}
@@ -906,10 +906,14 @@ export default function FilesPage() {
                     onDrop={(e) => handleDrop(e, week.id)}
                     data-testid={`folder-${week.id}`}
                   >
-                    {isWeekExpanded ? (
-                      <ChevronDown className="h-3 w-3 text-gray-500" />
+                    {weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`)) ? (
+                      isWeekExpanded ? (
+                        <ChevronDown className="h-3 w-3 text-gray-500" />
+                      ) : (
+                        <ChevronRight className="h-3 w-3 text-gray-500" />
+                      )
                     ) : (
-                      <ChevronRight className="h-3 w-3 text-gray-500" />
+                      <div className="w-3 h-3" />
                     )}
                     {isWeekExpanded ? (
                       <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
@@ -936,7 +940,7 @@ export default function FilesPage() {
                               onClick={(e) => {
                                 if (e.ctrlKey || e.metaKey) {
                                   setSelectedFolder(courseFolderId);
-                                } else {
+                                } else if (courseFiles.length > 0 || CONTENT_FOLDERS.some(cf => !deletedFolderIds.has(`${courseFolderId}-${cf.id}`))) {
                                   toggleFolder(courseFolderId);
                                 }
                               }}
@@ -945,10 +949,14 @@ export default function FilesPage() {
                               onDrop={(e) => handleDrop(e, courseFolderId)}
                               data-testid={`course-folder-${courseFolderId}`}
                             >
-                              {isCourseExpanded ? (
-                                <ChevronDown className="h-3 w-3 text-gray-500" />
+                              {courseFiles.length > 0 || CONTENT_FOLDERS.some(cf => !deletedFolderIds.has(`${courseFolderId}-${cf.id}`)) ? (
+                                isCourseExpanded ? (
+                                  <ChevronDown className="h-3 w-3 text-gray-500" />
+                                ) : (
+                                  <ChevronRight className="h-3 w-3 text-gray-500" />
+                                )
                               ) : (
-                                <ChevronRight className="h-3 w-3 text-gray-500" />
+                                <div className="w-3 h-3" />
                               )}
                               {isCourseExpanded ? (
                                 <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
