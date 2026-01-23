@@ -4193,11 +4193,11 @@ export default function Dashboard() {
         {calendarView === "week" && (
           <div 
             className="fixed z-50 flex flex-row-reverse items-center transition-transform duration-300 ease-in-out"
-            style={{ top: 'calc(50% + 111px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '351px' }}
+            style={{ top: 'calc(50% + 111px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '350px' }}
           >
             {/* Flyout Panel */}
             <div 
-              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-r-0 border-white/70 rounded-l-lg' : 'w-0 border-0'}`}
+              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-r-0 border-white/70 rounded-l-xl' : 'w-0 border-0'}`}
               style={{ height: '400px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}
             >
               <div className="w-80 h-full flex flex-col">
