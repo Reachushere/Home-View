@@ -2313,7 +2313,7 @@ export default function Dashboard() {
         {/* Calendar Header */}
         <div className="flex items-center mb-0 rounded-xl shadow-sm overflow-hidden" style={{ border: '1px solid #94a3b8', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)', marginTop: '24px' }}>
           {/* Blue section: date, home, sync, today, month */}
-          <div className="flex items-center bg-[#5979CC] pl-3 pr-1 py-1">
+          <div className="flex items-center bg-[#5979CC] pl-3 pr-0 py-1">
             {/* Week navigation */}
             <Button variant="ghost" size="icon" className="h-3 w-3 mr-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2} />
