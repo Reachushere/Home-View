@@ -2685,7 +2685,7 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 pt-2 px-6 pb-6 overflow-auto flex flex-col">
+      <main className="flex-1 pt-2 px-6 pb-6 flex flex-col overflow-hidden">
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0">
           {/* Left: Hamburger Menu + Title */}
@@ -3074,6 +3074,8 @@ export default function Dashboard() {
           </Dialog>
         </div>
 
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.4) transparent' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
@@ -3986,6 +3988,7 @@ export default function Dashboard() {
               </div>
             )}
           </section>
+        </div>
         </div>
 
         {/* Reschedule Dialog */}
