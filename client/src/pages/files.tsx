@@ -1062,11 +1062,49 @@ export default function FilesPage() {
                         ) : (
                           <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                         )}
-                        <span className={`text-sm flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{week.name}</span>
+                        {editingBuiltinFolderId === week.id ? (
+                          <input
+                            type="text"
+                            value={editingBuiltinFolderName}
+                            onChange={(e) => setEditingBuiltinFolderName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && editingBuiltinFolderName.trim()) {
+                                saveFolderDisplayName(week.id, editingBuiltinFolderName.trim());
+                              } else if (e.key === "Escape") {
+                                setEditingBuiltinFolderId(null);
+                                setEditingBuiltinFolderName("");
+                              }
+                            }}
+                            onBlur={() => {
+                              if (editingBuiltinFolderName.trim()) {
+                                saveFolderDisplayName(week.id, editingBuiltinFolderName.trim());
+                              } else {
+                                setEditingBuiltinFolderId(null);
+                                setEditingBuiltinFolderName("");
+                              }
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            autoFocus
+                            className="text-sm flex-1 bg-[#1e1e1e] border border-[#0078d4] rounded px-1 py-0 text-white outline-none"
+                            data-testid={`input-rename-week-folder-${week.id}`}
+                          />
+                        ) : (
+                          <span className={`text-sm flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{folderDisplayNames[week.id] || week.name}</span>
+                        )}
                         <span className="text-xs text-gray-500">{weekFiles.length}</span>
                       </div>
                     </ContextMenuTrigger>
                     <ContextMenuContent className="w-48">
+                      <ContextMenuItem
+                        onClick={() => {
+                          setEditingBuiltinFolderId(week.id);
+                          setEditingBuiltinFolderName(folderDisplayNames[week.id] || week.name);
+                        }}
+                        data-testid={`rename-week-folder-${week.id}`}
+                      >
+                        <Edit2 className="h-4 w-4 mr-2" />
+                        Rename Folder
+                      </ContextMenuItem>
                       <ContextMenuItem
                         onClick={() => {
                           setAddFolderParentId(week.id);
@@ -1121,11 +1159,49 @@ export default function FilesPage() {
                                   ) : (
                                     <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                                   )}
-                                  <span className={`text-sm flex-1 ${course.color}`}>{course.name.split(" - ")[0]}</span>
+                                  {editingBuiltinFolderId === courseFolderId ? (
+                                    <input
+                                      type="text"
+                                      value={editingBuiltinFolderName}
+                                      onChange={(e) => setEditingBuiltinFolderName(e.target.value)}
+                                      onKeyDown={(e) => {
+                                        if (e.key === "Enter" && editingBuiltinFolderName.trim()) {
+                                          saveFolderDisplayName(courseFolderId, editingBuiltinFolderName.trim());
+                                        } else if (e.key === "Escape") {
+                                          setEditingBuiltinFolderId(null);
+                                          setEditingBuiltinFolderName("");
+                                        }
+                                      }}
+                                      onBlur={() => {
+                                        if (editingBuiltinFolderName.trim()) {
+                                          saveFolderDisplayName(courseFolderId, editingBuiltinFolderName.trim());
+                                        } else {
+                                          setEditingBuiltinFolderId(null);
+                                          setEditingBuiltinFolderName("");
+                                        }
+                                      }}
+                                      onClick={(e) => e.stopPropagation()}
+                                      autoFocus
+                                      className={`text-sm flex-1 bg-[#1e1e1e] border border-[#0078d4] rounded px-1 py-0 outline-none ${course.color}`}
+                                      data-testid={`input-rename-course-folder-${courseFolderId}`}
+                                    />
+                                  ) : (
+                                    <span className={`text-sm flex-1 ${course.color}`}>{folderDisplayNames[courseFolderId] || course.name.split(" - ")[0]}</span>
+                                  )}
                                   <span className="text-xs text-gray-500">{courseFiles.length}</span>
                                 </div>
                               </ContextMenuTrigger>
                               <ContextMenuContent className="w-48">
+                                <ContextMenuItem
+                                  onClick={() => {
+                                    setEditingBuiltinFolderId(courseFolderId);
+                                    setEditingBuiltinFolderName(folderDisplayNames[courseFolderId] || course.name.split(" - ")[0]);
+                                  }}
+                                  data-testid={`rename-course-folder-${courseFolderId}`}
+                                >
+                                  <Edit2 className="h-4 w-4 mr-2" />
+                                  Rename Folder
+                                </ContextMenuItem>
                                 <ContextMenuItem
                                   onClick={() => {
                                     setAddFolderParentId(courseFolderId);
