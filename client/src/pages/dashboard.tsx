@@ -2340,7 +2340,7 @@ export default function Dashboard() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-7 w-7 hover:bg-white/20 rounded-lg"
+                className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
                 onClick={() => setSelectedWeek(2)}
                 data-testid="button-home-week"
                 title="Go to current week"
@@ -2350,7 +2350,7 @@ export default function Dashboard() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="h-7 w-7 hover:bg-white/20 rounded-lg"
+                className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
                 onClick={() => syncAllCalendarMutation.mutate()}
                 disabled={syncAllCalendarMutation.isPending}
                 data-testid="button-sync-calendar"
