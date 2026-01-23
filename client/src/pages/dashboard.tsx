@@ -1880,7 +1880,29 @@ export default function Dashboard() {
         {/* Header overlay - stays normal when flyout is open */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-start gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '46px', width: '46px' }} />
-          <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif", marginTop: '-5px' }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
+          <div className="flex flex-col" style={{ marginTop: '-5px' }}>
+            <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
+            <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
+              <span className="text-xs text-white/80 font-medium">
+                {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
+              </span>
+              <div className="w-[1px] h-3 bg-white/50" />
+              <div className="flex items-baseline">
+                <span className="text-sm font-semibold text-white tabular-nums">
+                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+                </span>
+                <span className="text-xs text-white/80 tabular-nums">
+                  :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
+                </span>
+                <span className="text-[9px] font-bold text-white/80 ml-0.5 uppercase">
+                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
+                </span>
+              </div>
+              {profileData.travelTimezone && (
+                <span className="text-[8px] text-orange-400 font-medium ml-1">✈️ Travel</span>
+              )}
+            </div>
+          </div>
         </div>
         
         {/* Sidebar with blur/fade effect */}
@@ -2740,30 +2762,7 @@ export default function Dashboard() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex flex-col bg-white/40 rounded-lg px-4 py-1.5 h-[60px] justify-center">
-              {/* Clock */}
-              <div className="flex items-center gap-2" data-testid="digital-clock">
-                <span className="text-xs text-black font-medium">
-                  {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-                </span>
-                <div className="w-[2px] h-5 bg-black/50" />
-                <div className="flex items-baseline">
-                  <span className="text-base font-semibold text-black tabular-nums">
-                    {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
-                  </span>
-                  <span className="text-xs text-black/80 tabular-nums">
-                    :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
-                  </span>
-                  <span className="text-[9px] font-bold text-black/80 ml-0.5 uppercase">
-                    {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-                  </span>
-                </div>
-                {profileData.travelTimezone && (
-                  <span className="text-[8px] text-orange-500 font-medium ml-1">✈️ Travel</span>
-                )}
-              </div>
             </div>
-          </div>
           
           <div className="flex items-center gap-3">
             {/* Pomodoro Timer */}
