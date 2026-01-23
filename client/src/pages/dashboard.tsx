@@ -2757,13 +2757,13 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '15px' }}>
+      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px' }}>
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
           </div>
         
         {/* Menu Bar Container - clips scroll content */}
-        <div className="flex-shrink-0 relative z-10" style={{ marginTop: '-15px', marginRight: '8px', marginLeft: '-115px' }}>
+        <div className="flex-shrink-0 relative z-10" style={{ marginTop: '0px', marginRight: '8px', marginLeft: '-115px' }}>
         {/* Sleek Menu Bar */}
         <div className="flex items-center mb-0 rounded-2xl overflow-hidden" style={{ 
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
