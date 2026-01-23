@@ -1889,8 +1889,8 @@ export default function Dashboard() {
                       ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                     </span>
                   </div>
-                  {week.taskCount > 0 && (
-                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center">
+                  {!isSelected && week.taskCount > 0 && (
+                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto">
                       {week.taskCount}
                     </Badge>
                   )}
