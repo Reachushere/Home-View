@@ -3321,8 +3321,8 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Row - Green */}
-                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-green-200 dark:border-green-700" style={{ backgroundColor: 'rgba(134,239,172,0.50)' }}>
-                    <div className="text-[8px] font-bold text-black mb-0.5">CPPA122</div>
+                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
+                    <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                         <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
@@ -3333,8 +3333,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Row - Pink */}
-                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700" style={{ backgroundColor: 'rgba(249,168,212,0.50)' }}>
-                    <div className="text-[8px] font-bold text-black mb-0.5">CFNF400</div>
+                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }}>
+                    <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                         <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
@@ -3345,8 +3345,8 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Row - Purple */}
-                  <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.50)' }}>
-                    <div className="text-[8px] font-bold text-black mb-0.5">CASL101</div>
+                  <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }}>
+                    <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                         <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact />
@@ -3369,8 +3369,8 @@ export default function Dashboard() {
             </h4>
             <div className="flex-1 flex flex-col overflow-hidden">
               {/* CPPA122 Row - Green */}
-              <div className="flex-1 px-2 py-1 overflow-auto border-b border-green-200 dark:border-green-700" style={{ backgroundColor: 'rgba(134,239,172,0.50)' }}>
-                <div className="text-[8px] font-bold text-black mb-0.5">CPPA122</div>
+              <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
+                <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
@@ -3383,8 +3383,8 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="flex-1 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700" style={{ backgroundColor: 'rgba(249,168,212,0.50)' }}>
-                <div className="text-[8px] font-bold text-black mb-0.5">CFNF400</div>
+              <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }}>
+                <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
@@ -3397,8 +3397,8 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CASL101 Row - Purple */}
-              <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.50)' }}>
-                <div className="text-[8px] font-bold text-black mb-0.5">CASL101</div>
+              <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }}>
+                <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
@@ -3459,10 +3459,10 @@ export default function Dashboard() {
         {/* Completed Tasks by Course */}
         <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
           {/* CPPA122 Completed */}
-          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.50)' }} data-testid="section-completed-cppa122">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 bg-white/90 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <ClipboardCheck className="h-3.5 w-3.5 text-green-600" />
-              <span className="text-green-600">Completed - CPPA122</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})</span>
+          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }} data-testid="section-completed-cppa122">
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+              <ClipboardCheck className="h-3.5 w-3.5 text-white drop-shadow-md" />
+              <span className="text-white drop-shadow-md">Completed - CPPA122</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})</span>
             </h4>
             {completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 ? (
               <div className="text-center py-4 text-muted-foreground text-xs">
@@ -3487,10 +3487,10 @@ export default function Dashboard() {
           </section>
 
           {/* CFNF400 Completed */}
-          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.50)' }} data-testid="section-completed-cfnf400">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 bg-white/90 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <ClipboardCheck className="h-3.5 w-3.5 text-pink-600" />
-              <span className="text-pink-600">Completed - CFNF400</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})</span>
+          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }} data-testid="section-completed-cfnf400">
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+              <ClipboardCheck className="h-3.5 w-3.5 text-white drop-shadow-md" />
+              <span className="text-white drop-shadow-md">Completed - CFNF400</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})</span>
             </h4>
             {completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 ? (
               <div className="text-center py-4 text-muted-foreground text-xs">
@@ -3515,10 +3515,10 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.50)' }} data-testid="section-completed-casl101">
-            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 bg-white/90 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <ClipboardCheck className="h-3.5 w-3.5 text-purple-600" />
-              <span className="text-purple-600">Completed - CASL101</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
+          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }} data-testid="section-completed-casl101">
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+              <ClipboardCheck className="h-3.5 w-3.5 text-white drop-shadow-md" />
+              <span className="text-white drop-shadow-md">Completed - CASL101</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
             </h4>
             {completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 ? (
               <div className="text-center py-4 text-muted-foreground text-xs">
