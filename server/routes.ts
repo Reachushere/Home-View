@@ -167,8 +167,8 @@ async function sendNextChunk() {
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
   try {
-    // Use normal speaking rate
-    const ssmlChunk = `<speak>${nextChunk}</speak>`;
+    // Use 90% speaking rate
+    const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
     
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
@@ -199,8 +199,8 @@ async function sendNextChunk() {
 }
 
 // Calculate delay based on chunk size and speed
-// At 100% speed (normal rate)
-const SPEED_RATE = 1.0;
+// At 90% speed (slightly slower than normal)
+const SPEED_RATE = 0.90;
 
 function scheduleNextChunk() {
   if (!currentTTSSession || !currentTTSSession.isPlaying) {
@@ -1515,8 +1515,8 @@ export async function registerRoutes(
       cleanedContent = cleanTextForTTS(cleanedContent);
       cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
       
-      // Use normal speaking rate
-      const ssmlContent = `<speak>${cleanedContent}</speak>`;
+      // Use 90% speaking rate
+      const ssmlContent = `<speak><prosody rate="90%">${cleanedContent}</prosody></speak>`;
       
       console.log("Sending TTS to:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
@@ -1589,25 +1589,8 @@ export async function registerRoutes(
         }
       }
       
-      // Use Alexa Media Player's alexa_media service to send "stop" command
-      // This can interrupt TTS announcements
-      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: "stop",
-          target: targetEntity,
-          data: {
-            type: "tts"
-          }
-        }),
-      });
-
-      // Also try media_stop for regular media
-      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+      // Use media_player/media_stop to stop playback
+      const stopResponse = await fetch(`${haUrl}/api/services/media_player/media_stop`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
@@ -1617,6 +1600,36 @@ export async function registerRoutes(
           entity_id: targetEntity,
         }),
       });
+      
+      console.log("Stop media response:", stopResponse.status);
+
+      // Also try volume to 0 temporarily to interrupt (works better for TTS)
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: targetEntity,
+          volume_level: 0
+        }),
+      });
+      
+      // Restore volume after a brief pause
+      setTimeout(async () => {
+        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: targetEntity,
+            volume_level: 0.5
+          }),
+        });
+      }, 500);
 
       const canResume = currentTTSSession && currentTTSSession.currentPosition < currentTTSSession.fullText.length;
       res.json({ success: true, canResume });
