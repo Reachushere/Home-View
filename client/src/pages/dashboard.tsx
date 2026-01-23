@@ -2385,10 +2385,10 @@ export default function Dashboard() {
                 Files
               </Button>
             </RouterLink>
-            <div className="h-4 flex mx-2"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex ml-3 mr-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             
             {/* Pomodoro Timer */}
-            <div className="flex items-center gap-3 h-[22px]">
+            <div className="flex items-center gap-2 h-[22px]">
               <div className={`text-[11px] font-mono font-bold ${
                 pomodoroMode === "work" ? "text-red-600" : 
                 pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
@@ -2418,12 +2418,12 @@ export default function Dashboard() {
                   <SkipForward className="h-2.5 w-2.5" />
                 </button>
               </div>
-              <div className="text-[11px] text-black font-semibold" style={{fontFamily: "Segoe UI, sans-serif"}}>
+              <div className="text-[11px] text-black font-semibold ml-1" style={{fontFamily: "Segoe UI, sans-serif"}}>
                 {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"}
                 <span className="ml-0.5 font-bold">{pomodoroCount}</span>
               </div>
             </div>
-            <div className="h-4 flex ml-2 mr-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex ml-2 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2433,7 +2433,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Module
             </Button>
-            <div className="h-4 flex mx-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex ml-0 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2443,7 +2443,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Reading
             </Button>
-            <div className="h-4 flex mx-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex ml-0.5 mr-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2453,7 +2453,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Discuss
             </Button>
-            <div className="h-4 flex mx-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex ml-0 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2463,7 +2463,7 @@ export default function Dashboard() {
               <span className="text-[14px] leading-none -mt-0.5">+</span>
               Assign
             </Button>
-            <div className="h-4 flex mr-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="h-4 flex ml-0 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
               className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
