@@ -3195,7 +3195,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
-          <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.50)' }} data-testid="section-upcoming">
+          <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col" data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-yellow-400" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Clock className="h-3 w-3 text-yellow-400" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
