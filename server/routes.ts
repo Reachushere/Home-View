@@ -123,12 +123,12 @@ function getChunkWithSentenceBoundary(text: string, maxLength: number): string {
 
 // Function to send next TTS chunk automatically
 async function sendNextChunk() {
-  if (!currentTTSSession || !currentTTSSession.isPlaying) return;
+  if (!currentTTSSession || !currentTTSSession.isPlaying) {
+    console.log("sendNextChunk: No active session or not playing");
+    return;
+  }
   
-  // Calculate position based on elapsed time
-  const elapsedSeconds = (Date.now() - currentTTSSession.startTime) / 1000;
-  const charsRead = Math.floor(elapsedSeconds * CHARS_PER_SECOND);
-  currentTTSSession.currentPosition += charsRead;
+  console.log("sendNextChunk called, currentPosition:", currentTTSSession.currentPosition);
   
   // Check if we've finished
   if (currentTTSSession.currentPosition >= currentTTSSession.fullText.length) {
@@ -153,18 +153,21 @@ async function sendNextChunk() {
   let nextChunk = cleanTextForTTS(rawChunk);
   nextChunk = getChunkWithSentenceBoundary(nextChunk, CHUNK_SIZE);
   
-  // Update session
+  // Update position BEFORE sending - advance by the chunk length we're about to send
+  const chunkLength = nextChunk.length;
+  currentTTSSession.currentPosition += chunkLength;
   currentTTSSession.startTime = Date.now();
   
   const targetEntity = currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY;
-  console.log("Auto-continuing TTS from position", currentTTSSession.currentPosition, 
+  console.log("Auto-continuing TTS, sent chunk length:", chunkLength, 
+    "new position:", currentTTSSession.currentPosition,
     "remaining:", currentTTSSession.fullText.length - currentTTSSession.currentPosition,
     "to:", targetEntity);
   
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
   try {
-    // Wrap in SSML to slow down the voice (85% speed)
+    // Wrap in SSML to slow down the voice (88% speed)
     const ssmlChunk = `<speak><prosody rate="88%">${nextChunk}</prosody></speak>`;
     
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
@@ -181,11 +184,12 @@ async function sendNextChunk() {
     });
     
     if (!response.ok) {
-      console.error("Auto-continue TTS error");
+      console.error("Auto-continue TTS error, response:", response.status);
       currentTTSSession.isPlaying = false;
       return;
     }
     
+    console.log("Chunk sent successfully, scheduling next...");
     // Schedule next chunk
     scheduleNextChunk();
   } catch (error) {
@@ -199,23 +203,28 @@ async function sendNextChunk() {
 const SPEED_RATE = 0.88;
 
 function scheduleNextChunk() {
-  if (!currentTTSSession || !currentTTSSession.isPlaying) return;
+  if (!currentTTSSession || !currentTTSSession.isPlaying) {
+    console.log("scheduleNextChunk: No active session or not playing, aborting schedule");
+    return;
+  }
   
   // Clear any existing timer
   if (currentTTSSession.autoTimer) {
+    console.log("Clearing existing timer");
     clearTimeout(currentTTSSession.autoTimer);
   }
   
   // Calculate estimated speaking time
   // Base: CHUNK_SIZE chars / CHARS_PER_SECOND chars per sec
-  // Adjust for speed: divide by speed rate (85% = 0.85 means slower)
+  // Adjust for speed: divide by speed rate (88% = 0.88 means slower)
   const baseSeconds = CHUNK_SIZE / CHARS_PER_SECOND;
   const adjustedSeconds = baseSeconds / SPEED_RATE;
   const delayMs = adjustedSeconds * 1000;
   
-  console.log(`Scheduling next chunk in ${(delayMs / 1000).toFixed(1)} seconds (${CHUNK_SIZE} chars at ${SPEED_RATE * 100}% speed)`);
+  console.log(`scheduleNextChunk: Scheduling next chunk in ${(delayMs / 1000).toFixed(1)} seconds (${CHUNK_SIZE} chars at ${SPEED_RATE * 100}% speed)`);
   
   currentTTSSession.autoTimer = setTimeout(() => {
+    console.log("Timer fired, calling sendNextChunk");
     sendNextChunk();
   }, delayMs);
 }
