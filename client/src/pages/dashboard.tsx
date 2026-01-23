@@ -2341,7 +2341,7 @@ export default function Dashboard() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-4 w-4 mx-3"
+              className="h-4 w-4 ml-4 mr-3"
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
@@ -2354,7 +2354,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               variant="ghost"
-              className="!h-[22px] !min-h-0 !px-2 mx-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-[22px] !min-h-0 !px-2 ml-2 mr-3 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
               onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
               data-testid="button-today"
             >
@@ -2364,7 +2364,7 @@ export default function Dashboard() {
             <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost"
-              className="!h-[22px] !min-h-0 !px-2 ml-2 mr-3 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
+              className="!h-[22px] !min-h-0 !px-2 ml-3 mr-4 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
               onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
               data-testid="button-month-view"
             >
@@ -2375,7 +2375,7 @@ export default function Dashboard() {
           
           {/* Gray section: remaining buttons */}
           <div className="flex-1 flex items-center justify-between bg-slate-300 px-2 py-1">
-            <RouterLink href="/files" className="flex items-center ml-1">
+            <RouterLink href="/files" className="flex items-center ml-2">
               <Button 
                 size="sm" 
                 className="!h-[22px] !min-h-0 !px-1.5 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
@@ -2426,21 +2426,21 @@ export default function Dashboard() {
             <div className="h-4 flex ml-2 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-[22px] !min-h-0 !pl-1 !pr-1 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none -mt-0.5">+</span>
+              <span className="text-[14px] leading-none -mt-0.5 mr-0">+</span>
               Module
             </Button>
             <div className="h-4 flex ml-0 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-[22px] !min-h-0 !pl-1 !pr-1 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none -mt-0.5">+</span>
+              <span className="text-[14px] leading-none -mt-0.5 mr-0">+</span>
               Reading
             </Button>
             <div className="h-4 flex ml-0.5 mr-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
@@ -2466,11 +2466,11 @@ export default function Dashboard() {
             <div className="h-4 flex ml-0 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-[22px] !min-h-0 !pl-1 !pr-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none -mt-0.5">+</span>
+              <span className="text-[14px] leading-none -mt-0.5 mr-0">+</span>
               Exam
             </Button>
           </div>
