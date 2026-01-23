@@ -2776,21 +2776,21 @@ export default function Dashboard() {
                   onClick={togglePomodoro}
                   data-testid="button-pomodoro-toggle"
                 >
-                  {pomodoroRunning ? <Pause className="h-3 w-3 text-black" /> : <Play className="h-3 w-3 text-black" />}
+                  {pomodoroRunning ? <Pause className="h-4 w-4 text-black" strokeWidth={2.5} /> : <Play className="h-4 w-4 text-black" strokeWidth={2.5} />}
                 </button>
                 <button
                   className="p-1 hover:bg-black/20 rounded transition-colors"
                   onClick={resetPomodoro}
                   data-testid="button-pomodoro-reset"
                 >
-                  <RotateCcw className="h-3 w-3 text-black" />
+                  <RotateCcw className="h-4 w-4 text-black" strokeWidth={2.5} />
                 </button>
                 <button
                   className="p-1 hover:bg-black/20 rounded transition-colors"
                   onClick={skipPomodoro}
                   data-testid="button-pomodoro-skip"
                 >
-                  <SkipForward className="h-3 w-3 text-black" />
+                  <SkipForward className="h-4 w-4 text-black" strokeWidth={2.5} />
                 </button>
               </div>
             </div>
