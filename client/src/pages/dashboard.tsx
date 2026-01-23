@@ -1879,7 +1879,19 @@ export default function Dashboard() {
       <div className="relative mb-3 mr-0 flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '5px', minHeight: 'calc(100% + 3px)' }}>
         {/* Header overlay - stays normal when flyout is open */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-start gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
-          <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '46px', width: '46px' }} />
+          <div className="flex flex-col items-center gap-2 -ml-3">
+            <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '46px', width: '46px' }} />
+            <RouterLink href="/files">
+              <Button 
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
+                data-testid="button-files-link-sidebar"
+              >
+                <FolderOpen className="h-4 w-4 text-amber-400" />
+              </Button>
+            </RouterLink>
+          </div>
           <div className="flex flex-col" style={{ marginTop: '-5px' }}>
             <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
             <div className="flex items-center gap-2" style={{ marginTop: '5px' }} data-testid="digital-clock">
@@ -2867,18 +2879,6 @@ export default function Dashboard() {
                 {calendarView === "month" ? "Week" : "Month"}
               </Button>
             </div>
-
-            {/* Files */}
-            <RouterLink href="/files">
-              <Button 
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
-                data-testid="button-files-link"
-              >
-                <FolderOpen className="h-4 w-4 text-amber-400" />
-              </Button>
-            </RouterLink>
 
             </div>
 
