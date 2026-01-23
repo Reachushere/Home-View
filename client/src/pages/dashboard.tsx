@@ -2688,7 +2688,7 @@ export default function Dashboard() {
             
             {/* ALL DAY Row - single consolidated row */}
             <div className="grid border-b border-border/50 sticky top-[52px] z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
-                <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
+                <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center" style={{ backgroundColor: 'rgb(229, 231, 235)' }}>
                   ALL DAY
                 </div>
                 {weekDays.map((day, dayIdx) => {
