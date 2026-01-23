@@ -3589,6 +3589,11 @@ export default function Dashboard() {
             )}
           </DialogContent>
         </Dialog>
+
+        {/* Copyright Symbol */}
+        <div className="fixed bottom-2 right-3 text-white text-xs font-medium" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+          © 2025
+        </div>
       </main>
       </div>
     </div>
