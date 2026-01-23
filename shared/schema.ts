@@ -129,6 +129,17 @@ export const insertDeletedFolderSchema = createInsertSchema(deletedFolders).omit
 export type DeletedFolder = typeof deletedFolders.$inferSelect;
 export type InsertDeletedFolder = z.infer<typeof insertDeletedFolderSchema>;
 
+export const customFolders = pgTable("custom_folders", {
+  id: serial("id").primaryKey(),
+  parentFolderId: text("parent_folder_id").notNull(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertCustomFolderSchema = createInsertSchema(customFolders).omit({ id: true, createdAt: true });
+export type CustomFolder = typeof customFolders.$inferSelect;
+export type InsertCustomFolder = z.infer<typeof insertCustomFolderSchema>;
+
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),

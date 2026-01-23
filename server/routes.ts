@@ -801,6 +801,48 @@ export async function registerRoutes(
 
   // ============= END DELETED FOLDERS ROUTES =============
 
+  // ============= CUSTOM FOLDERS ROUTES =============
+  
+  // GET /api/custom-folders - Get all custom folders
+  app.get("/api/custom-folders", async (_req, res) => {
+    try {
+      const folders = await storage.getCustomFolders();
+      res.json(folders);
+    } catch (err) {
+      console.error("Error fetching custom folders:", err);
+      res.status(500).json({ error: "Failed to fetch custom folders" });
+    }
+  });
+
+  // POST /api/custom-folders - Create a custom folder
+  app.post("/api/custom-folders", async (req, res) => {
+    try {
+      const { parentFolderId, name } = req.body;
+      if (!parentFolderId || !name) {
+        return res.status(400).json({ error: "parentFolderId and name are required" });
+      }
+      const folder = await storage.createCustomFolder({ parentFolderId, name });
+      res.json(folder);
+    } catch (err) {
+      console.error("Error creating custom folder:", err);
+      res.status(500).json({ error: "Failed to create custom folder" });
+    }
+  });
+
+  // DELETE /api/custom-folders/:id - Delete a custom folder
+  app.delete("/api/custom-folders/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteCustomFolder(id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting custom folder:", err);
+      res.status(500).json({ error: "Failed to delete custom folder" });
+    }
+  });
+
+  // ============= END CUSTOM FOLDERS ROUTES =============
+
   // GET /api/calendar/list - List all available Google calendars for selection
   app.get("/api/calendar/list", async (_req, res) => {
     try {

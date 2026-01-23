@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -35,7 +36,9 @@ import {
   FolderOpen,
   Loader2,
   ChevronRight,
-  ChevronDown
+  ChevronDown,
+  Plus,
+  FolderPlus
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { FileRecord } from "@shared/schema";
@@ -158,6 +161,9 @@ export default function FilesPage() {
   const [uploadingCount, setUploadingCount] = useState(0);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [showDeleteFolderConfirm, setShowDeleteFolderConfirm] = useState(false);
+  const [showAddFolderDialog, setShowAddFolderDialog] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [addFolderParentId, setAddFolderParentId] = useState<string | null>(null);
 
   // Column widths state for draggable resizing
   const [columnWidths, setColumnWidths] = useState({
@@ -315,6 +321,39 @@ export default function FilesPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/deleted-folders"] });
+    },
+  });
+
+  const { data: customFoldersData = [] } = useQuery<{ id: number; parentFolderId: string; name: string }[]>({
+    queryKey: ["/api/custom-folders"],
+  });
+
+  const createCustomFolderMutation = useMutation({
+    mutationFn: async ({ parentFolderId, name }: { parentFolderId: string; name: string }) => {
+      return await apiRequest("POST", "/api/custom-folders", { parentFolderId, name });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/custom-folders"] });
+      setShowAddFolderDialog(false);
+      setNewFolderName("");
+      setAddFolderParentId(null);
+      toast({ title: "Folder created successfully" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to create folder", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const deleteCustomFolderMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/custom-folders/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/custom-folders"] });
+      toast({ title: "Folder deleted" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to delete folder", description: String(err), variant: "destructive" });
     },
   });
 
@@ -801,6 +840,32 @@ export default function FilesPage() {
   // Get breadcrumb path for selected folder
   const getBreadcrumb = () => {
     if (!selectedFolder) return ["Bryn's Files"];
+    
+    // Handle custom folders
+    if (selectedFolder.startsWith("custom-")) {
+      const customId = parseInt(selectedFolder.replace("custom-", ""));
+      const customFolder = customFoldersData.find(cf => cf.id === customId);
+      if (customFolder) {
+        // Get parent breadcrumb and add custom folder name
+        const parentParts = customFolder.parentFolderId.split("-");
+        const result = ["Bryn's Files"];
+        if (parentParts[0] === "week") {
+          const week = WEEKS.find(w => w.id === `${parentParts[0]}-${parentParts[1]}`);
+          if (week) result.push(week.name);
+        }
+        if (parentParts.length >= 3) {
+          const course = COURSE_FOLDERS.find(c => c.id === parentParts[2]);
+          if (course) result.push(course.name);
+        }
+        if (parentParts.length >= 4) {
+          const content = CONTENT_FOLDERS.find(c => c.id === parentParts[3]);
+          if (content) result.push(content.name);
+        }
+        result.push(customFolder.name);
+        return result;
+      }
+    }
+    
     const parts = selectedFolder.split("-");
     const result = ["Bryn's Files"];
     if (parts[0]) {
@@ -892,37 +957,53 @@ export default function FilesPage() {
               
               return (
                 <div key={week.id}>
-                  <div
-                    className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === week.id ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === week.id ? "bg-[#0078d4]/50" : ""}`}
-                    onClick={(e) => {
-                      if (e.ctrlKey || e.metaKey) {
-                        setSelectedFolder(week.id);
-                      } else if (weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`))) {
-                        toggleFolder(week.id);
-                      }
-                    }}
-                    onDragOver={(e) => handleDragOver(e, week.id)}
-                    onDragLeave={(e) => handleDragLeave(e)}
-                    onDrop={(e) => handleDrop(e, week.id)}
-                    data-testid={`folder-${week.id}`}
-                  >
-                    {weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`)) ? (
-                      isWeekExpanded ? (
-                        <ChevronDown className="h-3 w-3 text-gray-500" />
-                      ) : (
-                        <ChevronRight className="h-3 w-3 text-gray-500" />
-                      )
-                    ) : (
-                      <div className="w-3 h-3" />
-                    )}
-                    {isWeekExpanded ? (
-                      <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
-                    ) : (
-                      <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
-                    )}
-                    <span className={`text-xs flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{week.name}</span>
-                    <span className="text-xs text-gray-500">{weekFiles.length}</span>
-                  </div>
+                  <ContextMenu>
+                    <ContextMenuTrigger asChild>
+                      <div
+                        className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === week.id ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === week.id ? "bg-[#0078d4]/50" : ""}`}
+                        onClick={(e) => {
+                          if (e.ctrlKey || e.metaKey) {
+                            setSelectedFolder(week.id);
+                          } else if (weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`))) {
+                            toggleFolder(week.id);
+                          }
+                        }}
+                        onDragOver={(e) => handleDragOver(e, week.id)}
+                        onDragLeave={(e) => handleDragLeave(e)}
+                        onDrop={(e) => handleDrop(e, week.id)}
+                        data-testid={`folder-${week.id}`}
+                      >
+                        {weekFiles.length > 0 || COURSE_FOLDERS.some(c => !deletedFolderIds.has(`${week.id}-${c.id}`)) ? (
+                          isWeekExpanded ? (
+                            <ChevronDown className="h-3 w-3 text-gray-500" />
+                          ) : (
+                            <ChevronRight className="h-3 w-3 text-gray-500" />
+                          )
+                        ) : (
+                          <div className="w-3 h-3" />
+                        )}
+                        {isWeekExpanded ? (
+                          <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                        ) : (
+                          <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
+                        )}
+                        <span className={`text-xs flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{week.name}</span>
+                        <span className="text-xs text-gray-500">{weekFiles.length}</span>
+                      </div>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="w-48">
+                      <ContextMenuItem
+                        onClick={() => {
+                          setAddFolderParentId(week.id);
+                          setShowAddFolderDialog(true);
+                        }}
+                        data-testid={`add-folder-${week.id}`}
+                      >
+                        <FolderPlus className="h-4 w-4 mr-2" />
+                        Add Folder
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
                   
                   {isWeekExpanded && (
                     <div className="ml-3">
@@ -935,37 +1016,53 @@ export default function FilesPage() {
                         
                         return (
                           <div key={courseFolderId}>
-                            <div
-                              className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === courseFolderId ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === courseFolderId ? "bg-[#0078d4]/50" : ""}`}
-                              onClick={(e) => {
-                                if (e.ctrlKey || e.metaKey) {
-                                  setSelectedFolder(courseFolderId);
-                                } else if (courseFiles.length > 0 || CONTENT_FOLDERS.some(cf => !deletedFolderIds.has(`${courseFolderId}-${cf.id}`))) {
-                                  toggleFolder(courseFolderId);
-                                }
-                              }}
-                              onDragOver={(e) => handleDragOver(e, courseFolderId)}
-                              onDragLeave={(e) => handleDragLeave(e)}
-                              onDrop={(e) => handleDrop(e, courseFolderId)}
-                              data-testid={`course-folder-${courseFolderId}`}
-                            >
-                              {courseFiles.length > 0 || CONTENT_FOLDERS.some(cf => !deletedFolderIds.has(`${courseFolderId}-${cf.id}`)) ? (
-                                isCourseExpanded ? (
-                                  <ChevronDown className="h-3 w-3 text-gray-500" />
-                                ) : (
-                                  <ChevronRight className="h-3 w-3 text-gray-500" />
-                                )
-                              ) : (
-                                <div className="w-3 h-3" />
-                              )}
-                              {isCourseExpanded ? (
-                                <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
-                              ) : (
-                                <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
-                              )}
-                              <span className={`text-xs flex-1 ${course.color}`}>{course.name.split(" - ")[0]}</span>
-                              <span className="text-xs text-gray-500">{courseFiles.length}</span>
-                            </div>
+                            <ContextMenu>
+                              <ContextMenuTrigger asChild>
+                                <div
+                                  className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === courseFolderId ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === courseFolderId ? "bg-[#0078d4]/50" : ""}`}
+                                  onClick={(e) => {
+                                    if (e.ctrlKey || e.metaKey) {
+                                      setSelectedFolder(courseFolderId);
+                                    } else if (courseFiles.length > 0 || CONTENT_FOLDERS.some(cf => !deletedFolderIds.has(`${courseFolderId}-${cf.id}`))) {
+                                      toggleFolder(courseFolderId);
+                                    }
+                                  }}
+                                  onDragOver={(e) => handleDragOver(e, courseFolderId)}
+                                  onDragLeave={(e) => handleDragLeave(e)}
+                                  onDrop={(e) => handleDrop(e, courseFolderId)}
+                                  data-testid={`course-folder-${courseFolderId}`}
+                                >
+                                  {courseFiles.length > 0 || CONTENT_FOLDERS.some(cf => !deletedFolderIds.has(`${courseFolderId}-${cf.id}`)) ? (
+                                    isCourseExpanded ? (
+                                      <ChevronDown className="h-3 w-3 text-gray-500" />
+                                    ) : (
+                                      <ChevronRight className="h-3 w-3 text-gray-500" />
+                                    )
+                                  ) : (
+                                    <div className="w-3 h-3" />
+                                  )}
+                                  {isCourseExpanded ? (
+                                    <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                                  ) : (
+                                    <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
+                                  )}
+                                  <span className={`text-xs flex-1 ${course.color}`}>{course.name.split(" - ")[0]}</span>
+                                  <span className="text-xs text-gray-500">{courseFiles.length}</span>
+                                </div>
+                              </ContextMenuTrigger>
+                              <ContextMenuContent className="w-48">
+                                <ContextMenuItem
+                                  onClick={() => {
+                                    setAddFolderParentId(courseFolderId);
+                                    setShowAddFolderDialog(true);
+                                  }}
+                                  data-testid={`add-folder-${courseFolderId}`}
+                                >
+                                  <FolderPlus className="h-4 w-4 mr-2" />
+                                  Add Folder
+                                </ContextMenuItem>
+                              </ContextMenuContent>
+                            </ContextMenu>
                             
                             {isCourseExpanded && (
                               <div className="ml-4">
@@ -975,20 +1072,103 @@ export default function FilesPage() {
                                   if (deletedFolderIds.has(contentFolderId)) return null;
                                   const contentFiles = getFilesInFolder(contentFolderId);
                                   const isSelected = selectedFolder === contentFolderId;
+                                  const contentCustomFolders = customFoldersData.filter(cf => cf.parentFolderId === contentFolderId);
+                                  const isContentExpanded = expandedFolders.has(contentFolderId);
+                                  const hasSubfolders = contentCustomFolders.length > 0;
                                   
                                   return (
-                                    <div
-                                      key={contentFolderId}
-                                      className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isSelected ? "bg-[#0078d4]/30" : ""} ${dragOverFolder === contentFolderId ? "bg-[#0078d4]/50 ring-1 ring-[#0078d4]" : ""}`}
-                                      onClick={() => setSelectedFolder(contentFolderId)}
-                                      onDragOver={(e) => handleDragOver(e, contentFolderId)}
-                                      onDragLeave={(e) => handleDragLeave(e)}
-                                      onDrop={(e) => handleDrop(e, contentFolderId)}
-                                      data-testid={`content-folder-${contentFolderId}`}
-                                    >
-                                      <Folder className="h-3.5 w-3.5 text-yellow-600 fill-yellow-400 ml-2" />
-                                      <span className="text-xs flex-1">{content.name}</span>
-                                      <span className="text-xs text-gray-500">{contentFiles.length}</span>
+                                    <div key={contentFolderId}>
+                                      <ContextMenu>
+                                        <ContextMenuTrigger asChild>
+                                          <div
+                                            className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isSelected ? "bg-[#0078d4]/30" : ""} ${dragOverFolder === contentFolderId ? "bg-[#0078d4]/50 ring-1 ring-[#0078d4]" : ""}`}
+                                            onClick={() => {
+                                              if (hasSubfolders) {
+                                                toggleFolder(contentFolderId);
+                                              }
+                                              setSelectedFolder(contentFolderId);
+                                            }}
+                                            onDragOver={(e) => handleDragOver(e, contentFolderId)}
+                                            onDragLeave={(e) => handleDragLeave(e)}
+                                            onDrop={(e) => handleDrop(e, contentFolderId)}
+                                            data-testid={`content-folder-${contentFolderId}`}
+                                          >
+                                            {hasSubfolders ? (
+                                              isContentExpanded ? (
+                                                <ChevronDown className="h-3 w-3 text-gray-500" />
+                                              ) : (
+                                                <ChevronRight className="h-3 w-3 text-gray-500" />
+                                              )
+                                            ) : (
+                                              <div className="w-3 h-3" />
+                                            )}
+                                            <Folder className="h-3.5 w-3.5 text-yellow-600 fill-yellow-400" />
+                                            <span className="text-xs flex-1">{content.name}</span>
+                                            <span className="text-xs text-gray-500">{contentFiles.length}</span>
+                                          </div>
+                                        </ContextMenuTrigger>
+                                        <ContextMenuContent className="w-48">
+                                          <ContextMenuItem
+                                            onClick={() => {
+                                              setAddFolderParentId(contentFolderId);
+                                              setShowAddFolderDialog(true);
+                                            }}
+                                            data-testid={`add-folder-${contentFolderId}`}
+                                          >
+                                            <FolderPlus className="h-4 w-4 mr-2" />
+                                            Add Folder
+                                          </ContextMenuItem>
+                                        </ContextMenuContent>
+                                      </ContextMenu>
+                                      {isContentExpanded && hasSubfolders && (
+                                        <div className="ml-4">
+                                          {contentCustomFolders.map((customFolder) => {
+                                            const customFolderId = `custom-${customFolder.id}`;
+                                            const customFiles = files.filter(f => f.folder === customFolderId);
+                                            const isCustomSelected = selectedFolder === customFolderId;
+                                            
+                                            return (
+                                              <ContextMenu key={customFolderId}>
+                                                <ContextMenuTrigger asChild>
+                                                  <div
+                                                    className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isCustomSelected ? "bg-[#0078d4]/30" : ""} ${dragOverFolder === customFolderId ? "bg-[#0078d4]/50 ring-1 ring-[#0078d4]" : ""}`}
+                                                    onClick={() => setSelectedFolder(customFolderId)}
+                                                    onDragOver={(e) => handleDragOver(e, customFolderId)}
+                                                    onDragLeave={(e) => handleDragLeave(e)}
+                                                    onDrop={(e) => handleDrop(e, customFolderId)}
+                                                    data-testid={`custom-folder-${customFolderId}`}
+                                                  >
+                                                    <div className="w-3 h-3" />
+                                                    <Folder className="h-3.5 w-3.5 text-blue-500 fill-blue-400" />
+                                                    <span className="text-xs flex-1">{customFolder.name}</span>
+                                                    <span className="text-xs text-gray-500">{customFiles.length}</span>
+                                                  </div>
+                                                </ContextMenuTrigger>
+                                                <ContextMenuContent className="w-48">
+                                                  <ContextMenuItem
+                                                    onClick={() => {
+                                                      setAddFolderParentId(customFolderId);
+                                                      setShowAddFolderDialog(true);
+                                                    }}
+                                                    data-testid={`add-folder-${customFolderId}`}
+                                                  >
+                                                    <FolderPlus className="h-4 w-4 mr-2" />
+                                                    Add Folder
+                                                  </ContextMenuItem>
+                                                  <ContextMenuItem
+                                                    onClick={() => deleteCustomFolderMutation.mutate(customFolder.id)}
+                                                    className="text-red-500"
+                                                    data-testid={`delete-folder-${customFolderId}`}
+                                                  >
+                                                    <Trash2 className="h-4 w-4 mr-2" />
+                                                    Delete Folder
+                                                  </ContextMenuItem>
+                                                </ContextMenuContent>
+                                              </ContextMenu>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
                                     </div>
                                   );
                                 })}
@@ -1403,6 +1583,53 @@ export default function FilesPage() {
               data-testid="button-confirm-delete-folder"
             >
               Delete All Files
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAddFolderDialog} onOpenChange={setShowAddFolderDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Folder</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              placeholder="Folder name"
+              value={newFolderName}
+              onChange={(e) => setNewFolderName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && newFolderName.trim() && addFolderParentId) {
+                  createCustomFolderMutation.mutate({ 
+                    parentFolderId: addFolderParentId, 
+                    name: newFolderName.trim() 
+                  });
+                }
+              }}
+              data-testid="input-new-folder-name"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowAddFolderDialog(false);
+              setNewFolderName("");
+              setAddFolderParentId(null);
+            }}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                if (newFolderName.trim() && addFolderParentId) {
+                  createCustomFolderMutation.mutate({ 
+                    parentFolderId: addFolderParentId, 
+                    name: newFolderName.trim() 
+                  });
+                }
+              }}
+              disabled={!newFolderName.trim() || createCustomFolderMutation.isPending}
+              data-testid="button-create-folder"
+            >
+              {createCustomFolderMutation.isPending ? "Creating..." : "Create Folder"}
             </Button>
           </DialogFooter>
         </DialogContent>
