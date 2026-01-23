@@ -2659,7 +2659,7 @@ export default function Dashboard() {
                     className="p-1 border-l border-border flex flex-col items-center justify-center"
                     style={{ 
                       backgroundColor: isToday 
-                        ? "rgba(45, 74, 111, 0.5)" 
+                        ? "#2d4a6f" 
                         : (isFriday && new Date().getDay() !== 5) 
                           ? "rgba(254, 202, 202, 0.5)" 
                           : "transparent" 
