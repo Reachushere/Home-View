@@ -2251,7 +2251,7 @@ export default function Dashboard() {
                 className="!h-8 !w-8 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border border-slate-700/50 text-white shadow-md mt-1"
                 data-testid="button-hamburger-menu"
               >
-                <Menu className="h-4 w-4 text-white" />
+                <Menu className="h-4 w-4" style={{ color: 'white' }} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
