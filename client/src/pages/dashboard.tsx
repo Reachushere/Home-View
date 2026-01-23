@@ -3200,12 +3200,12 @@ export default function Dashboard() {
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
           {/* Weekly Files Flyout Tab */}
           <div 
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-50 flex items-center"
-            style={{ transform: 'translateY(-50%)' }}
+            className="absolute top-1/2 z-50 flex items-center flex-row-reverse"
+            style={{ transform: 'translateY(-50%)', left: '-24px' }}
           >
             {/* Flyout Panel */}
             <div 
-              className={`bg-[#1a1a2e] border border-[#3d3d3d] rounded-r-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
+              className={`bg-[#1a1a2e] border border-[#3d3d3d] rounded-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
               style={{ height: '400px' }}
             >
               <div className="w-72 h-full flex flex-col">
@@ -3242,14 +3242,14 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="bg-[#1a1a2e] border border-l-0 border-[#3d3d3d] rounded-r-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
+              className="bg-[#1a1a2e] border border-r-0 border-[#3d3d3d] rounded-l-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
               data-testid="weekly-files-flyout-tab"
             >
               <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
                 <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
                 Weekly Files
-                {isWeeklyFilesFlyoutOpen ? <ChevronLeft className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} /> : <ChevronRight className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />}
+                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} /> : <ChevronLeft className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />}
               </span>
             </button>
           </div>
