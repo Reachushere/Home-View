@@ -1037,6 +1037,119 @@ export default function FilesPage() {
             data-testid="panel-resize-handle"
           />
           <div className="py-2">
+            {/* Root-level custom folders (at week level) */}
+            {(() => {
+              const rootCustomFolders = customFoldersData.filter(cf => cf.parentFolderId === "root");
+              return (
+                <ContextMenu>
+                  <ContextMenuTrigger asChild>
+                    <div
+                      className="flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] text-gray-400 text-xs"
+                      onClick={() => toggleFolder("root")}
+                      data-testid="root-folder-header"
+                    >
+                      {rootCustomFolders.length > 0 ? (
+                        expandedFolders.has("root") ? (
+                          <ChevronDown className="h-3 w-3 text-gray-500" />
+                        ) : (
+                          <ChevronRight className="h-3 w-3 text-gray-500" />
+                        )
+                      ) : (
+                        <div className="w-3 h-3" />
+                      )}
+                      <FolderPlus className="h-4 w-4 text-gray-500" />
+                      <span className="flex-1">My Folders</span>
+                      <span className="text-xs text-gray-600">{rootCustomFolders.length}</span>
+                    </div>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="w-48">
+                    <ContextMenuItem
+                      onClick={() => {
+                        setAddFolderParentId("root");
+                        setShowAddFolderDialog(true);
+                      }}
+                      data-testid="add-root-folder"
+                    >
+                      <FolderPlus className="h-4 w-4 mr-2" />
+                      Add Folder
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              );
+            })()}
+            
+            {/* Root-level custom folders children */}
+            {expandedFolders.has("root") && customFoldersData.filter(cf => cf.parentFolderId === "root").map(folder => {
+              const folderFiles = files.filter(f => f.folder === `custom-${folder.id}`);
+              const isSelected = selectedFolder === `custom-${folder.id}`;
+              return (
+                <div key={folder.id} className="ml-3">
+                  <ContextMenu>
+                    <ContextMenuTrigger asChild>
+                      <div
+                        className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isSelected ? "bg-[#0078d4]/30" : ""} ${dragOverFolder === `custom-${folder.id}` ? "bg-[#0078d4]/50" : ""}`}
+                        onClick={() => setSelectedFolder(`custom-${folder.id}`)}
+                        onDragOver={(e) => handleDragOver(e, `custom-${folder.id}`)}
+                        onDragLeave={(e) => handleDragLeave(e)}
+                        onDrop={(e) => handleDrop(e, `custom-${folder.id}`)}
+                        data-testid={`custom-folder-${folder.id}`}
+                      >
+                        <div className="w-3 h-3" />
+                        <Folder className="h-4 w-4 text-blue-400" />
+                        {editingFolderId === folder.id ? (
+                          <input
+                            type="text"
+                            value={editingFolderName}
+                            onChange={(e) => setEditingFolderName(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && editingFolderName.trim()) {
+                                renameCustomFolderMutation.mutate({ id: folder.id, name: editingFolderName.trim() });
+                              } else if (e.key === "Escape") {
+                                setEditingFolderId(null);
+                                setEditingFolderName("");
+                              }
+                            }}
+                            onBlur={() => {
+                              if (editingFolderName.trim()) {
+                                renameCustomFolderMutation.mutate({ id: folder.id, name: editingFolderName.trim() });
+                              } else {
+                                setEditingFolderId(null);
+                                setEditingFolderName("");
+                              }
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            autoFocus
+                            className="text-sm flex-1 bg-[#1e1e1e] border border-[#0078d4] rounded px-1 py-0 text-white outline-none"
+                          />
+                        ) : (
+                          <span className="text-sm flex-1 text-blue-300">{folder.name}</span>
+                        )}
+                        <span className="text-xs text-gray-500">{folderFiles.length}</span>
+                      </div>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="w-48">
+                      <ContextMenuItem
+                        onClick={() => {
+                          setEditingFolderId(folder.id);
+                          setEditingFolderName(folder.name);
+                        }}
+                      >
+                        <Edit2 className="h-4 w-4 mr-2" />
+                        Rename Folder
+                      </ContextMenuItem>
+                      <ContextMenuItem
+                        onClick={() => deleteCustomFolderMutation.mutate(folder.id)}
+                        className="text-red-400"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Folder
+                      </ContextMenuItem>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                </div>
+              );
+            })}
+
             {/* Week folders */}
             {WEEKS.map((week) => {
               const weekFiles = getFilesInWeek(week.id);
