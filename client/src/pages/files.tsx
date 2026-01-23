@@ -165,6 +165,8 @@ export default function FilesPage() {
   const [addFolderParentId, setAddFolderParentId] = useState<string | null>(null);
   const [editingFolderId, setEditingFolderId] = useState<number | null>(null);
   const [editingFolderName, setEditingFolderName] = useState("");
+  const [foldersPanelWidth, setFoldersPanelWidth] = useState(224); // 224px = w-56
+  const [isResizingPanel, setIsResizingPanel] = useState(false);
 
   // Column widths state for draggable resizing
   const [columnWidths, setColumnWidths] = useState({
@@ -210,6 +212,39 @@ export default function FilesPage() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [handleMouseMove, handleMouseUp]);
+
+  // Panel resize handlers
+  const panelStartX = useRef<number>(0);
+  const panelStartWidth = useRef<number>(0);
+
+  const handlePanelMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizingPanel(true);
+    panelStartX.current = e.clientX;
+    panelStartWidth.current = foldersPanelWidth;
+    document.addEventListener('mousemove', handlePanelMouseMove);
+    document.addEventListener('mouseup', handlePanelMouseUp);
+  }, [foldersPanelWidth]);
+
+  const handlePanelMouseMove = useCallback((e: MouseEvent) => {
+    if (!isResizingPanel) return;
+    const diff = e.clientX - panelStartX.current;
+    const newWidth = Math.max(150, Math.min(500, panelStartWidth.current + diff));
+    setFoldersPanelWidth(newWidth);
+  }, [isResizingPanel]);
+
+  const handlePanelMouseUp = useCallback(() => {
+    setIsResizingPanel(false);
+    document.removeEventListener('mousemove', handlePanelMouseMove);
+    document.removeEventListener('mouseup', handlePanelMouseUp);
+  }, [handlePanelMouseMove]);
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handlePanelMouseMove);
+      document.removeEventListener('mouseup', handlePanelMouseUp);
+    };
+  }, [handlePanelMouseMove, handlePanelMouseUp]);
 
   const { getUploadParameters, uploadFile } = useUpload({
     onSuccess: () => {
@@ -961,9 +996,18 @@ export default function FilesPage() {
         </Select>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative">
         {/* Sidebar - Tree Navigation */}
-        <div className="w-56 border-r border-[#3d3d3d] bg-[#202020] overflow-y-auto">
+        <div 
+          className="border-r border-[#3d3d3d] bg-[#202020] overflow-y-auto flex-shrink-0 relative"
+          style={{ width: foldersPanelWidth }}
+        >
+          {/* Resize handle */}
+          <div
+            className="absolute top-0 bottom-0 w-1 cursor-col-resize hover:bg-[#0078d4] z-10 right-0"
+            onMouseDown={handlePanelMouseDown}
+            data-testid="panel-resize-handle"
+          />
           <div className="py-2">
             {/* Week folders */}
             {WEEKS.map((week) => {
