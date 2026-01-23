@@ -4195,7 +4195,7 @@ export default function Dashboard() {
                             key={file.id}
                             className={`flex items-center gap-2 p-2 rounded text-xs group border ${
                               colors 
-                                ? `${colors.prepBg} ${colors.prepBorder} ${colors.prepText}` 
+                                ? `${colors.prepBg} ${colors.prepBorder} text-black` 
                                 : 'bg-[#2d2d2d] border-[#3d3d3d] text-white'
                             }`}
                             data-testid={`flyout-file-${file.id}`}
@@ -4216,7 +4216,7 @@ export default function Dashboard() {
                               onClick={() => setPreviewFile(file)}
                               className="flex items-center gap-2 flex-1 text-left"
                             >
-                              <FileText className={`h-4 w-4 shrink-0 ${colors ? colors.prepText : 'text-blue-400'}`} />
+                              <FileText className={`h-4 w-4 shrink-0 ${colors ? 'text-black' : 'text-blue-400'}`} />
                               <span className="truncate flex-1">{file.displayName}</span>
                             </button>
                           </div>
