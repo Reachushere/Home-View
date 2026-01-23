@@ -194,23 +194,72 @@ async function sendNextChunk() {
   }
 }
 
+// Check if Alexa is still speaking by polling its state
+async function isAlexaSpeaking(entityId: string): Promise<boolean> {
+  try {
+    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+    const response = await fetch(`${haUrl}/api/states/${entityId}`, {
+      headers: {
+        'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) return false;
+    
+    const state = await response.json();
+    // Alexa media player states: playing, paused, idle, standby
+    return state.state === 'playing';
+  } catch (error) {
+    console.error("Error checking Alexa state:", error);
+    return false;
+  }
+}
+
+// Poll until Alexa stops speaking, then send next chunk
+async function waitForAlexaAndSendNext() {
+  if (!currentTTSSession || !currentTTSSession.isPlaying) return;
+  
+  const targetEntity = currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY;
+  
+  // Wait a bit for TTS to start (Alexa takes ~2 seconds to begin speaking)
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  
+  // Poll every 2 seconds to check if Alexa finished speaking
+  const pollInterval = setInterval(async () => {
+    if (!currentTTSSession || !currentTTSSession.isPlaying) {
+      clearInterval(pollInterval);
+      return;
+    }
+    
+    const speaking = await isAlexaSpeaking(targetEntity);
+    
+    if (!speaking) {
+      clearInterval(pollInterval);
+      console.log("Alexa finished speaking, sending next chunk immediately");
+      // Small delay to let Alexa fully transition to idle
+      setTimeout(sendNextChunk, 500);
+    }
+  }, 2000);
+  
+  // Fallback: if polling takes too long (3 minutes), just send anyway
+  setTimeout(() => {
+    clearInterval(pollInterval);
+  }, 180000);
+}
+
 function scheduleNextChunk() {
   if (!currentTTSSession || !currentTTSSession.isPlaying) return;
   
-  // Calculate how long this chunk will take to read
-  const readTimeMs = (CHUNK_SIZE / CHARS_PER_SECOND) * 1000;
-  
-  // Add 2 seconds buffer for Alexa processing
-  const delayMs = readTimeMs + 2000;
-  
-  console.log(`Scheduling next chunk in ${Math.round(delayMs / 1000)} seconds`);
+  console.log("Waiting for Alexa to finish speaking before sending next chunk...");
   
   // Clear any existing timer
   if (currentTTSSession.autoTimer) {
     clearTimeout(currentTTSSession.autoTimer);
   }
   
-  currentTTSSession.autoTimer = setTimeout(sendNextChunk, delayMs);
+  // Use polling approach instead of fixed timing
+  waitForAlexaAndSendNext();
 }
 
 export async function registerRoutes(
