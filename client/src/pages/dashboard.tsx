@@ -2763,14 +2763,14 @@ export default function Dashboard() {
           
           <div className="flex items-center gap-3">
             {/* Pomodoro Timer */}
-            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/60 h-[60px]">
-              <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
+            <div className="flex items-center gap-4 px-4 py-1.5 rounded-lg bg-white/60 h-[60px]">
+              <div className={`text-sm font-mono font-bold px-2 py-1 rounded ${
                 pomodoroMode === "work" ? "bg-red-700 text-white" : 
                 pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
               }`} data-testid="pomodoro-timer">
                 {formatPomodoroTime(pomodoroTime)}
               </div>
-              <div className="flex items-center gap-0.5">
+              <div className="flex items-center gap-2">
                 <button
                   className="p-1 hover:bg-black/20 rounded transition-colors"
                   onClick={togglePomodoro}
