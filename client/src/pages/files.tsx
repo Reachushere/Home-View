@@ -357,30 +357,6 @@ export default function FilesPage() {
     },
   });
 
-  // Delete all CASL101 folders across all weeks
-  const deleteAllCaslFoldersMutation = useMutation({
-    mutationFn: async () => {
-      const caslFolderIds: string[] = [];
-      for (let week = 1; week <= 13; week++) {
-        caslFolderIds.push(`week-${week}-casl101-module`);
-        caslFolderIds.push(`week-${week}-casl101-reading`);
-        caslFolderIds.push(`week-${week}-casl101-other`);
-      }
-      // Delete each folder that isn't already deleted
-      const promises = caslFolderIds
-        .filter(id => !deletedFolderIds.has(id))
-        .map(folderId => apiRequest("POST", "/api/deleted-folders", { folderId }));
-      await Promise.all(promises);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/deleted-folders"] });
-      toast({ title: "All CASL101 folders deleted" });
-    },
-    onError: (err) => {
-      toast({ title: "Failed to delete CASL folders", description: String(err), variant: "destructive" });
-    },
-  });
-
   const getFilesToDeleteInFolder = (folderId: string) => {
     // Check if this is a week folder (e.g., "week-1")
     if (folderId.match(/^week-\d+$/)) {
@@ -1218,21 +1194,6 @@ export default function FilesPage() {
               {unfiledFiles.length > 0 && (
                 <span className="ml-auto text-xs bg-gray-600 px-1.5 py-0.5 rounded">{unfiledFiles.length}</span>
               )}
-            </div>
-
-            {/* Folder Management Buttons */}
-            <div className="px-2 pt-3 border-t border-[#3d3d3d] mt-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full text-xs text-red-400 border-red-400/50 hover:bg-red-500/20"
-                onClick={() => deleteAllCaslFoldersMutation.mutate()}
-                disabled={deleteAllCaslFoldersMutation.isPending}
-                data-testid="button-delete-all-casl"
-              >
-                <Trash2 className="h-3 w-3 mr-1" />
-                {deleteAllCaslFoldersMutation.isPending ? "Deleting..." : "Delete All CASL101 Folders"}
-              </Button>
             </div>
           </div>
         </div>
