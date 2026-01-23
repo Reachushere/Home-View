@@ -4170,8 +4170,8 @@ export default function Dashboard() {
           >
             {/* Flyout Panel */}
             <div 
-              className={`bg-[#1a1a2e] shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-r-0 border-[#3d3d3d] rounded-l-lg' : 'w-0 border-0'}`}
-              style={{ height: '400px' }}
+              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-r-0 border-white/70 rounded-l-lg' : 'w-0 border-0'}`}
+              style={{ height: '400px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}
             >
               <div className="w-80 h-full flex flex-col">
                 <div className="p-3 border-b border-[#3d3d3d] flex items-center justify-between">
@@ -4252,8 +4252,8 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="bg-[#1a1a2e] border-t border-b border-l border-[#3d3d3d] rounded-l-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
-              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              className="border-t border-b border-l border-white/70 rounded-l-lg px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
+              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}
               data-testid="weekly-files-flyout-tab"
             >
               <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
