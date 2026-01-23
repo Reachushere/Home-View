@@ -2463,19 +2463,19 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              className="!h-7 !min-h-0 px-3 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              Discuss
+              Discussion
             </Button>
             <Button 
               size="sm"
-              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              className="!h-7 !min-h-0 px-3 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              Assign
+              Assignment
             </Button>
             <Button 
               size="sm"
