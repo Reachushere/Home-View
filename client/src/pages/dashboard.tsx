@@ -2242,45 +2242,33 @@ export default function Dashboard() {
       <main className="flex-1 pt-2 px-6 pb-6 overflow-auto flex flex-col">
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0">
-          {/* Left: Hamburger Menu with Bell underneath */}
-          <div className="flex flex-col items-start gap-1 mt-1">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="!h-8 !w-8 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md backdrop-blur-sm"
-                  data-testid="button-hamburger-menu"
-                >
-                  <Menu className="h-4 w-4" stroke="white" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
-                  <User className="h-4 w-4 mr-2" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  School
-                </DropdownMenuItem>
-                <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
-                  <Palette className="h-4 w-4 mr-2" />
-                  Courses
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMute}
-              className={`!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border-[0.1px] border-white/50 text-white shadow-md ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
-              data-testid="button-mute-toggle"
-              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-            >
-              {isMuted ? <BellOff className="h-3 w-3" /> : <Bell className="h-3 w-3" />}
-            </Button>
-          </div>
+          {/* Left: Hamburger Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="!h-8 !w-8 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md mt-1 backdrop-blur-sm"
+                data-testid="button-hamburger-menu"
+              >
+                <Menu className="h-4 w-4" stroke="white" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
+                <GraduationCap className="h-4 w-4 mr-2" />
+                School
+              </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
+                <Palette className="h-4 w-4 mr-2" />
+                Courses
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           
           {/* Center: Title + Clock below */}
           <div className="flex flex-col items-center">
@@ -2339,6 +2327,16 @@ export default function Dashboard() {
 
             {/* Quick Actions */}
             <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleMute}
+                className={`h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50 ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+                data-testid="button-mute-toggle"
+                title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+              >
+                {isMuted ? <BellOff className="h-4 w-4 text-white" /> : <Bell className="h-4 w-4 text-white" />}
+              </Button>
               <Button 
                 variant="ghost" 
                 size="icon" 
