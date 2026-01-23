@@ -1872,9 +1872,32 @@ export default function Dashboard() {
             const isSelected = selectedWeek === week.weekNumber && !selectedDate;
             return (
               <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
-                {/* Hamburger menus on left for selected week */}
+                <Button
+                  variant="ghost"
+                  className={`justify-start gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent flex-shrink-0" : "flex-1"}`}
+                  size="sm"
+                  onClick={() => {
+                    setSelectedWeek(week.weekNumber);
+                    setSelectedDate(null);
+                  }}
+                  data-testid={`button-week-${week.weekNumber}`}
+                >
+                  <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
+                    <Calendar className="h-3 w-3" />
+                    <span className="text-xs">Week {week.weekNumber}</span>
+                    <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
+                      ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
+                    </span>
+                  </div>
+                  {!isSelected && week.taskCount > 0 && (
+                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto">
+                      {week.taskCount}
+                    </Badge>
+                  )}
+                </Button>
+                {/* Hamburger menus on right for selected week */}
                 {isSelected && (
-                  <div className="flex items-center gap-0.5 pl-1">
+                  <div className="flex items-center gap-0.5 pr-1 flex-1 justify-end">
                     {SIDEBAR_COURSES.map((course) => {
                       const availableFolders = FOLDER_TYPES.filter(
                         (folder) => !deletedFolderIds.has(`week-${week.weekNumber}-${course.id}-${folder.id}`)
@@ -1890,7 +1913,7 @@ export default function Dashboard() {
                             </button>
                           </DropdownMenuTrigger>
                           {availableFolders.length > 0 && (
-                            <DropdownMenuContent align="start" className="min-w-[160px]">
+                            <DropdownMenuContent align="end" className="min-w-[160px]">
                               <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
                                 {course.name}
                               </div>
@@ -1934,29 +1957,6 @@ export default function Dashboard() {
                     })}
                   </div>
                 )}
-                <Button
-                  variant="ghost"
-                  className={`justify-between gap-1 h-auto py-1 px-1 flex-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
-                  size="sm"
-                  onClick={() => {
-                    setSelectedWeek(week.weekNumber);
-                    setSelectedDate(null);
-                  }}
-                  data-testid={`button-week-${week.weekNumber}`}
-                >
-                  <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
-                    <Calendar className="h-3 w-3" />
-                    <span className="text-xs">Week {week.weekNumber}</span>
-                    <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
-                      ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
-                    </span>
-                  </div>
-                  {week.taskCount > 0 && (
-                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center">
-                      {week.taskCount}
-                    </Badge>
-                  )}
-                </Button>
               </div>
             );
           })}
