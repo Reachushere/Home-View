@@ -4184,7 +4184,7 @@ export default function Dashboard() {
                       No files in Week {selectedWeek}
                     </div>
                   ) : (
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       {(() => {
                         // Group files by course
                         const groupedFiles: Record<string, typeof currentWeekFiles> = {};
@@ -4200,24 +4200,17 @@ export default function Dashboard() {
                         return Object.entries(groupedFiles).map(([courseCode, files]) => {
                           const colors = courseColors[courseCode];
                           return (
-                            <div key={courseCode} className="flex gap-1">
-                              {/* Vertical course label */}
-                              <div 
-                                className={`flex items-center justify-center rounded-l px-1 ${
-                                  colors ? colors.dot : 'bg-gray-500'
-                                }`}
-                                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
-                              >
-                                <span className="text-white text-xs font-bold tracking-wider py-1">
-                                  {courseCode}
-                                </span>
+                            <div key={courseCode}>
+                              {/* Course header */}
+                              <div className={`text-xs font-bold mb-1 ${colors ? colors.text : 'text-gray-400'}`}>
+                                {courseCode}
                               </div>
                               {/* Files for this course */}
-                              <div className="flex-1 space-y-1">
+                              <div className="space-y-1">
                                 {files.map(file => (
                                   <div
                                     key={file.id}
-                                    className={`flex items-center gap-2 p-2 rounded-r text-xs group border border-l-0 ${
+                                    className={`flex items-center gap-2 p-2 rounded text-xs group border ${
                                       colors 
                                         ? `${colors.prepBg} ${colors.prepBorder} text-black` 
                                         : 'bg-[#2d2d2d] border-[#3d3d3d] text-white'
