@@ -4166,7 +4166,7 @@ export default function Dashboard() {
         {calendarView === "week" && (
           <div 
             className="fixed z-50 flex items-center"
-            style={{ top: '50%', transform: 'translateY(-50%)', right: 'calc(100% - 376px)' }}
+            style={{ top: '50%', transform: 'translateY(-50%)', left: '376px' }}
           >
             {/* Flyout Panel */}
             <div 
