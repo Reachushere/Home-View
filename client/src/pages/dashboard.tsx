@@ -2382,7 +2382,7 @@ export default function Dashboard() {
                 className="!h-[22px] !min-h-0 !px-1.5 text-[11px] hover:bg-[#e6c054] border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif", backgroundColor: "#FFE086"}} 
                 data-testid="button-files-link"
               >
-                <FolderOpen className="ml-2 mr-0.5" style={{ height: '12px', width: '12px' }} />
+                <FolderOpen className="ml-3 mr-0.5" style={{ height: '12px', width: '12px' }} />
                 Files
               </Button>
             </RouterLink>
