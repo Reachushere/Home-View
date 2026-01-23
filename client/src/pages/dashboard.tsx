@@ -2757,7 +2757,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '141px', paddingRight: '24px', marginTop: '0px' }}>
+      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px' }}>
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
           </div>
@@ -3223,7 +3223,7 @@ export default function Dashboard() {
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginRight: '-14px', marginLeft: '35px', paddingRight: '20px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginRight: '-14px', marginLeft: '49px', paddingRight: '20px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
