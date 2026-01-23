@@ -3176,8 +3176,8 @@ export default function Dashboard() {
           const cfnf400Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).length;
           const casl101Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).length;
           const maxTasks = Math.max(cppa122Tasks, cfnf400Tasks, casl101Tasks, 2);
-          // Base height 200px for up to 2 tasks, add 70px per additional task
-          const dynamicHeight = maxTasks <= 2 ? 200 : 200 + (maxTasks - 2) * 70;
+          // Base height 280px fits 3 course rows with 1 task each without scrolling
+          const dynamicHeight = maxTasks <= 2 ? 280 : 280 + (maxTasks - 2) * 70;
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
