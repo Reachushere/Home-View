@@ -2374,7 +2374,7 @@ export default function Dashboard() {
           </div>
           
           {/* Yellow Files section */}
-          <div className="flex items-center py-1 pl-6 pr-1" style={{backgroundColor: "#FFD253"}}>
+          <div className="flex items-center py-1 pl-6 pr-0" style={{backgroundColor: "#FFD253"}}>
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
