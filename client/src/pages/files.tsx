@@ -1,5 +1,5 @@
 import { useState, DragEvent, useRef, useCallback, useEffect } from "react";
-import quickActionsBg from "@assets/image_1769032847168.png";
+import quickActionsBg from "@assets/Washroom_1769164969510.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
