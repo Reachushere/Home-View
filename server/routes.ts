@@ -87,8 +87,10 @@ interface TTSSession {
   targetEntity?: string;
 }
 let currentTTSSession: TTSSession | null = null;
-// Average reading speed: ~150 words per minute, ~750 characters per minute
-const CHARS_PER_SECOND = 12.5;
+// Alexa reads faster than expected - ~200 words per minute at normal speed
+// At 80% speed: ~160 wpm = ~800 chars/min = ~13.3 chars/sec
+// But we want to send next chunk BEFORE current finishes, so use higher value
+const CHARS_PER_SECOND = 18; // Send next chunk early to avoid gaps
 const CHUNK_SIZE = 2000; // Characters per TTS chunk
 
 // Clean text for TTS - remove special characters that cause errors
