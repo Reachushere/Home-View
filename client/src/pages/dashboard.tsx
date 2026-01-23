@@ -1860,7 +1860,13 @@ export default function Dashboard() {
 
         <nav className="flex flex-col gap-0.5 -mt-2 pb-4">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-1 mb-0.5">Weeks</h3>
-          {weeks.map((week) => {
+          {[...weeks].sort((a, b) => {
+            const aFinished = parseISO(a.endDate) < new Date();
+            const bFinished = parseISO(b.endDate) < new Date();
+            if (aFinished && !bFinished) return 1;
+            if (!aFinished && bFinished) return -1;
+            return a.weekNumber - b.weekNumber;
+          }).map((week) => {
             const weekEndDate = parseISO(week.endDate);
             const isWeekFinished = weekEndDate < new Date();
             const isSelected = selectedWeek === week.weekNumber && !selectedDate;
