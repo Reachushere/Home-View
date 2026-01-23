@@ -2283,22 +2283,22 @@ export default function Dashboard() {
               >
                 {isMuted ? <BellOff className="h-3 w-3 scale-[0.65]" /> : <Bell className="h-3 w-3 scale-[0.65]" />}
               </Button>
-              <h1 className="text-base font-semibold text-foreground" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
+              <h1 className="text-base font-semibold text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
             </div>
             {/* Slightly bigger Clock below title */}
             <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
-              <span className="text-[10px] text-muted-foreground font-medium">
+              <span className="text-[10px] text-white font-medium">
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <div className="w-[2px] h-4 bg-muted-foreground/50" />
+              <div className="w-[2px] h-4 bg-white/50" />
               <div className="flex items-baseline">
-                <span className="text-sm font-semibold text-foreground tabular-nums">
+                <span className="text-sm font-semibold text-white tabular-nums">
                   {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
                 </span>
-                <span className="text-[10px] text-muted-foreground tabular-nums">
+                <span className="text-[10px] text-white/80 tabular-nums">
                   :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
                 </span>
-                <span className="text-[7px] font-bold text-muted-foreground ml-0.5 uppercase">
+                <span className="text-[7px] font-bold text-white/80 ml-0.5 uppercase">
                   {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
                 </span>
               </div>
@@ -2632,10 +2632,10 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800 bg-white/20 backdrop-blur-sm">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers */}
-            <div className="grid border-b border-border sticky top-0 bg-card z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+            <div className="grid border-b border-border sticky top-0 bg-white/20 backdrop-blur-sm z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="p-2 flex items-center justify-center">
                 <span className="text-sm text-black dark:text-white">Week {selectedWeek}</span>
               </div>
@@ -3084,10 +3084,10 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-3" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800">
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800 bg-white/20 backdrop-blur-sm">
             <CardContent className="p-0 h-full overflow-auto">
               {/* Month Header */}
-              <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-card z-10">
+              <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/20 backdrop-blur-sm z-10">
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
