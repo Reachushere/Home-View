@@ -2840,18 +2840,6 @@ export default function Dashboard() {
               {isMuted ? <BellOff className="h-4 w-4 text-white" /> : <Bell className="h-4 w-4 text-white" />}
             </Button>
 
-            {/* Home */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
-              onClick={() => setSelectedWeek(2)}
-              data-testid="button-home-week"
-              title="Go to current week"
-            >
-              <Home className="h-4 w-4 text-white" />
-            </Button>
-
             {/* Sync */}
             <Button 
               variant="ghost" 
