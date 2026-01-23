@@ -3201,7 +3201,7 @@ export default function Dashboard() {
           {/* Weekly Files Flyout Tab */}
           <div 
             className="absolute top-1/2 z-50 flex items-center flex-row-reverse"
-            style={{ transform: 'translateY(-50%)', left: '-24px' }}
+            style={{ transform: 'translateY(-50%)', left: '0px' }}
           >
             {/* Flyout Panel */}
             <div 
