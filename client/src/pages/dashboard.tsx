@@ -2378,7 +2378,7 @@ export default function Dashboard() {
             <RouterLink href="/files" className="flex items-center ml-2">
               <Button 
                 size="sm" 
-                className="!h-[22px] !min-h-0 !px-1.5 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+                className="!h-[22px] !min-h-0 !px-1.5 text-[11px] hover:bg-[#e6b93d] border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif", backgroundColor: "#FFCD44"}} 
                 data-testid="button-files-link"
               >
                 <FolderOpen className="mr-0.5" style={{ height: '12px', width: '12px' }} />
