@@ -3179,7 +3179,7 @@ export default function Dashboard() {
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-white bg-white/50 backdrop-blur-sm">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers */}
-            <div className="grid border-b border-border sticky top-0 z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.50)' }}>
+            <div className="grid border-b border-border sticky top-0 z-40 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.50)' }}>
               <div className="p-2 flex items-center justify-center" style={{ backgroundColor: 'rgb(255, 255, 255)' }}>
                 <span className="text-sm text-black dark:text-white">Week {selectedWeek}</span>
               </div>
@@ -3231,7 +3231,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border/50 sticky top-[52px] z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
+            <div className="grid border-b border-border/50 sticky top-[52px] z-30 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
                 <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center" style={{ backgroundColor: 'rgb(229, 231, 235)' }}>
                   ALL DAY
                 </div>
@@ -3439,12 +3439,12 @@ export default function Dashboard() {
               
               {/* Course Rows - CPPA122, CFNF400, CASL101 (frozen/sticky) */}
               {[
-                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', top: '96px' },
-                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', top: '116px' },
-                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', top: '136px' }
+                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', top: '96px', zIndex: 22 },
+                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', top: '120px', zIndex: 21 },
+                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', top: '144px', zIndex: 20 }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full sticky z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, top: course.top }}>
-                  <div className="px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center text-black min-h-[20px]" style={{ backgroundColor: course.label }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full sticky" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, top: course.top, height: '24px', zIndex: course.zIndex }}>
+                  <div className="px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center text-black h-[24px]" style={{ backgroundColor: course.label }}>
                     {course.name}
                   </div>
                   {weekDays.map((day, dayIdx) => {
@@ -3456,7 +3456,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0 border-l border-border/50 min-h-[20px] flex flex-col"
+                        className="px-0.5 py-0 border-l border-border/50 h-[24px] flex flex-col overflow-hidden"
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
                         {courseTasks.map(task => (
