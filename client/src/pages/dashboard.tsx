@@ -2310,172 +2310,92 @@ export default function Dashboard() {
           <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded mr-3" />
         </div>
         
-        {/* Modern Glassmorphism Menu Bar */}
-        <div className="flex items-center mb-0 rounded-xl overflow-hidden" style={{ 
-          background: 'linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-          boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+        {/* Clean Minimal Menu Bar */}
+        <div className="flex items-center mb-0 rounded-lg overflow-hidden bg-slate-900" style={{ 
           marginTop: '24px',
-          padding: '3px'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
         }}>
-          <div className="flex items-center w-full rounded-lg px-3 py-1.5 gap-4" style={{
-            background: 'rgba(255,255,255,0.95)',
-            backdropFilter: 'blur(10px)'
-          }}>
-            {/* Date Navigation */}
-            <div className="flex items-center gap-1 border-r border-gray-200 pr-4">
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-gray-100 rounded-full" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-                <ChevronLeft className="h-4 w-4 text-gray-600" strokeWidth={2} />
-              </Button>
-              <div className="flex items-center gap-1.5 px-2">
-                <span className="text-[11px] font-semibold text-gray-800">{format(weekStartDate, "MMM d")}</span>
-                <span className="text-[11px] text-gray-400">→</span>
-                <span className="text-[11px] font-semibold text-gray-800">{format(weekEndDate, "MMM d")}</span>
-              </div>
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-gray-100 rounded-full" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-                <ChevronRight className="h-4 w-4 text-gray-600" strokeWidth={2} />
-              </Button>
+          {/* Left Section - Navigation */}
+          <div className="flex items-center h-10 px-2 gap-1">
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-800" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+              <ChevronLeft className="h-4 w-4 text-slate-400" />
+            </Button>
+            <div className="bg-slate-800 rounded px-3 py-1">
+              <span className="text-[12px] font-medium text-white tracking-wide">{format(weekStartDate, "MMM d")} – {format(weekEndDate, "MMM d")}</span>
             </div>
-
-            {/* Icon Buttons */}
-            <div className="flex items-center gap-2 border-r border-gray-200 pr-4">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-7 w-7 hover:bg-indigo-50 rounded-full"
-                onClick={() => setSelectedWeek(2)}
-                data-testid="button-home-week"
-                title="Go to current week"
-              >
-                <Home className="h-4 w-4 text-indigo-600" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-7 w-7 hover:bg-indigo-50 rounded-full"
-                onClick={() => syncAllCalendarMutation.mutate()}
-                disabled={syncAllCalendarMutation.isPending}
-                data-testid="button-sync-calendar"
-              >
-                {syncAllCalendarMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 text-indigo-600 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4 text-indigo-600" />
-                )}
-              </Button>
-            </div>
-
-            {/* View Toggle */}
-            <div className="flex items-center gap-1 border-r border-gray-200 pr-4">
-              <Button 
-                variant="ghost"
-                className="!h-7 !min-h-0 px-3 text-[11px] hover:bg-amber-50 rounded-full font-semibold text-gray-700 border-0" 
-                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-                data-testid="button-today"
-              >
-                <Sun className="h-3.5 w-3.5 mr-1 text-amber-500" />
-                Today
-              </Button>
-              <Button 
-                variant="ghost"
-                className="!h-7 !min-h-0 px-3 text-[11px] hover:bg-purple-50 rounded-full font-semibold text-gray-700 border-0"
-                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-                data-testid="button-month-view"
-              >
-                <CalendarDays className="h-3.5 w-3.5 mr-1 text-purple-500" />
-                {calendarView === "month" ? "Week" : "Month"}
-              </Button>
-            </div>
-
-            {/* Files */}
-            <RouterLink href="/files" className="border-r border-gray-200 pr-4">
-              <Button 
-                className="!h-7 !min-h-0 px-3 text-[11px] rounded-full font-semibold border-0 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white shadow-sm"
-                data-testid="button-files-link"
-              >
-                <FolderOpen className="h-3.5 w-3.5 mr-1" />
-                Files
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-800" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+              <ChevronRight className="h-4 w-4 text-slate-400" />
+            </Button>
+            
+            <div className="w-px h-5 bg-slate-700 mx-1" />
+            
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-800" onClick={() => setSelectedWeek(2)} data-testid="button-home-week" title="Go to current week">
+              <Home className="h-4 w-4 text-slate-400" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-800" onClick={() => syncAllCalendarMutation.mutate()} disabled={syncAllCalendarMutation.isPending} data-testid="button-sync-calendar">
+              {syncAllCalendarMutation.isPending ? <Loader2 className="h-4 w-4 text-slate-400 animate-spin" /> : <RefreshCw className="h-4 w-4 text-slate-400" />}
+            </Button>
+            
+            <div className="w-px h-5 bg-slate-700 mx-1" />
+            
+            <Button variant="ghost" className="h-8 px-3 hover:bg-slate-800 text-[11px] font-medium text-slate-300" onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} data-testid="button-today">
+              <Sun className="h-3.5 w-3.5 mr-1.5 text-yellow-400" />Today
+            </Button>
+            <Button variant="ghost" className="h-8 px-3 hover:bg-slate-800 text-[11px] font-medium text-slate-300" onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")} data-testid="button-month-view">
+              <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-blue-400" />{calendarView === "month" ? "Week" : "Month"}
+            </Button>
+            
+            <div className="w-px h-5 bg-slate-700 mx-1" />
+            
+            <RouterLink href="/files">
+              <Button className="h-8 px-3 bg-amber-500 hover:bg-amber-600 text-[11px] font-semibold text-slate-900 border-0 rounded" data-testid="button-files-link">
+                <FolderOpen className="h-3.5 w-3.5 mr-1.5" />Files
               </Button>
             </RouterLink>
+          </div>
 
-            {/* Pomodoro */}
-            <div className="flex items-center gap-2 border-r border-gray-200 pr-4">
-              <div className={`text-xs font-mono font-bold px-2 py-1 rounded-full ${
-                pomodoroMode === "work" ? "bg-red-100 text-red-600" : 
-                pomodoroMode === "shortBreak" ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
-              }`} data-testid="pomodoro-timer">
-                {formatPomodoroTime(pomodoroTime)}
-              </div>
-              <div className="flex items-center gap-0.5">
-                <button
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                  onClick={togglePomodoro}
-                  data-testid="button-pomodoro-toggle"
-                >
-                  {pomodoroRunning ? <Pause className="h-3 w-3 text-gray-600" /> : <Play className="h-3 w-3 text-gray-600" />}
-                </button>
-                <button
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                  onClick={resetPomodoro}
-                  data-testid="button-pomodoro-reset"
-                >
-                  <RotateCcw className="h-3 w-3 text-gray-600" />
-                </button>
-                <button
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-                  onClick={skipPomodoro}
-                  data-testid="button-pomodoro-skip"
-                >
-                  <SkipForward className="h-3 w-3 text-gray-600" />
-                </button>
-              </div>
-              <span className="text-[10px] text-gray-500 font-medium">
-                {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"} {pomodoroCount}
-              </span>
+          {/* Center - Pomodoro */}
+          <div className="flex items-center h-10 px-3 mx-auto">
+            <div className={`text-sm font-mono font-bold px-2.5 py-1 rounded ${
+              pomodoroMode === "work" ? "bg-red-500/20 text-red-400" : 
+              pomodoroMode === "shortBreak" ? "bg-emerald-500/20 text-emerald-400" : "bg-blue-500/20 text-blue-400"
+            }`} data-testid="pomodoro-timer">
+              {formatPomodoroTime(pomodoroTime)}
             </div>
+            <div className="flex items-center ml-2 gap-0.5">
+              <button className="p-1.5 hover:bg-slate-800 rounded" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+                {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-slate-400" /> : <Play className="h-3.5 w-3.5 text-slate-400" />}
+              </button>
+              <button className="p-1.5 hover:bg-slate-800 rounded" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+                <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
+              </button>
+              <button className="p-1.5 hover:bg-slate-800 rounded" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+                <SkipForward className="h-3.5 w-3.5 text-slate-400" />
+              </button>
+            </div>
+            <span className="text-[10px] text-slate-500 ml-2 font-medium uppercase tracking-wider">
+              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"} {pomodoroCount}
+            </span>
+          </div>
 
-            {/* Quick Add */}
-            <div className="flex items-center gap-1.5 flex-1 justify-end">
-              <Button 
-                size="sm"
-                className="!h-6 !min-h-0 px-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[10px] border-0 font-semibold rounded-full"
-                data-testid="button-add-module"
-                onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
-              >
-                + Module
-              </Button>
-              <Button 
-                size="sm"
-                className="!h-6 !min-h-0 px-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 text-[10px] border-0 font-semibold rounded-full"
-                data-testid="button-add-reading"
-                onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
-              >
-                + Reading
-              </Button>
-              <Button 
-                size="sm"
-                className="!h-6 !min-h-0 px-2 bg-purple-50 hover:bg-purple-100 text-purple-700 text-[10px] border-0 font-semibold rounded-full"
-                data-testid="button-add-discussion"
-                onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
-              >
-                + Discuss
-              </Button>
-              <Button 
-                size="sm"
-                className="!h-6 !min-h-0 px-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] border-0 font-semibold rounded-full"
-                data-testid="button-add-assignment"
-                onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
-              >
-                + Assign
-              </Button>
-              <Button 
-                size="sm"
-                className="!h-6 !min-h-0 px-2 bg-rose-500 hover:bg-rose-600 text-white text-[10px] border-0 font-semibold rounded-full shadow-sm"
-                data-testid="button-add-exam"
-                onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
-              >
-                + Exam
-              </Button>
-            </div>
+          {/* Right - Quick Add */}
+          <div className="flex items-center h-10 px-2 gap-1">
+            <span className="text-[10px] text-slate-600 mr-1 uppercase tracking-wider">Add</span>
+            <Button size="sm" className="h-7 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700 font-medium rounded" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>
+              Module
+            </Button>
+            <Button size="sm" className="h-7 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700 font-medium rounded" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>
+              Reading
+            </Button>
+            <Button size="sm" className="h-7 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700 font-medium rounded" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>
+              Discuss
+            </Button>
+            <Button size="sm" className="h-7 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700 font-medium rounded" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>
+              Assign
+            </Button>
+            <Button size="sm" className="h-7 px-2.5 bg-rose-600 hover:bg-rose-700 text-white text-[10px] border-0 font-semibold rounded" data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>
+              Exam
+            </Button>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
