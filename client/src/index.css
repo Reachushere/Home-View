@@ -376,22 +376,20 @@
 
 /* Main content scrollbar */
 .main-scrollbar::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 .main-scrollbar::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
 }
 
 .main-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(100, 100, 100, 0.5);
-  border-radius: 5px;
-  border: 2px solid transparent;
-  background-clip: content-box;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
 }
 
 .main-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 100, 100, 0.7);
-  background-clip: content-box;
+  background: rgba(255, 255, 255, 0.9);
 }
