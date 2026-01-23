@@ -1878,11 +1878,20 @@ export default function Dashboard() {
       {/* Sidebar Container */}
       <div className="relative mt-3 mb-3 mr-0" style={{ width: 350, marginLeft: '11px' }}>
         {/* Header overlay - stays normal when flyout is open */}
-        <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-2 pt-3 pb-2 pl-4">
+        <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
-          <h1 className="text-base font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-            University Planner
-          </h1>
+          <div className="flex items-baseline gap-1.5 flex-1">
+            <h1 className="text-base font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+              University Planner
+            </h1>
+            <span className={`text-[10px] text-gray-300 whitespace-nowrap font-semibold transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
+              ({schoolData.week1StartDate 
+                ? format(new Date(schoolData.week1StartDate), 'MMM d') 
+                : 'Jan 16'} to {schoolData.week1StartDate 
+                ? format(addWeeks(new Date(schoolData.week1StartDate), schoolData.numberOfWeeks), 'MMM d')
+                : 'Apr 17'})
+            </span>
+          </div>
         </div>
         
         {/* Sidebar with blur/fade effect */}
