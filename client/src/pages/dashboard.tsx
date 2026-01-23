@@ -100,9 +100,9 @@ const SIDEBAR_COURSES = [
 ];
 
 const FOLDER_TYPES = [
-  { id: "module", name: "Module", icon: "📚" },
-  { id: "reading", name: "Reading", icon: "📖" },
-  { id: "other", name: "Other", icon: "📁" },
+  { id: "module", name: "Module" },
+  { id: "reading", name: "Reading" },
+  { id: "other", name: "Other" },
 ];
 
 interface WeekInfo {
@@ -1558,7 +1558,7 @@ export default function Dashboard() {
                                   return (
                                     <DropdownMenuSub key={folder.id}>
                                       <DropdownMenuSubTrigger data-testid={`menu-item-${course.id}-${folder.id}`}>
-                                        <span className="mr-2">{folder.icon}</span>
+                                        <FolderOpen className="h-3 w-3 mr-2" />
                                         {folder.name}
                                         {folderFiles.length > 0 && (
                                           <span className="ml-auto text-xs text-muted-foreground">({folderFiles.length})</span>
