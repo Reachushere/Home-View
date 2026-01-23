@@ -1876,7 +1876,7 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar Container */}
-      <div className="relative mb-3 mr-0 flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '5px', minHeight: 'calc(100% + 15px)' }}>
+      <div className="relative mb-3 mr-0 flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '5px', minHeight: 'calc(100% + 9px)' }}>
         {/* Header overlay - stays normal when flyout is open */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-start gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '46px', width: '46px' }} />
