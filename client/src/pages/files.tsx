@@ -374,8 +374,21 @@ export default function FilesPage() {
     mutationFn: async ({ parentFolderId, name }: { parentFolderId: string; name: string }) => {
       return await apiRequest("POST", "/api/custom-folders", { parentFolderId, name });
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/custom-folders"] });
+      // Expand the parent folder and all ancestors so the new folder is visible
+      const parentId = variables.parentFolderId;
+      setExpandedFolders(prev => {
+        const next = new Set(prev);
+        next.add(parentId);
+        // Expand ancestor folders (parse the hierarchy)
+        const parts = parentId.split("-");
+        // e.g. "week-1-cppa122-module" -> expand "week-1", "week-1-cppa122"
+        for (let i = 2; i <= parts.length; i++) {
+          next.add(parts.slice(0, i).join("-"));
+        }
+        return next;
+      });
       setShowAddFolderDialog(false);
       setNewFolderName("");
       setAddFolderParentId(null);
