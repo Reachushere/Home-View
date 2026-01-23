@@ -1371,7 +1371,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1">
+      <div className="flex flex-1" style={{ backgroundImage: 'url(/attached_assets/TMU_1769151150961.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       {isTodayExpanded && (
         <div 
           className="today-backdrop"
