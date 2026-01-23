@@ -841,6 +841,20 @@ export async function registerRoutes(
     }
   });
 
+  // DELETE /api/custom-folders - Delete ALL custom folders
+  app.delete("/api/custom-folders", async (_req, res) => {
+    try {
+      const folders = await storage.getCustomFolders();
+      for (const folder of folders) {
+        await storage.deleteCustomFolder(folder.id);
+      }
+      res.json({ success: true, deleted: folders.length });
+    } catch (err) {
+      console.error("Error deleting all custom folders:", err);
+      res.status(500).json({ error: "Failed to delete custom folders" });
+    }
+  });
+
   // ============= END CUSTOM FOLDERS ROUTES =============
 
   // GET /api/calendar/list - List all available Google calendars for selection
