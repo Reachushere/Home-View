@@ -4202,7 +4202,7 @@ export default function Dashboard() {
                           >
                             <Checkbox
                               className={`h-3 w-3 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 ${
-                                colors ? colors.prepBorder : 'border-white/50'
+                                colors ? 'border-black' : 'border-white/50'
                               }`}
                               onCheckedChange={(checked) => {
                                 if (checked) {
