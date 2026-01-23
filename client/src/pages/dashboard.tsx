@@ -1882,7 +1882,7 @@ export default function Dashboard() {
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '46px', width: '46px' }} />
           <div className="flex flex-col" style={{ marginTop: '-5px' }}>
             <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
-            <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
+            <div className="flex items-center gap-2" style={{ marginTop: '5px' }} data-testid="digital-clock">
               <span className="text-base text-white/80 font-medium">
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
               </span>
