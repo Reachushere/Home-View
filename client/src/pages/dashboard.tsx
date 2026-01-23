@@ -2248,7 +2248,7 @@ export default function Dashboard() {
               <Button
                 variant="ghost"
                 size="icon"
-                style={{ backgroundColor: 'rgba(255,255,255,0.40)' }} className="!h-8 !w-8 !min-h-0 p-0 hover:bg-white/50 border border-white/50 text-black shadow-md mt-1"
+                className="!h-8 !w-8 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md mt-1 backdrop-blur-sm"
                 data-testid="button-hamburger-menu"
               >
                 <Menu className="h-4 w-4" stroke="black" />
