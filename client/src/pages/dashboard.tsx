@@ -1897,7 +1897,7 @@ export default function Dashboard() {
                 </Button>
                 {/* Hamburger menus for selected week */}
                 {isSelected && (
-                  <div className="flex items-center gap-0.5 ml-2">
+                  <div className="flex items-center gap-0.5" style={{ marginLeft: '-2px' }}>
                     {SIDEBAR_COURSES.map((course) => {
                       const availableFolders = FOLDER_TYPES.filter(
                         (folder) => !deletedFolderIds.has(`week-${week.weekNumber}-${course.id}-${folder.id}`)
