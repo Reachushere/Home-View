@@ -2331,7 +2331,7 @@ export default function Dashboard() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-3 w-3 mx-1.5"
+              className="h-3 w-3 mx-3"
               onClick={() => setSelectedWeek(2)}
               data-testid="button-home-week"
               title="Go to current week"
