@@ -1910,7 +1910,7 @@ export default function Dashboard() {
               }`} style={{ marginLeft: '-40px' }} data-testid="pomodoro-timer">
                 {formatPomodoroTime(pomodoroTime)}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" style={{ marginLeft: '30px' }}>
                 <button
                   className="p-1.5 hover:bg-white/20 rounded transition-colors"
                   onClick={togglePomodoro}
