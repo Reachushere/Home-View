@@ -3217,7 +3217,8 @@ export default function Dashboard() {
                     >
                       {/* Planning tasks */}
                       {planningTasksForDay.map(task => {
-                        const colors = getCourseColor(task.courseName);
+                        const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                        const colors = courseColors[courseCode];
                         const taskDueDate = startOfDay(new Date(task.dueDate));
                         const dayStart = startOfDay(day);
                         const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
@@ -3239,11 +3240,9 @@ export default function Dashboard() {
                           const hasVisiblePrepDays = hasPrepDays && !isBefore(dayBeforeDue, today);
                           const baseStyle = task.isCompleted 
                             ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : (isDueToday || isDueTomorrow)
-                              ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
-                                 task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
-                                 task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
-                              : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400";
+                            : colors 
+                              ? `${colors.bg} text-black border ${colors.border}` 
+                              : "bg-gray-200 text-black border border-gray-400";
                           return (
                             <div key={`due-${task.id}`} className="flex items-center w-full">
                               {hasVisiblePrepDays && <div className="w-2 h-[2px] bg-black shrink-0" />}
@@ -3341,7 +3340,8 @@ export default function Dashboard() {
                       })}
                       {/* Regular all-day tasks */}
                       {allDayTasks.map(task => {
-                        const colors = getCourseColor(task.courseName);
+                        const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                        const colors = courseColors[courseCode];
                         const today = startOfDay(new Date());
                         const tomorrow = addDays(today, 1);
                         const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
@@ -3354,11 +3354,9 @@ export default function Dashboard() {
                             } ${
                               task.isCompleted 
                                 ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                : (isDueToday || isDueTomorrow)
-                                  ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 text-black border border-green-500" : 
-                                     task.courseName?.startsWith("CFNF400") ? "bg-pink-50 text-black border border-pink-500" : 
-                                     task.courseName?.startsWith("CASL101") ? "bg-indigo-50 text-black border border-indigo-500" : "bg-gray-200 text-black border border-gray-400")
-                                  : colors ? `${colors.bg} text-black border ${colors.border}` : "bg-gray-200 text-black border border-gray-400"
+                                : colors 
+                                  ? `${colors.bg} text-black border ${colors.border}` 
+                                  : "bg-gray-200 text-black border border-gray-400"
                             }`}
                             data-testid={`all-day-task-${task.id}`}
                           >
@@ -3473,7 +3471,8 @@ export default function Dashboard() {
                           {/* Half-hour dotted line */}
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50" />
                           {hourTasks.map((task, taskIdx) => {
-                            const colors = getCourseColor(task.courseName);
+                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                            const colors = courseColors[courseCode];
                             const today = startOfDay(new Date());
                             const tomorrow = addDays(today, 1);
                             const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
@@ -3505,11 +3504,9 @@ export default function Dashboard() {
                                 } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
-                                    : (isDueToday || isDueTomorrow)
-                                      ? (task.courseName?.startsWith("CPPA122") ? "bg-green-50 border border-green-500" : 
-                                         task.courseName?.startsWith("CFNF400") ? "bg-pink-50 border border-pink-500" : 
-                                         task.courseName?.startsWith("CASL101") ? "bg-indigo-50 border border-indigo-500" : "bg-gray-200 border border-gray-400")
-                                      : colors ? `${colors.bg} border ${colors.border}` : "bg-gray-200 border border-gray-400"
+                                    : colors 
+                                      ? `${colors.bg} border ${colors.border}` 
+                                      : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
                                   top: '2px',
@@ -3658,7 +3655,8 @@ export default function Dashboard() {
                         </div>
                         <div className="space-y-0.5">
                           {dayTasks.slice(0, 3).map((task) => {
-                            const colors = getCourseColor(task.courseName);
+                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                            const colors = courseColors[courseCode];
                             return (
                               <div
                                 key={task.id}
