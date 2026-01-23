@@ -3418,9 +3418,9 @@ export default function Dashboard() {
 
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
-          <section className="bg-blue-500/10 dark:bg-blue-500/20 rounded-xl shadow-md p-3 border-[1.75px] border-white h-[210px]" data-testid="section-todo">
-            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <ClipboardCheck className="h-3 w-3 text-black dark:text-white" />
+          <section className="rounded-xl shadow-md p-3 border-[0.25px] border-white/70 h-[210px]" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }} data-testid="section-todo">
+            <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+              <ClipboardCheck className="h-3 w-3 text-white" />
               To Do
             </h4>
             <div className="grid grid-cols-4 gap-4 h-[calc(100%-32px)]">
