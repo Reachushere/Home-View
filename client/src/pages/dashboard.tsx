@@ -179,7 +179,7 @@ export default function Dashboard() {
     return null;
   });
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isWeeklyFilesFlyoutOpen, setIsWeeklyFilesFlyoutOpen] = useState(false);
+  const [isWeeklyFilesFlyoutOpen, setIsWeeklyFilesFlyoutOpen] = useState(true);
   const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('checkedCourses');
     return saved ? JSON.parse(saved) : {};
