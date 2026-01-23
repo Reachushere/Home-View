@@ -1874,7 +1874,7 @@ export default function Dashboard() {
               <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
                 <Button
                   variant="ghost"
-                  className={`justify-start gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent flex-shrink-0" : "flex-1"}`}
+                  className={`justify-start gap-1 h-auto py-1 px-1 flex-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
                   size="sm"
                   onClick={() => {
                     setSelectedWeek(week.weekNumber);
@@ -1897,7 +1897,7 @@ export default function Dashboard() {
                 </Button>
                 {/* Hamburger menus on right for selected week */}
                 {isSelected && (
-                  <div className="flex items-center gap-0.5 flex-1 justify-end" style={{ marginRight: '77px' }}>
+                  <div className="flex items-center gap-0.5" style={{ marginRight: '40px' }}>
                     {SIDEBAR_COURSES.map((course) => {
                       const availableFolders = FOLDER_TYPES.filter(
                         (folder) => !deletedFolderIds.has(`week-${week.weekNumber}-${course.id}-${folder.id}`)
