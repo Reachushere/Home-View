@@ -2882,7 +2882,7 @@ export default function Dashboard() {
                 <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-cyan-300" />
                 {calendarView === "month" ? "Week" : "Month"}
               </Button>
-              <RouterLink href="/files" style={{ marginLeft: '55px' }}>
+              <RouterLink href="/files" style={{ marginLeft: '80px' }}>
                 <Button 
                   variant="ghost"
                   size="icon"
