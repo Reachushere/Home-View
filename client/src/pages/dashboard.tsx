@@ -2444,7 +2444,7 @@ export default function Dashboard() {
           <div className="w-px h-6 bg-white/20" />
 
           {/* Quick Add Section */}
-          <div className="flex items-center px-3 py-2 gap-1 flex-1 justify-end mr-2">
+          <div className="flex items-center px-3 py-2 gap-1 flex-1 justify-end mr-4">
                         <Button 
               size="sm"
               className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
