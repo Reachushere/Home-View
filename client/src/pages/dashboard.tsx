@@ -105,6 +105,39 @@ const FOLDER_TYPES = [
   { id: "other", name: "Other" },
 ];
 
+// Speakers list for media controls
+const SPEAKERS = [
+  { id: "media_player.byhome", name: "Apartment" },
+  { id: "media_player.cat_wr", name: "Cat Washroom Speakers" },
+  { id: "media_player.echo_cat_left_am", name: "Cat Washroom Left" },
+  { id: "media_player.echo_cat_right_am", name: "Cat Washroom Right" },
+  { id: "media_player.echo_cat_washroom_middle", name: "Cat Washroom Middle" },
+  { id: "media_player.echo_closet_am", name: "Closet" },
+  { id: "media_player.echo_lr_couch_r_am", name: "Hallway Corner" },
+  { id: "media_player.echo_hallway_entrance_am", name: "Hallway Entrance" },
+  { id: "media_player.echo_king_l_am", name: "King Left" },
+  { id: "media_player.echo_king_r_am", name: "King Right" },
+  { id: "media_player.echo_king_tv_am", name: "King TV" },
+  { id: "media_player.echo_kitchen_cupboards_left_am", name: "Kitchen Cupboards Left" },
+  { id: "media_player.echo_kitchen_cupboards_r_am", name: "Kitchen Cupboards Right" },
+  { id: "media_player.echo_kitchen_fridge_am", name: "Kitchen Fridge" },
+  { id: "media_player.echo_kitchen_hutch_am", name: "Kitchen Hutch" },
+  { id: "media_player.echo_kitchen_island_corner_am", name: "Kitchen Island Corner" },
+  { id: "media_player.echo_kitchen_studio_black_am", name: "Kitchen Studio Black" },
+  { id: "media_player.echo_lr_couch_l_am", name: "Living Room Couch Left" },
+  { id: "media_player.echo_lr_hub_am", name: "Living Room Hub" },
+  { id: "media_player.echo_lr_studio_white_am", name: "Living Room Studio White" },
+  { id: "media_player.echo_lr_tv_shelf_am", name: "Living Room TV Shelf" },
+  { id: "media_player.echo_queen_balcony_am", name: "Queen Balcony" },
+  { id: "media_player.echo_queen_bed_l_am", name: "Queen Bed Left" },
+  { id: "media_player.echo_queen_bed_r_am", name: "Queen Bed Right" },
+  { id: "media_player.echo_show_pug_am", name: "Echo Show Pug" },
+  { id: "media_player.everywhere_2", name: "Everywhere" },
+  { id: "media_player.hallway", name: "Hallway" },
+  { id: "media_player.king_bedroom", name: "King Bedroom" },
+  { id: "media_player.queen_bedroom", name: "Queen Bedroom" },
+];
+
 interface WeekInfo {
   weekNumber: number;
   startDate: string;
@@ -659,6 +692,54 @@ export default function Dashboard() {
   const { data: allFiles = [] } = useQuery<FileItem[]>({
     queryKey: ["/api/files"],
   });
+
+  // File preview dialog state
+  const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
+  const [previewSpeaker, setPreviewSpeaker] = useState<string>("media_player.everywhere_2");
+
+  // Media control functions for file preview
+  const handlePlayFile = async (fileUrl: string, fileName: string) => {
+    try {
+      const response = await fetch("/api/media/play", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mediaUrl: fileUrl, entityId: previewSpeaker }),
+      });
+      if (response.ok) {
+        const speakerName = SPEAKERS.find(s => s.id === previewSpeaker)?.name || previewSpeaker;
+        toast({ title: `Playing on ${speakerName}: ${fileName}` });
+      } else {
+        toast({ title: "Failed to play file", variant: "destructive" });
+      }
+    } catch (error) {
+      console.error("Play error:", error);
+      toast({ title: "Failed to play file", variant: "destructive" });
+    }
+  };
+
+  const handleStopMedia = async () => {
+    try {
+      await fetch("/api/media/stop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entityId: previewSpeaker }),
+      });
+    } catch (error) {
+      console.error("Stop error:", error);
+    }
+  };
+
+  const handleVolumeChange = async (action: "up" | "down") => {
+    try {
+      await fetch("/api/media/volume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, entityId: previewSpeaker }),
+      });
+    } catch (error) {
+      console.error("Volume error:", error);
+    }
+  };
 
   // State for new semester dialog
   const [isNewSemesterDialogOpen, setIsNewSemesterDialogOpen] = useState(false);
@@ -1403,6 +1484,94 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
+      {/* File Preview Dialog with Media Controls */}
+      <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-sm">
+              <FileText className="h-4 w-4" />
+              {previewFile?.displayName || previewFile?.originalName}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {/* Media Controls Bar */}
+          <div className="flex items-center gap-3 p-3 bg-black rounded-lg">
+            <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
+              <SelectTrigger className="w-[180px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
+                <SelectValue placeholder="Select Speaker" />
+              </SelectTrigger>
+              <SelectContent className="max-h-[300px]">
+                {SPEAKERS.map(speaker => (
+                  <SelectItem key={speaker.id} value={speaker.id} className="text-xs">
+                    {speaker.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-white hover:bg-gray-700"
+                onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
+                data-testid="button-preview-play"
+              >
+                <Play className="h-4 w-4 fill-white" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-white hover:bg-gray-700"
+                onClick={handleStopMedia}
+                data-testid="button-preview-stop"
+              >
+                <Square className="h-4 w-4 fill-white" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-white hover:bg-gray-700"
+                onClick={() => handleVolumeChange("down")}
+                data-testid="button-preview-volume-down"
+              >
+                <MinusCircle className="h-4 w-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-white hover:bg-gray-700"
+                onClick={() => handleVolumeChange("up")}
+                data-testid="button-preview-volume-up"
+              >
+                <PlusCircle className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-auto text-white hover:bg-gray-700 text-xs"
+              onClick={() => previewFile && window.open(previewFile.objectPath, '_blank')}
+              data-testid="button-preview-open-new-tab"
+            >
+              Open in New Tab
+            </Button>
+          </div>
+          
+          {/* PDF/File Preview */}
+          <div className="flex-1 min-h-[500px] bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden">
+            {previewFile && (
+              <iframe
+                src={previewFile.objectPath}
+                className="w-full h-full border-0"
+                title={previewFile.displayName || previewFile.originalName}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex flex-1" style={{ backgroundImage: `url(${campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       {isTodayExpanded && (
         <div 
@@ -1572,7 +1741,7 @@ export default function Dashboard() {
                                             <DropdownMenuItem
                                               key={file.id}
                                               onClick={() => {
-                                                window.open(file.objectPath, '_blank');
+                                                setPreviewFile(file);
                                               }}
                                               data-testid={`file-item-${file.id}`}
                                               className="text-xs"
