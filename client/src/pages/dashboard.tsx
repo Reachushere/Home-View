@@ -1428,7 +1428,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       {/* New Semester Banner - Shows when past Week 13 */}
       {isPastSemester && (
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 flex items-center justify-between">
@@ -1756,7 +1756,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1" style={{ backgroundImage: `url(${customBackground || campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+      <div className="flex flex-1 overflow-hidden" style={{ backgroundImage: `url(${customBackground || campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       {isTodayExpanded && (
         <div 
           className="today-backdrop"
