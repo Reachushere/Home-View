@@ -164,8 +164,8 @@ async function sendNextChunk() {
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
   try {
-    // Wrap in SSML to slow down the voice (90% speed)
-    const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
+    // Wrap in SSML to slow down the voice (85% speed)
+    const ssmlChunk = `<speak><prosody rate="85%">${nextChunk}</prosody></speak>`;
     
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
@@ -194,97 +194,30 @@ async function sendNextChunk() {
   }
 }
 
-// Check if Alexa is still speaking by polling its state
-async function isAlexaSpeaking(entityId: string): Promise<boolean | null> {
-  try {
-    const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-    const response = await fetch(`${haUrl}/api/states/${entityId}`, {
-      headers: {
-        'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    
-    if (!response.ok) {
-      console.log("Failed to get Alexa state:", response.status);
-      return null; // Error - return null to indicate unknown
-    }
-    
-    const state = await response.json();
-    console.log(`Alexa state for ${entityId}: ${state.state}`);
-    // Alexa media player states: playing, paused, idle, standby
-    return state.state === 'playing';
-  } catch (error) {
-    console.error("Error checking Alexa state:", error);
-    return null; // Error - return null to indicate unknown
-  }
-}
-
-// Poll until Alexa stops speaking, then send next chunk
-async function waitForAlexaAndSendNext() {
-  if (!currentTTSSession || !currentTTSSession.isPlaying) return;
-  
-  const targetEntity = currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY;
-  let sawPlaying = false;
-  let pollCount = 0;
-  const maxPolls = 90; // 3 minutes max (90 * 2 seconds)
-  
-  // Wait for TTS to start (Alexa takes ~3-5 seconds to begin speaking)
-  console.log("Waiting 5 seconds for Alexa to start speaking...");
-  await new Promise(resolve => setTimeout(resolve, 5000));
-  
-  // Poll every 2 seconds to check if Alexa finished speaking
-  const pollInterval = setInterval(async () => {
-    if (!currentTTSSession || !currentTTSSession.isPlaying) {
-      clearInterval(pollInterval);
-      return;
-    }
-    
-    pollCount++;
-    const speaking = await isAlexaSpeaking(targetEntity);
-    
-    if (speaking === true) {
-      sawPlaying = true;
-      console.log(`Poll ${pollCount}: Alexa is speaking...`);
-    } else if (speaking === false && sawPlaying) {
-      // Alexa was playing and now stopped
-      clearInterval(pollInterval);
-      console.log("Alexa finished speaking, sending next chunk immediately");
-      setTimeout(sendNextChunk, 500);
-    } else if (speaking === null) {
-      // Error polling - fall back to timer
-      console.log("Polling error, falling back to timer");
-      clearInterval(pollInterval);
-      // Estimate based on chunk size at 90% speed
-      const estimatedMs = (CHUNK_SIZE / CHARS_PER_SECOND) * 1000 / 0.9;
-      setTimeout(sendNextChunk, estimatedMs);
-    } else if (pollCount >= maxPolls) {
-      // Timeout - send anyway
-      clearInterval(pollInterval);
-      console.log("Polling timeout, sending next chunk");
-      sendNextChunk();
-    } else if (!sawPlaying && pollCount > 5) {
-      // Never saw playing after 10 seconds - Alexa might not report state, use fallback
-      clearInterval(pollInterval);
-      console.log("Never saw Alexa playing state, using fallback timer");
-      const estimatedMs = (CHUNK_SIZE / CHARS_PER_SECOND) * 1000 / 0.9;
-      setTimeout(sendNextChunk, Math.max(0, estimatedMs - 10000)); // Subtract time already waited
-    }
-  }, 2000);
-}
+// Calculate delay based on chunk size and speed
+// At 85% speed, speaking takes longer: baseTime / 0.85 = baseTime * 1.18
+const SPEED_RATE = 0.85;
 
 function scheduleNextChunk() {
   if (!currentTTSSession || !currentTTSSession.isPlaying) return;
-  
-  console.log("Waiting for Alexa to finish speaking before sending next chunk...");
   
   // Clear any existing timer
   if (currentTTSSession.autoTimer) {
     clearTimeout(currentTTSSession.autoTimer);
   }
   
-  // Use polling approach instead of fixed timing
-  waitForAlexaAndSendNext();
+  // Calculate estimated speaking time
+  // Base: CHUNK_SIZE chars / CHARS_PER_SECOND chars per sec
+  // Adjust for speed: divide by speed rate (85% = 0.85 means slower)
+  const baseSeconds = CHUNK_SIZE / CHARS_PER_SECOND;
+  const adjustedSeconds = baseSeconds / SPEED_RATE;
+  const delayMs = adjustedSeconds * 1000;
+  
+  console.log(`Scheduling next chunk in ${(delayMs / 1000).toFixed(1)} seconds (${CHUNK_SIZE} chars at ${SPEED_RATE * 100}% speed)`);
+  
+  currentTTSSession.autoTimer = setTimeout(() => {
+    sendNextChunk();
+  }, delayMs);
 }
 
 export async function registerRoutes(
@@ -1573,8 +1506,8 @@ export async function registerRoutes(
       cleanedContent = cleanTextForTTS(cleanedContent);
       cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
       
-      // Wrap in SSML to slow down the voice (90% speed)
-      const ssmlContent = `<speak><prosody rate="90%">${cleanedContent}</prosody></speak>`;
+      // Wrap in SSML to slow down the voice (85% speed)
+      const ssmlContent = `<speak><prosody rate="85%">${cleanedContent}</prosody></speak>`;
       
       console.log("Sending TTS to:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
@@ -1722,8 +1655,8 @@ export async function registerRoutes(
       
       console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
       
-      // Wrap in SSML to slow down the voice (90% speed)
-      const ssmlContent = `<speak><prosody rate="90%">${remainingText}</prosody></speak>`;
+      // Wrap in SSML to slow down the voice (85% speed)
+      const ssmlContent = `<speak><prosody rate="85%">${remainingText}</prosody></speak>`;
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
