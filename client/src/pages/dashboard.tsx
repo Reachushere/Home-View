@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import tmuLogo from "@assets/Chang-School_WT_1769155412842.png";
+import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
 import { useQuery, useMutation } from "@tanstack/react-query";
