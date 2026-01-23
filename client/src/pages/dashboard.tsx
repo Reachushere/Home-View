@@ -2864,10 +2864,10 @@ export default function Dashboard() {
             </Button>
 
             {/* View Buttons */}
-            <div className="flex items-center gap-0.5 bg-white/10 rounded-md px-0.5 py-0">
+            <div className="flex items-center gap-0.5 bg-white/10 rounded-md px-0.5 py-0.5">
               <Button 
                 variant="ghost"
-                className="!h-5 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
+                className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
                 onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
                 data-testid="button-today"
               >
@@ -2876,7 +2876,7 @@ export default function Dashboard() {
               </Button>
               <Button 
                 variant="ghost"
-                className="!h-5 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
+                className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
                 onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
                 data-testid="button-month-view"
               >
