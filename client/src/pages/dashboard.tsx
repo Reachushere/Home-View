@@ -2310,91 +2310,91 @@ export default function Dashboard() {
           <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded mr-3" />
         </div>
         
-        {/* Clean Minimal Menu Bar */}
-        <div className="flex items-center mb-0 rounded-lg overflow-hidden bg-slate-900" style={{ 
+        {/* Vibrant Toolbar Menu Bar */}
+        <div className="flex items-center mb-0 rounded-none overflow-hidden" style={{ 
           marginTop: '24px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+          background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
+          borderTop: '1px solid #cbd5e1',
+          borderBottom: '2px solid #94a3b8'
         }}>
-          {/* Left Section - Navigation */}
-          <div className="flex items-center h-10 px-2 gap-1">
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-800" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-              <ChevronLeft className="h-4 w-4 text-slate-400" />
+          {/* Navigation Group */}
+          <div className="flex items-center h-9 px-1 border-r border-slate-300">
+            <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white rounded" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+              <ChevronLeft className="h-4 w-4 text-slate-600" />
             </Button>
-            <div className="bg-slate-800 rounded px-3 py-1">
-              <span className="text-[12px] font-medium text-white tracking-wide">{format(weekStartDate, "MMM d")} – {format(weekEndDate, "MMM d")}</span>
-            </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-800" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-              <ChevronRight className="h-4 w-4 text-slate-400" />
+            <span className="text-[11px] font-bold text-slate-700 px-2 min-w-[120px] text-center">{format(weekStartDate, "MMM d")} – {format(weekEndDate, "MMM d")}</span>
+            <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-white rounded" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+              <ChevronRight className="h-4 w-4 text-slate-600" />
             </Button>
-            
-            <div className="w-px h-5 bg-slate-700 mx-1" />
-            
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-800" onClick={() => setSelectedWeek(2)} data-testid="button-home-week" title="Go to current week">
-              <Home className="h-4 w-4 text-slate-400" />
+          </div>
+
+          {/* Actions Group */}
+          <div className="flex items-center h-9 px-1 border-r border-slate-300 gap-0.5">
+            <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-blue-100 rounded" style={{background: 'linear-gradient(180deg, #3b82f6 0%, #2563eb 100%)'}} onClick={() => setSelectedWeek(2)} data-testid="button-home-week" title="Go to current week">
+              <Home className="h-3.5 w-3.5 text-white" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-800" onClick={() => syncAllCalendarMutation.mutate()} disabled={syncAllCalendarMutation.isPending} data-testid="button-sync-calendar">
-              {syncAllCalendarMutation.isPending ? <Loader2 className="h-4 w-4 text-slate-400 animate-spin" /> : <RefreshCw className="h-4 w-4 text-slate-400" />}
+            <Button variant="ghost" size="icon" className="h-7 w-7 hover:bg-green-100 rounded" style={{background: 'linear-gradient(180deg, #22c55e 0%, #16a34a 100%)'}} onClick={() => syncAllCalendarMutation.mutate()} disabled={syncAllCalendarMutation.isPending} data-testid="button-sync-calendar">
+              {syncAllCalendarMutation.isPending ? <Loader2 className="h-3.5 w-3.5 text-white animate-spin" /> : <RefreshCw className="h-3.5 w-3.5 text-white" />}
             </Button>
-            
-            <div className="w-px h-5 bg-slate-700 mx-1" />
-            
-            <Button variant="ghost" className="h-8 px-3 hover:bg-slate-800 text-[11px] font-medium text-slate-300" onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} data-testid="button-today">
-              <Sun className="h-3.5 w-3.5 mr-1.5 text-yellow-400" />Today
+          </div>
+
+          {/* View Group */}
+          <div className="flex items-center h-9 px-1 border-r border-slate-300 gap-0.5">
+            <Button className="h-7 px-2.5 text-[10px] font-bold text-white border-0 rounded" style={{background: 'linear-gradient(180deg, #f59e0b 0%, #d97706 100%)'}} onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} data-testid="button-today">
+              <Sun className="h-3 w-3 mr-1" />Today
             </Button>
-            <Button variant="ghost" className="h-8 px-3 hover:bg-slate-800 text-[11px] font-medium text-slate-300" onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")} data-testid="button-month-view">
-              <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-blue-400" />{calendarView === "month" ? "Week" : "Month"}
+            <Button className="h-7 px-2.5 text-[10px] font-bold text-white border-0 rounded" style={{background: 'linear-gradient(180deg, #8b5cf6 0%, #7c3aed 100%)'}} onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")} data-testid="button-month-view">
+              <CalendarDays className="h-3 w-3 mr-1" />{calendarView === "month" ? "Week" : "Month"}
             </Button>
-            
-            <div className="w-px h-5 bg-slate-700 mx-1" />
-            
+          </div>
+
+          {/* Files */}
+          <div className="flex items-center h-9 px-1 border-r border-slate-300">
             <RouterLink href="/files">
-              <Button className="h-8 px-3 bg-amber-500 hover:bg-amber-600 text-[11px] font-semibold text-slate-900 border-0 rounded" data-testid="button-files-link">
-                <FolderOpen className="h-3.5 w-3.5 mr-1.5" />Files
+              <Button className="h-7 px-2.5 text-[10px] font-bold text-slate-800 border-0 rounded" style={{background: 'linear-gradient(180deg, #fcd34d 0%, #f59e0b 100%)'}} data-testid="button-files-link">
+                <FolderOpen className="h-3 w-3 mr-1" />Files
               </Button>
             </RouterLink>
           </div>
 
-          {/* Center - Pomodoro */}
-          <div className="flex items-center h-10 px-3 mx-auto">
-            <div className={`text-sm font-mono font-bold px-2.5 py-1 rounded ${
-              pomodoroMode === "work" ? "bg-red-500/20 text-red-400" : 
-              pomodoroMode === "shortBreak" ? "bg-emerald-500/20 text-emerald-400" : "bg-blue-500/20 text-blue-400"
+          {/* Pomodoro */}
+          <div className="flex items-center h-9 px-2 border-r border-slate-300 gap-1">
+            <div className={`text-[11px] font-mono font-black px-2 py-0.5 rounded border ${
+              pomodoroMode === "work" ? "bg-red-50 text-red-700 border-red-300" : 
+              pomodoroMode === "shortBreak" ? "bg-green-50 text-green-700 border-green-300" : "bg-blue-50 text-blue-700 border-blue-300"
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center ml-2 gap-0.5">
-              <button className="p-1.5 hover:bg-slate-800 rounded" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-                {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-slate-400" /> : <Play className="h-3.5 w-3.5 text-slate-400" />}
-              </button>
-              <button className="p-1.5 hover:bg-slate-800 rounded" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-                <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
-              </button>
-              <button className="p-1.5 hover:bg-slate-800 rounded" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-                <SkipForward className="h-3.5 w-3.5 text-slate-400" />
-              </button>
-            </div>
-            <span className="text-[10px] text-slate-500 ml-2 font-medium uppercase tracking-wider">
-              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"} {pomodoroCount}
+            <button className="h-6 w-6 flex items-center justify-center hover:bg-white rounded border border-slate-300 bg-slate-50" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+              {pomodoroRunning ? <Pause className="h-3 w-3 text-slate-600" /> : <Play className="h-3 w-3 text-slate-600" />}
+            </button>
+            <button className="h-6 w-6 flex items-center justify-center hover:bg-white rounded border border-slate-300 bg-slate-50" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+              <RotateCcw className="h-3 w-3 text-slate-600" />
+            </button>
+            <button className="h-6 w-6 flex items-center justify-center hover:bg-white rounded border border-slate-300 bg-slate-50" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+              <SkipForward className="h-3 w-3 text-slate-600" />
+            </button>
+            <span className="text-[9px] text-slate-500 font-bold">
+              {pomodoroMode === "work" ? "FOCUS" : pomodoroMode === "shortBreak" ? "BREAK" : "LONG"} #{pomodoroCount}
             </span>
           </div>
 
-          {/* Right - Quick Add */}
-          <div className="flex items-center h-10 px-2 gap-1">
-            <span className="text-[10px] text-slate-600 mr-1 uppercase tracking-wider">Add</span>
-            <Button size="sm" className="h-7 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700 font-medium rounded" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>
-              Module
+          {/* Quick Add */}
+          <div className="flex items-center h-9 px-1 gap-0.5 flex-1 justify-end pr-2">
+            <Button size="sm" className="h-6 px-2 text-[9px] font-bold text-white border-0 rounded" style={{background: 'linear-gradient(180deg, #06b6d4 0%, #0891b2 100%)'}} data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>
+              +Module
             </Button>
-            <Button size="sm" className="h-7 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700 font-medium rounded" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>
-              Reading
+            <Button size="sm" className="h-6 px-2 text-[9px] font-bold text-white border-0 rounded" style={{background: 'linear-gradient(180deg, #14b8a6 0%, #0d9488 100%)'}} data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>
+              +Reading
             </Button>
-            <Button size="sm" className="h-7 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700 font-medium rounded" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>
-              Discuss
+            <Button size="sm" className="h-6 px-2 text-[9px] font-bold text-white border-0 rounded" style={{background: 'linear-gradient(180deg, #a855f7 0%, #9333ea 100%)'}} data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>
+              +Discuss
             </Button>
-            <Button size="sm" className="h-7 px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] border border-slate-700 font-medium rounded" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>
-              Assign
+            <Button size="sm" className="h-6 px-2 text-[9px] font-bold text-white border-0 rounded" style={{background: 'linear-gradient(180deg, #10b981 0%, #059669 100%)'}} data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>
+              +Assign
             </Button>
-            <Button size="sm" className="h-7 px-2.5 bg-rose-600 hover:bg-rose-700 text-white text-[10px] border-0 font-semibold rounded" data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>
-              Exam
+            <Button size="sm" className="h-6 px-2 text-[9px] font-bold text-white border-0 rounded" style={{background: 'linear-gradient(180deg, #ef4444 0%, #dc2626 100%)'}} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>
+              +Exam
             </Button>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
