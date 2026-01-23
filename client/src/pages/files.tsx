@@ -986,7 +986,7 @@ export default function FilesPage() {
                         ) : (
                           <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                         )}
-                        <span className={`text-xs flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{week.name}</span>
+                        <span className={`text-sm flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{week.name}</span>
                         <span className="text-xs text-gray-500">{weekFiles.length}</span>
                       </div>
                     </ContextMenuTrigger>
@@ -1045,7 +1045,7 @@ export default function FilesPage() {
                                   ) : (
                                     <Folder className="h-4 w-4 text-yellow-600 fill-yellow-400" />
                                   )}
-                                  <span className={`text-xs flex-1 ${course.color}`}>{course.name.split(" - ")[0]}</span>
+                                  <span className={`text-sm flex-1 ${course.color}`}>{course.name.split(" - ")[0]}</span>
                                   <span className="text-xs text-gray-500">{courseFiles.length}</span>
                                 </div>
                               </ContextMenuTrigger>
@@ -1102,7 +1102,7 @@ export default function FilesPage() {
                                               <div className="w-3 h-3" />
                                             )}
                                             <Folder className="h-3.5 w-3.5 text-yellow-600 fill-yellow-400" />
-                                            <span className="text-xs flex-1">{content.name}</span>
+                                            <span className="text-sm flex-1">{content.name}</span>
                                             <span className="text-xs text-gray-500">{contentFiles.length}</span>
                                           </div>
                                         </ContextMenuTrigger>
@@ -1139,7 +1139,7 @@ export default function FilesPage() {
                                                   >
                                                     <div className="w-3 h-3" />
                                                     <Folder className="h-3.5 w-3.5 text-blue-500 fill-blue-400" />
-                                                    <span className="text-xs flex-1">{customFolder.name}</span>
+                                                    <span className="text-sm flex-1">{customFolder.name}</span>
                                                     <span className="text-xs text-gray-500">{customFiles.length}</span>
                                                   </div>
                                                 </ContextMenuTrigger>
