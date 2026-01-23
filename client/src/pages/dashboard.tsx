@@ -3206,7 +3206,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Column - Green */}
-                  <div className="flex-1 p-2 overflow-auto border-r border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
+                  <div className="flex-1 p-2 overflow-auto border-r border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.45)' }}>
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CPPA122</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
@@ -3321,7 +3321,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Row - Green */}
-                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
+                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.45)' }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -3369,7 +3369,7 @@ export default function Dashboard() {
             </h4>
             <div className="flex-1 flex flex-col overflow-hidden">
               {/* CPPA122 Row - Green */}
-              <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
+              <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.45)' }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -3459,7 +3459,7 @@ export default function Dashboard() {
         {/* Completed Tasks by Course */}
         <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
           {/* CPPA122 Completed */}
-          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }} data-testid="section-completed-cppa122">
+          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.45)' }} data-testid="section-completed-cppa122">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-white drop-shadow-md" />
               <span className="text-white drop-shadow-md">Completed - CPPA122</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})</span>
