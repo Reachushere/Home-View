@@ -2805,6 +2805,7 @@ export default function Dashboard() {
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
           marginTop: '24px',
+          marginRight: '5px',
           border: '1px solid rgba(255,255,255,0.5)'
         }}>
           {/* Navigation Section */}
