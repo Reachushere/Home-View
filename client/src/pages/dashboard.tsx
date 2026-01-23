@@ -642,6 +642,12 @@ export default function Dashboard() {
     queryFn: () => fetch("/api/semester").then(r => r.json()),
   });
 
+  // Deleted folders query for hamburger menu filtering
+  const { data: deletedFoldersData = [] } = useQuery<{ id: number; folderId: string }[]>({
+    queryKey: ["/api/deleted-folders"],
+  });
+  const deletedFolderIds = new Set(deletedFoldersData.map(f => f.folderId));
+
   // State for new semester dialog
   const [isNewSemesterDialogOpen, setIsNewSemesterDialogOpen] = useState(false);
   const [newSemesterForm, setNewSemesterForm] = useState({
@@ -1513,36 +1519,46 @@ export default function Dashboard() {
                   {/* Hamburger menus inline for selected week */}
                   {isSelected && (
                     <div className="flex items-center justify-around flex-1 mx-2" onClick={(e) => e.stopPropagation()}>
-                      {SIDEBAR_COURSES.map((course) => (
-                        <DropdownMenu key={course.id}>
-                          <DropdownMenuTrigger asChild>
-                            <button
-                              className={`p-0.5 rounded ${course.hoverBg} transition-colors`}
-                              data-testid={`menu-week-${week.weekNumber}-${course.id}`}
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Menu className={`h-3 w-3 ${course.color}`} />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start" className="min-w-[140px]">
-                            <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
-                              {course.name}
-                            </div>
-                            {FOLDER_TYPES.map((folder) => (
-                              <DropdownMenuItem
-                                key={folder.id}
-                                onClick={() => {
-                                  window.location.href = `/files?folder=week-${week.weekNumber}-${course.id}-${folder.id}`;
-                                }}
-                                data-testid={`menu-item-${course.id}-${folder.id}`}
+                      {SIDEBAR_COURSES.map((course) => {
+                        // Filter folders that aren't deleted
+                        const availableFolders = FOLDER_TYPES.filter(
+                          (folder) => !deletedFolderIds.has(`week-${week.weekNumber}-${course.id}-${folder.id}`)
+                        );
+                        // Don't show hamburger if all folders are deleted
+                        if (availableFolders.length === 0) {
+                          return <div key={course.id} className="w-4" />; // Placeholder to maintain spacing
+                        }
+                        return (
+                          <DropdownMenu key={course.id}>
+                            <DropdownMenuTrigger asChild>
+                              <button
+                                className={`p-0.5 rounded ${course.hoverBg} transition-colors`}
+                                data-testid={`menu-week-${week.weekNumber}-${course.id}`}
+                                onClick={(e) => e.stopPropagation()}
                               >
-                                <span className="mr-2">{folder.icon}</span>
-                                {folder.name}
-                              </DropdownMenuItem>
-                            ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      ))}
+                                <Menu className={`h-3 w-3 ${course.color}`} />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="min-w-[140px]">
+                              <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
+                                {course.name}
+                              </div>
+                              {availableFolders.map((folder) => (
+                                <DropdownMenuItem
+                                  key={folder.id}
+                                  onClick={() => {
+                                    window.location.href = `/files?folder=week-${week.weekNumber}-${course.id}-${folder.id}`;
+                                  }}
+                                  data-testid={`menu-item-${course.id}-${folder.id}`}
+                                >
+                                  <span className="mr-2">{folder.icon}</span>
+                                  {folder.name}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        );
+                      })}
                     </div>
                   )}
                   {week.taskCount > 0 && (
