@@ -165,6 +165,12 @@ export default function FilesPage() {
   const [addFolderParentId, setAddFolderParentId] = useState<string | null>(null);
   const [editingFolderId, setEditingFolderId] = useState<number | null>(null);
   const [editingFolderName, setEditingFolderName] = useState("");
+  const [editingBuiltinFolderId, setEditingBuiltinFolderId] = useState<string | null>(null);
+  const [editingBuiltinFolderName, setEditingBuiltinFolderName] = useState("");
+  const [folderDisplayNames, setFolderDisplayNames] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem("folderDisplayNames");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [foldersPanelWidth, setFoldersPanelWidth] = useState(224); // 224px = w-56
   const isResizingPanelRef = useRef(false);
 
@@ -444,6 +450,15 @@ export default function FilesPage() {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [selectedFolder, editingFile, assigningFile, files, addDeletedFolderMutation, toast]);
+
+  const saveFolderDisplayName = useCallback((folderId: string, name: string) => {
+    const newNames = { ...folderDisplayNames, [folderId]: name };
+    setFolderDisplayNames(newNames);
+    localStorage.setItem("folderDisplayNames", JSON.stringify(newNames));
+    setEditingBuiltinFolderId(null);
+    setEditingBuiltinFolderName("");
+    toast({ title: "Folder renamed" });
+  }, [folderDisplayNames, toast]);
 
   const handleDeleteFolder = async () => {
     if (!selectedFolder) return;
@@ -1163,11 +1178,49 @@ export default function FilesPage() {
                                               <div className="w-3 h-3" />
                                             )}
                                             <Folder className="h-3.5 w-3.5 text-yellow-600 fill-yellow-400" />
-                                            <span className="text-sm flex-1">{content.name}</span>
+                                            {editingBuiltinFolderId === contentFolderId ? (
+                                              <input
+                                                type="text"
+                                                value={editingBuiltinFolderName}
+                                                onChange={(e) => setEditingBuiltinFolderName(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                  if (e.key === "Enter" && editingBuiltinFolderName.trim()) {
+                                                    saveFolderDisplayName(contentFolderId, editingBuiltinFolderName.trim());
+                                                  } else if (e.key === "Escape") {
+                                                    setEditingBuiltinFolderId(null);
+                                                    setEditingBuiltinFolderName("");
+                                                  }
+                                                }}
+                                                onBlur={() => {
+                                                  if (editingBuiltinFolderName.trim()) {
+                                                    saveFolderDisplayName(contentFolderId, editingBuiltinFolderName.trim());
+                                                  } else {
+                                                    setEditingBuiltinFolderId(null);
+                                                    setEditingBuiltinFolderName("");
+                                                  }
+                                                }}
+                                                onClick={(e) => e.stopPropagation()}
+                                                autoFocus
+                                                className="text-sm flex-1 bg-[#1e1e1e] border border-[#0078d4] rounded px-1 py-0 text-white outline-none"
+                                                data-testid={`input-rename-builtin-folder-${contentFolderId}`}
+                                              />
+                                            ) : (
+                                              <span className="text-sm flex-1">{folderDisplayNames[contentFolderId] || content.name}</span>
+                                            )}
                                             <span className="text-xs text-gray-500">{contentFiles.length}</span>
                                           </div>
                                         </ContextMenuTrigger>
                                         <ContextMenuContent className="w-48">
+                                          <ContextMenuItem
+                                            onClick={() => {
+                                              setEditingBuiltinFolderId(contentFolderId);
+                                              setEditingBuiltinFolderName(folderDisplayNames[contentFolderId] || content.name);
+                                            }}
+                                            data-testid={`rename-builtin-folder-${contentFolderId}`}
+                                          >
+                                            <Edit2 className="h-4 w-4 mr-2" />
+                                            Rename Folder
+                                          </ContextMenuItem>
                                           <ContextMenuItem
                                             onClick={() => {
                                               setAddFolderParentId(contentFolderId);
