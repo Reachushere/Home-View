@@ -167,8 +167,8 @@ async function sendNextChunk() {
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
   try {
-    // Wrap in SSML to slow down the voice (89% speed)
-    const ssmlChunk = `<speak><prosody rate="89%">${nextChunk}</prosody></speak>`;
+    // Use normal speaking rate
+    const ssmlChunk = `<speak>${nextChunk}</speak>`;
     
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
@@ -199,8 +199,8 @@ async function sendNextChunk() {
 }
 
 // Calculate delay based on chunk size and speed
-// At 89% speed, speaking takes longer: baseTime / 0.89
-const SPEED_RATE = 0.89;
+// At 100% speed (normal rate)
+const SPEED_RATE = 1.0;
 
 function scheduleNextChunk() {
   if (!currentTTSSession || !currentTTSSession.isPlaying) {
@@ -1515,8 +1515,8 @@ export async function registerRoutes(
       cleanedContent = cleanTextForTTS(cleanedContent);
       cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
       
-      // Wrap in SSML to slow down the voice (89% speed)
-      const ssmlContent = `<speak><prosody rate="89%">${cleanedContent}</prosody></speak>`;
+      // Use normal speaking rate
+      const ssmlContent = `<speak>${cleanedContent}</speak>`;
       
       console.log("Sending TTS to:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
