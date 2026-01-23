@@ -1880,7 +1880,7 @@ export default function Dashboard() {
         {/* Header overlay - stays normal when flyout is open */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '46px', width: '46px' }} />
-          <span className="text-xs text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule</span>
+          <span className="text-xs text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
         </div>
         
         {/* Sidebar with blur/fade effect */}
@@ -2741,9 +2741,8 @@ export default function Dashboard() {
               </DropdownMenu>
             </div>
             <div className="flex flex-col bg-white/40 rounded-lg px-4 py-1.5 h-[60px] justify-center">
-              <h1 className="text-base font-semibold text-black" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
-              {/* Clock below title */}
-              <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
+              {/* Clock */}
+              <div className="flex items-center gap-2" data-testid="digital-clock">
                 <span className="text-xs text-black font-medium">
                   {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
                 </span>
