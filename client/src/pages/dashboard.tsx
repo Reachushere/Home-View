@@ -1876,15 +1876,15 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className="text-white mt-3 mb-3 mr-0 rounded-xl shadow-lg pl-4 pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70" style={{ width: 350, marginLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
-        {/* Header - stays normal when flyout is open */}
+      <aside className={`text-white mt-3 mb-3 mr-0 rounded-xl shadow-lg pl-4 pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, marginLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+        {/* Header with icon and title that stay crisp */}
         <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0">
-          <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
+          <img src={unicalLogo} alt="Uni-Cal" className={`-ml-3 rounded transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-100 blur-0 brightness-[1.67]' : ''}`} style={{ height: '38px', width: '38px' }} />
           <div className="flex items-baseline gap-1.5 flex-1">
-            <h1 className="text-base font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h1 className={`text-base font-semibold text-white whitespace-nowrap transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-100 blur-0 brightness-[1.67]' : ''}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
               University Planner
             </h1>
-            <span className={`text-[10px] text-gray-300 whitespace-nowrap font-semibold transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <span className="text-[10px] text-gray-300 whitespace-nowrap font-semibold" style={{ fontFamily: "Segoe UI, sans-serif" }}>
             ({schoolData.week1StartDate 
               ? format(new Date(schoolData.week1StartDate), 'MMM d') 
               : 'Jan 16'} to {schoolData.week1StartDate 
@@ -1894,8 +1894,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Scrollable sidebar content - fades/blurs when flyout is open */}
-        <div className={`flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`}>
+        {/* Scrollable sidebar content */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar">
         {/* Mini Calendar */}
         <div className="px-2 mb-4 mt-0">
           <div className="flex items-center justify-between mb-2">
