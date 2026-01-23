@@ -2798,12 +2798,12 @@ export default function Dashboard() {
           </div>
         </div>
         
+        {/* Menu Bar Container - clips scroll content */}
+        <div className="flex-shrink-0 relative z-10" style={{ marginTop: '24px', marginRight: '8px' }}>
         {/* Sleek Menu Bar */}
-        <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-shrink-0 relative z-10" style={{ 
+        <div className="flex items-center mb-0 rounded-2xl overflow-hidden" style={{ 
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-          marginTop: '24px',
-          marginRight: '8px',
           border: '1px solid rgba(255,255,255,0.5)'
         }}>
           {/* Navigation Section */}
@@ -3162,9 +3162,10 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
         </div>
+        </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden pr-4 main-scrollbar" style={{ marginRight: '-20px', marginTop: '-100px', paddingTop: '100px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden pr-4 main-scrollbar" style={{ marginRight: '-20px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
