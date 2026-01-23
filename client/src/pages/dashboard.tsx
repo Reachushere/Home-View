@@ -2808,7 +2808,7 @@ export default function Dashboard() {
           border: '1px solid rgba(255,255,255,0.5)'
         }}>
           {/* Navigation Section */}
-          <div className="flex items-center px-4 py-2 gap-3">
+          <div className="flex items-center px-4 py-2 gap-2">
             {/* Week navigation */}
             <div className="flex items-center bg-white/10 rounded-lg px-2 py-1 backdrop-blur-sm">
               <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
@@ -2824,43 +2824,45 @@ export default function Dashboard() {
               </Button>
             </div>
 
-            {/* Quick Actions */}
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleMute}
-                className={`h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50 ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
-                data-testid="button-mute-toggle"
-                title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-              >
-                {isMuted ? <BellOff className="h-4 w-4 text-white" /> : <Bell className="h-4 w-4 text-white" />}
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
-                onClick={() => setSelectedWeek(2)}
-                data-testid="button-home-week"
-                title="Go to current week"
-              >
-                <Home className="h-4 w-4 text-white" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
-                onClick={() => syncAllCalendarMutation.mutate()}
-                disabled={syncAllCalendarMutation.isPending}
-                data-testid="button-sync-calendar"
-              >
-                {syncAllCalendarMutation.isPending ? (
-                  <Loader2 className="h-4 w-4 text-white animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4 text-white" />
-                )}
-              </Button>
-            </div>
+            {/* Bell */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMute}
+              className={`h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50 ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              data-testid="button-mute-toggle"
+              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+            >
+              {isMuted ? <BellOff className="h-4 w-4 text-white" /> : <Bell className="h-4 w-4 text-white" />}
+            </Button>
+
+            {/* Home */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
+              onClick={() => setSelectedWeek(2)}
+              data-testid="button-home-week"
+              title="Go to current week"
+            >
+              <Home className="h-4 w-4 text-white" />
+            </Button>
+
+            {/* Sync */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
+              onClick={() => syncAllCalendarMutation.mutate()}
+              disabled={syncAllCalendarMutation.isPending}
+              data-testid="button-sync-calendar"
+            >
+              {syncAllCalendarMutation.isPending ? (
+                <Loader2 className="h-4 w-4 text-white animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 text-white" />
+              )}
+            </Button>
 
             {/* View Buttons */}
             <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
@@ -2883,6 +2885,8 @@ export default function Dashboard() {
                 {calendarView === "month" ? "Week" : "Month"}
               </Button>
             </div>
+
+            {/* Files */}
             <RouterLink href="/files">
               <Button 
                 variant="ghost"
