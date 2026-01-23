@@ -156,7 +156,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(480);
+  const [calendarHeight, setCalendarHeight] = useState(465);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -2871,7 +2871,7 @@ export default function Dashboard() {
             </div>
 
           {/* Quick Add Section */}
-          <div className="flex items-center pl-3 py-2 gap-1 flex-1 justify-end" style={{ paddingRight: '137px' }}>
+          <div className="flex items-center pl-3 py-2 gap-1 flex-1 justify-end" style={{ paddingRight: '152px' }}>
             <Button 
               size="sm"
               className="!h-7 !min-h-0 px-4 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
@@ -4181,7 +4181,7 @@ export default function Dashboard() {
         {calendarView === "week" && (
           <div 
             className="fixed z-50 flex flex-row-reverse items-center transition-transform duration-300 ease-in-out"
-            style={{ top: 'calc(50% - 69px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '349px' }}
+            style={{ top: 'calc(50% - 59px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '349px' }}
           >
             {/* Flyout Panel */}
             <div 
