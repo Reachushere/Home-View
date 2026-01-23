@@ -2682,7 +2682,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border/50 sticky top-[52px] bg-gray-100 dark:bg-gray-800 z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}>
+            <div className="grid border-b border-border/50 sticky top-[52px] bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}>
                 <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
                   ALL DAY
                 </div>
@@ -2890,11 +2890,11 @@ export default function Dashboard() {
               
               {/* Course Rows - CPPA122, CFNF400, CASL101 */}
               {[
-                { name: 'CPPA122', bg: 'bg-green-100', label: 'bg-green-200' },
-                { name: 'CFNF400', bg: 'bg-pink-100', label: 'bg-pink-200' },
-                { name: 'CASL101', bg: 'bg-indigo-100', label: 'bg-indigo-200' }
+                { name: 'CPPA122', bg: 'bg-green-100/50', label: 'bg-green-200/50' },
+                { name: 'CFNF400', bg: 'bg-pink-100/50', label: 'bg-pink-200/50' },
+                { name: 'CASL101', bg: 'bg-indigo-100/50', label: 'bg-indigo-200/50' }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full backdrop-blur-sm" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
                   <div className={`px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center ${course.label} text-black min-h-[20px]`}>
                     {course.name}
                   </div>
