@@ -2864,7 +2864,7 @@ export default function Dashboard() {
             </Button>
 
             {/* View Buttons */}
-            <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
+            <div className="flex items-center gap-0.5 bg-white/10 rounded-md p-0.5">
               <Button 
                 variant="ghost"
                 className="!h-7 !min-h-0 px-3 text-[11px] hover:bg-white/20 rounded-md font-medium text-white border-0" 
