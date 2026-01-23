@@ -4166,14 +4166,14 @@ export default function Dashboard() {
         {calendarView === "week" && (
           <div 
             className="fixed z-50 flex flex-row-reverse items-center transition-transform duration-300 ease-in-out"
-            style={{ top: '50%', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-384px' : '0'})`, left: '378px' }}
+            style={{ top: '50%', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '378px' }}
           >
             {/* Flyout Panel */}
             <div 
-              className={`bg-[#1a1a2e] shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-96 border border-r-0 border-[#3d3d3d] rounded-l-lg' : 'w-0 border-0'}`}
+              className={`bg-[#1a1a2e] shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-r-0 border-[#3d3d3d] rounded-l-lg' : 'w-0 border-0'}`}
               style={{ height: '400px' }}
             >
-              <div className="w-96 h-full flex flex-col">
+              <div className="w-80 h-full flex flex-col">
                 <div className="p-3 border-b border-[#3d3d3d] flex items-center justify-between">
                   <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
                   <span className="text-xs text-gray-400">{currentWeekFiles.length} files</span>
