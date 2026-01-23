@@ -102,7 +102,6 @@ const SIDEBAR_COURSES = [
 const FOLDER_TYPES = [
   { id: "module", name: "Module" },
   { id: "reading", name: "Reading" },
-  { id: "other", name: "Other" },
 ];
 
 // Speakers list for media controls

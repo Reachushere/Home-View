@@ -78,7 +78,6 @@ const COURSE_FOLDERS = [
 const CONTENT_FOLDERS = [
   { id: "module", name: "Module" },
   { id: "reading", name: "Reading" },
-  { id: "other", name: "Other" },
 ];
 
 function getFileIcon(contentType: string | null) {
