@@ -2341,7 +2341,7 @@ export default function Dashboard() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-4 w-4 mx-1.5"
+              className="h-4 w-4 mx-3"
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
@@ -2354,7 +2354,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               variant="ghost"
-              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-[22px] !min-h-0 !px-2 mx-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
               onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
               data-testid="button-today"
             >
@@ -2364,7 +2364,7 @@ export default function Dashboard() {
             <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost"
-              className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
+              className="!h-[22px] !min-h-0 !px-2 ml-1 mr-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
               onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
               data-testid="button-month-view"
             >
