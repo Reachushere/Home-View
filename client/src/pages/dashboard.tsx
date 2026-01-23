@@ -2656,7 +2656,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`p-1 border-l border-border flex flex-col items-center justify-center ${
-                      isToday ? "bg-[#5979CC]" : isFriday ? "bg-destructive/60" : ""
+                      isToday ? "bg-[#2d4a6f]" : isFriday ? "bg-destructive/60" : ""
                     }`}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -2955,7 +2955,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors ${isFriday ? "bg-destructive/60" : ""} ${isToday ? "bg-[#5979CC]" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors ${isFriday ? "bg-destructive/60" : ""} ${isToday ? "bg-[#2d4a6f]" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
@@ -3128,7 +3128,7 @@ export default function Dashboard() {
                         key={idx}
                         className={`min-h-[80px] p-1 border-r border-b border-border last:border-r-0 ${
                           isCurrentMonth ? "bg-card" : "bg-muted/30"
-                        } ${isToday ? "bg-[#5979CC]" : ""}`}
+                        } ${isToday ? "bg-[#2d4a6f]" : ""}`}
                         onClick={() => {
                           // Find which week this day belongs to
                           const weekInfo = weeks.find(w => {
