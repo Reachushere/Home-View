@@ -3333,7 +3333,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Row - Pink */}
-                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700" style={{ backgroundColor: 'rgba(249,168,212,0.50)' }}>
+                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700" style={{ backgroundColor: 'rgba(249,168,212,0.70)' }}>
                     <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -3383,7 +3383,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="flex-1 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700" style={{ backgroundColor: 'rgba(249,168,212,0.50)' }}>
+              <div className="flex-1 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700" style={{ backgroundColor: 'rgba(249,168,212,0.70)' }}>
                 <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
