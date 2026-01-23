@@ -3199,9 +3199,9 @@ export default function Dashboard() {
                 <div className="text-muted-foreground text-xs p-3">Loading...</div>
               ) : (
                 <>
-                  {/* CPPA122 Column - Green */}
-                  <div className="flex-1 bg-green-100 dark:bg-green-900/30 p-2 overflow-auto border-r border-green-200 dark:border-green-700">
-                    <div className="text-[9px] font-bold text-green-700 dark:text-green-300 mb-1.5 text-center">CPPA122</div>
+                  {/* CPPA122 Column - Yellow Theme */}
+                  <div className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 p-2 overflow-auto border-r border-yellow-300 dark:border-yellow-700">
+                    <div className="text-[9px] font-bold text-yellow-700 dark:text-yellow-300 mb-1.5 text-center">CPPA122</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
                         const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
@@ -3213,10 +3213,10 @@ export default function Dashboard() {
                               onReschedule={() => setRescheduleTask(task)}
                               onEdit={() => setEditingTask(task)}
                               onDelete={() => deleteMutation.mutate(task.id)}
-                              cardBgClass="bg-green-50 dark:bg-green-900/20"
+                              cardBgClass="bg-yellow-200 dark:bg-yellow-800/40 border border-yellow-400 dark:border-yellow-600"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-blue-800">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-yellow-500 rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-yellow-600">
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -3228,13 +3228,13 @@ export default function Dashboard() {
                         );
                       })}
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
-                        <div className="text-center py-2 text-green-600 dark:text-green-400 text-[10px]">No tasks</div>
+                        <div className="text-center py-2 text-yellow-600 dark:text-yellow-400 text-[10px]">No tasks</div>
                       )}
                     </div>
                   </div>
-                  {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 p-2 overflow-auto border-r border-pink-200 dark:border-pink-700">
-                    <div className="text-[9px] font-bold text-pink-700 dark:text-pink-300 mb-1.5 text-center">CFNF400</div>
+                  {/* CFNF400 Column - Yellow Theme */}
+                  <div className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 p-2 overflow-auto border-r border-yellow-300 dark:border-yellow-700">
+                    <div className="text-[9px] font-bold text-yellow-700 dark:text-yellow-300 mb-1.5 text-center">CFNF400</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
                         const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
@@ -3246,10 +3246,10 @@ export default function Dashboard() {
                               onReschedule={() => setRescheduleTask(task)}
                               onEdit={() => setEditingTask(task)}
                               onDelete={() => deleteMutation.mutate(task.id)}
-                              cardBgClass="bg-pink-50 dark:bg-pink-900/20"
+                              cardBgClass="bg-yellow-200 dark:bg-yellow-800/40 border border-yellow-400 dark:border-yellow-600"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-blue-800">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-yellow-500 rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-yellow-600">
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -3261,13 +3261,13 @@ export default function Dashboard() {
                         );
                       })}
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
-                        <div className="text-center py-2 text-pink-600 dark:text-pink-400 text-[10px]">No tasks</div>
+                        <div className="text-center py-2 text-yellow-600 dark:text-yellow-400 text-[10px]">No tasks</div>
                       )}
                     </div>
                   </div>
-                  {/* CASL101 Column - Purple */}
-                  <div className="flex-1 bg-indigo-100 dark:bg-indigo-900/30 p-2 overflow-auto">
-                    <div className="text-[9px] font-bold text-purple-700 dark:text-purple-300 mb-1.5 text-center">CASL101</div>
+                  {/* CASL101 Column - Yellow Theme */}
+                  <div className="flex-1 bg-yellow-100 dark:bg-yellow-900/30 p-2 overflow-auto">
+                    <div className="text-[9px] font-bold text-yellow-700 dark:text-yellow-300 mb-1.5 text-center">CASL101</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => {
                         const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
@@ -3279,10 +3279,10 @@ export default function Dashboard() {
                               onReschedule={() => setRescheduleTask(task)}
                               onEdit={() => setEditingTask(task)}
                               onDelete={() => deleteMutation.mutate(task.id)}
-                              cardBgClass="bg-indigo-50 dark:bg-indigo-900/20"
+                              cardBgClass="bg-yellow-200 dark:bg-yellow-800/40 border border-yellow-400 dark:border-yellow-600"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-[#5979CC] rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-blue-800">
+                            <div className="absolute top-1/2 -translate-y-1/2 -right-1 w-6 h-6 bg-yellow-500 rounded-sm flex flex-col items-center justify-center z-10 border-[1.5px] border-yellow-600">
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -3294,7 +3294,7 @@ export default function Dashboard() {
                         );
                       })}
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
-                        <div className="text-center py-2 text-purple-600 dark:text-purple-400 text-[10px]">No tasks</div>
+                        <div className="text-center py-2 text-yellow-600 dark:text-yellow-400 text-[10px]">No tasks</div>
                       )}
                     </div>
                   </div>
@@ -3314,39 +3314,39 @@ export default function Dashboard() {
                 <div className="text-muted-foreground text-xs p-2">Loading...</div>
               ) : (
                 <>
-                  {/* CPPA122 Row - Green */}
-                  <div className="flex-1 bg-green-100 dark:bg-green-900/30 px-2 py-1 overflow-auto border-b border-green-200 dark:border-green-700">
-                    <div className="text-[8px] font-bold text-green-700 dark:text-green-300 mb-0.5">CPPA122</div>
+                  {/* CPPA122 Row - Orange Theme */}
+                  <div className="flex-1 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 overflow-auto border-b border-orange-300 dark:border-orange-700">
+                    <div className="text-[8px] font-bold text-orange-700 dark:text-orange-300 mb-0.5">CPPA122</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
-                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
+                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-orange-200 dark:bg-orange-800/40 border border-orange-400 dark:border-orange-600" compact />
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
-                        <div className="text-[9px] text-green-600 dark:text-green-400 opacity-60">-</div>
+                        <div className="text-[9px] text-orange-600 dark:text-orange-400 opacity-60">-</div>
                       )}
                     </div>
                   </div>
-                  {/* CFNF400 Row - Pink */}
-                  <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700">
-                    <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
+                  {/* CFNF400 Row - Orange Theme */}
+                  <div className="flex-1 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 overflow-auto border-b border-orange-300 dark:border-orange-700">
+                    <div className="text-[8px] font-bold text-orange-700 dark:text-orange-300 mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
-                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
+                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-orange-200 dark:bg-orange-800/40 border border-orange-400 dark:border-orange-600" compact />
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
-                        <div className="text-[9px] text-pink-600 dark:text-pink-400 opacity-60">-</div>
+                        <div className="text-[9px] text-orange-600 dark:text-orange-400 opacity-60">-</div>
                       )}
                     </div>
                   </div>
-                  {/* CASL101 Row - Purple */}
-                  <div className="flex-1 bg-indigo-100 dark:bg-indigo-900/30 px-2 py-1 overflow-auto">
-                    <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
+                  {/* CASL101 Row - Orange Theme */}
+                  <div className="flex-1 bg-orange-100 dark:bg-orange-900/30 px-2 py-1 overflow-auto">
+                    <div className="text-[8px] font-bold text-orange-700 dark:text-orange-300 mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
-                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact />
+                        <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-orange-200 dark:bg-orange-800/40 border border-orange-400 dark:border-orange-600" compact />
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
-                        <div className="text-[9px] text-purple-600 dark:text-purple-400 opacity-60">-</div>
+                        <div className="text-[9px] text-orange-600 dark:text-orange-400 opacity-60">-</div>
                       )}
                     </div>
                   </div>
@@ -3362,45 +3362,45 @@ export default function Dashboard() {
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
             <div className="flex-1 flex flex-col overflow-hidden">
-              {/* CPPA122 Row - Green */}
-              <div className="flex-1 bg-green-100 dark:bg-green-900/30 px-2 py-1 overflow-auto border-b border-green-200 dark:border-green-700">
-                <div className="text-[8px] font-bold text-green-700 dark:text-green-300 mb-0.5">CPPA122</div>
+              {/* CPPA122 Row - Red Theme */}
+              <div className="flex-1 bg-red-100 dark:bg-red-900/30 px-2 py-1 overflow-auto border-b border-red-300 dark:border-red-700">
+                <div className="text-[8px] font-bold text-red-700 dark:text-red-300 mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-red-200 dark:bg-red-800/40 border border-red-400 dark:border-red-600" compact />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
-                    <div className="text-[9px] text-green-600 dark:text-green-400 opacity-60">-</div>
+                    <div className="text-[9px] text-red-600 dark:text-red-400 opacity-60">-</div>
                   )}
                 </div>
               </div>
-              {/* CFNF400 Row - Pink */}
-              <div className="flex-1 bg-pink-100 dark:bg-pink-900/30 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700">
-                <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
+              {/* CFNF400 Row - Red Theme */}
+              <div className="flex-1 bg-red-100 dark:bg-red-900/30 px-2 py-1 overflow-auto border-b border-red-300 dark:border-red-700">
+                <div className="text-[8px] font-bold text-red-700 dark:text-red-300 mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-red-200 dark:bg-red-800/40 border border-red-400 dark:border-red-600" compact />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
-                    <div className="text-[9px] text-pink-600 dark:text-pink-400 opacity-60">-</div>
+                    <div className="text-[9px] text-red-600 dark:text-red-400 opacity-60">-</div>
                   )}
                 </div>
               </div>
-              {/* CASL101 Row - Purple */}
-              <div className="flex-1 bg-indigo-100 dark:bg-indigo-900/30 px-2 py-1 overflow-auto">
-                <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
+              {/* CASL101 Row - Red Theme */}
+              <div className="flex-1 bg-red-100 dark:bg-red-900/30 px-2 py-1 overflow-auto">
+                <div className="text-[8px] font-bold text-red-700 dark:text-red-300 mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact />
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-red-200 dark:bg-red-800/40 border border-red-400 dark:border-red-600" compact />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
-                    <div className="text-[9px] text-purple-600 dark:text-purple-400 opacity-60">-</div>
+                    <div className="text-[9px] text-red-600 dark:text-red-400 opacity-60">-</div>
                   )}
                 </div>
               </div>
