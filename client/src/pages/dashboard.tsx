@@ -1255,8 +1255,8 @@ export default function Dashboard() {
   // Move Saturday (first day) to the end so order is Sun-Sat
   const weekDays = rawWeekDays.length === 7 ? [...rawWeekDays.slice(1), rawWeekDays[0]] : rawWeekDays;
   
-  // Time slots for the day view (6am-11pm)
-  const timeSlots = Array.from({ length: 18 }, (_, i) => i + 6); // 6am-11pm
+  // Time slots for the day view (7am-11pm)
+  const timeSlots = Array.from({ length: 17 }, (_, i) => i + 7); // 7am-11pm
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to show blinking tasks (due tomorrow) or current hour
