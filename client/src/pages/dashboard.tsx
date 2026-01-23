@@ -2270,31 +2270,29 @@ export default function Dashboard() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <h1 className="text-base font-semibold text-white -mt-3" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
-          </div>
-          
-          {/* Center: Clock */}
-          <div className="flex flex-col items-center">
-            {/* Slightly bigger Clock below title */}
-            <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
-              <span className="text-[10px] text-white font-medium">
-                {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-              </span>
-              <div className="w-[2px] h-4 bg-white/50" />
-              <div className="flex items-baseline">
-                <span className="text-sm font-semibold text-white tabular-nums">
-                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+            <div className="flex flex-col">
+              <h1 className="text-base font-semibold text-white -mt-3" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
+              {/* Clock below title */}
+              <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
+                <span className="text-[10px] text-white font-medium">
+                  {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
                 </span>
-                <span className="text-[10px] text-white/80 tabular-nums">
-                  :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
-                </span>
-                <span className="text-[7px] font-bold text-white/80 ml-0.5 uppercase">
-                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-                </span>
+                <div className="w-[2px] h-4 bg-white/50" />
+                <div className="flex items-baseline">
+                  <span className="text-sm font-semibold text-white tabular-nums">
+                    {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+                  </span>
+                  <span className="text-[10px] text-white/80 tabular-nums">
+                    :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
+                  </span>
+                  <span className="text-[7px] font-bold text-white/80 ml-0.5 uppercase">
+                    {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
+                  </span>
+                </div>
+                {profileData.travelTimezone && (
+                  <span className="text-[8px] text-orange-500 font-medium ml-1">✈️ Travel</span>
+                )}
               </div>
-              {profileData.travelTimezone && (
-                <span className="text-[8px] text-orange-500 font-medium ml-1">✈️ Travel</span>
-              )}
             </div>
           </div>
           
