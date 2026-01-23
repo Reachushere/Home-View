@@ -3190,8 +3190,8 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-upcoming">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-yellow-200 dark:bg-yellow-200" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <Clock className="h-3 w-3 text-black dark:text-black" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-yellow-300" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 25%, #3d5a7f 50%, #4d6a8f 75%, #5d7a9f 100%)' }}>
+              <Clock className="h-3 w-3 text-yellow-300" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
             </h4>
             <div className="flex-1 flex overflow-hidden">
@@ -3305,8 +3305,8 @@ export default function Dashboard() {
 
           {/* Do Today Section (Urgent) - Now in Middle */}
           <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-orange-300 dark:bg-orange-300" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <Calendar className="h-3 w-3 text-black dark:text-black" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-orange-300" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 25%, #3d5a7f 50%, #4d6a8f 75%, #5d7a9f 100%)' }}>
+              <Calendar className="h-3 w-3 text-orange-300" />
               URGENT: Do Today ({todayTasks.length})
             </h4>
             <div className="flex-1 flex flex-col overflow-hidden">
@@ -3357,8 +3357,8 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
           <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" data-testid="section-missed">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-black dark:text-black bg-red-300 dark:bg-red-300" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <Clock className="h-3 w-3 text-black dark:text-black" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-red-300" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 25%, #3d5a7f 50%, #4d6a8f 75%, #5d7a9f 100%)' }}>
+              <Clock className="h-3 w-3 text-red-300" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
             <div className="flex-1 flex flex-col overflow-hidden">
