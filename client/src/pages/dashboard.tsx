@@ -1874,7 +1874,7 @@ export default function Dashboard() {
               <div key={week.weekNumber} className="flex items-center gap-0.5">
                 <Button
                   variant={isSelected ? "secondary" : "ghost"}
-                  className={`flex-1 justify-between gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""}`}
+                  className={`justify-between gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "flex-shrink-0" : "flex-1"}`}
                   size="sm"
                   onClick={() => {
                     setSelectedWeek(week.weekNumber);
@@ -1889,76 +1889,74 @@ export default function Dashboard() {
                       ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                     </span>
                   </div>
-                  {/* Hamburger menus inline for selected week */}
-                  {isSelected && (
-                    <div className="flex items-center justify-around flex-1 mx-2" onClick={(e) => e.stopPropagation()}>
-                      {SIDEBAR_COURSES.map((course) => {
-                        // Filter folders that aren't deleted
-                        const availableFolders = FOLDER_TYPES.filter(
-                          (folder) => !deletedFolderIds.has(`week-${week.weekNumber}-${course.id}-${folder.id}`)
-                        );
-                        return (
-                          <DropdownMenu key={course.id}>
-                            <DropdownMenuTrigger asChild>
-                              <button
-                                className={`p-1.5 rounded ${course.hoverBg} transition-colors ${availableFolders.length === 0 ? 'opacity-40' : ''}`}
-                                data-testid={`menu-week-${week.weekNumber}-${course.id}`}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <Menu className={course.color} style={{ width: '22px', height: '22px' }} strokeWidth={2} />
-                              </button>
-                            </DropdownMenuTrigger>
-                            {availableFolders.length > 0 && (
-                              <DropdownMenuContent align="start" className="min-w-[160px]">
-                                <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
-                                  {course.name}
-                                </div>
-                                {availableFolders.map((folder) => {
-                                  const folderId = `week-${week.weekNumber}-${course.id}-${folder.id}`;
-                                  const folderFiles = allFiles.filter(f => f.folder === folderId);
-                                  return (
-                                    <DropdownMenuSub key={folder.id}>
-                                      <DropdownMenuSubTrigger data-testid={`menu-item-${course.id}-${folder.id}`}>
-                                        <FolderOpen className="h-3 w-3 mr-2" />
-                                        {folder.name}
-                                        {folderFiles.length > 0 && (
-                                          <span className="ml-auto text-xs text-muted-foreground">({folderFiles.length})</span>
-                                        )}
-                                      </DropdownMenuSubTrigger>
-                                      <DropdownMenuSubContent className="min-w-[200px] max-h-[300px] overflow-y-auto">
-                                        {folderFiles.length === 0 ? (
-                                          <div className="px-2 py-1.5 text-xs text-muted-foreground italic">No files</div>
-                                        ) : (
-                                          folderFiles.map((file) => (
-                                            <DropdownMenuItem
-                                              key={file.id}
-                                              onClick={() => {
-                                                setPreviewFile(file);
-                                              }}
-                                              data-testid={`file-item-${file.id}`}
-                                              className="text-xs"
-                                            >
-                                              <span className="truncate">{file.displayName || file.originalName}</span>
-                                            </DropdownMenuItem>
-                                          ))
-                                        )}
-                                      </DropdownMenuSubContent>
-                                    </DropdownMenuSub>
-                                  );
-                                })}
-                              </DropdownMenuContent>
-                            )}
-                          </DropdownMenu>
-                        );
-                      })}
-                    </div>
-                  )}
                   {week.taskCount > 0 && (
                     <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center">
                       {week.taskCount}
                     </Badge>
                   )}
                 </Button>
+                {/* Hamburger menus outside button for selected week */}
+                {isSelected && (
+                  <div className="flex items-center justify-around flex-1 mx-1">
+                    {SIDEBAR_COURSES.map((course) => {
+                      const availableFolders = FOLDER_TYPES.filter(
+                        (folder) => !deletedFolderIds.has(`week-${week.weekNumber}-${course.id}-${folder.id}`)
+                      );
+                      return (
+                        <DropdownMenu key={course.id}>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              className={`p-1.5 rounded ${course.hoverBg} transition-colors ${availableFolders.length === 0 ? 'opacity-40' : ''}`}
+                              data-testid={`menu-week-${week.weekNumber}-${course.id}`}
+                            >
+                              <Menu className={course.color} style={{ width: '22px', height: '22px' }} strokeWidth={2} />
+                            </button>
+                          </DropdownMenuTrigger>
+                          {availableFolders.length > 0 && (
+                            <DropdownMenuContent align="start" className="min-w-[160px]">
+                              <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
+                                {course.name}
+                              </div>
+                              {availableFolders.map((folder) => {
+                                const folderId = `week-${week.weekNumber}-${course.id}-${folder.id}`;
+                                const folderFiles = allFiles.filter(f => f.folder === folderId);
+                                return (
+                                  <DropdownMenuSub key={folder.id}>
+                                    <DropdownMenuSubTrigger data-testid={`menu-item-${course.id}-${folder.id}`}>
+                                      <FolderOpen className="h-3 w-3 mr-2" />
+                                      {folder.name}
+                                      {folderFiles.length > 0 && (
+                                        <span className="ml-auto text-xs text-muted-foreground">({folderFiles.length})</span>
+                                      )}
+                                    </DropdownMenuSubTrigger>
+                                    <DropdownMenuSubContent className="min-w-[200px] max-h-[300px] overflow-y-auto">
+                                      {folderFiles.length === 0 ? (
+                                        <div className="px-2 py-1.5 text-xs text-muted-foreground italic">No files</div>
+                                      ) : (
+                                        folderFiles.map((file) => (
+                                          <DropdownMenuItem
+                                            key={file.id}
+                                            onClick={() => {
+                                              setPreviewFile(file);
+                                            }}
+                                            data-testid={`file-item-${file.id}`}
+                                            className="text-xs"
+                                          >
+                                            <span className="truncate">{file.displayName || file.originalName}</span>
+                                          </DropdownMenuItem>
+                                        ))
+                                      )}
+                                    </DropdownMenuSubContent>
+                                  </DropdownMenuSub>
+                                );
+                              })}
+                            </DropdownMenuContent>
+                          )}
+                        </DropdownMenu>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
