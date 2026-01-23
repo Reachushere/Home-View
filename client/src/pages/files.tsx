@@ -357,6 +357,19 @@ export default function FilesPage() {
     },
   });
 
+  const clearAllCustomFoldersMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest("DELETE", "/api/custom-folders");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/custom-folders"] });
+      toast({ title: "All custom folders cleared" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to clear folders", description: String(err), variant: "destructive" });
+    },
+  });
+
   const getFilesToDeleteInFolder = (folderId: string) => {
     // Check if this is a week folder (e.g., "week-1")
     if (folderId.match(/^week-\d+$/)) {
@@ -1195,6 +1208,23 @@ export default function FilesPage() {
                 <span className="ml-auto text-xs bg-gray-600 px-1.5 py-0.5 rounded">{unfiledFiles.length}</span>
               )}
             </div>
+
+            {/* Clear Custom Folders Button */}
+            {customFoldersData.length > 0 && (
+              <div className="px-2 pt-3 border-t border-[#3d3d3d] mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-xs text-red-400 border-red-400/50 hover:bg-red-500/20"
+                  onClick={() => clearAllCustomFoldersMutation.mutate()}
+                  disabled={clearAllCustomFoldersMutation.isPending}
+                  data-testid="button-clear-custom-folders"
+                >
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  {clearAllCustomFoldersMutation.isPending ? "Clearing..." : `Clear Custom Folders (${customFoldersData.length})`}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
 
