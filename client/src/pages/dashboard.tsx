@@ -1907,6 +1907,7 @@ export default function Dashboard() {
                           <DropdownMenuTrigger asChild>
                             <button
                               className={`p-1 rounded ${course.hoverBg} transition-colors ${availableFolders.length === 0 ? 'opacity-40' : ''}`}
+                              style={course.id === 'casl101' ? { marginLeft: '80px' } : undefined}
                               data-testid={`menu-week-${week.weekNumber}-${course.id}`}
                             >
                               <Menu className={course.color} style={{ width: '20px', height: '20px' }} strokeWidth={2} />
