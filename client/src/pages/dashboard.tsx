@@ -2352,7 +2352,6 @@ export default function Dashboard() {
                 <RefreshCw className="text-white" style={{ height: '13px', width: '13px' }} />
               )}
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
