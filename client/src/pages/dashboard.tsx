@@ -1760,8 +1760,8 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto border-[0.25px] border-white/70" style={{ width: 350, background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
-        <div className="flex items-center gap-2 px-2 pt-3 pb-2">
+      <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col overflow-hidden border-[0.25px] border-white/70" style={{ width: 350, background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+        <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
           <div className="flex items-baseline gap-1.5">
             <h1 className="text-base font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
@@ -1777,6 +1777,8 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Scrollable sidebar content */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.4) transparent' }}>
         {/* Mini Calendar */}
         <div className="px-2 mb-4 -mt-2">
           <div className="flex items-center justify-between mb-2">
@@ -2680,6 +2682,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+        </div>
         </div>
         </div>
       </aside>
