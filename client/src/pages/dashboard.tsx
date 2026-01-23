@@ -4202,7 +4202,7 @@ export default function Dashboard() {
                           return (
                             <div key={courseCode}>
                               {/* Course header */}
-                              <div className="text-xs font-bold mb-1 text-white">
+                              <div className="text-[10px] font-bold mb-1 text-white">
                                 {courseCode}
                               </div>
                               {/* Files for this course */}
