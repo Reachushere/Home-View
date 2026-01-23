@@ -1492,10 +1492,10 @@ export default function Dashboard() {
             const isWeekFinished = weekEndDate < new Date();
             const isSelected = selectedWeek === week.weekNumber && !selectedDate;
             return (
-              <div key={week.weekNumber} className="flex flex-col">
+              <div key={week.weekNumber} className="flex items-center gap-0.5">
                 <Button
                   variant={isSelected ? "secondary" : "ghost"}
-                  className={`justify-between gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""}`}
+                  className={`flex-1 justify-between gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""}`}
                   size="sm"
                   onClick={() => {
                     setSelectedWeek(week.weekNumber);
@@ -1510,46 +1510,47 @@ export default function Dashboard() {
                       ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                     </span>
                   </div>
+                  {/* Hamburger menus inline for selected week */}
+                  {isSelected && (
+                    <div className="flex items-center gap-0.5 mx-1" onClick={(e) => e.stopPropagation()}>
+                      {SIDEBAR_COURSES.map((course) => (
+                        <DropdownMenu key={course.id}>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              className={`p-0.5 rounded ${course.hoverBg} transition-colors`}
+                              data-testid={`menu-week-${week.weekNumber}-${course.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Menu className={`h-3 w-3 ${course.color}`} />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start" className="min-w-[140px]">
+                            <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
+                              {course.name}
+                            </div>
+                            {FOLDER_TYPES.map((folder) => (
+                              <DropdownMenuItem
+                                key={folder.id}
+                                onClick={() => {
+                                  window.location.href = `/files?folder=week-${week.weekNumber}-${course.id}-${folder.id}`;
+                                }}
+                                data-testid={`menu-item-${course.id}-${folder.id}`}
+                              >
+                                <span className="mr-2">{folder.icon}</span>
+                                {folder.name}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ))}
+                    </div>
+                  )}
                   {week.taskCount > 0 && (
-                    <Badge variant="outline" className="ml-auto text-[10px] px-1 py-0 min-w-5 text-center justify-center">
+                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center">
                       {week.taskCount}
                     </Badge>
                   )}
                 </Button>
-                {/* Hamburger menus for selected week */}
-                {isSelected && (
-                  <div className="flex items-center gap-1 px-2 py-1 ml-4">
-                    {SIDEBAR_COURSES.map((course) => (
-                      <DropdownMenu key={course.id}>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            className={`p-1 rounded ${course.hoverBg} transition-colors`}
-                            data-testid={`menu-week-${week.weekNumber}-${course.id}`}
-                          >
-                            <Menu className={`h-3 w-3 ${course.color}`} />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="min-w-[140px]">
-                          <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
-                            {course.name}
-                          </div>
-                          {FOLDER_TYPES.map((folder) => (
-                            <DropdownMenuItem
-                              key={folder.id}
-                              onClick={() => {
-                                window.location.href = `/files?folder=week-${week.weekNumber}-${course.id}-${folder.id}`;
-                              }}
-                              data-testid={`menu-item-${course.id}-${folder.id}`}
-                            >
-                              <span className="mr-2">{folder.icon}</span>
-                              {folder.name}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ))}
-                  </div>
-                )}
               </div>
             );
           })}
