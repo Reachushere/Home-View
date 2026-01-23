@@ -2799,7 +2799,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sleek Menu Bar */}
-        <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-shrink-0" style={{ 
+        <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-shrink-0 relative z-10" style={{ 
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
           marginTop: '24px',
