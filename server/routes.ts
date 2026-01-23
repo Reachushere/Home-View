@@ -1511,6 +1511,19 @@ export async function registerRoutes(
       // Store the target entity in session for resume
       currentTTSSession.targetEntity = targetEntity;
       
+      // Restore volume in case it was muted by previous stop
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: targetEntity,
+          volume_level: 0.5
+        }),
+      });
+      
       // Clean and chunk the content
       cleanedContent = cleanTextForTTS(cleanedContent);
       cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
@@ -1589,21 +1602,7 @@ export async function registerRoutes(
         }
       }
       
-      // Use media_player/media_stop to stop playback
-      const stopResponse = await fetch(`${haUrl}/api/services/media_player/media_stop`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          entity_id: targetEntity,
-        }),
-      });
-      
-      console.log("Stop media response:", stopResponse.status);
-
-      // Also try volume to 0 temporarily to interrupt (works better for TTS)
+      // Mute volume to silence ongoing TTS (most reliable method)
       await fetch(`${haUrl}/api/services/media_player/volume_set`, {
         method: 'POST',
         headers: {
@@ -1616,7 +1615,22 @@ export async function registerRoutes(
         }),
       });
       
-      // Restore volume after a brief pause
+      console.log("Muted speaker to stop TTS");
+      
+      // Try media_player/media_stop as well
+      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: targetEntity,
+        }),
+      });
+      
+      // Restore volume after TTS would have finished (use longer delay)
+      // This gives the current announcement time to complete while muted
       setTimeout(async () => {
         await fetch(`${haUrl}/api/services/media_player/volume_set`, {
           method: 'POST',
@@ -1629,7 +1643,8 @@ export async function registerRoutes(
             volume_level: 0.5
           }),
         });
-      }, 500);
+        console.log("Restored volume after mute");
+      }, 60000); // 60 seconds - long enough for any chunk to finish
 
       const canResume = currentTTSSession && currentTTSSession.currentPosition < currentTTSSession.fullText.length;
       res.json({ success: true, canResume });
@@ -1651,6 +1666,19 @@ export async function registerRoutes(
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Restore volume in case it was muted by stop
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY,
+          volume_level: 0.5
+        }),
+      });
       
       // Get remaining text from current position
       let remainingText = currentTTSSession.fullText.substring(currentTTSSession.currentPosition);
@@ -1681,8 +1709,8 @@ export async function registerRoutes(
       
       console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
       
-      // Wrap in SSML to slow down the voice (85% speed)
-      const ssmlContent = `<speak><prosody rate="88%">${remainingText}</prosody></speak>`;
+      // Use 90% speaking rate
+      const ssmlContent = `<speak><prosody rate="90%">${remainingText}</prosody></speak>`;
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
