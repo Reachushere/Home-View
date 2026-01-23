@@ -2890,13 +2890,13 @@ export default function Dashboard() {
                 })}
             </div>
               
-              {/* Course Rows - CPPA122, CFNF400, CASL101 */}
+              {/* Course Rows - CPPA122, CFNF400, CASL101 (frozen/sticky) */}
               {[
-                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.50)', label: 'rgba(74, 222, 128, 0.70)' },
-                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.50)', label: 'rgba(244, 114, 182, 0.70)' },
-                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.50)', label: 'rgba(129, 140, 248, 0.70)' }
+                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', top: '96px' },
+                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', top: '116px' },
+                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', top: '136px' }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full sticky z-10" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, top: course.top }}>
                   <div className="px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center text-black min-h-[20px]" style={{ backgroundColor: course.label }}>
                     {course.name}
                   </div>
