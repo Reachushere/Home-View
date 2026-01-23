@@ -2313,7 +2313,7 @@ export default function Dashboard() {
         {/* Calendar Header */}
         <div className="flex items-center mb-0 rounded-xl shadow-sm overflow-hidden" style={{ border: '1px solid #94a3b8', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)', marginTop: '24px' }}>
           {/* Blue section: date, home, sync, today, month */}
-          <div className="flex items-center bg-[#5979CC] pl-3 pr-0 py-1">
+          <div className="flex items-center bg-[#3B82F6] pl-3 pr-0 py-1">
             {/* Week navigation */}
             <Button variant="ghost" size="icon" className="h-3 w-3 mr-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2} />
@@ -2373,12 +2373,12 @@ export default function Dashboard() {
           </div>
           
           {/* Yellow Files section */}
-          <div className="flex items-center py-1 pl-0 pr-0" style={{backgroundColor: "#FFE086"}}>
+          <div className="flex items-center py-1 pl-0 pr-0" style={{backgroundColor: "#FCD34D"}}>
             <div className="h-4 flex ml-0 mr-2"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
-                className="!h-[22px] !min-h-0 !pl-1.5 !pr-0 text-[11px] hover:bg-[#e6c054] border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif", backgroundColor: "#FFE086"}} 
+                className="!h-[22px] !min-h-0 !pl-1.5 !pr-0 text-[11px] hover:bg-[#eab308] border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif", backgroundColor: "#FCD34D"}} 
                 data-testid="button-files-link"
               >
                 <FolderOpen className="ml-4 mr-0.5" style={{ height: '12px', width: '12px' }} />
@@ -2387,8 +2387,8 @@ export default function Dashboard() {
             </RouterLink>
             <div className="h-4 flex ml-10 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           </div>
-          {/* Gray section: remaining buttons */}
-          <div className="flex-1 flex items-center justify-between bg-slate-300 pl-1 pr-2 py-1">
+          {/* Purple section: remaining buttons */}
+          <div className="flex-1 flex items-center justify-between pl-1 pr-2 py-1" style={{backgroundColor: "#DDD6FE"}}>
             
             {/* Pomodoro Timer */}
             <div className="flex items-center gap-2 h-[22px] ml-2">
