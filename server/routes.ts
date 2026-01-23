@@ -170,6 +170,7 @@ async function sendNextChunk() {
     // Use 90% speaking rate
     const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
     
+    console.log("Sending chunk to Home Assistant...");
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
       headers: {
@@ -184,17 +185,30 @@ async function sendNextChunk() {
     });
     
     if (!response.ok) {
-      console.error("Auto-continue TTS error, response:", response.status);
-      currentTTSSession.isPlaying = false;
-      return;
+      const errorText = await response.text();
+      console.error("Auto-continue TTS error, response:", response.status, errorText);
+      // Don't stop - try to continue anyway
+      console.log("Attempting to continue despite error...");
+    } else {
+      console.log("Chunk sent successfully");
     }
     
-    console.log("Chunk sent successfully, scheduling next...");
-    // Schedule next chunk
-    scheduleNextChunk();
+    // Always schedule next chunk if we still have content
+    if (currentTTSSession && currentTTSSession.isPlaying && 
+        currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
+      console.log("Scheduling next chunk...");
+      scheduleNextChunk();
+    } else {
+      console.log("Not scheduling next - session ended or no more content");
+    }
   } catch (error) {
     console.error("Auto-continue error:", error);
-    currentTTSSession.isPlaying = false;
+    // Don't stop completely on error - try to schedule next anyway
+    if (currentTTSSession && currentTTSSession.isPlaying && 
+        currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
+      console.log("Scheduling next chunk despite error...");
+      scheduleNextChunk();
+    }
   }
 }
 
