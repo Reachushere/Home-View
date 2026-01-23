@@ -4184,43 +4184,71 @@ export default function Dashboard() {
                       No files in Week {selectedWeek}
                     </div>
                   ) : (
-                    <div className="space-y-1">
-                      {currentWeekFiles.map(file => {
-                        const folderParts = file.folder?.split('-') || [];
-                        const courseCode = folderParts.length >= 3 ? folderParts[2].toUpperCase() : null;
-                        const colors = courseCode ? courseColors[courseCode] : null;
+                    <div className="space-y-2">
+                      {(() => {
+                        // Group files by course
+                        const groupedFiles: Record<string, typeof currentWeekFiles> = {};
+                        currentWeekFiles.forEach(file => {
+                          const folderParts = file.folder?.split('-') || [];
+                          const courseCode = folderParts.length >= 3 ? folderParts[2].toUpperCase() : 'OTHER';
+                          if (!groupedFiles[courseCode]) {
+                            groupedFiles[courseCode] = [];
+                          }
+                          groupedFiles[courseCode].push(file);
+                        });
                         
-                        return (
-                          <div
-                            key={file.id}
-                            className={`flex items-center gap-2 p-2 rounded text-xs group border ${
-                              colors 
-                                ? `${colors.prepBg} ${colors.prepBorder} text-black` 
-                                : 'bg-[#2d2d2d] border-[#3d3d3d] text-white'
-                            }`}
-                            data-testid={`flyout-file-${file.id}`}
-                          >
-                            <Checkbox
-                              className={`h-3 w-3 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 ${
-                                colors ? 'border-black' : 'border-white/50'
-                              }`}
-                              onCheckedChange={(checked) => {
-                                if (checked) {
-                                  markFileCompletedMutation.mutate({ fileId: file.id });
-                                }
-                              }}
-                              onClick={(e) => e.stopPropagation()}
-                              data-testid={`flyout-file-checkbox-${file.id}`}
-                            />
-                            <button
-                              onClick={() => setPreviewFile(file)}
-                              className="flex items-center gap-2 flex-1 text-left"
-                            >
-                              <span className="truncate flex-1 font-bold">{file.displayName}</span>
-                            </button>
-                          </div>
-                        );
-                      })}
+                        return Object.entries(groupedFiles).map(([courseCode, files]) => {
+                          const colors = courseColors[courseCode];
+                          return (
+                            <div key={courseCode} className="flex gap-1">
+                              {/* Vertical course label */}
+                              <div 
+                                className={`flex items-center justify-center rounded-l px-1 ${
+                                  colors ? colors.dot : 'bg-gray-500'
+                                }`}
+                                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+                              >
+                                <span className="text-white text-xs font-bold tracking-wider py-1">
+                                  {courseCode}
+                                </span>
+                              </div>
+                              {/* Files for this course */}
+                              <div className="flex-1 space-y-1">
+                                {files.map(file => (
+                                  <div
+                                    key={file.id}
+                                    className={`flex items-center gap-2 p-2 rounded-r text-xs group border border-l-0 ${
+                                      colors 
+                                        ? `${colors.prepBg} ${colors.prepBorder} text-black` 
+                                        : 'bg-[#2d2d2d] border-[#3d3d3d] text-white'
+                                    }`}
+                                    data-testid={`flyout-file-${file.id}`}
+                                  >
+                                    <Checkbox
+                                      className={`h-3 w-3 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 ${
+                                        colors ? 'border-black' : 'border-white/50'
+                                      }`}
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          markFileCompletedMutation.mutate({ fileId: file.id });
+                                        }
+                                      }}
+                                      onClick={(e) => e.stopPropagation()}
+                                      data-testid={`flyout-file-checkbox-${file.id}`}
+                                    />
+                                    <button
+                                      onClick={() => setPreviewFile(file)}
+                                      className="flex items-center gap-2 flex-1 text-left"
+                                    >
+                                      <span className="truncate flex-1 font-bold">{file.displayName}</span>
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        });
+                      })()}
                     </div>
                   )}
                 </div>
