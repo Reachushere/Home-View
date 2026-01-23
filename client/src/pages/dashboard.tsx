@@ -103,7 +103,6 @@ const FOLDER_TYPES = [
   { id: "module", name: "Module" },
   { id: "reading", name: "Reading" },
   { id: "other", name: "Other" },
-  { id: "completed", name: "Completed" },
 ];
 
 // Speakers list for media controls
@@ -1043,21 +1042,10 @@ export default function Dashboard() {
 
   // Mark file as completed (listened) and move to completed folder
   const markFileCompletedMutation = useMutation({
-    mutationFn: async ({ fileId, currentFolder }: { fileId: number; currentFolder: string | null }) => {
-      // Parse current folder to get week and course, then build completed folder path
-      let newFolder = currentFolder;
-      if (currentFolder) {
-        // Pattern: week-X-courseId-contentType
-        const parts = currentFolder.split('-');
-        if (parts.length >= 4) {
-          // Replace the content type (last part) with "completed"
-          parts[parts.length - 1] = 'completed';
-          newFolder = parts.join('-');
-        }
-      }
+    mutationFn: async ({ fileId }: { fileId: number }) => {
       return apiRequest("PATCH", `/api/files/${fileId}`, { 
         listened: true, 
-        folder: newFolder 
+        folder: "completed" 
       });
     },
     onSuccess: () => {
@@ -1703,7 +1691,6 @@ export default function Dashboard() {
                   if (checked && previewFile) {
                     markFileCompletedMutation.mutate({
                       fileId: previewFile.id,
-                      currentFolder: previewFile.folder,
                     });
                   }
                 }}

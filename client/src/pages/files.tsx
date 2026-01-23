@@ -79,7 +79,6 @@ const CONTENT_FOLDERS = [
   { id: "module", name: "Module" },
   { id: "reading", name: "Reading" },
   { id: "other", name: "Other" },
-  { id: "completed", name: "Completed" },
 ];
 
 function getFileIcon(contentType: string | null) {
@@ -1183,6 +1182,19 @@ export default function FilesPage() {
                 </div>
               );
             })}
+
+            {/* Completed folder - single folder at bottom */}
+            <div
+              className={`flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === "completed" ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""}`}
+              onClick={() => setSelectedFolder("completed")}
+              data-testid="folder-completed"
+            >
+              <Folder className="h-4 w-4 text-green-500 fill-green-400" />
+              <span className="text-sm text-white">Completed</span>
+              {files.filter(f => f.folder === "completed").length > 0 && (
+                <span className="ml-auto text-xs bg-green-600 px-1.5 py-0.5 rounded">{files.filter(f => f.folder === "completed").length}</span>
+              )}
+            </div>
 
             {/* Unfiled files */}
             <div
