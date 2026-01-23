@@ -4178,7 +4178,7 @@ export default function Dashboard() {
                   <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
                   <span className="text-xs text-gray-400">{currentWeekFiles.length} files</span>
                 </div>
-                <div className="flex-1 overflow-y-auto p-2">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden p-2">
                   {currentWeekFiles.length === 0 ? (
                     <div className="text-gray-500 text-sm text-center py-8">
                       No files in Week {selectedWeek}
@@ -4233,9 +4233,9 @@ export default function Dashboard() {
                                     />
                                     <button
                                       onClick={() => setPreviewFile(file)}
-                                      className="flex items-center gap-2 flex-1 text-left"
+                                      className="flex items-center gap-2 flex-1 text-left min-w-0"
                                     >
-                                      <span className="truncate flex-1 font-bold">{file.displayName}</span>
+                                      <span className="truncate font-bold">{file.displayName}</span>
                                     </button>
                                   </div>
                                 ))}
