@@ -1380,7 +1380,7 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 350, background: 'linear-gradient(135deg, rgba(10,20,33,0.20) 0%, rgba(15,31,51,0.20) 25%, rgba(22,42,68,0.20) 50%, rgba(30,58,95,0.20) 75%, rgba(45,74,111,0.20) 100%)' }}>
+      <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col gap-4 overflow-auto" style={{ width: 350, background: 'linear-gradient(135deg, rgba(10,20,33,0.80) 0%, rgba(15,31,51,0.80) 25%, rgba(22,42,68,0.80) 50%, rgba(30,58,95,0.80) 75%, rgba(45,74,111,0.80) 100%)' }}>
         <div className="flex items-center gap-2 px-2 pt-3 pb-2">
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
           <div className="flex items-baseline gap-1.5">
