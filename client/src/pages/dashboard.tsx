@@ -2379,7 +2379,7 @@ export default function Dashboard() {
           
           {/* Gray section: remaining buttons */}
           <div className="flex-1 flex items-center justify-between bg-slate-300 px-2 py-1">
-            <RouterLink href="/files" className="flex items-center">
+            <RouterLink href="/files" className="flex items-center ml-1">
               <Button 
                 size="sm" 
                 className="!h-[22px] !min-h-0 !px-1.5 text-[11px] bg-transparent hover:bg-gray-100 border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
