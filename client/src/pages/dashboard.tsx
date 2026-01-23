@@ -2945,8 +2945,8 @@ export default function Dashboard() {
                   return (
                   <div 
                     key={hour} 
-                    className={`grid border-b border-border/50 ${isCurrentHour ? "bg-blue-500/10" : ""}`}
-                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}
+                    className="grid border-b border-border/50"
+                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: isCurrentHour ? 'rgba(93, 129, 204, 0.60)' : 'transparent' }}
                   >
                     <div className={`text-xs font-bold tracking-wide flex items-center justify-center ${isCurrentHour ? "bg-[#5979CC] text-white" : "text-foreground"}`}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
