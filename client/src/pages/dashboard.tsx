@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -647,6 +647,18 @@ export default function Dashboard() {
     queryKey: ["/api/deleted-folders"],
   });
   const deletedFolderIds = new Set(deletedFoldersData.map(f => f.folderId));
+
+  // Files query for hamburger menu
+  interface FileItem {
+    id: number;
+    originalName: string;
+    displayName: string;
+    objectPath: string;
+    folder: string | null;
+  }
+  const { data: allFiles = [] } = useQuery<FileItem[]>({
+    queryKey: ["/api/files"],
+  });
 
   // State for new semester dialog
   const [isNewSemesterDialogOpen, setIsNewSemesterDialogOpen] = useState(false);
@@ -1536,22 +1548,43 @@ export default function Dashboard() {
                               </button>
                             </DropdownMenuTrigger>
                             {availableFolders.length > 0 && (
-                              <DropdownMenuContent align="start" className="min-w-[140px]">
+                              <DropdownMenuContent align="start" className="min-w-[160px]">
                                 <div className={`px-2 py-1 text-xs font-semibold ${course.color}`}>
                                   {course.name}
                                 </div>
-                                {availableFolders.map((folder) => (
-                                  <DropdownMenuItem
-                                    key={folder.id}
-                                    onClick={() => {
-                                      window.location.href = `/files?folder=week-${week.weekNumber}-${course.id}-${folder.id}`;
-                                    }}
-                                    data-testid={`menu-item-${course.id}-${folder.id}`}
-                                  >
-                                    <span className="mr-2">{folder.icon}</span>
-                                    {folder.name}
-                                  </DropdownMenuItem>
-                                ))}
+                                {availableFolders.map((folder) => {
+                                  const folderId = `week-${week.weekNumber}-${course.id}-${folder.id}`;
+                                  const folderFiles = allFiles.filter(f => f.folder === folderId);
+                                  return (
+                                    <DropdownMenuSub key={folder.id}>
+                                      <DropdownMenuSubTrigger data-testid={`menu-item-${course.id}-${folder.id}`}>
+                                        <span className="mr-2">{folder.icon}</span>
+                                        {folder.name}
+                                        {folderFiles.length > 0 && (
+                                          <span className="ml-auto text-xs text-muted-foreground">({folderFiles.length})</span>
+                                        )}
+                                      </DropdownMenuSubTrigger>
+                                      <DropdownMenuSubContent className="min-w-[200px] max-h-[300px] overflow-y-auto">
+                                        {folderFiles.length === 0 ? (
+                                          <div className="px-2 py-1.5 text-xs text-muted-foreground italic">No files</div>
+                                        ) : (
+                                          folderFiles.map((file) => (
+                                            <DropdownMenuItem
+                                              key={file.id}
+                                              onClick={() => {
+                                                window.open(file.objectPath, '_blank');
+                                              }}
+                                              data-testid={`file-item-${file.id}`}
+                                              className="text-xs"
+                                            >
+                                              <span className="truncate">{file.displayName || file.originalName}</span>
+                                            </DropdownMenuItem>
+                                          ))
+                                        )}
+                                      </DropdownMenuSubContent>
+                                    </DropdownMenuSub>
+                                  );
+                                })}
                               </DropdownMenuContent>
                             )}
                           </DropdownMenu>
