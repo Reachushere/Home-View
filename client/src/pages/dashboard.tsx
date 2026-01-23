@@ -1678,24 +1678,35 @@ export default function Dashboard() {
             ) : previewText ? (
               <div className="text-sm leading-relaxed whitespace-pre-wrap">
                 {(() => {
-                  const words = previewText.split(/(\s+)/);
-                  let wordIdx = 0;
-                  return words.map((segment, i) => {
-                    if (/^\s+$/.test(segment)) {
-                      return <span key={i}>{segment}</span>;
-                    }
-                    const isCurrentWord = isPlaying && wordIdx === currentWordIndex;
-                    const result = (
-                      <span
-                        key={i}
-                        className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded transition-colors" : ""}
-                      >
-                        {segment}
-                      </span>
-                    );
-                    wordIdx++;
-                    return result;
-                  });
+                  // Split into words but only render spans around a window near the current word
+                  const allWords = previewText.split(/\s+/).filter(w => w.length > 0);
+                  const WINDOW_SIZE = 50; // Only render spans for 50 words around current
+                  const windowStart = Math.max(0, currentWordIndex - WINDOW_SIZE);
+                  const windowEnd = Math.min(allWords.length, currentWordIndex + WINDOW_SIZE);
+                  
+                  // Build text with highlighted current word
+                  const beforeWindow = allWords.slice(0, windowStart).join(' ');
+                  const afterWindow = allWords.slice(windowEnd).join(' ');
+                  const windowWords = allWords.slice(windowStart, windowEnd);
+                  
+                  return (
+                    <>
+                      {beforeWindow && <span>{beforeWindow} </span>}
+                      {windowWords.map((word, i) => {
+                        const globalIdx = windowStart + i;
+                        const isCurrentWord = isPlaying && globalIdx === currentWordIndex;
+                        return (
+                          <span
+                            key={globalIdx}
+                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
+                          >
+                            {word}{' '}
+                          </span>
+                        );
+                      })}
+                      {afterWindow && <span>{afterWindow}</span>}
+                    </>
+                  );
                 })()}
               </div>
             ) : (
