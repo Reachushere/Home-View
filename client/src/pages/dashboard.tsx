@@ -2274,11 +2274,11 @@ export default function Dashboard() {
               variant="ghost"
               size="icon"
               onClick={toggleMute}
-              className={`!h-8 !w-8 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border-[0.25px] border-white/70 text-white shadow-md ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              className={`!h-6 !w-6 !min-h-0 p-0 bg-gradient-to-r from-slate-800 to-slate-900 hover:from-slate-700 hover:to-slate-800 border-[0.1px] border-white/50 text-white shadow-md ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
-              {isMuted ? <BellOff className="h-4 w-4" /> : <Bell className="h-4 w-4" />}
+              {isMuted ? <BellOff className="h-3 w-3" /> : <Bell className="h-3 w-3" />}
             </Button>
           </div>
           
