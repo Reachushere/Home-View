@@ -4185,31 +4185,43 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <div className="space-y-1">
-                      {currentWeekFiles.map(file => (
-                        <div
-                          key={file.id}
-                          className="flex items-center gap-2 p-2 rounded hover:bg-[#2d2d2d] text-white text-xs group"
-                          data-testid={`flyout-file-${file.id}`}
-                        >
-                          <Checkbox
-                            className="h-3 w-3 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                            onCheckedChange={(checked) => {
-                              if (checked) {
-                                markFileCompletedMutation.mutate({ fileId: file.id });
-                              }
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            data-testid={`flyout-file-checkbox-${file.id}`}
-                          />
-                          <button
-                            onClick={() => setPreviewFile(file)}
-                            className="flex items-center gap-2 flex-1 text-left"
+                      {currentWeekFiles.map(file => {
+                        const folderParts = file.folder?.split('-') || [];
+                        const courseCode = folderParts.length >= 3 ? folderParts[2].toUpperCase() : null;
+                        const colors = courseCode ? courseColors[courseCode] : null;
+                        
+                        return (
+                          <div
+                            key={file.id}
+                            className={`flex items-center gap-2 p-2 rounded text-xs group border ${
+                              colors 
+                                ? `${colors.prepBg} ${colors.prepBorder} ${colors.prepText}` 
+                                : 'bg-[#2d2d2d] border-[#3d3d3d] text-white'
+                            }`}
+                            data-testid={`flyout-file-${file.id}`}
                           >
-                            <FileText className="h-4 w-4 text-blue-400 shrink-0" />
-                            <span className="truncate flex-1">{file.displayName}</span>
-                          </button>
-                        </div>
-                      ))}
+                            <Checkbox
+                              className={`h-3 w-3 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 ${
+                                colors ? colors.prepBorder : 'border-white/50'
+                              }`}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  markFileCompletedMutation.mutate({ fileId: file.id });
+                                }
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              data-testid={`flyout-file-checkbox-${file.id}`}
+                            />
+                            <button
+                              onClick={() => setPreviewFile(file)}
+                              className="flex items-center gap-2 flex-1 text-left"
+                            >
+                              <FileText className={`h-4 w-4 shrink-0 ${colors ? colors.prepText : 'text-blue-400'}`} />
+                              <span className="truncate flex-1">{file.displayName}</span>
+                            </button>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
