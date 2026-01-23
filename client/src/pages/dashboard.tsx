@@ -1786,7 +1786,7 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar */}
-      <aside className="text-white mt-3 mb-3 mr-0 rounded-xl shadow-lg pl-4 pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70" style={{ width: 350, marginLeft: '2px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+      <aside className="text-white mt-3 mb-3 mr-0 rounded-xl shadow-lg pl-4 pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70" style={{ width: 350, marginLeft: '8px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
         <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
           <div className="flex items-baseline gap-1.5 flex-1">
@@ -2725,7 +2725,7 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '27px', paddingRight: '24px' }}>
+      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '37px', paddingRight: '24px' }}>
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
           {/* Left: Hamburger Menu + Files Button + Title */}
