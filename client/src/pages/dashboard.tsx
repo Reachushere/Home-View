@@ -2797,10 +2797,7 @@ export default function Dashboard() {
                 </button>
               </div>
             </div>
-            <div className="bg-white/60 rounded-lg p-1.5 mr-3 h-[60px] flex items-center">
-              <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded" />
             </div>
-          </div>
         </div>
         
         {/* Menu Bar Container - clips scroll content */}
