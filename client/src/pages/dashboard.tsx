@@ -4165,10 +4165,10 @@ export default function Dashboard() {
         {/* Weekly Files Flyout Tab - Fixed position outside overflow containers */}
         {calendarView === "week" && (
           <div 
-            className="fixed z-50 flex items-center transition-all duration-300 ease-in-out"
-            style={{ top: '50%', transform: 'translateY(-50%)', left: isWeeklyFilesFlyoutOpen ? '88px' : '376px' }}
+            className="fixed z-50 flex items-center"
+            style={{ top: '50%', transform: 'translateY(-50%)', right: 'calc(100% - 376px)' }}
           >
-            {/* Flyout Panel - slides left */}
+            {/* Flyout Panel */}
             <div 
               className={`bg-[#1a1a2e] shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-72 border border-r-0 border-[#3d3d3d] rounded-l-lg' : 'w-0 border-0'}`}
               style={{ height: '400px' }}
