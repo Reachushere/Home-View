@@ -3195,7 +3195,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
-          <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col backdrop-blur-md" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} data-testid="section-upcoming">
+          <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-yellow-400" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Clock className="h-3 w-3 text-yellow-400" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
@@ -3206,7 +3206,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Column - Green */}
-                  <div className="flex-1 p-2 overflow-auto border-r border-white/30 backdrop-blur-sm" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
+                  <div className="flex-1 p-2 overflow-auto border-r border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CPPA122</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
@@ -3239,7 +3239,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 p-2 overflow-auto border-r border-white/30 backdrop-blur-sm" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }}>
+                  <div className="flex-1 p-2 overflow-auto border-r border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }}>
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CFNF400</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
@@ -3272,7 +3272,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Column - Purple */}
-                  <div className="flex-1 p-2 overflow-auto backdrop-blur-sm" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }}>
+                  <div className="flex-1 p-2 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }}>
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CASL101</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => {
