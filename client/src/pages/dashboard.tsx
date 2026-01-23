@@ -2310,170 +2310,179 @@ export default function Dashboard() {
           <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded mr-3" />
         </div>
         
-        {/* Calendar Header */}
-        <div className="flex items-center mb-0 rounded-xl shadow-sm overflow-hidden" style={{ border: '1px solid #94a3b8', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.1)', marginTop: '24px' }}>
-          {/* Blue section: date, home, sync, today, month */}
-          <div className="flex items-center bg-[#3B82F6] pl-3 pr-0 py-1">
+        {/* Sleek Menu Bar */}
+        <div className="flex items-center mb-0 rounded-2xl overflow-hidden" style={{ 
+          background: 'linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 25%, #3d5a7f 50%, #4d6a8f 75%, #5d7a9f 100%)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+          marginTop: '24px',
+          border: '1px solid rgba(255,255,255,0.1)'
+        }}>
+          {/* Navigation Section */}
+          <div className="flex items-center px-4 py-2 gap-3">
             {/* Week navigation */}
-            <Button variant="ghost" size="icon" className="h-3 w-3 mr-2" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2} />
-            </Button>
-            <div className="flex items-center" style={{ fontFamily: "Segoe UI, sans-serif" }}>
-              <div className="flex items-center gap-1.5 whitespace-nowrap" style={{fontFamily: "Segoe UI, sans-serif"}}>
-                <span className="text-[11px] font-semibold text-white">{format(weekStartDate, "EEE, MMM d")}</span>
-                <span className="text-[11px] font-semibold text-white/70">to</span>
-                <span className="text-[11px] font-semibold text-white">{format(weekEndDate, "EEE, MMM d")}</span>
+            <div className="flex items-center bg-white/10 rounded-lg px-2 py-1 backdrop-blur-sm">
+              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </Button>
+              <div className="flex items-center gap-1 mx-2 whitespace-nowrap">
+                <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                <span className="text-[11px] text-white/50">—</span>
+                <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
               </div>
+              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </Button>
             </div>
-            <Button variant="ghost" size="icon" className="h-3 w-3 ml-2 mr-1" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-              <ChevronRight className="h-4 w-4 text-white" strokeWidth={2} />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-3 w-3 ml-4 mr-3"
-              onClick={() => setSelectedWeek(2)}
-              data-testid="button-home-week"
-              title="Go to current week"
-            >
-              <Home className="text-white" style={{ height: '14px', width: '14px' }} />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-4 w-4 ml-4 mr-3"
-              onClick={() => syncAllCalendarMutation.mutate()}
-              disabled={syncAllCalendarMutation.isPending}
-              data-testid="button-sync-calendar"
-            >
-              {syncAllCalendarMutation.isPending ? (
-                <Loader2 className="text-white animate-spin" style={{ height: '13px', width: '13px' }} />
-              ) : (
-                <RefreshCw className="text-white" style={{ height: '13px', width: '13px' }} />
-              )}
-            </Button>
-            <Button 
-              variant="ghost"
-              className="!h-[22px] !min-h-0 !px-2 ml-2 mr-3 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
-              onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-              data-testid="button-today"
-            >
-              <Sun className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
-              Today
-            </Button>
-            <Button 
-              variant="ghost"
-              className="!h-[22px] !min-h-0 !px-2 ml-3 mr-4 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
-              onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-              data-testid="button-month-view"
-            >
-              <CalendarDays className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
-              {calendarView === "month" ? "Week" : "Month"}
-            </Button>
-          </div>
-          
-          {/* Yellow Files section */}
-          <div className="flex items-center py-1 pl-0 pr-0" style={{backgroundColor: "#FCD34D"}}>
-            <div className="h-4 flex ml-0 mr-2"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+
+            {/* Quick Actions */}
+            <div className="flex items-center gap-1">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-7 w-7 hover:bg-white/20 rounded-lg"
+                onClick={() => setSelectedWeek(2)}
+                data-testid="button-home-week"
+                title="Go to current week"
+              >
+                <Home className="h-4 w-4 text-white" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-7 w-7 hover:bg-white/20 rounded-lg"
+                onClick={() => syncAllCalendarMutation.mutate()}
+                disabled={syncAllCalendarMutation.isPending}
+                data-testid="button-sync-calendar"
+              >
+                {syncAllCalendarMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 text-white animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 text-white" />
+                )}
+              </Button>
+            </div>
+
+            {/* View Buttons */}
+            <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
+              <Button 
+                variant="ghost"
+                className="!h-7 !min-h-0 px-3 text-[11px] hover:bg-white/20 rounded-md font-medium text-white border-0" 
+                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+                data-testid="button-today"
+              >
+                <Sun className="h-3.5 w-3.5 mr-1.5 text-amber-300" />
+                Today
+              </Button>
+              <Button 
+                variant="ghost"
+                className="!h-7 !min-h-0 px-3 text-[11px] hover:bg-white/20 rounded-md font-medium text-white border-0"
+                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+                data-testid="button-month-view"
+              >
+                <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-cyan-300" />
+                {calendarView === "month" ? "Week" : "Month"}
+              </Button>
+            </div>
+
+            {/* Files Button */}
             <RouterLink href="/files" className="flex items-center">
               <Button 
-                size="sm" 
-                className="!h-[22px] !min-h-0 !pl-1.5 !pr-0 text-[11px] hover:bg-[#eab308] border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif", backgroundColor: "#FCD34D"}} 
+                className="!h-7 !min-h-0 px-3 text-[11px] rounded-lg font-medium border-0" 
+                style={{
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+                  color: '#1e3a5f'
+                }}
                 data-testid="button-files-link"
               >
-                <FolderOpen className="ml-4 mr-0.5" style={{ height: '12px', width: '12px' }} />
+                <FolderOpen className="h-3.5 w-3.5 mr-1.5" />
                 Files
               </Button>
             </RouterLink>
-            <div className="h-4 flex ml-10 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
           </div>
-          {/* Purple section: remaining buttons */}
-          <div className="flex-1 flex items-center justify-between pl-1 pr-2 py-1" style={{backgroundColor: "#DDD6FE"}}>
-            
-            {/* Pomodoro Timer */}
-            <div className="flex items-center gap-2 h-[22px] ml-2">
-              <div className={`text-[11px] font-mono font-bold ${
-                pomodoroMode === "work" ? "text-red-600" : 
-                pomodoroMode === "shortBreak" ? "text-green-600" : "text-blue-600"
-              }`} data-testid="pomodoro-timer">
-                {formatPomodoroTime(pomodoroTime)}
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  className="p-0.5 hover:bg-gray-100 rounded"
-                  onClick={togglePomodoro}
-                  data-testid="button-pomodoro-toggle"
-                >
-                  {pomodoroRunning ? <Pause className="h-2.5 w-2.5" /> : <Play className="h-2.5 w-2.5" />}
-                </button>
-                <button
-                  className="p-0.5 hover:bg-gray-100 rounded"
-                  onClick={resetPomodoro}
-                  data-testid="button-pomodoro-reset"
-                >
-                  <RotateCcw className="h-2.5 w-2.5" />
-                </button>
-                <button
-                  className="p-0.5 hover:bg-gray-100 rounded"
-                  onClick={skipPomodoro}
-                  data-testid="button-pomodoro-skip"
-                >
-                  <SkipForward className="h-2.5 w-2.5" />
-                </button>
-              </div>
-              <div className="text-[11px] text-black font-semibold ml-1" style={{fontFamily: "Segoe UI, sans-serif"}}>
-                {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"}
-                <span className="ml-0.5 font-bold">{pomodoroCount}</span>
-              </div>
+
+          {/* Separator */}
+          <div className="w-px h-6 bg-white/20" />
+
+          {/* Pomodoro Section */}
+          <div className="flex items-center px-3 py-2 gap-2">
+            <div className={`text-sm font-mono font-bold px-2 py-0.5 rounded-md ${
+              pomodoroMode === "work" ? "bg-red-500/20 text-red-300" : 
+              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+            }`} data-testid="pomodoro-timer">
+              {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="h-4 flex ml-2 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
+            <div className="flex items-center gap-1">
+              <button
+                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
+                onClick={togglePomodoro}
+                data-testid="button-pomodoro-toggle"
+              >
+                {pomodoroRunning ? <Pause className="h-3 w-3 text-white" /> : <Play className="h-3 w-3 text-white" />}
+              </button>
+              <button
+                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
+                onClick={resetPomodoro}
+                data-testid="button-pomodoro-reset"
+              >
+                <RotateCcw className="h-3 w-3 text-white" />
+              </button>
+              <button
+                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
+                onClick={skipPomodoro}
+                data-testid="button-pomodoro-skip"
+              >
+                <SkipForward className="h-3 w-3 text-white" />
+              </button>
+            </div>
+            <span className="text-[10px] text-white/70 font-medium">
+              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"} #{pomodoroCount}
+            </span>
+          </div>
+
+          {/* Separator */}
+          <div className="w-px h-6 bg-white/20" />
+
+          {/* Quick Add Section */}
+          <div className="flex items-center px-3 py-2 gap-1 flex-1 justify-end">
+            <span className="text-[10px] text-white/50 mr-2 font-medium">Quick Add:</span>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !pl-1 !pr-1 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none -mt-0.5 mr-0">+</span>
               Module
             </Button>
-            <div className="h-4 flex ml-0 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !pl-1 !pr-1 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none -mt-0.5 mr-0">+</span>
               Reading
             </Button>
-            <div className="h-4 flex ml-0.5 mr-0.5"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-discussion"
               onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none -mt-0.5">+</span>
               Discuss
             </Button>
-            <div className="h-4 flex ml-0 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !px-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-assignment"
               onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none -mt-0.5">+</span>
               Assign
             </Button>
-            <div className="h-4 flex ml-0 mr-0"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <Button 
               size="sm"
-              className="!h-[22px] !min-h-0 !pl-1 !pr-1.5 bg-transparent hover:bg-gray-100 text-black text-[11px] border-0 font-semibold !py-0" style={{fontFamily: "Segoe UI, sans-serif"}} 
+              className="!h-7 !min-h-0 px-2.5 bg-rose-500/80 hover:bg-rose-500 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
-              <span className="text-[14px] leading-none -mt-0.5 mr-0">+</span>
               Exam
             </Button>
           </div>
