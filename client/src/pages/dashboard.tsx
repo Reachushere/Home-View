@@ -2338,7 +2338,6 @@ export default function Dashboard() {
             >
               <Home className="text-white" style={{ height: '14px', width: '14px' }} />
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost" 
               size="icon" 
