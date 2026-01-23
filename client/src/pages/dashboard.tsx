@@ -2374,12 +2374,12 @@ export default function Dashboard() {
           </div>
           
           {/* Yellow Files section */}
-          <div className="flex items-center py-1 pl-0 pr-0" style={{backgroundColor: "#FFD253"}}>
+          <div className="flex items-center py-1 pl-0 pr-0" style={{backgroundColor: "#FFD55D"}}>
             <div className="h-4 flex ml-0 mr-2"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             <RouterLink href="/files" className="flex items-center">
               <Button 
                 size="sm" 
-                className="!h-[22px] !min-h-0 !px-1.5 text-[11px] hover:bg-[#e6bd4a] border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif", backgroundColor: "#FFD253"}} 
+                className="!h-[22px] !min-h-0 !px-1.5 text-[11px] hover:bg-[#e6c054] border-0 font-semibold text-black !py-0" style={{fontFamily: "Segoe UI, sans-serif", backgroundColor: "#FFD55D"}} 
                 data-testid="button-files-link"
               >
                 <FolderOpen className="mr-0.5" style={{ height: '12px', width: '12px' }} />
