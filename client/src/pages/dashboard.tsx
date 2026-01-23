@@ -1879,19 +1879,7 @@ export default function Dashboard() {
       <div className="relative mb-3 mr-0 flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '5px', minHeight: 'calc(100% + 3px)' }}>
         {/* Header overlay - stays normal when flyout is open */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-start gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
-          <div className="flex flex-col items-center gap-2 -ml-3">
-            <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '46px', width: '46px' }} />
-            <RouterLink href="/files">
-              <Button 
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
-                data-testid="button-files-link-sidebar"
-              >
-                <FolderOpen className="h-4 w-4 text-amber-400" />
-              </Button>
-            </RouterLink>
-          </div>
+          <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '46px', width: '46px' }} />
           <div className="flex flex-col" style={{ marginTop: '-5px' }}>
             <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
             <div className="flex items-center gap-2" style={{ marginTop: '5px' }} data-testid="digital-clock">
@@ -4202,7 +4190,19 @@ export default function Dashboard() {
             >
               <div className="w-80 h-full flex flex-col">
                 <div className="p-3 border-b border-[#3d3d3d] flex items-center justify-between">
-                  <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
+                    <RouterLink href="/files">
+                      <Button 
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
+                        data-testid="button-files-link-flyout"
+                      >
+                        <FolderOpen className="h-3.5 w-3.5 text-amber-400" />
+                      </Button>
+                    </RouterLink>
+                  </div>
                   <span className="text-xs text-gray-400">{currentWeekFiles.length} files</span>
                 </div>
                 <div className="flex-1 overflow-y-auto overflow-x-hidden p-2">
