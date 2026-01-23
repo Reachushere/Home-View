@@ -2760,18 +2760,6 @@ export default function Dashboard() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <RouterLink href="/files">
-                <Button 
-                  className="!h-9 !w-9 !min-h-0 p-0 rounded-lg font-medium border-0" 
-                  style={{
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
-                    color: '#1e3a5f'
-                  }}
-                  data-testid="button-files-link"
-                >
-                  <FolderOpen className="h-5 w-5" />
-                </Button>
-              </RouterLink>
             </div>
             <div className="flex flex-col">
               <h1 className="text-base font-semibold text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
@@ -2886,6 +2874,15 @@ export default function Dashboard() {
                 <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-cyan-300" />
                 {calendarView === "month" ? "Week" : "Month"}
               </Button>
+              <RouterLink href="/files">
+                <Button 
+                  variant="ghost"
+                  className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
+                  data-testid="button-files-link"
+                >
+                  <FolderOpen className="h-4 w-4 text-amber-400" />
+                </Button>
+              </RouterLink>
             </div>
 
             </div>
