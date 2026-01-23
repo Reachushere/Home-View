@@ -1974,7 +1974,7 @@ export default function Dashboard() {
           })}
         </div>
 
-        <nav className="flex flex-col gap-0.5 mt-4 pb-4" style={{ maxWidth: '280px', marginLeft: '-15px' }}>
+        <nav className="flex flex-col gap-0.5 mt-4 pb-4" style={{ maxWidth: '280px', marginLeft: '15px' }}>
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-1 mb-0.5">Weeks</h3>
           {[...weeks].sort((a, b) => {
             const aFinished = parseISO(a.endDate) < new Date();
