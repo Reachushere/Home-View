@@ -3195,7 +3195,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
-          <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.55)' }} data-testid="section-upcoming">
+          <section className="flex-1 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.55)' }} data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-yellow-400" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Clock className="h-3 w-3 text-yellow-400" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
@@ -3310,7 +3310,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section (Urgent) - Now in Middle */}
-          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(255,255,255,0.55)' }} data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(255,255,255,0.55)' }} data-testid="section-due-today">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-orange-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Calendar className="h-3 w-3 text-orange-500" />
               URGENT: Do Today ({todayTasks.length})
@@ -3362,7 +3362,7 @@ export default function Dashboard() {
           </section>
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
-          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-blue-800 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.55)' }} data-testid="section-missed">
+          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.75px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.55)' }} data-testid="section-missed">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-red-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Clock className="h-3 w-3 text-red-500" />
               OVERDUE: Missed Tasks ({missedTasks.length})
@@ -3418,7 +3418,7 @@ export default function Dashboard() {
 
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
-          <section className="bg-blue-500/10 dark:bg-blue-500/20 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 h-[210px]" data-testid="section-todo">
+          <section className="bg-blue-500/10 dark:bg-blue-500/20 rounded-xl shadow-md p-3 border-[1.75px] border-white h-[210px]" data-testid="section-todo">
             <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-black dark:text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3 w-3 text-black dark:text-white" />
               To Do
@@ -3459,7 +3459,7 @@ export default function Dashboard() {
         {/* Completed Tasks by Course */}
         <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
           {/* CPPA122 Completed */}
-          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cppa122">
+          <section className="flex-1 bg-green-100 dark:bg-green-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" data-testid="section-completed-cppa122">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-green-600" />
               <span className="text-green-600">Completed - CPPA122</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})</span>
@@ -3487,7 +3487,7 @@ export default function Dashboard() {
           </section>
 
           {/* CFNF400 Completed */}
-          <section className="flex-1 bg-pink-100 dark:bg-pink-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-cfnf400">
+          <section className="flex-1 bg-pink-100 dark:bg-pink-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" data-testid="section-completed-cfnf400">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-pink-600" />
               <span className="text-pink-600">Completed - CFNF400</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})</span>
@@ -3515,7 +3515,7 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-blue-800 overflow-auto" data-testid="section-completed-casl101">
+          <section className="flex-1 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" data-testid="section-completed-casl101">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-purple-600" />
               <span className="text-purple-600">Completed - CASL101</span> <span className="text-black dark:text-white">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
