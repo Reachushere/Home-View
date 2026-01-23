@@ -3456,7 +3456,7 @@ export default function Dashboard() {
         </div>
 
         {/* Completed Tasks by Course */}
-        <div className="flex gap-4 items-stretch h-[180px] flex-shrink-0">
+        <div className="flex gap-4 items-stretch h-[240px] flex-shrink-0">
           {/* CPPA122 Completed */}
           <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }} data-testid="section-completed-cppa122">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
