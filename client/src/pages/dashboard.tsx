@@ -4165,7 +4165,7 @@ export default function Dashboard() {
         {/* Weekly Files Flyout Tab - Fixed position outside overflow containers */}
         {calendarView === "week" && (
           <div 
-            className="fixed z-50 flex items-center"
+            className="fixed z-50 flex items-center flex-row-reverse"
             style={{ top: '50%', transform: 'translateY(-50%)', left: '376px' }}
           >
             {/* Flyout Panel */}
@@ -4207,14 +4207,14 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="bg-[#1a1a2e] border border-l-0 border-[#3d3d3d] rounded-r-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
+              className="bg-[#1a1a2e] border border-r-0 border-[#3d3d3d] rounded-l-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
               data-testid="weekly-files-flyout-tab"
             >
               <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
                 <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
                 Weekly Files
-                {isWeeklyFilesFlyoutOpen ? <ChevronLeft className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
               </span>
             </button>
           </div>
