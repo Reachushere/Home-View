@@ -2371,7 +2371,6 @@ export default function Dashboard() {
               <CalendarDays className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
               {calendarView === "month" ? "Week" : "Month"}
             </Button>
-            <div className="h-4 flex ml-1 mr-0"><div className="w-px bg-white" /></div>
           </div>
           
           {/* Gray section: remaining buttons */}
