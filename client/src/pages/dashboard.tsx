@@ -96,6 +96,7 @@ const courseColors: Record<string, { bg: string; border: string; text: string; d
 const SIDEBAR_COURSES = [
   { id: "cppa122", name: "CPPA122", color: "text-green-500", hoverBg: "hover:bg-green-500/20" },
   { id: "cfnf400", name: "CFNF400", color: "text-pink-500", hoverBg: "hover:bg-pink-500/20" },
+  { id: "casl101", name: "CASL101", color: "text-indigo-500", hoverBg: "hover:bg-indigo-500/20" },
 ];
 
 const FOLDER_TYPES = [
