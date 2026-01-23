@@ -165,7 +165,7 @@ async function sendNextChunk() {
   
   try {
     // Wrap in SSML to slow down the voice (85% speed)
-    const ssmlChunk = `<speak><prosody rate="85%">${nextChunk}</prosody></speak>`;
+    const ssmlChunk = `<speak><prosody rate="88%">${nextChunk}</prosody></speak>`;
     
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
@@ -196,7 +196,7 @@ async function sendNextChunk() {
 
 // Calculate delay based on chunk size and speed
 // At 85% speed, speaking takes longer: baseTime / 0.85 = baseTime * 1.18
-const SPEED_RATE = 0.85;
+const SPEED_RATE = 0.88;
 
 function scheduleNextChunk() {
   if (!currentTTSSession || !currentTTSSession.isPlaying) return;
@@ -1507,7 +1507,7 @@ export async function registerRoutes(
       cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
       
       // Wrap in SSML to slow down the voice (85% speed)
-      const ssmlContent = `<speak><prosody rate="85%">${cleanedContent}</prosody></speak>`;
+      const ssmlContent = `<speak><prosody rate="88%">${cleanedContent}</prosody></speak>`;
       
       console.log("Sending TTS to:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
@@ -1656,7 +1656,7 @@ export async function registerRoutes(
       console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
       
       // Wrap in SSML to slow down the voice (85% speed)
-      const ssmlContent = `<speak><prosody rate="85%">${remainingText}</prosody></speak>`;
+      const ssmlContent = `<speak><prosody rate="88%">${remainingText}</prosody></speak>`;
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
