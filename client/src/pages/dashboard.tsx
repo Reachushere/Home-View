@@ -2361,7 +2361,6 @@ export default function Dashboard() {
               <Sun className="mr-0.5 text-white" style={{ height: '12px', width: '12px' }} />
               Today
             </Button>
-            <div className="h-4 flex mx-1"><div className="w-px bg-white" /></div>
             <Button 
               variant="ghost"
               className="!h-[22px] !min-h-0 !px-2 ml-3 mr-4 text-[11px] bg-transparent hover:bg-white/20 border-0 font-semibold text-white !py-0" style={{fontFamily: "Segoe UI, sans-serif"}}
