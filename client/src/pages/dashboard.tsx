@@ -1913,53 +1913,6 @@ export default function Dashboard() {
 
           {/* Scrollable sidebar content */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
-        {/* Mini Calendar */}
-        <div className="px-2 mb-4 mt-0">
-          <div className="flex items-center justify-between mb-2">
-            <Button variant="ghost" size="icon" className="h-3 w-3" onClick={handlePrevMonth}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-sm font-bold bg-[#5979CC] text-white px-3 py-0.5 rounded-full" style={{ fontFamily: "Segoe UI, sans-serif" }}>{format(currentMonth, "MMMM")}</span>
-            <Button variant="ghost" size="icon" className="h-3 w-3" onClick={handleNextMonth}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="grid grid-cols-7 gap-0.5 text-center">
-            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-              <div key={i} className="text-[10px] text-white font-medium py-1">{d}</div>
-            ))}
-            {(() => {
-              const monthStart = startOfMonth(currentMonth);
-              const monthEnd = endOfMonth(currentMonth);
-              const calStart = startOfWeek(monthStart, { weekStartsOn: 0 });
-              const calEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
-              const days = eachDayOfInterval({ start: calStart, end: calEnd });
-              return days.map((day, i) => {
-                const isToday = isSameDay(day, new Date());
-                const isCurrentMonthDay = isSameMonth(day, currentMonth);
-                const isSelected = selectedDate && isSameDay(day, selectedDate);
-                return (
-                  <button
-                    key={i}
-                    onClick={() => handleDayClick(day)}
-                    className={`text-[10px] py-1 rounded-full transition-colors ${
-                      isToday 
-                        ? "bg-[#5979CC] text-white font-bold" 
-                        : isSelected
-                          ? "bg-primary/20 text-primary font-medium"
-                          : isCurrentMonthDay 
-                            ? "text-white hover:bg-white/20" 
-                            : "text-white/30"
-                    }`}
-                  >
-                    {format(day, "d")}
-                  </button>
-                );
-              });
-            })()}
-          </div>
-        </div>
-
         {/* Course Legend */}
         <div className="pl-0.5 pr-1 space-y-3 mb-4 -mt-2">
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
