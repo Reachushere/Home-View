@@ -2407,7 +2407,7 @@ export default function Dashboard() {
           {/* Pomodoro Section */}
           <div className="flex items-center px-3 py-2 gap-2">
             <div className={`text-sm font-mono font-bold px-2 py-0.5 rounded-md ${
-              pomodoroMode === "work" ? "bg-red-600 text-white" : 
+              pomodoroMode === "work" ? "bg-red-700 text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
@@ -2480,7 +2480,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="!h-7 !min-h-0 px-2.5 bg-red-600 hover:bg-red-700 text-white text-[11px] border-0 font-medium rounded-md"
+              className="!h-7 !min-h-0 px-2.5 bg-red-700 hover:bg-red-800 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-exam"
               onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
             >
