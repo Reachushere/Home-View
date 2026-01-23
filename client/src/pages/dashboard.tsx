@@ -1880,7 +1880,7 @@ export default function Dashboard() {
         {/* Header overlay - stays normal when flyout is open */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-start gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '46px', width: '46px' }} />
-          <span className="text-sm text-white font-medium pt-0.5" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
+          <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
         </div>
         
         {/* Sidebar with blur/fade effect */}
