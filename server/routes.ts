@@ -162,6 +162,9 @@ async function sendNextChunk() {
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
   try {
+    // Wrap in SSML to slow down the voice (80% speed)
+    const ssmlChunk = `<speak><prosody rate="80%">${nextChunk}</prosody></speak>`;
+    
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
       headers: {
@@ -169,7 +172,7 @@ async function sendNextChunk() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: nextChunk,
+        message: ssmlChunk,
         target: targetEntity,
         data: { type: "tts" }
       }),
@@ -1494,6 +1497,9 @@ export async function registerRoutes(
       cleanedContent = cleanTextForTTS(cleanedContent);
       cleanedContent = getChunkWithSentenceBoundary(cleanedContent, CHUNK_SIZE);
       
+      // Wrap in SSML to slow down the voice (80% speed)
+      const ssmlContent = `<speak><prosody rate="80%">${cleanedContent}</prosody></speak>`;
+      
       console.log("Sending TTS to:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
       
@@ -1504,7 +1510,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: cleanedContent,
+          message: ssmlContent,
           target: targetEntity,
           data: {
             type: "tts"
@@ -1640,6 +1646,9 @@ export async function registerRoutes(
       
       console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
       
+      // Wrap in SSML to slow down the voice (80% speed)
+      const ssmlContent = `<speak><prosody rate="80%">${remainingText}</prosody></speak>`;
+      
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -1647,7 +1656,7 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: remainingText,
+          message: ssmlContent,
           target: BATHROOM_ECHO_ENTITY,
           data: {
             type: "tts"
