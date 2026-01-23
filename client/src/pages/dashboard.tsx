@@ -2808,22 +2808,22 @@ export default function Dashboard() {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex flex-col">
-              <h1 className="text-base font-semibold text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
+            <div className="flex flex-col bg-white/60 rounded-lg px-4 py-1.5 h-[60px] justify-center">
+              <h1 className="text-base font-semibold text-black" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</h1>
               {/* Clock below title */}
               <div className="flex items-center gap-2 mt-0.5" data-testid="digital-clock">
-                <span className="text-xs text-white font-medium">
+                <span className="text-xs text-black font-medium">
                   {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
                 </span>
-                <div className="w-[2px] h-5 bg-white/50" />
+                <div className="w-[2px] h-5 bg-black/50" />
                 <div className="flex items-baseline">
-                  <span className="text-base font-semibold text-white tabular-nums">
+                  <span className="text-base font-semibold text-black tabular-nums">
                     {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
                   </span>
-                  <span className="text-xs text-white/80 tabular-nums">
+                  <span className="text-xs text-black/80 tabular-nums">
                     :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
                   </span>
-                  <span className="text-[9px] font-bold text-white/80 ml-0.5 uppercase">
+                  <span className="text-[9px] font-bold text-black/80 ml-0.5 uppercase">
                     {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
                   </span>
                 </div>
