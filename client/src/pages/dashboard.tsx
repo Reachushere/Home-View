@@ -3239,7 +3239,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 p-2 overflow-auto border-r border-white/30" style={{ backgroundColor: 'rgba(251,113,133,0.50)' }}>
+                  <div className="flex-1 p-2 overflow-auto border-r border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }}>
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CFNF400</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
@@ -3272,7 +3272,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Column - Purple */}
-                  <div className="flex-1 p-2 overflow-auto" style={{ backgroundColor: 'rgba(99,102,241,0.50)' }}>
+                  <div className="flex-1 p-2 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }}>
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CASL101</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => {
@@ -3333,7 +3333,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Row - Pink */}
-                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(251,113,133,0.50)' }}>
+                  <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -3345,7 +3345,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Row - Purple */}
-                  <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(99,102,241,0.50)' }}>
+                  <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
@@ -3383,7 +3383,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(251,113,133,0.50)' }}>
+              <div className="flex-1 px-2 py-1 overflow-auto border-b border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -3397,7 +3397,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CASL101 Row - Purple */}
-              <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(99,102,241,0.50)' }}>
+              <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
@@ -3487,7 +3487,7 @@ export default function Dashboard() {
           </section>
 
           {/* CFNF400 Completed */}
-          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(251,113,133,0.50)' }} data-testid="section-completed-cfnf400">
+          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.35)' }} data-testid="section-completed-cfnf400">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-white drop-shadow-md" />
               <span className="text-white drop-shadow-md">Completed - CFNF400</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})</span>
@@ -3515,7 +3515,7 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(99,102,241,0.50)' }} data-testid="section-completed-casl101">
+          <section className="flex-1 rounded-xl shadow-md p-3 border-[1.75px] border-white overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.35)' }} data-testid="section-completed-casl101">
             <h4 className="text-sm font-semibold mb-2 flex items-center gap-2 rounded px-2 py-1" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3.5 w-3.5 text-white drop-shadow-md" />
               <span className="text-white drop-shadow-md">Completed - CASL101</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
