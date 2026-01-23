@@ -2766,25 +2766,25 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center gap-0.5">
                 <button
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  className="p-1 hover:bg-black/20 rounded transition-colors"
                   onClick={togglePomodoro}
                   data-testid="button-pomodoro-toggle"
                 >
-                  {pomodoroRunning ? <Pause className="h-3 w-3 text-white" /> : <Play className="h-3 w-3 text-white" />}
+                  {pomodoroRunning ? <Pause className="h-3 w-3 text-black" /> : <Play className="h-3 w-3 text-black" />}
                 </button>
                 <button
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  className="p-1 hover:bg-black/20 rounded transition-colors"
                   onClick={resetPomodoro}
                   data-testid="button-pomodoro-reset"
                 >
-                  <RotateCcw className="h-3 w-3 text-white" />
+                  <RotateCcw className="h-3 w-3 text-black" />
                 </button>
                 <button
-                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  className="p-1 hover:bg-black/20 rounded transition-colors"
                   onClick={skipPomodoro}
                   data-testid="button-pomodoro-skip"
                 >
-                  <SkipForward className="h-3 w-3 text-white" />
+                  <SkipForward className="h-3 w-3 text-black" />
                 </button>
               </div>
             </div>
