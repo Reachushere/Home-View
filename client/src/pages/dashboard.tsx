@@ -2757,7 +2757,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '72px', paddingRight: '24px' }}>
+      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '82px', paddingRight: '24px' }}>
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
           {/* Left: Hamburger Menu + Files Button + Title */}
