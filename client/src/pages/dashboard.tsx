@@ -2635,7 +2635,7 @@ export default function Dashboard() {
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.75px] border-blue-800 bg-white/50 backdrop-blur-sm">
             <CardContent ref={calendarScrollRef} className="p-0 h-full overflow-auto" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers */}
-            <div className="grid border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+            <div className="grid border-b border-border sticky top-0 z-10 h-[52px] w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'transparent' }}>
               <div className="p-2 flex items-center justify-center">
                 <span className="text-sm text-black dark:text-white">Week {selectedWeek}</span>
               </div>
@@ -2687,7 +2687,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border/50 sticky top-[52px] backdrop-blur-sm z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(200, 200, 200, 0.5)' }}>
+            <div className="grid border-b border-border/50 sticky top-[52px] z-10 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'transparent' }}>
                 <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center">
                   ALL DAY
                 </div>
@@ -2895,11 +2895,11 @@ export default function Dashboard() {
               
               {/* Course Rows - CPPA122, CFNF400, CASL101 */}
               {[
-                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.5)', label: 'rgba(134, 239, 172, 0.7)' },
-                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.5)', label: 'rgba(249, 168, 212, 0.7)' },
-                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.5)', label: 'rgba(165, 180, 252, 0.7)' }
+                { name: 'CPPA122', label: 'rgba(134, 239, 172, 0.7)' },
+                { name: 'CFNF400', label: 'rgba(249, 168, 212, 0.7)' },
+                { name: 'CASL101', label: 'rgba(165, 180, 252, 0.7)' }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full backdrop-blur-sm" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'transparent' }}>
                   <div className="px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center text-black min-h-[20px]" style={{ backgroundColor: course.label }}>
                     {course.name}
                   </div>
