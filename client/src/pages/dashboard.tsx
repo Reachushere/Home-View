@@ -2757,7 +2757,7 @@ export default function Dashboard() {
           
           <div className="flex items-center gap-3">
             {/* Pomodoro Timer */}
-            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/60">
+            <div className="flex items-center gap-1.5 p-1.5 rounded-lg bg-white/60 h-[54px]">
               <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
                 pomodoroMode === "work" ? "bg-red-700 text-white" : 
                 pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
