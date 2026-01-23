@@ -3322,7 +3322,7 @@ export default function Dashboard() {
                 <>
                   {/* CPPA122 Row - Green */}
                   <div className="flex-1 px-2 py-1 overflow-auto border-b border-green-200 dark:border-green-700" style={{ backgroundColor: 'rgba(134,239,172,0.50)' }}>
-                    <div className="text-[8px] font-bold text-green-700 dark:text-green-300 mb-0.5">CPPA122</div>
+                    <div className="text-[8px] font-bold text-white mb-0.5">CPPA122</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                         <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
@@ -3334,7 +3334,7 @@ export default function Dashboard() {
                   </div>
                   {/* CFNF400 Row - Pink */}
                   <div className="flex-1 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700" style={{ backgroundColor: 'rgba(249,168,212,0.50)' }}>
-                    <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
+                    <div className="text-[8px] font-bold text-white mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                         <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
@@ -3346,7 +3346,7 @@ export default function Dashboard() {
                   </div>
                   {/* CASL101 Row - Purple */}
                   <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.50)' }}>
-                    <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
+                    <div className="text-[8px] font-bold text-white mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                         <TaskCard key={task.id} task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact />
@@ -3370,7 +3370,7 @@ export default function Dashboard() {
             <div className="flex-1 flex flex-col overflow-hidden">
               {/* CPPA122 Row - Green */}
               <div className="flex-1 px-2 py-1 overflow-auto border-b border-green-200 dark:border-green-700" style={{ backgroundColor: 'rgba(134,239,172,0.50)' }}>
-                <div className="text-[8px] font-bold text-green-700 dark:text-green-300 mb-0.5">CPPA122</div>
+                <div className="text-[8px] font-bold text-white mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
@@ -3384,7 +3384,7 @@ export default function Dashboard() {
               </div>
               {/* CFNF400 Row - Pink */}
               <div className="flex-1 px-2 py-1 overflow-auto border-b border-pink-200 dark:border-pink-700" style={{ backgroundColor: 'rgba(249,168,212,0.50)' }}>
-                <div className="text-[8px] font-bold text-pink-700 dark:text-pink-300 mb-0.5">CFNF400</div>
+                <div className="text-[8px] font-bold text-white mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
@@ -3398,7 +3398,7 @@ export default function Dashboard() {
               </div>
               {/* CASL101 Row - Purple */}
               <div className="flex-1 px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.50)' }}>
-                <div className="text-[8px] font-bold text-purple-700 dark:text-purple-300 mb-0.5">CASL101</div>
+                <div className="text-[8px] font-bold text-white mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                     <div key={task.id} className="animate-urgent-blink">
