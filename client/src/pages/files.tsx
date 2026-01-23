@@ -1186,7 +1186,7 @@ export default function FilesPage() {
                                       data-testid={`input-rename-course-folder-${courseFolderId}`}
                                     />
                                   ) : (
-                                    <span className={`text-sm flex-1 ${course.color}`}>{folderDisplayNames[courseFolderId] || course.name.split(" - ")[0]}</span>
+                                    <span className={`text-sm flex-1 ${course.color}`}>{folderDisplayNames[courseFolderId] || course.name}</span>
                                   )}
                                   <span className="text-xs text-gray-500">{courseFiles.length}</span>
                                 </div>
@@ -1195,7 +1195,7 @@ export default function FilesPage() {
                                 <ContextMenuItem
                                   onClick={() => {
                                     setEditingBuiltinFolderId(courseFolderId);
-                                    setEditingBuiltinFolderName(folderDisplayNames[courseFolderId] || course.name.split(" - ")[0]);
+                                    setEditingBuiltinFolderName(folderDisplayNames[courseFolderId] || course.name);
                                   }}
                                   data-testid={`rename-course-folder-${courseFolderId}`}
                                 >
