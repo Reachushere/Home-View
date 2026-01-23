@@ -1209,22 +1209,20 @@ export default function FilesPage() {
               )}
             </div>
 
-            {/* Clear Custom Folders Button */}
-            {customFoldersData.length > 0 && (
-              <div className="px-2 pt-3 border-t border-[#3d3d3d] mt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full text-xs text-red-400 border-red-400/50 hover:bg-red-500/20"
-                  onClick={() => clearAllCustomFoldersMutation.mutate()}
-                  disabled={clearAllCustomFoldersMutation.isPending}
-                  data-testid="button-clear-custom-folders"
-                >
-                  <Trash2 className="h-3 w-3 mr-1" />
-                  {clearAllCustomFoldersMutation.isPending ? "Clearing..." : `Clear Custom Folders (${customFoldersData.length})`}
-                </Button>
-              </div>
-            )}
+            {/* Clear Custom Folders Button - Always visible for debugging */}
+            <div className="px-2 pt-3 border-t border-[#3d3d3d] mt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full text-xs text-red-400 border-red-400/50 hover:bg-red-500/20"
+                onClick={() => clearAllCustomFoldersMutation.mutate()}
+                disabled={clearAllCustomFoldersMutation.isPending || customFoldersData.length === 0}
+                data-testid="button-clear-custom-folders"
+              >
+                <Trash2 className="h-3 w-3 mr-1" />
+                {clearAllCustomFoldersMutation.isPending ? "Clearing..." : `Clear Custom Folders (${customFoldersData.length})`}
+              </Button>
+            </div>
           </div>
         </div>
 
