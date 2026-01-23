@@ -3211,7 +3211,7 @@ export default function Dashboard() {
         </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginRight: '23px', marginLeft: '-111px', paddingRight: '0px', transform: 'translate(2px, 3px)' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginRight: '-7px', marginLeft: '-111px', paddingRight: '0px', transform: 'translate(2px, 3px)' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
