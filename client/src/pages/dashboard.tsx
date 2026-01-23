@@ -1907,7 +1907,7 @@ export default function Dashboard() {
               <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
                 pomodoroMode === "work" ? "bg-red-700 text-white" : 
                 pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-              }`} data-testid="pomodoro-timer">
+              }`} style={{ marginLeft: '-20px' }} data-testid="pomodoro-timer">
                 {formatPomodoroTime(pomodoroTime)}
               </div>
               <div className="flex items-center gap-2">
