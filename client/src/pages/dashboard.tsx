@@ -2251,7 +2251,7 @@ export default function Dashboard() {
                 className="!h-8 !w-8 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md mt-1 backdrop-blur-sm"
                 data-testid="button-hamburger-menu"
               >
-                <Menu className="h-4 w-4" stroke="black" />
+                <Menu className="h-4 w-4" stroke="white" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
