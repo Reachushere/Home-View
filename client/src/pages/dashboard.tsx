@@ -1779,38 +1779,6 @@ export default function Dashboard() {
               : 'Apr 17'})
             </span>
           </div>
-          {/* Pomodoro Timer - with transparent box like logo */}
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
-            <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
-              pomodoroMode === "work" ? "bg-red-700 text-white" : 
-              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-            }`} data-testid="pomodoro-timer">
-              {formatPomodoroTime(pomodoroTime)}
-            </div>
-            <div className="flex items-center gap-0.5">
-              <button
-                className="p-1 hover:bg-white/20 rounded transition-colors"
-                onClick={togglePomodoro}
-                data-testid="button-pomodoro-toggle"
-              >
-                {pomodoroRunning ? <Pause className="h-3 w-3 text-white" /> : <Play className="h-3 w-3 text-white" />}
-              </button>
-              <button
-                className="p-1 hover:bg-white/20 rounded transition-colors"
-                onClick={resetPomodoro}
-                data-testid="button-pomodoro-reset"
-              >
-                <RotateCcw className="h-3 w-3 text-white" />
-              </button>
-              <button
-                className="p-1 hover:bg-white/20 rounded transition-colors"
-                onClick={skipPomodoro}
-                data-testid="button-pomodoro-skip"
-              >
-                <SkipForward className="h-3 w-3 text-white" />
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Scrollable sidebar content */}
@@ -2787,8 +2755,42 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <div className="bg-white/60 rounded-lg p-1.5 mr-3">
-            <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded" />
+          <div className="flex items-center gap-3">
+            {/* Pomodoro Timer */}
+            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/30 backdrop-blur-sm border border-white/30">
+              <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
+                pomodoroMode === "work" ? "bg-red-700 text-white" : 
+                pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+              }`} data-testid="pomodoro-timer">
+                {formatPomodoroTime(pomodoroTime)}
+              </div>
+              <div className="flex items-center gap-0.5">
+                <button
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  onClick={togglePomodoro}
+                  data-testid="button-pomodoro-toggle"
+                >
+                  {pomodoroRunning ? <Pause className="h-3 w-3 text-white" /> : <Play className="h-3 w-3 text-white" />}
+                </button>
+                <button
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  onClick={resetPomodoro}
+                  data-testid="button-pomodoro-reset"
+                >
+                  <RotateCcw className="h-3 w-3 text-white" />
+                </button>
+                <button
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                  onClick={skipPomodoro}
+                  data-testid="button-pomodoro-skip"
+                >
+                  <SkipForward className="h-3 w-3 text-white" />
+                </button>
+              </div>
+            </div>
+            <div className="bg-white/60 rounded-lg p-1.5 mr-3">
+              <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded" />
+            </div>
           </div>
         </div>
         
@@ -2874,7 +2876,7 @@ export default function Dashboard() {
                 <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-cyan-300" />
                 {calendarView === "month" ? "Week" : "Month"}
               </Button>
-              <RouterLink href="/files" style={{ marginLeft: '10px' }}>
+              <RouterLink href="/files" style={{ marginLeft: '20px' }}>
                 <Button 
                   variant="ghost"
                   size="icon"
