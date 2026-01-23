@@ -1390,7 +1390,7 @@ export default function FilesPage() {
                 backgroundImage: `url(${quickActionsBg})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center center',
-                filter: 'brightness(1.3)'
+                filter: 'brightness(1.04)'
               }}
             ></div>
             <h3 className="text-sm font-medium mb-3 text-white relative z-10">Media Player</h3>
