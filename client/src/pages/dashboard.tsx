@@ -1901,11 +1901,11 @@ export default function Dashboard() {
                           <DropdownMenu key={course.id}>
                             <DropdownMenuTrigger asChild>
                               <button
-                                className={`p-0.5 rounded ${course.hoverBg} transition-colors ${availableFolders.length === 0 ? 'opacity-40' : ''}`}
+                                className={`p-1 rounded ${course.hoverBg} transition-colors ${availableFolders.length === 0 ? 'opacity-40' : ''}`}
                                 data-testid={`menu-week-${week.weekNumber}-${course.id}`}
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Menu className={`h-4 w-4 ${course.color}`} strokeWidth={2.5} />
+                                <Menu className={`h-5 w-5 ${course.color}`} strokeWidth={3} />
                               </button>
                             </DropdownMenuTrigger>
                             {availableFolders.length > 0 && (
