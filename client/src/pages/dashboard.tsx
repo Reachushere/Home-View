@@ -2388,6 +2388,7 @@ export default function Dashboard() {
           </div>
           {/* Gray section: remaining buttons */}
           <div className="flex-1 flex items-center justify-between bg-slate-300 px-2 py-1">
+            <div className="h-4 flex ml-0 mr-1"><div className="w-px bg-gray-400/80" /><div className="w-px bg-white/60" /></div>
             
             {/* Pomodoro Timer */}
             <div className="flex items-center gap-2 h-[22px]">
