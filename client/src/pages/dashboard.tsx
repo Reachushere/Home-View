@@ -4170,7 +4170,7 @@ export default function Dashboard() {
           >
             {/* Flyout Panel - slides left */}
             <div 
-              className={`bg-[#1a1a2e] border border-r-0 border-[#3d3d3d] rounded-l-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden absolute right-full ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
+              className={`bg-[#1a1a2e] shadow-xl transition-all duration-300 ease-in-out overflow-hidden absolute right-full ${isWeeklyFilesFlyoutOpen ? 'w-72 border border-r-0 border-[#3d3d3d] rounded-l-lg' : 'w-0 border-0'}`}
               style={{ height: '400px' }}
             >
               <div className="w-72 h-full flex flex-col">
