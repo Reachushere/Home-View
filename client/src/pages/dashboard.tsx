@@ -186,6 +186,10 @@ export default function Dashboard() {
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
+  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [customBackground, setCustomBackground] = useState<string | null>(() => {
+    return localStorage.getItem('customBackground');
+  });
   const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }>(() => {
     const saved = localStorage.getItem('profileData');
     return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
@@ -1752,7 +1756,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1" style={{ backgroundImage: `url(${campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+      <div className="flex flex-1" style={{ backgroundImage: `url(${customBackground || campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       {isTodayExpanded && (
         <div 
           className="today-backdrop"
@@ -2717,6 +2721,10 @@ export default function Dashboard() {
                   <Palette className="h-4 w-4 mr-2" />
                   Courses
                 </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <div className="flex flex-col">
@@ -2987,6 +2995,77 @@ export default function Dashboard() {
                 coursesData={coursesData}
                 onSave={saveCourses} 
               />
+            </DialogContent>
+          </Dialog>
+          
+          {/* Settings Dialog */}
+          <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Settings</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Background Image</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Upload a custom background image to replace the default campus photo.
+                  </p>
+                  {customBackground && (
+                    <div className="relative w-full h-24 rounded-md overflow-hidden border">
+                      <img 
+                        src={customBackground} 
+                        alt="Current background" 
+                        className="w-full h-full object-cover"
+                      />
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-1 right-1"
+                        onClick={() => {
+                          localStorage.removeItem('customBackground');
+                          setCustomBackground(null);
+                          toast({ title: "Background reset", description: "Default background has been restored." });
+                        }}
+                        data-testid="button-reset-background"
+                      >
+                        <X className="h-3 w-3 mr-1" />
+                        Reset
+                      </Button>
+                    </div>
+                  )}
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      id="background-upload"
+                      data-testid="input-background-upload"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          const dataUrl = event.target?.result as string;
+                          localStorage.setItem('customBackground', dataUrl);
+                          setCustomBackground(dataUrl);
+                          toast({ title: "Background updated", description: "Your custom background has been saved." });
+                        };
+                        reader.readAsDataURL(file);
+                      }}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById('background-upload')?.click()}
+                      data-testid="button-upload-background"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      {customBackground ? "Change Background" : "Upload Background"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </DialogContent>
           </Dialog>
           
