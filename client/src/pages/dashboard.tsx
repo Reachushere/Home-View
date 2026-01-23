@@ -1903,7 +1903,7 @@ export default function Dashboard() {
               )}
             </div>
             {/* Pomodoro Timer */}
-            <div className="flex items-center justify-center gap-3 bg-white/50 rounded-lg px-4 py-2" style={{ marginTop: '65px', marginLeft: '-15px' }}>
+            <div className="flex items-center justify-center gap-3 bg-white/50 rounded-lg px-4 py-2" style={{ marginTop: '65px', marginLeft: '-25px' }}>
               <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
                 pomodoroMode === "work" ? "bg-red-700 text-white" : 
                 pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
