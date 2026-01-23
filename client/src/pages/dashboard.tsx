@@ -4170,7 +4170,7 @@ export default function Dashboard() {
           >
             {/* Flyout Panel - slides left */}
             <div 
-              className={`bg-[#1a1a2e] border border-[#3d3d3d] rounded-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden absolute right-full mr-0 ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
+              className={`bg-[#1a1a2e] border border-r-0 border-[#3d3d3d] rounded-l-lg shadow-xl transition-all duration-300 ease-in-out overflow-hidden absolute right-full ${isWeeklyFilesFlyoutOpen ? 'w-72' : 'w-0'}`}
               style={{ height: '400px' }}
             >
               <div className="w-72 h-full flex flex-col">
@@ -4207,7 +4207,7 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="bg-[#1a1a2e] border border-r-0 border-[#3d3d3d] rounded-l-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
+              className="bg-[#1a1a2e] border border-l-0 border-[#3d3d3d] rounded-r-lg px-1 py-3 hover:bg-[#2d2d2d] transition-colors shadow-lg"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
               data-testid="weekly-files-flyout-tab"
             >
