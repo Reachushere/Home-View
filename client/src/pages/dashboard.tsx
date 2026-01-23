@@ -4216,7 +4216,6 @@ export default function Dashboard() {
                               onClick={() => setPreviewFile(file)}
                               className="flex items-center gap-2 flex-1 text-left"
                             >
-                              <FileText className={`h-4 w-4 shrink-0 ${colors ? 'text-black' : 'text-blue-400'}`} />
                               <span className="truncate flex-1 font-bold">{file.displayName}</span>
                             </button>
                           </div>
