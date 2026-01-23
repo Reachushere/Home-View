@@ -1895,7 +1895,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className={`text-white rounded-xl shadow-lg pl-4 pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+        <aside className={`text-white rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
           {/* Header placeholder to maintain spacing */}
           <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0 opacity-0">
             <div style={{ height: '38px', width: '38px' }} />
@@ -1912,7 +1912,7 @@ export default function Dashboard() {
           </div>
 
           {/* Scrollable sidebar content */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar" style={{ marginLeft: '-5px' }}>
+          <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
         {/* Mini Calendar */}
         <div className="px-2 mb-4 mt-0">
           <div className="flex items-center justify-between mb-2">
