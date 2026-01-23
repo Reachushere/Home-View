@@ -1876,7 +1876,7 @@ export default function Dashboard() {
         />
       )}
       {/* Sidebar Container */}
-      <div className="relative mt-3 mb-3 mr-0" style={{ width: 350, marginLeft: '11px' }}>
+      <div className="relative mt-3 mb-3 mr-0 flex flex-col" style={{ width: 350, marginLeft: '11px' }}>
         {/* Header overlay - stays normal when flyout is open */}
         <div className="absolute top-0 left-0 right-0 z-10 flex items-center gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
@@ -1895,7 +1895,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className={`text-white rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+        <aside className={`flex-1 text-white rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
           {/* Header placeholder to maintain spacing */}
           <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0 opacity-0">
             <div style={{ height: '38px', width: '38px' }} />
