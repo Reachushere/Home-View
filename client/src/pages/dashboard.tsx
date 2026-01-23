@@ -1905,7 +1905,7 @@ export default function Dashboard() {
                                 data-testid={`menu-week-${week.weekNumber}-${course.id}`}
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Menu className={`h-5 w-5 ${course.color}`} strokeWidth={3} />
+                                <Menu className={`h-6 w-6 ${course.color}`} strokeWidth={3} />
                               </button>
                             </DropdownMenuTrigger>
                             {availableFolders.length > 0 && (
