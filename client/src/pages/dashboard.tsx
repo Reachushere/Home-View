@@ -748,7 +748,7 @@ export default function Dashboard() {
   // Also add delay to account for network + TTS processing time
   const WORDS_PER_SECOND = 2.0;
   const MS_PER_WORD = 1000 / WORDS_PER_SECOND;
-  const TTS_START_DELAY_MS = 30000; // 30 second delay for TTS to start speaking
+  const TTS_START_DELAY_MS = 27000; // 27 second delay for TTS to start speaking
 
   const startHighlighting = () => {
     const words = previewText.split(/\s+/).filter(w => w.length > 0);
