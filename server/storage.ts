@@ -29,6 +29,7 @@ export interface IStorage {
   removeDeletedFolder(folderId: string): Promise<void>;
   getCustomFolders(): Promise<CustomFolder[]>;
   createCustomFolder(folder: InsertCustomFolder): Promise<CustomFolder>;
+  updateCustomFolder(id: number, name: string): Promise<CustomFolder>;
   deleteCustomFolder(id: number): Promise<void>;
 }
 
@@ -224,6 +225,15 @@ export class DatabaseStorage implements IStorage {
   async createCustomFolder(folder: InsertCustomFolder): Promise<CustomFolder> {
     const [created] = await db.insert(customFolders).values(folder).returning();
     return created;
+  }
+
+  async updateCustomFolder(id: number, name: string): Promise<CustomFolder> {
+    const [updated] = await db
+      .update(customFolders)
+      .set({ name })
+      .where(eq(customFolders.id, id))
+      .returning();
+    return updated;
   }
 
   async deleteCustomFolder(id: number): Promise<void> {

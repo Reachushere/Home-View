@@ -163,6 +163,8 @@ export default function FilesPage() {
   const [showAddFolderDialog, setShowAddFolderDialog] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
   const [addFolderParentId, setAddFolderParentId] = useState<string | null>(null);
+  const [editingFolderId, setEditingFolderId] = useState<number | null>(null);
+  const [editingFolderName, setEditingFolderName] = useState("");
 
   // Column widths state for draggable resizing
   const [columnWidths, setColumnWidths] = useState({
@@ -353,6 +355,21 @@ export default function FilesPage() {
     },
     onError: (err) => {
       toast({ title: "Failed to delete folder", description: String(err), variant: "destructive" });
+    },
+  });
+
+  const renameCustomFolderMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: number; name: string }) => {
+      return await apiRequest("PATCH", `/api/custom-folders/${id}`, { name });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/custom-folders"] });
+      setEditingFolderId(null);
+      setEditingFolderName("");
+      toast({ title: "Folder renamed" });
+    },
+    onError: (err) => {
+      toast({ title: "Failed to rename folder", description: String(err), variant: "destructive" });
     },
   });
 
@@ -1139,11 +1156,59 @@ export default function FilesPage() {
                                                   >
                                                     <div className="w-3 h-3" />
                                                     <Folder className="h-3.5 w-3.5 text-blue-500 fill-blue-400" />
-                                                    <span className="text-sm flex-1">{customFolder.name}</span>
+                                                    {editingFolderId === customFolder.id ? (
+                                                      <input
+                                                        type="text"
+                                                        value={editingFolderName}
+                                                        onChange={(e) => setEditingFolderName(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                          if (e.key === "Enter" && editingFolderName.trim()) {
+                                                            renameCustomFolderMutation.mutate({ id: customFolder.id, name: editingFolderName.trim() });
+                                                          } else if (e.key === "Escape") {
+                                                            setEditingFolderId(null);
+                                                            setEditingFolderName("");
+                                                          }
+                                                        }}
+                                                        onBlur={() => {
+                                                          if (editingFolderName.trim() && editingFolderName !== customFolder.name) {
+                                                            renameCustomFolderMutation.mutate({ id: customFolder.id, name: editingFolderName.trim() });
+                                                          } else {
+                                                            setEditingFolderId(null);
+                                                            setEditingFolderName("");
+                                                          }
+                                                        }}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        autoFocus
+                                                        className="text-sm flex-1 bg-[#1e1e1e] border border-[#0078d4] rounded px-1 py-0 text-white outline-none"
+                                                        data-testid={`input-rename-folder-${customFolder.id}`}
+                                                      />
+                                                    ) : (
+                                                      <span 
+                                                        className="text-sm flex-1 hover:underline"
+                                                        onClick={(e) => {
+                                                          e.stopPropagation();
+                                                          setEditingFolderId(customFolder.id);
+                                                          setEditingFolderName(customFolder.name);
+                                                        }}
+                                                        data-testid={`folder-name-${customFolder.id}`}
+                                                      >
+                                                        {customFolder.name}
+                                                      </span>
+                                                    )}
                                                     <span className="text-xs text-gray-500">{customFiles.length}</span>
                                                   </div>
                                                 </ContextMenuTrigger>
                                                 <ContextMenuContent className="w-48">
+                                                  <ContextMenuItem
+                                                    onClick={() => {
+                                                      setEditingFolderId(customFolder.id);
+                                                      setEditingFolderName(customFolder.name);
+                                                    }}
+                                                    data-testid={`rename-folder-${customFolderId}`}
+                                                  >
+                                                    <Edit2 className="h-4 w-4 mr-2" />
+                                                    Rename Folder
+                                                  </ContextMenuItem>
                                                   <ContextMenuItem
                                                     onClick={() => {
                                                       setAddFolderParentId(customFolderId);

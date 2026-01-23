@@ -916,6 +916,22 @@ export async function registerRoutes(
     }
   });
 
+  // PATCH /api/custom-folders/:id - Rename a custom folder
+  app.patch("/api/custom-folders/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { name } = req.body;
+      if (!name) {
+        return res.status(400).json({ error: "name is required" });
+      }
+      const folder = await storage.updateCustomFolder(id, name);
+      res.json(folder);
+    } catch (err) {
+      console.error("Error renaming custom folder:", err);
+      res.status(500).json({ error: "Failed to rename custom folder" });
+    }
+  });
+
   // DELETE /api/custom-folders/:id - Delete a custom folder
   app.delete("/api/custom-folders/:id", async (req, res) => {
     try {
