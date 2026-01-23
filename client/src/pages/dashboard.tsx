@@ -2709,10 +2709,10 @@ export default function Dashboard() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="!h-9 !w-9 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md backdrop-blur-sm"
+                    className="!h-10 !w-10 !min-h-0 p-0 !bg-transparent hover:!bg-white/20 border border-white/50 text-black shadow-md backdrop-blur-sm"
                     data-testid="button-hamburger-menu"
                   >
-                    <Menu className="h-7 w-7" stroke="white" />
+                    <Menu className="h-8 w-8" stroke="white" strokeWidth={2.5} />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
