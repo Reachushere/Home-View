@@ -2310,96 +2310,180 @@ export default function Dashboard() {
           <img src={schoolData.schoolLogo || tmuLogo} alt="School Logo" className="h-12 object-contain rounded mr-3" />
         </div>
         
-        {/* Soft Modern Menu Bar */}
-        <div className="flex items-center mb-0 rounded-2xl overflow-hidden mx-2" style={{ 
+        {/* Sleek Menu Bar */}
+        <div className="flex items-center mb-0 rounded-2xl overflow-hidden" style={{ 
+          background: 'linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 25%, #3d5a7f 50%, #4d6a8f 75%, #5d7a9f 100%)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
           marginTop: '24px',
-          background: '#ffffff',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05)',
-          border: '1px solid #e5e7eb'
+          border: '1px solid rgba(255,255,255,0.1)'
         }}>
-          {/* Date Picker */}
-          <div className="flex items-center h-11 px-3 gap-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-gray-100 rounded-xl" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-              <ChevronLeft className="h-5 w-5 text-gray-400" />
-            </Button>
-            <div className="bg-gray-50 rounded-xl px-4 py-1.5 border border-gray-100">
-              <span className="text-sm font-semibold text-gray-700">{format(weekStartDate, "MMM d")} – {format(weekEndDate, "MMM d")}</span>
+          {/* Navigation Section */}
+          <div className="flex items-center px-4 py-2 gap-3">
+            {/* Week navigation */}
+            <div className="flex items-center bg-white/10 rounded-lg px-2 py-1 backdrop-blur-sm">
+              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </Button>
+              <div className="flex items-center gap-1 mx-2 whitespace-nowrap">
+                <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                <span className="text-[11px] text-white/50">—</span>
+                <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+              </div>
+              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </Button>
             </div>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-gray-100 rounded-xl" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-              <ChevronRight className="h-5 w-5 text-gray-400" />
-            </Button>
-          </div>
 
-          {/* Divider */}
-          <div className="w-px h-6 bg-gray-200" />
+            {/* Quick Actions */}
+            <div className="flex items-center gap-1">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-7 w-7 hover:bg-white/20 rounded-lg"
+                onClick={() => setSelectedWeek(2)}
+                data-testid="button-home-week"
+                title="Go to current week"
+              >
+                <Home className="h-4 w-4 text-white" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-7 w-7 hover:bg-white/20 rounded-lg"
+                onClick={() => syncAllCalendarMutation.mutate()}
+                disabled={syncAllCalendarMutation.isPending}
+                data-testid="button-sync-calendar"
+              >
+                {syncAllCalendarMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 text-white animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4 text-white" />
+                )}
+              </Button>
+            </div>
 
-          {/* Quick Actions */}
-          <div className="flex items-center h-11 px-3 gap-2">
-            <Button variant="ghost" size="icon" className="h-9 w-9 bg-blue-50 hover:bg-blue-100 rounded-xl" onClick={() => setSelectedWeek(2)} data-testid="button-home-week" title="Go to current week">
-              <Home className="h-4 w-4 text-blue-600" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9 bg-emerald-50 hover:bg-emerald-100 rounded-xl" onClick={() => syncAllCalendarMutation.mutate()} disabled={syncAllCalendarMutation.isPending} data-testid="button-sync-calendar">
-              {syncAllCalendarMutation.isPending ? <Loader2 className="h-4 w-4 text-emerald-600 animate-spin" /> : <RefreshCw className="h-4 w-4 text-emerald-600" />}
-            </Button>
-            <Button className="h-9 px-4 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold border-0 rounded-xl" onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} data-testid="button-today">
-              <Sun className="h-4 w-4 mr-1.5" />Today
-            </Button>
-            <Button className="h-9 px-4 bg-violet-50 hover:bg-violet-100 text-violet-700 text-xs font-semibold border-0 rounded-xl" onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")} data-testid="button-month-view">
-              <CalendarDays className="h-4 w-4 mr-1.5" />{calendarView === "month" ? "Week" : "Month"}
-            </Button>
-            <RouterLink href="/files">
-              <Button className="h-9 px-4 bg-orange-400 hover:bg-orange-500 text-white text-xs font-semibold border-0 rounded-xl shadow-sm" data-testid="button-files-link">
-                <FolderOpen className="h-4 w-4 mr-1.5" />Files
+            {/* View Buttons */}
+            <div className="flex items-center gap-1 bg-white/10 rounded-lg p-0.5">
+              <Button 
+                variant="ghost"
+                className="!h-7 !min-h-0 px-3 text-[11px] hover:bg-white/20 rounded-md font-medium text-white border-0" 
+                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+                data-testid="button-today"
+              >
+                <Sun className="h-3.5 w-3.5 mr-1.5 text-amber-300" />
+                Today
+              </Button>
+              <Button 
+                variant="ghost"
+                className="!h-7 !min-h-0 px-3 text-[11px] hover:bg-white/20 rounded-md font-medium text-white border-0"
+                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+                data-testid="button-month-view"
+              >
+                <CalendarDays className="h-3.5 w-3.5 mr-1.5 text-cyan-300" />
+                {calendarView === "month" ? "Week" : "Month"}
+              </Button>
+            </div>
+
+            {/* Files Button */}
+            <RouterLink href="/files" className="flex items-center">
+              <Button 
+                className="!h-7 !min-h-0 px-3 text-[11px] rounded-lg font-medium border-0" 
+                style={{
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+                  color: '#1e3a5f'
+                }}
+                data-testid="button-files-link"
+              >
+                <FolderOpen className="h-3.5 w-3.5 mr-1.5" />
+                Files
               </Button>
             </RouterLink>
           </div>
 
-          {/* Divider */}
-          <div className="w-px h-6 bg-gray-200" />
+          {/* Separator */}
+          <div className="w-px h-6 bg-white/20" />
 
-          {/* Pomodoro */}
-          <div className="flex items-center h-11 px-4 gap-3">
-            <div className={`text-sm font-mono font-bold px-3 py-1.5 rounded-xl ${
-              pomodoroMode === "work" ? "bg-rose-50 text-rose-600" : 
-              pomodoroMode === "shortBreak" ? "bg-emerald-50 text-emerald-600" : "bg-sky-50 text-sky-600"
+          {/* Pomodoro Section */}
+          <div className="flex items-center px-3 py-2 gap-2">
+            <div className={`text-sm font-mono font-bold px-2 py-0.5 rounded-md ${
+              pomodoroMode === "work" ? "bg-red-500/20 text-red-300" : 
+              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
             <div className="flex items-center gap-1">
-              <button className="h-8 w-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-                {pomodoroRunning ? <Pause className="h-4 w-4 text-gray-600" /> : <Play className="h-4 w-4 text-gray-600" />}
+              <button
+                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
+                onClick={togglePomodoro}
+                data-testid="button-pomodoro-toggle"
+              >
+                {pomodoroRunning ? <Pause className="h-3 w-3 text-white" /> : <Play className="h-3 w-3 text-white" />}
               </button>
-              <button className="h-8 w-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-                <RotateCcw className="h-4 w-4 text-gray-600" />
+              <button
+                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
+                onClick={resetPomodoro}
+                data-testid="button-pomodoro-reset"
+              >
+                <RotateCcw className="h-3 w-3 text-white" />
               </button>
-              <button className="h-8 w-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-                <SkipForward className="h-4 w-4 text-gray-600" />
+              <button
+                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
+                onClick={skipPomodoro}
+                data-testid="button-pomodoro-skip"
+              >
+                <SkipForward className="h-3 w-3 text-white" />
               </button>
             </div>
-            <span className="text-xs text-gray-400 font-medium">
-              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"} · {pomodoroCount}
+            <span className="text-[10px] text-white/70 font-medium">
+              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"} #{pomodoroCount}
             </span>
           </div>
 
-          {/* Divider */}
-          <div className="w-px h-6 bg-gray-200" />
+          {/* Separator */}
+          <div className="w-px h-6 bg-white/20" />
 
-          {/* Quick Add */}
-          <div className="flex items-center h-11 px-3 gap-2 flex-1 justify-end">
-            <Button size="sm" className="h-8 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium border-0 rounded-xl" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>
-              + Module
+          {/* Quick Add Section */}
+          <div className="flex items-center px-3 py-2 gap-1 flex-1 justify-end">
+            <span className="text-[10px] text-white/50 mr-2 font-medium">Quick Add:</span>
+            <Button 
+              size="sm"
+              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              data-testid="button-add-module"
+              onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
+            >
+              Module
             </Button>
-            <Button size="sm" className="h-8 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium border-0 rounded-xl" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>
-              + Reading
+            <Button 
+              size="sm"
+              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              data-testid="button-add-reading"
+              onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
+            >
+              Reading
             </Button>
-            <Button size="sm" className="h-8 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium border-0 rounded-xl" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>
-              + Discuss
+            <Button 
+              size="sm"
+              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              data-testid="button-add-discussion"
+              onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
+            >
+              Discuss
             </Button>
-            <Button size="sm" className="h-8 px-3 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium border-0 rounded-xl" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>
-              + Assign
+            <Button 
+              size="sm"
+              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              data-testid="button-add-assignment"
+              onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
+            >
+              Assign
             </Button>
-            <Button size="sm" className="h-8 px-3 bg-rose-500 hover:bg-rose-600 text-white text-xs font-semibold border-0 rounded-xl shadow-sm" data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>
-              + Exam
+            <Button 
+              size="sm"
+              className="!h-7 !min-h-0 px-2.5 bg-rose-500/80 hover:bg-rose-500 text-white text-[11px] border-0 font-medium rounded-md"
+              data-testid="button-add-exam"
+              onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
+            >
+              Exam
             </Button>
           </div>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
