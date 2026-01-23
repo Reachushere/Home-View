@@ -103,6 +103,7 @@ const FOLDER_TYPES = [
   { id: "module", name: "Module" },
   { id: "reading", name: "Reading" },
   { id: "other", name: "Other" },
+  { id: "completed", name: "Completed" },
 ];
 
 // Speakers list for media controls
@@ -1040,6 +1041,32 @@ export default function Dashboard() {
     },
   });
 
+  // Mark file as completed (listened) and move to completed folder
+  const markFileCompletedMutation = useMutation({
+    mutationFn: async ({ fileId, currentFolder }: { fileId: number; currentFolder: string | null }) => {
+      // Parse current folder to get week and course, then build completed folder path
+      let newFolder = currentFolder;
+      if (currentFolder) {
+        // Pattern: week-X-courseId-contentType
+        const parts = currentFolder.split('-');
+        if (parts.length >= 4) {
+          // Replace the content type (last part) with "completed"
+          parts[parts.length - 1] = 'completed';
+          newFolder = parts.join('-');
+        }
+      }
+      return apiRequest("PATCH", `/api/files/${fileId}`, { 
+        listened: true, 
+        folder: newFolder 
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      setPreviewFile(null);
+      toast({ title: "File marked as completed and moved to Completed folder" });
+    },
+  });
+
   // Drag and drop handlers
   const handleDragStart = (e: React.DragEvent, task: Task) => {
     setDraggedTask(task);
@@ -1666,6 +1693,27 @@ export default function Dashboard() {
             >
               Open in New Tab
             </Button>
+            
+            {/* Mark as Completed Checkbox */}
+            <div className="flex items-center gap-2 ml-2">
+              <Checkbox
+                id="mark-completed"
+                checked={false}
+                onCheckedChange={(checked) => {
+                  if (checked && previewFile) {
+                    markFileCompletedMutation.mutate({
+                      fileId: previewFile.id,
+                      currentFolder: previewFile.folder,
+                    });
+                  }
+                }}
+                className="border-white data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                data-testid="checkbox-mark-completed"
+              />
+              <Label htmlFor="mark-completed" className="text-white text-xs cursor-pointer">
+                Mark Completed
+              </Label>
+            </div>
           </div>
           
           {/* Text Content with Word Highlighting */}

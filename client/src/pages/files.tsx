@@ -79,6 +79,7 @@ const CONTENT_FOLDERS = [
   { id: "module", name: "Module" },
   { id: "reading", name: "Reading" },
   { id: "other", name: "Other" },
+  { id: "completed", name: "Completed" },
 ];
 
 function getFileIcon(contentType: string | null) {
