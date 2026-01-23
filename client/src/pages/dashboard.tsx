@@ -1767,7 +1767,7 @@ export default function Dashboard() {
       <aside className="text-white m-3 mr-0 rounded-xl shadow-lg p-4 pt-0 flex flex-col overflow-hidden border-[0.25px] border-white/70" style={{ width: 350, background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
         <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '38px', width: '38px' }} />
-          <div className="flex items-baseline gap-1.5">
+          <div className="flex items-baseline gap-1.5 flex-1">
             <h1 className="text-base font-semibold text-white whitespace-nowrap" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               University Planner
             </h1>
@@ -1778,6 +1778,38 @@ export default function Dashboard() {
               ? format(addWeeks(new Date(schoolData.week1StartDate), schoolData.numberOfWeeks), 'MMM d')
               : 'Apr 17'})
             </span>
+          </div>
+          {/* Pomodoro Timer - with transparent box like logo */}
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
+            <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
+              pomodoroMode === "work" ? "bg-red-700 text-white" : 
+              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+            }`} data-testid="pomodoro-timer">
+              {formatPomodoroTime(pomodoroTime)}
+            </div>
+            <div className="flex items-center gap-0.5">
+              <button
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                onClick={togglePomodoro}
+                data-testid="button-pomodoro-toggle"
+              >
+                {pomodoroRunning ? <Pause className="h-3 w-3 text-white" /> : <Play className="h-3 w-3 text-white" />}
+              </button>
+              <button
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                onClick={resetPomodoro}
+                data-testid="button-pomodoro-reset"
+              >
+                <RotateCcw className="h-3 w-3 text-white" />
+              </button>
+              <button
+                className="p-1 hover:bg-white/20 rounded transition-colors"
+                onClick={skipPomodoro}
+                data-testid="button-pomodoro-skip"
+              >
+                <SkipForward className="h-3 w-3 text-white" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2856,45 +2888,6 @@ export default function Dashboard() {
                 Files
               </Button>
             </RouterLink>
-          </div>
-
-          {/* Separator */}
-          <div className="w-px h-6 bg-white/20" />
-
-          {/* Pomodoro Section */}
-          <div className="flex items-center pl-3 pr-1 py-2 gap-2 -ml-[13px]">
-            <div className={`text-sm font-mono font-bold px-2 h-7 flex items-center rounded-md ${
-              pomodoroMode === "work" ? "bg-red-700 text-white" : 
-              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-            }`} data-testid="pomodoro-timer">
-              {formatPomodoroTime(pomodoroTime)}
-            </div>
-            <div className="flex items-center gap-1">
-              <button
-                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
-                onClick={togglePomodoro}
-                data-testid="button-pomodoro-toggle"
-              >
-                {pomodoroRunning ? <Pause className="h-3 w-3 text-white" /> : <Play className="h-3 w-3 text-white" />}
-              </button>
-              <button
-                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
-                onClick={resetPomodoro}
-                data-testid="button-pomodoro-reset"
-              >
-                <RotateCcw className="h-3 w-3 text-white" />
-              </button>
-              <button
-                className="p-1.5 hover:bg-white/20 rounded-md transition-colors"
-                onClick={skipPomodoro}
-                data-testid="button-pomodoro-skip"
-              >
-                <SkipForward className="h-3 w-3 text-white" />
-              </button>
-            </div>
-            <span className="text-[10px] text-white/70 font-medium">
-              {pomodoroMode === "work" ? "Focus" : pomodoroMode === "shortBreak" ? "Break" : "Long"} #{pomodoroCount}
-            </span>
           </div>
 
           {/* Separator */}
