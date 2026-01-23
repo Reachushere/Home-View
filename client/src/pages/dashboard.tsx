@@ -4202,7 +4202,7 @@ export default function Dashboard() {
                           return (
                             <div key={courseCode}>
                               {/* Course header */}
-                              <div className={`text-xs font-bold mb-1 ${colors ? colors.text : 'text-gray-400'}`}>
+                              <div className="text-xs font-bold mb-1 text-white">
                                 {courseCode}
                               </div>
                               {/* Files for this course */}
