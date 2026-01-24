@@ -2448,7 +2448,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-hidden relative" style={{ backgroundImage: `url(${customBackground || campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+      <div className="flex flex-1 overflow-hidden relative" style={{ backgroundColor: 'white' }}>
         {/* Constant fade overlay - slightly dims background */}
         <div 
           className="absolute inset-0 pointer-events-none"
