@@ -4919,10 +4919,10 @@ export default function Dashboard() {
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}
               data-testid="weekly-files-flyout-tab"
             >
-              <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
-                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-                Weekly Files
+              <span className="text-white text-[10px] font-medium tracking-wide flex items-center gap-2">
                 <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
+                Weekly Files
+                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
               </span>
             </button>
           </div>
