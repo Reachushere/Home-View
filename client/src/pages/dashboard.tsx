@@ -2345,7 +2345,6 @@ export default function Dashboard() {
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
           boxShadow: '0 -2px 10px rgba(0,0,0,0.2)'
         }}>
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '40px', width: '40px' }} />
           <div className="flex flex-col flex-1">
             <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
             <div className="flex items-center gap-2" data-testid="digital-clock">
@@ -3238,6 +3237,7 @@ export default function Dashboard() {
       }}>
         <div className="flex items-center px-4 py-2 gap-2 w-full justify-center">
           <div className="h-7 flex items-center">
+            <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '28px', width: '28px' }} />
           </div>
         </div>
       </div>
