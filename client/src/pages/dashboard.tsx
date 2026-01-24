@@ -3770,7 +3770,7 @@ export default function Dashboard() {
                       backgroundColor: isToday 
                         ? "#2d4a6f" 
                         : (isFriday && new Date().getDay() !== 5) 
-                          ? "#dc2626" 
+                          ? "#f87171" 
                           : "transparent" 
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
@@ -4043,8 +4043,8 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors ${totalItems > 0 && !isToday && !(isFriday && new Date().getDay() !== 5) ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
-                          style={isToday ? { backgroundColor: 'rgba(165,180,252,0.45)' } : (isFriday && new Date().getDay() !== 5) ? { backgroundColor: '#dc2626' } : undefined}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors ${(isFriday && new Date().getDay() !== 5) ? "bg-red-200" : totalItems > 0 ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          style={isToday ? { backgroundColor: 'rgba(165,180,252,0.45)' } : undefined}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
