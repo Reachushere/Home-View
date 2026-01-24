@@ -4244,6 +4244,8 @@ export default function Dashboard() {
           const maxTasks = Math.max(cppa122Tasks, cfnf400Tasks, casl101Tasks, 2);
           // Base height 330px fits 3 course rows with 1 task each without scrolling
           const dynamicHeight = maxTasks <= 2 ? 330 : 330 + (maxTasks - 2) * 70;
+          // Calculate exact row height: container height minus header (~28px), divided by 3 rows
+          const rowHeight = Math.floor((dynamicHeight - 28) / 3);
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
@@ -4373,7 +4375,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Row - Green */}
-                  <div className="px-2 py-1 border-b border-white/30 flex-1" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
+                  <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.35)', height: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -4385,7 +4387,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Row - Pink */}
-                  <div className="px-2 py-1 border-b border-white/30 flex-1" style={{ backgroundColor: 'rgba(249,168,212,0.45)' }}>
+                  <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.45)', height: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -4397,7 +4399,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Row - Purple */}
-                  <div className="px-2 py-1 flex-1" style={{ backgroundColor: 'rgba(165,180,252,0.45)' }}>
+                  <div className="px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.45)', height: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
@@ -4421,7 +4423,7 @@ export default function Dashboard() {
             </h4>
             <div className="flex-1 flex flex-col overflow-auto">
               {/* CPPA122 Row - Green */}
-              <div className="px-2 py-1 border-b border-white/30 flex-1" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }}>
+              <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.35)', height: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -4435,7 +4437,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="px-2 py-1 border-b border-white/30 flex-1" style={{ backgroundColor: 'rgba(249,168,212,0.45)' }}>
+              <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.45)', height: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -4449,7 +4451,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CASL101 Row - Purple */}
-              <div className="px-2 py-1 flex-1" style={{ backgroundColor: 'rgba(165,180,252,0.45)' }}>
+              <div className="px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.45)', height: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
