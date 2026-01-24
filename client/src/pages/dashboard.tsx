@@ -4774,8 +4774,9 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           {sortedOverdue.map(([courseCode, files]) => {
                             const colors = courseColors[courseCode];
-                            // Use the first file's courseName, or fall back to courseCode
-                            const displayName = files[0]?.courseName || courseCode;
+                            // Use coursesData lookup for consistent naming
+                            const courseInfo = coursesData.courses.find(c => c.name.toUpperCase().startsWith(courseCode));
+                            const displayName = courseInfo?.name || courseCode;
                             return (
                               <div key={courseCode}>
                                 <div className="text-[10px] font-bold mb-1 text-white">
