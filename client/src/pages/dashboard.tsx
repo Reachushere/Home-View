@@ -2343,30 +2343,31 @@ export default function Dashboard() {
         {/* Sidebar Container */}
         <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
-        {/* Clock and Pomodoro Timer - Floating above sidebar */}
-        <div className="absolute left-0 right-0 z-10 flex flex-col items-center gap-1 px-2" style={{ top: '33px' }}>
-          {/* Digital Clock */}
+        {/* Digital Clock - Floating above sidebar */}
+        <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '13px' }}>
           <div className="flex items-center gap-2" data-testid="digital-clock">
-            <span className="text-sm text-white font-medium">
+            <span className="text-base text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <div className="w-[1px] h-5 bg-white/50" />
+            <div className="w-[1px] h-6 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-lg font-semibold text-white tabular-nums">
+              <span className="text-xl font-semibold text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-sm text-white tabular-nums">
+              <span className="text-base text-white tabular-nums">
                 :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <span className="text-sm font-bold text-white ml-0.5 uppercase">
+              <span className="text-base font-bold text-white ml-0.5 uppercase">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
             {profileData.travelTimezone && (
-              <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
+              <span className="text-xs text-orange-400 font-medium ml-1">Travel</span>
             )}
           </div>
-          {/* Pomodoro Timer */}
+        </div>
+        {/* Pomodoro Timer - Floating above sidebar */}
+        <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '58px' }}>
           <div className="flex items-center justify-center gap-3 bg-white/20 rounded-lg px-4 py-2">
             <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
               pomodoroMode === "work" ? "bg-red-700 text-white" : 
