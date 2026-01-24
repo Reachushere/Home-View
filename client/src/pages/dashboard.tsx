@@ -5263,6 +5263,9 @@ function TaskCard({
               <Icon className="h-2.5 w-2.5 mr-0.5" />
               {task.type}
             </Badge>
+            {hasAttachments && (
+              <Paperclip className="h-3 w-3 ml-1.5 text-muted-foreground" data-testid={`icon-attachment-${task.id}`} />
+            )}
             <div className="flex-1 flex items-center justify-end gap-1 text-black dark:text-white text-[10px]">
               <Clock className="h-2.5 w-2.5" />
               <span className="font-bold">DUE</span> {format(new Date(task.dueDate), "MMM d")}
