@@ -4768,7 +4768,7 @@ export default function Dashboard() {
                     
                     return (
                       <div className="mb-4">
-                        <div className="text-[11px] font-bold text-red-400 border-b border-white/30 pb-1 mb-2">
+                        <div className="text-[11px] font-bold text-red-400 border-t-2 border-white pt-2 mb-2">
                           OVERDUE
                         </div>
                         <div className="space-y-2">
