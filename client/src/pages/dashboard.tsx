@@ -2579,22 +2579,22 @@ export default function Dashboard() {
           <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
           <div className="border-[1.5px] border-white">
             <div className="flex border-b border-white">
-              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL I</div>
+              <div className="font-bold px-1 py-0.5 border-r-[1.5px] border-white w-16">LEVEL I</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
+              <div className="w-5 px-0.5 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
               <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
             <div className={`flex border-b border-white ${checkedCourses['PPA101'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
+              <div className="w-5 px-0.5 py-0.5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 101</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">Core Req</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 101</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
@@ -2604,11 +2604,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div className={`flex border-b border-white ${checkedCourses['PPA102'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
+              <div className="w-5 px-0.5 py-0.5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 102</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">Core Req</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 102</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA102']?.grade || ''} onChange={(e) => updateGrade('PPA102', e.target.value)}>
@@ -2618,11 +2618,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div className={`flex border-b border-white ${checkedCourses['PPA125'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
+              <div className="w-5 px-0.5 py-0.5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 125</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">Core Req</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 125</div>
               <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA125']?.grade || ''} onChange={(e) => updateGrade('PPA125', e.target.value)}>
@@ -2632,18 +2632,18 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white text-[8px] font-semibold">CORE ELECTIVES:</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
+              <div className="w-5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white text-[8px] font-semibold">CORE ELECTIVES:</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className={`flex border-b border-white ${checkedCourses['ELECTIVE1'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 120</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 120</div>
               <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
@@ -2653,11 +2653,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div className={`flex border-b border-white ${checkedCourses['ELECTIVE2'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 121</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 121</div>
               <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
@@ -2667,11 +2667,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 122</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 122</div>
               <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2681,11 +2681,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 124</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 124</div>
               <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2695,7 +2695,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex flex-col">
+              <div className="w-5 border-r-[1.5px] border-white flex flex-col">
                 <div className="flex-1"></div>
                 <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-500' : ''}`}>
                   <input type="checkbox" className="checkbox-black" checked={checkedCourses['LIBERAL'] || false} disabled={!openElectives['LIBERAL']?.trim()} onChange={() => toggleCourse('LIBERAL')} />
@@ -2724,7 +2724,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
+              <div className="w-5 border-r-[1.5px] border-white flex flex-col">
                 <div className="flex-1"></div>
                 <div className={`h-[46px] flex items-start justify-center pt-2 ${checkedCourses['OPEN1'] ? 'bg-gray-500' : ''}`}>
                   <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
@@ -2782,22 +2782,22 @@ export default function Dashboard() {
           <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-500 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
           <div className="border-[1.5px] border-white">
             <div className="flex border-b border-white">
-              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL II</div>
+              <div className="font-bold px-1 py-0.5 border-r-[1.5px] border-white w-16">LEVEL II</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
+              <div className="w-5 px-0.5 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
               <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
+              <div className="w-5 px-0.5 py-0.5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 211</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">Core Req</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 211</div>
               <div className="flex-1 px-1 py-0.5">Public Policy</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2807,17 +2807,17 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white text-[8px] font-semibold">CORE ELECTIVES:</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
+              <div className="w-5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white text-[8px] font-semibold">CORE ELECTIVES:</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">THREE</span> from the following:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 120</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 120</div>
               <div className="flex-1 px-1 py-0.5">Canadian Politics and Government</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2827,10 +2827,10 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 121</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 121</div>
               <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2840,11 +2840,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 122</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 122</div>
               <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2854,11 +2854,11 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 124</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 124</div>
               <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2868,10 +2868,10 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 235</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 235</div>
               <div className="flex-1 px-1 py-0.5">Theories of the State</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2881,10 +2881,10 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 303</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 303</div>
               <div className="flex-1 px-1 py-0.5">Public Budget Policy/Politics</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2894,10 +2894,10 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 319</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white">PPA 319</div>
               <div className="flex-1 px-1 py-0.5">Politics of Work and Labour</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
@@ -2907,16 +2907,16 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
+              <div className="w-5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 border-r-[1.5px] border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex items-stretch">
-              <div className="w-5 border-r border-white flex items-center justify-center">
+              <div className="w-5 border-r-[1.5px] border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 border-r border-white h-11 flex items-start justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r-[1.5px] border-white h-11 flex items-start justify-center text-[8px] text-center px-0.5">
                 <span className="leading-none -mt-2"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
               </div>
               <div className="flex-1 h-11 px-1 flex items-center">
@@ -2931,7 +2931,7 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex items-stretch">
-              <div className="w-5 border-r border-white flex flex-col">
+              <div className="w-5 border-r-[1.5px] border-white flex flex-col">
                 <div className="h-7 border-b border-white"></div>
                 <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
@@ -2942,7 +2942,7 @@ export default function Dashboard() {
                 <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-9 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r-[1.5px] border-white flex items-center justify-center text-[8px] text-center px-0.5">
                 <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
               </div>
               <div className="flex-1 flex flex-col">
@@ -2994,17 +2994,17 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
+              <div className="w-5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 border-r-[1.5px] border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex items-stretch">
-              <div className="w-5 border-r border-white flex flex-col">
+              <div className="w-5 border-r-[1.5px] border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r-[1.5px] border-white h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
                 <span className="leading-tight"><span className="font-bold">TWO</span> one-term courses required - options are listed in <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800 font-bold">PR Table I</a>.</span>
               </div>
               <div className="flex-1 flex flex-col">
@@ -3029,13 +3029,13 @@ export default function Dashboard() {
           <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 3 ? '' : 'hidden'}`}>
           <div className="border-[1.5px] border-white">
             <div className="flex border-b border-white">
-              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL III</div>
+              <div className="font-bold px-1 py-0.5 border-r-[1.5px] border-white w-16">LEVEL III</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
             </div>
             <div className="flex border-b border-white">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
+              <div className="w-5 px-0.5 py-0.5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r-[1.5px] border-white font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
               <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
@@ -3049,11 +3049,11 @@ export default function Dashboard() {
               </colgroup>
               <tbody>
                 <tr className="border-b border-white">
-                  <td className="px-0.5 py-0.5 border-r border-white text-center align-middle">
+                  <td className="px-0.5 py-0.5 border-r-[1.5px] border-white text-center align-middle">
                     <input type="checkbox" className="checkbox-black" />
                   </td>
-                  <td className="px-1 py-0.5 border-r border-white align-middle text-[8px]">Core Req</td>
-                  <td className="px-1 py-0.5 border-r border-white align-middle text-[9px]">PPA 333</td>
+                  <td className="px-1 py-0.5 border-r-[1.5px] border-white align-middle text-[8px]">Core Req</td>
+                  <td className="px-1 py-0.5 border-r-[1.5px] border-white align-middle text-[9px]">PPA 333</td>
                   <td className="px-1 py-0.5 align-middle text-[9px]">Research Methods in Public Administration</td>
                   <td className="border-l border-black align-middle">
                     <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
@@ -3083,7 +3083,7 @@ export default function Dashboard() {
                   <tr key={course.code} className={idx < arr.length - 1 ? 'border-b border-white' : ''}>
                     {idx === 0 && (
                       <>
-                        <td rowSpan={14} className="px-0.5 py-0.5 border-r border-white text-center align-middle">
+                        <td rowSpan={14} className="px-0.5 py-0.5 border-r-[1.5px] border-white text-center align-middle">
                           <div className="flex flex-col gap-0">
                             {Array(14).fill(0).map((_, i) => (
                               <div key={i} className={`h-11 flex items-center justify-center ${i < 13 ? 'border-b border-white' : ''}`}>
@@ -3092,13 +3092,13 @@ export default function Dashboard() {
                             ))}
                           </div>
                         </td>
-                        <td rowSpan={14} className="px-1 py-0.5 border-r border-white text-[8px] align-middle">
+                        <td rowSpan={14} className="px-1 py-0.5 border-r-[1.5px] border-white text-[8px] align-middle">
                           <div className="font-semibold">CORE ELECTIVES:</div>
                           <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
                         </td>
                       </>
                     )}
-                    <td className={`h-11 px-1 py-0.5 border-r border-white align-middle text-[9px]`}>{course.code}</td>
+                    <td className={`h-11 px-1 py-0.5 border-r-[1.5px] border-white align-middle text-[9px]`}>{course.code}</td>
                     <td className={`h-11 px-1 py-0.5 align-middle text-[9px]`}>{course.title}</td>
                     <td className="border-l border-black align-middle">
                       <div className="flex flex-col items-center justify-center gap-1.5">
@@ -3114,17 +3114,17 @@ export default function Dashboard() {
             </table>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
+              <div className="w-5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 border-r-[1.5px] border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE REQUIRED:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
+              <div className="w-5 border-r-[1.5px] border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center">
+              <div className="w-14 border-r-[1.5px] border-white flex items-center justify-center text-[8px] text-center">
                 Select&nbsp;<span className="font-bold">ONE</span>
               </div>
               <div className="flex-1 flex flex-col">
@@ -3144,18 +3144,18 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
+              <div className="w-5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 border-r-[1.5px] border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
+              <div className="w-5 border-r-[1.5px] border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r-[1.5px] border-white flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -3180,19 +3180,19 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
+              <div className="w-5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 border-r-[1.5px] border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A / B:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
+              <div className="w-5 border-r-[1.5px] border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r-[1.5px] border-white flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED,<br/><br/><span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/><br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -3222,13 +3222,13 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
+              <div className="w-5 border-r-[1.5px] border-white"></div>
+              <div className="w-14 border-r-[1.5px] border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
+              <div className="w-5 border-r-[1.5px] border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
@@ -3236,7 +3236,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r-[1.5px] border-white flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight"><span className="font-bold">SIX</span> one-term level courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -4308,7 +4308,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Column - Green */}
-                  <div className="flex-1 p-2 overflow-auto border-r border-white">
+                  <div className="flex-1 p-2 overflow-auto border-r-[1.5px] border-white">
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CPPA122 - Local Politics</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
@@ -4341,7 +4341,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 p-2 overflow-auto border-r border-white">
+                  <div className="flex-1 p-2 overflow-auto border-r-[1.5px] border-white">
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CFNF400 - Human Sexuality</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
