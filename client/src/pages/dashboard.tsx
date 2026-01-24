@@ -4846,7 +4846,7 @@ export default function Dashboard() {
             {/* Flyout Panel */}
             <div 
               className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden backdrop-blur-md ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-white/50 rounded-l-md' : 'w-0 border-0'}`}
-              style={{ maxHeight: '70vh', background: 'rgba(255,255,255,0.1)' }}
+              style={{ maxHeight: '70vh', background: 'rgba(0,0,0,0.7)' }}
             >
               <div className="w-80 flex flex-col">
                 <div className="p-3 flex items-center justify-between" style={{ borderBottom: '1px solid rgb(255, 255, 255, 0.3)' }}>
@@ -5074,7 +5074,7 @@ export default function Dashboard() {
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
               className="border border-r-0 border-white/50 rounded-l-md px-1 py-3 hover:opacity-80 transition-colors shadow-lg backdrop-blur-md"
-              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'rgba(255,255,255,0.1)' }}
+              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'rgba(0,0,0,0.7)' }}
               data-testid="weekly-files-flyout-tab"
             >
               <span className="text-white text-[10px] font-medium tracking-wide flex items-center gap-2">
