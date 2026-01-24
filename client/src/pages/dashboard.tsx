@@ -4777,7 +4777,9 @@ export default function Dashboard() {
                             return (
                               <div key={courseCode}>
                                 <div className="text-[10px] font-bold mb-1 text-white">
-                                  {courseCode}
+                                  {courseCode === "CPPA122" ? "CPPA122 - Local Politics" : 
+                                   courseCode === "CFNF400" ? "CFNF400 - Human Sexuality" : 
+                                   courseCode === "CASL101" ? "CASL101 - Academic Skills" : courseCode}
                                 </div>
                                 <div className="space-y-1">
                                   {files.map((file, idx) => {
