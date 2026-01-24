@@ -112,7 +112,7 @@ const FOLDER_TYPES = [
 
 // Speakers list for media controls
 const SPEAKERS = [
-  { id: "browser_tts", name: "🔊 Browser (This Device)" },
+  { id: "browser_tts", name: "Browser (This Device)" },
   { id: "media_player.byhome", name: "Apartment" },
   { id: "media_player.cat_wr", name: "Cat Washroom Speakers" },
   { id: "media_player.echo_cat_left_am", name: "Cat Washroom Left" },
@@ -2069,7 +2069,7 @@ export default function Dashboard() {
           {/* Media Controls Bar */}
           <div className="flex items-center gap-3 p-3 mx-6 mt-4 bg-black rounded-lg">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
-              <SelectTrigger className="w-[180px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
+              <SelectTrigger className="w-[200px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
