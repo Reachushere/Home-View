@@ -2430,8 +2430,8 @@ export default function Dashboard() {
         </div>
         {/* Pomodoro Timer - Floating above sidebar */}
         <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '78px' }}>
-          <div className="flex items-center justify-center gap-4 bg-white/20 rounded-lg px-5 py-2.5">
-            <div className={`text-[11px] font-mono font-bold px-2 py-1 rounded ${
+          <div className="flex items-center justify-center gap-4 bg-white/20 rounded-lg px-6 py-3">
+            <div className={`text-sm font-mono font-bold px-3 py-1.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
             }`} style={pomodoroMode === "work" ? { backgroundColor: '#7f1d1d' } : undefined} data-testid="pomodoro-timer">
@@ -4316,7 +4316,7 @@ export default function Dashboard() {
                               cardBgClass="bg-green-50 dark:bg-green-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-7px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-9px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -4349,7 +4349,7 @@ export default function Dashboard() {
                               cardBgClass="bg-pink-50 dark:bg-pink-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-7px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-9px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -4382,7 +4382,7 @@ export default function Dashboard() {
                               cardBgClass="bg-indigo-50 dark:bg-indigo-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-7px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-9px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
