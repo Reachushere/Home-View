@@ -2341,7 +2341,7 @@ export default function Dashboard() {
       {/* Left Column - Header Bar + Sidebar */}
       <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '70px' }}>
         {/* Sidebar Container */}
-        <div className="relative flex-1 flex flex-col mb-3">
+        <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
         {/* Pomodoro Timer - Floating above sidebar */}
         <div className="absolute top-2 left-0 right-0 z-10 flex justify-center px-2">
