@@ -2464,7 +2464,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className="flex-1 text-white rounded-xl shadow-lg overflow-hidden border-[0.15px] border-white" style={{ width: 350, background: 'rgba(0,0,0,0.35)' }}>
+        <aside className="flex-1 text-white rounded-xl shadow-lg overflow-hidden border-[0.1px] border-white" style={{ width: 350, background: 'rgba(0,0,0,0.35)' }}>
         <div className={`h-full pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '85px' }} />
@@ -2577,7 +2577,7 @@ export default function Dashboard() {
           
           {/* Level I */}
           <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
-          <div className="border-[0.15px] border-white">
+          <div className="border-[0.1px] border-white">
             <div className="flex border-b border-white">
               <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL I</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
@@ -2780,7 +2780,7 @@ export default function Dashboard() {
 
           {/* Level II */}
           <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-500 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
-          <div className="border-[0.15px] border-white">
+          <div className="border-[0.1px] border-white">
             <div className="flex border-b border-white">
               <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL II</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
@@ -3027,7 +3027,7 @@ export default function Dashboard() {
 
         {/* Level III */}
           <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 3 ? '' : 'hidden'}`}>
-          <div className="border-[0.15px] border-white">
+          <div className="border-[0.1px] border-white">
             <div className="flex border-b border-white">
               <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL III</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
@@ -3290,7 +3290,7 @@ export default function Dashboard() {
         top: '8px',
         background: 'rgba(0,0,0,0.75)',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-        border: '0.15px solid white'
+        border: '0.1px solid white'
       }}>
         <div className="flex items-center px-4 gap-2 w-full h-[44px]">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" />
@@ -3310,7 +3310,7 @@ export default function Dashboard() {
         <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-1" style={{ 
           background: 'rgba(0,0,0,0.75)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-          border: '0.15px solid white'
+          border: '0.1px solid white'
         }}>
           {/* Navigation Section */}
           <div className="flex items-center px-4 gap-2 h-[44px]">
@@ -3758,7 +3758,7 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.15px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.1px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
@@ -4179,7 +4179,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-3" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.15px] border-white bg-white/50 backdrop-blur-sm">
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm">
             <CardContent className="p-0 h-full overflow-auto">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
@@ -4289,7 +4289,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
-          <section className="flex-1 rounded-xl shadow-md border-[0.15px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-upcoming">
+          <section className="flex-1 rounded-xl shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Clock className="h-3 w-3 text-white" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
@@ -4316,7 +4316,7 @@ export default function Dashboard() {
                               cardBgClass="bg-green-50 dark:bg-green-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.15px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -4349,7 +4349,7 @@ export default function Dashboard() {
                               cardBgClass="bg-pink-50 dark:bg-pink-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.15px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -4382,7 +4382,7 @@ export default function Dashboard() {
                               cardBgClass="bg-indigo-50 dark:bg-indigo-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.15px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -4404,7 +4404,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section (Urgent) - Now in Middle */}
-          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[0.15px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[0.1px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-due-today">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Calendar className="h-3 w-3 text-white" />
               URGENT: Do Today ({todayTasks.length})
@@ -4462,7 +4462,7 @@ export default function Dashboard() {
           </section>
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
-          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[0.15px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-missed">
+          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-missed">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Clock className="h-3 w-3 text-white" />
               OVERDUE: Missed Tasks ({missedTasks.length})
@@ -4518,7 +4518,7 @@ export default function Dashboard() {
 
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
-          <section className="rounded-xl shadow-md border-[0.15px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgba(0,0,0,0.35)' }} data-testid="section-todo">
+          <section className="rounded-xl shadow-md border-[0.1px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgba(0,0,0,0.35)' }} data-testid="section-todo">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               To Do ({todoItems.filter(item => item.trim() !== "").length})
@@ -4554,7 +4554,7 @@ export default function Dashboard() {
         {/* Completed Tasks by Course */}
         <div className="flex gap-4 items-stretch h-[240px] flex-shrink-0">
           {/* CPPA122 Completed */}
-          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[0.15px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-cppa122">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-cppa122">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CPPA122 - Local Politics ({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})
@@ -4582,7 +4582,7 @@ export default function Dashboard() {
           </section>
 
           {/* CFNF400 Completed */}
-          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[0.15px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-cfnf400">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-cfnf400">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CFNF400 - Human Sexuality ({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})
@@ -4610,7 +4610,7 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[0.15px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-casl101">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-casl101">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CASL101 - American Sign Language ({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})
@@ -4699,7 +4699,7 @@ export default function Dashboard() {
           >
             {/* Flyout Panel */}
             <div 
-              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border-[0.15px] border-white rounded-l-xl' : 'w-0 border-0'}`}
+              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border-[0.1px] border-white rounded-l-xl' : 'w-0 border-0'}`}
               style={{ maxHeight: '70vh', background: 'rgba(0,0,0,0.75)' }}
             >
               <div className="w-80 flex flex-col">
@@ -4909,7 +4909,7 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="border-[0.15px] border-r-0 border-white rounded-l-lg px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
+              className="border-[0.1px] border-r-0 border-white rounded-l-lg px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'rgba(0,0,0,0.75)' }}
               data-testid="weekly-files-flyout-tab"
             >
@@ -5209,7 +5209,7 @@ function TaskCard({
       return (
         <div className="relative pt-1 h-full flex flex-col cursor-pointer pb-2" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="h-5 flex items-center justify-around rounded-xl px-1 text-white border-[0.15px] border-white no-blink mb-1" style={{ background: 'rgba(0,0,0,0.75)' }}>
+          <div className="h-5 flex items-center justify-around rounded-xl px-1 text-white border-[0.1px] border-white no-blink mb-1" style={{ background: 'rgba(0,0,0,0.75)' }}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
@@ -5271,7 +5271,7 @@ function TaskCard({
     return (
       <div className="relative pt-1 h-full flex flex-col">
         {/* Media Controls - positioned absolutely at top, half height */}
-        <div className="absolute -top-5 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 bg-[#5979CC] text-white border-[0.15px] border-white">
+        <div className="absolute -top-5 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 bg-[#5979CC] text-white border-[0.1px] border-white">
           <div
             className="cursor-pointer hover:opacity-70"
             onClick={handlePlayTTS}
