@@ -3237,7 +3237,7 @@ export default function Dashboard() {
         border: '1px solid rgba(255,255,255,0.5)'
       }}>
         <div className="flex items-center px-4 py-2 gap-2 w-full justify-center">
-          <div className="h-6 flex items-center">
+          <div className="h-7 flex items-center">
             <span className="text-white text-sm font-medium">Quick Actions</span>
           </div>
         </div>
