@@ -213,6 +213,14 @@ export default function Dashboard() {
     
     return currentMinutes < sunriseMinutes || currentMinutes > sunsetMinutes;
   }, [currentTime]);
+  
+  // Calculate synchronized animation delay so all overdue blinks are in sync
+  // Animation is 1s, so we use negative delay based on current second fraction
+  const blinkSyncDelay = useMemo(() => {
+    const ms = currentTime.getTime() % 1000;
+    return `-${ms / 1000}s`;
+  }, [currentTime]);
+  
   const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('checkedCourses');
     return saved ? JSON.parse(saved) : {};
@@ -4471,7 +4479,7 @@ export default function Dashboard() {
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                     <div key={task.id}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact overdueBlink />
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact overdueBlink blinkSyncDelay={blinkSyncDelay} />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
@@ -4485,7 +4493,7 @@ export default function Dashboard() {
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                     <div key={task.id}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact overdueBlink />
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact overdueBlink blinkSyncDelay={blinkSyncDelay} />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
@@ -4499,7 +4507,7 @@ export default function Dashboard() {
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                     <div key={task.id}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact overdueBlink />
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact overdueBlink blinkSyncDelay={blinkSyncDelay} />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
@@ -4795,6 +4803,7 @@ export default function Dashboard() {
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
                                       className="flex items-center gap-2 p-2 rounded text-xs group border border-red-400/50 bg-red-900/30 text-white animate-urgent-blink"
+                                      style={{ animationDelay: blinkSyncDelay }}
                                       data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
                                     >
                                       <button
@@ -4938,6 +4947,7 @@ function TaskCard({
   compact = false,
   overdueBlink = false,
   urgentBlink = false,
+  blinkSyncDelay,
 }: {
   task: Task;
   onComplete: (isCompleted: boolean) => void;
@@ -4947,6 +4957,7 @@ function TaskCard({
   cardBgClass?: string;
   compact?: boolean;
   overdueBlink?: boolean;
+  blinkSyncDelay?: string;
   urgentBlink?: boolean;
 }) {
   const Icon = iconMap[task.type] || ClipboardCheck;
@@ -5065,6 +5076,7 @@ function TaskCard({
       } ${isMissed && !cardBgClass ? "border-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
       } ${overdueBlink ? "animate-urgent-blink" : ""} ${urgentBlink ? "animate-shimmer" : ""}`}
+      style={overdueBlink && blinkSyncDelay ? { animationDelay: blinkSyncDelay } : undefined}
       data-testid={`card-task-${task.id}`}
     >
       <CardHeader className={`flex flex-row items-start justify-between gap-1 space-y-0 ${compact ? "pb-0 pt-1.5 px-2 flex-shrink-0" : "pb-1 pt-3 px-3"}`}>
