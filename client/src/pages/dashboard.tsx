@@ -4963,7 +4963,7 @@ export default function Dashboard() {
                                         }}
                                         className="flex items-center gap-2 flex-1 text-left min-w-0"
                                       >
-                                        <span className="truncate font-medium text-[10px]">{file.name || file.url}</span>
+                                        <span className="truncate font-medium text-[10px]">{matchingFile?.displayName || matchingFile?.originalName || file.name || file.url}</span>
                                       </button>
                                     </div>
                                   );})}
