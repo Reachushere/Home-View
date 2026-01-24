@@ -3206,7 +3206,7 @@ export default function Dashboard() {
         border: '1px solid rgba(255,255,255,0.5)'
       }}>
         <div className="flex items-center px-4 py-2 gap-2 w-full">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '36px', width: '36px' }} />
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-7 w-7" />
           <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
         </div>
       </div>
