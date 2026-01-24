@@ -1036,8 +1036,11 @@ export default function Dashboard() {
       if (response.ok) {
         const speakerName = SPEAKERS.find(s => s.id === previewSpeaker)?.name || previewSpeaker;
         toast({ title: `Playing on ${speakerName}: ${fileName}` });
-        // Start word highlighting when audio starts playing
-        startHighlighting();
+        // Only use estimated highlighting if sync mode is OFF
+        // (sync mode uses browser TTS onboundary for precise tracking)
+        if (!syncWithEcho) {
+          startHighlighting();
+        }
       } else {
         toast({ title: "Failed to play file", variant: "destructive" });
       }
