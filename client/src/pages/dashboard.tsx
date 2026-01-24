@@ -3275,7 +3275,7 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hover:bg-white/20 rounded-md -ml-1.5 -mr-0.5"
+                  className="hover:bg-white/20 rounded-md -ml-1.5 -mr-1"
                   data-testid="button-hamburger-menu"
                 >
                   <Menu className="!h-7 !w-7 text-white" strokeWidth={2.5} />
