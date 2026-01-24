@@ -2474,23 +2474,23 @@ export default function Dashboard() {
         <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '13px' }}>
           {/* Clock on the left */}
           <div className="flex items-center gap-1.5" data-testid="digital-clock">
-            <span className="text-xs text-white font-medium">
+            <span className="text-sm text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <div className="w-[1px] h-4 bg-white/50" />
+            <div className="w-[1px] h-5 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-sm font-semibold text-white tabular-nums">
+              <span className="text-base font-semibold text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-xs text-white tabular-nums">
+              <span className="text-sm text-white tabular-nums">
                 :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <span className="text-xs font-bold text-white ml-0.5 uppercase">
+              <span className="text-sm font-bold text-white ml-0.5 uppercase">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
             {profileData.travelTimezone && (
-              <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
+              <span className="text-xs text-orange-400 font-medium ml-1">Travel</span>
             )}
           </div>
           {/* Timer and controls on the right */}
