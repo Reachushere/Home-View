@@ -4995,7 +4995,7 @@ export default function Dashboard() {
                     </div>
                   ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="mb-1 mt-7">
+                      <div className={`mb-1 ${missedTasks.filter(t => t.attachments && t.attachments.length > 0).length > 0 ? 'mt-7' : 'mt-0'}`}>
                         <span className="text-[11px] font-bold text-white">DUE THIS WEEK</span>
                         <div className="bg-white" style={{ height: '0.1px', marginTop: '1px' }}></div>
                       </div>
