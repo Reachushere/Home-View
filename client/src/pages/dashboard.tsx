@@ -2386,8 +2386,8 @@ export default function Dashboard() {
       <div className="flex flex-1 overflow-hidden relative" style={{ backgroundImage: `url(${customBackground || campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
         {/* Constant fade overlay - slightly dims background */}
         <div 
-          className="absolute inset-0 pointer-events-none z-0"
-          style={{ background: 'rgba(0, 0, 0, 0.35)' }}
+          className="absolute inset-0 pointer-events-none z-[1]"
+          style={{ background: 'rgba(0, 0, 0, 0.45)' }}
         />
         {/* Night overlay - dims background based on Toronto sunrise/sunset */}
         <div 
