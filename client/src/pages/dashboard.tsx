@@ -2449,10 +2449,10 @@ export default function Dashboard() {
       </Dialog>
 
       <div className="flex flex-1 overflow-hidden relative" style={{ backgroundColor: 'black' }}>
-        {/* Constant fade overlay - slightly dims background */}
+        {/* Constant fade overlay - disabled for solid black background */}
         <div 
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'rgba(255, 255, 255, 0.30)', zIndex: 0 }}
+          style={{ background: 'transparent', zIndex: 0 }}
         />
         {/* Night overlay - dims background based on Toronto sunrise/sunset */}
         <div 
