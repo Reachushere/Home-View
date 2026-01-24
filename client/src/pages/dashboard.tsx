@@ -4793,12 +4793,12 @@ export default function Dashboard() {
                                     return (
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
-                                      className={`flex items-center gap-2 p-1.5 rounded-xl text-xs group shadow-sm ${
-                                        courseCode === 'CPPA122' ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700' :
-                                        courseCode === 'CFNF400' ? 'bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-700' :
-                                        courseCode === 'CASL101' ? 'bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700' : 
-                                        'bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700'
-                                      } text-black dark:text-white animate-urgent-blink`}
+                                      className={`flex items-center gap-2 p-1.5 rounded-xl text-xs group shadow-sm border ${
+                                        courseCode === 'CPPA122' ? 'bg-green-100 dark:bg-green-900/40 border-green-500 text-green-700 dark:text-green-300' :
+                                        courseCode === 'CFNF400' ? 'bg-pink-100 dark:bg-pink-900/40 border-pink-500 text-pink-700 dark:text-pink-300' :
+                                        courseCode === 'CASL101' ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-500 text-indigo-700 dark:text-indigo-300' : 
+                                        'bg-gray-100 dark:bg-gray-900/40 border-gray-500 text-gray-700 dark:text-gray-300'
+                                      } animate-urgent-blink`}
                                       style={{ animationDelay: blinkSyncDelay }}
                                       data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
                                     >
@@ -4876,12 +4876,12 @@ export default function Dashboard() {
                                 {files.map(file => (
                                   <div
                                     key={file.id}
-                                    className={`flex items-center gap-2 p-1.5 rounded-xl text-xs group shadow-sm ${
-                                      courseCode === 'CPPA122' ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700' :
-                                      courseCode === 'CFNF400' ? 'bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-700' :
-                                      courseCode === 'CASL101' ? 'bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700' : 
-                                      'bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700'
-                                    } text-black dark:text-white`}
+                                    className={`flex items-center gap-2 p-1.5 rounded-xl text-xs group shadow-sm border ${
+                                      courseCode === 'CPPA122' ? 'bg-green-100 dark:bg-green-900/40 border-green-500 text-green-700 dark:text-green-300' :
+                                      courseCode === 'CFNF400' ? 'bg-pink-100 dark:bg-pink-900/40 border-pink-500 text-pink-700 dark:text-pink-300' :
+                                      courseCode === 'CASL101' ? 'bg-indigo-100 dark:bg-indigo-900/40 border-indigo-500 text-indigo-700 dark:text-indigo-300' : 
+                                      'bg-gray-100 dark:bg-gray-900/40 border-gray-500 text-gray-700 dark:text-gray-300'
+                                    }`}
                                     data-testid={`flyout-file-${file.id}`}
                                   >
                                     <Checkbox
