@@ -3929,7 +3929,9 @@ export default function Dashboard() {
                     key={idx} 
                     className="border-l border-border flex items-center justify-center h-full"
                     style={{ 
-                      backgroundColor: isToday ? "#2d4a6f" : "black"
+                      backgroundColor: isToday ? "#2d4a6f" : "black",
+                      borderLeftWidth: day.getDay() === 6 ? '3px' : undefined,
+                      borderLeftColor: day.getDay() === 6 ? 'black' : undefined
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -3958,7 +3960,11 @@ export default function Dashboard() {
                     <div 
                       key={dayIdx} 
                       className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
-                      style={{ backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white' }}
+                      style={{ 
+                        backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white',
+                        borderLeftWidth: day.getDay() === 6 ? '3px' : undefined,
+                        borderLeftColor: day.getDay() === 6 ? 'black' : undefined
+                      }}
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Regular all-day tasks only - prep tasks moved to course rows */}
@@ -4044,7 +4050,11 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden backdrop-blur-md"
-                        style={{ backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg }}
+                        style={{ 
+                          backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg,
+                          borderLeftWidth: day.getDay() === 6 ? '3px' : undefined,
+                          borderLeftColor: day.getDay() === 6 ? 'black' : undefined
+                        }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
                         {coursePrepTasks.map(task => {
@@ -4192,8 +4202,12 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md ${totalItems > 0 && !(isFriday && new Date().getDay() !== 5) && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
-                          style={(isToday || isCurrentHour) ? { backgroundColor: 'rgba(93, 129, 204, 0.35)' } : { backgroundColor: 'white' }}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          style={{
+                            backgroundColor: (isToday || isCurrentHour) ? 'rgba(93, 129, 204, 0.35)' : 'white',
+                            borderLeftWidth: day.getDay() === 6 ? '3px' : undefined,
+                            borderLeftColor: day.getDay() === 6 ? 'black' : undefined
+                          }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
