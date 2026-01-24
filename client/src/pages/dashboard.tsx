@@ -2316,7 +2316,7 @@ export default function Dashboard() {
             </div>
             
             {/* Highlighted Text for TTS */}
-            <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto p-4">
+            <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto overflow-x-hidden p-4">
               {isLoadingText ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
