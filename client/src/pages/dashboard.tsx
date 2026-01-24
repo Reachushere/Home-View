@@ -5209,7 +5209,7 @@ function TaskCard({
       return (
         <div className="relative pt-1 h-full flex flex-col cursor-pointer pb-2" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="h-5 flex items-center justify-around rounded-xl px-1 text-white border-[0.3px] border-white no-blink mb-1" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+          <div className="h-5 flex items-center justify-around rounded-xl px-1 text-white border-[0.3px] border-white no-blink mb-1" style={{ background: 'rgba(0,0,0,0.75)' }}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
