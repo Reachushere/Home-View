@@ -4864,7 +4864,7 @@ export default function Dashboard() {
                         <FolderOpen className="h-4 w-4 text-white" />
                       </Button>
                     </RouterLink>
-                    <h3 className="text-white font-semibold text-sm">Files Due This Week</h3>
+                    <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
                   </div>
                   <span className="text-xs text-white/60">{currentWeekFiles.length} files</span>
                 </div>
@@ -5077,7 +5077,7 @@ export default function Dashboard() {
               data-testid="weekly-files-flyout-tab"
             >
               <span className="text-white text-[10px] font-medium tracking-wide flex items-center gap-2">
-                Weekly Files
+                Week {selectedWeek} Files
                 {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
               </span>
             </button>
