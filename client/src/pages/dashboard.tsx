@@ -2050,7 +2050,7 @@ export default function Dashboard() {
 
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col p-0 overflow-hidden border-[0.1px] border-white !bg-transparent" style={{ background: 'rgba(0,0,0,0.75)' }}>
+        <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0 overflow-hidden border-[0.1px] border-white !bg-transparent" style={{ background: 'rgba(0,0,0,0.75)' }}>
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
             const folderParts = previewFile?.folder?.split('-') || [];
@@ -2068,9 +2068,9 @@ export default function Dashboard() {
           })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-3 p-3 mx-6 mt-4 bg-black rounded-lg flex-wrap">
+          <div className="flex items-center gap-2 p-2 px-3 mx-6 mt-4 bg-black rounded-lg">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
-              <SelectTrigger className="w-[200px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
+              <SelectTrigger className="w-[120px] h-7 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
@@ -2086,7 +2086,7 @@ export default function Dashboard() {
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
               <>
                 <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                  <SelectTrigger className="w-[200px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
+                  <SelectTrigger className="w-[140px] h-7 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
                     <SelectValue placeholder="Select Voice" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
@@ -2100,7 +2100,7 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 text-white hover:bg-gray-700"
+                  className="h-7 w-7 text-white hover:bg-gray-700"
                   onClick={() => {
                     window.speechSynthesis.cancel();
                     const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
@@ -2112,7 +2112,7 @@ export default function Dashboard() {
                   data-testid="button-preview-voice"
                   title="Preview voice"
                 >
-                  <Volume2 className="h-4 w-4" />
+                  <Volume2 className="h-3 w-3" />
                 </Button>
               </>
             )}
@@ -2146,92 +2146,66 @@ export default function Dashboard() {
               </div>
             )}
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 text-white hover:bg-gray-700"
+                className="h-7 w-7 text-white hover:bg-gray-700"
                 onClick={handleSkipBack}
                 disabled={previewSpeaker !== "browser_tts"}
                 data-testid="button-preview-rewind"
                 title="Rewind 20 words"
               >
-                <SkipBack className="h-4 w-4" />
+                <SkipBack className="h-3 w-3" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 text-white hover:bg-gray-700"
+                className="h-7 w-7 text-white hover:bg-gray-700"
                 onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
                 data-testid="button-preview-play"
               >
-                <Play className="h-4 w-4 fill-white" />
+                <Play className="h-3 w-3 fill-white" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 text-white hover:bg-gray-700"
+                className="h-7 w-7 text-white hover:bg-gray-700"
                 onClick={handleStopMedia}
                 data-testid="button-preview-stop"
               >
-                <Square className="h-4 w-4 fill-white" />
+                <Square className="h-3 w-3 fill-white" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 text-white hover:bg-gray-700"
+                className="h-7 w-7 text-white hover:bg-gray-700"
                 onClick={handleSkipForward}
                 disabled={previewSpeaker !== "browser_tts"}
                 data-testid="button-preview-forward"
                 title="Skip forward 20 words"
               >
-                <SkipForward className="h-4 w-4" />
+                <SkipForward className="h-3 w-3" />
               </Button>
-              <div className="w-px h-6 bg-gray-600 mx-1" />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 text-white hover:bg-gray-700"
-                onClick={() => handleVolumeChange("down")}
-                data-testid="button-preview-speed-down"
-                title="Decrease speed"
-              >
-                <MinusCircle className="h-4 w-4" />
-              </Button>
-              <span className="text-xs text-white/70 min-w-[3rem] text-center">
-                {Math.round(browserTtsRate * 100)}%
-              </span>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 text-white hover:bg-gray-700"
-                onClick={() => handleVolumeChange("up")}
-                data-testid="button-preview-speed-up"
-                title="Increase speed"
-              >
-                <PlusCircle className="h-4 w-4" />
-              </Button>
-              
-              {/* Sync Highlight Toggle */}
-              <div className="flex items-center gap-1.5 ml-2">
-                <Checkbox
-                  id="sync-highlight"
-                  checked={syncHighlight}
-                  onCheckedChange={(checked) => setSyncHighlight(!!checked)}
-                  className="h-3.5 w-3.5 border-gray-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                  data-testid="checkbox-sync-highlight"
-                />
-                <Label htmlFor="sync-highlight" className="text-white text-[10px] cursor-pointer whitespace-nowrap">
-                  Sync
-                </Label>
-              </div>
+              <div className="w-px h-5 bg-gray-600 mx-0.5" />
+              <Checkbox
+                id="sync-highlight"
+                checked={syncHighlight}
+                onCheckedChange={(checked) => setSyncHighlight(!!checked)}
+                className="h-3 w-3 border-gray-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                data-testid="checkbox-sync-highlight"
+              />
+              <Label htmlFor="sync-highlight" className="text-white text-[9px] cursor-pointer">
+                Sync
+              </Label>
             </div>
             
             <Button
+              size="icon"
               variant="ghost"
-              size="sm"
-              className="text-white hover:bg-gray-700 text-xs ml-auto"
+              className="h-7 w-7 text-white hover:bg-gray-700 ml-auto"
               data-testid="button-preview-download"
+              title="Download PDF"
               onClick={async () => {
                 if (!previewFile) return;
                 try {
@@ -2251,11 +2225,11 @@ export default function Dashboard() {
                 }
               }}
             >
-              Download PDF
+              <Download className="h-3 w-3" />
             </Button>
             
             {/* Mark as Completed Checkbox */}
-            <div className="flex items-center gap-2 ml-2">
+            <div className="flex items-center gap-1 ml-1">
               <Checkbox
                 id="mark-completed"
                 checked={false}
@@ -2266,11 +2240,11 @@ export default function Dashboard() {
                     });
                   }
                 }}
-                className="border-white data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                className="h-3 w-3 border-white data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                 data-testid="checkbox-mark-completed"
               />
-              <Label htmlFor="mark-completed" className="text-white text-xs cursor-pointer">
-                Mark Completed
+              <Label htmlFor="mark-completed" className="text-white text-[9px] cursor-pointer whitespace-nowrap">
+                Done
               </Label>
             </div>
           </div>
