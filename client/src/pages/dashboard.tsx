@@ -3229,7 +3229,7 @@ export default function Dashboard() {
           border: '1px solid rgba(255,255,255,0.5)'
         }}>
           {/* Navigation Section */}
-          <div className="flex items-center px-4 py-2 gap-2" style={{ marginLeft: '-10px' }}>
+          <div className="flex items-center px-4 py-2 gap-2" style={{ marginLeft: '-20px' }}>
             {/* Hamburger Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
