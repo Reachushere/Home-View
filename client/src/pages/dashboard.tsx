@@ -4041,7 +4041,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors ${isToday ? "bg-[#2d4a6f]" : (isFriday && new Date().getDay() !== 5) ? "bg-red-200" : totalItems > 0 ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors ${isToday ? "bg-[#2d4a6f]/30" : (isFriday && new Date().getDay() !== 5) ? "bg-red-200" : totalItems > 0 ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
@@ -4713,11 +4713,87 @@ export default function Dashboard() {
                   <span className="text-xs text-gray-400">{currentWeekFiles.length} files</span>
                 </div>
                 <div className="flex-1 overflow-y-auto overflow-x-hidden p-2">
-                  {currentWeekFiles.length === 0 ? (
+                  {/* Overdue Files Section */}
+                  {(() => {
+                    // Get files from overdue tasks
+                    const overdueFilesFromTasks = missedTasks
+                      .filter(t => t.attachments && t.attachments.length > 0)
+                      .flatMap(t => t.attachments!.map(att => ({
+                        ...att,
+                        taskId: t.id,
+                        taskTitle: t.title,
+                        courseName: t.courseName
+                      })));
+                    
+                    if (overdueFilesFromTasks.length === 0) return null;
+                    
+                    // Group by course
+                    const groupedOverdue: Record<string, typeof overdueFilesFromTasks> = {};
+                    overdueFilesFromTasks.forEach(file => {
+                      const courseCode = file.courseName?.split(" ")[0]?.toUpperCase() || 'OTHER';
+                      if (!groupedOverdue[courseCode]) {
+                        groupedOverdue[courseCode] = [];
+                      }
+                      groupedOverdue[courseCode].push(file);
+                    });
+                    
+                    const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
+                    const sortedOverdue = Object.entries(groupedOverdue).sort(([a], [b]) => {
+                      const aIdx = courseOrder.indexOf(a);
+                      const bIdx = courseOrder.indexOf(b);
+                      if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
+                      if (aIdx === -1) return 1;
+                      if (bIdx === -1) return -1;
+                      return aIdx - bIdx;
+                    });
+                    
+                    return (
+                      <div className="mb-4">
+                        <div className="text-xs font-bold text-red-400 mb-2 border-b border-red-400/50 pb-1">
+                          OVERDUE
+                        </div>
+                        <div className="space-y-2">
+                          {sortedOverdue.map(([courseCode, files]) => {
+                            const colors = courseColors[courseCode];
+                            return (
+                              <div key={courseCode}>
+                                <div className="text-[10px] font-bold mb-1 text-red-300">
+                                  {courseCode}
+                                </div>
+                                <div className="space-y-1">
+                                  {files.map((file, idx) => (
+                                    <div
+                                      key={`overdue-${file.taskId}-${idx}`}
+                                      className="flex items-center gap-2 p-2 rounded text-xs group border border-red-400/50 bg-red-900/30 text-white"
+                                      data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
+                                    >
+                                      <button
+                                        onClick={() => {
+                                          if (file.url) {
+                                            window.open(file.url, '_blank');
+                                          }
+                                        }}
+                                        className="flex items-center gap-2 flex-1 text-left min-w-0"
+                                      >
+                                        <span className="truncate font-medium">{file.name || file.url}</span>
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  
+                  {/* Current Week Files */}
+                  {currentWeekFiles.length === 0 && missedTasks.filter(t => t.attachments && t.attachments.length > 0).length === 0 ? (
                     <div className="text-gray-500 text-sm text-center py-8">
                       No files in Week {selectedWeek}
                     </div>
-                  ) : (
+                  ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
                       {(() => {
                         // Group files by course
@@ -4790,7 +4866,7 @@ export default function Dashboard() {
                         });
                       })()}
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>
