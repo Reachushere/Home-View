@@ -4200,7 +4200,7 @@ export default function Dashboard() {
                         <div 
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md ${totalItems > 0 && !(isFriday && new Date().getDay() !== 5) && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
-                          style={isToday ? { backgroundColor: 'rgba(165,180,252,0.35)' } : (isFriday && new Date().getDay() !== 5) ? { backgroundColor: 'rgba(236,72,153,0.2)' } : { backgroundColor: 'rgba(255,255,255,0.1)' }}
+                          style={isToday ? { backgroundColor: 'rgba(255,255,255,0.25)' } : (isFriday && new Date().getDay() !== 5) ? { backgroundColor: 'rgba(236,72,153,0.2)' } : { backgroundColor: 'rgba(255,255,255,0.1)' }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
