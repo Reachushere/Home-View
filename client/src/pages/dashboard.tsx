@@ -2464,7 +2464,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className={`flex-1 text-black rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border border-white/50 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'rgba(255,255,255,0.15)' }}>
+        <aside className={`flex-1 text-black rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border border-white/50 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'rgba(255,255,255,0.25)' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '85px' }} />
 
