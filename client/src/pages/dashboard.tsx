@@ -4405,8 +4405,8 @@ export default function Dashboard() {
                 <div className="text-muted-foreground text-xs p-2">Loading...</div>
               ) : (
                 <>
-                  {/* CPPA122 Row - Green */}
-                  <div className="px-2 py-1 border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)', minHeight: `${rowHeight}px` }}>
+                  {/* CPPA122 Row */}
+                  <div className="px-2 py-1 border-b border-white/30" style={{ minHeight: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -4415,12 +4415,12 @@ export default function Dashboard() {
                         </div>
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
-                        <div className="text-[9px] text-green-600 dark:text-green-400 opacity-60">-</div>
+                        <div className="text-[9px] text-white/60">-</div>
                       )}
                     </div>
                   </div>
-                  {/* CFNF400 Row - Pink */}
-                  <div className="px-2 py-1 border-b border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.45)', minHeight: `${rowHeight}px` }}>
+                  {/* CFNF400 Row */}
+                  <div className="px-2 py-1 border-b border-white/30" style={{ minHeight: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -4429,12 +4429,12 @@ export default function Dashboard() {
                         </div>
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
-                        <div className="text-[9px] text-pink-600 dark:text-pink-400 opacity-60">-</div>
+                        <div className="text-[9px] text-white/60">-</div>
                       )}
                     </div>
                   </div>
-                  {/* CASL101 Row - Purple */}
-                  <div className="px-2 py-1" style={{ backgroundColor: 'rgba(165,180,252,0.45)', minHeight: `${rowHeight}px` }}>
+                  {/* CASL101 Row */}
+                  <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
@@ -4443,7 +4443,7 @@ export default function Dashboard() {
                         </div>
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
-                        <div className="text-[9px] text-purple-600 dark:text-purple-400 opacity-60">-</div>
+                        <div className="text-[9px] text-white/60">-</div>
                       )}
                     </div>
                   </div>
