@@ -585,12 +585,13 @@ export default function Dashboard() {
 
   // Speak "New Day" at midnight with a female voice
   const speakNewDay = useCallback(() => {
+    if (!window.speechSynthesis) return; // Not available on Fire tablets
     try {
       const utterance = new SpeechSynthesisUtterance("New Day");
       utterance.rate = 0.9;
       utterance.pitch = 1.1;
       // Try to find a female voice
-      const voices = window.speechSynthesis.getVoices();
+      const voices = window.speechSynthesis.getVoices() || [];
       const femaleVoice = voices.find(v => 
         v.name.toLowerCase().includes('female') || 
         v.name.toLowerCase().includes('samantha') ||
@@ -818,8 +819,11 @@ export default function Dashboard() {
   
   // Load available TTS voices
   useEffect(() => {
+    // Check if speechSynthesis is available (not on Fire tablets)
+    if (!window.speechSynthesis) return;
+    
     const loadVoices = () => {
-      const voices = window.speechSynthesis.getVoices();
+      const voices = window.speechSynthesis?.getVoices() || [];
       if (voices.length > 0) {
         // Filter to English voices and sort by name
         const englishVoices = voices.filter(v => v.lang.startsWith('en')).sort((a, b) => a.name.localeCompare(b.name));
@@ -835,10 +839,14 @@ export default function Dashboard() {
     };
     
     loadVoices();
-    window.speechSynthesis.onvoiceschanged = loadVoices;
+    if (window.speechSynthesis) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
     
     return () => {
-      window.speechSynthesis.onvoiceschanged = null;
+      if (window.speechSynthesis) {
+        window.speechSynthesis.onvoiceschanged = null;
+      }
     };
   }, []);
   const highlightIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -1043,6 +1051,10 @@ export default function Dashboard() {
     try {
       // Check if using browser TTS only
       if (previewSpeaker === "browser_tts") {
+        if (!window.speechSynthesis) {
+          toast({ title: "Browser TTS not available on this device", variant: "destructive" });
+          return;
+        }
         if (!previewText) {
           toast({ title: "No text content available", variant: "destructive" });
           return;
@@ -1058,7 +1070,7 @@ export default function Dashboard() {
         utterance.pitch = 1;
         
         // Use selected voice or find a good default
-        const voices = window.speechSynthesis.getVoices();
+        const voices = window.speechSynthesis.getVoices() || [];
         const voice = selectedVoice 
           ? voices.find(v => v.name === selectedVoice)
           : voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
@@ -1118,7 +1130,7 @@ export default function Dashboard() {
   const handleStopMedia = async () => {
     try {
       // Stop browser TTS if active
-      if (previewSpeaker === "browser_tts") {
+      if (previewSpeaker === "browser_tts" && window.speechSynthesis) {
         window.speechSynthesis.cancel();
         setIsPlaying(false);
         isPlayingRef.current = false;
@@ -1140,7 +1152,7 @@ export default function Dashboard() {
 
   // Skip forward/back functions for browser TTS
   const handleSkipForward = () => {
-    if (!previewText || previewSpeaker !== "browser_tts") return;
+    if (!previewText || previewSpeaker !== "browser_tts" || !window.speechSynthesis) return;
     
     const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const skipAmount = 20; // Skip 20 words forward
@@ -1164,7 +1176,7 @@ export default function Dashboard() {
       utterance.pitch = 1;
       
       // Use selected voice
-      const voices = window.speechSynthesis.getVoices();
+      const voices = window.speechSynthesis.getVoices() || [];
       const voice = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices[0];
       if (voice) utterance.voice = voice;
       
@@ -1187,7 +1199,7 @@ export default function Dashboard() {
   };
 
   const handleSkipBack = () => {
-    if (!previewText || previewSpeaker !== "browser_tts") return;
+    if (!previewText || previewSpeaker !== "browser_tts" || !window.speechSynthesis) return;
     
     const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const skipAmount = 20; // Skip 20 words back
@@ -1211,7 +1223,7 @@ export default function Dashboard() {
       utterance.pitch = 1;
       
       // Use selected voice
-      const voices = window.speechSynthesis.getVoices();
+      const voices = window.speechSynthesis.getVoices() || [];
       const voice = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices[0];
       if (voice) utterance.voice = voice;
       
@@ -2102,6 +2114,7 @@ export default function Dashboard() {
                   variant="ghost"
                   className="h-7 w-7 text-white hover:bg-gray-700"
                   onClick={() => {
+                    if (!window.speechSynthesis) return;
                     window.speechSynthesis.cancel();
                     const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
                     utterance.rate = browserTtsRate;
