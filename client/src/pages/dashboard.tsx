@@ -4772,7 +4772,7 @@ export default function Dashboard() {
                     return (
                       <div className="mb-4">
                         <div className="mb-2">
-                          <span className="text-[11px] font-bold text-white border-b-[0.5px] border-white pb-1">OVERDUE</span>
+                          <span className="text-[11px] font-bold text-white pb-1" style={{ borderBottom: '1px solid white' }}>OVERDUE</span>
                         </div>
                         <div className="space-y-2">
                           {sortedOverdue.map(([courseCode, files]) => {
@@ -4829,7 +4829,7 @@ export default function Dashboard() {
                   ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
                       <div className="mb-2 mt-6">
-                        <span className="text-[11px] font-bold text-white border-b-[0.5px] border-white pb-1">DUE THIS WEEK</span>
+                        <span className="text-[11px] font-bold text-white pb-1" style={{ borderBottom: '1px solid white' }}>DUE THIS WEEK</span>
                       </div>
                       {(() => {
                         // Group files by course
