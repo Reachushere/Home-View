@@ -3759,9 +3759,9 @@ export default function Dashboard() {
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.3px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
-            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
+            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" style={{ scrollbarGutter: 'stable' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
-            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0 pr-2" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
+            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
               </div>
@@ -3804,7 +3804,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0 pr-2" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
+            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
                 <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                   ALL DAY
                 </div>
@@ -3881,7 +3881,7 @@ export default function Dashboard() {
                 { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', colors: courseColors['CFNF400'] },
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 pr-2" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, minHeight: '24px' }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, minHeight: '24px' }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                     {course.name}
                   </div>
@@ -4028,7 +4028,7 @@ export default function Dashboard() {
               ))}
             
             {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-x-hidden calendar-scrollbar">
+            <div ref={calendarScrollRef} className="flex-1 overflow-x-hidden calendar-scrollbar" style={{ scrollbarGutter: 'stable' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
