@@ -4718,16 +4718,25 @@ export default function Dashboard() {
                 <div className="flex-1 overflow-y-auto overflow-x-hidden p-2">
                   {/* Overdue Files Section */}
                   {(() => {
-                    // Get files from overdue tasks - attachments are URL strings
+                    // Get files from overdue tasks - attachments may be JSON strings or objects
                     const overdueFilesFromTasks = missedTasks
                       .filter(t => t.attachments && t.attachments.length > 0)
                       .flatMap(t => t.attachments!.map(att => {
-                        // att is a string URL, extract filename from it
-                        const url = typeof att === 'string' ? att : (att as any).url || '';
-                        const name = typeof att === 'string' ? url.split('/').pop() || url : (att as any).name || url;
+                        // Parse attachment - could be JSON string, object, or plain URL string
+                        let parsed: { name?: string; url?: string } = {};
+                        if (typeof att === 'string') {
+                          try {
+                            parsed = JSON.parse(att);
+                          } catch {
+                            // Plain URL string
+                            parsed = { url: att, name: att.split('/').pop() || att };
+                          }
+                        } else {
+                          parsed = att as any;
+                        }
                         return {
-                          url,
-                          name,
+                          url: parsed.url || '',
+                          name: parsed.name || parsed.url?.split('/').pop() || 'File',
                           taskId: t.id,
                           taskTitle: t.title,
                           courseName: t.courseName
