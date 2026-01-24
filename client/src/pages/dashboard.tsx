@@ -3320,7 +3320,7 @@ export default function Dashboard() {
                   className="hover:bg-white/20 rounded-md -ml-1.5 -mr-1"
                   data-testid="button-hamburger-menu"
                 >
-                  <Menu className="!h-7 !w-7 text-white" strokeWidth={2.5} />
+                  <Menu className="!h-6 !w-6 text-white" strokeWidth={2.5} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
