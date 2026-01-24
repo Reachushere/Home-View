@@ -3227,6 +3227,20 @@ export default function Dashboard() {
       </div>
       </div>
 
+      {/* Quick Actions Header Bar - positioned absolutely to align with left panel */}
+      <div className="absolute z-20 flex items-center rounded-2xl overflow-hidden" style={{ 
+        width: '350px',
+        left: '11px',
+        top: '8px',
+        background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+        border: '1px solid rgba(255,255,255,0.5)'
+      }}>
+        <div className="flex items-center px-4 py-2 gap-2 w-full justify-center">
+          <span className="text-white text-sm font-medium">Quick Actions</span>
+        </div>
+      </div>
+
       {/* Main Content */}
       <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px' }}>
         {/* Title Row - aligned with sidebar header */}
@@ -3234,19 +3248,7 @@ export default function Dashboard() {
           </div>
         
         {/* Menu Bar Container - clips scroll content */}
-        <div className="flex-shrink-0 relative z-10 flex gap-2" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-127px' }}>
-        {/* Second Header Bar - aligned with left panel */}
-        <div className="flex items-center rounded-2xl overflow-hidden flex-shrink-0" style={{ 
-          width: '350px',
-          marginLeft: '23px',
-          background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-          border: '1px solid rgba(255,255,255,0.5)'
-        }}>
-          <div className="flex items-center px-4 py-2 gap-2 w-full justify-center">
-            <span className="text-white text-sm font-medium">Quick Actions</span>
-          </div>
-        </div>
+        <div className="flex-shrink-0 relative z-10 flex gap-2" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-111px' }}>
         {/* Sleek Menu Bar */}
         <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-1" style={{ 
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
