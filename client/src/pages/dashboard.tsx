@@ -2386,13 +2386,13 @@ export default function Dashboard() {
       <div className="flex flex-1 overflow-hidden relative" style={{ backgroundImage: `url(${customBackground || campusBg})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
         {/* Constant fade overlay - slightly dims background */}
         <div 
-          className="absolute inset-0 pointer-events-none z-[1]"
-          style={{ background: 'rgba(0, 0, 0, 0.45)' }}
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: 'rgba(0, 0, 0, 0.45)', zIndex: 0 }}
         />
         {/* Night overlay - dims background based on Toronto sunrise/sunset */}
         <div 
           className={`absolute inset-0 pointer-events-none transition-opacity duration-1000 ${isNighttime ? 'opacity-100' : 'opacity-0'}`}
-          style={{ background: 'linear-gradient(to bottom, rgba(10, 15, 30, 0.6) 0%, rgba(5, 10, 25, 0.7) 100%)' }}
+          style={{ background: 'linear-gradient(to bottom, rgba(10, 15, 30, 0.6) 0%, rgba(5, 10, 25, 0.7) 100%)', zIndex: 0 }}
         />
       {isTodayExpanded && (
         <div 
@@ -2401,7 +2401,7 @@ export default function Dashboard() {
         />
       )}
       {/* Left Column - Header Bar + Sidebar */}
-      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '60px' }}>
+      <div className="flex flex-col relative z-10" style={{ width: 350, marginLeft: '11px', marginTop: '60px' }}>
         {/* Sidebar Container */}
         <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
@@ -3297,7 +3297,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px' }}>
+      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden relative z-10" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px' }}>
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
           </div>
