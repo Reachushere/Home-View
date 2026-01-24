@@ -782,6 +782,7 @@ export default function Dashboard() {
   const [isLoadingText, setIsLoadingText] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [syncHighlight, setSyncHighlight] = useState(true); // Sync text highlighting with TTS
   const [playStartTime, setPlayStartTime] = useState<number | null>(null);
   const highlightIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -2020,6 +2021,20 @@ export default function Dashboard() {
               >
                 <PlusCircle className="h-4 w-4" />
               </Button>
+              
+              {/* Sync Highlight Toggle */}
+              <div className="flex items-center gap-1.5 ml-2">
+                <Checkbox
+                  id="sync-highlight"
+                  checked={syncHighlight}
+                  onCheckedChange={(checked) => setSyncHighlight(!!checked)}
+                  className="h-3.5 w-3.5 border-gray-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                  data-testid="checkbox-sync-highlight"
+                />
+                <Label htmlFor="sync-highlight" className="text-white text-[10px] cursor-pointer whitespace-nowrap">
+                  Sync
+                </Label>
+              </div>
             </div>
             
             <Button
@@ -2169,7 +2184,7 @@ export default function Dashboard() {
                               >
                                 {words.map((word, wIdx) => {
                                   const wordGlobalIdx = lineStartIdx + wIdx;
-                                  const isCurrentWord = isPlaying && wordGlobalIdx === currentWordIndex;
+                                  const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
                                   return (
                                     <span
                                       key={wordGlobalIdx}
