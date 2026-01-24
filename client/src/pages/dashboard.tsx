@@ -4459,12 +4459,12 @@ export default function Dashboard() {
             </h4>
             <div className="flex-1 flex flex-col overflow-auto">
               {/* CPPA122 Row - Green */}
-              <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.35)', minHeight: `${rowHeight}px` }}>
+              <div className="px-2 py-1 border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)', minHeight: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
-                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
+                    <div key={task.id} className={`${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact overdueBlink />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
@@ -4473,12 +4473,12 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.45)', minHeight: `${rowHeight}px` }}>
+              <div className="px-2 py-1 border-b border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.45)', minHeight: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
-                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
+                    <div key={task.id} className={`${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact overdueBlink />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
@@ -4487,12 +4487,12 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CASL101 Row - Purple */}
-              <div className="px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.45)', minHeight: `${rowHeight}px` }}>
+              <div className="px-2 py-1" style={{ backgroundColor: 'rgba(165,180,252,0.45)', minHeight: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
-                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact />
+                    <div key={task.id} className={`${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
+                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact overdueBlink />
                     </div>
                   ))}
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
@@ -4901,6 +4901,7 @@ function TaskCard({
   onDelete,
   cardBgClass,
   compact = false,
+  overdueBlink = false,
 }: {
   task: Task;
   onComplete: (isCompleted: boolean) => void;
@@ -4909,6 +4910,7 @@ function TaskCard({
   onDelete: () => void;
   cardBgClass?: string;
   compact?: boolean;
+  overdueBlink?: boolean;
 }) {
   const Icon = iconMap[task.type] || ClipboardCheck;
   const isMissed = task.isMissed && !task.isCompleted;
@@ -5025,7 +5027,7 @@ function TaskCard({
         colors ? colors.border : "border-gray-400"
       } ${isMissed && !cardBgClass ? "border-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
-      }`}
+      } ${overdueBlink ? "animate-urgent-blink" : ""}`}
       data-testid={`card-task-${task.id}`}
     >
       <CardHeader className={`flex flex-row items-start justify-between gap-1 space-y-0 ${compact ? "pb-0 pt-1.5 px-2 flex-shrink-0" : "pb-1 pt-3 px-3"}`}>
