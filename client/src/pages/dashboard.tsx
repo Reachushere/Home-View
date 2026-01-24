@@ -783,7 +783,35 @@ export default function Dashboard() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [syncHighlight, setSyncHighlight] = useState(true); // Sync text highlighting with TTS
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<string>(""); // Voice name
   const [playStartTime, setPlayStartTime] = useState<number | null>(null);
+  
+  // Load available TTS voices
+  useEffect(() => {
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        // Filter to English voices and sort by name
+        const englishVoices = voices.filter(v => v.lang.startsWith('en')).sort((a, b) => a.name.localeCompare(b.name));
+        setAvailableVoices(englishVoices.length > 0 ? englishVoices : voices);
+        // Set default voice
+        if (!selectedVoice) {
+          const defaultVoice = englishVoices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural'))
+            || englishVoices.find(v => v.name.includes('Female'))
+            || englishVoices[0];
+          if (defaultVoice) setSelectedVoice(defaultVoice.name);
+        }
+      }
+    };
+    
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+    
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
+  }, []);
   const highlightIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isPlayingRef = useRef(false);
@@ -955,12 +983,14 @@ export default function Dashboard() {
         utterance.rate = browserTtsRate;
         utterance.pitch = 1;
         
-        // Get available voices and prefer a natural sounding one
+        // Use selected voice or find a good default
         const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
-          || voices.find(v => v.lang.startsWith('en'))
-          || voices[0];
-        if (preferredVoice) utterance.voice = preferredVoice;
+        const voice = selectedVoice 
+          ? voices.find(v => v.name === selectedVoice)
+          : voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
+            || voices.find(v => v.lang.startsWith('en'))
+            || voices[0];
+        if (voice) utterance.voice = voice;
         
         // Track word position for highlighting
         let wordIndex = 0;
@@ -1053,10 +1083,10 @@ export default function Dashboard() {
       utterance.rate = browserTtsRate;
       utterance.pitch = 1;
       
+      // Use selected voice
       const voices = window.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
-        || voices.find(v => v.lang.startsWith('en'));
-      if (preferredVoice) utterance.voice = preferredVoice;
+      const voice = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices[0];
+      if (voice) utterance.voice = voice;
       
       let localWordIdx = 0;
       utterance.onboundary = (event) => {
@@ -1094,10 +1124,10 @@ export default function Dashboard() {
       utterance.rate = browserTtsRate;
       utterance.pitch = 1;
       
+      // Use selected voice
       const voices = window.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
-        || voices.find(v => v.lang.startsWith('en'));
-      if (preferredVoice) utterance.voice = preferredVoice;
+      const voice = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices[0];
+      if (voice) utterance.voice = voice;
       
       let localWordIdx = 0;
       utterance.onboundary = (event) => {
@@ -1930,6 +1960,22 @@ export default function Dashboard() {
                 ))}
               </SelectContent>
             </Select>
+            
+            {/* Voice selector - shows for browser TTS */}
+            {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
+              <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                <SelectTrigger className="w-[200px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
+                  <SelectValue placeholder="Select Voice" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {availableVoices.map(voice => (
+                    <SelectItem key={voice.name} value={voice.name} className="text-xs">
+                      {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
             
             {/* Speed control - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && (
