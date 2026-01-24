@@ -771,6 +771,7 @@ export default function Dashboard() {
     contentType: string;
     size: number;
     folder: string | null;
+    listened?: boolean;
   }
   
   const { data: weeklyFiles = [] } = useQuery<WeeklyFile[]>({
@@ -801,6 +802,7 @@ export default function Dashboard() {
     displayName: string;
     objectPath: string;
     folder: string | null;
+    listened?: boolean;
   }
   const { data: allFiles = [] } = useQuery<FileItem[]>({
     queryKey: ["/api/files"],
@@ -1850,31 +1852,12 @@ export default function Dashboard() {
   };
 
   // Get all planning tasks for the week and assign row slots
-  // Includes tasks with explicit startDate AND upcoming tasks without startDate (auto-generated prep period)
+  // Only includes tasks with explicit startDate (user-set prep days)
   const getAllWeekPlanningTasks = () => {
-    const today = startOfDay(new Date());
-    
-    // Tasks with explicit start dates
+    // Only show tasks with explicit start dates (no auto-generation)
     const tasksWithExplicitPlanningPeriods = allTasks.filter(t => t.startDate && !t.isCompleted && !t.isMissed);
     
-    // Upcoming tasks without startDate - auto-generate prep period (2 days before due)
-    const upcomingTasksWithoutStartDate = allTasks.filter(t => {
-      if (t.isCompleted || t.isMissed || t.startDate) return false;
-      const dueDate = new Date(t.dueDate);
-      // Only upcoming tasks (due after today, not due today)
-      return dueDate > today && !isSameDay(dueDate, today);
-    }).map(t => ({
-      ...t,
-      // Auto-generate startDate: 2 days before due (or today if due is closer)
-      startDate: (() => {
-        const dueDate = new Date(t.dueDate);
-        const twoDaysBefore = subDays(dueDate, 2);
-        // Use today if 2 days before is in the past
-        return twoDaysBefore < today ? today.toISOString() : twoDaysBefore.toISOString();
-      })()
-    }));
-    
-    const allPlanningTasks = [...tasksWithExplicitPlanningPeriods, ...upcomingTasksWithoutStartDate];
+    const allPlanningTasks = [...tasksWithExplicitPlanningPeriods];
     
     // Sort by start date to ensure consistent ordering
     return allPlanningTasks.sort((a, b) => {
@@ -5678,7 +5661,7 @@ function SchoolForm({
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
-  const { upload } = useUpload();
+  const { uploadFile } = useUpload();
   
   const daysOfWeek = [
     { value: 'sunday', label: 'Sunday' },
@@ -5696,9 +5679,9 @@ function SchoolForm({
     
     setIsUploadingLogo(true);
     try {
-      const result = await upload(file, { prefix: 'logos' });
-      if (result?.url) {
-        setSchoolLogo(result.url);
+      const result = await uploadFile(file);
+      if (result?.objectPath) {
+        setSchoolLogo(result.objectPath);
       }
     } catch (error) {
       console.error('Logo upload failed:', error);
