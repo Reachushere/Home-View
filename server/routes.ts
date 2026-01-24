@@ -2053,6 +2053,104 @@ export async function registerRoutes(
     }
   });
 
+  // Export all data for sync
+  app.get("/api/export", async (_req, res) => {
+    try {
+      const tasks = await storage.getTasks();
+      const files = await storage.getFiles();
+      const semester = await storage.getActiveSemesterSettings();
+      const deletedFolders = await storage.getDeletedFolders();
+      
+      const exportData = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        tasks,
+        files,
+        semester,
+        deletedFolders,
+      };
+      
+      res.json(exportData);
+    } catch (err) {
+      console.error("Export error:", err);
+      res.status(500).json({ error: "Failed to export data" });
+    }
+  });
+
+  // Import data for sync
+  app.post("/api/import", async (req, res) => {
+    try {
+      const { tasks, files, semester, deletedFolders } = req.body;
+      
+      let imported = { tasks: 0, files: 0, semester: false, deletedFolders: 0 };
+      
+      // Import semester settings
+      if (semester) {
+        const existing = await storage.getActiveSemesterSettings();
+        if (existing) {
+          await storage.updateSemesterSettings(existing.id, semester);
+        } else {
+          await storage.createSemesterSettings(semester);
+        }
+        imported.semester = true;
+      }
+      
+      // Import tasks (skip if ID already exists)
+      if (tasks && Array.isArray(tasks)) {
+        for (const task of tasks) {
+          try {
+            const existing = await storage.getTask(task.id);
+            if (!existing) {
+              const { id, ...taskData } = task;
+              await storage.createTask({
+                ...taskData,
+                dueDate: new Date(task.dueDate),
+                startDate: task.startDate ? new Date(task.startDate) : null,
+                repeatEndDate: task.repeatEndDate ? new Date(task.repeatEndDate) : null,
+              });
+              imported.tasks++;
+            }
+          } catch (err) {
+            console.error("Error importing task:", err);
+          }
+        }
+      }
+      
+      // Import files (skip if objectPath already exists)
+      if (files && Array.isArray(files)) {
+        for (const file of files) {
+          try {
+            const existing = await storage.getFileByPath(file.objectPath);
+            if (!existing) {
+              const { id, createdAt, ...fileData } = file;
+              await storage.createFile(fileData);
+              imported.files++;
+            }
+          } catch (err) {
+            console.error("Error importing file:", err);
+          }
+        }
+      }
+      
+      // Import deleted folders
+      if (deletedFolders && Array.isArray(deletedFolders)) {
+        for (const folder of deletedFolders) {
+          try {
+            await storage.addDeletedFolder(folder.folderId);
+            imported.deletedFolders++;
+          } catch (err) {
+            // Folder might already be marked as deleted
+          }
+        }
+      }
+      
+      res.json({ success: true, imported });
+    } catch (err) {
+      console.error("Import error:", err);
+      res.status(500).json({ error: "Failed to import data" });
+    }
+  });
+
   // Seed database with sample tasks
   await seedDatabase();
 

@@ -3655,6 +3655,91 @@ export default function Dashboard() {
                     </Button>
                   </div>
                 </div>
+                
+                {/* Data Sync Section */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Data Sync</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Export your data to a file, then import it on the published app to sync.
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          const res = await fetch("/api/export");
+                          const data = await res.json();
+                          const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+                          const url = URL.createObjectURL(blob);
+                          const link = document.createElement("a");
+                          link.href = url;
+                          link.download = `planner-export-${format(new Date(), "yyyy-MM-dd")}.json`;
+                          document.body.appendChild(link);
+                          link.click();
+                          document.body.removeChild(link);
+                          URL.revokeObjectURL(url);
+                          toast({ title: "Export complete", description: "Data exported successfully." });
+                        } catch (err) {
+                          toast({ title: "Export failed", description: "Could not export data.", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-export-data"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Export Data
+                    </Button>
+                    <div>
+                      <input
+                        type="file"
+                        accept=".json"
+                        className="hidden"
+                        id="import-data"
+                        data-testid="input-import-data"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          
+                          try {
+                            const text = await file.text();
+                            const data = JSON.parse(text);
+                            
+                            const res = await fetch("/api/import", {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify(data),
+                            });
+                            const result = await res.json();
+                            
+                            if (result.success) {
+                              toast({ 
+                                title: "Import complete", 
+                                description: `Imported ${result.imported.tasks} tasks, ${result.imported.files} files.` 
+                              });
+                              queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                              queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+                              queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                            } else {
+                              toast({ title: "Import failed", description: result.error, variant: "destructive" });
+                            }
+                          } catch (err) {
+                            toast({ title: "Import failed", description: "Invalid file format.", variant: "destructive" });
+                          }
+                          e.target.value = "";
+                        }}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => document.getElementById("import-data")?.click()}
+                        data-testid="button-import-data"
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Import Data
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
