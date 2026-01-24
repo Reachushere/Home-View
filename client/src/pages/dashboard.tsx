@@ -2473,24 +2473,24 @@ export default function Dashboard() {
         {/* Digital Clock and Pomodoro Timer - Same line */}
         <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '13px' }}>
           {/* Clock on the left */}
-          <div className="flex items-center gap-2" data-testid="digital-clock">
-            <span className="text-base text-white font-medium">
+          <div className="flex items-center gap-1.5" data-testid="digital-clock">
+            <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <div className="w-[1px] h-6 bg-white/50" />
+            <div className="w-[1px] h-4 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-xl font-semibold text-white tabular-nums">
+              <span className="text-sm font-semibold text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-base text-white tabular-nums">
+              <span className="text-xs text-white tabular-nums">
                 :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <span className="text-base font-bold text-white ml-0.5 uppercase">
+              <span className="text-xs font-bold text-white ml-0.5 uppercase">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
             {profileData.travelTimezone && (
-              <span className="text-xs text-orange-400 font-medium ml-1">Travel</span>
+              <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
             )}
           </div>
           {/* Timer and controls on the right */}
@@ -4840,7 +4840,7 @@ export default function Dashboard() {
         {calendarView === "week" && (
           <div 
             className="fixed z-50 flex flex-row-reverse items-center transition-transform duration-300 ease-in-out"
-            style={{ top: 'calc(50% - 69px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '351px' }}
+            style={{ top: 'calc(50% - 94px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '351px' }}
           >
             {/* Flyout Panel */}
             <div 
