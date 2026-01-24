@@ -4699,7 +4699,7 @@ export default function Dashboard() {
           >
             {/* Flyout Panel */}
             <div 
-              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border-[0.1px] border-white rounded-l-xl' : 'w-0 border-0'}`}
+              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border-[0.1px] border-white rounded-l-md' : 'w-0 border-0'}`}
               style={{ maxHeight: '70vh', background: 'rgba(0,0,0,0.75)' }}
             >
               <div className="w-80 flex flex-col">
