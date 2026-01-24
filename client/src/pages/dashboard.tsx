@@ -4929,7 +4929,12 @@ export default function Dashboard() {
                             const displayName = courseInfo?.name || courseCode;
                             return (
                               <div key={courseCode}>
-                                <div className="text-[10px] font-bold mb-1 text-white">
+                                <div className={`text-[10px] font-bold mb-1 ${
+                                  courseCode === 'CPPA122' ? 'text-green-400' :
+                                  courseCode === 'CFNF400' ? 'text-pink-400' :
+                                  courseCode === 'CASL101' ? 'text-indigo-400' : 
+                                  'text-white'
+                                }`}>
                                   {displayName}
                                 </div>
                                 <div className="space-y-1">
@@ -4941,17 +4946,12 @@ export default function Dashboard() {
                                     return (
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
-                                      className={`flex items-center gap-2 p-1.5 rounded-md text-xs group ${
-                                        courseCode === 'CPPA122' ? 'text-green-700 dark:text-green-300' :
-                                        courseCode === 'CFNF400' ? 'text-pink-700 dark:text-pink-300' :
-                                        courseCode === 'CASL101' ? 'text-indigo-700 dark:text-indigo-300' : 
-                                        'text-gray-700 dark:text-gray-300'
-                                      } animate-urgent-blink`}
+                                      className="flex items-center gap-2 p-1.5 rounded-md text-xs group text-white animate-urgent-blink"
                                       style={{ animationDelay: blinkSyncDelay }}
                                       data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
                                     >
                                       <Checkbox
-                                        className="h-3 w-3 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                        className="h-3 w-3 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
                                         onCheckedChange={(checked) => {
                                           if (checked && matchingFile) {
                                             markFileCompletedMutation.mutate({ fileId: matchingFile.id });
@@ -5026,7 +5026,12 @@ export default function Dashboard() {
                           return (
                             <div key={courseCode}>
                               {/* Course header */}
-                              <div className="text-[10px] font-bold mb-1 text-white">
+                              <div className={`text-[10px] font-bold mb-1 ${
+                                courseCode === 'CPPA122' ? 'text-green-400' :
+                                courseCode === 'CFNF400' ? 'text-pink-400' :
+                                courseCode === 'CASL101' ? 'text-indigo-400' : 
+                                'text-white'
+                              }`}>
                                 {courseName}
                               </div>
                               {/* Files for this course */}
@@ -5034,16 +5039,11 @@ export default function Dashboard() {
                                 {files.map(file => (
                                   <div
                                     key={file.id}
-                                    className={`flex items-center gap-2 p-1.5 rounded-md text-xs group ${
-                                      courseCode === 'CPPA122' ? 'text-green-700 dark:text-green-300' :
-                                      courseCode === 'CFNF400' ? 'text-pink-700 dark:text-pink-300' :
-                                      courseCode === 'CASL101' ? 'text-indigo-700 dark:text-indigo-300' : 
-                                      'text-gray-700 dark:text-gray-300'
-                                    }`}
+                                    className="flex items-center gap-2 p-1.5 rounded-md text-xs group text-white"
                                     data-testid={`flyout-file-${file.id}`}
                                   >
                                     <Checkbox
-                                      className="h-3 w-3 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                      className="h-3 w-3 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
                                       onCheckedChange={(checked) => {
                                         if (checked) {
                                           markFileCompletedMutation.mutate({ fileId: file.id });
