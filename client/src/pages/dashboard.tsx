@@ -1047,6 +1047,32 @@ export default function Dashboard() {
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [browserTtsRate, setBrowserTtsRate] = useState(0.9); // 90% speed
   
+  // Helper to wait for voices to be loaded (Chrome/Android fix)
+  const waitForVoices = (): Promise<SpeechSynthesisVoice[]> => {
+    return new Promise((resolve) => {
+      if (!window.speechSynthesis) {
+        resolve([]);
+        return;
+      }
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        resolve(voices);
+        return;
+      }
+      // Chrome loads voices asynchronously
+      const handleVoicesChanged = () => {
+        const loadedVoices = window.speechSynthesis.getVoices();
+        resolve(loadedVoices || []);
+      };
+      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged, { once: true });
+      // Timeout after 3 seconds
+      setTimeout(() => {
+        const fallbackVoices = window.speechSynthesis.getVoices() || [];
+        resolve(fallbackVoices);
+      }, 3000);
+    });
+  };
+  
   const handlePlayFile = async (fileUrl: string, fileName: string) => {
     try {
       // Check if using browser TTS only
@@ -1063,20 +1089,36 @@ export default function Dashboard() {
         // Cancel any existing speech
         window.speechSynthesis.cancel();
         
+        // Wait for voices to load (important for Chrome on Android/Fire tablets)
+        const voices = await waitForVoices();
+        console.log("Available voices:", voices.length, voices.map(v => v.name).slice(0, 5));
+        
+        if (voices.length === 0) {
+          toast({ title: "No TTS voices found. Make sure Chrome has TTS enabled.", variant: "destructive" });
+          return;
+        }
+        
         // Remove page markers from text for TTS (they're only for page sync)
         const cleanTextForTts = previewText.replace(/---PAGE---/g, '');
-        const utterance = new SpeechSynthesisUtterance(cleanTextForTts);
+        
+        // For long text, Chrome can fail - limit to 5000 chars at a time
+        const textToSpeak = cleanTextForTts.length > 5000 ? cleanTextForTts.substring(0, 5000) : cleanTextForTts;
+        
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
         utterance.rate = browserTtsRate;
         utterance.pitch = 1;
         
         // Use selected voice or find a good default
-        const voices = window.speechSynthesis.getVoices() || [];
         const voice = selectedVoice 
           ? voices.find(v => v.name === selectedVoice)
-          : voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
+          : voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) 
+            || voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural'))
             || voices.find(v => v.lang.startsWith('en'))
             || voices[0];
-        if (voice) utterance.voice = voice;
+        if (voice) {
+          utterance.voice = voice;
+          console.log("Using voice:", voice.name);
+        }
         
         // Track word position for highlighting
         let wordIndex = 0;
@@ -1087,18 +1129,29 @@ export default function Dashboard() {
           }
         };
         
+        utterance.onstart = () => {
+          console.log("Speech started");
+        };
+        
         utterance.onend = () => {
+          console.log("Speech ended");
           setIsPlaying(false);
           isPlayingRef.current = false;
           setCurrentWordIndex(0);
         };
         
-        utterance.onerror = () => {
+        utterance.onerror = (event) => {
+          console.error("Speech error:", event.error);
+          toast({ title: `Speech error: ${event.error}`, variant: "destructive" });
           setIsPlaying(false);
           isPlayingRef.current = false;
         };
         
         speechUtteranceRef.current = utterance;
+        
+        // Chrome bug workaround: need small delay after cancel
+        await new Promise(r => setTimeout(r, 100));
+        
         window.speechSynthesis.speak(utterance);
         
         setIsPlaying(true);
