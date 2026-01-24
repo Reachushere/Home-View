@@ -4300,7 +4300,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Column - Green */}
-                  <div className="flex-1 p-2 overflow-auto">
+                  <div className="flex-1 p-2 overflow-hidden">
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CPPA122 - Local Politics</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
@@ -4333,7 +4333,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 p-2 overflow-auto">
+                  <div className="flex-1 p-2 overflow-hidden">
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CFNF400 - Human Sexuality</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
@@ -4366,7 +4366,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CASL101 Column - Purple */}
-                  <div className="flex-1 p-2 overflow-auto">
+                  <div className="flex-1 p-2 overflow-hidden">
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CASL101 - American Sign Language</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => {
