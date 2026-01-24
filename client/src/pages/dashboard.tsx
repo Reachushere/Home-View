@@ -3234,11 +3234,9 @@ export default function Dashboard() {
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '1px solid rgba(255,255,255,0.5)'
       }}>
-        <div className="flex items-center px-4 py-2 gap-2 w-full justify-center">
-          <div className="h-7 flex items-center gap-2">
-            <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '36px', width: '36px' }} />
-            <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
-          </div>
+        <div className="flex items-center px-4 py-2 gap-2 w-full">
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '36px', width: '36px' }} />
+          <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
         </div>
       </div>
 
