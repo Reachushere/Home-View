@@ -2339,7 +2339,7 @@ export default function Dashboard() {
         />
       )}
       {/* Left Column - Header Bar + Sidebar */}
-      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '63px' }}>
+      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '70px' }}>
         {/* Sidebar Container */}
         <div className="relative flex-1 flex flex-col mb-3">
         
