@@ -2408,7 +2408,7 @@ export default function Dashboard() {
           {/* Scrollable sidebar content */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
         {/* Course Legend */}
-        <div className="pl-0.5 pr-1 space-y-3 mb-4" style={{ marginTop: '10px', marginLeft: '15px' }}>
+        <div className="pl-0.5 pr-1 space-y-3 mb-4" style={{ marginTop: '60px', marginLeft: '15px' }}>
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
             const courseCode = course.name.split(' - ')[0];
