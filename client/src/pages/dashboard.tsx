@@ -4527,7 +4527,7 @@ export default function Dashboard() {
           <section className="rounded-xl shadow-md p-3 border border-white h-[175px]" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }} data-testid="section-todo">
             <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
-              To Do {todoItems.filter(item => item.trim() !== "").length > 0 && <span>({todoItems.filter(item => item.trim() !== "").length})</span>}
+              To Do ({todoItems.filter(item => item.trim() !== "").length})
             </h4>
             <div className="grid grid-cols-4 gap-4 h-[calc(100%-32px)]">
               {[0, 1, 2, 3].map(col => (
