@@ -3366,7 +3366,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden relative z-10" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px' }}>
+      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px', height: 'calc(100vh - 64px)' }}>
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
           </div>
@@ -3387,7 +3387,7 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hover:bg-white/20 rounded-md -ml-1.5 -mr-1"
+                  className="hover:bg-white/20 rounded-md -ml-2.5 -mr-1"
                   data-testid="button-hamburger-menu"
                 >
                   <Menu className="!h-6 !w-6 text-white" strokeWidth={2.5} />
@@ -3456,7 +3456,7 @@ export default function Dashboard() {
             </Button>
 
             {/* View Buttons */}
-            <div className="flex items-center gap-0.5 bg-white/10 rounded-md px-0.5 py-0.5">
+            <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-0.5 py-0.5">
               <Button 
                 variant="ghost"
                 className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
@@ -3466,6 +3466,7 @@ export default function Dashboard() {
                 <Sun className="h-3 w-3 mr-1 text-white" />
                 Today
               </Button>
+              <div className="w-[1px] h-4 bg-white/50" />
               <Button 
                 variant="ghost"
                 className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
@@ -3483,7 +3484,7 @@ export default function Dashboard() {
           <div className="flex items-center pl-3 py-2 gap-1 flex-1 justify-end" style={{ paddingRight: '152px', transform: 'translateX(-20px)' }}>
             <Button 
               size="sm"
-              className="!h-7 !min-h-0 px-4 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              className="!h-7 !min-h-0 px-4 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-class"
               onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}
             >
@@ -3491,7 +3492,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              className="!h-7 !min-h-0 px-2.5 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-module"
               onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
             >
@@ -3499,7 +3500,7 @@ export default function Dashboard() {
             </Button>
             <Button 
               size="sm"
-              className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
+              className="!h-7 !min-h-0 px-2.5 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
               data-testid="button-add-reading"
               onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
             >
@@ -4847,7 +4848,7 @@ export default function Dashboard() {
         {calendarView === "week" && (
           <div 
             className="fixed z-50 flex flex-row-reverse items-center transition-transform duration-300 ease-in-out"
-            style={{ top: 'calc(50% - 119px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '350px' }}
+            style={{ top: 'calc(50% - 114px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '350px' }}
           >
             {/* Flyout Panel */}
             <div 
@@ -5075,7 +5076,7 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="border border-r-0 border-white/50 rounded-l-md px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
+              className="border border-r-0 border-white rounded-l-md px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: '#1a1a1a' }}
               data-testid="weekly-files-flyout-tab"
             >
