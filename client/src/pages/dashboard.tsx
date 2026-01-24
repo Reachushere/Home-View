@@ -4864,7 +4864,7 @@ export default function Dashboard() {
                         <FolderOpen className="h-4 w-4 text-white" />
                       </Button>
                     </RouterLink>
-                    <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
+                    <h3 className="text-white font-semibold text-sm">Files Due This Week</h3>
                   </div>
                   <span className="text-xs text-white/60">{currentWeekFiles.length} files</span>
                 </div>
@@ -4994,11 +4994,7 @@ export default function Dashboard() {
                       No files in Week {selectedWeek}
                     </div>
                   ) : currentWeekFiles.length > 0 ? (
-                    <div className="space-y-3">
-                      <div className={`mb-1 ${missedTasks.filter(t => t.attachments && t.attachments.length > 0).length > 0 ? 'mt-7' : 'mt-0'}`}>
-                        <span className="text-[11px] font-bold text-white">DUE THIS WEEK</span>
-                        <div className="bg-white" style={{ height: '0.1px', marginTop: '1px' }}></div>
-                      </div>
+                    <div className={`space-y-3 ${missedTasks.filter(t => t.attachments && t.attachments.length > 0).length > 0 ? 'mt-7' : 'mt-0'}`}>
                       {(() => {
                         // Group files by course
                         const groupedFiles: Record<string, typeof currentWeekFiles> = {};
