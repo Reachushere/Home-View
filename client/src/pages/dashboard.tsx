@@ -3205,9 +3205,9 @@ export default function Dashboard() {
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '1px solid rgba(255,255,255,0.5)'
       }}>
-        <div className="flex items-center px-4 py-2 gap-2 w-full justify-between">
+        <div className="flex items-center px-4 gap-2 w-full justify-between h-[44px]">
           <div className="flex items-center gap-2">
-            <img src={unicalLogo} alt="Uni-Cal" className="rounded h-7 w-7" />
+            <img src={unicalLogo} alt="Uni-Cal" className="rounded h-6 w-6" />
             <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
           </div>
           <div className="flex items-center gap-2" data-testid="digital-clock">
@@ -3248,7 +3248,7 @@ export default function Dashboard() {
           border: '1px solid rgba(255,255,255,0.5)'
         }}>
           {/* Navigation Section */}
-          <div className="flex items-center px-4 py-2 gap-2">
+          <div className="flex items-center px-4 gap-2 h-[44px]">
             {/* Hamburger Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
