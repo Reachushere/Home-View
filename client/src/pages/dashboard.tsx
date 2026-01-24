@@ -3958,7 +3958,7 @@ export default function Dashboard() {
                     <div 
                       key={dayIdx} 
                       className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
-                      style={{ backgroundColor: isSameDay(day, new Date()) ? 'rgba(45, 74, 111, 0.25)' : 'white' }}
+                      style={{ backgroundColor: isSameDay(day, new Date()) ? 'rgba(45, 74, 111, 0.35)' : 'white' }}
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Regular all-day tasks only - prep tasks moved to course rows */}
@@ -4044,7 +4044,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden backdrop-blur-md"
-                        style={{ backgroundColor: isSameDay(day, new Date()) ? 'rgba(45, 74, 111, 0.25)' : course.bg }}
+                        style={{ backgroundColor: isSameDay(day, new Date()) ? 'rgba(45, 74, 111, 0.35)' : course.bg }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
                         {coursePrepTasks.map(task => {
@@ -4177,7 +4177,7 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className="grid border-b border-border/50"
-                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: isCurrentHour ? 'rgba(45, 74, 111, 0.4)' : 'transparent' }}
+                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}
                   >
                     <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : 'black' }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
@@ -4193,7 +4193,7 @@ export default function Dashboard() {
                         <div 
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md ${totalItems > 0 && !(isFriday && new Date().getDay() !== 5) && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
-                          style={isToday ? { backgroundColor: 'rgba(45, 74, 111, 0.25)' } : isCurrentHour ? { backgroundColor: 'rgba(45, 74, 111, 0.25)' } : { backgroundColor: 'white' }}
+                          style={(isToday || isCurrentHour) ? { backgroundColor: 'rgba(45, 74, 111, 0.35)' } : { backgroundColor: 'white' }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
