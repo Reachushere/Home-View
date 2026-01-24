@@ -4529,28 +4529,28 @@ export default function Dashboard() {
               To Do
             </h4>
             <div className="grid grid-cols-4 gap-4 h-[calc(100%-32px)]">
-              <div className="flex flex-col gap-1.5 overflow-auto">
+              <div className="flex flex-col gap-1.5 overflow-hidden">
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
               </div>
-              <div className="flex flex-col gap-1.5 overflow-auto">
+              <div className="flex flex-col gap-1.5 overflow-hidden">
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
               </div>
-              <div className="flex flex-col gap-1.5 overflow-auto">
+              <div className="flex flex-col gap-1.5 overflow-hidden">
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
               </div>
-              <div className="flex flex-col gap-1.5 overflow-auto">
+              <div className="flex flex-col gap-1.5 overflow-hidden">
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
                 <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
