@@ -3950,7 +3950,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
+            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}>
                 <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                   ALL DAY
                 </div>
@@ -3962,7 +3962,8 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
+                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden backdrop-blur-md"
+                      style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Regular all-day tasks only - prep tasks moved to course rows */}
@@ -4027,7 +4028,7 @@ export default function Dashboard() {
                 { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', colors: courseColors['CFNF400'] },
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, minHeight: '24px' }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minHeight: '24px' }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                     {course.name}
                   </div>
@@ -4047,7 +4048,8 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden"
+                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden backdrop-blur-md"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
                         {coursePrepTasks.map(task => {
@@ -4197,8 +4199,8 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors ${totalItems > 0 && !(isFriday && new Date().getDay() !== 5) && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
-                          style={isToday ? { backgroundColor: 'rgba(165,180,252,0.45)' } : (isFriday && new Date().getDay() !== 5) ? { backgroundColor: 'rgba(236,72,153,0.25)' } : { backgroundColor: 'rgba(255,255,255,0.08)' }}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md ${totalItems > 0 && !(isFriday && new Date().getDay() !== 5) && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          style={isToday ? { backgroundColor: 'rgba(165,180,252,0.35)' } : (isFriday && new Date().getDay() !== 5) ? { backgroundColor: 'rgba(236,72,153,0.2)' } : { backgroundColor: 'rgba(255,255,255,0.1)' }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
