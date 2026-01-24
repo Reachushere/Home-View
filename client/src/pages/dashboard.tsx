@@ -2470,6 +2470,9 @@ export default function Dashboard() {
         {/* Sidebar Container */}
         <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
+        {/* Header box behind clock and timer */}
+        <div className="absolute left-0 right-0 z-0 rounded-t-md" style={{ top: '2px', height: '45px', background: 'rgba(0,0,0,0.75)' }} />
+        
         {/* Digital Clock and Pomodoro Timer - Same line */}
         <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '13px' }}>
           {/* Clock on the left */}
