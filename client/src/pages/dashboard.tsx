@@ -4459,11 +4459,11 @@ export default function Dashboard() {
             </h4>
             <div className="flex-1 flex flex-col overflow-auto">
               {/* CPPA122 Row - Green */}
-              <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.35)', height: `${rowHeight}px` }}>
+              <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(134,239,172,0.35)', minHeight: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
-                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-4' : ''}`}>
+                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
                     </div>
                   ))}
@@ -4473,11 +4473,11 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.45)', height: `${rowHeight}px` }}>
+              <div className="px-2 py-1 border-b border-white/30 overflow-auto" style={{ backgroundColor: 'rgba(249,168,212,0.45)', minHeight: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
-                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-4' : ''}`}>
+                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
                     </div>
                   ))}
@@ -4487,11 +4487,11 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CASL101 Row - Purple */}
-              <div className="px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.45)', height: `${rowHeight}px` }}>
+              <div className="px-2 py-1 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.45)', minHeight: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
-                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-4' : ''}`}>
+                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact />
                     </div>
                   ))}
@@ -5168,7 +5168,7 @@ function TaskCard({
       return (
         <div className="relative pt-1 h-full flex flex-col cursor-pointer" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="absolute -top-5 left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 text-white border border-white/50 no-blink" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+          <div className="absolute -top-[15px] left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 text-white border border-white/50 no-blink" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
