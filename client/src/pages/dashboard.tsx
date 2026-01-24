@@ -4703,7 +4703,7 @@ export default function Dashboard() {
               style={{ maxHeight: '70vh', background: 'rgba(0,0,0,0.75)' }}
             >
               <div className="w-80 flex flex-col">
-                <div className="p-3 flex items-center justify-between" style={{ borderBottom: '2px solid rgb(255, 255, 255)' }}>
+                <div className="p-3 flex items-center justify-between" style={{ borderBottom: '1px solid rgb(255, 255, 255)' }}>
                   <div className="flex items-center gap-2">
                     <RouterLink href="/files">
                       <Button 
@@ -4771,7 +4771,7 @@ export default function Dashboard() {
                     
                     return (
                       <div className="mb-4">
-                        <div className="mb-3 inline-block pb-0.5" style={{ borderBottom: '2px solid rgb(255, 255, 255)' }}>
+                        <div className="mb-3 inline-block pb-0.5" style={{ borderBottom: '1px solid rgb(255, 255, 255)' }}>
                           <span className="text-[11px] font-bold text-white">OVERDUE</span>
                         </div>
                         <div className="space-y-2">
@@ -4828,7 +4828,7 @@ export default function Dashboard() {
                     </div>
                   ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="mb-1 mt-4 inline-block pb-0.5" style={{ borderBottom: '2px solid rgb(255, 255, 255)' }}>
+                      <div className="mb-1 mt-4 inline-block pb-0.5" style={{ borderBottom: '1px solid rgb(255, 255, 255)' }}>
                         <span className="text-[11px] font-bold text-white">DUE THIS WEEK</span>
                       </div>
                       {(() => {
