@@ -59,6 +59,7 @@ import {
   SkipForward,
   SkipBack,
   RotateCcw,
+  Gauge,
   Menu,
   User,
   Palette,
@@ -1979,25 +1980,29 @@ export default function Dashboard() {
             
             {/* Speed control - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 bg-gray-800 rounded px-2 py-1">
+                <Gauge className="h-3 w-3 text-gray-400" />
+                <span className="text-[9px] text-gray-400 mr-1">Speed</span>
                 <Button
                   size="icon"
                   variant="ghost"
                   className="h-5 w-5 text-white hover:bg-gray-700"
                   onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
                   title="Slow down"
+                  data-testid="button-speed-down"
                 >
-                  <span className="text-[10px]">-</span>
+                  <MinusCircle className="h-3 w-3" />
                 </Button>
-                <span className="text-[9px] text-gray-400 w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
+                <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
                 <Button
                   size="icon"
                   variant="ghost"
                   className="h-5 w-5 text-white hover:bg-gray-700"
                   onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
                   title="Speed up"
+                  data-testid="button-speed-up"
                 >
-                  <span className="text-[10px]">+</span>
+                  <PlusCircle className="h-3 w-3" />
                 </Button>
               </div>
             )}
