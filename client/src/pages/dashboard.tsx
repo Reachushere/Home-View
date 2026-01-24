@@ -4824,7 +4824,7 @@ export default function Dashboard() {
                     </div>
                   ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="text-[11px] font-bold text-yellow-400 border-b border-white/30 pb-1 mb-2">
+                      <div className="text-[11px] font-bold text-yellow-400 border-b border-white/30 pb-1 mb-2 mt-3">
                         DUE THIS WEEK
                       </div>
                       {(() => {
