@@ -2068,7 +2068,7 @@ export default function Dashboard() {
           })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-3 p-3 mx-6 mt-4 bg-black rounded-lg">
+          <div className="flex items-center gap-3 p-3 mx-6 mt-4 bg-black rounded-lg flex-wrap">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
               <SelectTrigger className="w-[200px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
