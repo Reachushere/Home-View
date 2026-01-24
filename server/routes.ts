@@ -661,6 +661,49 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/files/:id/download - Download the actual file
+  app.get("/api/files/:id/download", async (req, res) => {
+    try {
+      const file = await storage.getFile(Number(req.params.id));
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      const mediaUrl = file.objectPath;
+      
+      if (mediaUrl.startsWith("/objects/")) {
+        const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+        const objectStorageService = new ObjectStorageService();
+        const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
+        
+        // Set content type based on file extension
+        const ext = (file.originalName || '').toLowerCase().split('.').pop();
+        const contentTypes: Record<string, string> = {
+          'pdf': 'application/pdf',
+          'jpg': 'image/jpeg',
+          'jpeg': 'image/jpeg',
+          'png': 'image/png',
+          'gif': 'image/gif',
+          'mp3': 'audio/mpeg',
+          'mp4': 'video/mp4',
+          'doc': 'application/msword',
+          'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        };
+        
+        res.setHeader('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
+        res.setHeader('Content-Disposition', `inline; filename="${file.displayName || file.originalName}"`);
+        
+        await objectStorageService.downloadObject(objectFile, res);
+      } else {
+        // For external URLs, redirect
+        res.redirect(mediaUrl);
+      }
+    } catch (err) {
+      console.error("Error downloading file:", err);
+      res.status(500).json({ error: "Failed to download file" });
+    }
+  });
+
   // GET /api/files/:id/text - Extract text content from a file (for PDF reading with highlighting)
   app.get("/api/files/:id/text", async (req, res) => {
     try {
