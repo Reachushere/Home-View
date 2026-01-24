@@ -4043,8 +4043,8 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors ${(isFriday && new Date().getDay() !== 5) ? "bg-red-100" : totalItems > 0 ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
-                          style={isToday ? { backgroundColor: 'rgba(165,180,252,0.45)' } : undefined}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors ${totalItems > 0 && !(isFriday && new Date().getDay() !== 5) && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          style={isToday ? { backgroundColor: 'rgba(165,180,252,0.45)' } : (isFriday && new Date().getDay() !== 5) ? { backgroundColor: 'rgba(248,113,113,0.25)' } : undefined}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
