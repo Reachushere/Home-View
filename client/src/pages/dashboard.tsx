@@ -3792,14 +3792,10 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className={`text-2xl font-bold ${
-                        isToday ? "text-white" : (isFriday && new Date().getDay() !== 5) ? "text-white" : "text-foreground"
-                      }`}>
+                      <div className="text-2xl font-bold text-white">
                         {dayNum}
                       </div>
-                      <div className={`text-xs font-medium tracking-wide ${
-                        isToday ? "text-white/80" : (isFriday && new Date().getDay() !== 5) ? "text-white/80" : "text-muted-foreground"
-                      }`}>{dayName}</div>
+                      <div className="text-xs font-medium tracking-wide text-white/80">{dayName}</div>
                     </div>
                     {isToday && daysUntilNextTask !== null && (
                       <div className="text-[9px] text-white text-center leading-tight -mt-1">
@@ -4046,7 +4042,7 @@ export default function Dashboard() {
                     className="grid border-b border-border/50"
                     style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: isCurrentHour ? 'rgba(93, 129, 204, 0.60)' : 'transparent' }}
                   >
-                    <div className={`text-xs font-bold tracking-wide flex items-center justify-center ${isCurrentHour ? "bg-[#5979CC] text-white" : "text-foreground"}`}>
+                    <div className={`text-xs font-bold tracking-wide flex items-center justify-center text-white ${isCurrentHour ? "bg-[#5979CC]" : ""}`}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
