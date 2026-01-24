@@ -4753,9 +4753,9 @@ export default function Dashboard() {
               data-testid="weekly-files-flyout-tab"
             >
               <span className="text-white text-xs font-medium tracking-wide flex items-center gap-1">
-                <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
-                Weekly Files
                 {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+                Weekly Files
+                <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
               </span>
             </button>
           </div>
