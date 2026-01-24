@@ -4560,7 +4560,7 @@ export default function Dashboard() {
         {/* Completed Tasks by Course */}
         <div className="flex gap-4 items-stretch h-[240px] flex-shrink-0">
           {/* CPPA122 Completed */}
-          <section className="flex-1 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }} data-testid="section-completed-cppa122">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }} data-testid="section-completed-cppa122">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CPPA122 - Local Politics ({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})
@@ -4588,7 +4588,7 @@ export default function Dashboard() {
           </section>
 
           {/* CFNF400 Completed */}
-          <section className="flex-1 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(249,168,212,0.45)' }} data-testid="section-completed-cfnf400">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(249,168,212,0.45)' }} data-testid="section-completed-cfnf400">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CFNF400 - Human Sexuality ({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})
@@ -4616,7 +4616,7 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(165,180,252,0.45)' }} data-testid="section-completed-casl101">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(165,180,252,0.45)' }} data-testid="section-completed-casl101">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CASL101 - American Sign Language ({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})
