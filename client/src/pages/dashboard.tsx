@@ -3757,7 +3757,7 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border border-white/50 flex flex-col" style={{ background: 'rgba(0,0,0,0.50)' }}>
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border border-white/50 flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0 pr-[17px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.50)' }}>
