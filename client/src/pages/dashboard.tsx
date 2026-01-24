@@ -837,18 +837,21 @@ export default function Dashboard() {
   // Calculate page boundaries when text is loaded
   useEffect(() => {
     if (previewText) {
-      // Split by double newlines (page breaks from PDF extraction)
-      const pages = previewText.split(/\n\n+/);
+      // Split by the special page marker inserted by server during PDF extraction
+      const PAGE_MARKER = '---PAGE---';
+      const pages = previewText.split(PAGE_MARKER);
       const boundaries: number[] = [];
       let wordCount = 0;
       
       for (const page of pages) {
         boundaries.push(wordCount);
-        const words = page.split(/\s+/).filter(w => w.length > 0);
+        // Count words excluding the page marker
+        const words = page.split(/\s+/).filter(w => w.length > 0 && w !== PAGE_MARKER);
         wordCount += words.length;
       }
       
       setPageWordBoundaries(boundaries);
+      console.log("Page boundaries calculated:", boundaries);
     }
   }, [previewText]);
   
@@ -942,7 +945,7 @@ export default function Dashboard() {
   };
 
   const startHighlighting = () => {
-    const words = previewText.split(/\s+/).filter(w => w.length > 0);
+    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     if (words.length === 0) return;
     
     setPlayStartTime(Date.now());
@@ -1109,7 +1112,7 @@ export default function Dashboard() {
   const handleSkipForward = () => {
     if (!previewText || previewSpeaker !== "browser_tts") return;
     
-    const words = previewText.split(/\s+/).filter(w => w.length > 0);
+    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const skipAmount = 20; // Skip 20 words forward
     const newIndex = Math.min(currentWordIndex + skipAmount, words.length - 1);
     
@@ -1156,7 +1159,7 @@ export default function Dashboard() {
   const handleSkipBack = () => {
     if (!previewText || previewSpeaker !== "browser_tts") return;
     
-    const words = previewText.split(/\s+/).filter(w => w.length > 0);
+    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const skipAmount = 20; // Skip 20 words back
     const newIndex = Math.max(currentWordIndex - skipAmount, 0);
     
@@ -2258,8 +2261,9 @@ export default function Dashboard() {
               ) : previewText ? (
                 <div className="text-sm leading-relaxed">
                   {(() => {
-                    // Split by paragraphs first to preserve structure
-                    const paragraphs = previewText.split(/\n\n+/);
+                    // Remove the page markers and split by paragraphs
+                    const cleanText = previewText.replace(/---PAGE---/g, '');
+                    const paragraphs = cleanText.split(/\n\n+/);
                     
                     // Track global word index for highlighting
                     let globalWordIndex = 0;

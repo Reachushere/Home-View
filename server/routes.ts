@@ -753,15 +753,18 @@ export async function registerRoutes(
           await parser.load();
           const pdfText = await parser.getText();
           
+          // Use a special marker to indicate page breaks for sync with PDF viewer
+          const PAGE_BREAK_MARKER = '\n\n---PAGE---\n\n';
+          
           if (pdfText && typeof pdfText === 'object') {
             if (pdfText.pages && Array.isArray(pdfText.pages)) {
-              textContent = pdfText.pages.map((page: any) => page.text || '').join('\n\n');
+              textContent = pdfText.pages.map((page: any) => page.text || '').join(PAGE_BREAK_MARKER);
             } else if (Array.isArray(pdfText)) {
-              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join('\n\n');
+              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(PAGE_BREAK_MARKER);
             } else if (pdfText.text) {
               textContent = pdfText.text;
             } else {
-              textContent = Object.values(pdfText).filter(v => typeof v === 'string').join('\n\n');
+              textContent = Object.values(pdfText).filter(v => typeof v === 'string').join(PAGE_BREAK_MARKER);
             }
           } else if (typeof pdfText === 'string') {
             textContent = pdfText;
