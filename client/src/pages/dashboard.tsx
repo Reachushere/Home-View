@@ -2083,18 +2083,37 @@ export default function Dashboard() {
             
             {/* Voice selector - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
-              <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                <SelectTrigger className="w-[200px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
-                  <SelectValue placeholder="Select Voice" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  {availableVoices.map(voice => (
-                    <SelectItem key={voice.name} value={voice.name} className="text-xs">
-                      {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <>
+                <Select value={selectedVoice} onValueChange={setSelectedVoice}>
+                  <SelectTrigger className="w-[200px] h-8 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
+                    <SelectValue placeholder="Select Voice" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {availableVoices.map(voice => (
+                      <SelectItem key={voice.name} value={voice.name} className="text-xs">
+                        {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-white hover:bg-gray-700"
+                  onClick={() => {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance("Hello, this is a sample of my voice.");
+                    utterance.rate = browserTtsRate;
+                    const voice = availableVoices.find(v => v.name === selectedVoice);
+                    if (voice) utterance.voice = voice;
+                    window.speechSynthesis.speak(utterance);
+                  }}
+                  data-testid="button-preview-voice"
+                  title="Preview voice"
+                >
+                  <Volume2 className="h-4 w-4" />
+                </Button>
+              </>
             )}
             
             {/* Speed control - shows for browser TTS */}
