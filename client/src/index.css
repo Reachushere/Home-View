@@ -109,6 +109,11 @@
   animation: urgent-blink 1s ease-in-out infinite;
 }
 
+.animate-urgent-blink .no-blink {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
 @keyframes today-blink {
   0%, 100% { box-shadow: 0 0 0 3px hsl(217 91% 60%); }
   50% { box-shadow: 0 0 0 3px hsl(217 91% 60% / 0.3); }
