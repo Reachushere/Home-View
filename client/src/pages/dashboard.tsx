@@ -4437,7 +4437,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col backdrop-blur-md" style={{ backgroundColor: 'rgba(255,255,255,0.1)' }} data-testid="section-upcoming">
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Clock className="h-3 w-3 text-white" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
