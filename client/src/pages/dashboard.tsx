@@ -3907,7 +3907,7 @@ export default function Dashboard() {
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-              <div className="flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
+              <div className="flex items-center justify-center" style={{ backgroundColor: 'black' }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
               </div>
               {weekDays.map((day, idx) => {
@@ -3950,7 +3950,7 @@ export default function Dashboard() {
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}>
-                <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
+                <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'black' }}>
                   ALL DAY
                 </div>
                 {weekDays.map((day, dayIdx) => {
@@ -4028,7 +4028,7 @@ export default function Dashboard() {
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
               ].map(course => (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minHeight: '24px' }}>
-                  <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
+                  <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'black' }}>
                     {course.name}
                   </div>
                   {weekDays.map((day, dayIdx) => {
