@@ -429,3 +429,13 @@
     overflow-y: overlay;
   }
 }
+
+/* Hidden scrollbar - scrollable but no visible scrollbar */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}

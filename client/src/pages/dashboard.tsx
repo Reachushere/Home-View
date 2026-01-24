@@ -3759,7 +3759,7 @@ export default function Dashboard() {
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.15px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
-            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" style={{ scrollbarGutter: 'stable' }} onClick={() => setSelectedTaskId(null)}>
+            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
               <div className="flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
@@ -4028,7 +4028,7 @@ export default function Dashboard() {
               ))}
             
             {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-x-hidden calendar-scrollbar" style={{ scrollbarGutter: 'stable' }}>
+            <div ref={calendarScrollRef} className="flex-1 overflow-x-hidden overflow-y-scroll scrollbar-hidden">
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
