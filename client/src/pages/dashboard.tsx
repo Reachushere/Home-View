@@ -4774,12 +4774,12 @@ export default function Dashboard() {
                         <div className="space-y-2">
                           {sortedOverdue.map(([courseCode, files]) => {
                             const colors = courseColors[courseCode];
+                            // Use the first file's courseName, or fall back to courseCode
+                            const displayName = files[0]?.courseName || courseCode;
                             return (
                               <div key={courseCode}>
                                 <div className="text-[10px] font-bold mb-1 text-white">
-                                  {courseCode === "CPPA122" ? "CPPA122 - Local Politics" : 
-                                   courseCode === "CFNF400" ? "CFNF400 - Human Sexuality" : 
-                                   courseCode === "CASL101" ? "CASL101 - Academic Skills" : courseCode}
+                                  {displayName}
                                 </div>
                                 <div className="space-y-1">
                                   {files.map((file, idx) => {
