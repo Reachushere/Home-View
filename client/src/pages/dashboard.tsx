@@ -4952,7 +4952,7 @@ export default function Dashboard() {
                                     return (
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
-                                      className="flex items-center gap-2 p-1.5 rounded-md text-xs group text-white animate-urgent-blink border-y border-white/40"
+                                      className="flex items-center gap-2 p-1.5 text-xs group text-white animate-urgent-blink border-b border-white/40"
                                       style={{ animationDelay: blinkSyncDelay }}
                                       data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
                                     >
@@ -5041,7 +5041,7 @@ export default function Dashboard() {
                                 {files.map(file => (
                                   <div
                                     key={file.id}
-                                    className="flex items-center gap-2 p-1.5 rounded-md text-xs group text-white border-y border-white/40"
+                                    className="flex items-center gap-2 p-1.5 text-xs group text-white border-b border-white/40"
                                     data-testid={`flyout-file-${file.id}`}
                                   >
                                     <Checkbox
