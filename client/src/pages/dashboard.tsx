@@ -4524,7 +4524,7 @@ export default function Dashboard() {
 
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
-          <section className="rounded-xl shadow-md border border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgba(0,0,0,0.50)' }} data-testid="section-todo">
+          <section className="rounded-xl shadow-md border border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgba(0,0,0,0.75)' }} data-testid="section-todo">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.50)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               To Do ({todoItems.filter(item => item.trim() !== "").length})
