@@ -704,6 +704,21 @@ export default function Dashboard() {
     queryKey: ["/api/weeks"],
   });
 
+  // Automatically set selectedWeek based on today's date
+  useEffect(() => {
+    if (weeks.length > 0) {
+      const today = new Date();
+      const currentWeek = weeks.find(w => {
+        const start = parseISO(w.startDate);
+        const end = parseISO(w.endDate);
+        return today >= start && today <= end;
+      });
+      if (currentWeek) {
+        setSelectedWeek(currentWeek.weekNumber);
+      }
+    }
+  }, [weeks]);
+
   const { data: allTasks = [] } = useQuery<Task[]>({
     queryKey: ["/api/tasks"],
     queryFn: () => fetch("/api/tasks").then(r => r.json()),
