@@ -3286,9 +3286,9 @@ export default function Dashboard() {
         width: '350px',
         left: '11px',
         top: '8px',
-        background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
+        background: 'rgba(0,0,0,0.35)',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-        border: '1px solid white'
+        border: '1px solid rgba(255,255,255,0.5)'
       }}>
         <div className="flex items-center px-4 gap-2 w-full h-[44px]">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-6 w-6" />
@@ -3306,9 +3306,9 @@ export default function Dashboard() {
         <div className="flex-shrink-0 relative z-10 flex gap-2" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-111px' }}>
         {/* Sleek Menu Bar */}
         <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-1" style={{ 
-          background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
+          background: 'rgba(0,0,0,0.35)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-          border: '1px solid white'
+          border: '1px solid rgba(255,255,255,0.5)'
         }}>
           {/* Navigation Section */}
           <div className="flex items-center px-4 gap-2 h-[44px]">
