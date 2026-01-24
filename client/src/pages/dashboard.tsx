@@ -4925,7 +4925,7 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="border-[0.1px] border-r-0 border-white rounded-l-lg px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
+              className="border-[0.1px] border-r-0 border-white rounded-l-md px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'rgba(0,0,0,0.75)' }}
               data-testid="weekly-files-flyout-tab"
             >
