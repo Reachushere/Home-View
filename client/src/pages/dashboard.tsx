@@ -3236,8 +3236,10 @@ export default function Dashboard() {
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '1px solid rgba(255,255,255,0.5)'
       }}>
-        <div className="flex items-center px-4 py-2 gap-2 w-full justify-center h-full">
-          <span className="text-white text-sm font-medium">Quick Actions</span>
+        <div className="flex items-center px-4 py-2 gap-2 w-full justify-center">
+          <div className="h-6 flex items-center">
+            <span className="text-white text-sm font-medium">Quick Actions</span>
+          </div>
         </div>
       </div>
 
