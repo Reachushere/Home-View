@@ -2464,7 +2464,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className="flex-1 text-white rounded-xl shadow-lg overflow-hidden border-[0.1px] border-white" style={{ width: 350, background: 'rgba(0,0,0,0.35)' }}>
+        <aside className="flex-1 text-white rounded-md shadow-lg overflow-hidden border-[0.1px] border-white" style={{ width: 350, background: 'rgba(0,0,0,0.35)' }}>
         <div className={`h-full pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '85px' }} />
@@ -3758,7 +3758,7 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.1px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
+          <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
@@ -4179,7 +4179,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-3" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm">
+          <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm">
             <CardContent className="p-0 h-full overflow-auto">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
