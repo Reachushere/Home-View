@@ -4395,7 +4395,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section (Urgent) - Now in Middle */}
-          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(147,197,253,0.25)' }} data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-orange-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)', boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.1)' }}>
               <Calendar className="h-3 w-3 text-orange-500" />
               URGENT: Do Today ({todayTasks.length})
@@ -4405,8 +4405,8 @@ export default function Dashboard() {
                 <div className="text-muted-foreground text-xs p-2">Loading...</div>
               ) : (
                 <>
-                  {/* CPPA122 Row */}
-                  <div className="px-2 py-1 border-b border-white/30" style={{ minHeight: `${rowHeight}px` }}>
+                  {/* CPPA122 Row - Green */}
+                  <div className="px-2 py-1 border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)', minHeight: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -4415,12 +4415,12 @@ export default function Dashboard() {
                         </div>
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
-                        <div className="text-[9px] text-white/60">-</div>
+                        <div className="text-[9px] text-green-600 dark:text-green-400 opacity-60">-</div>
                       )}
                     </div>
                   </div>
-                  {/* CFNF400 Row */}
-                  <div className="px-2 py-1 border-b border-white/30" style={{ minHeight: `${rowHeight}px` }}>
+                  {/* CFNF400 Row - Pink */}
+                  <div className="px-2 py-1 border-b border-white/30" style={{ backgroundColor: 'rgba(249,168,212,0.45)', minHeight: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -4429,12 +4429,12 @@ export default function Dashboard() {
                         </div>
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
-                        <div className="text-[9px] text-white/60">-</div>
+                        <div className="text-[9px] text-pink-600 dark:text-pink-400 opacity-60">-</div>
                       )}
                     </div>
                   </div>
-                  {/* CASL101 Row */}
-                  <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
+                  {/* CASL101 Row - Purple */}
+                  <div className="px-2 py-1" style={{ backgroundColor: 'rgba(165,180,252,0.45)', minHeight: `${rowHeight}px` }}>
                     <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
@@ -4443,7 +4443,7 @@ export default function Dashboard() {
                         </div>
                       ))}
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
-                        <div className="text-[9px] text-white/60">-</div>
+                        <div className="text-[9px] text-purple-600 dark:text-purple-400 opacity-60">-</div>
                       )}
                     </div>
                   </div>
