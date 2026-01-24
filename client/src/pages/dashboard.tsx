@@ -4108,10 +4108,9 @@ export default function Dashboard() {
                           
                           // First prep day
                           if (isFirstPrepDay) {
-                            const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                             const baseStyle = task.isCompleted 
                               ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                              : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400 ${shimmerClass}`;
+                              : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400`;
                             return (
                               <div key={`prep-${task.id}`} className="flex items-center w-full">
                                 <div
@@ -4138,10 +4137,9 @@ export default function Dashboard() {
                           }
                           
                           // Intermediate prep days
-                          const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
                           const baseStyle = task.isCompleted 
                             ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400 ${shimmerClass}`;
+                            : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400`;
                           const previousDay = addDays(dayStart, -1);
                           const hasPreviousVisibleDay = !isBefore(previousDay, today);
                           return (
