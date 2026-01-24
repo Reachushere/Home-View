@@ -3760,8 +3760,8 @@ export default function Dashboard() {
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.5px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
-            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0 pr-[17px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.50)' }}>
-              <div className="p-2 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
+            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.50)', marginRight: '17px' }}>
+              <div className="flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
               </div>
               {weekDays.map((day, idx) => {
@@ -3781,7 +3781,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className="p-1 border-l border-border flex flex-col items-center justify-center"
+                    className="border-l border-border flex items-center justify-center h-full"
                     style={{ 
                       backgroundColor: isToday 
                         ? "#2d4a6f" 
@@ -3797,18 +3797,13 @@ export default function Dashboard() {
                       </div>
                       <div className="text-xs font-medium tracking-wide text-white/80">{dayName}</div>
                     </div>
-                    {isToday && daysUntilNextTask !== null && (
-                      <div className="text-[9px] text-white text-center leading-tight -mt-1">
-                        Next task due in <span className="font-bold text-white text-sm animate-blink">{daysUntilNextTask}</span> <span className="text-[9px]">{daysUntilNextTask === 1 ? 'day' : 'days'}</span>
-                      </div>
-                    )}
                   </div>
                 );
               })}
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0 pr-[17px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
+            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)', marginRight: '17px' }}>
                 <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                   ALL DAY
                 </div>
@@ -3885,7 +3880,7 @@ export default function Dashboard() {
                 { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', colors: courseColors['CFNF400'] },
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 pr-[17px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, minHeight: '24px' }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, minHeight: '24px', marginRight: '17px' }}>
                   <div className="px-1 py-0.5 text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                     {course.name}
                   </div>
