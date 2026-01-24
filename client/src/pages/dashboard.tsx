@@ -2408,18 +2408,18 @@ export default function Dashboard() {
         {/* Digital Clock - Floating above sidebar */}
         <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '13px' }}>
           <div className="flex items-center gap-2" data-testid="digital-clock">
-            <span className="text-base text-black font-medium">
+            <span className="text-base text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <div className="w-[1px] h-6 bg-black/30" />
+            <div className="w-[1px] h-6 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-xl font-semibold text-black tabular-nums">
+              <span className="text-xl font-semibold text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-base text-black tabular-nums">
+              <span className="text-base text-white tabular-nums">
                 :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <span className="text-base font-bold text-black ml-0.5 uppercase">
+              <span className="text-base font-bold text-white ml-0.5 uppercase">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
@@ -2430,7 +2430,7 @@ export default function Dashboard() {
         </div>
         {/* Pomodoro Timer - Floating above sidebar */}
         <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '78px' }}>
-          <div className="flex items-center justify-center gap-3 bg-black/10 rounded-lg px-4 py-2">
+          <div className="flex items-center justify-center gap-3 bg-white/20 rounded-lg px-4 py-2">
             <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
               pomodoroMode === "work" ? "bg-red-700 text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -2443,28 +2443,28 @@ export default function Dashboard() {
                 onClick={togglePomodoro}
                 data-testid="button-pomodoro-toggle"
               >
-                {pomodoroRunning ? <Pause className="h-5 w-5 text-black" strokeWidth={2.5} /> : <Play className="h-5 w-5 text-black" strokeWidth={2.5} />}
+                {pomodoroRunning ? <Pause className="h-5 w-5 text-white" strokeWidth={2.5} /> : <Play className="h-5 w-5 text-white" strokeWidth={2.5} />}
               </button>
               <button
                 className="p-1.5 hover:bg-white/20 rounded transition-colors"
                 onClick={resetPomodoro}
                 data-testid="button-pomodoro-reset"
               >
-                <RotateCcw className="h-5 w-5 text-black" strokeWidth={2.5} />
+                <RotateCcw className="h-5 w-5 text-white" strokeWidth={2.5} />
               </button>
               <button
                 className="p-1.5 hover:bg-white/20 rounded transition-colors"
                 onClick={skipPomodoro}
                 data-testid="button-pomodoro-skip"
               >
-                <SkipForward className="h-5 w-5 text-black" strokeWidth={2.5} />
+                <SkipForward className="h-5 w-5 text-white" strokeWidth={2.5} />
               </button>
             </div>
           </div>
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className={`flex-1 text-gray-800 rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border border-white/50 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'rgba(255,255,255,0.95)' }}>
+        <aside className={`flex-1 text-white rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border border-white/50 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'rgba(255,255,255,0.15)' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '85px' }} />
 
@@ -2472,7 +2472,7 @@ export default function Dashboard() {
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
         {/* Course Legend */}
         <div className="pl-0.5 pr-1 space-y-3 mb-4" style={{ marginTop: '90px', marginLeft: '15px' }}>
-          <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Courses</h3>
+          <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
             const courseCode = course.name.split(' - ')[0];
             const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
@@ -2490,8 +2490,8 @@ export default function Dashboard() {
                 />
                 <span className="text-[10px]">
                   <span className="font-medium">{courseCode}</span>
-                  {courseName !== courseCode && <span className="text-black"> - {courseName}</span>}
-                  {course.professor && <span className="text-gray-600"> ({course.professor})</span>}
+                  {courseName !== courseCode && <span className="text-white"> - {courseName}</span>}
+                  {course.professor && <span className="text-white/70"> ({course.professor})</span>}
                 </span>
               </div>
             );
@@ -2499,7 +2499,7 @@ export default function Dashboard() {
         </div>
 
         <nav className="flex flex-col gap-0.5 mt-1 pb-4" style={{ maxWidth: '280px', marginLeft: '15px' }}>
-          <h3 className="text-xs font-semibold text-gray-700 uppercase tracking-wide px-1 mb-0.5">Weeks</h3>
+          <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-1 mb-0.5">Weeks</h3>
           {[...weeks].sort((a, b) => {
             const aFinished = parseISO(a.endDate) < new Date();
             const bFinished = parseISO(b.endDate) < new Date();
@@ -2525,7 +2525,7 @@ export default function Dashboard() {
                   <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
                     <Calendar className={`h-3 w-3 ${isSelected ? 'text-black' : ''}`} />
                     <span className={`text-xs ${isSelected ? 'text-black' : ''}`}>Week {week.weekNumber}</span>
-                    <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-gray-500'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
+                    <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Segoe UI, sans-serif" }}>
                       ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                     </span>
                   </div>
@@ -2552,7 +2552,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-center gap-2 mb-2">
             <button
               onClick={() => setCurrentPagLevel(prev => prev > 1 ? prev - 1 : 3)}
-              className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
+              className="w-5 h-5 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
               data-testid="button-pag-prev"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
@@ -2561,13 +2561,13 @@ export default function Dashboard() {
               <button
                 key={level}
                 onClick={() => setCurrentPagLevel(level)}
-                className={`w-2.5 h-2.5 rounded-full transition-colors ${currentPagLevel === level ? 'bg-gray-700' : 'bg-gray-300 hover:bg-gray-400'}`}
+                className={`w-2.5 h-2.5 rounded-full transition-colors ${currentPagLevel === level ? 'bg-white' : 'bg-white/30 hover:bg-white/50'}`}
                 data-testid={`button-pag-level-${level}`}
               />
             ))}
             <button
               onClick={() => setCurrentPagLevel(prev => prev < 3 ? prev + 1 : 1)}
-              className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
+              className="w-5 h-5 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
               data-testid="button-pag-next"
             >
               <ChevronRight className="h-3.5 w-3.5" />
