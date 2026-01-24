@@ -1201,9 +1201,22 @@ export default function Dashboard() {
     }
   };
 
-  // Skip forward/back functions for browser TTS
-  const handleSkipForward = () => {
-    if (!previewText || previewSpeaker !== "browser_tts" || !window.speechSynthesis) return;
+  // Skip forward/back functions for browser TTS and Echo
+  const handleSkipForward = async () => {
+    if (previewSpeaker !== "browser_tts") {
+      // For Echo speakers - call seek API
+      try {
+        await fetch('/api/media/seek', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ direction: 'forward', entityId: 'media_player.echo_lr_studio_white_am' }),
+        });
+      } catch (error) {
+        console.error('Seek forward error:', error);
+      }
+      return;
+    }
+    if (!previewText || !window.speechSynthesis) return;
     
     const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const skipAmount = 20; // Skip 20 words forward
@@ -1249,8 +1262,21 @@ export default function Dashboard() {
     }
   };
 
-  const handleSkipBack = () => {
-    if (!previewText || previewSpeaker !== "browser_tts" || !window.speechSynthesis) return;
+  const handleSkipBack = async () => {
+    if (previewSpeaker !== "browser_tts") {
+      // For Echo speakers - call seek API
+      try {
+        await fetch('/api/media/seek', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ direction: 'backward', entityId: 'media_player.echo_lr_studio_white_am' }),
+        });
+      } catch (error) {
+        console.error('Seek backward error:', error);
+      }
+      return;
+    }
+    if (!previewText || !window.speechSynthesis) return;
     
     const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
     const skipAmount = 20; // Skip 20 words back
@@ -2216,7 +2242,6 @@ export default function Dashboard() {
                 variant="ghost"
                 className="h-7 w-7 text-white hover:bg-gray-700"
                 onClick={handleSkipBack}
-                disabled={previewSpeaker !== "browser_tts"}
                 data-testid="button-preview-rewind"
                 title="Rewind 20 words"
               >
@@ -2245,7 +2270,6 @@ export default function Dashboard() {
                 variant="ghost"
                 className="h-7 w-7 text-white hover:bg-gray-700"
                 onClick={handleSkipForward}
-                disabled={previewSpeaker !== "browser_tts"}
                 data-testid="button-preview-forward"
                 title="Skip forward 20 words"
               >
