@@ -4316,7 +4316,7 @@ export default function Dashboard() {
                               cardBgClass="bg-green-50 dark:bg-green-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.3px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.3px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -4349,7 +4349,7 @@ export default function Dashboard() {
                               cardBgClass="bg-pink-50 dark:bg-pink-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.3px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.3px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
@@ -4382,7 +4382,7 @@ export default function Dashboard() {
                               cardBgClass="bg-indigo-50 dark:bg-indigo-900/20"
                               compact
                             />
-                            <div className="absolute top-1/2 -translate-y-1/2 right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.3px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
+                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-1px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.3px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
                               <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
                               <div className="working-dots mt-0.5">
                                 <div className="working-dot"></div>
