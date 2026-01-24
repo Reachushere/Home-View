@@ -4793,11 +4793,12 @@ export default function Dashboard() {
                                     return (
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
-                                      className={`flex items-center gap-2 p-1.5 rounded-lg text-xs group border-[0.1px] border-white/30 shadow-sm ${
-                                        courseCode === 'CPPA122' ? 'bg-green-900/40' :
-                                        courseCode === 'CFNF400' ? 'bg-pink-900/40' :
-                                        courseCode === 'CASL101' ? 'bg-indigo-900/40' : 'bg-gray-900/40'
-                                      } text-white animate-urgent-blink`}
+                                      className={`flex items-center gap-2 p-1.5 rounded-xl text-xs group shadow-sm ${
+                                        courseCode === 'CPPA122' ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700' :
+                                        courseCode === 'CFNF400' ? 'bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-700' :
+                                        courseCode === 'CASL101' ? 'bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700' : 
+                                        'bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700'
+                                      } text-black dark:text-white animate-urgent-blink`}
                                       style={{ animationDelay: blinkSyncDelay }}
                                       data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
                                     >
@@ -4875,15 +4876,16 @@ export default function Dashboard() {
                                 {files.map(file => (
                                   <div
                                     key={file.id}
-                                    className={`flex items-center gap-2 p-1.5 rounded-lg text-xs group border-[0.1px] border-white/30 shadow-sm ${
-                                      courseCode === 'CPPA122' ? 'bg-green-900/40' :
-                                      courseCode === 'CFNF400' ? 'bg-pink-900/40' :
-                                      courseCode === 'CASL101' ? 'bg-indigo-900/40' : 'bg-gray-900/40'
-                                    } text-white`}
+                                    className={`flex items-center gap-2 p-1.5 rounded-xl text-xs group shadow-sm ${
+                                      courseCode === 'CPPA122' ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700' :
+                                      courseCode === 'CFNF400' ? 'bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-700' :
+                                      courseCode === 'CASL101' ? 'bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700' : 
+                                      'bg-gray-50 dark:bg-gray-900/20 border border-gray-200 dark:border-gray-700'
+                                    } text-black dark:text-white`}
                                     data-testid={`flyout-file-${file.id}`}
                                   >
                                     <Checkbox
-                                      className="h-3 w-3 border-white/60 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                                      className="h-3 w-3 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                                       onCheckedChange={(checked) => {
                                         if (checked) {
                                           markFileCompletedMutation.mutate({ fileId: file.id });
