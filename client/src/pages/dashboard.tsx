@@ -4885,7 +4885,7 @@ export default function Dashboard() {
                                     data-testid={`flyout-file-${file.id}`}
                                   >
                                     <Checkbox
-                                      className="h-3 w-3 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                                      className="h-3 w-3 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                       onCheckedChange={(checked) => {
                                         if (checked) {
                                           markFileCompletedMutation.mutate({ fileId: file.id });
@@ -5081,7 +5081,7 @@ function TaskCard({
             checked={task.isCompleted || false}
             onCheckedChange={(checked) => onComplete(!!checked)}
             data-testid={`checkbox-task-${task.id}`}
-            className={compact ? "h-3.5 w-3.5" : ""}
+            className={`${compact ? "h-3.5 w-3.5" : ""} border-black data-[state=checked]:bg-black data-[state=checked]:border-black`}
           />
           <div>
             <CardTitle className={`${compact ? "font-semibold" : "font-medium"} ${task.isCompleted ? "line-through" : ""} ${compact ? "text-[10px] leading-tight" : "text-xs"}`}>
