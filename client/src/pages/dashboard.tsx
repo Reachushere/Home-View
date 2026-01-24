@@ -2408,18 +2408,18 @@ export default function Dashboard() {
         {/* Digital Clock - Floating above sidebar */}
         <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '13px' }}>
           <div className="flex items-center gap-2" data-testid="digital-clock">
-            <span className="text-base text-white font-medium">
+            <span className="text-base text-black font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <div className="w-[1px] h-6 bg-white/50" />
+            <div className="w-[1px] h-6 bg-black/30" />
             <div className="flex items-baseline">
-              <span className="text-xl font-semibold text-white tabular-nums">
+              <span className="text-xl font-semibold text-black tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-base text-white tabular-nums">
+              <span className="text-base text-black tabular-nums">
                 :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <span className="text-base font-bold text-white ml-0.5 uppercase">
+              <span className="text-base font-bold text-black ml-0.5 uppercase">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
@@ -2430,7 +2430,7 @@ export default function Dashboard() {
         </div>
         {/* Pomodoro Timer - Floating above sidebar */}
         <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '78px' }}>
-          <div className="flex items-center justify-center gap-3 bg-white/20 rounded-lg px-4 py-2">
+          <div className="flex items-center justify-center gap-3 bg-black/10 rounded-lg px-4 py-2">
             <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
               pomodoroMode === "work" ? "bg-red-700 text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -2443,21 +2443,21 @@ export default function Dashboard() {
                 onClick={togglePomodoro}
                 data-testid="button-pomodoro-toggle"
               >
-                {pomodoroRunning ? <Pause className="h-5 w-5 text-white" strokeWidth={2.5} /> : <Play className="h-5 w-5 text-white" strokeWidth={2.5} />}
+                {pomodoroRunning ? <Pause className="h-5 w-5 text-black" strokeWidth={2.5} /> : <Play className="h-5 w-5 text-black" strokeWidth={2.5} />}
               </button>
               <button
                 className="p-1.5 hover:bg-white/20 rounded transition-colors"
                 onClick={resetPomodoro}
                 data-testid="button-pomodoro-reset"
               >
-                <RotateCcw className="h-5 w-5 text-white" strokeWidth={2.5} />
+                <RotateCcw className="h-5 w-5 text-black" strokeWidth={2.5} />
               </button>
               <button
                 className="p-1.5 hover:bg-white/20 rounded transition-colors"
                 onClick={skipPomodoro}
                 data-testid="button-pomodoro-skip"
               >
-                <SkipForward className="h-5 w-5 text-white" strokeWidth={2.5} />
+                <SkipForward className="h-5 w-5 text-black" strokeWidth={2.5} />
               </button>
             </div>
           </div>
@@ -2490,8 +2490,8 @@ export default function Dashboard() {
                 />
                 <span className="text-[10px]">
                   <span className="font-medium">{courseCode}</span>
-                  {courseName !== courseCode && <span className="text-white"> - {courseName}</span>}
-                  {course.professor && <span className="text-white/70"> ({course.professor})</span>}
+                  {courseName !== courseCode && <span className="text-black"> - {courseName}</span>}
+                  {course.professor && <span className="text-gray-600"> ({course.professor})</span>}
                 </span>
               </div>
             );
