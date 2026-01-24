@@ -818,36 +818,57 @@ export default function Dashboard() {
   const [selectedVoice, setSelectedVoice] = useState<string>(""); // Voice name
   const [playStartTime, setPlayStartTime] = useState<number | null>(null);
   
-  // Load available TTS voices
+  // Load available TTS voices with retries for Chrome on mobile/Fire tablets
   useEffect(() => {
-    // Check if speechSynthesis is available (not on Fire tablets)
-    if (!window.speechSynthesis) return;
+    // Check if speechSynthesis is available
+    if (!window.speechSynthesis) {
+      console.log("TTS: speechSynthesis not available");
+      return;
+    }
+    
+    console.log("TTS: Initializing voice loading");
     
     const loadVoices = () => {
       const voices = window.speechSynthesis?.getVoices() || [];
+      console.log("TTS: Loaded", voices.length, "voices");
       if (voices.length > 0) {
         // Filter to English voices and sort by name
         const englishVoices = voices.filter(v => v.lang.startsWith('en')).sort((a, b) => a.name.localeCompare(b.name));
         setAvailableVoices(englishVoices.length > 0 ? englishVoices : voices);
-        // Set default voice - prefer Guy
+        // Set default voice - prefer Guy or Google
         if (!selectedVoice) {
           const defaultVoice = englishVoices.find(v => v.name.includes('Guy'))
+            || englishVoices.find(v => v.name.includes('Google') && v.lang === 'en-US')
             || englishVoices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural'))
             || englishVoices[0];
-          if (defaultVoice) setSelectedVoice(defaultVoice.name);
+          if (defaultVoice) {
+            console.log("TTS: Default voice:", defaultVoice.name);
+            setSelectedVoice(defaultVoice.name);
+          }
         }
       }
     };
     
+    // Try loading immediately
     loadVoices();
-    if (window.speechSynthesis) {
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
+    
+    // Also listen for voiceschanged event (Chrome loads async)
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+    
+    // Retry loading a few times for Chrome on mobile
+    const retryIntervals = [100, 500, 1000, 2000];
+    const timeouts = retryIntervals.map(delay => 
+      setTimeout(() => {
+        const voices = window.speechSynthesis?.getVoices() || [];
+        if (voices.length > 0 && availableVoices.length === 0) {
+          loadVoices();
+        }
+      }, delay)
+    );
     
     return () => {
-      if (window.speechSynthesis) {
-        window.speechSynthesis.onvoiceschanged = null;
-      }
+      window.speechSynthesis?.removeEventListener('voiceschanged', loadVoices);
+      timeouts.forEach(t => clearTimeout(t));
     };
   }, []);
   const highlightIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
