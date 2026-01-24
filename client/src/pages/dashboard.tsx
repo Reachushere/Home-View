@@ -4423,7 +4423,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Row - Green */}
-                  <div className="px-2 py-1 border-b border-white" style={{ minHeight: `${rowHeight}px` }}>
+                  <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
                     <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CPPA122 - Local Politics</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -4437,7 +4437,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Row - Pink */}
-                  <div className="px-2 py-1 border-b border-white" style={{ minHeight: `${rowHeight}px` }}>
+                  <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
                     <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CFNF400 - Human Sexuality</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -4477,7 +4477,7 @@ export default function Dashboard() {
             </h4>
             <div className="flex-1 flex flex-col">
               {/* CPPA122 Row - Green */}
-              <div className="px-2 py-1 border-b border-white" style={{ minHeight: `${rowHeight}px` }}>
+              <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
                 <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CPPA122 - Local Politics</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -4491,7 +4491,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="px-2 py-1 border-b border-white" style={{ minHeight: `${rowHeight}px` }}>
+              <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
                 <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CFNF400 - Human Sexuality</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
