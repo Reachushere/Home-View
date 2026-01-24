@@ -1874,7 +1874,7 @@ export default function Dashboard() {
           </div>
           <Button 
             variant="outline" 
-            className="bg-white/20 border-white/40 text-white hover:bg-white/30"
+            className="bg-white/20 border-white text-white hover:bg-white/30"
             onClick={() => setIsNewSemesterDialogOpen(true)}
             data-testid="button-new-semester"
           >
@@ -2464,7 +2464,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className="flex-1 text-white rounded-xl shadow-lg overflow-hidden border-2 border-white/50" style={{ width: 350, background: 'rgba(0,0,0,0.35)' }}>
+        <aside className="flex-1 text-white rounded-xl shadow-lg overflow-hidden border-[1.5px] border-white" style={{ width: 350, background: 'rgba(0,0,0,0.35)' }}>
         <div className={`h-full pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '85px' }} />
@@ -2577,125 +2577,125 @@ export default function Dashboard() {
           
           {/* Level I */}
           <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
-          <div className="border-2 border-white/60">
-            <div className="flex border-b border-white/60">
-              <div className="font-bold px-1 py-0.5 border-r border-white/60 w-16">LEVEL I</div>
+          <div className="border-[1.5px] border-white">
+            <div className="flex border-b border-white">
+              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL I</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60 font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60 font-bold">Code</div>
+            <div className="flex border-b border-white">
+              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
               <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
-            <div className={`flex border-b border-white/60 ${checkedCourses['PPA101'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white/60 flex items-center justify-center">
+            <div className={`flex border-b border-white ${checkedCourses['PPA101'] ? 'bg-gray-500 text-gray-500' : ''}`}>
+              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 101</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 101</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA101']?.percent || ''} onChange={(e) => updatePercent('PPA101', e.target.value)} />
               </div>
             </div>
-            <div className={`flex border-b border-white/60 ${checkedCourses['PPA102'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white/60 flex items-center justify-center">
+            <div className={`flex border-b border-white ${checkedCourses['PPA102'] ? 'bg-gray-500 text-gray-500' : ''}`}>
+              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 102</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 102</div>
               <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA102']?.grade || ''} onChange={(e) => updateGrade('PPA102', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA102']?.percent || ''} onChange={(e) => updatePercent('PPA102', e.target.value)} />
               </div>
             </div>
-            <div className={`flex border-b border-white/60 ${checkedCourses['PPA125'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white/60 flex items-center justify-center">
+            <div className={`flex border-b border-white ${checkedCourses['PPA125'] ? 'bg-gray-500 text-gray-500' : ''}`}>
+              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 125</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 125</div>
               <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA125']?.grade || ''} onChange={(e) => updateGrade('PPA125', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA125']?.percent || ''} onChange={(e) => updatePercent('PPA125', e.target.value)} />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60 text-[8px] font-semibold">CORE ELECTIVES:</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60"></div>
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white text-[8px] font-semibold">CORE ELECTIVES:</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
-            <div className={`flex border-b border-white/60 ${checkedCourses['ELECTIVE1'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className={`flex border-b border-white ${checkedCourses['ELECTIVE1'] ? 'bg-gray-500 text-gray-500' : ''}`}>
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 120</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 120</div>
               <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
               </div>
             </div>
-            <div className={`flex border-b border-white/60 ${checkedCourses['ELECTIVE2'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className={`flex border-b border-white ${checkedCourses['ELECTIVE2'] ? 'bg-gray-500 text-gray-500' : ''}`}>
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 121</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 121</div>
               <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 122</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 122</div>
               <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 124</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 124</div>
               <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex flex-col">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex flex-col">
                 <div className="flex-1"></div>
                 <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-500' : ''}`}>
                   <input type="checkbox" className="checkbox-black" checked={checkedCourses['LIBERAL'] || false} disabled={!openElectives['LIBERAL']?.trim()} onChange={() => toggleCourse('LIBERAL')} />
@@ -2716,7 +2716,7 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
-              <div className={`w-14 border-l border-white/60 flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-500' : ''}`}>
+              <div className={`w-14 border-l border-white flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-500' : ''}`}>
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -2724,7 +2724,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60 flex flex-col">
+              <div className="w-5 border-r border-white flex flex-col">
                 <div className="flex-1"></div>
                 <div className={`h-[46px] flex items-start justify-center pt-2 ${checkedCourses['OPEN1'] ? 'bg-gray-500' : ''}`}>
                   <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
@@ -2758,7 +2758,7 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
-              <div className="w-14 border-l border-white/60 flex flex-col">
+              <div className="w-14 border-l border-white flex flex-col">
                 <div className="pt-5"></div>
                 <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-gray-500' : ''}`}>
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
@@ -2780,126 +2780,126 @@ export default function Dashboard() {
 
           {/* Level II */}
           <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-500 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
-          <div className="border-2 border-white/60">
-            <div className="flex border-b border-white/60">
-              <div className="font-bold px-1 py-0.5 border-r border-white/60 w-16">LEVEL II</div>
+          <div className="border-[1.5px] border-white">
+            <div className="flex border-b border-white">
+              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL II</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60 font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60 font-bold">Code</div>
+            <div className="flex border-b border-white">
+              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
               <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 211</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 211</div>
               <div className="flex-1 px-1 py-0.5">Public Policy</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-1.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60 text-[8px] font-semibold">CORE ELECTIVES:</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60"></div>
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white text-[8px] font-semibold">CORE ELECTIVES:</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">THREE</span> from the following:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 120</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 120</div>
               <div className="flex-1 px-1 py-0.5">Canadian Politics and Government</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 121</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 121</div>
               <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 122</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 122</div>
               <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 124</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 124</div>
               <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 235</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 235</div>
               <div className="flex-1 px-1 py-0.5">Theories of the State</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 303</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 303</div>
               <div className="flex-1 px-1 py-0.5">Public Budget Policy/Politics</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
                 <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
               </div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+            <div className="flex border-b border-white">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60">PPA 319</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 319</div>
               <div className="flex-1 px-1 py-0.5">Politics of Work and Labour</div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5 py-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -2907,22 +2907,22 @@ export default function Dashboard() {
               </div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60"></div>
-              <div className="w-14 border-r border-white/60"></div>
+              <div className="w-5 border-r border-white"></div>
+              <div className="w-14 border-r border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex items-stretch">
-              <div className="w-5 border-r border-white/60 flex items-center justify-center">
+              <div className="w-5 border-r border-white flex items-center justify-center">
                 <input type="checkbox" className="checkbox-black" />
               </div>
-              <div className="w-14 border-r border-white/60 h-11 flex items-start justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-white h-11 flex items-start justify-center text-[8px] text-center px-0.5">
                 <span className="leading-none -mt-2"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
               </div>
               <div className="flex-1 h-11 px-1 flex items-center">
                 <input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course..." />
               </div>
-              <div className="w-14 border-l border-white/60 flex flex-col items-center justify-center gap-0.5">
+              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                 </select>
@@ -2931,58 +2931,58 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex items-stretch">
-              <div className="w-5 border-r border-white/60 flex flex-col">
-                <div className="h-7 border-b border-white/60"></div>
-                <div className="h-9 flex items-center justify-center border-b border-white/60"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white/60"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white/60"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white/60"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white/60"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white/60"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white/60"><input type="checkbox" className="checkbox-black" /></div>
+              <div className="w-5 border-r border-white flex flex-col">
+                <div className="h-7 border-b border-white"></div>
+                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
+                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-9 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white/60 flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
                 <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
               </div>
               <div className="flex-1 flex flex-col">
-                <div className="h-7 px-1 text-[8px] leading-tight flex items-center border-b border-white/60"><span><b>CORE ELECTIVE: ONE</b> course required from the following:</span></div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white/60">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white/60">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white/60">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white/60">ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white/60">ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white/60">ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white/60">ECN 220 Evolution of the Global Economy</div>
+                <div className="h-7 px-1 text-[8px] leading-tight flex items-center border-b border-white"><span><b>CORE ELECTIVE: ONE</b> course required from the following:</span></div>
+                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
+                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
+                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
+                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
+                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
+                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
+                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 220 Evolution of the Global Economy</div>
                 <div className="h-9 px-1 text-[8px] flex items-center">ECN 320 Introduction to Financial Economics</div>
               </div>
-              <div className="w-14 border-l border-white/60 flex flex-col">
-                <div className="h-7 border-b border-white/60"></div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white/60">
+              <div className="w-14 border-l border-white flex flex-col">
+                <div className="h-7 border-b border-white"></div>
+                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white/60">
+                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white/60">
+                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white/60">
+                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white/60">
+                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white/60">
+                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white/60">
+                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                 </div>
@@ -2994,24 +2994,24 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60"></div>
-              <div className="w-14 border-r border-white/60"></div>
+              <div className="w-5 border-r border-white"></div>
+              <div className="w-14 border-r border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex items-stretch">
-              <div className="w-5 border-r border-white/60 flex flex-col">
+              <div className="w-5 border-r border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white/60 h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-white h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
                 <span className="leading-tight"><span className="font-bold">TWO</span> one-term courses required - options are listed in <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800 font-bold">PR Table I</a>.</span>
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
               </div>
-              <div className="w-14 border-l border-white/60 flex flex-col">
+              <div className="w-14 border-l border-white flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -3027,15 +3027,15 @@ export default function Dashboard() {
 
         {/* Level III */}
           <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 3 ? '' : 'hidden'}`}>
-          <div className="border-2 border-white/60">
-            <div className="flex border-b border-white/60">
-              <div className="font-bold px-1 py-0.5 border-r border-white/60 w-16">LEVEL III</div>
+          <div className="border-[1.5px] border-white">
+            <div className="flex border-b border-white">
+              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL III</div>
               <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
             </div>
-            <div className="flex border-b border-white/60">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white/60"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60 font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white/60 font-bold">Code</div>
+            <div className="flex border-b border-white">
+              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
+              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
+              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
               <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
               <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
             </div>
@@ -3048,12 +3048,12 @@ export default function Dashboard() {
                 <col style={{ width: '56px' }} />
               </colgroup>
               <tbody>
-                <tr className="border-b border-white/60">
-                  <td className="px-0.5 py-0.5 border-r border-white/60 text-center align-middle">
+                <tr className="border-b border-white">
+                  <td className="px-0.5 py-0.5 border-r border-white text-center align-middle">
                     <input type="checkbox" className="checkbox-black" />
                   </td>
-                  <td className="px-1 py-0.5 border-r border-white/60 align-middle text-[8px]">Core Req</td>
-                  <td className="px-1 py-0.5 border-r border-white/60 align-middle text-[9px]">PPA 333</td>
+                  <td className="px-1 py-0.5 border-r border-white align-middle text-[8px]">Core Req</td>
+                  <td className="px-1 py-0.5 border-r border-white align-middle text-[9px]">PPA 333</td>
                   <td className="px-1 py-0.5 align-middle text-[9px]">Research Methods in Public Administration</td>
                   <td className="border-l border-black align-middle">
                     <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
@@ -3080,25 +3080,25 @@ export default function Dashboard() {
                   { code: 'PPA 490', title: 'Public Admin Themes' },
                   { code: 'PPA 501', title: 'Public Sector Leadership' },
                 ].map((course, idx, arr) => (
-                  <tr key={course.code} className={idx < arr.length - 1 ? 'border-b border-white/60' : ''}>
+                  <tr key={course.code} className={idx < arr.length - 1 ? 'border-b border-white' : ''}>
                     {idx === 0 && (
                       <>
-                        <td rowSpan={14} className="px-0.5 py-0.5 border-r border-white/60 text-center align-middle">
+                        <td rowSpan={14} className="px-0.5 py-0.5 border-r border-white text-center align-middle">
                           <div className="flex flex-col gap-0">
                             {Array(14).fill(0).map((_, i) => (
-                              <div key={i} className={`h-11 flex items-center justify-center ${i < 13 ? 'border-b border-white/60' : ''}`}>
+                              <div key={i} className={`h-11 flex items-center justify-center ${i < 13 ? 'border-b border-white' : ''}`}>
                                 <input type="checkbox" className="checkbox-black" />
                               </div>
                             ))}
                           </div>
                         </td>
-                        <td rowSpan={14} className="px-1 py-0.5 border-r border-white/60 text-[8px] align-middle">
+                        <td rowSpan={14} className="px-1 py-0.5 border-r border-white text-[8px] align-middle">
                           <div className="font-semibold">CORE ELECTIVES:</div>
                           <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
                         </td>
                       </>
                     )}
-                    <td className={`h-11 px-1 py-0.5 border-r border-white/60 align-middle text-[9px]`}>{course.code}</td>
+                    <td className={`h-11 px-1 py-0.5 border-r border-white align-middle text-[9px]`}>{course.code}</td>
                     <td className={`h-11 px-1 py-0.5 align-middle text-[9px]`}>{course.title}</td>
                     <td className="border-l border-black align-middle">
                       <div className="flex flex-col items-center justify-center gap-1.5">
@@ -3114,24 +3114,24 @@ export default function Dashboard() {
             </table>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60"></div>
-              <div className="w-14 border-r border-white/60"></div>
+              <div className="w-5 border-r border-white"></div>
+              <div className="w-14 border-r border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE REQUIRED:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60 flex flex-col">
+              <div className="w-5 border-r border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white/60 flex items-center justify-center text-[8px] text-center">
+              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center">
                 Select&nbsp;<span className="font-bold">ONE</span>
               </div>
               <div className="flex-1 flex flex-col">
                 <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
                 <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
               </div>
-              <div className="w-14 border-l border-white/60 flex flex-col">
+              <div className="w-14 border-l border-white flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -3144,18 +3144,18 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60"></div>
-              <div className="w-14 border-r border-white/60"></div>
+              <div className="w-5 border-r border-white"></div>
+              <div className="w-14 border-r border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60 flex flex-col">
+              <div className="w-5 border-r border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white/60 flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -3163,7 +3163,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
                 <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
               </div>
-              <div className="w-14 border-l border-white/60 flex flex-col">
+              <div className="w-14 border-l border-white flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -3180,19 +3180,19 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60"></div>
-              <div className="w-14 border-r border-white/60"></div>
+              <div className="w-5 border-r border-white"></div>
+              <div className="w-14 border-r border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A / B:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60 flex flex-col">
+              <div className="w-5 border-r border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white/60 flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED,<br/><br/><span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/><br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -3201,7 +3201,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
               </div>
-              <div className="w-14 border-l border-white/60 flex flex-col">
+              <div className="w-14 border-l border-white flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -3222,13 +3222,13 @@ export default function Dashboard() {
             </div>
             <div className="h-px bg-black"></div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60"></div>
-              <div className="w-14 border-r border-white/60"></div>
+              <div className="w-5 border-r border-white"></div>
+              <div className="w-14 border-r border-white"></div>
               <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE:</div>
               <div className="w-14 border-l border-black"></div>
             </div>
             <div className="flex">
-              <div className="w-5 border-r border-white/60 flex flex-col">
+              <div className="w-5 border-r border-white flex flex-col">
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
@@ -3236,7 +3236,7 @@ export default function Dashboard() {
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                 <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
               </div>
-              <div className="w-14 border-r border-white/60 flex items-center justify-center text-[8px] text-center px-0.5">
+              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
                 <div className="leading-tight"><span className="font-bold">SIX</span> one-term level courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
               </div>
               <div className="flex-1 flex flex-col">
@@ -3247,7 +3247,7 @@ export default function Dashboard() {
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 5..." /></div>
                 <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 6..." /></div>
               </div>
-              <div className="w-14 border-l border-white/60 flex flex-col">
+              <div className="w-14 border-l border-white flex flex-col">
                 <div className="h-11 flex flex-col items-center justify-center gap-0.5">
                   <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                   <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
@@ -3365,7 +3365,7 @@ export default function Dashboard() {
               variant="ghost"
               size="icon"
               onClick={toggleMute}
-              className={`h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50 ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              className={`h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
@@ -3376,7 +3376,7 @@ export default function Dashboard() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
+              className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white"
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
@@ -3757,7 +3757,7 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-2 border-white/50 flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[1.5px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0 pr-[17px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.50)' }}>
@@ -4297,7 +4297,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
-          <section className="flex-1 rounded-xl shadow-md border-2 border-white/50 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-upcoming">
+          <section className="flex-1 rounded-xl shadow-md border-[1.5px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-yellow-400" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Clock className="h-3 w-3 text-yellow-400" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
@@ -4308,7 +4308,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Column - Green */}
-                  <div className="flex-1 p-2 overflow-auto border-r border-white/30">
+                  <div className="flex-1 p-2 overflow-auto border-r border-white">
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CPPA122 - Local Politics</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
@@ -4341,7 +4341,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 p-2 overflow-auto border-r border-white/30">
+                  <div className="flex-1 p-2 overflow-auto border-r border-white">
                     <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CFNF400 - Human Sexuality</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
@@ -4412,7 +4412,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section (Urgent) - Now in Middle */}
-          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-2 border-white/50 overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.5px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-due-today">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-orange-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Calendar className="h-3 w-3 text-orange-500" />
               URGENT: Do Today ({todayTasks.length})
@@ -4423,7 +4423,7 @@ export default function Dashboard() {
               ) : (
                 <>
                   {/* CPPA122 Row - Green */}
-                  <div className="px-2 py-1 border-b border-white/30" style={{ minHeight: `${rowHeight}px` }}>
+                  <div className="px-2 py-1 border-b border-white" style={{ minHeight: `${rowHeight}px` }}>
                     <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CPPA122 - Local Politics</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -4437,7 +4437,7 @@ export default function Dashboard() {
                     </div>
                   </div>
                   {/* CFNF400 Row - Pink */}
-                  <div className="px-2 py-1 border-b border-white/30" style={{ minHeight: `${rowHeight}px` }}>
+                  <div className="px-2 py-1 border-b border-white" style={{ minHeight: `${rowHeight}px` }}>
                     <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CFNF400 - Human Sexuality</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -4470,14 +4470,14 @@ export default function Dashboard() {
           </section>
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
-          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-2 border-white/50 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-missed">
+          <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[1.5px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-missed">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-red-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Clock className="h-3 w-3 text-red-500" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
             <div className="flex-1 flex flex-col">
               {/* CPPA122 Row - Green */}
-              <div className="px-2 py-1 border-b border-white/30" style={{ minHeight: `${rowHeight}px` }}>
+              <div className="px-2 py-1 border-b border-white" style={{ minHeight: `${rowHeight}px` }}>
                 <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CPPA122 - Local Politics</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
@@ -4491,7 +4491,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* CFNF400 Row - Pink */}
-              <div className="px-2 py-1 border-b border-white/30" style={{ minHeight: `${rowHeight}px` }}>
+              <div className="px-2 py-1 border-b border-white" style={{ minHeight: `${rowHeight}px` }}>
                 <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CFNF400 - Human Sexuality</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
@@ -4526,7 +4526,7 @@ export default function Dashboard() {
 
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
-          <section className="rounded-xl shadow-md border-2 border-white/50 h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgba(0,0,0,0.35)' }} data-testid="section-todo">
+          <section className="rounded-xl shadow-md border-[1.5px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgba(0,0,0,0.35)' }} data-testid="section-todo">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               To Do ({todoItems.filter(item => item.trim() !== "").length})
@@ -4562,7 +4562,7 @@ export default function Dashboard() {
         {/* Completed Tasks by Course */}
         <div className="flex gap-4 items-stretch h-[240px] flex-shrink-0">
           {/* CPPA122 Completed */}
-          <section className="flex-1 min-w-0 rounded-xl shadow-md border-2 border-white/50 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-cppa122">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[1.5px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-cppa122">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CPPA122 - Local Politics ({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})
@@ -4590,7 +4590,7 @@ export default function Dashboard() {
           </section>
 
           {/* CFNF400 Completed */}
-          <section className="flex-1 min-w-0 rounded-xl shadow-md border-2 border-white/50 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-cfnf400">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[1.5px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-cfnf400">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CFNF400 - Human Sexuality ({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})
@@ -4618,7 +4618,7 @@ export default function Dashboard() {
           </section>
 
           {/* CASL101 Completed */}
-          <section className="flex-1 min-w-0 rounded-xl shadow-md border-2 border-white/50 overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-casl101">
+          <section className="flex-1 min-w-0 rounded-xl shadow-md border-[1.5px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-completed-casl101">
             <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CASL101 - American Sign Language ({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})
@@ -4707,7 +4707,7 @@ export default function Dashboard() {
           >
             {/* Flyout Panel */}
             <div 
-              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-r-0 border-white/50 rounded-l-xl' : 'w-0 border-0'}`}
+              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-r-0 border-white rounded-l-xl' : 'w-0 border-0'}`}
               style={{ maxHeight: '70vh', background: 'rgba(0,0,0,0.75)' }}
             >
               <div className="w-80 flex flex-col">
@@ -4717,7 +4717,7 @@ export default function Dashboard() {
                       <Button 
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white/50"
+                        className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white"
                         data-testid="button-files-link-flyout"
                       >
                         <FolderOpen className="h-4 w-4 text-amber-400" />
@@ -4779,7 +4779,7 @@ export default function Dashboard() {
                     
                     return (
                       <div className="mb-4">
-                        <div className="text-[11px] font-bold text-red-400 border-b border-white/30 pb-1 mb-2">
+                        <div className="text-[11px] font-bold text-red-400 border-b border-white pb-1 mb-2">
                           OVERDUE
                         </div>
                         <div className="space-y-2">
@@ -4836,7 +4836,7 @@ export default function Dashboard() {
                     </div>
                   ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="text-[11px] font-bold text-yellow-400 border-b border-white/30 pb-1 mb-2 mt-6">
+                      <div className="text-[11px] font-bold text-yellow-400 border-b border-white pb-1 mb-2 mt-6">
                         DUE THIS WEEK
                       </div>
                       {(() => {
@@ -4886,7 +4886,7 @@ export default function Dashboard() {
                                   >
                                     <Checkbox
                                       className={`h-3 w-3 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500 ${
-                                        colors ? 'border-black' : 'border-white/50'
+                                        colors ? 'border-black' : 'border-white'
                                       }`}
                                       onCheckedChange={(checked) => {
                                         if (checked) {
@@ -4917,7 +4917,7 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="border-t border-b border-l border-white/50 rounded-l-lg px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
+              className="border-t border-b border-l border-white rounded-l-lg px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'rgba(0,0,0,0.75)' }}
               data-testid="weekly-files-flyout-tab"
             >
@@ -5217,7 +5217,7 @@ function TaskCard({
       return (
         <div className="relative pt-1 h-full flex flex-col cursor-pointer pb-2" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="h-5 flex items-center justify-around rounded-xl px-1 text-white border-2 border-white/50 no-blink mb-1" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+          <div className="h-5 flex items-center justify-around rounded-xl px-1 text-white border-[1.5px] border-white no-blink mb-1" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
