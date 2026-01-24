@@ -3929,11 +3929,7 @@ export default function Dashboard() {
                     key={idx} 
                     className="border-l border-border flex items-center justify-center h-full"
                     style={{ 
-                      backgroundColor: isToday 
-                        ? "black" 
-                        : (isFriday && new Date().getDay() !== 5) 
-                          ? "#7f1d1d" 
-                          : "black" 
+                      backgroundColor: "black"
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
