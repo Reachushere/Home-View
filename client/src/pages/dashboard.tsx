@@ -2474,7 +2474,7 @@ export default function Dashboard() {
         <div className="absolute left-0 right-0 z-0 rounded-t-md border-[0.1px] border-white border-b-0" style={{ top: '2px', height: '52px', background: 'rgba(0,0,0,0.75)' }} />
         
         {/* Digital Clock and Pomodoro Timer - Same line */}
-        <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '0', height: '52px' }}>
+        <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '2px', height: '52px' }}>
           {/* Clock on the left */}
           <div className="flex items-center gap-1.5" data-testid="digital-clock">
             <span className="text-sm text-white font-medium">
