@@ -2104,37 +2104,49 @@ export async function registerRoutes(
         imported.semester = true;
       }
       
-      // Import tasks (skip if ID already exists)
+      // Import tasks - create or update all
       if (tasks && Array.isArray(tasks)) {
         for (const task of tasks) {
           try {
             const existing = await storage.getTask(task.id);
-            if (!existing) {
-              const { id, ...taskData } = task;
-              await storage.createTask({
-                ...taskData,
-                dueDate: new Date(task.dueDate),
-                startDate: task.startDate ? new Date(task.startDate) : null,
-                repeatEndDate: task.repeatEndDate ? new Date(task.repeatEndDate) : null,
-              });
-              imported.tasks++;
+            const taskData = {
+              ...task,
+              dueDate: new Date(task.dueDate),
+              startDate: task.startDate ? new Date(task.startDate) : null,
+              repeatEndDate: task.repeatEndDate ? new Date(task.repeatEndDate) : null,
+              completedAt: task.completedAt ? new Date(task.completedAt) : null,
+            };
+            
+            if (existing) {
+              const { id, ...updates } = taskData;
+              await storage.updateTask(task.id, updates);
+            } else {
+              const { id, ...newTask } = taskData;
+              await storage.createTask(newTask);
             }
+            imported.tasks++;
           } catch (err) {
             console.error("Error importing task:", err);
           }
         }
       }
       
-      // Import files (skip if objectPath already exists)
+      // Import files - create or update all
       if (files && Array.isArray(files)) {
         for (const file of files) {
           try {
             const existing = await storage.getFileByPath(file.objectPath);
-            if (!existing) {
+            if (existing) {
+              await storage.updateFile(existing.id, {
+                displayName: file.displayName,
+                folder: file.folder,
+                listened: file.listened,
+              });
+            } else {
               const { id, createdAt, ...fileData } = file;
               await storage.createFile(fileData);
-              imported.files++;
             }
+            imported.files++;
           } catch (err) {
             console.error("Error importing file:", err);
           }
