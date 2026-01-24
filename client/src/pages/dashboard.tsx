@@ -2344,7 +2344,7 @@ export default function Dashboard() {
         <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
         {/* Clock and Pomodoro Timer - Floating above sidebar */}
-        <div className="absolute top-2 left-0 right-0 z-10 flex flex-col items-center gap-1 px-2">
+        <div className="absolute left-0 right-0 z-10 flex flex-col items-center gap-1 px-2" style={{ top: '58px' }}>
           {/* Digital Clock */}
           <div className="flex items-center gap-2" data-testid="digital-clock">
             <span className="text-xs text-white font-medium">
