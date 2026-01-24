@@ -936,10 +936,11 @@ export default function Dashboard() {
   // Browser TTS ref
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const [browserTtsRate, setBrowserTtsRate] = useState(0.9); // 90% speed like Alexa
+  const [syncWithEcho, setSyncWithEcho] = useState(true); // Sync tablet highlighting with Echo playback
   
   const handlePlayFile = async (fileUrl: string, fileName: string) => {
     try {
-      // Check if using browser TTS
+      // Check if using browser TTS only
       if (previewSpeaker === "browser_tts") {
         if (!previewText) {
           toast({ title: "No text content available", variant: "destructive" });
@@ -989,7 +990,44 @@ export default function Dashboard() {
         return;
       }
       
-      // Use Home Assistant for other speakers
+      // SYNC MODE: Run silent browser TTS for word tracking + Echo for audio
+      if (syncWithEcho && previewText) {
+        // Cancel any existing speech
+        window.speechSynthesis.cancel();
+        
+        // Create silent utterance for word tracking
+        const utterance = new SpeechSynthesisUtterance(previewText);
+        utterance.rate = browserTtsRate;
+        utterance.volume = 0; // Silent - just for tracking
+        utterance.pitch = 1;
+        
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+        if (preferredVoice) utterance.voice = preferredVoice;
+        
+        let wordIndex = 0;
+        utterance.onboundary = (event) => {
+          if (event.name === 'word') {
+            setCurrentWordIndex(wordIndex);
+            wordIndex++;
+          }
+        };
+        
+        utterance.onend = () => {
+          setIsPlaying(false);
+          isPlayingRef.current = false;
+          setCurrentWordIndex(0);
+        };
+        
+        speechUtteranceRef.current = utterance;
+        
+        // Start both: silent browser TTS for tracking + Echo for audio
+        window.speechSynthesis.speak(utterance);
+        setIsPlaying(true);
+        isPlayingRef.current = true;
+      }
+      
+      // Use Home Assistant for Echo speaker audio
       const response = await fetch("/api/media/play", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1018,6 +1056,14 @@ export default function Dashboard() {
         isPlayingRef.current = false;
         setCurrentWordIndex(0);
         return;
+      }
+      
+      // Also stop silent browser TTS if in sync mode
+      if (syncWithEcho) {
+        window.speechSynthesis.cancel();
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+        setCurrentWordIndex(0);
       }
       
       await fetch("/api/media/stop", {
@@ -1845,6 +1891,22 @@ export default function Dashboard() {
                 ))}
               </SelectContent>
             </Select>
+            
+            {/* Sync toggle - shows when Echo speaker is selected */}
+            {previewSpeaker !== "browser_tts" && (
+              <div className="flex items-center gap-1.5">
+                <Checkbox
+                  id="sync-highlight"
+                  checked={syncWithEcho}
+                  onCheckedChange={(checked) => setSyncWithEcho(!!checked)}
+                  className="h-3.5 w-3.5 border-gray-600 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                  data-testid="checkbox-sync-highlight"
+                />
+                <Label htmlFor="sync-highlight" className="text-white text-[10px] cursor-pointer whitespace-nowrap">
+                  Sync Highlight
+                </Label>
+              </div>
+            )}
             
             <div className="flex items-center gap-2">
               <Button
