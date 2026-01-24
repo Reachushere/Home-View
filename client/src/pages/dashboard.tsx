@@ -1784,17 +1784,16 @@ export default function Dashboard() {
             
             <a
               href={`/api/files/${previewFile?.id}/download`}
-              target="_blank"
-              rel="noopener noreferrer"
+              download={previewFile?.displayName || previewFile?.originalName || 'file'}
               className="ml-auto"
             >
               <Button
                 variant="ghost"
                 size="sm"
                 className="text-white hover:bg-gray-700 text-xs"
-                data-testid="button-preview-open-new-tab"
+                data-testid="button-preview-download"
               >
-                Open in New Tab
+                Download PDF
               </Button>
             </a>
             

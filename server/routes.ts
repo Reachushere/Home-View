@@ -694,7 +694,7 @@ export async function registerRoutes(
         };
         
         res.setHeader('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
-        res.setHeader('Content-Disposition', `inline; filename="${file.displayName || file.originalName}"`);
+        res.setHeader('Content-Disposition', `attachment; filename="${file.displayName || file.originalName}"`);
         res.setHeader('Content-Length', content.length.toString());
         res.send(content);
       } else {
