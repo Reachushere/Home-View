@@ -3881,7 +3881,7 @@ export default function Dashboard() {
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
               ].map(course => (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, minHeight: '24px', marginRight: '17px' }}>
-                  <div className="px-1 py-0.5 text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
+                  <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                     {course.name}
                   </div>
                   {weekDays.map((day, dayIdx) => {
