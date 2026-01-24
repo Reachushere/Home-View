@@ -112,7 +112,7 @@ const FOLDER_TYPES = [
 
 // Speakers list for media controls
 const SPEAKERS = [
-  { id: "browser_tts", name: "Browser (This Device)" },
+  { id: "browser_tts", name: "Bluetooth" },
   { id: "media_player.byhome", name: "Apartment" },
   { id: "media_player.cat_wr", name: "Cat Washroom Speakers" },
   { id: "media_player.echo_cat_left_am", name: "Cat Washroom Left" },
