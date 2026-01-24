@@ -4296,7 +4296,7 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(255,255,255,0.15)' }} data-testid="section-upcoming">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-yellow-400 border-b border-white/30" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-yellow-400" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.50)' }}>
               <Clock className="h-3 w-3 text-yellow-400" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
             </h4>
@@ -4411,7 +4411,7 @@ export default function Dashboard() {
 
           {/* Do Today Section (Urgent) - Now in Middle */}
           <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} data-testid="section-due-today">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-orange-500 border-b border-white/30" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-orange-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.50)' }}>
               <Calendar className="h-3 w-3 text-orange-500" />
               URGENT: Do Today ({todayTasks.length})
             </h4>
@@ -4469,7 +4469,7 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
           <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" data-testid="section-missed">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-red-500 border-b border-white/30" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-red-500" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.50)' }}>
               <Clock className="h-3 w-3 text-red-500" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
@@ -4525,7 +4525,7 @@ export default function Dashboard() {
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
           <section className="rounded-xl shadow-md border border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgba(0,0,0,0.75)' }} data-testid="section-todo">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white/30" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.50)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               To Do ({todoItems.filter(item => item.trim() !== "").length})
             </h4>
@@ -4561,7 +4561,7 @@ export default function Dashboard() {
         <div className="flex gap-4 items-stretch h-[240px] flex-shrink-0">
           {/* CPPA122 Completed */}
           <section className="flex-1 min-w-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(134,239,172,0.35)' }} data-testid="section-completed-cppa122">
-            <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white border-b border-white/30" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.50)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CPPA122 - Local Politics ({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})
             </h4>
@@ -4589,7 +4589,7 @@ export default function Dashboard() {
 
           {/* CFNF400 Completed */}
           <section className="flex-1 min-w-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(249,168,212,0.45)' }} data-testid="section-completed-cfnf400">
-            <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white border-b border-white/30" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.50)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CFNF400 - Human Sexuality ({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})
             </h4>
@@ -4617,7 +4617,7 @@ export default function Dashboard() {
 
           {/* CASL101 Completed */}
           <section className="flex-1 min-w-0 rounded-xl shadow-md border border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(165,180,252,0.45)' }} data-testid="section-completed-casl101">
-            <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white border-b border-white/30" style={{ fontFamily: "Segoe UI, sans-serif" }}>
+            <h4 className="text-[10px] font-semibold py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.50)' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CASL101 - American Sign Language ({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})
             </h4>
