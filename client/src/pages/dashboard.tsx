@@ -2402,8 +2402,8 @@ export default function Dashboard() {
         
         {/* Sidebar with blur/fade effect */}
         <aside className={`flex-1 text-white rounded-b-xl rounded-t-none shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-t-0 border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
-          {/* Spacer for pomodoro timer */}
-          <div className="flex-shrink-0" style={{ height: '60px' }} />
+          {/* Spacer for clock and pomodoro timer */}
+          <div className="flex-shrink-0" style={{ height: '85px' }} />
 
           {/* Scrollable sidebar content */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
