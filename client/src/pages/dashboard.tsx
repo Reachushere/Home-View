@@ -2346,7 +2346,6 @@ export default function Dashboard() {
           boxShadow: '0 -2px 10px rgba(0,0,0,0.2)'
         }}>
           <div className="flex flex-col flex-1">
-            <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
             <div className="flex items-center gap-2" data-testid="digital-clock">
               <span className="text-xs text-white/80 font-medium">
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
@@ -3236,8 +3235,9 @@ export default function Dashboard() {
         border: '1px solid rgba(255,255,255,0.5)'
       }}>
         <div className="flex items-center px-4 py-2 gap-2 w-full justify-center">
-          <div className="h-7 flex items-center">
+          <div className="h-7 flex items-center gap-2">
             <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '28px', width: '28px' }} />
+            <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
           </div>
         </div>
       </div>
