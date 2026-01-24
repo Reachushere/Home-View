@@ -2122,7 +2122,7 @@ export default function Dashboard() {
 
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
-        <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0 overflow-hidden border-[0.1px] border-white !bg-transparent" style={{ background: 'rgba(0,0,0,0.75)' }}>
+        <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0 overflow-hidden border-[0.1px] border-white !bg-transparent" style={{ background: 'black' }}>
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
             const folderParts = previewFile?.folder?.split('-') || [];
@@ -2471,7 +2471,7 @@ export default function Dashboard() {
         <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
         {/* Header box behind clock and timer */}
-        <div className="absolute left-0 right-0 z-0 rounded-t-md border-[0.1px] border-white border-b-0" style={{ top: '2px', height: '52px', background: 'rgba(0,0,0,0.75)' }} />
+        <div className="absolute left-0 right-0 z-0 rounded-t-md border-[0.1px] border-white border-b-0" style={{ top: '2px', height: '52px', background: 'black' }} />
         
         {/* Digital Clock and Pomodoro Timer - Same line */}
         <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '5px', height: '52px' }}>
@@ -3355,7 +3355,7 @@ export default function Dashboard() {
         width: '350px',
         left: '11px',
         top: '8px',
-        background: 'rgba(0,0,0,0.75)',
+        background: 'black',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '0.1px solid white'
       }}>
@@ -3375,7 +3375,7 @@ export default function Dashboard() {
         <div className="flex-shrink-0 relative z-10 flex gap-2" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-111px' }}>
         {/* Sleek Menu Bar */}
         <div className="flex items-center mb-0 rounded-md overflow-hidden flex-1" style={{ 
-          background: 'rgba(0,0,0,0.75)',
+          background: 'black',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
           border: '0.1px solid white'
         }}>
@@ -4442,7 +4442,7 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-upcoming">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Clock className="h-3 w-3 text-white" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
             </h4>
@@ -4557,7 +4557,7 @@ export default function Dashboard() {
 
           {/* Do Today Section (Urgent) - Now in Middle */}
           <section className={`w-[240px] flex-shrink-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               URGENT: Do Today ({todayTasks.length})
             </h4>
@@ -4615,7 +4615,7 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
           <section className="w-[240px] flex-shrink-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-missed">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Clock className="h-3 w-3 text-white" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
@@ -4671,7 +4671,7 @@ export default function Dashboard() {
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0">
           <section className="rounded-md shadow-md border-[0.1px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgb(1, 160, 175)' }} data-testid="section-todo">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               To Do ({todoItems.filter(item => item.trim() !== "").length})
             </h4>
@@ -4707,7 +4707,7 @@ export default function Dashboard() {
         <div className="flex gap-4 items-stretch h-[240px] flex-shrink-0">
           {/* CPPA122 Completed */}
           <section className="flex-1 min-w-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-completed-cppa122">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CPPA122 - Local Politics ({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})
             </h4>
@@ -4735,7 +4735,7 @@ export default function Dashboard() {
 
           {/* CFNF400 Completed */}
           <section className="flex-1 min-w-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-completed-cfnf400">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CFNF400 - Human Sexuality ({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})
             </h4>
@@ -4763,7 +4763,7 @@ export default function Dashboard() {
 
           {/* CASL101 Completed */}
           <section className="flex-1 min-w-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-completed-casl101">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 whitespace-nowrap text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               Completed - CASL101 - American Sign Language ({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})
             </h4>
@@ -5377,7 +5377,7 @@ function TaskCard({
       return (
         <div className="relative pt-1 h-full flex flex-col cursor-pointer pb-2" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="h-5 flex items-center justify-around rounded-md px-1 text-white border-[0.1px] border-white no-blink mb-1" style={{ background: 'rgba(0,0,0,0.75)' }}>
+          <div className="h-5 flex items-center justify-around rounded-md px-1 text-white border-[0.1px] border-white no-blink mb-1" style={{ background: 'black' }}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
