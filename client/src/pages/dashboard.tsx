@@ -821,6 +821,46 @@ export default function Dashboard() {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [currentPdfPage, setCurrentPdfPage] = useState(1);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pageWordBoundaries, setPageWordBoundaries] = useState<number[]>([]); // Word index where each page starts
+  
+  // Calculate which PDF page a word index belongs to
+  const getPageForWordIndex = (wordIndex: number): number => {
+    if (pageWordBoundaries.length === 0) return 1;
+    for (let i = pageWordBoundaries.length - 1; i >= 0; i--) {
+      if (wordIndex >= pageWordBoundaries[i]) {
+        return i + 1;
+      }
+    }
+    return 1;
+  };
+  
+  // Calculate page boundaries when text is loaded
+  useEffect(() => {
+    if (previewText) {
+      // Split by double newlines (page breaks from PDF extraction)
+      const pages = previewText.split(/\n\n+/);
+      const boundaries: number[] = [];
+      let wordCount = 0;
+      
+      for (const page of pages) {
+        boundaries.push(wordCount);
+        const words = page.split(/\s+/).filter(w => w.length > 0);
+        wordCount += words.length;
+      }
+      
+      setPageWordBoundaries(boundaries);
+    }
+  }, [previewText]);
+  
+  // Sync PDF page with current word during playback
+  useEffect(() => {
+    if (isPlaying && syncHighlight && pageWordBoundaries.length > 0) {
+      const newPage = getPageForWordIndex(currentWordIndex);
+      if (newPage !== currentPdfPage && newPage >= 1 && newPage <= (numPages || 1)) {
+        setCurrentPdfPage(newPage);
+      }
+    }
+  }, [currentWordIndex, isPlaying, syncHighlight, pageWordBoundaries, numPages]);
   
   // Load PDF when file is selected
   useEffect(() => {
@@ -1077,6 +1117,12 @@ export default function Dashboard() {
     window.speechSynthesis.cancel();
     setCurrentWordIndex(newIndex);
     
+    // Sync PDF page to the new position
+    const newPage = getPageForWordIndex(newIndex);
+    if (newPage !== currentPdfPage && newPage <= (numPages || 1)) {
+      setCurrentPdfPage(newPage);
+    }
+    
     if (isPlaying) {
       // Resume from new position
       const remainingText = words.slice(newIndex).join(' ');
@@ -1117,6 +1163,12 @@ export default function Dashboard() {
     // Cancel current speech and restart from new position
     window.speechSynthesis.cancel();
     setCurrentWordIndex(newIndex);
+    
+    // Sync PDF page to the new position
+    const newPage = getPageForWordIndex(newIndex);
+    if (newPage !== currentPdfPage && newPage >= 1) {
+      setCurrentPdfPage(newPage);
+    }
     
     if (isPlaying) {
       // Resume from new position
