@@ -4700,7 +4700,7 @@ export default function Dashboard() {
               style={{ maxHeight: '70vh', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}
             >
               <div className="w-80 flex flex-col">
-                <div className="p-3 border-b border-[#3d3d3d] flex items-center justify-between">
+                <div className="p-3 border-b border-white flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <RouterLink href="/files">
                       <Button 
