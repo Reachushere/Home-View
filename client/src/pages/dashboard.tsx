@@ -4616,7 +4616,7 @@ export default function Dashboard() {
             <div className="flex-1 flex flex-col">
               {/* CPPA122 Row - Green */}
               <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CPPA122 - Local Politics</div>
+                <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CPPA122 - Local Politics</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
                     <div key={task.id}>
@@ -4630,7 +4630,7 @@ export default function Dashboard() {
               </div>
               {/* CFNF400 Row - Pink */}
               <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CFNF400 - Human Sexuality</div>
+                <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CFNF400 - Human Sexuality</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
                     <div key={task.id}>
@@ -4644,7 +4644,7 @@ export default function Dashboard() {
               </div>
               {/* CASL101 Row - Purple */}
               <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                <div className="text-[9px] font-bold text-white drop-shadow-md mb-0.5">CASL101 - American Sign Language</div>
+                <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CASL101 - American Sign Language</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                     <div key={task.id}>
