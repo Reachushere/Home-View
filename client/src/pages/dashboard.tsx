@@ -1558,7 +1558,7 @@ export default function Dashboard() {
   const timeSlots = Array.from({ length: 17 }, (_, i) => i + 7); // 7am-11pm
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
-  // Auto-scroll to show blinking tasks (due tomorrow) or current hour
+  // Auto-scroll to show first task of today, or first upcoming task
   useEffect(() => {
     // Only scroll when we have tasks loaded
     if (allTasks.length === 0 || calendarView !== "week") return;
@@ -1567,44 +1567,46 @@ export default function Dashboard() {
       if (!calendarScrollRef.current) return;
       
       const today = startOfDay(new Date());
-      const tomorrow = addDays(today, 1);
+      const now = new Date();
       const weekInfo = weeks.find(w => w.weekNumber === selectedWeek);
+      if (!weekInfo) return;
       
-      // First check for tasks due today (they blink fast)
-      const tasksDueTodayInWeek = weekInfo ? allTasks.filter(t => {
+      const weekStart = new Date(weekInfo.startDate);
+      const weekEnd = new Date(weekInfo.endDate);
+      
+      // First priority: tasks due today
+      const tasksDueToday = allTasks.filter(t => {
         if (t.isCompleted) return false;
         const dueDate = new Date(t.dueDate);
-        const weekStart = new Date(weekInfo.startDate);
-        const weekEnd = new Date(weekInfo.endDate);
         return isSameDay(dueDate, today) && dueDate >= weekStart && dueDate <= weekEnd;
-      }) : [];
+      });
       
-      // Then check for tasks due tomorrow (they blink slow)
-      const tasksDueTomorrowInWeek = weekInfo ? allTasks.filter(t => {
+      // Second priority: first upcoming task in the selected week (after now)
+      const upcomingTasksInWeek = allTasks.filter(t => {
         if (t.isCompleted) return false;
         const dueDate = new Date(t.dueDate);
-        const weekStart = new Date(weekInfo.startDate);
-        const weekEnd = new Date(weekInfo.endDate);
-        return isSameDay(dueDate, tomorrow) && dueDate >= weekStart && dueDate <= weekEnd;
-      }) : [];
+        return dueDate > now && dueDate >= weekStart && dueDate <= weekEnd;
+      }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
       
       const hourHeight = 44; // height of each time slot
       const startHour = 7; // calendar starts at 7am
-      const blinkingTasks = tasksDueTodayInWeek.length > 0 ? tasksDueTodayInWeek : tasksDueTomorrowInWeek;
       
-      if (blinkingTasks.length > 0) {
-        // Find the earliest hour among blinking tasks
-        const earliestHour = Math.min(...blinkingTasks.map(t => {
+      // Find which tasks to scroll to
+      let targetTasks = tasksDueToday.length > 0 ? tasksDueToday : upcomingTasksInWeek;
+      
+      if (targetTasks.length > 0) {
+        // Find the earliest hour among target tasks
+        const earliestHour = Math.min(...targetTasks.map(t => {
           const dueDate = new Date(t.dueDate);
-          // If it's midnight (ALL DAY), return 0
+          // If it's midnight (ALL DAY), return start hour
           if (dueDate.getHours() === 0 && dueDate.getMinutes() === 0) return startHour;
           return dueDate.getHours();
         }));
-        // Scroll to show that hour (with some padding to show it centered)
+        // Scroll to show that hour
         const scrollTo = Math.max(0, (earliestHour - startHour) * hourHeight);
         calendarScrollRef.current.scrollTop = scrollTo;
       } else {
-        // Scroll to current hour (clamped to start at 7am)
+        // No tasks in week, scroll to current hour (clamped to start at 7am)
         const currentHour = Math.max(startHour, new Date().getHours());
         const scrollTo = (currentHour - startHour) * hourHeight;
         calendarScrollRef.current.scrollTop = scrollTo;
