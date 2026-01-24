@@ -3286,7 +3286,7 @@ export default function Dashboard() {
         width: '350px',
         left: '11px',
         top: '8px',
-        background: 'rgba(0,0,0,0.35)',
+        background: 'rgba(0,0,0,0.50)',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '1px solid rgba(255,255,255,0.5)'
       }}>
@@ -3306,7 +3306,7 @@ export default function Dashboard() {
         <div className="flex-shrink-0 relative z-10 flex gap-2" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-111px' }}>
         {/* Sleek Menu Bar */}
         <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-1" style={{ 
-          background: 'rgba(0,0,0,0.35)',
+          background: 'rgba(0,0,0,0.50)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
           border: '1px solid rgba(255,255,255,0.5)'
         }}>
