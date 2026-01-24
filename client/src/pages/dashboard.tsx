@@ -2387,7 +2387,7 @@ export default function Dashboard() {
         {/* Constant fade overlay - slightly dims background */}
         <div 
           className="absolute inset-0 pointer-events-none"
-          style={{ background: 'rgba(0, 0, 0, 0.55)', zIndex: 0 }}
+          style={{ background: 'rgba(0, 0, 0, 0.65)', zIndex: 0 }}
         />
         {/* Night overlay - dims background based on Toronto sunrise/sunset */}
         <div 
