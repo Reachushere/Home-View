@@ -1,4 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { Document, Page, pdfjs } from 'react-pdf';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
@@ -781,6 +784,31 @@ export default function Dashboard() {
   const highlightIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const highlightTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isPlayingRef = useRef(false);
+  
+  // PDF viewer state
+  const [numPages, setNumPages] = useState<number | null>(null);
+  const [currentPdfPage, setCurrentPdfPage] = useState(1);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  
+  // Load PDF when file is selected
+  useEffect(() => {
+    if (previewFile && previewFile.objectPath) {
+      // Create blob URL for PDF
+      fetch(`/api/files/${previewFile.id}/download`)
+        .then(res => res.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          setPdfUrl(url);
+        })
+        .catch(err => console.error('Error loading PDF:', err));
+    }
+    return () => {
+      if (pdfUrl) {
+        URL.revokeObjectURL(pdfUrl);
+        setPdfUrl(null);
+      }
+    };
+  }, [previewFile?.id]);
 
   // Fetch text when file is selected for preview
   useEffect(() => {
@@ -1830,9 +1858,68 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Highlighted Text for TTS */}
-          <div className="flex-1 min-h-[500px] max-h-[60vh] mx-6 mb-6 mt-4">
-            <div className="h-full bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto p-4">
+          {/* Split View: PDF on left, Highlighted Text on right */}
+          <div className="flex-1 flex gap-4 min-h-[500px] max-h-[60vh] mx-6 mb-6 mt-4">
+            {/* PDF Viewer */}
+            <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col">
+              <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
+                <span className="text-xs text-muted-foreground">
+                  Page {currentPdfPage} of {numPages || '?'}
+                </span>
+                <div className="flex gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2"
+                    onClick={() => setCurrentPdfPage(p => Math.max(1, p - 1))}
+                    disabled={currentPdfPage <= 1}
+                  >
+                    <ChevronLeft className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2"
+                    onClick={() => setCurrentPdfPage(p => Math.min(numPages || 1, p + 1))}
+                    disabled={currentPdfPage >= (numPages || 1)}
+                  >
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1 overflow-auto flex items-start justify-center p-2">
+                {pdfUrl ? (
+                  <Document
+                    file={pdfUrl}
+                    onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                    loading={
+                      <div className="flex items-center justify-center h-full">
+                        <Loader2 className="h-6 w-6 animate-spin" />
+                      </div>
+                    }
+                    error={
+                      <div className="text-center text-muted-foreground p-4">
+                        Failed to load PDF
+                      </div>
+                    }
+                  >
+                    <Page 
+                      pageNumber={currentPdfPage} 
+                      width={350}
+                      renderTextLayer={false}
+                      renderAnnotationLayer={false}
+                    />
+                  </Document>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Highlighted Text for TTS */}
+            <div className="flex-1 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto p-4">
               {isLoadingText ? (
                 <div className="flex items-center justify-center h-full">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
