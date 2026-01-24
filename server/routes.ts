@@ -676,6 +676,9 @@ export async function registerRoutes(
         const objectStorageService = new ObjectStorageService();
         const objectFile = await objectStorageService.getObjectEntityFile(mediaUrl);
         
+        // Download file content as buffer
+        const [content] = await objectFile.download();
+        
         // Set content type based on file extension
         const ext = (file.originalName || '').toLowerCase().split('.').pop();
         const contentTypes: Record<string, string> = {
@@ -692,8 +695,8 @@ export async function registerRoutes(
         
         res.setHeader('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
         res.setHeader('Content-Disposition', `inline; filename="${file.displayName || file.originalName}"`);
-        
-        await objectStorageService.downloadObject(objectFile, res);
+        res.setHeader('Content-Length', content.length.toString());
+        res.send(content);
       } else {
         // For external URLs, redirect
         res.redirect(mediaUrl);
