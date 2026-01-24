@@ -4824,6 +4824,9 @@ export default function Dashboard() {
                     </div>
                   ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
+                      <div className="text-[11px] font-bold text-blue-400 border-b border-blue-400/30 pb-1 mb-2">
+                        DUE THIS WEEK
+                      </div>
                       {(() => {
                         // Group files by course
                         const groupedFiles: Record<string, typeof currentWeekFiles> = {};
