@@ -2672,7 +2672,7 @@ export default function Dashboard() {
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-white"></div>
               <div className="w-14 px-1 py-0.5 border-r border-white">PPA 122</div>
-              <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
+              <div className="flex-1 px-1 py-0.5">Local Politics</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
@@ -2845,7 +2845,7 @@ export default function Dashboard() {
               </div>
               <div className="w-14 px-1 py-0.5 border-r border-white"></div>
               <div className="w-14 px-1 py-0.5 border-r border-white">PPA 122</div>
-              <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
+              <div className="flex-1 px-1 py-0.5">Local Politics</div>
               <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
                 <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
                   {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
