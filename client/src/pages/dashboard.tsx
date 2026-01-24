@@ -3931,10 +3931,10 @@ export default function Dashboard() {
                     className="border-l border-border flex items-center justify-center h-full"
                     style={{ 
                       backgroundColor: isToday 
-                        ? "#2d4a6f" 
+                        ? "black" 
                         : (isFriday && new Date().getDay() !== 5) 
                           ? "#7f1d1d" 
-                          : "transparent" 
+                          : "black" 
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -3962,8 +3962,8 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden backdrop-blur-md"
-                      style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
+                      style={{ backgroundColor: isSameDay(day, new Date()) ? 'rgb(128,128,128)' : 'white' }}
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Regular all-day tasks only - prep tasks moved to course rows */}
@@ -4198,7 +4198,7 @@ export default function Dashboard() {
                         <div 
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md ${totalItems > 0 && !(isFriday && new Date().getDay() !== 5) && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
-                          style={isToday ? { backgroundColor: 'rgba(255,255,255,0.25)' } : (isFriday && new Date().getDay() !== 5) ? { backgroundColor: 'rgba(236,72,153,0.2)' } : { backgroundColor: 'rgba(255,255,255,0.1)' }}
+                          style={isToday ? { backgroundColor: 'rgb(128,128,128)' } : (isFriday && new Date().getDay() !== 5) ? { backgroundColor: 'rgba(236,72,153,0.2)' } : { backgroundColor: 'white' }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
