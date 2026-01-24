@@ -7,9 +7,41 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:wght@200;300;400;500;600;700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Outfit:wght@100..900&family=Oxanium:wght@200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <script>
+      // Early error detection for older browsers
+      window.onerror = function(msg, url, line, col, error) {
+        document.body.innerHTML = '<div style="padding:20px;background:red;color:white;font-size:16px;">' +
+          '<h2>Error Loading App</h2>' +
+          '<p>' + msg + '</p>' +
+          '<p>File: ' + url + '</p>' +
+          '<p>Line: ' + line + '</p>' +
+          '</div>';
+        return true;
+      };
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <noscript>
+        <div style="padding:20px;text-align:center;">
+          <h2>JavaScript Required</h2>
+          <p>Please enable JavaScript to use this app.</p>
+        </div>
+      </noscript>
+      <div id="loading-fallback" style="padding:40px;text-align:center;font-family:sans-serif;">
+        <p>Loading University Planner...</p>
+        <p style="font-size:12px;color:#666;margin-top:20px;">If this message stays for more than 10 seconds, your browser may not be supported.</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script nomodule>
+      // Fallback for browsers that don't support ES modules
+      document.getElementById('loading-fallback').innerHTML = 
+        '<div style="padding:20px;background:#ff6600;color:white;">' +
+        '<h2>Browser Not Supported</h2>' +
+        '<p>Your browser does not support modern JavaScript modules.</p>' +
+        '<p>Please update your device or try a different browser.</p>' +
+        '</div>';
+    </script>
   </body>
 </html>
