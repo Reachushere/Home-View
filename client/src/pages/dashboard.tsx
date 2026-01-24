@@ -4044,7 +4044,7 @@ export default function Dashboard() {
                       <div 
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden backdrop-blur-md"
-                        style={{ backgroundColor: course.bg }}
+                        style={{ backgroundColor: isSameDay(day, new Date()) ? 'rgba(45, 74, 111, 0.25)' : course.bg }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
                         {coursePrepTasks.map(task => {
