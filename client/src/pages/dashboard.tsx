@@ -1786,7 +1786,24 @@ export default function Dashboard() {
               variant="ghost"
               size="sm"
               className="ml-auto text-white hover:bg-gray-700 text-xs"
-              onClick={() => previewFile && window.open(`/api/files/${previewFile.id}/download`, '_blank')}
+              onClick={async () => {
+                if (!previewFile) return;
+                try {
+                  const response = await fetch(`/api/files/${previewFile.id}/download`);
+                  const blob = await response.blob();
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.target = '_blank';
+                  link.rel = 'noopener noreferrer';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  setTimeout(() => URL.revokeObjectURL(url), 1000);
+                } catch (err) {
+                  console.error('Error opening file:', err);
+                }
+              }}
               data-testid="button-preview-open-new-tab"
             >
               Open in New Tab
