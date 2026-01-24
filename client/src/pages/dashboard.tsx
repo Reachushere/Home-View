@@ -1588,7 +1588,8 @@ export default function Dashboard() {
         return isSameDay(dueDate, tomorrow) && dueDate >= weekStart && dueDate <= weekEnd;
       }) : [];
       
-      const hourHeight = 40; // height of each time slot
+      const hourHeight = 44; // height of each time slot
+      const startHour = 7; // calendar starts at 7am
       const blinkingTasks = tasksDueTodayInWeek.length > 0 ? tasksDueTodayInWeek : tasksDueTomorrowInWeek;
       
       if (blinkingTasks.length > 0) {
@@ -1596,16 +1597,16 @@ export default function Dashboard() {
         const earliestHour = Math.min(...blinkingTasks.map(t => {
           const dueDate = new Date(t.dueDate);
           // If it's midnight (ALL DAY), return 0
-          if (dueDate.getHours() === 0 && dueDate.getMinutes() === 0) return 0;
+          if (dueDate.getHours() === 0 && dueDate.getMinutes() === 0) return startHour;
           return dueDate.getHours();
         }));
         // Scroll to show that hour (with some padding to show it centered)
-        const scrollTo = Math.max(0, (earliestHour - 1) * hourHeight);
+        const scrollTo = Math.max(0, (earliestHour - startHour) * hourHeight);
         calendarScrollRef.current.scrollTop = scrollTo;
       } else {
-        // Scroll to current hour
-        const currentHour = new Date().getHours();
-        const scrollTo = currentHour * hourHeight;
+        // Scroll to current hour (clamped to start at 7am)
+        const currentHour = Math.max(startHour, new Date().getHours());
+        const scrollTo = (currentHour - startHour) * hourHeight;
         calendarScrollRef.current.scrollTop = scrollTo;
       }
     };
