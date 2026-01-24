@@ -3346,7 +3346,7 @@ export default function Dashboard() {
               </DropdownMenuContent>
             </DropdownMenu>
             {/* Week navigation */}
-            <div className="flex items-center bg-white/10 rounded-lg px-2 py-1 backdrop-blur-sm">
+            <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
               <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
               </Button>
@@ -3365,7 +3365,7 @@ export default function Dashboard() {
               variant="ghost"
               size="icon"
               onClick={toggleMute}
-              className={`h-[25px] w-[25px] hover:bg-white/20 rounded-lg border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              className={`h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
@@ -3376,7 +3376,7 @@ export default function Dashboard() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-[25px] w-[25px] hover:bg-white/20 rounded-lg border-[0.1px] border-white"
+              className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
@@ -4709,7 +4709,7 @@ export default function Dashboard() {
                       <Button 
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white"
+                        className="h-7 w-7 hover:bg-white/20 rounded-md border-[0.1px] border-white"
                         data-testid="button-files-link-flyout"
                       >
                         <FolderOpen className="h-4 w-4 text-white" />
