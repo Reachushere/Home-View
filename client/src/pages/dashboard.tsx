@@ -4789,7 +4789,7 @@ export default function Dashboard() {
                                     return (
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
-                                      className="flex items-center gap-2 p-2 rounded text-xs group border border-red-400/50 bg-red-900/30 text-white"
+                                      className="flex items-center gap-2 p-2 rounded text-xs group border border-red-400/50 bg-red-900/30 text-white animate-blink"
                                       data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
                                     >
                                       <button
