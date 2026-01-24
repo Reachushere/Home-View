@@ -2448,7 +2448,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-hidden relative" style={{ backgroundColor: 'rgb(1, 160, 175)' }}>
+      <div className="flex flex-1 overflow-hidden relative" style={{ backgroundColor: 'black' }}>
         {/* Constant fade overlay - disabled for solid black background */}
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -2529,7 +2529,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className="flex-1 text-white rounded-md shadow-lg overflow-hidden border-[0.1px] border-white backdrop-blur-md" style={{ width: 350, background: 'rgba(0,0,0,0.7)', marginTop: '2px' }}>
+        <aside className="flex-1 text-white rounded-md shadow-lg overflow-hidden border-[0.1px] border-white" style={{ width: 350, background: 'rgb(1, 160, 175)', marginTop: '2px' }}>
         <div className={`h-full pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '85px' }} />
@@ -4435,7 +4435,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col backdrop-blur-md" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} data-testid="section-upcoming">
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-upcoming">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Clock className="h-3 w-3 text-white" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
@@ -4550,7 +4550,7 @@ export default function Dashboard() {
           </section>
 
           {/* Do Today Section (Urgent) - Now in Middle */}
-          <section className={`w-[240px] flex-shrink-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col backdrop-blur-md ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} data-testid="section-due-today">
+          <section className={`w-[240px] flex-shrink-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Calendar className="h-3 w-3 text-white" />
               URGENT: Do Today ({todayTasks.length})
@@ -4608,7 +4608,7 @@ export default function Dashboard() {
           </section>
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
-          <section className="w-[240px] flex-shrink-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col backdrop-blur-md" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} data-testid="section-missed">
+          <section className="w-[240px] flex-shrink-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-missed">
             <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
               <Clock className="h-3 w-3 text-white" />
               OVERDUE: Missed Tasks ({missedTasks.length})
