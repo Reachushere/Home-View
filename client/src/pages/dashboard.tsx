@@ -3274,10 +3274,10 @@ export default function Dashboard() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 hover:bg-white/20 rounded-md"
+                  className="h-8 w-8 hover:bg-white/20 rounded-md"
                   data-testid="button-hamburger-menu"
                 >
-                  <Menu className="h-6 w-6 text-white" strokeWidth={2.5} />
+                  <Menu className="h-7 w-7 text-white" strokeWidth={2.5} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
