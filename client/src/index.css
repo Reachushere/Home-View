@@ -398,3 +398,34 @@
 .main-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.9);
 }
+
+/* Calendar overlay scrollbar - doesn't take up space */
+.calendar-scrollbar {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+.calendar-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+.calendar-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.calendar-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+}
+
+.calendar-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+@supports (overflow-y: overlay) {
+  .calendar-scrollbar {
+    overflow-y: overlay;
+  }
+}
