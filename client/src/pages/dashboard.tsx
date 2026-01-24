@@ -2385,7 +2385,7 @@ export default function Dashboard() {
           </div>
         </div>
         {/* Pomodoro Timer - Floating above sidebar */}
-        <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '58px' }}>
+        <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '63px' }}>
           <div className="flex items-center justify-center gap-3 bg-white/20 rounded-lg px-4 py-2">
             <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
               pomodoroMode === "work" ? "bg-red-700 text-white" : 
