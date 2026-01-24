@@ -4457,7 +4457,7 @@ export default function Dashboard() {
               <Clock className="h-3 w-3 text-red-500" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
-            <div className="flex-1 flex flex-col overflow-auto">
+            <div className="flex-1 flex flex-col">
               {/* CPPA122 Row - Green */}
               <div className="px-2 py-1 border-b border-white/30" style={{ backgroundColor: 'rgba(134,239,172,0.35)', minHeight: `${rowHeight}px` }}>
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
