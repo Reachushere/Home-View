@@ -2471,10 +2471,10 @@ export default function Dashboard() {
         <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
         {/* Header box behind clock and timer */}
-        <div className="absolute left-0 right-0 z-0 rounded-t-md" style={{ top: '2px', height: '45px', background: 'rgba(0,0,0,0.75)' }} />
+        <div className="absolute left-0 right-0 z-0 rounded-t-md border-[0.1px] border-white border-b-0" style={{ top: '2px', height: '52px', background: 'rgba(0,0,0,0.75)' }} />
         
         {/* Digital Clock and Pomodoro Timer - Same line */}
-        <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '13px' }}>
+        <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '16px' }}>
           {/* Clock on the left */}
           <div className="flex items-center gap-1.5" data-testid="digital-clock">
             <span className="text-sm text-white font-medium">
@@ -2534,7 +2534,7 @@ export default function Dashboard() {
         <aside className="flex-1 text-white rounded-md shadow-lg overflow-hidden border-[0.1px] border-white flex flex-col" style={{ width: 350, background: 'rgb(1, 160, 175)', marginTop: '2px', maxHeight: 'calc(100vh - 130px)' }}>
         <div className={`flex-1 pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
           {/* Spacer for clock and pomodoro timer */}
-          <div className="flex-shrink-0" style={{ height: '45px' }} />
+          <div className="flex-shrink-0" style={{ height: '52px' }} />
 
           {/* Scrollable sidebar content */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1" style={{ minHeight: 0 }}>
