@@ -3365,26 +3365,26 @@ export default function Dashboard() {
               variant="ghost"
               size="icon"
               onClick={toggleMute}
-              className={`h-[26px] w-[26px] hover:bg-white/20 rounded-lg border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              className={`h-[25px] w-[25px] hover:bg-white/20 rounded-lg border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
-              {isMuted ? <BellOff className="h-[15px] w-[15px] text-white" /> : <Bell className="h-[15px] w-[15px] text-white" />}
+              {isMuted ? <BellOff className="h-[14px] w-[14px] text-white" /> : <Bell className="h-[14px] w-[14px] text-white" />}
             </Button>
 
             {/* Sync */}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-[26px] w-[26px] hover:bg-white/20 rounded-lg border-[0.1px] border-white"
+              className="h-[25px] w-[25px] hover:bg-white/20 rounded-lg border-[0.1px] border-white"
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
             >
               {syncAllCalendarMutation.isPending ? (
-                <Loader2 className="h-[15px] w-[15px] text-white animate-spin" />
+                <Loader2 className="h-[14px] w-[14px] text-white animate-spin" />
               ) : (
-                <RefreshCw className="h-[15px] w-[15px] text-white" />
+                <RefreshCw className="h-[14px] w-[14px] text-white" />
               )}
             </Button>
 
