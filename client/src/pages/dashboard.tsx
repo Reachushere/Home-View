@@ -64,6 +64,7 @@ import {
   User,
   Palette,
   ExternalLink,
+  Volume2,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
