@@ -4463,7 +4463,7 @@ export default function Dashboard() {
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
-                    <div key={task.id} className="animate-urgent-blink">
+                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-4' : ''}`}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact />
                     </div>
                   ))}
@@ -4477,7 +4477,7 @@ export default function Dashboard() {
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
-                    <div key={task.id} className="animate-urgent-blink">
+                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-4' : ''}`}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact />
                     </div>
                   ))}
@@ -4491,7 +4491,7 @@ export default function Dashboard() {
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
-                    <div key={task.id} className="animate-urgent-blink">
+                    <div key={task.id} className={`animate-urgent-blink ${task.attachments && task.attachments.length > 0 ? 'mt-4' : ''}`}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact />
                     </div>
                   ))}
