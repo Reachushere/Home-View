@@ -1895,19 +1895,44 @@ export default function Dashboard() {
               </SelectContent>
             </Select>
             
-            {/* Sync toggle - shows when Echo speaker is selected */}
+            {/* Sync toggle and speed control - shows when Echo speaker is selected */}
             {previewSpeaker !== "browser_tts" && (
-              <div className="flex items-center gap-1.5">
-                <Checkbox
-                  id="sync-highlight"
-                  checked={syncWithEcho}
-                  onCheckedChange={(checked) => setSyncWithEcho(!!checked)}
-                  className="h-3.5 w-3.5 border-gray-600 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                  data-testid="checkbox-sync-highlight"
-                />
-                <Label htmlFor="sync-highlight" className="text-white text-[10px] cursor-pointer whitespace-nowrap">
-                  Sync Highlight
-                </Label>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <Checkbox
+                    id="sync-highlight"
+                    checked={syncWithEcho}
+                    onCheckedChange={(checked) => setSyncWithEcho(!!checked)}
+                    className="h-3.5 w-3.5 border-gray-600 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                    data-testid="checkbox-sync-highlight"
+                  />
+                  <Label htmlFor="sync-highlight" className="text-white text-[10px] cursor-pointer whitespace-nowrap">
+                    Sync
+                  </Label>
+                </div>
+                {syncWithEcho && (
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-5 w-5 text-white hover:bg-gray-700"
+                      onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
+                      title="Slow down sync"
+                    >
+                      <span className="text-[10px]">-</span>
+                    </Button>
+                    <span className="text-[9px] text-gray-400 w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-5 w-5 text-white hover:bg-gray-700"
+                      onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
+                      title="Speed up sync"
+                    >
+                      <span className="text-[10px]">+</span>
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
             
