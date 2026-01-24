@@ -1813,50 +1813,17 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Text Content with Word Highlighting */}
-          <div className="flex-1 min-h-[500px] max-h-[60vh] mx-6 mb-6 mt-4 bg-gray-50 dark:bg-gray-900 rounded-lg overflow-y-auto p-4">
-            {isLoadingText ? (
-              <div className="flex items-center justify-center h-full">
-                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                <span className="ml-2 text-muted-foreground">Extracting text...</span>
-              </div>
-            ) : previewText ? (
-              <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                {(() => {
-                  // Split into words but only render spans around a window near the current word
-                  const allWords = previewText.split(/\s+/).filter(w => w.length > 0);
-                  const WINDOW_SIZE = 50; // Only render spans for 50 words around current
-                  const windowStart = Math.max(0, currentWordIndex - WINDOW_SIZE);
-                  const windowEnd = Math.min(allWords.length, currentWordIndex + WINDOW_SIZE);
-                  
-                  // Build text with highlighted current word
-                  const beforeWindow = allWords.slice(0, windowStart).join(' ');
-                  const afterWindow = allWords.slice(windowEnd).join(' ');
-                  const windowWords = allWords.slice(windowStart, windowEnd);
-                  
-                  return (
-                    <>
-                      {beforeWindow && <span>{beforeWindow} </span>}
-                      {windowWords.map((word, i) => {
-                        const globalIdx = windowStart + i;
-                        const isCurrentWord = isPlaying && globalIdx === currentWordIndex;
-                        return (
-                          <span
-                            key={globalIdx}
-                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
-                          >
-                            {word}{' '}
-                          </span>
-                        );
-                      })}
-                      {afterWindow && <span>{afterWindow}</span>}
-                    </>
-                  );
-                })()}
-              </div>
+          {/* PDF Viewer */}
+          <div className="flex-1 min-h-[500px] max-h-[60vh] mx-6 mb-6 mt-4 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden">
+            {previewFile?.objectPath ? (
+              <iframe
+                src={previewFile.objectPath}
+                className="w-full h-full border-0"
+                title={previewFile.displayName || previewFile.originalName}
+              />
             ) : (
               <div className="flex items-center justify-center h-full text-muted-foreground">
-                No text content available
+                No file available
               </div>
             )}
           </div>
