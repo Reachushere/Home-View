@@ -3290,7 +3290,7 @@ export default function Dashboard() {
         top: '8px',
         background: 'rgba(0,0,0,0.75)',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-        border: '1px solid rgba(255,255,255,0.5)'
+        border: '1.5px solid white'
       }}>
         <div className="flex items-center px-4 gap-2 w-full h-[44px]">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-6 w-6" />
@@ -3310,7 +3310,7 @@ export default function Dashboard() {
         <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-1" style={{ 
           background: 'rgba(0,0,0,0.75)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-          border: '1px solid rgba(255,255,255,0.5)'
+          border: '1.5px solid white'
         }}>
           {/* Navigation Section */}
           <div className="flex items-center px-4 gap-2 h-[44px]">
