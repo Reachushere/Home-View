@@ -824,10 +824,10 @@ export default function Dashboard() {
         // Filter to English voices and sort by name
         const englishVoices = voices.filter(v => v.lang.startsWith('en')).sort((a, b) => a.name.localeCompare(b.name));
         setAvailableVoices(englishVoices.length > 0 ? englishVoices : voices);
-        // Set default voice
+        // Set default voice - prefer Guy
         if (!selectedVoice) {
-          const defaultVoice = englishVoices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural'))
-            || englishVoices.find(v => v.name.includes('Female'))
+          const defaultVoice = englishVoices.find(v => v.name.includes('Guy'))
+            || englishVoices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural'))
             || englishVoices[0];
           if (defaultVoice) setSelectedVoice(defaultVoice.name);
         }
