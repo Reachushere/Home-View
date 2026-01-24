@@ -4787,9 +4787,15 @@ export default function Dashboard() {
                                     >
                                       <button
                                         onClick={() => {
-                                          if (file.url) {
-                                            window.open(file.url, '_blank');
-                                          }
+                                          // Create a FileItem-compatible object for the preview dialog
+                                          const fileItem = {
+                                            id: file.taskId,
+                                            originalName: file.name,
+                                            displayName: file.name,
+                                            objectPath: file.url,
+                                            folder: null
+                                          };
+                                          setPreviewFile(fileItem);
                                         }}
                                         className="flex items-center gap-2 flex-1 text-left min-w-0"
                                       >
