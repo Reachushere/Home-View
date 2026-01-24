@@ -4272,9 +4272,10 @@ export default function Dashboard() {
           const cfnf400Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).length;
           const casl101Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).length;
           const maxTasks = Math.max(cppa122Tasks, cfnf400Tasks, casl101Tasks, 2);
-          // Base height 330px fits 3 course rows with 1 task each without scrolling
-          const dynamicHeight = maxTasks <= 2 ? 330 : 330 + (maxTasks - 2) * 70;
+          // Base height 390px fits 3 course rows with 1 task with media controls each
+          const dynamicHeight = maxTasks <= 2 ? 390 : 390 + (maxTasks - 2) * 95;
           // Calculate exact row height: container height minus header (~28px), divided by 3 rows
+          // Each row needs ~110px to fit a task with media controls (h-5 controls + mb-1 + 60px card + pb-2 + margins)
           const rowHeight = Math.floor((dynamicHeight - 28) / 3);
           return (
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
