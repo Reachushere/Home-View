@@ -4359,7 +4359,7 @@ export default function Dashboard() {
                   </div>
                   {/* CASL101 Column - Purple */}
                   <div className="flex-1 p-2 overflow-auto" style={{ backgroundColor: 'rgba(165,180,252,0.45)' }}>
-                    <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CASL101 - Academic Skills</div>
+                    <div className="text-[9px] font-bold text-white mb-1.5 text-center drop-shadow-md">CASL101 - American Sign Language</div>
                     <div className="space-y-1.5">
                       {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => {
                         const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
@@ -4436,7 +4436,7 @@ export default function Dashboard() {
                   </div>
                   {/* CASL101 Row - Purple */}
                   <div className="px-2 py-1" style={{ backgroundColor: 'rgba(165,180,252,0.45)', minHeight: `${rowHeight}px` }}>
-                    <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101 - Academic Skills</div>
+                    <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101 - American Sign Language</div>
                     <div className="space-y-1">
                       {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                         <div key={task.id}>
@@ -4490,7 +4490,7 @@ export default function Dashboard() {
               </div>
               {/* CASL101 Row - Purple */}
               <div className="px-2 py-1" style={{ backgroundColor: 'rgba(165,180,252,0.45)', minHeight: `${rowHeight}px` }}>
-                <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101 - Academic Skills</div>
+                <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101 - American Sign Language</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
                     <div key={task.id}>
