@@ -3365,26 +3365,26 @@ export default function Dashboard() {
               variant="ghost"
               size="icon"
               onClick={toggleMute}
-              className={`h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              className={`h-6 w-6 hover:bg-white/20 rounded-lg border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
-              {isMuted ? <BellOff className="h-4 w-4 text-white" /> : <Bell className="h-4 w-4 text-white" />}
+              {isMuted ? <BellOff className="h-3.5 w-3.5 text-white" /> : <Bell className="h-3.5 w-3.5 text-white" />}
             </Button>
 
             {/* Sync */}
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white"
+              className="h-6 w-6 hover:bg-white/20 rounded-lg border-[0.1px] border-white"
               onClick={() => syncAllCalendarMutation.mutate()}
               disabled={syncAllCalendarMutation.isPending}
               data-testid="button-sync-calendar"
             >
               {syncAllCalendarMutation.isPending ? (
-                <Loader2 className="h-4 w-4 text-white animate-spin" />
+                <Loader2 className="h-3.5 w-3.5 text-white animate-spin" />
               ) : (
-                <RefreshCw className="h-4 w-4 text-white" />
+                <RefreshCw className="h-3.5 w-3.5 text-white" />
               )}
             </Button>
 
