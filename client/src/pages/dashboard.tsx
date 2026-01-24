@@ -4851,21 +4851,21 @@ export default function Dashboard() {
               style={{ maxHeight: '70vh', background: 'rgba(255,255,255,0.1)' }}
             >
               <div className="w-80 flex flex-col">
-                <div className="p-3 flex items-center justify-between" style={{ borderBottom: '1px solid rgb(255, 255, 255)' }}>
+                <div className="p-3 flex items-center justify-between" style={{ borderBottom: '1px solid rgb(0, 0, 0, 0.3)' }}>
                   <div className="flex items-center gap-2">
                     <RouterLink href="/files">
                       <Button 
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 hover:bg-white/20 rounded-md border-[0.1px] border-white"
+                        className="h-7 w-7 hover:bg-black/20 rounded-md border-[0.1px] border-black/50"
                         data-testid="button-files-link-flyout"
                       >
-                        <FolderOpen className="h-4 w-4 text-white" />
+                        <FolderOpen className="h-4 w-4 text-black" />
                       </Button>
                     </RouterLink>
-                    <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
+                    <h3 className="text-black font-semibold text-sm">Week {selectedWeek} Files</h3>
                   </div>
-                  <span className="text-xs text-gray-400">{currentWeekFiles.length} files</span>
+                  <span className="text-xs text-black/60">{currentWeekFiles.length} files</span>
                 </div>
                 <div className="flex-1 overflow-y-auto overflow-x-hidden p-2">
                   {/* Overdue Files Section */}
@@ -4920,8 +4920,8 @@ export default function Dashboard() {
                     return (
                       <div className="mb-4">
                         <div className="mb-3">
-                          <span className="text-[11px] font-bold text-white">OVERDUE</span>
-                          <div className="bg-white" style={{ height: '0.1px', marginTop: '1px' }}></div>
+                          <span className="text-[11px] font-bold text-black">OVERDUE</span>
+                          <div className="bg-black/30" style={{ height: '0.1px', marginTop: '1px' }}></div>
                         </div>
                         <div className="space-y-2">
                           {sortedOverdue.map(([courseCode, files]) => {
@@ -4932,10 +4932,10 @@ export default function Dashboard() {
                             return (
                               <div key={courseCode}>
                                 <div className={`text-[10px] font-bold mb-1 ${
-                                  courseCode === 'CPPA122' ? 'text-green-400' :
-                                  courseCode === 'CFNF400' ? 'text-pink-400' :
-                                  courseCode === 'CASL101' ? 'text-indigo-400' : 
-                                  'text-white'
+                                  courseCode === 'CPPA122' ? 'text-green-700' :
+                                  courseCode === 'CFNF400' ? 'text-pink-700' :
+                                  courseCode === 'CASL101' ? 'text-indigo-700' : 
+                                  'text-black'
                                 }`}>
                                   {displayName}
                                 </div>
@@ -4948,12 +4948,12 @@ export default function Dashboard() {
                                     return (
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
-                                      className="flex items-center gap-2 p-1.5 rounded-md text-xs group text-white animate-urgent-blink"
+                                      className="flex items-center gap-2 p-1.5 rounded-md text-xs group text-black animate-urgent-blink"
                                       style={{ animationDelay: blinkSyncDelay }}
                                       data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
                                     >
                                       <Checkbox
-                                        className="h-3 w-3 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                        className="h-3 w-3 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                         onCheckedChange={(checked) => {
                                           if (checked && matchingFile) {
                                             markFileCompletedMutation.mutate({ fileId: matchingFile.id });
@@ -5029,10 +5029,10 @@ export default function Dashboard() {
                             <div key={courseCode}>
                               {/* Course header */}
                               <div className={`text-[10px] font-bold mb-1 ${
-                                courseCode === 'CPPA122' ? 'text-green-400' :
-                                courseCode === 'CFNF400' ? 'text-pink-400' :
-                                courseCode === 'CASL101' ? 'text-indigo-400' : 
-                                'text-white'
+                                courseCode === 'CPPA122' ? 'text-green-700' :
+                                courseCode === 'CFNF400' ? 'text-pink-700' :
+                                courseCode === 'CASL101' ? 'text-indigo-700' : 
+                                'text-black'
                               }`}>
                                 {courseName}
                               </div>
@@ -5041,11 +5041,11 @@ export default function Dashboard() {
                                 {files.map(file => (
                                   <div
                                     key={file.id}
-                                    className="flex items-center gap-2 p-1.5 rounded-md text-xs group text-white"
+                                    className="flex items-center gap-2 p-1.5 rounded-md text-xs group text-black"
                                     data-testid={`flyout-file-${file.id}`}
                                   >
                                     <Checkbox
-                                      className="h-3 w-3 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
+                                      className="h-3 w-3 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                       onCheckedChange={(checked) => {
                                         if (checked) {
                                           markFileCompletedMutation.mutate({ fileId: file.id });
@@ -5079,7 +5079,7 @@ export default function Dashboard() {
               style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'rgba(255,255,255,0.1)' }}
               data-testid="weekly-files-flyout-tab"
             >
-              <span className="text-white text-[10px] font-medium tracking-wide flex items-center gap-2">
+              <span className="text-black text-[10px] font-medium tracking-wide flex items-center gap-2">
                 Weekly Files
                 {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
               </span>
