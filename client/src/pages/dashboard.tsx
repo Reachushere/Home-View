@@ -110,6 +110,7 @@ const FOLDER_TYPES = [
 
 // Speakers list for media controls
 const SPEAKERS = [
+  { id: "browser_tts", name: "🔊 Browser (This Device)" },
   { id: "media_player.byhome", name: "Apartment" },
   { id: "media_player.cat_wr", name: "Cat Washroom Speakers" },
   { id: "media_player.echo_cat_left_am", name: "Cat Washroom Left" },
@@ -932,8 +933,63 @@ export default function Dashboard() {
   };
 
   // Media control functions for file preview
+  // Browser TTS ref
+  const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const [browserTtsRate, setBrowserTtsRate] = useState(0.9); // 90% speed like Alexa
+  
   const handlePlayFile = async (fileUrl: string, fileName: string) => {
     try {
+      // Check if using browser TTS
+      if (previewSpeaker === "browser_tts") {
+        if (!previewText) {
+          toast({ title: "No text content available", variant: "destructive" });
+          return;
+        }
+        
+        // Cancel any existing speech
+        window.speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(previewText);
+        utterance.rate = browserTtsRate;
+        utterance.pitch = 1;
+        
+        // Get available voices and prefer a natural sounding one
+        const voices = window.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
+          || voices.find(v => v.lang.startsWith('en'))
+          || voices[0];
+        if (preferredVoice) utterance.voice = preferredVoice;
+        
+        // Track word position for highlighting
+        let wordIndex = 0;
+        utterance.onboundary = (event) => {
+          if (event.name === 'word') {
+            setCurrentWordIndex(wordIndex);
+            wordIndex++;
+          }
+        };
+        
+        utterance.onend = () => {
+          setIsPlaying(false);
+          isPlayingRef.current = false;
+          setCurrentWordIndex(0);
+        };
+        
+        utterance.onerror = () => {
+          setIsPlaying(false);
+          isPlayingRef.current = false;
+        };
+        
+        speechUtteranceRef.current = utterance;
+        window.speechSynthesis.speak(utterance);
+        
+        setIsPlaying(true);
+        isPlayingRef.current = true;
+        toast({ title: `Reading aloud: ${fileName}` });
+        return;
+      }
+      
+      // Use Home Assistant for other speakers
       const response = await fetch("/api/media/play", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -955,6 +1011,15 @@ export default function Dashboard() {
 
   const handleStopMedia = async () => {
     try {
+      // Stop browser TTS if active
+      if (previewSpeaker === "browser_tts") {
+        window.speechSynthesis.cancel();
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+        setCurrentWordIndex(0);
+        return;
+      }
+      
       await fetch("/api/media/stop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -969,6 +1034,16 @@ export default function Dashboard() {
 
   const handleVolumeChange = async (action: "up" | "down") => {
     try {
+      // Adjust browser TTS rate if using browser
+      if (previewSpeaker === "browser_tts") {
+        setBrowserTtsRate(prev => {
+          const newRate = action === "up" ? Math.min(prev + 0.1, 2) : Math.max(prev - 0.1, 0.5);
+          toast({ title: `Speech rate: ${Math.round(newRate * 100)}%` });
+          return newRate;
+        });
+        return;
+      }
+      
       await fetch("/api/media/volume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
