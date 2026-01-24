@@ -3785,10 +3785,11 @@ export default function Dashboard() {
                   const allDayTasks = getAllDayTasks(day);
                   const allDayEvents = getAllDayCalendarEvents(day);
                   
+                  const isToday = isSameDay(day, new Date());
                   return (
                     <div 
                       key={dayIdx} 
-                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
+                      className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden ${isToday ? "bg-[#2d4a6f]" : ""}`}
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
                       {/* Planning tasks */}
@@ -3986,10 +3987,11 @@ export default function Dashboard() {
                       t.courseName?.startsWith(course.name) && 
                       isSameDay(new Date(t.dueDate), day)
                     );
+                    const isToday = isSameDay(day, new Date());
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0 border-l border-border/50 h-[24px] flex flex-col overflow-hidden"
+                        className={`px-0.5 py-0 border-l border-border/50 h-[24px] flex flex-col overflow-hidden ${isToday ? "bg-[#2d4a6f]" : ""}`}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
                         {courseTasks.map(task => (
@@ -4038,7 +4040,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors ${isToday ? "bg-[#2d4a6f]/60" : (isFriday && new Date().getDay() !== 5) ? "bg-red-200" : totalItems > 0 ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors ${isToday ? "bg-[#2d4a6f]" : (isFriday && new Date().getDay() !== 5) ? "bg-red-200" : totalItems > 0 ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
