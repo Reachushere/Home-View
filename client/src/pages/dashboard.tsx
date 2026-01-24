@@ -2333,79 +2333,86 @@ export default function Dashboard() {
           onClick={() => setIsTodayExpanded(false)}
         />
       )}
-      {/* Sidebar Container */}
-      <div className="relative mb-3 mr-0 flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '5px', minHeight: 'calc(100% + 3px)' }}>
-        {/* Header overlay - stays normal when flyout is open */}
-        <div className="absolute top-0 left-0 right-0 z-10 flex items-start gap-2 px-2 pt-3 pb-2" style={{ paddingLeft: '21px' }}>
-          <img src={unicalLogo} alt="Uni-Cal" className="-ml-3 rounded" style={{ height: '46px', width: '46px' }} />
-          <div className="flex flex-col" style={{ marginTop: '-5px' }}>
+      {/* Left Column - Header Bar + Sidebar */}
+      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '5px' }}>
+        {/* New Left Header Bar - Above Sidebar */}
+        <div className="flex items-center gap-2 px-3 py-2 rounded-t-xl border-[0.25px] border-b-0 border-white/70" style={{ 
+          background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
+          boxShadow: '0 -2px 10px rgba(0,0,0,0.2)'
+        }}>
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded" style={{ height: '40px', width: '40px' }} />
+          <div className="flex flex-col flex-1">
             <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
-            <div className="flex items-center gap-2" style={{ marginTop: '5px' }} data-testid="digital-clock">
-              <span className="text-base text-white/80 font-medium">
+            <div className="flex items-center gap-2" data-testid="digital-clock">
+              <span className="text-xs text-white/80 font-medium">
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <div className="w-[1px] h-5 bg-white/50" />
+              <div className="w-[1px] h-4 bg-white/50" />
               <div className="flex items-baseline">
-                <span className="text-lg font-semibold text-white tabular-nums">
+                <span className="text-sm font-semibold text-white tabular-nums">
                   {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
                 </span>
-                <span className="text-base text-white/80 tabular-nums">
+                <span className="text-xs text-white/80 tabular-nums">
                   :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
                 </span>
-                <span className="text-sm font-bold text-white/80 ml-0.5 uppercase">
+                <span className="text-xs font-bold text-white/80 ml-0.5 uppercase">
                   {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
                 </span>
               </div>
               {profileData.travelTimezone && (
-                <span className="text-[8px] text-orange-400 font-medium ml-1">✈️ Travel</span>
+                <span className="text-[8px] text-orange-400 font-medium ml-1">Travel</span>
               )}
             </div>
-            {/* Pomodoro Timer */}
-            <div className="flex items-center justify-center gap-3 bg-white/20 rounded-lg px-4 py-2" style={{ marginTop: '25px', marginLeft: '-35px' }}>
-              <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
-                pomodoroMode === "work" ? "bg-red-700 text-white" : 
-                pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-              }`} style={{ marginLeft: '-30px' }} data-testid="pomodoro-timer">
-                {formatPomodoroTime(pomodoroTime)}
-              </div>
-              <div className="flex items-center gap-2" style={{ marginLeft: '30px' }}>
-                <button
-                  className="p-1.5 hover:bg-white/20 rounded transition-colors"
-                  onClick={togglePomodoro}
-                  data-testid="button-pomodoro-toggle"
-                >
-                  {pomodoroRunning ? <Pause className="h-5 w-5 text-white" strokeWidth={2.5} /> : <Play className="h-5 w-5 text-white" strokeWidth={2.5} />}
-                </button>
-                <button
-                  className="p-1.5 hover:bg-white/20 rounded transition-colors"
-                  onClick={resetPomodoro}
-                  data-testid="button-pomodoro-reset"
-                >
-                  <RotateCcw className="h-5 w-5 text-white" strokeWidth={2.5} />
-                </button>
-                <button
-                  className="p-1.5 hover:bg-white/20 rounded transition-colors"
-                  onClick={skipPomodoro}
-                  data-testid="button-pomodoro-skip"
-                >
-                  <SkipForward className="h-5 w-5 text-white" strokeWidth={2.5} />
-                </button>
-              </div>
+          </div>
+        </div>
+        
+        {/* Sidebar Container */}
+        <div className="relative flex-1 flex flex-col mb-3">
+        
+        {/* Pomodoro Timer - Floating above sidebar */}
+        <div className="absolute top-2 left-0 right-0 z-10 flex justify-center px-2">
+          <div className="flex items-center justify-center gap-3 bg-white/20 rounded-lg px-4 py-2">
+            <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
+              pomodoroMode === "work" ? "bg-red-700 text-white" : 
+              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+            }`} data-testid="pomodoro-timer">
+              {formatPomodoroTime(pomodoroTime)}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                className="p-1.5 hover:bg-white/20 rounded transition-colors"
+                onClick={togglePomodoro}
+                data-testid="button-pomodoro-toggle"
+              >
+                {pomodoroRunning ? <Pause className="h-5 w-5 text-white" strokeWidth={2.5} /> : <Play className="h-5 w-5 text-white" strokeWidth={2.5} />}
+              </button>
+              <button
+                className="p-1.5 hover:bg-white/20 rounded transition-colors"
+                onClick={resetPomodoro}
+                data-testid="button-pomodoro-reset"
+              >
+                <RotateCcw className="h-5 w-5 text-white" strokeWidth={2.5} />
+              </button>
+              <button
+                className="p-1.5 hover:bg-white/20 rounded transition-colors"
+                onClick={skipPomodoro}
+                data-testid="button-pomodoro-skip"
+              >
+                <SkipForward className="h-5 w-5 text-white" strokeWidth={2.5} />
+              </button>
             </div>
           </div>
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className={`flex-1 text-white rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
-          {/* Header placeholder to maintain spacing */}
-          <div className="flex items-center gap-2 px-2 pt-3 pb-2 flex-shrink-0 opacity-0">
-            <div style={{ height: '46px', width: '46px' }} />
-          </div>
+        <aside className={`flex-1 text-white rounded-b-xl rounded-t-none shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-t-0 border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+          {/* Spacer for pomodoro timer */}
+          <div className="flex-shrink-0" style={{ height: '60px' }} />
 
           {/* Scrollable sidebar content */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
         {/* Course Legend */}
-        <div className="pl-0.5 pr-1 space-y-3 mb-4" style={{ marginTop: '184px', marginLeft: '15px' }}>
+        <div className="pl-0.5 pr-1 space-y-3 mb-4" style={{ marginTop: '10px', marginLeft: '15px' }}>
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
           {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
             const courseCode = course.name.split(' - ')[0];
@@ -3212,6 +3219,7 @@ export default function Dashboard() {
         </div>
         </div>
       </aside>
+      </div>
       </div>
 
       {/* Main Content */}
