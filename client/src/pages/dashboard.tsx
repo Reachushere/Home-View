@@ -2339,7 +2339,7 @@ export default function Dashboard() {
         />
       )}
       {/* Left Column - Header Bar + Sidebar */}
-      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '70px' }}>
+      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '60px' }}>
         {/* Sidebar Container */}
         <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
@@ -2401,7 +2401,7 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className={`flex-1 text-white rounded-b-xl rounded-t-none shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-t-0 border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+        <aside className={`flex-1 text-white rounded-xl shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '85px' }} />
 
