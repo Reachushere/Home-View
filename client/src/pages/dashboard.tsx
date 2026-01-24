@@ -3760,7 +3760,7 @@ export default function Dashboard() {
           <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.5px] border-white flex flex-col" style={{ background: 'rgba(0,0,0,0.65)' }}>
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
-            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: 'rgba(255, 255, 255, 0.50)', marginRight: '17px' }}>
+            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', marginRight: '17px' }}>
               <div className="flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
               </div>
