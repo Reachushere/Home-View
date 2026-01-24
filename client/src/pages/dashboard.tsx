@@ -3221,7 +3221,7 @@ export default function Dashboard() {
           </div>
         
         {/* Menu Bar Container - clips scroll content */}
-        <div className="flex-shrink-0 relative z-10" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-111px' }}>
+        <div className="flex-shrink-0 relative z-10" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-131px' }}>
         {/* Sleek Menu Bar */}
         <div className="flex items-center mb-0 rounded-2xl overflow-hidden" style={{ 
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
@@ -3229,7 +3229,7 @@ export default function Dashboard() {
           border: '1px solid rgba(255,255,255,0.5)'
         }}>
           {/* Navigation Section */}
-          <div className="flex items-center pl-1 pr-4 py-2 gap-2">
+          <div className="flex items-center px-4 py-2 gap-2">
             {/* Hamburger Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
