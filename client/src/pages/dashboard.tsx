@@ -1819,9 +1819,10 @@ export default function Dashboard() {
             <div className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden">
               {previewFile?.objectPath ? (
                 <iframe
-                  src={previewFile.objectPath}
+                  src={`https://docs.google.com/gview?url=${encodeURIComponent(previewFile.objectPath)}&embedded=true`}
                   className="w-full h-full border-0"
                   title={previewFile.displayName || previewFile.originalName}
+                  sandbox="allow-scripts allow-same-origin"
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
