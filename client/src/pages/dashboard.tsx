@@ -1782,20 +1782,32 @@ export default function Dashboard() {
               </Button>
             </div>
             
-            <a
-              href={`/api/files/${previewFile?.id}/download`}
-              download={previewFile?.displayName || previewFile?.originalName || 'file'}
-              className="ml-auto"
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-gray-700 text-xs ml-auto"
+              data-testid="button-preview-download"
+              onClick={async () => {
+                if (!previewFile) return;
+                try {
+                  const response = await fetch(`/api/files/${previewFile.id}/download`);
+                  if (!response.ok) throw new Error('Download failed');
+                  const blob = await response.blob();
+                  const url = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = previewFile.displayName || previewFile.originalName || 'file.pdf';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(url);
+                } catch (err) {
+                  console.error('Download error:', err);
+                }
+              }}
             >
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-gray-700 text-xs"
-                data-testid="button-preview-download"
-              >
-                Download PDF
-              </Button>
-            </a>
+              Download PDF
+            </Button>
             
             {/* Mark as Completed Checkbox */}
             <div className="flex items-center gap-2 ml-2">
