@@ -3767,7 +3767,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - single consolidated row */}
-            <div className="grid border-b border-border/50 sticky top-[52px] z-30 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgb(229, 231, 235)' }}>
+            <div className="grid border-b border-border/50 sticky top-[52px] z-30 w-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
                 <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center" style={{ backgroundColor: 'rgb(229, 231, 235)' }}>
                   ALL DAY
                 </div>
@@ -3973,9 +3973,9 @@ export default function Dashboard() {
               
               {/* Course Rows - CPPA122, CFNF400, CASL101 (frozen/sticky) */}
               {[
-                { name: 'CPPA122', bg: 'rgb(198, 246, 213)', label: 'rgb(134, 239, 172)', top: '96px', zIndex: 22 },
-                { name: 'CFNF400', bg: 'rgb(252, 207, 230)', label: 'rgb(249, 168, 212)', top: '120px', zIndex: 21 },
-                { name: 'CASL101', bg: 'rgb(210, 218, 253)', label: 'rgb(165, 180, 252)', top: '144px', zIndex: 20 }
+                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', top: '96px', zIndex: 22 },
+                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', top: '120px', zIndex: 21 },
+                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', top: '144px', zIndex: 20 }
               ].map(course => (
                 <div key={course.name} className="grid border-b border-border/50 w-full sticky" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, top: course.top, height: '24px', zIndex: course.zIndex }}>
                   <div className="px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center text-black h-[24px]" style={{ backgroundColor: course.label }}>
