@@ -3844,7 +3844,7 @@ export default function Dashboard() {
                             <Checkbox
                               checked={task.isCompleted || false}
                               onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                              className="h-3 w-3 shrink-0"
+                              className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                               data-testid={`checkbox-allday-${task.id}`}
                             />
                             <span 
@@ -3944,7 +3944,7 @@ export default function Dashboard() {
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    className="h-3 w-3 shrink-0"
+                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                     data-testid={`checkbox-course-due-${task.id}`}
                                   />
                                   <span 
@@ -3974,7 +3974,7 @@ export default function Dashboard() {
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    className="h-3 w-3 shrink-0"
+                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                     data-testid={`checkbox-course-prep-${task.id}`}
                                   />
                                   <span 
@@ -4007,7 +4007,7 @@ export default function Dashboard() {
                                 <Checkbox
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0"
+                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                   data-testid={`checkbox-course-prep-mid-${task.id}`}
                                 />
                                 <span 
@@ -4112,7 +4112,7 @@ export default function Dashboard() {
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    className="h-3 w-3 shrink-0"
+                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                                     data-testid={`checkbox-time-${task.id}`}
                                   />
                                   <div 
