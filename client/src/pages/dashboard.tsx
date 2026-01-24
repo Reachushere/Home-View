@@ -2334,7 +2334,7 @@ export default function Dashboard() {
         />
       )}
       {/* Left Column - Header Bar + Sidebar */}
-      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '5px' }}>
+      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '10px' }}>
         {/* New Left Header Bar - Above Sidebar */}
         <div className="flex items-center gap-2 px-3 py-2 rounded-t-xl border-[0.25px] border-b-0 border-white/70" style={{ 
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
