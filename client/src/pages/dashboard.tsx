@@ -1023,7 +1023,9 @@ export default function Dashboard() {
         // Cancel any existing speech
         window.speechSynthesis.cancel();
         
-        const utterance = new SpeechSynthesisUtterance(previewText);
+        // Remove page markers from text for TTS (they're only for page sync)
+        const cleanTextForTts = previewText.replace(/---PAGE---/g, '');
+        const utterance = new SpeechSynthesisUtterance(cleanTextForTts);
         utterance.rate = browserTtsRate;
         utterance.pitch = 1;
         
