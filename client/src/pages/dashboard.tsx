@@ -4768,7 +4768,7 @@ export default function Dashboard() {
                     
                     return (
                       <div className="mb-4">
-                        <div className="text-[10px] font-bold mb-1 text-red-400">
+                        <div className="text-[11px] font-bold text-red-400 border-b border-red-400/30 pb-1 mb-2">
                           OVERDUE
                         </div>
                         <div className="space-y-2">
@@ -4824,7 +4824,7 @@ export default function Dashboard() {
                     </div>
                   ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="text-[11px] font-bold text-blue-400 border-b border-blue-400/30 pb-1 mb-2">
+                      <div className="text-[11px] font-bold text-yellow-400 border-b border-yellow-400/30 pb-1 mb-2">
                         DUE THIS WEEK
                       </div>
                       {(() => {
