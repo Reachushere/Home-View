@@ -2470,8 +2470,9 @@ export default function Dashboard() {
         {/* Sidebar Container */}
         <div className="relative flex-1 flex flex-col mb-3 pt-1">
         
-        {/* Digital Clock - Floating above sidebar */}
-        <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '13px' }}>
+        {/* Digital Clock and Pomodoro Timer - Same line */}
+        <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '13px' }}>
+          {/* Clock on the left */}
           <div className="flex items-center gap-2" data-testid="digital-clock">
             <span className="text-base text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
@@ -2492,17 +2493,15 @@ export default function Dashboard() {
               <span className="text-xs text-orange-400 font-medium ml-1">Travel</span>
             )}
           </div>
-        </div>
-        {/* Pomodoro Timer - Floating above sidebar */}
-        <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '78px' }}>
-          <div className="flex items-center justify-center gap-4 bg-white/20 rounded-md px-6 py-3">
-            <div className={`text-sm font-mono font-bold px-3 py-1.5 rounded ${
+          {/* Timer and controls on the right */}
+          <div className="flex items-center gap-2 bg-white/20 rounded-md px-3 py-1.5">
+            <div className={`text-sm font-mono font-bold px-2 py-1 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
             }`} style={pomodoroMode === "work" ? { backgroundColor: '#7f1d1d' } : undefined} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-1.5">
               <button
                 className="p-0.5 hover:bg-white/20 rounded transition-colors"
                 onClick={togglePomodoro}
@@ -2532,7 +2531,7 @@ export default function Dashboard() {
         <aside className="flex-1 text-white rounded-md shadow-lg overflow-hidden border-[0.1px] border-white" style={{ width: 350, background: 'rgb(1, 160, 175)', marginTop: '2px' }}>
         <div className={`h-full pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
           {/* Spacer for clock and pomodoro timer */}
-          <div className="flex-shrink-0" style={{ height: '85px' }} />
+          <div className="flex-shrink-0" style={{ height: '45px' }} />
 
           {/* Scrollable sidebar content */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
@@ -4841,7 +4840,7 @@ export default function Dashboard() {
         {calendarView === "week" && (
           <div 
             className="fixed z-50 flex flex-row-reverse items-center transition-transform duration-300 ease-in-out"
-            style={{ top: 'calc(50% - 44px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '351px' }}
+            style={{ top: 'calc(50% - 69px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '351px' }}
           >
             {/* Flyout Panel */}
             <div 
