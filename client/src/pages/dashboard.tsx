@@ -708,10 +708,13 @@ export default function Dashboard() {
   useEffect(() => {
     if (weeks.length > 0) {
       const today = new Date();
+      const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
       const currentWeek = weeks.find(w => {
         const start = parseISO(w.startDate);
         const end = parseISO(w.endDate);
-        return today >= start && today <= end;
+        const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+        const endDateOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+        return todayDateOnly >= startDateOnly && todayDateOnly <= endDateOnly;
       });
       if (currentWeek) {
         setSelectedWeek(currentWeek.weekNumber);
