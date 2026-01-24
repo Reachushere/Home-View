@@ -2430,7 +2430,7 @@ export default function Dashboard() {
         </div>
         {/* Pomodoro Timer - Floating above sidebar */}
         <div className="absolute left-0 right-0 z-10 flex justify-center px-2" style={{ top: '78px' }}>
-          <div className="flex items-center justify-center gap-4 bg-white/20 rounded-lg px-6 py-3">
+          <div className="flex items-center justify-center gap-4 bg-white/20 rounded-md px-6 py-3">
             <div className={`text-sm font-mono font-bold px-3 py-1.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -5075,7 +5075,7 @@ function TaskCard({
 
   const cardElement = (
     <Card
-      className={`transition-all rounded-xl shadow-sm border ${
+      className={`transition-all rounded-md shadow-sm border ${
         compact ? "h-[60px] flex flex-col" : "flex-1"
       } ${cardBgClass ? cardBgClass : colors ? colors.bg : ""} ${
         colors ? colors.border : "border-gray-400"
