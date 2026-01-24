@@ -1816,14 +1816,23 @@ export default function Dashboard() {
           {/* Split View: PDF + Highlighted Text */}
           <div className="flex-1 min-h-[500px] max-h-[60vh] mx-6 mb-6 mt-4 flex gap-4">
             {/* PDF Viewer - Left Side */}
-            <div className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden">
+            <div className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden flex flex-col items-center justify-center gap-4 p-6">
               {previewFile?.objectPath ? (
-                <iframe
-                  src={`https://docs.google.com/gview?url=${encodeURIComponent(previewFile.objectPath)}&embedded=true`}
-                  className="w-full h-full border-0"
-                  title={previewFile.displayName || previewFile.originalName}
-                  sandbox="allow-scripts allow-same-origin"
-                />
+                <>
+                  <FileText className="h-16 w-16 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground text-center">
+                    PDF preview not available in embedded view
+                  </p>
+                  <Button
+                    variant="default"
+                    onClick={() => window.open(previewFile.objectPath, '_blank')}
+                    className="gap-2"
+                    data-testid="button-open-pdf"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Open PDF in New Tab
+                  </Button>
+                </>
               ) : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
                   No file available
