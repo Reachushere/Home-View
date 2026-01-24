@@ -4570,7 +4570,7 @@ export default function Dashboard() {
               <span className="text-white drop-shadow-md">Completed - CPPA122 - Local Politics</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length})</span>
             </h4>
             {completedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-xs">
+              <div className="text-center py-4 text-white text-xs">
                 No completed tasks
               </div>
             ) : (
@@ -4598,7 +4598,7 @@ export default function Dashboard() {
               <span className="text-white drop-shadow-md">Completed - CFNF400 - Human Sexuality</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length})</span>
             </h4>
             {completedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-xs">
+              <div className="text-center py-4 text-white text-xs">
                 No completed tasks
               </div>
             ) : (
@@ -4626,7 +4626,7 @@ export default function Dashboard() {
               <span className="text-white drop-shadow-md">Completed - CASL101 - American Sign Language</span> <span className="text-white drop-shadow-md">({completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length})</span>
             </h4>
             {completedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-xs">
+              <div className="text-center py-4 text-white text-xs">
                 No completed tasks
               </div>
             ) : (
