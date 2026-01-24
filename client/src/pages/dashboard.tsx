@@ -3396,7 +3396,7 @@ export default function Dashboard() {
                 onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
                 data-testid="button-today"
               >
-                <Sun className="h-3 w-3 mr-1 text-amber-300" />
+                <Sun className="h-3 w-3 mr-1 text-white" />
                 Today
               </Button>
               <Button 
@@ -3405,7 +3405,7 @@ export default function Dashboard() {
                 onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
                 data-testid="button-month-view"
               >
-                <CalendarDays className="h-3 w-3 mr-1 text-cyan-300" />
+                <CalendarDays className="h-3 w-3 mr-1 text-white" />
                 {calendarView === "month" ? "Week" : "Month"}
               </Button>
             </div>
@@ -4289,8 +4289,8 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
           {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
           <section className="flex-1 rounded-xl shadow-md border-[0.5px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-upcoming">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-yellow-400 border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
-              <Clock className="h-3 w-3 text-yellow-400" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+              <Clock className="h-3 w-3 text-white" />
               BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
             </h4>
             <div className="flex-1 flex overflow-hidden">
@@ -4404,8 +4404,8 @@ export default function Dashboard() {
 
           {/* Do Today Section (Urgent) - Now in Middle */}
           <section className={`w-[240px] flex-shrink-0 rounded-xl shadow-md border-[0.5px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-due-today">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-orange-500 border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
-              <Calendar className="h-3 w-3 text-orange-500" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+              <Calendar className="h-3 w-3 text-white" />
               URGENT: Do Today ({todayTasks.length})
             </h4>
             <div className="flex-1 flex flex-col">
@@ -4462,8 +4462,8 @@ export default function Dashboard() {
 
           {/* Missed Tasks Section (Overdue) - Now on Right */}
           <section className="w-[240px] flex-shrink-0 rounded-xl shadow-md border-[0.5px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgba(0,0,0,0.35)' }} data-testid="section-missed">
-            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-red-500 border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
-              <Clock className="h-3 w-3 text-red-500" />
+            <h4 className="text-xs font-semibold py-1.5 px-3 flex items-center gap-2 text-white border-b border-white" style={{ fontFamily: "Segoe UI, sans-serif", background: 'rgba(0,0,0,0.75)' }}>
+              <Clock className="h-3 w-3 text-white" />
               OVERDUE: Missed Tasks ({missedTasks.length})
             </h4>
             <div className="flex-1 flex flex-col">
@@ -4711,7 +4711,7 @@ export default function Dashboard() {
                         className="h-7 w-7 hover:bg-white/20 rounded-lg border-[0.1px] border-white"
                         data-testid="button-files-link-flyout"
                       >
-                        <FolderOpen className="h-4 w-4 text-amber-400" />
+                        <FolderOpen className="h-4 w-4 text-white" />
                       </Button>
                     </RouterLink>
                     <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
@@ -4770,7 +4770,7 @@ export default function Dashboard() {
                     
                     return (
                       <div className="mb-4">
-                        <div className="text-[11px] font-bold text-red-400 border-b-[0.5px] border-white/60 pb-1 mb-2">
+                        <div className="text-[11px] font-bold text-white border-b-[0.5px] border-white/60 pb-1 mb-2">
                           OVERDUE
                         </div>
                         <div className="space-y-2">
@@ -4827,7 +4827,7 @@ export default function Dashboard() {
                     </div>
                   ) : currentWeekFiles.length > 0 ? (
                     <div className="space-y-3">
-                      <div className="text-[11px] font-bold text-yellow-400 border-b-[0.5px] border-white/60 pb-1 mb-2 mt-6">
+                      <div className="text-[11px] font-bold text-white border-b-[0.5px] border-white/60 pb-1 mb-2 mt-6">
                         DUE THIS WEEK
                       </div>
                       {(() => {
