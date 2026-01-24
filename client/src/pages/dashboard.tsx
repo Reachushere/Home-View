@@ -3230,7 +3230,6 @@ export default function Dashboard() {
       {/* Quick Actions Header Bar - positioned absolutely to align with left panel */}
       <div className="absolute z-20 flex items-center rounded-2xl overflow-hidden" style={{ 
         width: '350px',
-        height: '56px',
         left: '11px',
         top: '8px',
         background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
