@@ -4644,9 +4644,9 @@ export default function Dashboard() {
             {/* Flyout Panel */}
             <div 
               className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-r-0 border-white/70 rounded-l-xl' : 'w-0 border-0'}`}
-              style={{ height: '400px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}
+              style={{ maxHeight: '70vh', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}
             >
-              <div className="w-80 h-full flex flex-col">
+              <div className="w-80 flex flex-col">
                 <div className="p-3 border-b border-[#3d3d3d] flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
