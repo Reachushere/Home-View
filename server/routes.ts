@@ -2053,8 +2053,17 @@ export async function registerRoutes(
     }
   });
 
-  // Export all data for sync
+  // Export all data for sync (with CORS for cross-origin sync)
+  app.options("/api/export", (_req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.sendStatus(200);
+  });
+  
   app.get("/api/export", async (_req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    
     try {
       const tasks = await storage.getTasks();
       const files = await storage.getFiles();

@@ -3658,44 +3658,83 @@ export default function Dashboard() {
                 
                 {/* Data Sync Section */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Sync to Production</Label>
+                  <Label className="text-sm font-medium">Data Sync</Label>
                   <p className="text-xs text-muted-foreground">
-                    Push your tasks and files to the published app.
+                    Push to or pull from the published app.
                   </p>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={async () => {
-                      try {
-                        toast({ title: "Syncing...", description: "Pushing data to production." });
-                        
-                        const exportRes = await fetch("/api/export");
-                        const exportData = await exportRes.json();
-                        
-                        const importRes = await fetch("https://home-view--bkh416.replit.app/api/import", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify(exportData),
-                        });
-                        const result = await importRes.json();
-                        
-                        if (result.success) {
-                          toast({ 
-                            title: "Sync complete!", 
-                            description: `Synced ${result.imported.tasks} tasks, ${result.imported.files} files.` 
+                  <div className="flex gap-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          toast({ title: "Pushing...", description: "Sending data to production." });
+                          
+                          const exportRes = await fetch("/api/export");
+                          const exportData = await exportRes.json();
+                          
+                          const importRes = await fetch("https://home-view--bkh416.replit.app/api/import", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(exportData),
                           });
-                        } else {
-                          toast({ title: "Sync failed", description: result.error, variant: "destructive" });
+                          const result = await importRes.json();
+                          
+                          if (result.success) {
+                            toast({ 
+                              title: "Push complete!", 
+                              description: `Pushed ${result.imported.tasks} tasks, ${result.imported.files} files.` 
+                            });
+                          } else {
+                            toast({ title: "Push failed", description: result.error, variant: "destructive" });
+                          }
+                        } catch (err) {
+                          toast({ title: "Push failed", description: "Could not connect to production.", variant: "destructive" });
                         }
-                      } catch (err) {
-                        toast({ title: "Sync failed", description: "Could not connect to production.", variant: "destructive" });
-                      }
-                    }}
-                    data-testid="button-sync-production"
-                  >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Sync Now
-                  </Button>
+                      }}
+                      data-testid="button-push-production"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Push
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          toast({ title: "Pulling...", description: "Getting data from production." });
+                          
+                          const exportRes = await fetch("https://home-view--bkh416.replit.app/api/export");
+                          const exportData = await exportRes.json();
+                          
+                          const importRes = await fetch("/api/import", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(exportData),
+                          });
+                          const result = await importRes.json();
+                          
+                          if (result.success) {
+                            toast({ 
+                              title: "Pull complete!", 
+                              description: `Pulled ${result.imported.tasks} tasks, ${result.imported.files} files.` 
+                            });
+                            queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                            queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+                            queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                          } else {
+                            toast({ title: "Pull failed", description: result.error, variant: "destructive" });
+                          }
+                        } catch (err) {
+                          toast({ title: "Pull failed", description: "Could not connect to production.", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-pull-production"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Pull
+                    </Button>
+                  </div>
                 </div>
               </div>
             </DialogContent>
