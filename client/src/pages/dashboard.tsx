@@ -2334,7 +2334,7 @@ export default function Dashboard() {
         />
       )}
       {/* Left Column - Header Bar + Sidebar */}
-      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '10px' }}>
+      <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '45px' }}>
         {/* New Left Header Bar - Above Sidebar */}
         <div className="flex items-center gap-2 px-3 py-2 rounded-t-xl border-[0.25px] border-b-0 border-white/70" style={{ 
           background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
@@ -2370,7 +2370,7 @@ export default function Dashboard() {
         <div className="relative flex-1 flex flex-col mb-3">
         
         {/* Pomodoro Timer - Floating above sidebar */}
-        <div className="absolute top-[38px] left-0 right-0 z-10 flex justify-center px-2">
+        <div className="absolute top-2 left-0 right-0 z-10 flex justify-center px-2">
           <div className="flex items-center justify-center gap-3 bg-white/20 rounded-lg px-4 py-2">
             <div className={`text-lg font-mono font-bold px-3 py-1.5 rounded ${
               pomodoroMode === "work" ? "bg-red-700 text-white" : 
@@ -2407,7 +2407,7 @@ export default function Dashboard() {
         {/* Sidebar with blur/fade effect */}
         <aside className={`flex-1 text-white rounded-b-xl rounded-t-none shadow-lg pb-4 pt-0 pr-0 flex flex-col overflow-hidden border-[0.25px] border-t-0 border-white/70 transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ width: 350, paddingLeft: '11px', background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
           {/* Spacer for pomodoro timer */}
-          <div className="flex-shrink-0" style={{ height: '95px' }} />
+          <div className="flex-shrink-0" style={{ height: '60px' }} />
 
           {/* Scrollable sidebar content */}
           <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
