@@ -3792,23 +3792,13 @@ export default function Dashboard() {
               })}
             </div>
             
-            {/* ALL DAY Row - Fixed, not scrollable */}
+            {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0 pr-[17px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px', backgroundColor: 'rgba(229, 231, 235, 0.55)' }}>
                 <div className="text-xs text-foreground font-bold tracking-wide flex items-center justify-center" style={{ backgroundColor: 'rgb(229, 231, 235)' }}>
                   ALL DAY
                 </div>
                 {weekDays.map((day, dayIdx) => {
-                  const planningTasksForDay = weekPlanningTasks.filter(task => {
-                    if (!task.startDate) return false;
-                    const startDate = new Date(task.startDate);
-                    const dueDate = new Date(task.dueDate);
-                    const dayStart = new Date(day);
-                    dayStart.setHours(0, 0, 0, 0);
-                    const dayEnd = new Date(day);
-                    dayEnd.setHours(23, 59, 59, 999);
-                    // Show task on all days from startDate through dueDate (inclusive)
-                    return startDate <= dayEnd && dayStart <= dueDate;
-                  });
+                  // Only show true all-day tasks (midnight due) and all-day calendar events - NO prep tasks here
                   const allDayTasks = getAllDayTasks(day);
                   const allDayEvents = getAllDayCalendarEvents(day);
                   
@@ -3818,130 +3808,7 @@ export default function Dashboard() {
                       className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
                       data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                     >
-                      {/* Planning tasks */}
-                      {planningTasksForDay.map(task => {
-                        const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                        const colors = courseColors[courseCode];
-                        const taskDueDate = startOfDay(new Date(task.dueDate));
-                        const dayStart = startOfDay(day);
-                        const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
-                        const isFirstPrepDay = taskStartDate && isSameDay(taskStartDate, dayStart);
-                        const isDueDay = isSameDay(taskDueDate, dayStart);
-                        const dayBeforeDue = addDays(taskDueDate, -1);
-                        const isLastPrepDay = taskStartDate && !isDueDay && isSameDay(dayStart, dayBeforeDue);
-                        const lineColor = "bg-black";
-                        
-                        // Due day takes priority - check first
-                        if (isDueDay) {
-                          const today = startOfDay(new Date());
-                          const tomorrow = addDays(today, 1);
-                          const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
-                          const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
-                          const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
-                          // Only show connecting line if the previous prep day is still visible (today or future)
-                          const dayBeforeDue = addDays(taskDueDate, -1);
-                          const hasVisiblePrepDays = hasPrepDays && !isBefore(dayBeforeDue, today);
-                          const baseStyle = task.isCompleted 
-                            ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : colors 
-                              ? `${colors.bg} text-black border ${colors.border}` 
-                              : "bg-gray-200 text-black border border-gray-400";
-                          return (
-                            <div key={`due-${task.id}`} className="flex items-center w-full">
-                              {hasVisiblePrepDays && <div className="w-2 h-[2px] bg-black shrink-0" />}
-                              <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle} ${
-                                  isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                                }`}
-                                style={{ borderRadius: hasVisiblePrepDays ? '0 4px 4px 0' : '4px' }}
-                                data-testid={`due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                              >
-                                <Checkbox
-                                  checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0"
-                                  data-testid={`checkbox-due-${task.id}`}
-                                />
-                                <span 
-                                  onClick={() => setEditingTask(task)}
-                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                                >
-                                  <span className="font-bold">DUE:</span> {task.title}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        }
-                        // Skip prep days that have already passed
-                        const today = startOfDay(new Date());
-                        if (!isDueDay && isBefore(dayStart, today)) {
-                          return null;
-                        }
-                        
-                        // First prep day (not the due day)
-                        if (isFirstPrepDay) {
-                          const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
-                          const baseStyle = task.isCompleted 
-                            ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400 ${shimmerClass}`;
-                          return (
-                            <div key={`prep-${task.id}`} className="flex items-center w-full">
-                              <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                                style={{ borderRadius: '4px 0 0 4px' }}
-                                data-testid={`prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                              >
-                                <Checkbox
-                                  checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0"
-                                  data-testid={`checkbox-prep-${task.id}`}
-                                />
-                                <span 
-                                  onClick={() => setEditingTask(task)}
-                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                                >
-                                  <span className="font-bold">PREP:</span> {task.title}
-                                </span>
-                              </div>
-                              <div className="w-2 h-[2px] bg-black shrink-0" />
-                            </div>
-                          );
-                        }
-                        // Intermediate prep days (between start and due date)
-                        const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
-                        const baseStyle = task.isCompleted 
-                          ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                          : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400 ${shimmerClass}`;
-                        // Check if the previous day is visible (today or future)
-                        const previousDay = addDays(dayStart, -1);
-                        const hasPreviousVisibleDay = !isBefore(previousDay, today);
-                        return (
-                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                            {hasPreviousVisibleDay && <div className="w-2 h-[2px] bg-black shrink-0" />}
-                            <div
-                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                              style={{ borderRadius: hasPreviousVisibleDay ? 0 : '4px 0 0 4px' }}
-                              data-testid={`prep-mid-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                            >
-                              <Checkbox
-                                checked={task.isCompleted || false}
-                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                className="h-3 w-3 shrink-0"
-                                data-testid={`checkbox-prep-mid-${task.id}`}
-                              />
-                              <span 
-                                onClick={() => setEditingTask(task)}
-                                className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                              >
-                                <span className="font-bold">PREP:</span> {task.title}
-                              </span>
-                            </div>
-                            <div className="w-2 h-[2px] bg-black shrink-0" />
-                          </div>
-                        );
-                      })}
-                      {/* Regular all-day tasks */}
+                      {/* Regular all-day tasks only - prep tasks moved to course rows */}
                       {allDayTasks.map(task => {
                         const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                         const colors = courseColors[courseCode];
@@ -3997,44 +3864,152 @@ export default function Dashboard() {
                 })}
             </div>
               
-              {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable */}
+              {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
               {[
-                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)' },
-                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)' },
-                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)' }
+                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', colors: courseColors['CPPA122'] },
+                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', colors: courseColors['CFNF400'] },
+                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
               ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 pr-[17px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, height: '24px' }}>
-                  <div className="px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center text-black h-[24px]" style={{ backgroundColor: course.label }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 pr-[17px]" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', backgroundColor: course.bg, minHeight: '24px' }}>
+                  <div className="px-1 py-0.5 text-[9px] font-bold tracking-wide flex items-center justify-center text-black" style={{ backgroundColor: course.label }}>
                     {course.name}
                   </div>
                   {weekDays.map((day, dayIdx) => {
-                    const courseTasks = allTasks.filter(t => 
-                      !t.isCompleted &&
-                      t.courseName?.startsWith(course.name) && 
-                      isSameDay(new Date(t.dueDate), day)
-                    );
+                    // Get prep tasks for this course and day
+                    const coursePrepTasks = weekPlanningTasks.filter(task => {
+                      if (!task.startDate || !task.courseName?.startsWith(course.name)) return false;
+                      const startDate = new Date(task.startDate);
+                      const dueDate = new Date(task.dueDate);
+                      const dayStart = new Date(day);
+                      dayStart.setHours(0, 0, 0, 0);
+                      const dayEnd = new Date(day);
+                      dayEnd.setHours(23, 59, 59, 999);
+                      return startDate <= dayEnd && dayStart <= dueDate;
+                    });
+                    
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0 border-l border-border/50 h-[24px] flex flex-col overflow-hidden"
+                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden"
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                       >
-                        {courseTasks.map(task => (
-                          <div
-                            key={task.id}
-                            className={`flex items-center gap-0.5 text-[8px] px-1 py-0.5 ${
-                              task.isCompleted ? "text-gray-500 line-through" : "text-black font-medium"
-                            }`}
-                            data-testid={`course-task-${task.id}`}
-                          >
-                            <span 
-                              onClick={() => setEditingTask(task)}
-                              className="truncate cursor-pointer hover:opacity-80 flex-1"
-                            >
-                              {task.title}
-                            </span>
-                          </div>
-                        ))}
+                        {coursePrepTasks.map(task => {
+                          const taskDueDate = startOfDay(new Date(task.dueDate));
+                          const dayStart = startOfDay(day);
+                          const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
+                          const isFirstPrepDay = taskStartDate && isSameDay(taskStartDate, dayStart);
+                          const isDueDay = isSameDay(taskDueDate, dayStart);
+                          const dayBeforeDue = addDays(taskDueDate, -1);
+                          const isLastPrepDay = taskStartDate && !isDueDay && isSameDay(dayStart, dayBeforeDue);
+                          const today = startOfDay(new Date());
+                          const tomorrow = addDays(today, 1);
+                          
+                          // Skip prep days that have already passed (but show due days)
+                          if (!isDueDay && isBefore(dayStart, today)) {
+                            return null;
+                          }
+                          
+                          // Due day
+                          if (isDueDay) {
+                            const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
+                            const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
+                            const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
+                            const hasVisiblePrepDays = hasPrepDays && !isBefore(dayBeforeDue, today);
+                            const baseStyle = task.isCompleted 
+                              ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                              : course.colors 
+                                ? `${course.colors.bg} text-black border ${course.colors.border}` 
+                                : "bg-gray-200 text-black border border-gray-400";
+                            return (
+                              <div key={`due-${task.id}`} className="flex items-center w-full">
+                                {hasVisiblePrepDays && <div className="w-2 h-[2px] bg-black shrink-0" />}
+                                <div
+                                  className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle} ${
+                                    isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                                  }`}
+                                  style={{ borderRadius: hasVisiblePrepDays ? '0 4px 4px 0' : '4px' }}
+                                  data-testid={`course-due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                                >
+                                  <Checkbox
+                                    checked={task.isCompleted || false}
+                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                    className="h-3 w-3 shrink-0"
+                                    data-testid={`checkbox-course-due-${task.id}`}
+                                  />
+                                  <span 
+                                    onClick={() => setEditingTask(task)}
+                                    className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                  >
+                                    <span className="font-bold">DUE:</span> {task.title}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          }
+                          
+                          // First prep day
+                          if (isFirstPrepDay) {
+                            const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
+                            const baseStyle = task.isCompleted 
+                              ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                              : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400 ${shimmerClass}`;
+                            return (
+                              <div key={`prep-${task.id}`} className="flex items-center w-full">
+                                <div
+                                  className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
+                                  style={{ borderRadius: '4px 0 0 4px' }}
+                                  data-testid={`course-prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                                >
+                                  <Checkbox
+                                    checked={task.isCompleted || false}
+                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                    className="h-3 w-3 shrink-0"
+                                    data-testid={`checkbox-course-prep-${task.id}`}
+                                  />
+                                  <span 
+                                    onClick={() => setEditingTask(task)}
+                                    className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                  >
+                                    <span className="font-bold">PREP:</span> {task.title}
+                                  </span>
+                                </div>
+                                <div className="w-2 h-[2px] bg-black shrink-0" />
+                              </div>
+                            );
+                          }
+                          
+                          // Intermediate prep days
+                          const shimmerClass = isLastPrepDay && !task.isCompleted ? "animate-shimmer" : "";
+                          const baseStyle = task.isCompleted 
+                            ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                            : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400 ${shimmerClass}`;
+                          const previousDay = addDays(dayStart, -1);
+                          const hasPreviousVisibleDay = !isBefore(previousDay, today);
+                          return (
+                            <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
+                              {hasPreviousVisibleDay && <div className="w-2 h-[2px] bg-black shrink-0" />}
+                              <div
+                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
+                                style={{ borderRadius: hasPreviousVisibleDay ? 0 : '4px 0 0 4px' }}
+                                data-testid={`course-prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`}
+                              >
+                                <Checkbox
+                                  checked={task.isCompleted || false}
+                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  className="h-3 w-3 shrink-0"
+                                  data-testid={`checkbox-course-prep-mid-${task.id}`}
+                                />
+                                <span 
+                                  onClick={() => setEditingTask(task)}
+                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                >
+                                  <span className="font-bold">PREP:</span> {task.title}
+                                </span>
+                              </div>
+                              <div className="w-2 h-[2px] bg-black shrink-0" />
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   })}
