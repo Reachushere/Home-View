@@ -3783,7 +3783,7 @@ export default function Dashboard() {
                       backgroundColor: isToday 
                         ? "#2d4a6f" 
                         : (isFriday && new Date().getDay() !== 5) 
-                          ? "#991b1b" 
+                          ? "#7f1d1d" 
                           : "transparent" 
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
