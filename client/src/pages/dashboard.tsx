@@ -4463,7 +4463,7 @@ export default function Dashboard() {
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CPPA122</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
-                    <div key={task.id} className={`${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
+                    <div key={task.id}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact overdueBlink />
                     </div>
                   ))}
@@ -4477,7 +4477,7 @@ export default function Dashboard() {
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CFNF400</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
-                    <div key={task.id} className={`${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
+                    <div key={task.id}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact overdueBlink />
                     </div>
                   ))}
@@ -4491,7 +4491,7 @@ export default function Dashboard() {
                 <div className="text-[8px] font-bold text-white drop-shadow-md mb-0.5">CASL101</div>
                 <div className="space-y-1">
                   {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
-                    <div key={task.id} className={`${task.attachments && task.attachments.length > 0 ? 'mt-5' : ''}`}>
+                    <div key={task.id}>
                       <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact overdueBlink />
                     </div>
                   ))}
@@ -5168,9 +5168,9 @@ function TaskCard({
   if (compact) {
     if (hasAttachments) {
       return (
-        <div className="relative pt-1 h-full flex flex-col cursor-pointer" onClick={onEdit}>
+        <div className="relative pt-1 h-full flex flex-col cursor-pointer pb-2" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="absolute -top-[15px] left-0 right-0 h-5 flex items-center justify-around rounded-xl px-1 text-white border border-white/50 no-blink" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
+          <div className="h-5 flex items-center justify-around rounded-xl px-1 text-white border border-white/50 no-blink mb-1" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
