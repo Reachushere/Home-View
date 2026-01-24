@@ -4779,7 +4779,10 @@ export default function Dashboard() {
                                   {courseCode}
                                 </div>
                                 <div className="space-y-1">
-                                  {files.map((file, idx) => (
+                                  {files.map((file, idx) => {
+                                    // Find matching file from allFiles by objectPath
+                                    const matchingFile = allFiles.find(f => f.objectPath === file.url);
+                                    return (
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
                                       className="flex items-center gap-2 p-2 rounded text-xs group border border-red-400/50 bg-red-900/30 text-white"
@@ -4787,22 +4790,20 @@ export default function Dashboard() {
                                     >
                                       <button
                                         onClick={() => {
-                                          // Create a FileItem-compatible object for the preview dialog
-                                          const fileItem = {
-                                            id: file.taskId,
-                                            originalName: file.name,
-                                            displayName: file.name,
-                                            objectPath: file.url,
-                                            folder: null
-                                          };
-                                          setPreviewFile(fileItem);
+                                          if (matchingFile) {
+                                            // Use the actual file record from the files table
+                                            setPreviewFile(matchingFile);
+                                          } else {
+                                            // Fallback: open URL directly if no matching file found
+                                            window.open(file.url, '_blank');
+                                          }
                                         }}
                                         className="flex items-center gap-2 flex-1 text-left min-w-0"
                                       >
                                         <span className="truncate font-medium">{file.name || file.url}</span>
                                       </button>
                                     </div>
-                                  ))}
+                                  );})}
                                 </div>
                               </div>
                             );
