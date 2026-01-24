@@ -1519,7 +1519,7 @@ export default function Dashboard() {
     });
   };
 
-  const missedTasks = sortByAttachments(displayTasks.filter(t => t.isMissed && !t.isCompleted));
+  const missedTasks = sortByAttachments(allTasks.filter(t => t.isMissed && !t.isCompleted));
   const today = new Date();
   // Do Today shows ALL tasks due today OR prep tasks starting today (from all tasks, not just selected week)
   const todayTasks = sortByAttachments(allTasks.filter(t => {
