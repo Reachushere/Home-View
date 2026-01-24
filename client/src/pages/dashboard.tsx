@@ -3284,7 +3284,7 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Actions Header Bar - positioned absolutely to align with left panel */}
-      <div className="absolute z-20 flex items-center rounded-2xl overflow-hidden" style={{ 
+      <div className="absolute z-20 flex items-center rounded-md overflow-hidden" style={{ 
         width: '350px',
         left: '11px',
         top: '8px',
@@ -3307,7 +3307,7 @@ export default function Dashboard() {
         {/* Menu Bar Container - clips scroll content */}
         <div className="flex-shrink-0 relative z-10 flex gap-2" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-111px' }}>
         {/* Sleek Menu Bar */}
-        <div className="flex items-center mb-0 rounded-2xl overflow-hidden flex-1" style={{ 
+        <div className="flex items-center mb-0 rounded-md overflow-hidden flex-1" style={{ 
           background: 'rgba(0,0,0,0.75)',
           boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
           border: '0.1px solid white'
