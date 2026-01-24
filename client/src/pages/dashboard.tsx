@@ -777,9 +777,9 @@ export default function Dashboard() {
     queryKey: ["/api/files"],
   });
   
-  // Filter files for the current week
+  // Filter files for the current week (exclude completed/listened files)
   const currentWeekFiles = weeklyFiles.filter(f => 
-    f.folder?.startsWith(`week-${selectedWeek}`) || f.folder === `week-${selectedWeek}`
+    (f.folder?.startsWith(`week-${selectedWeek}`) || f.folder === `week-${selectedWeek}`) && !f.listened
   );
 
   // Semester settings query
@@ -4953,6 +4953,8 @@ export default function Dashboard() {
                                   {files.map((file, idx) => {
                                     // Find matching file from allFiles by objectPath
                                     const matchingFile = allFiles.find(f => f.objectPath === file.url);
+                                    // Skip if file is already completed/listened
+                                    if (matchingFile?.listened) return null;
                                     return (
                                     <div
                                       key={`overdue-${file.taskId}-${idx}`}
