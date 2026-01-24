@@ -4845,7 +4845,7 @@ export default function Dashboard() {
           >
             {/* Flyout Panel */}
             <div 
-              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden backdrop-blur-md ${isWeeklyFilesFlyoutOpen ? 'w-80 border-[0.1px] border-white/30 rounded-l-md' : 'w-0 border-0'}`}
+              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden backdrop-blur-md ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-black/50 rounded-l-md' : 'w-0 border-0'}`}
               style={{ maxHeight: '70vh', background: 'rgba(255,255,255,0.1)' }}
             >
               <div className="w-80 flex flex-col">
@@ -5073,12 +5073,11 @@ export default function Dashboard() {
             {/* Tab Button */}
             <button
               onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="border-[0.1px] border-r-0 border-white rounded-l-md px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
-              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'rgba(0,0,0,0.75)' }}
+              className="border border-r-0 border-black/50 rounded-l-md px-1 py-3 hover:opacity-80 transition-colors shadow-lg backdrop-blur-md"
+              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: 'rgba(255,255,255,0.1)' }}
               data-testid="weekly-files-flyout-tab"
             >
               <span className="text-white text-[10px] font-medium tracking-wide flex items-center gap-2">
-                <FolderOpen className="h-3 w-3" style={{ transform: 'rotate(90deg)' }} />
                 Weekly Files
                 {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
               </span>
