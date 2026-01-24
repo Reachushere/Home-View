@@ -407,6 +407,7 @@ export default function Dashboard() {
 
   const [currentPagLevel, setCurrentPagLevel] = useState(1);
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [todoItems, setTodoItems] = useState<string[]>(Array(20).fill(""));
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   
@@ -4526,37 +4527,32 @@ export default function Dashboard() {
           <section className="rounded-xl shadow-md p-3 border border-white h-[160px]" style={{ background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)' }} data-testid="section-todo">
             <h4 className="text-xs font-semibold mb-2 flex items-center gap-2 text-white" style={{ fontFamily: "Segoe UI, sans-serif" }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
-              To Do
+              To Do {todoItems.filter(item => item.trim() !== "").length > 0 && <span>({todoItems.filter(item => item.trim() !== "").length})</span>}
             </h4>
             <div className="grid grid-cols-4 gap-4 h-[calc(100%-32px)]">
-              <div className="flex flex-col gap-1.5 overflow-hidden">
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-              </div>
-              <div className="flex flex-col gap-1.5 overflow-hidden">
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-              </div>
-              <div className="flex flex-col gap-1.5 overflow-hidden">
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-              </div>
-              <div className="flex flex-col gap-1.5 overflow-hidden">
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-                <div className="flex items-center gap-1.5"><input type="checkbox" className="checkbox-black" /><input type="text" className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" placeholder="Task..." /></div>
-              </div>
+              {[0, 1, 2, 3].map(col => (
+                <div key={col} className="flex flex-col gap-1.5 overflow-hidden">
+                  {[0, 1, 2, 3, 4].map(row => {
+                    const idx = col * 5 + row;
+                    return (
+                      <div key={idx} className="flex items-center gap-1.5">
+                        <input type="checkbox" className="checkbox-black" />
+                        <input 
+                          type="text" 
+                          className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" 
+                          placeholder="Task..." 
+                          value={todoItems[idx]} 
+                          onChange={(e) => {
+                            const newItems = [...todoItems];
+                            newItems[idx] = e.target.value;
+                            setTodoItems(newItems);
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
             </div>
           </section>
         </div>
