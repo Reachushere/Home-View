@@ -237,7 +237,7 @@ export default function Dashboard() {
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string }> }>(() => {
     const saved = localStorage.getItem('coursesData');
     const defaultCourses = [
-      { name: 'CPPA122 - Local Politics and Government', color: '#22c55e', professor: 'Caryl Arundel' },
+      { name: 'CPPA122 - Local Politics', color: '#22c55e', professor: 'Caryl Arundel' },
       { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'Alex McKay' },
       { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'Christina Moreau' },
       { name: '', color: '#6b7280', professor: '' },
