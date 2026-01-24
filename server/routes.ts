@@ -2077,8 +2077,17 @@ export async function registerRoutes(
     }
   });
 
-  // Import data for sync
+  // Import data for sync (with CORS for cross-origin sync)
+  app.options("/api/import", (_req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.sendStatus(200);
+  });
+  
   app.post("/api/import", async (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    
     try {
       const { tasks, files, semester, deletedFolders } = req.body;
       
