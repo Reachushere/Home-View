@@ -4649,7 +4649,6 @@ export default function Dashboard() {
               <div className="w-80 flex flex-col">
                 <div className="p-3 border-b border-[#3d3d3d] flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
                     <RouterLink href="/files">
                       <Button 
                         variant="ghost"
@@ -4660,6 +4659,7 @@ export default function Dashboard() {
                         <FolderOpen className="h-4 w-4 text-amber-400" />
                       </Button>
                     </RouterLink>
+                    <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
                   </div>
                   <span className="text-xs text-gray-400">{currentWeekFiles.length} files</span>
                 </div>
