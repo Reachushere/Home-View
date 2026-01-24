@@ -3205,9 +3205,31 @@ export default function Dashboard() {
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '1px solid rgba(255,255,255,0.5)'
       }}>
-        <div className="flex items-center px-4 py-2 gap-2 w-full">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-7 w-7" />
-          <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
+        <div className="flex items-center px-4 py-2 gap-2 w-full justify-between">
+          <div className="flex items-center gap-2">
+            <img src={unicalLogo} alt="Uni-Cal" className="rounded h-7 w-7" />
+            <span className="text-sm text-white font-medium" style={{ fontFamily: "Segoe UI, sans-serif" }}>{profileData.firstName}'s Schedule - {currentSemesterName}</span>
+          </div>
+          <div className="flex items-center gap-2" data-testid="digital-clock">
+            <span className="text-xs text-white font-medium">
+              {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
+            </span>
+            <div className="w-[1px] h-4 bg-white/50" />
+            <div className="flex items-baseline">
+              <span className="text-sm font-semibold text-white tabular-nums">
+                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+              </span>
+              <span className="text-xs text-white tabular-nums">
+                :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
+              </span>
+              <span className="text-xs font-bold text-white ml-0.5 uppercase">
+                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
+              </span>
+            </div>
+            {profileData.travelTimezone && (
+              <span className="text-[8px] text-orange-400 font-medium ml-1">Travel</span>
+            )}
+          </div>
         </div>
       </div>
 
