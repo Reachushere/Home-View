@@ -490,6 +490,43 @@ export async function registerRoutes(
         }
       }
       
+      // Handle prep calendar event changes
+      // If startDate was removed (had prep days, now has 0), delete prep events
+      if (existingTask?.startDate && !task.startDate) {
+        // Delete main prep event
+        if (existingTask.prepCalendarEventId) {
+          try {
+            await deleteCalendarEvent(existingTask.prepCalendarEventId);
+            await storage.updateTask(task.id, { prepCalendarEventId: null });
+          } catch (prepErr) {
+            console.error("Failed to delete prep calendar event:", prepErr);
+          }
+        }
+        // Delete second account prep event
+        if (existingTask.secondAccountPrepEventId) {
+          try {
+            await deleteEventFromSecondAccount(existingTask.secondAccountPrepEventId);
+            await storage.updateTask(task.id, { secondAccountPrepEventId: null });
+          } catch (secPrepErr) {
+            console.error("Failed to delete second account prep event:", secPrepErr);
+          }
+        }
+      }
+      // If startDate was added or changed, update/create prep events
+      else if (task.startDate && task.prepCalendarEventId) {
+        try {
+          await updatePrepCalendarEvent(task.prepCalendarEventId, {
+            title: task.title,
+            description: task.description,
+            startDate: task.startDate,
+            dueDate: task.dueDate,
+            courseName: task.courseName,
+          });
+        } catch (prepErr) {
+          console.error("Failed to update prep calendar event:", prepErr);
+        }
+      }
+      
       res.json(task);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -517,6 +554,15 @@ export async function registerRoutes(
         await deleteCalendarEvent(task.calendarEventId);
       } catch (calErr) {
         console.error("Auto-delete from Google Calendar failed:", calErr);
+      }
+    }
+    
+    // Delete prep calendar event if synced
+    if (task.prepCalendarEventId) {
+      try {
+        await deleteCalendarEvent(task.prepCalendarEventId);
+      } catch (prepErr) {
+        console.error("Auto-delete prep event from Google Calendar failed:", prepErr);
       }
     }
     
