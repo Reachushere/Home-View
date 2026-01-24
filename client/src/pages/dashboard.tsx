@@ -115,6 +115,7 @@ const FOLDER_TYPES = [
 const SPEAKERS = [
   { id: "browser_tts", name: "Bluetooth" },
   { id: "media_player.byhome", name: "Apartment" },
+  { id: "media_player.cat_wash", name: "Cat Wash" },
   { id: "media_player.cat_wr", name: "Cat Washroom Speakers" },
   { id: "media_player.echo_cat_left_am", name: "Cat Washroom Left" },
   { id: "media_player.echo_cat_right_am", name: "Cat Washroom Right" },
