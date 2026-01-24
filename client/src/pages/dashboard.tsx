@@ -2340,35 +2340,6 @@ export default function Dashboard() {
       )}
       {/* Left Column - Header Bar + Sidebar */}
       <div className="flex flex-col" style={{ width: 350, marginLeft: '11px', marginTop: '63px' }}>
-        {/* New Left Header Bar - Above Sidebar */}
-        <div className="flex items-center gap-2 px-3 py-2 rounded-t-xl border-[0.25px] border-b-0 border-white/70" style={{ 
-          background: 'linear-gradient(135deg, #0a1421 0%, #0f1f33 25%, #162a44 50%, #1e3a5f 75%, #2d4a6f 100%)',
-          boxShadow: '0 -2px 10px rgba(0,0,0,0.2)'
-        }}>
-          <div className="flex flex-col flex-1">
-            <div className="flex items-center gap-2" data-testid="digital-clock">
-              <span className="text-xs text-white font-medium">
-                {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-              </span>
-              <div className="w-[1px] h-4 bg-white/50" />
-              <div className="flex items-baseline">
-                <span className="text-sm font-semibold text-white tabular-nums">
-                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
-                </span>
-                <span className="text-xs text-white tabular-nums">
-                  :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
-                </span>
-                <span className="text-xs font-bold text-white ml-0.5 uppercase">
-                  {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-                </span>
-              </div>
-              {profileData.travelTimezone && (
-                <span className="text-[8px] text-orange-400 font-medium ml-1">Travel</span>
-              )}
-            </div>
-          </div>
-        </div>
-        
         {/* Sidebar Container */}
         <div className="relative flex-1 flex flex-col mb-3">
         
