@@ -1531,14 +1531,13 @@ export default function Dashboard() {
   
   // Update ref for jiggle effect
   todayTaskCountRef.current = todayTasks.length;
-  // Be Prepared shows only prep tasks (tasks with startDate that are in their prep period, not yet due)
-  // Each task appears only once, showing the unique upcoming tasks that need preparation
-  const upcomingTasks = sortByAttachments(allTasks.filter(t => {
+  // Be Prepared shows only prep tasks for the selected week that are not yet due
+  // Each task appears only once
+  const upcomingTasks = sortByAttachments(displayTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
     const dueDate = new Date(t.dueDate);
     // Must be a future task (not due today or in the past)
     if (dueDate <= today) return false;
-    // Show tasks that are upcoming and need prep
     return true;
   }));
   const completedTasks = displayTasks.filter(t => t.isCompleted);
