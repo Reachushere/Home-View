@@ -57,6 +57,7 @@ import {
   Timer,
   Pause,
   SkipForward,
+  SkipBack,
   RotateCcw,
   Menu,
   User,
@@ -1032,6 +1033,89 @@ export default function Dashboard() {
     }
   };
 
+  // Skip forward/back functions for browser TTS
+  const handleSkipForward = () => {
+    if (!previewText || previewSpeaker !== "browser_tts") return;
+    
+    const words = previewText.split(/\s+/).filter(w => w.length > 0);
+    const skipAmount = 20; // Skip 20 words forward
+    const newIndex = Math.min(currentWordIndex + skipAmount, words.length - 1);
+    
+    // Cancel current speech and restart from new position
+    window.speechSynthesis.cancel();
+    setCurrentWordIndex(newIndex);
+    
+    if (isPlaying) {
+      // Resume from new position
+      const remainingText = words.slice(newIndex).join(' ');
+      const utterance = new SpeechSynthesisUtterance(remainingText);
+      utterance.rate = browserTtsRate;
+      utterance.pitch = 1;
+      
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
+        || voices.find(v => v.lang.startsWith('en'));
+      if (preferredVoice) utterance.voice = preferredVoice;
+      
+      let localWordIdx = 0;
+      utterance.onboundary = (event) => {
+        if (event.name === 'word') {
+          setCurrentWordIndex(newIndex + localWordIdx);
+          localWordIdx++;
+        }
+      };
+      
+      utterance.onend = () => {
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+      };
+      
+      speechUtteranceRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleSkipBack = () => {
+    if (!previewText || previewSpeaker !== "browser_tts") return;
+    
+    const words = previewText.split(/\s+/).filter(w => w.length > 0);
+    const skipAmount = 20; // Skip 20 words back
+    const newIndex = Math.max(currentWordIndex - skipAmount, 0);
+    
+    // Cancel current speech and restart from new position
+    window.speechSynthesis.cancel();
+    setCurrentWordIndex(newIndex);
+    
+    if (isPlaying) {
+      // Resume from new position
+      const remainingText = words.slice(newIndex).join(' ');
+      const utterance = new SpeechSynthesisUtterance(remainingText);
+      utterance.rate = browserTtsRate;
+      utterance.pitch = 1;
+      
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural')) 
+        || voices.find(v => v.lang.startsWith('en'));
+      if (preferredVoice) utterance.voice = preferredVoice;
+      
+      let localWordIdx = 0;
+      utterance.onboundary = (event) => {
+        if (event.name === 'word') {
+          setCurrentWordIndex(newIndex + localWordIdx);
+          localWordIdx++;
+        }
+      };
+      
+      utterance.onend = () => {
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+      };
+      
+      speechUtteranceRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   const handleVolumeChange = async (action: "up" | "down") => {
     try {
       // Adjust browser TTS rate if using browser
@@ -1876,6 +1960,17 @@ export default function Dashboard() {
                 size="icon"
                 variant="ghost"
                 className="h-8 w-8 text-white hover:bg-gray-700"
+                onClick={handleSkipBack}
+                disabled={previewSpeaker !== "browser_tts"}
+                data-testid="button-preview-rewind"
+                title="Rewind 20 words"
+              >
+                <SkipBack className="h-4 w-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-white hover:bg-gray-700"
                 onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
                 data-testid="button-preview-play"
               >
@@ -1894,17 +1989,34 @@ export default function Dashboard() {
                 size="icon"
                 variant="ghost"
                 className="h-8 w-8 text-white hover:bg-gray-700"
+                onClick={handleSkipForward}
+                disabled={previewSpeaker !== "browser_tts"}
+                data-testid="button-preview-forward"
+                title="Skip forward 20 words"
+              >
+                <SkipForward className="h-4 w-4" />
+              </Button>
+              <div className="w-px h-6 bg-gray-600 mx-1" />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-white hover:bg-gray-700"
                 onClick={() => handleVolumeChange("down")}
-                data-testid="button-preview-volume-down"
+                data-testid="button-preview-speed-down"
+                title="Decrease speed"
               >
                 <MinusCircle className="h-4 w-4" />
               </Button>
+              <span className="text-xs text-white/70 min-w-[3rem] text-center">
+                {Math.round(browserTtsRate * 100)}%
+              </span>
               <Button
                 size="icon"
                 variant="ghost"
                 className="h-8 w-8 text-white hover:bg-gray-700"
                 onClick={() => handleVolumeChange("up")}
-                data-testid="button-preview-volume-up"
+                data-testid="button-preview-speed-up"
+                title="Increase speed"
               >
                 <PlusCircle className="h-4 w-4" />
               </Button>
@@ -2026,35 +2138,53 @@ export default function Dashboard() {
                   <span className="ml-2 text-muted-foreground">Extracting text...</span>
                 </div>
               ) : previewText ? (
-                <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                <div className="text-sm leading-relaxed">
                   {(() => {
-                    const allWords = previewText.split(/\s+/).filter(w => w.length > 0);
-                    const WINDOW_SIZE = 50;
-                    const windowStart = Math.max(0, currentWordIndex - WINDOW_SIZE);
-                    const windowEnd = Math.min(allWords.length, currentWordIndex + WINDOW_SIZE);
+                    // Split by paragraphs first to preserve structure
+                    const paragraphs = previewText.split(/\n\n+/);
                     
-                    const beforeWindow = allWords.slice(0, windowStart).join(' ');
-                    const afterWindow = allWords.slice(windowEnd).join(' ');
-                    const windowWords = allWords.slice(windowStart, windowEnd);
+                    // Track global word index for highlighting
+                    let globalWordIndex = 0;
                     
-                    return (
-                      <>
-                        {beforeWindow && <span>{beforeWindow} </span>}
-                        {windowWords.map((word, i) => {
-                          const globalIdx = windowStart + i;
-                          const isCurrentWord = isPlaying && globalIdx === currentWordIndex;
-                          return (
-                            <span
-                              key={globalIdx}
-                              className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
-                            >
-                              {word}{' '}
-                            </span>
-                          );
-                        })}
-                        {afterWindow && <span>{afterWindow}</span>}
-                      </>
-                    );
+                    return paragraphs.map((paragraph, pIdx) => {
+                      // Split paragraph into lines (for bullets, headers)
+                      const lines = paragraph.split(/\n/);
+                      
+                      return (
+                        <div key={pIdx} className="mb-3">
+                          {lines.map((line, lIdx) => {
+                            const words = line.split(/\s+/).filter(w => w.length > 0);
+                            const lineStartIdx = globalWordIndex;
+                            globalWordIndex += words.length;
+                            
+                            // Detect if line starts with bullet
+                            const isBullet = /^[•\-\*►▶→]/.test(line.trim());
+                            // Detect if line looks like a header (short, no ending punctuation)
+                            const isHeader = words.length <= 8 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0;
+                            
+                            return (
+                              <div 
+                                key={`${pIdx}-${lIdx}`} 
+                                className={`${isBullet ? 'pl-4' : ''} ${isHeader && !isBullet ? 'font-semibold text-base mt-2' : ''}`}
+                              >
+                                {words.map((word, wIdx) => {
+                                  const wordGlobalIdx = lineStartIdx + wIdx;
+                                  const isCurrentWord = isPlaying && wordGlobalIdx === currentWordIndex;
+                                  return (
+                                    <span
+                                      key={wordGlobalIdx}
+                                      className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
+                                    >
+                                      {word}{' '}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    });
                   })()}
                 </div>
               ) : (

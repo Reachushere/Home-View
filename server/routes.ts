@@ -777,14 +777,22 @@ export async function registerRoutes(
         textContent = fileBuffer.toString('utf-8');
       }
       
-      // Clean up the text but preserve paragraph structure
+      // Clean up the text while preserving formatting structure
       textContent = textContent
+        // Convert fancy quotes to regular quotes
         .replace(/[\u2018\u2019]/g, "'")
         .replace(/[\u201C\u201D]/g, '"')
+        // Convert dashes
         .replace(/[\u2013\u2014]/g, "-")
-        .replace(/[^\x20-\x7E\n]/g, ' ')
+        // Preserve bullet characters
+        .replace(/[\u2022\u25CF\u25E6\u25AA\u25AB]/g, '•')
+        // Keep alphanumeric, punctuation, newlines, and common symbols
+        .replace(/[^\x20-\x7E\n•→►▶]/g, ' ')
+        // Normalize multiple spaces (but not newlines)
         .replace(/[ \t]+/g, ' ')
-        .replace(/\n\s*\n/g, '\n\n')
+        // Preserve single line breaks (likely formatting)
+        // but collapse 3+ into 2
+        .replace(/\n{3,}/g, '\n\n')
         .trim();
 
       res.json({ text: textContent, fileName: file.displayName || file.originalName });
