@@ -2531,13 +2531,13 @@ export default function Dashboard() {
         </div>
         
         {/* Sidebar with blur/fade effect */}
-        <aside className="flex-1 text-white rounded-md shadow-lg overflow-hidden border-[0.1px] border-white" style={{ width: 350, background: 'rgb(1, 160, 175)', marginTop: '2px' }}>
-        <div className={`h-full pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
+        <aside className="flex-1 text-white rounded-md shadow-lg overflow-hidden border-[0.1px] border-white flex flex-col" style={{ width: 350, background: 'rgb(1, 160, 175)', marginTop: '2px', maxHeight: 'calc(100vh - 130px)' }}>
+        <div className={`flex-1 pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '45px' }} />
 
           {/* Scrollable sidebar content */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1" style={{ minHeight: 0 }}>
         {/* Course Legend */}
         <div className="pl-0.5 pr-1 space-y-3 mb-4" style={{ marginTop: '90px', marginLeft: '15px' }}>
           <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
