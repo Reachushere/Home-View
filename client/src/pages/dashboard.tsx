@@ -935,8 +935,7 @@ export default function Dashboard() {
   // Media control functions for file preview
   // Browser TTS ref
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const [browserTtsRate, setBrowserTtsRate] = useState(0.9); // 90% speed like Alexa
-  const [syncWithEcho, setSyncWithEcho] = useState(true); // Sync tablet highlighting with Echo playback
+  const [browserTtsRate, setBrowserTtsRate] = useState(0.9); // 90% speed
   
   const handlePlayFile = async (fileUrl: string, fileName: string) => {
     try {
@@ -990,44 +989,7 @@ export default function Dashboard() {
         return;
       }
       
-      // SYNC MODE: Run silent browser TTS for word tracking + Echo for audio
-      if (syncWithEcho && previewText) {
-        // Cancel any existing speech
-        window.speechSynthesis.cancel();
-        
-        // Create silent utterance for word tracking
-        const utterance = new SpeechSynthesisUtterance(previewText);
-        utterance.rate = browserTtsRate;
-        utterance.volume = 0; // Silent - just for tracking
-        utterance.pitch = 1;
-        
-        const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
-        if (preferredVoice) utterance.voice = preferredVoice;
-        
-        let wordIndex = 0;
-        utterance.onboundary = (event) => {
-          if (event.name === 'word') {
-            setCurrentWordIndex(wordIndex);
-            wordIndex++;
-          }
-        };
-        
-        utterance.onend = () => {
-          setIsPlaying(false);
-          isPlayingRef.current = false;
-          setCurrentWordIndex(0);
-        };
-        
-        speechUtteranceRef.current = utterance;
-        
-        // Start both: silent browser TTS for tracking + Echo for audio
-        window.speechSynthesis.speak(utterance);
-        setIsPlaying(true);
-        isPlayingRef.current = true;
-      }
-      
-      // Use Home Assistant for Echo speaker audio
+      // Use Home Assistant for Echo speaker audio (no word-level sync available)
       const response = await fetch("/api/media/play", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1036,11 +998,8 @@ export default function Dashboard() {
       if (response.ok) {
         const speakerName = SPEAKERS.find(s => s.id === previewSpeaker)?.name || previewSpeaker;
         toast({ title: `Playing on ${speakerName}: ${fileName}` });
-        // Only use estimated highlighting if sync mode is OFF
-        // (sync mode uses browser TTS onboundary for precise tracking)
-        if (!syncWithEcho) {
-          startHighlighting();
-        }
+        // Use estimated highlighting for Echo speakers
+        startHighlighting();
       } else {
         toast({ title: "Failed to play file", variant: "destructive" });
       }
@@ -1059,14 +1018,6 @@ export default function Dashboard() {
         isPlayingRef.current = false;
         setCurrentWordIndex(0);
         return;
-      }
-      
-      // Also stop silent browser TTS if in sync mode
-      if (syncWithEcho) {
-        window.speechSynthesis.cancel();
-        setIsPlaying(false);
-        isPlayingRef.current = false;
-        setCurrentWordIndex(0);
       }
       
       await fetch("/api/media/stop", {
@@ -1895,44 +1846,28 @@ export default function Dashboard() {
               </SelectContent>
             </Select>
             
-            {/* Sync toggle and speed control - shows when Echo speaker is selected */}
-            {previewSpeaker !== "browser_tts" && (
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
-                  <Checkbox
-                    id="sync-highlight"
-                    checked={syncWithEcho}
-                    onCheckedChange={(checked) => setSyncWithEcho(!!checked)}
-                    className="h-3.5 w-3.5 border-gray-600 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                    data-testid="checkbox-sync-highlight"
-                  />
-                  <Label htmlFor="sync-highlight" className="text-white text-[10px] cursor-pointer whitespace-nowrap">
-                    Sync
-                  </Label>
-                </div>
-                {syncWithEcho && (
-                  <div className="flex items-center gap-1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-5 w-5 text-white hover:bg-gray-700"
-                      onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
-                      title="Slow down sync"
-                    >
-                      <span className="text-[10px]">-</span>
-                    </Button>
-                    <span className="text-[9px] text-gray-400 w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-5 w-5 text-white hover:bg-gray-700"
-                      onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
-                      title="Speed up sync"
-                    >
-                      <span className="text-[10px]">+</span>
-                    </Button>
-                  </div>
-                )}
+            {/* Speed control - shows for browser TTS */}
+            {previewSpeaker === "browser_tts" && (
+              <div className="flex items-center gap-1">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
+                  title="Slow down"
+                >
+                  <span className="text-[10px]">-</span>
+                </Button>
+                <span className="text-[9px] text-gray-400 w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
+                  title="Speed up"
+                >
+                  <span className="text-[10px]">+</span>
+                </Button>
               </div>
             )}
             
