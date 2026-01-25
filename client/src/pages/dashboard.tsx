@@ -2076,8 +2076,8 @@ export default function Dashboard() {
       const endMinutes = endHour * 60 + endMin;
       const durationMinutes = endMinutes - startMinutes;
       
-      // Top position: hour * 44px + minute offset
-      const topPx = (startHour * 44) + ((startMin / 60) * 44);
+      // Top position: (hour - 7) * 44px + minute offset (timeSlots start at 7 AM)
+      const topPx = ((startHour - 7) * 44) + ((startMin / 60) * 44);
       const heightPx = (durationMinutes / 60) * 44;
       
       return { task: t, dayIdx, topPx, heightPx };
