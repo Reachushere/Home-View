@@ -2902,7 +2902,7 @@ export default function Dashboard() {
         </div>
 
         {/* All items with equal gaps - spread between arrow and timer */}
-        <div className="flex items-center flex-1 h-full justify-start gap-[7px] min-w-0 overflow-hidden pl-[15px] pr-4">
+        <div className="flex items-center flex-1 h-full justify-start gap-[7px] min-w-0 overflow-hidden pl-[11px] pr-4">
 
           {/* Hamburger Menu */}
           <DropdownMenu>
