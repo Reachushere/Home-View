@@ -1731,14 +1731,34 @@ export default function Dashboard() {
   
   // Generate weekdays for the weekly view
   // School week runs Saturday to Friday, but we display Sunday-Saturday visually
-  // The Saturday column should show the SAME Saturday that started this school week
-  // When today IS Saturday, the week shows Saturday through Friday (new school week)
-  // When today is Sunday-Friday, we show the same dates throughout the week
+  // Logic:
+  // - On Sunday through Friday: Saturday column shows the upcoming Saturday (end of this school week)
+  // - On Saturday: Sunday-Friday columns show NEXT week's dates
+  const currentDate = new Date();
+  const currentDayOfWeek = currentDate.getDay(); // 0=Sun, 6=Sat
+  const isTodaySaturday = currentDayOfWeek === 6;
+  
+  // Get the raw days from the school week (Saturday to Friday)
   const rawWeekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate });
-  // Reorder so display is: Sun, Mon, Tue, Wed, Thu, Fri, Sat
-  // rawWeekDays[0] = Saturday (start of school week), rawWeekDays[1-6] = Sun-Fri
-  // Move Saturday to end: [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
-  const weekDays = rawWeekDays.length === 7 ? [...rawWeekDays.slice(1), rawWeekDays[0]] : rawWeekDays;
+  
+  let weekDays: Date[];
+  if (rawWeekDays.length === 7) {
+    // rawWeekDays[0] = Saturday (start of school week), rawWeekDays[1-6] = Sun-Fri
+    if (isTodaySaturday) {
+      // On Saturday: Sun-Fri should be NEXT week, Saturday stays the same
+      // So we add 7 days to Sun-Fri but keep Saturday as is
+      const saturdayDate = rawWeekDays[0]; // Current Saturday
+      const nextWeekSunToFri = rawWeekDays.slice(1).map(d => addDays(d, 7));
+      weekDays = [...nextWeekSunToFri, saturdayDate];
+    } else {
+      // On Sunday-Friday: Show current week with Saturday at end
+      // Saturday should be the UPCOMING Saturday (end of school week = Friday + 1 day)
+      const upcomingSaturday = addDays(rawWeekDays[6], 1); // Friday + 1 = Saturday
+      weekDays = [...rawWeekDays.slice(1), upcomingSaturday];
+    }
+  } else {
+    weekDays = rawWeekDays;
+  }
   
   // Time slots for the day view (7am-11pm)
   const timeSlots = Array.from({ length: 17 }, (_, i) => i + 7); // 7am-11pm
@@ -4322,10 +4342,16 @@ export default function Dashboard() {
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
                           onDrop={(e) => handleDrop(e, day, hour)}
-                          onDoubleClick={() => {
+                          onDoubleClick={(e) => {
+                            // Detect if click was in top or bottom half of cell
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const clickY = e.clientY - rect.top;
+                            const isBottomHalf = clickY > rect.height / 2;
+                            const minutes = isBottomHalf ? 30 : 0;
+                            
                             // Create new task with pre-filled date and time
                             const dueDate = new Date(day);
-                            dueDate.setHours(hour, 0, 0, 0);
+                            dueDate.setHours(hour, minutes, 0, 0);
                             setEditingTask({
                               id: 0, // New task
                               title: "",
@@ -4334,8 +4360,8 @@ export default function Dashboard() {
                               courseName: "",
                               startDate: null,
                               dueDate: dueDate.toISOString(),
-                              eventStartTime: `${hour.toString().padStart(2, '0')}:00`,
-                              eventEndTime: `${(hour + 1).toString().padStart(2, '0')}:00`,
+                              eventStartTime: `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
+                              eventEndTime: `${(hour + 1).toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
                               reminder1: 30,
                               reminder2: 120,
                               reminder3: null,
