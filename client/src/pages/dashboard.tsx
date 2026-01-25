@@ -2554,7 +2554,7 @@ export default function Dashboard() {
             {/* Center content - Today/Month above dates */}
             <div className="flex flex-col items-center gap-0.5">
               {/* Today/Month buttons */}
-              <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-1 py-0.5">
+              <div className="flex items-center gap-0.5">
                 <Button 
                   variant="ghost"
                   className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
