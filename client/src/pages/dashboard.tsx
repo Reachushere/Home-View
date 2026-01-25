@@ -5185,17 +5185,28 @@ export default function Dashboard() {
               // Path: start at checkbox, go left, then curve up to calendar
               const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} Q ${exitX} ${midY}, ${conn.toX} ${conn.toY}`;
               return (
-                <path
-                  key={conn.taskId}
-                  d={path}
-                  stroke={conn.color}
-                  strokeWidth="2"
-                  fill="none"
-                  strokeDasharray="5,3"
-                  markerEnd={`url(#${markerId})`}
-                  opacity="0.7"
-                  className={conn.isToday ? "animate-pulse" : ""}
-                />
+                <g key={conn.taskId}>
+                  {/* Glow/outline for visibility on dark backgrounds */}
+                  <path
+                    d={path}
+                    stroke="white"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeDasharray="5,3"
+                    opacity="0.3"
+                  />
+                  {/* Main colored line */}
+                  <path
+                    d={path}
+                    stroke={conn.color}
+                    strokeWidth="2"
+                    fill="none"
+                    strokeDasharray="5,3"
+                    markerEnd={`url(#${markerId})`}
+                    opacity="1"
+                    className={conn.isToday ? "animate-pulse" : ""}
+                  />
+                </g>
               );
             })}
           </svg>
