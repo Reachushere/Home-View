@@ -4554,7 +4554,8 @@ export default function Dashboard() {
                             // Check if this is the final hour for this task
                             const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
                             const isFinalHour = endHour === hour;
-                            const heightPx = isFinalHour ? ((endMin / 60) * 44) : 44;
+                            // Height fills full slot except final hour which is partial
+                            const heightPx = isFinalHour ? Math.max(2, (endMin / 60) * 44 - 2) : 42;
                             
                             return (
                               <div
@@ -4568,12 +4569,14 @@ export default function Dashboard() {
                                 } ${isFinalHour ? "rounded-b" : ""} ${
                                   isDueToday ? "animate-shimmer" : ""
                                 } ${
-                                  colors 
-                                    ? `${colors.bg} border-l border-r ${isFinalHour ? "border-b" : ""} ${colors.border}` 
-                                    : "bg-gray-100 border-l border-r border-b-0 border-gray-400" + (isFinalHour ? " border-b" : "")
+                                  task.isCompleted
+                                    ? `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-300`
+                                    : colors 
+                                      ? `${colors.bg} border-l border-r ${isFinalHour ? "border-b" : ""} ${colors.border}` 
+                                      : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
                                 }`}
                                 style={{ 
-                                  top: 0,
+                                  top: '2px',
                                   left: '2px',
                                   width: 'calc(100% - 4px)',
                                   height: `${heightPx}px`,
@@ -4632,7 +4635,7 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute ${spansMultipleHours ? "rounded-t" : "rounded"} pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                                className={`absolute ${spansMultipleHours ? "rounded-t" : "rounded"} pt-1 px-0.5 pb-2 hover:opacity-90 ${spansMultipleHours ? "" : "shadow-sm"} cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
