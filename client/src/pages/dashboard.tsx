@@ -1978,11 +1978,10 @@ export default function Dashboard() {
     return isWithinInterval(dayStart, { start: weekStart, end: weekEnd });
   };
   
-  // Get tasks for a specific hour on a day (exclude tasks with planning periods - they show in ALL DAY)
+  // Get tasks for a specific hour on a day (tasks with prep days show in time slot on due date)
   const getTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
-      if (t.startDate) return false; // Tasks with planning periods show in ALL DAY row
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
@@ -1999,7 +1998,6 @@ export default function Dashboard() {
   const getContinuingTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
-      if (t.startDate) return false; // Planning period tasks show in ALL DAY
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
