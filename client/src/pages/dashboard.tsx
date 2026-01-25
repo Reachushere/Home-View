@@ -164,6 +164,8 @@ export default function Dashboard() {
   const [calendarView, setCalendarView] = useState<"week" | "month">("week");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newTaskType, setNewTaskType] = useState<string>("module");
+  const [initialStartTime, setInitialStartTime] = useState<string>("");
+  const [initialEndTime, setInitialEndTime] = useState<string>("");
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
@@ -3770,17 +3772,29 @@ export default function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+            setIsAddDialogOpen(open);
+            if (!open) {
+              setInitialStartTime("");
+              setInitialEndTime("");
+            }
+          }}>
             <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Task</DialogTitle>
               </DialogHeader>
               <TaskForm 
-                key="add-task-form"
+                key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}`}
                 weekNumber={selectedWeek}
                 initialDate={selectedDate}
                 initialType={newTaskType}
-                onSuccess={() => setIsAddDialogOpen(false)} 
+                initialStartTime={initialStartTime}
+                initialEndTime={initialEndTime}
+                onSuccess={() => {
+                  setIsAddDialogOpen(false);
+                  setInitialStartTime("");
+                  setInitialEndTime("");
+                }} 
               />
             </DialogContent>
           </Dialog>
@@ -4457,40 +4471,13 @@ export default function Dashboard() {
                             // Create new task with pre-filled date and time
                             const dueDate = new Date(day);
                             dueDate.setHours(hour, minutes, 0, 0);
-                            setEditingTask({
-                              id: 0, // New task
-                              title: "",
-                              description: "",
-                              type: "other",
-                              courseName: "",
-                              startDate: null,
-                              dueDate: dueDate,
-                              eventStartTime: `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
-                              eventEndTime: `${(hour + 1).toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
-                              reminder1: 30,
-                              reminder2: 120,
-                              reminder3: null,
-                              reminder4: null,
-                              weekNumber: selectedWeek,
-                              isCompleted: false,
-                              completedAt: null,
-                              isMissed: false,
-                              priority: "medium",
-                              notes: null,
-                              referenceLink: null,
-                              attachments: [],
-                              calendarEventId: null,
-                              calendarProvider: null,
-                              prepCalendarEventId: null,
-                              secondaryCalendarEventId: null,
-                              secondAccountCalendarEventId: null,
-                              secondAccountPrepEventId: null,
-                              repeatType: "none",
-                              repeatInterval: null,
-                              repeatIntervalUnit: null,
-                              repeatEndDate: null,
-                              parentTaskId: null
-                            } as Task);
+                            
+                            // Set the pre-filled data and open Add dialog
+                            setSelectedDate(dueDate);
+                            setNewTaskType("other");
+                            setInitialStartTime(`${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+                            setInitialEndTime(`${(hour + 1).toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+                            setIsAddDialogOpen(true);
                           }}
                         >
                           {/* Half-hour dotted line */}
@@ -6148,12 +6135,16 @@ function TaskForm({
   weekNumber,
   initialDate,
   initialType,
+  initialStartTime,
+  initialEndTime,
   onSuccess 
 }: { 
   task?: Task; 
   weekNumber: number;
   initialDate?: Date | null;
   initialType?: string;
+  initialStartTime?: string;
+  initialEndTime?: string;
   onSuccess: () => void;
 }) {
   const getDefaultDate = () => {
@@ -6187,8 +6178,8 @@ function TaskForm({
     courseName: task?.courseName || "",
     prepDays: getDefaultPrepDays(),
     dueDate: getDefaultDate(),
-    eventStartTime: task?.eventStartTime || "",
-    eventEndTime: task?.eventEndTime || "",
+    eventStartTime: task?.eventStartTime || initialStartTime || "",
+    eventEndTime: task?.eventEndTime || initialEndTime || "",
     reminder1: task?.reminder1 ?? DEFAULT_REMINDER_1,
     reminder2: task?.reminder2 ?? DEFAULT_REMINDER_2,
     reminder3: task?.reminder3 ?? 0,
