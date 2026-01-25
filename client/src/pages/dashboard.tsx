@@ -4332,6 +4332,22 @@ export default function Dashboard() {
                             const tomorrow = addDays(today, 1);
                             const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                             const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                            
+                            // Calculate height based on duration for events with start/end times
+                            let taskHeight = 40; // Default height for single hour
+                            let topOffset = 2; // Default top offset
+                            if (task.eventStartTime && task.eventEndTime) {
+                              const [startHour, startMin] = task.eventStartTime.split(':').map(Number);
+                              const [endHour, endMin] = task.eventEndTime.split(':').map(Number);
+                              const startMinutes = startHour * 60 + startMin;
+                              const endMinutes = endHour * 60 + endMin;
+                              const durationMinutes = endMinutes - startMinutes;
+                              // Each hour slot is 44px, so per minute is 44/60 = 0.733px
+                              taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
+                              // Offset for minutes past the hour
+                              topOffset = (startMin / 60) * 44 + 2;
+                            }
+                            
                             return (
                               <div
                                 key={task.id}
@@ -4364,14 +4380,14 @@ export default function Dashboard() {
                                       : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
-                                  top: '2px',
+                                  top: `${topOffset}px`,
                                   left: `calc(${taskIdx * columnWidth}% + 2px)`,
                                   width: `calc(${columnWidth}% - 4px)`,
-                                  height: '40px',
-                                  maxHeight: '40px',
+                                  height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 20 : (draggedTask?.id === task.id ? 10 : 1)
                                 }}
                                 data-testid={`time-task-${task.id}`}
+                                data-cal-task-id={task.id}
                               >
                                 <div className="flex items-center gap-0.5">
                                   <Checkbox
