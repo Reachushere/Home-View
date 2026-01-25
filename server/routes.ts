@@ -680,6 +680,26 @@ export async function registerRoutes(
     }
   });
 
+  // PATCH /api/semester-settings/professor-emails - Update professor emails
+  app.patch("/api/semester-settings/professor-emails", async (req, res) => {
+    try {
+      const { course1ProfessorEmail, course2ProfessorEmail, course3ProfessorEmail } = req.body;
+      const activeSemester = await storage.getActiveSemesterSettings();
+      if (!activeSemester) {
+        return res.status(404).json({ error: "No active semester settings found" });
+      }
+      const updated = await storage.updateSemesterSettings(activeSemester.id, { 
+        course1ProfessorEmail, 
+        course2ProfessorEmail, 
+        course3ProfessorEmail 
+      });
+      res.json(updated);
+    } catch (err) {
+      console.error("Error updating professor emails:", err);
+      res.status(500).json({ error: "Failed to update professor emails" });
+    }
+  });
+
   // ============= FILE MANAGEMENT ROUTES =============
 
   // GET /api/files - List all uploaded files

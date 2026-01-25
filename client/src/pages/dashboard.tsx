@@ -4423,7 +4423,7 @@ export default function Dashboard() {
                               type: "other",
                               courseName: "",
                               startDate: null,
-                              dueDate: dueDate.toISOString(),
+                              dueDate: dueDate,
                               eventStartTime: `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
                               eventEndTime: `${(hour + 1).toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`,
                               reminder1: 30,
@@ -5931,6 +5931,67 @@ function SchoolForm({
                   <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course3Professor}</span>
                 )
               )}
+            </div>
+          </div>
+          
+          {/* Professor Email Inputs */}
+          <div className="mt-3 pt-3 border-t space-y-2">
+            <Label className="text-xs font-medium text-muted-foreground">Professor Emails (click name to send email)</Label>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-green-500 shrink-0" />
+                <Input
+                  type="email"
+                  placeholder="Course 1 professor email"
+                  defaultValue={semesterSettings.course1ProfessorEmail || ""}
+                  onChange={(e) => {
+                    const email = e.target.value;
+                    apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
+                      course1ProfessorEmail: email || null,
+                      course2ProfessorEmail: semesterSettings.course2ProfessorEmail,
+                      course3ProfessorEmail: semesterSettings.course3ProfessorEmail
+                    }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
+                  }}
+                  className="h-7 text-xs"
+                  data-testid="input-course1-email-edit"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-pink-500 shrink-0" />
+                <Input
+                  type="email"
+                  placeholder="Course 2 professor email"
+                  defaultValue={semesterSettings.course2ProfessorEmail || ""}
+                  onChange={(e) => {
+                    const email = e.target.value;
+                    apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
+                      course1ProfessorEmail: semesterSettings.course1ProfessorEmail,
+                      course2ProfessorEmail: email || null,
+                      course3ProfessorEmail: semesterSettings.course3ProfessorEmail
+                    }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
+                  }}
+                  className="h-7 text-xs"
+                  data-testid="input-course2-email-edit"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-indigo-500 shrink-0" />
+                <Input
+                  type="email"
+                  placeholder="Course 3 professor email"
+                  defaultValue={semesterSettings.course3ProfessorEmail || ""}
+                  onChange={(e) => {
+                    const email = e.target.value;
+                    apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
+                      course1ProfessorEmail: semesterSettings.course1ProfessorEmail,
+                      course2ProfessorEmail: semesterSettings.course2ProfessorEmail,
+                      course3ProfessorEmail: email || null
+                    }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
+                  }}
+                  className="h-7 text-xs"
+                  data-testid="input-course3-email-edit"
+                />
+              </div>
             </div>
           </div>
           <p className="text-xs text-muted-foreground">Course details are set when starting a new semester.</p>
