@@ -206,14 +206,14 @@
   animation: slow-blink 60s ease-in-out infinite;
 }
 
-/* Light pulse for today column - subtle brightness pulse */
+/* Light pulse for today column - prominent brightness pulse */
 @keyframes today-pulse {
-  0%, 100% { filter: brightness(1.15); }
-  50% { filter: brightness(0.95); }
+  0%, 100% { filter: brightness(1.4); }
+  50% { filter: brightness(0.8); }
 }
 
 .animate-today-column {
-  animation: today-pulse 2s ease-in-out infinite;
+  animation: today-pulse 1.5s ease-in-out infinite;
 }
 
 /* Silver shimmer header for task boxes */
