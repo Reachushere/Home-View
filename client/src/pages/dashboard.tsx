@@ -3895,7 +3895,7 @@ export default function Dashboard() {
           <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
-              DUE TODAY ({dueTodayTasks.length})
+              TODAY ({dueTodayTasks.length})
             </h4>
             <div className="flex-1 p-3">
               {isLoading ? (
@@ -3912,7 +3912,7 @@ export default function Dashboard() {
           <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-tomorrow">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
-              DUE TOMORROW ({dueTomorrowTasks.length})
+              TOMORROW ({dueTomorrowTasks.length})
             </h4>
             <div className="flex-1 p-3">
               {isLoading ? (
@@ -3929,7 +3929,7 @@ export default function Dashboard() {
           <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-this-week">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
-              DUE THIS WEEK ({dueThisWeekTasks.length})
+              THIS WEEK ({dueThisWeekTasks.length})
             </h4>
             <div className="flex-1 p-3">
               {isLoading ? (
