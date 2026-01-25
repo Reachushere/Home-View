@@ -279,7 +279,6 @@ export default function Dashboard() {
   });
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
-    const saved = localStorage.getItem('coursesData');
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics', color: '#22c55e', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'Alex McKay', professorEmail: 'bryn.kai-hendricks@outlook.com' },
@@ -292,17 +291,19 @@ export default function Dashboard() {
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
     ];
+    // Always use defaults for professor emails to ensure they stay current
+    const saved = localStorage.getItem('coursesData');
     if (saved) {
       const parsed = JSON.parse(saved);
-      // If saved data has no courses with names, use defaults instead
       const hasNamedCourses = parsed.courses?.some((c: { name: string }) => c.name.trim());
       if (hasNamedCourses) {
-        // Ensure professor and professorEmail fields exist for each course
+        // Keep course names/colors from saved, but always use default professor emails
         const coursesWithProfessor = parsed.courses.map((c: { name: string; color: string; professor?: string; professorEmail?: string }, i: number) => ({
           ...c,
           professor: c.professor ?? defaultCourses[i]?.professor ?? '',
-          professorEmail: c.professorEmail ?? defaultCourses[i]?.professorEmail ?? ''
+          professorEmail: defaultCourses[i]?.professorEmail ?? ''
         }));
+        localStorage.setItem('coursesData', JSON.stringify({ courses: coursesWithProfessor }));
         return { courses: coursesWithProfessor };
       }
       return { courses: defaultCourses };
