@@ -282,7 +282,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('coursesData');
     const defaultCourses = [
       { name: 'CPPA122 - Local Politics', color: '#22c55e', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
-      { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
+      { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'Alex McKay', professorEmail: 'bryn.kai-hendricks@outlook.com' },
       { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
