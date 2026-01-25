@@ -3868,8 +3868,7 @@ export default function Dashboard() {
               return (
                 <div key={courseCode} className="mb-3 last:mb-0">
                   <div 
-                    className="text-[10px] font-bold mb-1 pb-0.5 border-b border-white/30"
-                    style={{ color: getCourseColor(courseName) }}
+                    className="text-xs text-white/60 font-normal mb-1 pb-0.5 border-b border-white/30"
                   >
                     {courseName}
                   </div>
