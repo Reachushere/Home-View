@@ -4086,6 +4086,7 @@ function TaskCard({
   onReschedule,
   onEdit,
   onDelete,
+  onFileClick,
   cardBgClass,
   compact = false,
   overdueBlink = false,
@@ -4097,6 +4098,7 @@ function TaskCard({
   onReschedule: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onFileClick?: (attachment: string) => void;
   cardBgClass?: string;
   compact?: boolean;
   overdueBlink?: boolean;
@@ -4307,15 +4309,13 @@ function TaskCard({
                     const attachmentName = attachment.split('/').pop() || attachment;
                     return (
                       <div key={idx} className="flex items-center gap-1">
-                        <a
-                          href={attachment}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[10px] text-primary hover:underline truncate max-w-[150px]"
+                        <button
+                          onClick={() => onFileClick?.(attachment)}
+                          className="text-[10px] text-primary hover:underline truncate max-w-[150px] cursor-pointer"
                           data-testid={`link-attachment-${task.id}-${idx}`}
                         >
                           {attachmentName}
-                        </a>
+                        </button>
                       </div>
                     );
                   })}
