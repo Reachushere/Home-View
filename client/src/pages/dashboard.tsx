@@ -2532,7 +2532,7 @@ export default function Dashboard() {
       )}
 
       {/* Unified Header Bar */}
-      <div className="absolute z-20 left-0 right-0 top-0 flex items-center rounded-md mx-3 mt-2" style={{ 
+      <div className="absolute z-20 left-0 right-0 top-0 flex items-center rounded-md mx-3 mt-2 overflow-hidden" style={{ 
         background: 'black',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '0.1px solid white',
@@ -2548,7 +2548,7 @@ export default function Dashboard() {
         </div>
 
         {/* Middle Section - All items with equal gaps */}
-        <div className="flex items-center flex-1 h-full justify-center gap-3">
+        <div className="flex items-center flex-1 h-full justify-center gap-3 min-w-0 overflow-hidden">
           {/* Week navigation */}
           <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
             <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
