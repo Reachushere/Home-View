@@ -4563,11 +4563,9 @@ export default function Dashboard() {
                                   e.stopPropagation();
                                   setSelectedTaskId(task.id);
                                 }}
-                                className={`absolute left-[2px] right-[2px] cursor-pointer overflow-hidden ${
+                                className={`absolute left-[2px] right-[2px] cursor-pointer ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${isFinalHour ? "rounded-b" : ""} ${
-                                  isDueToday ? "animate-blink" : ""
-                                } ${
                                   colors 
                                     ? `${colors.bg} border-l border-r ${isFinalHour ? "border-b" : ""} ${colors.border}` 
                                     : "bg-gray-100 border-l border-r border-gray-400"
