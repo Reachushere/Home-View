@@ -195,6 +195,17 @@ export default function Dashboard() {
   const [showCelebration, setShowCelebration] = useState(false);
   const celebrationAudioRef = useRef<HTMLAudioElement | null>(null);
   
+  // Arrow connections from task boxes to calendar
+  const [arrowConnections, setArrowConnections] = useState<Array<{
+    taskId: number;
+    fromX: number;
+    fromY: number;
+    toX: number;
+    toY: number;
+    color: string;
+  }>>([]);
+  const mainContentRef = useRef<HTMLElement | null>(null);
+  
   // Celebration popup auto-dismiss and audio
   useEffect(() => {
     if (showCelebration) {
@@ -1797,6 +1808,63 @@ export default function Dashboard() {
     const interval = setInterval(scrollToRelevantPosition, 60000);
     return () => clearInterval(interval);
   }, [selectedWeek, allTasks, calendarView, weeks]);
+
+  // Calculate arrow connections from task boxes to calendar
+  useEffect(() => {
+    if (calendarView !== "week") {
+      setArrowConnections([]);
+      return;
+    }
+    
+    const calculateArrows = () => {
+      const connections: typeof arrowConnections = [];
+      const allTasksToConnect = [...dueTodayTasks, ...dueTomorrowTasks, ...dueThisWeekTasks];
+      
+      allTasksToConnect.forEach(task => {
+        // Find the task card in the bottom boxes
+        const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
+        // Find the corresponding task on the calendar
+        const calTaskEl = document.querySelector(`[data-cal-task-id="${task.id}"]`);
+        
+        if (boxTaskEl && calTaskEl) {
+          const boxRect = boxTaskEl.getBoundingClientRect();
+          const calRect = calTaskEl.getBoundingClientRect();
+          
+          // Get course color
+          const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+          let color = "#666";
+          if (courseCode === "CPPA122") color = "#22c55e";
+          else if (courseCode === "CFNF400") color = "#ec4899";
+          else if (courseCode === "CASL101") color = "#6366f1";
+          
+          connections.push({
+            taskId: task.id,
+            fromX: boxRect.left + boxRect.width / 2,
+            fromY: boxRect.top,
+            toX: calRect.left + calRect.width / 2,
+            toY: calRect.bottom,
+            color
+          });
+        }
+      });
+      
+      setArrowConnections(connections);
+    };
+    
+    // Calculate after DOM updates
+    const timer = setTimeout(calculateArrows, 100);
+    
+    // Recalculate on scroll and resize
+    const handleUpdate = () => setTimeout(calculateArrows, 50);
+    window.addEventListener('scroll', handleUpdate, true);
+    window.addEventListener('resize', handleUpdate);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleUpdate, true);
+      window.removeEventListener('resize', handleUpdate);
+    };
+  }, [calendarView, dueTodayTasks, dueTomorrowTasks, dueThisWeekTasks]);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
@@ -4797,6 +4865,67 @@ export default function Dashboard() {
         <div className="fixed right-0 bottom-2 text-white text-xs font-medium" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
           © 2026
         </div>
+
+        {/* Arrow Connections SVG Overlay */}
+        {arrowConnections.length > 0 && (
+          <svg 
+            className="fixed inset-0 pointer-events-none z-[60]" 
+            style={{ width: '100vw', height: '100vh' }}
+          >
+            <defs>
+              <marker
+                id="arrowhead-green"
+                markerWidth="10"
+                markerHeight="7"
+                refX="9"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+              </marker>
+              <marker
+                id="arrowhead-pink"
+                markerWidth="10"
+                markerHeight="7"
+                refX="9"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" />
+              </marker>
+              <marker
+                id="arrowhead-indigo"
+                markerWidth="10"
+                markerHeight="7"
+                refX="9"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
+              </marker>
+            </defs>
+            {arrowConnections.map(conn => {
+              const markerId = conn.color === "#22c55e" ? "arrowhead-green" 
+                : conn.color === "#ec4899" ? "arrowhead-pink" 
+                : "arrowhead-indigo";
+              // Draw curved line from box to calendar
+              const midY = (conn.fromY + conn.toY) / 2;
+              const path = `M ${conn.fromX} ${conn.fromY} Q ${conn.fromX} ${midY}, ${conn.toX} ${conn.toY}`;
+              return (
+                <path
+                  key={conn.taskId}
+                  d={path}
+                  stroke={conn.color}
+                  strokeWidth="2"
+                  fill="none"
+                  strokeDasharray="5,3"
+                  markerEnd={`url(#${markerId})`}
+                  opacity="0.7"
+                />
+              );
+            })}
+          </svg>
+        )}
 
         {/* Celebration Popup */}
         {showCelebration && (
