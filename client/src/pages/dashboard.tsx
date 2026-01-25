@@ -2802,8 +2802,16 @@ export default function Dashboard() {
 
             {/* PAG Level Carousel */}
             <div className="mt-4 pt-4 border-t border-white/30">
-              {/* Navigation dots */}
-              <div className="flex justify-center gap-2 mb-2">
+              {/* Navigation with arrows and dots */}
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <button
+                  onClick={() => currentPagLevel > 1 && setCurrentPagLevel(currentPagLevel - 1)}
+                  className={`text-white text-lg font-bold px-2 py-0.5 rounded ${currentPagLevel > 1 ? 'hover:bg-white/20' : 'opacity-30 cursor-not-allowed'}`}
+                  disabled={currentPagLevel <= 1}
+                  data-testid="button-pag-prev"
+                >
+                  ←
+                </button>
                 {[1, 2, 3].map((level) => (
                   <button
                     key={level}
@@ -2812,6 +2820,14 @@ export default function Dashboard() {
                     data-testid={`button-pag-level-${level}`}
                   />
                 ))}
+                <button
+                  onClick={() => currentPagLevel < 3 && setCurrentPagLevel(currentPagLevel + 1)}
+                  className={`text-white text-lg font-bold px-2 py-0.5 rounded ${currentPagLevel < 3 ? 'hover:bg-white/20' : 'opacity-30 cursor-not-allowed'}`}
+                  disabled={currentPagLevel >= 3}
+                  data-testid="button-pag-next"
+                >
+                  →
+                </button>
               </div>
               
               {/* Swipeable container */}
