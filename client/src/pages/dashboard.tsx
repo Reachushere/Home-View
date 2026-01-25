@@ -4795,7 +4795,7 @@ export default function Dashboard() {
                           onClick={(e) => e.stopPropagation()}
                         />
                         <span className={`text-[9px] leading-tight font-medium line-clamp-2 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}>
-                          {task.name}
+                          {task.title}
                         </span>
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
