@@ -2677,7 +2677,7 @@ export default function Dashboard() {
         {/* Timer and Clock - Far Right */}
         <div className="flex items-center gap-3 px-3 h-full flex-shrink-0">
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 py-1">
+          <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 py-1.5">
             <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -2698,7 +2698,7 @@ export default function Dashboard() {
           </div>
           
           {/* Clock */}
-          <div className="flex items-center gap-1.5 bg-white/20 rounded-md px-2 py-1" data-testid="digital-clock">
+          <div className="flex items-center gap-1.5 bg-white/20 rounded-md px-2 py-1.5" data-testid="digital-clock">
             <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
