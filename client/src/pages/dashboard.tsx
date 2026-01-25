@@ -3858,11 +3858,6 @@ export default function Dashboard() {
                             <FileText className="h-3 w-3" />
                             <span className="truncate max-w-[180px]">{displayName}</span>
                           </button>
-                          {showDaysUntil && (
-                            <span className="text-[9px] text-white/60 whitespace-nowrap">
-                              {format(new Date(task.dueDate), 'MMM d')} (+{daysUntil}d)
-                            </span>
-                          )}
                         </div>
                       );
                     })}
