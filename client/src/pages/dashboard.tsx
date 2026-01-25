@@ -3820,15 +3820,15 @@ export default function Dashboard() {
                     data-testid={`checkbox-task-${task.id}`}
                   />
                   <button 
-                    className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
+                    className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
                   >
                     {task.title}
-                    {attachments.length > 0 && (
-                      <Paperclip className="h-3 w-3 text-white/70 flex-shrink-0" />
-                    )}
                   </button>
+                  {attachments.length > 0 && (
+                    <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2.5} />
+                  )}
                   {showDaysUntil && (
                     <span className="text-[11px] text-white/70 font-normal flex-shrink-0">
                       {format(new Date(task.dueDate), 'EEEE')} (+{daysUntil})
@@ -3839,6 +3839,7 @@ export default function Dashboard() {
                   <div className="ml-6 mt-0.5 space-y-0.5">
                     {attachments.map((file, idx) => {
                       const matchingFile = findFileByUrl(file.url);
+                      const displayName = matchingFile?.displayName || file.name || file.url.split('/').pop() || 'File';
                       return (
                         <div key={idx} className="flex items-center gap-2">
                           <button
@@ -3853,7 +3854,7 @@ export default function Dashboard() {
                             data-testid={`file-link-${task.id}-${idx}`}
                           >
                             <FileText className="h-3 w-3" />
-                            <span className="truncate max-w-[180px]">{file.name}</span>
+                            <span className="truncate max-w-[180px]">{displayName}</span>
                           </button>
                           {showDaysUntil && (
                             <span className="text-[9px] text-white/60 whitespace-nowrap">
