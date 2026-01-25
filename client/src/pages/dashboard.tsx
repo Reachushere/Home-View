@@ -4846,7 +4846,7 @@ export default function Dashboard() {
             const attachments = parseAttachments(task.attachments);
             const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
             return (
-              <div key={task.id} className="mb-1.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+              <div key={task.id} className="mb-1.5" data-box-task-id={task.id} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
