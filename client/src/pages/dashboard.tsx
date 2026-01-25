@@ -2552,8 +2552,8 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50" data-testid="button-hamburger-menu">
-                <Menu className="!h-5 !w-5 text-white" strokeWidth={2.5} />
+              <Button variant="ghost" size="icon" className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white" data-testid="button-hamburger-menu">
+                <Menu className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
@@ -2580,11 +2580,11 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
+            className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
-            <Settings className="h-4 w-4 text-white" />
+            <Settings className="h-[14px] w-[14px] text-white" />
           </Button>
           
           {/* Week navigation */}
@@ -2666,11 +2666,11 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50 ml-1"
+            className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white ml-1"
             data-testid="button-completed-tasks"
             onClick={() => setIsCompletedTasksOpen(true)}
           >
-            <CheckSquare className="h-4 w-4 text-white" />
+            <CheckSquare className="h-[14px] w-[14px] text-white" />
           </Button>
         </div>
 
