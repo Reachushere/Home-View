@@ -2886,7 +2886,7 @@ export default function Dashboard() {
               <span className="text-xs font-medium text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-xs font-medium text-white tabular-nums">
+              <span className="text-[10px] font-medium text-white tabular-nums">
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
               <span className="text-xs font-medium text-white ml-0.5 uppercase">
