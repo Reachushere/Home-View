@@ -3819,7 +3819,16 @@ export default function Dashboard() {
                     style={{ accentColor: getCourseColor(task.courseName) }}
                     data-testid={`checkbox-task-${task.id}`}
                   />
-                  <span className="text-xs text-white font-normal truncate flex-1">{task.title}</span>
+                  <button 
+                    className="text-xs text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
+                    onClick={() => setEditingTask(task)}
+                    data-testid={`task-link-${task.id}`}
+                  >
+                    {task.title}
+                    {attachments.length > 0 && (
+                      <Paperclip className="h-3 w-3 text-white/70 flex-shrink-0" />
+                    )}
+                  </button>
                   {showDaysUntil && (
                     <span className="text-[10px] text-white/70 font-normal flex-shrink-0">
                       {format(new Date(task.dueDate), 'EEEE')}
