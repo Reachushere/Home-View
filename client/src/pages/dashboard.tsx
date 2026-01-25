@@ -2546,7 +2546,7 @@ export default function Dashboard() {
         {/* All items with equal gaps */}
         <div className="flex items-center flex-1 h-full justify-center gap-3 min-w-0 overflow-hidden">
           {/* Title */}
-          <div className="flex flex-col flex-shrink-0">
+          <div className="flex flex-col flex-shrink-0" style={{ marginLeft: '15px' }}>
             <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
             <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
           </div>
