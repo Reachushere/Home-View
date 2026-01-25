@@ -2538,17 +2538,18 @@ export default function Dashboard() {
         border: '0.1px solid white',
         height: '52px'
       }}>
-        {/* Logo and Title - Fixed Left */}
-        <div className="flex items-center px-4 gap-3 h-full flex-shrink-0">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" style={{ marginLeft: '-7px' }} />
-          <div className="flex flex-col">
+        {/* Logo - Fixed Left */}
+        <div className="flex items-center pl-3 h-full flex-shrink-0">
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" />
+        </div>
+
+        {/* All items with equal gaps */}
+        <div className="flex items-center flex-1 h-full justify-center gap-3 min-w-0 overflow-hidden">
+          {/* Title */}
+          <div className="flex flex-col flex-shrink-0">
             <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
             <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
           </div>
-        </div>
-
-        {/* Middle Section - All items with equal gaps */}
-        <div className="flex items-center flex-1 h-full justify-center gap-3 min-w-0 overflow-hidden">
           {/* Week navigation */}
           <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
             <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
