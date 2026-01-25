@@ -69,6 +69,7 @@ import {
   ExternalLink,
   Volume2,
   CheckSquare,
+  Undo2,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -196,6 +197,7 @@ export default function Dashboard() {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [lastCompletedTaskId, setLastCompletedTaskId] = useState<number | null>(null);
   const celebrationAudioRef = useRef<HTMLAudioElement | null>(null);
   
   // Arrow connections from task boxes to calendar
@@ -1554,10 +1556,18 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
       if (variables.isCompleted) {
+        setLastCompletedTaskId(variables.id);
         setShowCelebration(true);
       }
     },
   });
+
+  const handleUndoComplete = () => {
+    if (lastCompletedTaskId) {
+      completeMutation.mutate({ id: lastCompletedTaskId, isCompleted: false });
+      setLastCompletedTaskId(null);
+    }
+  };
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -2958,6 +2968,19 @@ export default function Dashboard() {
             ) : (
               <RefreshCw className="h-[14px] w-[14px] text-white" />
             )}
+          </Button>
+
+          {/* Undo Complete */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square rounded-md border-[0.1px] border-white ${lastCompletedTaskId ? "bg-amber-500/80 hover:bg-amber-500" : "hover:bg-white/20 opacity-50"}`}
+            onClick={handleUndoComplete}
+            disabled={!lastCompletedTaskId}
+            data-testid="button-undo-complete"
+            title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
+          >
+            <Undo2 className="h-[14px] w-[14px] text-white" />
           </Button>
 
           {/* Completed Tasks Checkbox */}
