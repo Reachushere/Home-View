@@ -4652,12 +4652,10 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                                className={`absolute rounded overflow-hidden hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
-                                } ${
-                                  isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
@@ -4675,7 +4673,11 @@ export default function Dashboard() {
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
                               >
-                                <div className="flex items-center gap-0.5">
+                                {/* Silver shimmer header for due today tasks */}
+                                {isDueToday && (
+                                  <div className="silver-shimmer-header h-2 w-full" />
+                                )}
+                                <div className={`flex items-center gap-0.5 px-0.5 ${isDueToday ? "pt-0.5" : "pt-1"}`}>
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -4691,7 +4693,7 @@ export default function Dashboard() {
                                     {task.title}
                                   </div>
                                 </div>
-                                <div className={`text-[8px] mt-0.5 mb-3 ml-4 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}>
+                                <div className={`text-[8px] mt-0.5 mb-3 ml-4 px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}>
                                   {format(new Date(task.dueDate), "h:mm a")}
                                 </div>
                               </div>
@@ -4765,12 +4767,10 @@ export default function Dashboard() {
                           setSelectedTaskId(null);
                         }
                       }}
-                      className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                      className={`absolute rounded overflow-hidden hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                         draggedTask?.id === task.id ? "opacity-50" : ""
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
-                      } ${
-                        isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                       } ${
                         task.isCompleted 
                           ? "bg-gray-200 border border-gray-300" 
@@ -4788,7 +4788,11 @@ export default function Dashboard() {
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
                     >
-                      <div className="flex items-center gap-0.5">
+                      {/* Silver shimmer header for due today tasks */}
+                      {isDueToday && (
+                        <div className="silver-shimmer-header h-3 w-full" />
+                      )}
+                      <div className={`flex items-center gap-0.5 px-0.5 ${isDueToday ? "pt-0.5" : "pt-1"}`}>
                         <Checkbox
                           checked={task.isCompleted || false}
                           onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -4800,7 +4804,7 @@ export default function Dashboard() {
                         </span>
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
-                        <div className="text-[7px] text-muted-foreground ml-3">
+                        <div className="text-[7px] text-muted-foreground ml-3 px-0.5">
                           {task.eventStartTime} - {task.eventEndTime}
                         </div>
                       )}

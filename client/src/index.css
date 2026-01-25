@@ -216,6 +216,20 @@
   animation: today-pulse 3s ease-in-out infinite;
 }
 
+/* Silver shimmer header for task boxes */
+.silver-shimmer-header {
+  background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 25%, #d4d4d4 50%, #e8e8e8 75%, #c0c0c0 100%);
+  background-size: 200% 200%;
+  animation: silver-shimmer 2s ease-in-out infinite;
+  border-radius: 4px 4px 0 0;
+}
+
+@keyframes silver-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* Clapping animation for celebration animoji */
 @keyframes clap {
   0%, 100% {
