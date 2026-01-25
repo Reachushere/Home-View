@@ -4598,10 +4598,10 @@ export default function Dashboard() {
                                       : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
                                 }`}
                                 style={{ 
-                                  top: '-2px',
+                                  top: '-4px',
                                   left: '2px',
                                   width: 'calc(100% - 4px)',
-                                  height: `${heightPx + 2}px`,
+                                  height: `${heightPx + 4}px`,
                                   zIndex: 9
                                 }}
                                 data-testid={`task-continuation-${task.id}-hour-${hour}`}
@@ -4629,12 +4629,12 @@ export default function Dashboard() {
                               spansMultipleHours = endHour > startHour;
                               // Each hour slot is 44px, so per minute is 44/60 = 0.733px
                               if (spansMultipleHours) {
-                                // For multi-hour tasks, calculate height to reach exactly to slot bottom + 2px overlap
-                                taskHeight = 44 - (startMin / 60) * 44 + 2;
+                                // For multi-hour tasks, extend 4px past slot to fully overlap continuation
+                                taskHeight = 44 - (startMin / 60) * 44 + 4;
                               } else {
                                 taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               }
-                              // Offset for minutes past the hour (no extra offset)
+                              // Offset for minutes past the hour
                               topOffset = (startMin / 60) * 44;
                             }
                             
