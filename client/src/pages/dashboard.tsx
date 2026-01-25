@@ -4306,7 +4306,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-3 mt-[1px] relative" style={{ height: calendarHeight }}>
+        <div className="mb-3 mt-[11px] relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: 'calc(70px + (6 / 7) * (100% - 70px))' }} />
