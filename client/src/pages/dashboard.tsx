@@ -2569,6 +2569,7 @@ export default function Dashboard() {
                 <Sun className="h-3 w-3 mr-0.5 text-white" />
                 Today
               </Button>
+              <div className="w-[1px] h-4 bg-white/50" />
               <Button 
                 variant="ghost"
                 className="!h-5 !min-h-0 px-1.5 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
