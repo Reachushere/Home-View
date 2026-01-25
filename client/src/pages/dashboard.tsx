@@ -2575,6 +2575,17 @@ export default function Dashboard() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Settings Gear - next to hamburger */}
+          <Button 
+            size="icon"
+            variant="ghost"
+            className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
+            data-testid="button-settings-panel"
+            onClick={() => setIsSettingsPanelOpen(true)}
+          >
+            <Settings className="h-4 w-4 text-white" />
+          </Button>
           
           {/* Week navigation */}
           <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
@@ -2653,31 +2664,8 @@ export default function Dashboard() {
           <Button size="sm" className="!h-7 !min-h-0 px-2 hover:opacity-80 text-white text-[10px] border-0 font-medium rounded-md" style={{ backgroundColor: '#7f1d1d' }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
         </div>
 
-        {/* Clock and Timer Section */}
-        <div className="flex items-center gap-3 px-3 h-full flex-shrink-0 border-l border-white/20">
-          {/* Clock */}
-          <div className="flex items-center gap-1.5" data-testid="digital-clock">
-            <span className="text-xs text-white font-medium">
-              {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-            </span>
-            <div className="w-[1px] h-4 bg-white/50" />
-            <div className="flex items-baseline">
-              <span className="text-sm font-semibold text-white tabular-nums">
-                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
-              </span>
-              <span className="text-xs text-white tabular-nums">
-                :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
-              </span>
-              <span className="text-xs font-bold text-white ml-0.5 uppercase">
-                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-              </span>
-            </div>
-            {profileData.travelTimezone && (
-              <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
-            )}
-          </div>
-          
-          {/* Timer */}
+        {/* Pomodoro Timer */}
+        <div className="flex items-center gap-2 px-2 h-full flex-shrink-0">
           <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 py-1">
             <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
@@ -2699,17 +2687,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Settings Gear and Completed Tasks */}
-        <div className="flex items-center gap-2 px-3 h-full flex-shrink-0">
-          <Button 
-            size="icon"
-            variant="ghost"
-            className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
-            data-testid="button-settings-panel"
-            onClick={() => setIsSettingsPanelOpen(true)}
-          >
-            <Settings className="h-4 w-4 text-white" />
-          </Button>
+        {/* Completed Tasks Checkbox */}
+        <div className="flex items-center gap-2 px-2 h-full flex-shrink-0">
           <Button 
             size="icon"
             variant="ghost"
@@ -2719,6 +2698,28 @@ export default function Dashboard() {
           >
             <CheckSquare className="h-4 w-4 text-white" />
           </Button>
+        </div>
+
+        {/* Clock and Date - Far Right */}
+        <div className="flex items-center gap-1.5 px-3 h-full flex-shrink-0 border-l border-white/20" data-testid="digital-clock">
+          <span className="text-xs text-white font-medium">
+            {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
+          </span>
+          <div className="w-[1px] h-4 bg-white/50" />
+          <div className="flex items-baseline">
+            <span className="text-sm font-semibold text-white tabular-nums">
+              {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+            </span>
+            <span className="text-xs text-white tabular-nums">
+              :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
+            </span>
+            <span className="text-xs font-bold text-white ml-0.5 uppercase">
+              {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
+            </span>
+          </div>
+          {profileData.travelTimezone && (
+            <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
+          )}
         </div>
       </div>
 
