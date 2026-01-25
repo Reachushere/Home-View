@@ -272,33 +272,38 @@ export default function Dashboard() {
       
       playClapping();
       
-      // Crowd yelling "Hooray!" using multiple English voices at once
+      // Crowd yelling "Hooray!" - stagger slightly for realistic crowd overlap
       const sayHooray = () => {
         const allVoices = window.speechSynthesis.getVoices();
         // Filter to only English voices
         const englishVoices = allVoices.filter(v => v.lang.startsWith('en'));
         const voices = englishVoices.length > 0 ? englishVoices : allVoices;
         
-        // Create multiple utterances at different pitches - all at once for crowd effect
+        // Create multiple utterances at different pitches with tiny random delays for crowd effect
         const crowdSettings = [
-          { pitch: 0.7, rate: 1.0 },
-          { pitch: 0.9, rate: 1.0 },
-          { pitch: 1.0, rate: 1.0 },
-          { pitch: 1.1, rate: 1.0 },
-          { pitch: 1.3, rate: 1.0 },
+          { pitch: 0.7, rate: 0.95, delay: 0 },
+          { pitch: 0.85, rate: 1.0, delay: 30 },
+          { pitch: 1.0, rate: 1.05, delay: 15 },
+          { pitch: 1.15, rate: 0.98, delay: 45 },
+          { pitch: 1.3, rate: 1.02, delay: 20 },
         ];
         
-        // Say all at once (no delay between them)
-        crowdSettings.forEach(({ pitch, rate }, index) => {
-          const utterance = new SpeechSynthesisUtterance("Hooray!");
-          utterance.lang = 'en-US';
-          utterance.rate = rate;
-          utterance.pitch = pitch;
-          utterance.volume = 0.7;
-          if (voices.length > 0) {
-            utterance.voice = voices[index % voices.length];
-          }
-          window.speechSynthesis.speak(utterance);
+        // Cancel any previous speech and start fresh
+        window.speechSynthesis.cancel();
+        
+        // Stagger with tiny delays (15-50ms) for realistic crowd overlap
+        crowdSettings.forEach(({ pitch, rate, delay }, index) => {
+          setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance("Hooray!");
+            utterance.lang = 'en-US';
+            utterance.rate = rate;
+            utterance.pitch = pitch;
+            utterance.volume = 0.6;
+            if (voices.length > 0) {
+              utterance.voice = voices[index % voices.length];
+            }
+            window.speechSynthesis.speak(utterance);
+          }, delay);
         });
       };
       
