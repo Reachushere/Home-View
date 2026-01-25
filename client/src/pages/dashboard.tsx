@@ -1916,6 +1916,28 @@ export default function Dashboard() {
     });
   };
   
+  // Get tasks that started in a previous hour but are still ongoing at this hour
+  const getContinuingTasksForHour = (day: Date, hour: number) => {
+    return allTasks.filter(t => {
+      if (t.isCompleted) return false;
+      if (t.startDate) return false; // Planning period tasks show in ALL DAY
+      const dueDate = new Date(t.dueDate);
+      if (!isSameDay(dueDate, day)) return false;
+      
+      // Only consider tasks with explicit start and end times
+      if (!t.eventStartTime || !t.eventEndTime) return false;
+      
+      const [startHour, startMin] = t.eventStartTime.split(':').map(Number);
+      const [endHour, endMin] = t.eventEndTime.split(':').map(Number);
+      
+      // Task started before this hour and ends at or after this hour
+      const startsBeforeThisHour = startHour < hour;
+      const endsAtOrAfterThisHour = endHour > hour || (endHour === hour && endMin > 0);
+      
+      return startsBeforeThisHour && endsAtOrAfterThisHour;
+    });
+  };
+  
   // Check if a calendar event conflicts with any task
   const eventConflictsWithTask = (event: CalendarEvent) => {
     const eventStart = new Date(event.startDate);
@@ -4311,7 +4333,7 @@ export default function Dashboard() {
               ))}
             
             {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-x-hidden overflow-y-scroll scrollbar-hidden">
+            <div ref={calendarScrollRef} className="flex-1 overflow-x-hidden overflow-y-scroll scrollbar-hidden relative">
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -4390,6 +4412,35 @@ export default function Dashboard() {
                         >
                           {/* Half-hour dotted line */}
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50" />
+                          {/* Render continuing tasks from previous hours */}
+                          {getContinuingTasksForHour(day, hour).map((task, contIdx) => {
+                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                            const colors = courseColors[courseCode];
+                            // Check if this is the final hour for this task
+                            const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
+                            const isFinalHour = endHour === hour;
+                            const heightPercent = isFinalHour ? ((endMin / 60) * 100) : 100;
+                            
+                            return (
+                              <div
+                                key={`cont-${task.id}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTaskId(task.id);
+                                }}
+                                className={`absolute left-0.5 right-0.5 top-0 cursor-pointer ${
+                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
+                                } ${colors ? `${colors.bg} border-l-2 ${colors.border}` : "bg-gray-100 border-l-2 border-gray-400"}`}
+                                style={{ 
+                                  height: `${heightPercent}%`,
+                                  zIndex: 10
+                                }}
+                                data-testid={`task-continuation-${task.id}-hour-${hour}`}
+                              >
+                                {/* Show thin continuation strip */}
+                              </div>
+                            );
+                          })}
                           {hourTasks.map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                             const colors = courseColors[courseCode];
