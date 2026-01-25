@@ -2662,6 +2662,16 @@ export default function Dashboard() {
           <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2 hover:opacity-80 text-white text-[10px] border-0 font-medium rounded-md" style={{ backgroundColor: '#7f1d1d' }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
+          {/* Completed Tasks Checkbox - right after Exam */}
+          <Button 
+            size="icon"
+            variant="ghost"
+            className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50 ml-1"
+            data-testid="button-completed-tasks"
+            onClick={() => setIsCompletedTasksOpen(true)}
+          >
+            <CheckSquare className="h-4 w-4 text-white" />
+          </Button>
         </div>
 
         {/* Pomodoro Timer */}
@@ -2687,19 +2697,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Completed Tasks Checkbox */}
-        <div className="flex items-center gap-2 px-2 h-full flex-shrink-0">
-          <Button 
-            size="icon"
-            variant="ghost"
-            className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
-            data-testid="button-completed-tasks"
-            onClick={() => setIsCompletedTasksOpen(true)}
-          >
-            <CheckSquare className="h-4 w-4 text-white" />
-          </Button>
-        </div>
-
         {/* Clock and Date - Far Right */}
         <div className="flex items-center gap-1.5 px-3 h-full flex-shrink-0 border-l border-white/20" data-testid="digital-clock">
           <span className="text-xs text-white font-medium">
@@ -2711,7 +2708,7 @@ export default function Dashboard() {
               {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
             </span>
             <span className="text-xs text-white tabular-nums">
-              :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
+              :{String(currentTime.getSeconds()).padStart(2, '0')}
             </span>
             <span className="text-xs font-bold text-white ml-0.5 uppercase">
               {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
