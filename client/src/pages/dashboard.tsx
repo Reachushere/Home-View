@@ -1387,12 +1387,15 @@ export default function Dashboard() {
     course1Code: "",
     course1Name: "",
     course1Professor: "",
+    course1ProfessorEmail: "",
     course2Code: "",
     course2Name: "",
     course2Professor: "",
+    course2ProfessorEmail: "",
     course3Code: "",
     course3Name: "",
     course3Professor: "",
+    course3ProfessorEmail: "",
     secondaryCalendarId: "",
   });
   
