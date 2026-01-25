@@ -171,7 +171,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(482);
+  const [calendarHeight, setCalendarHeight] = useState(490);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -2995,16 +2995,16 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Buttons */}
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-3 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
+          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[10px] bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
+          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[8px] bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-2 hover:opacity-80 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ backgroundColor: '#7f1d1d', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
         </div>
 
         {/* Timer and Clock - Fixed Right */}
-        <div className="flex items-center gap-3 h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '15px' }}>
+        <div className="flex items-center gap-3 h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '17px' }}>
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 py-1.5">
             <div className={`text-xs font-bold px-1.5 py-0.5 rounded ${
@@ -4306,7 +4306,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-3 relative" style={{ height: calendarHeight }}>
+        <div className="mb-3 mt-[1px] relative" style={{ height: calendarHeight }}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: 'calc(70px + (6 / 7) * (100% - 70px))' }} />
