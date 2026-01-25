@@ -2814,6 +2814,26 @@ export default function Dashboard() {
                 ))}
               </div>
               
+              {/* Swipeable container */}
+              <div 
+                className="touch-pan-y"
+                onTouchStart={(e) => {
+                  const touch = e.touches[0];
+                  (e.currentTarget as any).touchStartX = touch.clientX;
+                }}
+                onTouchEnd={(e) => {
+                  const touch = e.changedTouches[0];
+                  const startX = (e.currentTarget as any).touchStartX;
+                  const diff = touch.clientX - startX;
+                  if (Math.abs(diff) > 50) {
+                    if (diff > 0 && currentPagLevel > 1) {
+                      setCurrentPagLevel(currentPagLevel - 1);
+                    } else if (diff < 0 && currentPagLevel < 3) {
+                      setCurrentPagLevel(currentPagLevel + 1);
+                    }
+                  }
+                }}
+              >
               {/* Level I */}
               <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
                 <div className="border-2 border-black">
@@ -3062,6 +3082,7 @@ export default function Dashboard() {
                     </div>
                   ))}
                 </div>
+              </div>
               </div>
             </div>
           </div>
