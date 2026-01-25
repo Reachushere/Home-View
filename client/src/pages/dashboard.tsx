@@ -2545,42 +2545,45 @@ export default function Dashboard() {
             <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
             <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
           </div>
-          {/* Week navigation with Today/Month above */}
-          <div className="flex flex-col items-center gap-0.5">
-            {/* Today/Month buttons - smaller, above */}
-            <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-1 py-0.5" style={{ marginTop: '8px' }}>
-              <Button 
-                variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
-                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-                data-testid="button-today"
-              >
-                Today
-              </Button>
-              <div className="w-[1px] h-3 bg-white/50" />
-              <Button 
-                variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
-                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-                data-testid="button-month-view"
-              >
-                {calendarView === "month" ? "Week" : "Month"}
-              </Button>
-            </div>
-            {/* Date navigation */}
-            <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm" style={{ marginTop: '-3px' }}>
-              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
-              <div className="flex items-center gap-1 mx-2 whitespace-nowrap">
+          {/* Week navigation with arrows centered, Today/Month and dates stacked */}
+          <div className="flex items-center gap-1">
+            {/* Left arrow - centered vertically */}
+            <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+            </Button>
+            {/* Center content - Today/Month above dates */}
+            <div className="flex flex-col items-center gap-0.5">
+              {/* Today/Month buttons */}
+              <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-1 py-0.5">
+                <Button 
+                  variant="ghost"
+                  className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
+                  onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+                  data-testid="button-today"
+                >
+                  Today
+                </Button>
+                <div className="w-[1px] h-3 bg-white/50" />
+                <Button 
+                  variant="ghost"
+                  className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
+                  onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+                  data-testid="button-month-view"
+                >
+                  {calendarView === "month" ? "Week" : "Month"}
+                </Button>
+              </div>
+              {/* Date display */}
+              <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap">
                 <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
                 <span className="text-[11px] text-white/50">—</span>
                 <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
               </div>
-              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
             </div>
+            {/* Right arrow - centered vertically */}
+            <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+              <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+            </Button>
           </div>
         </div>
 
