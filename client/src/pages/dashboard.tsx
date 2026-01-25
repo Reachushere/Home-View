@@ -278,29 +278,30 @@ export default function Dashboard() {
     return saved ? JSON.parse(saved) : { schoolLogo: null, numberOfWeeks: 13, week1StartDate: '2026-01-17', firstDayOfWeek: 'saturday' };
   });
   
-  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string }> }>(() => {
+  const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
     const saved = localStorage.getItem('coursesData');
     const defaultCourses = [
-      { name: 'CPPA122 - Local Politics', color: '#22c55e', professor: 'Caryl Arundel' },
-      { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'Alex McKay' },
-      { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'Christina Moreau' },
-      { name: '', color: '#6b7280', professor: '' },
-      { name: '', color: '#6b7280', professor: '' },
-      { name: '', color: '#6b7280', professor: '' },
-      { name: '', color: '#6b7280', professor: '' },
-      { name: '', color: '#6b7280', professor: '' },
-      { name: '', color: '#6b7280', professor: '' },
-      { name: '', color: '#6b7280', professor: '' },
+      { name: 'CPPA122 - Local Politics', color: '#22c55e', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
+      { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
+      { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
+      { name: '', color: '#6b7280', professor: '', professorEmail: '' },
     ];
     if (saved) {
       const parsed = JSON.parse(saved);
       // If saved data has no courses with names, use defaults instead
       const hasNamedCourses = parsed.courses?.some((c: { name: string }) => c.name.trim());
       if (hasNamedCourses) {
-        // Ensure professor field exists for each course
-        const coursesWithProfessor = parsed.courses.map((c: { name: string; color: string; professor?: string }, i: number) => ({
+        // Ensure professor and professorEmail fields exist for each course
+        const coursesWithProfessor = parsed.courses.map((c: { name: string; color: string; professor?: string; professorEmail?: string }, i: number) => ({
           ...c,
-          professor: c.professor ?? defaultCourses[i]?.professor ?? ''
+          professor: c.professor ?? defaultCourses[i]?.professor ?? '',
+          professorEmail: c.professorEmail ?? defaultCourses[i]?.professorEmail ?? ''
         }));
         return { courses: coursesWithProfessor };
       }
@@ -2916,10 +2917,8 @@ export default function Dashboard() {
                   !task.isCompleted &&
                   isSameDay(new Date(task.dueDate), tomorrow)
                 );
-                // Match professor email by course code, not index
-                const professorEmail = semesterSettings?.course1Code === courseCode ? semesterSettings?.course1ProfessorEmail :
-                                       semesterSettings?.course2Code === courseCode ? semesterSettings?.course2ProfessorEmail :
-                                       semesterSettings?.course3Code === courseCode ? semesterSettings?.course3ProfessorEmail : null;
+                // Get professor email from coursesData
+                const professorEmail = course.professorEmail;
                 return (
                   <div key={index} className="flex items-center gap-1.5">
                     <div 
@@ -2955,58 +2954,29 @@ export default function Dashboard() {
             </div>
             
             {/* Professor Email Inputs */}
-            {semesterSettings && (
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-white/70">Professor Emails (click name above to email)</Label>
-                <div className="space-y-1.5">
+            <div className="space-y-2">
+              <Label className="text-xs font-medium text-white/70">Professor Emails (click name above to email)</Label>
+              <div className="space-y-1.5">
+                {coursesData.courses.filter(c => c.name.trim()).slice(0, 3).map((course, index) => (
                   <Input
+                    key={index}
                     type="email"
-                    placeholder={`${semesterSettings.course1Code || 'Course 1'} professor email`}
-                    defaultValue={semesterSettings.course1ProfessorEmail || ""}
+                    placeholder={`${course.name.split(' - ')[0]} professor email`}
+                    defaultValue={course.professorEmail || ""}
                     onBlur={(e) => {
                       const email = e.target.value;
-                      apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
-                        course1ProfessorEmail: email || null,
-                        course2ProfessorEmail: semesterSettings.course2ProfessorEmail,
-                        course3ProfessorEmail: semesterSettings.course3ProfessorEmail
-                      }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
+                      const updatedCourses = [...coursesData.courses];
+                      updatedCourses[index] = { ...updatedCourses[index], professorEmail: email };
+                      const newCoursesData = { courses: updatedCourses };
+                      setCoursesData(newCoursesData);
+                      localStorage.setItem('coursesData', JSON.stringify(newCoursesData));
                     }}
                     className="h-7 text-xs bg-white/20 border-white/30 text-white placeholder:text-white/50"
-                    data-testid="input-settings-course1-email"
+                    data-testid={`input-settings-course${index + 1}-email`}
                   />
-                  <Input
-                    type="email"
-                    placeholder={`${semesterSettings.course2Code || 'Course 2'} professor email`}
-                    defaultValue={semesterSettings.course2ProfessorEmail || ""}
-                    onBlur={(e) => {
-                      const email = e.target.value;
-                      apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
-                        course1ProfessorEmail: semesterSettings.course1ProfessorEmail,
-                        course2ProfessorEmail: email || null,
-                        course3ProfessorEmail: semesterSettings.course3ProfessorEmail
-                      }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
-                    }}
-                    className="h-7 text-xs bg-white/20 border-white/30 text-white placeholder:text-white/50"
-                    data-testid="input-settings-course2-email"
-                  />
-                  <Input
-                    type="email"
-                    placeholder={`${semesterSettings.course3Code || 'Course 3'} professor email`}
-                    defaultValue={semesterSettings.course3ProfessorEmail || ""}
-                    onBlur={(e) => {
-                      const email = e.target.value;
-                      apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
-                        course1ProfessorEmail: semesterSettings.course1ProfessorEmail,
-                        course2ProfessorEmail: semesterSettings.course2ProfessorEmail,
-                        course3ProfessorEmail: email || null
-                      }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
-                    }}
-                    className="h-7 text-xs bg-white/20 border-white/30 text-white placeholder:text-white/50"
-                    data-testid="input-settings-course3-email"
-                  />
-                </div>
+                ))}
               </div>
-            )}
+            </div>
 
             {/* Weeks */}
             <div className="space-y-1">
