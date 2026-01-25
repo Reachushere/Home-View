@@ -2946,6 +2946,17 @@ export default function Dashboard() {
             <GraduationCap className="h-[14px] w-[14px] text-white" />
           </Button>
 
+          {/* Files */}
+          <Button 
+            size="icon"
+            variant="ghost"
+            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            data-testid="button-files"
+            onClick={() => window.location.href = '/files'}
+          >
+            <FolderOpen className="h-[14px] w-[14px] text-white" />
+          </Button>
+
           {/* Bell */}
           <Button
             variant="ghost"
