@@ -2747,7 +2747,7 @@ export default function Dashboard() {
                       className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
                       style={{ backgroundColor: course.color }}
                     />
-                    <span className="text-[10px] text-white">
+                    <span className="text-[12px] text-white">
                       <span className="font-medium">{courseCode}</span>
                       {courseName !== courseCode && <span> - {courseName}</span>}
                       {course.professor && <span className="text-white/70"> ({course.professor})</span>}
