@@ -2691,7 +2691,7 @@ export default function Dashboard() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Settings Gear */}
+          {/* Graduation Hat - Opens Settings Panel */}
           <Button 
             size="icon"
             variant="ghost"
@@ -2699,7 +2699,7 @@ export default function Dashboard() {
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
-            <Settings className="h-[14px] w-[14px] text-white" />
+            <GraduationCap className="h-[14px] w-[14px] text-white" />
           </Button>
 
           {/* Bell */}
