@@ -2538,18 +2538,17 @@ export default function Dashboard() {
         border: '0.1px solid white',
         height: '52px'
       }}>
-        {/* Logo - Fixed Left */}
-        <div className="flex items-center pl-3 h-full flex-shrink-0">
+        {/* Logo and Title - Fixed Left */}
+        <div className="flex items-center pl-3 gap-3 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" />
+          <div className="flex flex-col">
+            <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
+            <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
+          </div>
         </div>
 
         {/* All items with equal gaps */}
         <div className="flex items-center flex-1 h-full justify-center gap-3 min-w-0 overflow-hidden">
-          {/* Title */}
-          <div className="flex flex-col flex-shrink-0" style={{ marginLeft: '15px' }}>
-            <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
-            <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
-          </div>
           {/* Week navigation with Today/Month above */}
           <div className="flex flex-col items-center gap-0.5 flex-shrink-0" style={{ marginLeft: '-5px' }}>
             {/* Today/Month buttons - smaller, above */}
