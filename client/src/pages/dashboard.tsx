@@ -3776,6 +3776,7 @@ export default function Dashboard() {
                 <DialogTitle>Add New Task</DialogTitle>
               </DialogHeader>
               <TaskForm 
+                key="add-task-form"
                 weekNumber={selectedWeek}
                 initialDate={selectedDate}
                 initialType={newTaskType}
@@ -5070,6 +5071,7 @@ export default function Dashboard() {
             </DialogHeader>
             {editingTask && (
               <TaskForm 
+                key={`edit-task-${editingTask.id}`}
                 task={editingTask}
                 weekNumber={editingTask.weekNumber}
                 onSuccess={() => setEditingTask(null)} 
