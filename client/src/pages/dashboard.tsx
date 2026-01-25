@@ -2854,8 +2854,8 @@ export default function Dashboard() {
       }}>
         {/* Logo, Title, and Week Navigation - Fixed Left */}
         <div className="flex items-center pl-3 gap-3 h-full flex-shrink-0">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" />
-          <div className="flex flex-col">
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8 ml-[-1px]" />
+          <div className="flex flex-col ml-[-2px]">
             <span className="text-sm text-white font-bold whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
             <span className="text-[10px] text-white/80 font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
           </div>
@@ -2888,7 +2888,7 @@ export default function Dashboard() {
                 </Button>
               </div>
               {/* Date display */}
-              <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+              <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap ml-[-2px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                 <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
                 <span className="text-[11px] text-white/50">—</span>
                 <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
@@ -2902,7 +2902,7 @@ export default function Dashboard() {
         </div>
 
         {/* All items with equal gaps - spread between arrow and timer */}
-        <div className="flex items-center flex-1 h-full justify-start gap-[7px] min-w-0 overflow-hidden pl-[11px] pr-4">
+        <div className="flex items-center flex-1 h-full justify-start gap-[7px] min-w-0 overflow-hidden pl-[9px] pr-4">
 
           {/* Hamburger Menu */}
           <DropdownMenu>
