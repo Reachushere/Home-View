@@ -220,6 +220,58 @@ export default function Dashboard() {
       celebrationAudioRef.current.volume = 0.7;
       celebrationAudioRef.current.play().catch(() => {});
       
+      // Play clapping sound pattern using Web Audio API
+      const playClapping = () => {
+        try {
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+          const now = audioContext.currentTime;
+          
+          // Create a rhythmic clapping pattern (8 claps over 2 seconds)
+          const clapTimes = [0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75];
+          
+          clapTimes.forEach((time) => {
+            // Create noise buffer for clap sound
+            const bufferSize = audioContext.sampleRate * 0.08; // 80ms clap
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            // Generate noise with envelope for clap-like sound
+            for (let i = 0; i < bufferSize; i++) {
+              const envelope = Math.exp(-i / (bufferSize * 0.15)); // Quick decay
+              data[i] = (Math.random() * 2 - 1) * envelope;
+            }
+            
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            
+            // Add high-pass filter for sharper clap sound
+            const highpass = audioContext.createBiquadFilter();
+            highpass.type = 'highpass';
+            highpass.frequency.value = 1500;
+            
+            // Add bandpass for clap character
+            const bandpass = audioContext.createBiquadFilter();
+            bandpass.type = 'bandpass';
+            bandpass.frequency.value = 2500;
+            bandpass.Q.value = 0.5;
+            
+            const gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.3;
+            
+            source.connect(highpass);
+            highpass.connect(bandpass);
+            bandpass.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            source.start(now + time);
+          });
+        } catch (e) {
+          // Silently fail if Web Audio API not available
+        }
+      };
+      
+      playClapping();
+      
       const timer = setTimeout(() => setShowCelebration(false), 5000);
       return () => clearTimeout(timer);
     }
