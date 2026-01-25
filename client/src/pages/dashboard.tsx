@@ -4578,11 +4578,11 @@ export default function Dashboard() {
                                       : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
                                 }`}
                                 style={{ 
-                                  top: '-1px',
+                                  top: '-2px',
                                   left: '2px',
                                   width: 'calc(100% - 4px)',
-                                  height: `${heightPx + 1}px`,
-                                  zIndex: 5
+                                  height: `${heightPx + 2}px`,
+                                  zIndex: 10
                                 }}
                                 data-testid={`task-continuation-${task.id}-hour-${hour}`}
                               />
@@ -4611,7 +4611,8 @@ export default function Dashboard() {
                               // For multi-hour tasks, only render the first hour portion (continuation blocks handle the rest)
                               if (spansMultipleHours) {
                                 const firstHourMinutes = 60 - startMin;
-                                taskHeight = (firstHourMinutes / 60) * 44 - 2;
+                                // Add 2px to overlap with continuation block and cover row border
+                                taskHeight = (firstHourMinutes / 60) * 44 + 2;
                               } else {
                                 taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               }
