@@ -3366,7 +3366,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 pt-2 pb-6 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px', height: 'calc(100vh - 64px)' }}>
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px' }}>
         {/* Title Row - aligned with sidebar header */}
         <div className="flex items-start justify-between mb-0 flex-shrink-0">
           </div>
