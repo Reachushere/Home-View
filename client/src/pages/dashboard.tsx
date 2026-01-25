@@ -4432,7 +4432,7 @@ export default function Dashboard() {
                                 : "bg-gray-200 text-black border border-gray-400";
                             return (
                               <div key={`due-${task.id}`} className="flex items-center w-full">
-                                {hasVisiblePrepDays && <div className="w-2 h-[2px] bg-white shrink-0" />}
+                                {hasVisiblePrepDays && <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />}
                                 <div
                                   className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle} ${
                                     isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
@@ -4482,7 +4482,7 @@ export default function Dashboard() {
                                     <span className="font-bold">PREP:</span> {task.title}
                                   </span>
                                 </div>
-                                <div className="w-2 h-[2px] bg-white shrink-0" />
+                                <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />
                               </div>
                             );
                           }
@@ -4495,7 +4495,7 @@ export default function Dashboard() {
                           const hasPreviousVisibleDay = !isBefore(previousDay, today);
                           return (
                             <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                              {hasPreviousVisibleDay && <div className="w-2 h-[2px] bg-white shrink-0" />}
+                              {hasPreviousVisibleDay && <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />}
                               <div
                                 className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
                                 style={{ borderRadius: hasPreviousVisibleDay ? 0 : '4px 0 0 4px' }}
@@ -4514,7 +4514,7 @@ export default function Dashboard() {
                                   <span className="font-bold">PREP:</span> {task.title}
                                 </span>
                               </div>
-                              <div className="w-2 h-[2px] bg-white shrink-0" />
+                              <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />
                             </div>
                           );
                         })}
