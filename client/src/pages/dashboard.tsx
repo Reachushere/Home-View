@@ -4862,7 +4862,7 @@ export default function Dashboard() {
                             data-testid={`file-link-${task.id}-${idx}`}
                           >
                             <FileText className="h-3 w-3" />
-                            <span className="truncate max-w-[180px]">{displayName}</span>
+                            <span className="truncate">{displayName}</span>
                           </button>
                         </div>
                       );
