@@ -4322,6 +4322,45 @@ export default function Dashboard() {
                           onDragOver={(e) => handleDragOver(e, day, hour)}
                           onDragLeave={handleDragLeave}
                           onDrop={(e) => handleDrop(e, day, hour)}
+                          onDoubleClick={() => {
+                            // Create new task with pre-filled date and time
+                            const dueDate = new Date(day);
+                            dueDate.setHours(hour, 0, 0, 0);
+                            setEditingTask({
+                              id: 0, // New task
+                              title: "",
+                              description: "",
+                              type: "other",
+                              courseName: "",
+                              startDate: null,
+                              dueDate: dueDate.toISOString(),
+                              eventStartTime: `${hour.toString().padStart(2, '0')}:00`,
+                              eventEndTime: `${(hour + 1).toString().padStart(2, '0')}:00`,
+                              reminder1: 30,
+                              reminder2: 120,
+                              reminder3: null,
+                              reminder4: null,
+                              weekNumber: selectedWeek,
+                              isCompleted: false,
+                              completedAt: null,
+                              isMissed: false,
+                              priority: "medium",
+                              notes: null,
+                              referenceLink: null,
+                              attachments: [],
+                              calendarEventId: null,
+                              calendarProvider: null,
+                              prepCalendarEventId: null,
+                              secondaryCalendarEventId: null,
+                              secondAccountCalendarEventId: null,
+                              secondAccountPrepEventId: null,
+                              repeatType: "none",
+                              repeatInterval: null,
+                              repeatIntervalUnit: null,
+                              repeatEndDate: null,
+                              parentTaskId: null
+                            } as Task);
+                          }}
                         >
                           {/* Half-hour dotted line */}
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50" />
