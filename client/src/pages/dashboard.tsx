@@ -2538,12 +2538,26 @@ export default function Dashboard() {
         border: '0.1px solid white',
         height: '52px'
       }}>
-        {/* Logo and Title */}
-        <div className="flex items-center px-4 gap-2 h-full flex-shrink-0">
+        {/* Logo, Title, and Week Navigation */}
+        <div className="flex items-center px-4 gap-3 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" style={{ marginLeft: '-7px' }} />
           <div className="flex flex-col">
             <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
             <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
+          </div>
+          {/* Week navigation */}
+          <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
+            <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+            </Button>
+            <div className="flex items-center gap-1 mx-2 whitespace-nowrap">
+              <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+              <span className="text-[11px] text-white/50">—</span>
+              <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+            </div>
+            <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+              <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+            </Button>
           </div>
         </div>
 
@@ -2586,21 +2600,6 @@ export default function Dashboard() {
           >
             <Settings className="h-[14px] w-[14px] text-white" />
           </Button>
-          
-          {/* Week navigation */}
-          <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
-            <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-            </Button>
-            <div className="flex items-center gap-1 mx-2 whitespace-nowrap">
-              <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
-              <span className="text-[11px] text-white/50">—</span>
-              <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
-            </div>
-            <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-              <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-            </Button>
-          </div>
 
           {/* Bell */}
           <Button
