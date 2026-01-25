@@ -2550,7 +2550,7 @@ export default function Dashboard() {
         {/* All items with equal gaps */}
         <div className="flex items-center flex-1 h-full justify-center gap-3 min-w-0 overflow-hidden">
           {/* Week navigation with Today/Month above */}
-          <div className="flex flex-col items-center gap-0.5 flex-shrink-0" style={{ marginLeft: '-5px' }}>
+          <div className="flex flex-col items-center gap-0.5 flex-shrink-0" style={{ marginLeft: '-25px' }}>
             {/* Today/Month buttons - smaller, above */}
             <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-1 py-0.5" style={{ marginTop: '3px' }}>
               <Button 
