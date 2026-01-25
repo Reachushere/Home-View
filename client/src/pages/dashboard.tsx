@@ -5,6 +5,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
+import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -190,6 +191,15 @@ export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  
+  // Celebration popup auto-dismiss
+  useEffect(() => {
+    if (showCelebration) {
+      const timer = setTimeout(() => setShowCelebration(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showCelebration]);
   
   // Calculate if it's nighttime in Toronto based on approximate sunrise/sunset
   const isNighttime = useMemo(() => {
@@ -1447,9 +1457,12 @@ export default function Dashboard() {
     mutationFn: async ({ id, isCompleted }: { id: number; isCompleted: boolean }) => {
       return apiRequest("PATCH", `/api/tasks/${id}/complete`, { isCompleted });
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+      if (variables.isCompleted) {
+        setShowCelebration(true);
+      }
     },
   });
 
@@ -1550,6 +1563,7 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/files"] });
       setPreviewFile(null);
       toast({ title: "File marked as completed and moved to Completed folder" });
+      setShowCelebration(true);
     },
   });
 
@@ -4881,6 +4895,63 @@ export default function Dashboard() {
         <div className="fixed right-0 bottom-2 text-white text-xs font-medium" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
           © 2026
         </div>
+
+        {/* Celebration Popup */}
+        {showCelebration && (
+          <div 
+            className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none"
+            onClick={() => setShowCelebration(false)}
+          >
+            <div className="celebration-container flex flex-col items-center pointer-events-auto">
+              {/* Horray text in arch shape */}
+              <div className="relative mb-2">
+                <svg viewBox="0 0 200 60" className="w-72 h-24">
+                  <defs>
+                    <path id="arch" d="M 10,55 Q 100,-5 190,55" fill="transparent" />
+                    <linearGradient id="shimmerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#ffd700">
+                        <animate attributeName="stop-color" values="#ffd700;#ff6b6b;#ffd700" dur="1s" repeatCount="indefinite" />
+                      </stop>
+                      <stop offset="50%" stopColor="#ff6b6b">
+                        <animate attributeName="stop-color" values="#ff6b6b;#ffd700;#ff6b6b" dur="1s" repeatCount="indefinite" />
+                      </stop>
+                      <stop offset="100%" stopColor="#ffd700">
+                        <animate attributeName="stop-color" values="#ffd700;#ff6b6b;#ffd700" dur="1s" repeatCount="indefinite" />
+                      </stop>
+                    </linearGradient>
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                      <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <text 
+                    fill="url(#shimmerGradient)" 
+                    filter="url(#glow)"
+                    style={{ 
+                      fontFamily: "Avenir, 'Avenir Next', sans-serif", 
+                      fontWeight: 800, 
+                      fontSize: '28px',
+                      letterSpacing: '0.1em'
+                    }}
+                  >
+                    <textPath href="#arch" startOffset="50%" textAnchor="middle">
+                      HORRAY!
+                    </textPath>
+                  </text>
+                </svg>
+              </div>
+              {/* Animoji */}
+              <img 
+                src={celebrationAnimoji} 
+                alt="Celebration" 
+                className="w-52 h-52 object-contain drop-shadow-2xl"
+              />
+            </div>
+          </div>
+        )}
 
       </main>
       </div>
