@@ -3827,6 +3827,7 @@ export default function Dashboard() {
             if (!open) {
               setInitialStartTime("");
               setInitialEndTime("");
+              setNewTaskType("module"); // Reset to default
             }
           }}>
             <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
