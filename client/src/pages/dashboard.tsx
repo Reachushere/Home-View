@@ -4419,7 +4419,7 @@ export default function Dashboard() {
                             // Check if this is the final hour for this task
                             const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
                             const isFinalHour = endHour === hour;
-                            const heightPercent = isFinalHour ? ((endMin / 60) * 100) : 100;
+                            const heightPx = isFinalHour ? ((endMin / 60) * 44) : 44;
                             
                             return (
                               <div
@@ -4428,17 +4428,20 @@ export default function Dashboard() {
                                   e.stopPropagation();
                                   setSelectedTaskId(task.id);
                                 }}
-                                className={`absolute left-0.5 right-0.5 top-0 cursor-pointer ${
+                                className={`absolute left-0.5 right-0.5 cursor-pointer border-l border-r ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
-                                } ${colors ? `${colors.bg} border-l-2 ${colors.border}` : "bg-gray-100 border-l-2 border-gray-400"}`}
+                                } ${isFinalHour ? "rounded-b border-b" : ""} ${
+                                  colors 
+                                    ? `${colors.bg} ${colors.border}` 
+                                    : "bg-gray-100 border-gray-400"
+                                }`}
                                 style={{ 
-                                  height: `${heightPercent}%`,
+                                  top: 0,
+                                  height: `${heightPx}px`,
                                   zIndex: 10
                                 }}
                                 data-testid={`task-continuation-${task.id}-hour-${hour}`}
-                              >
-                                {/* Show thin continuation strip */}
-                              </div>
+                              />
                             );
                           })}
                           {hourTasks.map((task, taskIdx) => {
