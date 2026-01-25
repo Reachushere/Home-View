@@ -1533,12 +1533,15 @@ export default function Dashboard() {
         course1Code: data.course1Code,
         course1Name: data.course1Name,
         course1Professor: data.course1Professor || null,
+        course1ProfessorEmail: data.course1ProfessorEmail || null,
         course2Code: data.course2Code,
         course2Name: data.course2Name,
         course2Professor: data.course2Professor || null,
+        course2ProfessorEmail: data.course2ProfessorEmail || null,
         course3Code: data.course3Code,
         course3Name: data.course3Name,
         course3Professor: data.course3Professor || null,
+        course3ProfessorEmail: data.course3ProfessorEmail || null,
       });
     },
     onSuccess: () => {
@@ -2204,14 +2207,26 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
-                <Input
-                  placeholder="e.g., Dr. Smith"
-                  value={newSemesterForm.course1Professor}
-                  onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Professor: e.target.value }))}
-                  data-testid="input-course1-professor"
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
+                  <Input
+                    placeholder="e.g., Dr. Smith"
+                    value={newSemesterForm.course1Professor}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Professor: e.target.value }))}
+                    data-testid="input-course1-professor"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Professor Email (optional)</Label>
+                  <Input
+                    type="email"
+                    placeholder="e.g., prof@university.edu"
+                    value={newSemesterForm.course1ProfessorEmail}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1ProfessorEmail: e.target.value }))}
+                    data-testid="input-course1-professor-email"
+                  />
+                </div>
               </div>
             </div>
 
@@ -2239,14 +2254,26 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
-                <Input
-                  placeholder="e.g., Prof. Johnson"
-                  value={newSemesterForm.course2Professor}
-                  onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2Professor: e.target.value }))}
-                  data-testid="input-course2-professor"
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
+                  <Input
+                    placeholder="e.g., Prof. Johnson"
+                    value={newSemesterForm.course2Professor}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2Professor: e.target.value }))}
+                    data-testid="input-course2-professor"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Professor Email (optional)</Label>
+                  <Input
+                    type="email"
+                    placeholder="e.g., prof@university.edu"
+                    value={newSemesterForm.course2ProfessorEmail}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course2ProfessorEmail: e.target.value }))}
+                    data-testid="input-course2-professor-email"
+                  />
+                </div>
               </div>
             </div>
 
@@ -2274,14 +2301,26 @@ export default function Dashboard() {
                   />
                 </div>
               </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
-                <Input
-                  placeholder="e.g., Dr. Williams"
-                  value={newSemesterForm.course3Professor}
-                  onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3Professor: e.target.value }))}
-                  data-testid="input-course3-professor"
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Professor Name (optional)</Label>
+                  <Input
+                    placeholder="e.g., Dr. Williams"
+                    value={newSemesterForm.course3Professor}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3Professor: e.target.value }))}
+                    data-testid="input-course3-professor"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Professor Email (optional)</Label>
+                  <Input
+                    type="email"
+                    placeholder="e.g., prof@university.edu"
+                    value={newSemesterForm.course3ProfessorEmail}
+                    onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course3ProfessorEmail: e.target.value }))}
+                    data-testid="input-course3-professor-email"
+                  />
+                </div>
               </div>
             </div>
 
@@ -5838,7 +5877,19 @@ function SchoolForm({
               <span className="text-sm font-medium">{semesterSettings.course1Code}</span>
               <span className="text-sm text-muted-foreground">- {semesterSettings.course1Name}</span>
               {semesterSettings.course1Professor && (
-                <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course1Professor}</span>
+                semesterSettings.course1ProfessorEmail ? (
+                  <a 
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course1ProfessorEmail)}&su=${encodeURIComponent(`${semesterSettings.course1Code} - `)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
+                    data-testid="link-email-professor-1"
+                  >
+                    Prof. {semesterSettings.course1Professor}
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course1Professor}</span>
+                )
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -5846,7 +5897,19 @@ function SchoolForm({
               <span className="text-sm font-medium">{semesterSettings.course2Code}</span>
               <span className="text-sm text-muted-foreground">- {semesterSettings.course2Name}</span>
               {semesterSettings.course2Professor && (
-                <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course2Professor}</span>
+                semesterSettings.course2ProfessorEmail ? (
+                  <a 
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course2ProfessorEmail)}&su=${encodeURIComponent(`${semesterSettings.course2Code} - `)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
+                    data-testid="link-email-professor-2"
+                  >
+                    Prof. {semesterSettings.course2Professor}
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course2Professor}</span>
+                )
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -5854,7 +5917,19 @@ function SchoolForm({
               <span className="text-sm font-medium">{semesterSettings.course3Code}</span>
               <span className="text-sm text-muted-foreground">- {semesterSettings.course3Name}</span>
               {semesterSettings.course3Professor && (
-                <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course3Professor}</span>
+                semesterSettings.course3ProfessorEmail ? (
+                  <a 
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course3ProfessorEmail)}&su=${encodeURIComponent(`${semesterSettings.course3Code} - `)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
+                    data-testid="link-email-professor-3"
+                  >
+                    Prof. {semesterSettings.course3Professor}
+                  </a>
+                ) : (
+                  <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course3Professor}</span>
+                )
               )}
             </div>
           </div>
