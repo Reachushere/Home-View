@@ -4677,7 +4677,7 @@ export default function Dashboard() {
                   )}
                   {showDaysUntil && (
                     <span className="text-[11px] text-white font-normal flex-shrink-0">
-                      {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')} (+{daysUntil})
+                      {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')} ({daysUntil} {daysUntil === 1 ? 'day' : 'days'})
                     </span>
                   )}
                 </div>
