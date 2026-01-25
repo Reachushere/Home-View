@@ -2953,30 +2953,6 @@ export default function Dashboard() {
               })}
             </div>
             
-            {/* Professor Email Inputs */}
-            <div className="space-y-2">
-              <Label className="text-xs font-medium text-white/70">Professor Emails (click name above to email)</Label>
-              <div className="space-y-1.5">
-                {coursesData.courses.filter(c => c.name.trim()).slice(0, 3).map((course, index) => (
-                  <Input
-                    key={index}
-                    type="email"
-                    placeholder={`${course.name.split(' - ')[0]} professor email`}
-                    defaultValue={course.professorEmail || ""}
-                    onBlur={(e) => {
-                      const email = e.target.value;
-                      const updatedCourses = [...coursesData.courses];
-                      updatedCourses[index] = { ...updatedCourses[index], professorEmail: email };
-                      const newCoursesData = { courses: updatedCourses };
-                      setCoursesData(newCoursesData);
-                      localStorage.setItem('coursesData', JSON.stringify(newCoursesData));
-                    }}
-                    className="h-7 text-xs bg-white/20 border-white/30 text-white placeholder:text-white/50"
-                    data-testid={`input-settings-course${index + 1}-email`}
-                  />
-                ))}
-              </div>
-            </div>
 
             {/* Weeks */}
             <div className="space-y-1">
