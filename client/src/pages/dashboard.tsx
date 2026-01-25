@@ -2558,6 +2558,27 @@ export default function Dashboard() {
             <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
               <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
             </Button>
+            {/* Today/Month buttons */}
+            <div className="flex items-center gap-0.5 ml-2">
+              <Button 
+                variant="ghost"
+                className="!h-5 !min-h-0 px-1.5 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
+                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+                data-testid="button-today"
+              >
+                <Sun className="h-3 w-3 mr-0.5 text-white" />
+                Today
+              </Button>
+              <Button 
+                variant="ghost"
+                className="!h-5 !min-h-0 px-1.5 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
+                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+                data-testid="button-month-view"
+              >
+                <CalendarDays className="h-3 w-3 mr-0.5 text-white" />
+                {calendarView === "month" ? "Week" : "Month"}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -2629,28 +2650,6 @@ export default function Dashboard() {
             )}
           </Button>
 
-          {/* View Buttons */}
-          <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-0.5 py-0.5">
-            <Button 
-              variant="ghost"
-              className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
-              onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-              data-testid="button-today"
-            >
-              <Sun className="h-3 w-3 mr-1 text-white" />
-              Today
-            </Button>
-            <div className="w-[1px] h-4 bg-white/50" />
-            <Button 
-              variant="ghost"
-              className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
-              onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-              data-testid="button-month-view"
-            >
-              <CalendarDays className="h-3 w-3 mr-1 text-white" />
-              {calendarView === "month" ? "Week" : "Month"}
-            </Button>
-          </div>
         </div>
 
         {/* Quick Add Buttons */}
