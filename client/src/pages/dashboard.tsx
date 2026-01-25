@@ -3819,12 +3819,12 @@ export default function Dashboard() {
                     style={{ accentColor: getCourseColor(task.courseName) }}
                     data-testid={`checkbox-task-${task.id}`}
                   />
+                  <span className="text-xs text-white font-normal truncate flex-1">{task.title}</span>
                   {showDaysUntil && (
-                    <span className="text-[10px] text-white/70 font-normal w-16 flex-shrink-0">
-                      {format(new Date(task.dueDate), 'EEE')} (+{daysUntil})
+                    <span className="text-[10px] text-white/70 font-normal flex-shrink-0">
+                      {format(new Date(task.dueDate), 'EEEE')}
                     </span>
                   )}
-                  <span className="text-xs text-white font-normal truncate">{task.title}</span>
                 </div>
                 {attachments.length > 0 && (
                   <div className="ml-6 mt-0.5 space-y-0.5">
