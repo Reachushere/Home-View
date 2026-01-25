@@ -4787,6 +4787,7 @@ export default function Dashboard() {
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25)
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
+                      data-cal-task-id={task.id}
                     >
                       <div className="flex items-center gap-0.5">
                         <Checkbox
