@@ -148,9 +148,12 @@
   }
 }
 
+.animate-blink:not(.absolute) {
+  position: relative;
+}
+
 .animate-blink {
   animation: blink 0.8s ease-in-out infinite;
-  position: relative;
   z-index: 10;
   isolation: isolate;
 }
@@ -293,8 +296,11 @@
   }
 }
 
-.animate-shimmer {
+.animate-shimmer:not(.absolute) {
   position: relative;
+}
+
+.animate-shimmer {
   overflow: hidden;
 }
 
