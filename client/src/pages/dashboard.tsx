@@ -2559,7 +2559,7 @@ export default function Dashboard() {
               <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
             </Button>
             {/* Today/Month buttons */}
-            <div className="flex items-center gap-0.5 ml-2">
+            <div className="flex items-center gap-0.5 ml-2 bg-white/15 backdrop-blur-sm rounded-md px-1 py-0.5">
               <Button 
                 variant="ghost"
                 className="!h-5 !min-h-0 px-1.5 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
