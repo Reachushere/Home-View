@@ -159,15 +159,39 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(192, 192, 192, 0.2) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(192, 192, 192, 0.2) 100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.6) 40%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.6) 60%,
+    transparent 100%
+  );
   border-radius: inherit;
   pointer-events: none;
-  animation: shimmer-overlay 0.8s ease-in-out infinite;
+  animation: shimmer-sweep 5s ease-in-out infinite;
+  transform: translateX(-100%);
 }
 
-@keyframes shimmer-overlay {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.7; }
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  15% {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+  20% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
 
 @keyframes slow-blink {
@@ -252,14 +276,14 @@
     opacity: 0;
     transform: translateX(-100%);
   }
-  5% {
+  2% {
     opacity: 1;
   }
-  25% {
+  10% {
     opacity: 1;
     transform: translateX(100%);
   }
-  30% {
+  12% {
     opacity: 0;
     transform: translateX(100%);
   }
@@ -289,7 +313,7 @@
     rgba(255, 255, 255, 0.7) 60%,
     transparent 100%
   );
-  animation: shimmer 4s ease-in-out infinite;
+  animation: shimmer 5s ease-in-out infinite;
   pointer-events: none;
 }
 

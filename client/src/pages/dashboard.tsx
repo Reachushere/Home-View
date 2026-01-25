@@ -4572,38 +4572,7 @@ export default function Dashboard() {
                         >
                           {/* Half-hour dotted line */}
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50" />
-                          {/* Render continuing tasks from previous hours */}
-                          {getContinuingTasksForHour(day, hour).map((task, contIdx) => {
-                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                            const colors = courseColors[courseCode];
-                            // Check if this is the final hour for this task
-                            const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
-                            const isFinalHour = endHour === hour;
-                            const heightPx = isFinalHour ? ((endMin / 60) * 44) : 44;
-                            
-                            return (
-                              <div
-                                key={`cont-${task.id}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedTaskId(task.id);
-                                }}
-                                className={`absolute left-0.5 right-0.5 cursor-pointer border-l border-r ${
-                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
-                                } ${isFinalHour ? "rounded-b border-b" : ""} ${
-                                  colors 
-                                    ? `${colors.bg} ${colors.border}` 
-                                    : "bg-gray-100 border-gray-400"
-                                }`}
-                                style={{ 
-                                  top: 0,
-                                  height: `${heightPx}px`,
-                                  zIndex: 10
-                                }}
-                                data-testid={`task-continuation-${task.id}-hour-${hour}`}
-                              />
-                            );
-                          })}
+                          {/* Continuation tasks are handled by the main task's extended height - no separate rendering needed */}
                           {hourTasks.map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                             const colors = courseColors[courseCode];
