@@ -1952,7 +1952,7 @@ export default function Dashboard() {
             fromX,
             fromY,
             toX: calRect.left + calRect.width / 2,
-            toY: calRect.bottom + 12,
+            toY: calRect.bottom + 25,
             color,
             isToday: todayTaskIds.has(task.id)
           });
