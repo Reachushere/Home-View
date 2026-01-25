@@ -2466,9 +2466,9 @@ export default function Dashboard() {
         />
       )}
       {/* Left Column - Header Bar + Sidebar */}
-      <div className="flex flex-col relative z-10" style={{ width: 350, marginLeft: '11px', marginTop: '64px', height: 'calc(100vh - 64px - 12px)' }}>
+      <div className="flex flex-col relative z-10 min-h-0" style={{ width: 350, marginLeft: '11px', marginTop: '64px', height: 'calc(100vh - 64px - 12px)' }}>
         {/* Sidebar Container */}
-        <div className="relative flex-1 flex flex-col mb-3 pt-1">
+        <div className="relative flex-1 flex flex-col mb-3 pt-1 min-h-0 overflow-hidden">
         
         {/* Header box behind clock and timer */}
         <div className="absolute left-0 right-0 z-0 rounded-t-md border-[0.1px] border-white border-b-0" style={{ top: '2px', height: '52px', background: 'black' }} />
