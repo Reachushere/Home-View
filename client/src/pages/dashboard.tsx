@@ -6459,7 +6459,7 @@ function TaskForm({
       </div>
 
       <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={createMutation.isPending} className="bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-submit-task">
+        <Button type="submit" disabled={createMutation.isPending} className="bg-teal-500 hover:bg-teal-600 text-white border border-black" data-testid="button-submit-task">
           {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
         </Button>
       </div>
