@@ -7,6 +7,7 @@ import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_17691109
 import campusBg from "@assets/TMU_1769151150961.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
+import crowdCheer from "@assets/crowd-cheer.mp3";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -272,48 +273,15 @@ export default function Dashboard() {
       
       playClapping();
       
-      // Crowd yelling "Hooray!" - stagger slightly for realistic crowd overlap
-      const sayHooray = () => {
-        const allVoices = window.speechSynthesis.getVoices();
-        // Filter to only English voices
-        const englishVoices = allVoices.filter(v => v.lang.startsWith('en'));
-        const voices = englishVoices.length > 0 ? englishVoices : allVoices;
-        
-        // Create multiple utterances at different pitches with tiny random delays for crowd effect
-        const crowdSettings = [
-          { pitch: 0.7, rate: 0.95, delay: 0 },
-          { pitch: 0.85, rate: 1.0, delay: 30 },
-          { pitch: 1.0, rate: 1.05, delay: 15 },
-          { pitch: 1.15, rate: 0.98, delay: 45 },
-          { pitch: 1.3, rate: 1.02, delay: 20 },
-        ];
-        
-        // Cancel any previous speech and start fresh
-        window.speechSynthesis.cancel();
-        
-        // Stagger with tiny delays (15-50ms) for realistic crowd overlap
-        crowdSettings.forEach(({ pitch, rate, delay }, index) => {
-          setTimeout(() => {
-            const utterance = new SpeechSynthesisUtterance("Hooray!");
-            utterance.lang = 'en-US';
-            utterance.rate = rate;
-            utterance.pitch = pitch;
-            utterance.volume = 0.6;
-            if (voices.length > 0) {
-              utterance.voice = voices[index % voices.length];
-            }
-            window.speechSynthesis.speak(utterance);
-          }, delay);
-        });
+      // Play crowd cheer audio
+      const playCrowdCheer = () => {
+        const audio = new Audio(crowdCheer);
+        audio.volume = 0.7;
+        audio.play().catch(err => console.log("Crowd cheer playback error:", err));
       };
       
       setTimeout(() => {
-        // Ensure voices are loaded
-        if (window.speechSynthesis.getVoices().length > 0) {
-          sayHooray();
-        } else {
-          window.speechSynthesis.onvoiceschanged = sayHooray;
-        }
+        playCrowdCheer();
       }, 500);
       
       const timer = setTimeout(() => setShowCelebration(false), 5000);
