@@ -3,6 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const TASK_TYPES = [
+  "class",
   "reading",
   "module", 
   "essay",
@@ -10,7 +11,8 @@ export const TASK_TYPES = [
   "discussion",
   "poll",
   "exam",
-  "quiz"
+  "quiz",
+  "other"
 ] as const;
 
 export const REPEAT_TYPES = [
