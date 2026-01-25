@@ -209,11 +209,11 @@
 /* Light pulse for today column */
 @keyframes today-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.6; }
 }
 
 .animate-today-column {
-  animation: today-pulse 3s ease-in-out infinite;
+  animation: today-pulse 1s ease-in-out infinite;
 }
 
 /* Silver shimmer header for task boxes */
