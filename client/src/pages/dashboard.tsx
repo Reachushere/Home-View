@@ -2889,7 +2889,7 @@ export default function Dashboard() {
               <span className="text-[10px] font-medium text-white tabular-nums">
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
-              <span className="text-xs font-medium text-white ml-0.5 uppercase">
+              <span className="text-[10px] font-medium text-white ml-0.5 uppercase">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
