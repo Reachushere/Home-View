@@ -1947,12 +1947,35 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
+          // For multi-hour tasks, find the last continuation block to get the actual bottom
+          let toY = calRect.bottom + 25;
+          const continuations = document.querySelectorAll(`[data-testid^="task-continuation-${task.id}-hour-"]`);
+          if (continuations.length > 0) {
+            // Find the continuation with the largest hour number (last one)
+            let lastContinuation: Element | null = null;
+            let maxHour = -1;
+            continuations.forEach(cont => {
+              const match = cont.getAttribute('data-testid')?.match(/hour-(\d+)$/);
+              if (match) {
+                const hour = parseInt(match[1], 10);
+                if (hour > maxHour) {
+                  maxHour = hour;
+                  lastContinuation = cont;
+                }
+              }
+            });
+            if (lastContinuation) {
+              const contRect = (lastContinuation as HTMLElement).getBoundingClientRect();
+              toY = contRect.bottom + 25;
+            }
+          }
+          
           connections.push({
             taskId: task.id,
             fromX,
             fromY,
             toX: calRect.left + calRect.width / 2,
-            toY: calRect.bottom + 25,
+            toY,
             color,
             isToday: todayTaskIds.has(task.id)
           });
@@ -4578,10 +4601,10 @@ export default function Dashboard() {
                                       : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
                                 }`}
                                 style={{ 
-                                  top: '-2px',
+                                  top: '0px',
                                   left: '2px',
                                   width: 'calc(100% - 4px)',
-                                  height: `${heightPx + 2}px`,
+                                  height: `${heightPx}px`,
                                   zIndex: 10
                                 }}
                                 data-testid={`task-continuation-${task.id}-hour-${hour}`}
@@ -4611,8 +4634,8 @@ export default function Dashboard() {
                               // For multi-hour tasks, only render the first hour portion (continuation blocks handle the rest)
                               if (spansMultipleHours) {
                                 const firstHourMinutes = 60 - startMin;
-                                // Add 2px to overlap with continuation block and cover row border
-                                taskHeight = (firstHourMinutes / 60) * 44 + 2;
+                                // Add 6px to aggressively overlap with continuation block and fully cover row border
+                                taskHeight = (firstHourMinutes / 60) * 44 + 6;
                               } else {
                                 taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               }
@@ -4656,7 +4679,7 @@ export default function Dashboard() {
                                   left: `calc(${taskIdx * columnWidth}% + 2px)`,
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
-                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : (taskHeight > 44 ? 30 : 1))
+                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : (spansMultipleHours ? 15 : (taskHeight > 44 ? 30 : 1)))
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
