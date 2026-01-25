@@ -4657,6 +4657,8 @@ export default function Dashboard() {
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
+                                  isDueToday ? "task-blink-border" : ""
+                                } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
                                     : colors 
@@ -4768,6 +4770,8 @@ export default function Dashboard() {
                         draggedTask?.id === task.id ? "opacity-50" : ""
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
+                      } ${
+                        isDueToday ? "task-blink-border" : ""
                       } ${
                         task.isCompleted 
                           ? "bg-gray-200 border border-gray-300" 
