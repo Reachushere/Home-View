@@ -2937,6 +2937,10 @@ export default function Dashboard() {
                             rel="noopener noreferrer"
                             className="text-white/70 hover:text-white hover:underline cursor-pointer"
                             data-testid={`link-settings-email-professor-${index + 1}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`, '_blank');
+                            }}
                           >
                             {" "}({course.professor})
                           </a>
@@ -5176,7 +5180,7 @@ export default function Dashboard() {
                 : "arrowhead-indigo";
               // Draw path that goes left first, then curves up to calendar
               // This avoids crossing other checkboxes in the task list
-              const exitX = conn.fromX - 30; // Go 30px left first
+              const exitX = conn.fromX - 12; // Go 12px left first
               const midY = (conn.fromY + conn.toY) / 2;
               // Path: start at checkbox, go left, then curve up to calendar
               const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} Q ${exitX} ${midY}, ${conn.toX} ${conn.toY}`;
@@ -5977,6 +5981,10 @@ function SchoolForm({
                     rel="noopener noreferrer"
                     className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
                     data-testid="link-email-professor-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course1ProfessorEmail!)}&su=${encodeURIComponent(`${semesterSettings.course1Code} - `)}`, '_blank');
+                    }}
                   >
                     Prof. {semesterSettings.course1Professor}
                   </a>
@@ -5997,6 +6005,10 @@ function SchoolForm({
                     rel="noopener noreferrer"
                     className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
                     data-testid="link-email-professor-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course2ProfessorEmail!)}&su=${encodeURIComponent(`${semesterSettings.course2Code} - `)}`, '_blank');
+                    }}
                   >
                     Prof. {semesterSettings.course2Professor}
                   </a>
@@ -6017,6 +6029,10 @@ function SchoolForm({
                     rel="noopener noreferrer"
                     className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
                     data-testid="link-email-professor-3"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course3ProfessorEmail!)}&su=${encodeURIComponent(`${semesterSettings.course3Code} - `)}`, '_blank');
+                    }}
                   >
                     Prof. {semesterSettings.course3Professor}
                   </a>
