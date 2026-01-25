@@ -2862,7 +2862,7 @@ export default function Dashboard() {
           {/* Week navigation with arrows centered, Today/Month and dates stacked */}
           <div className="flex items-center gap-1">
             {/* Left arrow - centered vertically */}
-            <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+            <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md ml-[-2px]" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
             </Button>
             {/* Center content - Today/Month above dates */}
@@ -2888,7 +2888,7 @@ export default function Dashboard() {
                 </Button>
               </div>
               {/* Date display */}
-              <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap ml-[-2px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+              <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap ml-[-4px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                 <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
                 <span className="text-[11px] text-white/50">—</span>
                 <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
@@ -2902,7 +2902,7 @@ export default function Dashboard() {
         </div>
 
         {/* All items with equal gaps - spread between arrow and timer */}
-        <div className="flex items-center flex-1 h-full justify-start gap-[7px] min-w-0 overflow-hidden pl-[9px] pr-4">
+        <div className="flex items-center flex-1 h-full justify-start gap-[7px] min-w-0 overflow-hidden pl-[6px] pr-4">
 
           {/* Hamburger Menu */}
           <DropdownMenu>
@@ -3013,7 +3013,7 @@ export default function Dashboard() {
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-[9px] bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
+          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[8px] bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-[7px] bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-2 hover:opacity-80 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ backgroundColor: '#7f1d1d', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
         </div>
