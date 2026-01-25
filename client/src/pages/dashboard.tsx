@@ -4702,7 +4702,10 @@ export default function Dashboard() {
                                     {task.title}
                                   </div>
                                 </div>
-                                <div className={`text-[8px] mt-0.5 mb-3 ml-4 px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}>
+                                <div 
+                                  className={`text-[8px] mt-0.5 mb-3 ml-4 px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
+                                  style={{ animation: 'none' }}
+                                >
                                   {format(new Date(task.dueDate), "h:mm a")}
                                 </div>
                               </div>
@@ -4813,7 +4816,10 @@ export default function Dashboard() {
                         </span>
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
-                        <div className="text-[7px] text-muted-foreground ml-3 px-0.5">
+                        <div 
+                          className="text-[7px] text-muted-foreground ml-3 px-0.5"
+                          style={{ animation: 'none' }}
+                        >
                           {task.eventStartTime} - {task.eventEndTime}
                         </div>
                       )}
