@@ -203,6 +203,7 @@ export default function Dashboard() {
     toX: number;
     toY: number;
     color: string;
+    isToday: boolean;
   }>>([]);
   const mainContentRef = useRef<HTMLElement | null>(null);
   
@@ -1844,16 +1845,18 @@ export default function Dashboard() {
     
     const calculateArrows = () => {
       const connections: typeof arrowConnections = [];
+      const todayTaskIds = new Set(dueTodayTasks.map(t => t.id));
       const allTasksToConnect = [...dueTodayTasks, ...dueTomorrowTasks, ...dueThisWeekTasks];
       
       allTasksToConnect.forEach(task => {
         // Find the task card in the bottom boxes
         const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
+        // Find the checkbox within the task element
+        const checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
         // Find the corresponding task on the calendar
         const calTaskEl = document.querySelector(`[data-cal-task-id="${task.id}"]`);
         
         if (boxTaskEl && calTaskEl) {
-          const boxRect = boxTaskEl.getBoundingClientRect();
           const calRect = calTaskEl.getBoundingClientRect();
           
           // Get course color
@@ -1863,13 +1866,27 @@ export default function Dashboard() {
           else if (courseCode === "CFNF400") color = "#ec4899";
           else if (courseCode === "CASL101") color = "#6366f1";
           
+          // Start arrow from left side of checkbox, or fall back to left of task box
+          let fromX: number;
+          let fromY: number;
+          if (checkboxEl) {
+            const checkboxRect = checkboxEl.getBoundingClientRect();
+            fromX = checkboxRect.left;
+            fromY = checkboxRect.top + checkboxRect.height / 2;
+          } else {
+            const boxRect = boxTaskEl.getBoundingClientRect();
+            fromX = boxRect.left;
+            fromY = boxRect.top + boxRect.height / 2;
+          }
+          
           connections.push({
             taskId: task.id,
-            fromX: boxRect.left,
-            fromY: boxRect.top + boxRect.height / 2,
+            fromX,
+            fromY,
             toX: calRect.left + calRect.width / 2,
             toY: calRect.bottom + 6,
-            color
+            color,
+            isToday: todayTaskIds.has(task.id)
           });
         }
       });
@@ -5157,9 +5174,12 @@ export default function Dashboard() {
               const markerId = conn.color === "#22c55e" ? "arrowhead-green" 
                 : conn.color === "#ec4899" ? "arrowhead-pink" 
                 : "arrowhead-indigo";
-              // Draw curved line from box to calendar
+              // Draw path that goes left first, then curves up to calendar
+              // This avoids crossing other checkboxes in the task list
+              const exitX = conn.fromX - 30; // Go 30px left first
               const midY = (conn.fromY + conn.toY) / 2;
-              const path = `M ${conn.fromX} ${conn.fromY} Q ${conn.fromX} ${midY}, ${conn.toX} ${conn.toY}`;
+              // Path: start at checkbox, go left, then curve up to calendar
+              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} Q ${exitX} ${midY}, ${conn.toX} ${conn.toY}`;
               return (
                 <path
                   key={conn.taskId}
@@ -5170,6 +5190,7 @@ export default function Dashboard() {
                   strokeDasharray="5,3"
                   markerEnd={`url(#${markerId})`}
                   opacity="0.7"
+                  className={conn.isToday ? "animate-pulse" : ""}
                 />
               );
             })}
