@@ -3820,7 +3820,7 @@ export default function Dashboard() {
                     data-testid={`checkbox-task-${task.id}`}
                   />
                   <button 
-                    className="text-xs text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
+                    className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
                   >
@@ -3830,7 +3830,7 @@ export default function Dashboard() {
                     )}
                   </button>
                   {showDaysUntil && (
-                    <span className="text-[10px] text-white/70 font-normal flex-shrink-0">
+                    <span className="text-[11px] text-white/70 font-normal flex-shrink-0">
                       {format(new Date(task.dueDate), 'EEEE')} (+{daysUntil})
                     </span>
                   )}
