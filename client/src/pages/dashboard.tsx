@@ -2816,7 +2816,30 @@ export default function Dashboard() {
               
               {/* Swipeable container */}
               <div 
-                className="touch-pan-y"
+                className="select-none cursor-grab active:cursor-grabbing"
+                onMouseDown={(e) => {
+                  (e.currentTarget as any).mouseStartX = e.clientX;
+                  (e.currentTarget as any).isMouseDown = true;
+                }}
+                onMouseMove={(e) => {
+                  if (!(e.currentTarget as any).isMouseDown) return;
+                }}
+                onMouseUp={(e) => {
+                  if (!(e.currentTarget as any).isMouseDown) return;
+                  (e.currentTarget as any).isMouseDown = false;
+                  const startX = (e.currentTarget as any).mouseStartX;
+                  const diff = e.clientX - startX;
+                  if (Math.abs(diff) > 50) {
+                    if (diff > 0 && currentPagLevel > 1) {
+                      setCurrentPagLevel(currentPagLevel - 1);
+                    } else if (diff < 0 && currentPagLevel < 3) {
+                      setCurrentPagLevel(currentPagLevel + 1);
+                    }
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as any).isMouseDown = false;
+                }}
                 onTouchStart={(e) => {
                   const touch = e.touches[0];
                   (e.currentTarget as any).touchStartX = touch.clientX;
