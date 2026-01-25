@@ -3892,7 +3892,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 items-start flex-shrink-0">
           {/* Due Today */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               TODAY ({dueTodayTasks.length})
@@ -3903,13 +3903,28 @@ export default function Dashboard() {
               ) : dueTodayTasks.length === 0 ? (
                 <div className="text-white/60 text-xs">No tasks today</div>
               ) : (
-                renderGroupedTasks(dueTodayTasks, false)
+                <div className="space-y-0.5">
+                  {dueTodayTasks.map((task, idx) => {
+                    const prevTask = idx > 0 ? dueTodayTasks[idx - 1] : null;
+                    const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
+                    return (
+                      <div key={task.id}>
+                        {showCourseHeader && (
+                          <div className="text-[10px] text-black font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                            {task.courseName}
+                          </div>
+                        )}
+                        {renderTask(task, false)}
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </section>
 
           {/* Due Tomorrow */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-tomorrow">
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-tomorrow">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               TOMORROW ({dueTomorrowTasks.length})
@@ -3920,13 +3935,28 @@ export default function Dashboard() {
               ) : dueTomorrowTasks.length === 0 ? (
                 <div className="text-white/60 text-xs">No tasks tomorrow</div>
               ) : (
-                renderGroupedTasks(dueTomorrowTasks, false)
+                <div className="space-y-0.5">
+                  {dueTomorrowTasks.map((task, idx) => {
+                    const prevTask = idx > 0 ? dueTomorrowTasks[idx - 1] : null;
+                    const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
+                    return (
+                      <div key={task.id}>
+                        {showCourseHeader && (
+                          <div className="text-[10px] text-black font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                            {task.courseName}
+                          </div>
+                        )}
+                        {renderTask(task, false)}
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           </section>
 
           {/* Due This Week */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-this-week">
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-this-week">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               THIS WEEK ({dueThisWeekTasks.length})
