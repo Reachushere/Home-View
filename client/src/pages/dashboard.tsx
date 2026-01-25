@@ -4645,6 +4645,10 @@ export default function Dashboard() {
                                   e.stopPropagation();
                                   setSelectedTaskId(task.id);
                                 }}
+                                onDoubleClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingTask(task);
+                                }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Delete' || e.key === 'Backspace') {
                                     e.preventDefault();
@@ -4755,9 +4759,7 @@ export default function Dashboard() {
                       }}
                       onDoubleClick={(e) => {
                         e.stopPropagation();
-                        if (task.isCompleted) {
-                          completeMutation.mutate({ id: task.id, isCompleted: false });
-                        }
+                        setEditingTask(task);
                       }}
                       onContextMenu={(e) => {
                         e.preventDefault();
