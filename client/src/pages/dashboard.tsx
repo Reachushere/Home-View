@@ -2664,12 +2664,12 @@ export default function Dashboard() {
           >
             <CheckSquare className="h-[14px] w-[14px] text-white" />
           </Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-3 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2 hover:opacity-80 text-white text-[10px] border-0 font-medium rounded-md" style={{ backgroundColor: '#7f1d1d' }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-3 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2 hover:opacity-80 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ backgroundColor: '#7f1d1d' }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
         </div>
 
         {/* Timer and Clock - Far Right */}
@@ -2700,6 +2700,7 @@ export default function Dashboard() {
             <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
+            <div className="w-[1px] h-4 bg-white/50" />
             <div className="flex items-baseline">
               <span className="text-sm font-semibold text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
