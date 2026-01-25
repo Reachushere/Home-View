@@ -2702,7 +2702,6 @@ export default function Dashboard() {
             <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <div className="w-[1px] h-4 bg-white/50" />
             <div className="flex items-baseline">
               <span className="text-sm font-semibold text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
