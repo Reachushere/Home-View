@@ -4964,13 +4964,13 @@ export default function Dashboard() {
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
           <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
-            <DialogHeader className="flex flex-row items-center justify-between gap-2">
+            <DialogHeader className="flex flex-row items-center justify-between gap-4">
               <DialogTitle>Edit Task</DialogTitle>
               {editingTask && (
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 mr-6"
                   onClick={() => {
                     if (confirm("Are you sure you want to delete this task?")) {
                       deleteMutation.mutate(editingTask.id);
