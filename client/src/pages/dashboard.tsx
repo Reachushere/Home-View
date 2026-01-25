@@ -4797,7 +4797,10 @@ export default function Dashboard() {
                           className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
                           onClick={(e) => e.stopPropagation()}
                         />
-                        <span className={`text-[9px] leading-tight font-medium line-clamp-2 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}>
+                        <span 
+                          onClick={() => setEditingTask(task)}
+                          className={`text-[9px] leading-tight font-medium line-clamp-2 cursor-pointer ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
+                        >
                           {task.title}
                         </span>
                       </div>
