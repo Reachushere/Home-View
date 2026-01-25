@@ -4592,10 +4592,10 @@ export default function Dashboard() {
                                   isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted
-                                    ? `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-300`
+                                    ? "bg-gray-200"
                                     : colors 
-                                      ? `${colors.bg} border-l border-r ${isFinalHour ? "border-b" : ""} ${colors.border}` 
-                                      : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
+                                      ? colors.bg
+                                      : "bg-gray-200"
                                 }`}
                                 style={{ 
                                   top: '-4px',
@@ -4664,10 +4664,10 @@ export default function Dashboard() {
                                   isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted 
-                                    ? `bg-gray-200 border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} border-gray-300` 
+                                    ? `bg-gray-200 ${spansMultipleHours ? "" : "border border-gray-300"}` 
                                     : colors 
-                                      ? `${colors.bg} border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} ${colors.border}` 
-                                      : `bg-gray-200 border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} border-gray-400`
+                                      ? `${colors.bg} ${spansMultipleHours ? "" : `border ${colors.border}`}` 
+                                      : `bg-gray-200 ${spansMultipleHours ? "" : "border border-gray-400"}`
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
