@@ -4354,7 +4354,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden backdrop-blur-md"
+                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible backdrop-blur-md"
                         style={{ 
                           backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg
                         }}
