@@ -1927,9 +1927,9 @@ export default function Dashboard() {
         if (boxTaskEl && calTaskEl) {
           const calRect = calTaskEl.getBoundingClientRect();
           
-          // Get course color
+          // Get course color - black for tasks without a course
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-          let color = "#666";
+          let color = "#000000";
           if (courseCode === "CPPA122") color = "#22c55e";
           else if (courseCode === "CFNF400") color = "#ec4899";
           else if (courseCode === "CASL101") color = "#6366f1";
@@ -4647,8 +4647,8 @@ export default function Dashboard() {
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
-                                  left: `calc(${taskIdx * columnWidth}% + 2px)`,
-                                  width: `calc(${columnWidth}% - 4px)`,
+                                  left: '2px',
+                                  width: 'calc(100% - 4px)',
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : (taskHeight > 44 ? 30 : 1))
                                 }}
@@ -5186,11 +5186,22 @@ export default function Dashboard() {
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
               </marker>
+              <marker
+                id="arrowhead-black"
+                markerWidth="10"
+                markerHeight="7"
+                refX="9"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#000000" />
+              </marker>
             </defs>
             {arrowConnections.map(conn => {
               const markerId = conn.color === "#22c55e" ? "arrowhead-green" 
                 : conn.color === "#ec4899" ? "arrowhead-pink" 
-                : "arrowhead-indigo";
+                : conn.color === "#6366f1" ? "arrowhead-indigo"
+                : "arrowhead-black";
               // Draw path that goes left first, then curves up to calendar
               // This avoids crossing other checkboxes in the task list
               const exitX = conn.fromX - 25; // Go 25px left first to clear all checkboxes
