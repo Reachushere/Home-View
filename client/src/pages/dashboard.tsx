@@ -2899,6 +2899,9 @@ export default function Dashboard() {
                   !task.isCompleted &&
                   isSameDay(new Date(task.dueDate), tomorrow)
                 );
+                const professorEmail = index === 0 ? semesterSettings?.course1ProfessorEmail :
+                                       index === 1 ? semesterSettings?.course2ProfessorEmail :
+                                       semesterSettings?.course3ProfessorEmail;
                 return (
                   <div key={index} className="flex items-center gap-1.5">
                     <div 
@@ -2908,12 +2911,80 @@ export default function Dashboard() {
                     <span className="text-[12px] text-white">
                       <span className="font-medium">{courseCode}</span>
                       {courseName !== courseCode && <span> - {courseName}</span>}
-                      {course.professor && <span className="text-white/70"> ({course.professor})</span>}
+                      {course.professor && (
+                        professorEmail ? (
+                          <a
+                            href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white/70 hover:text-white hover:underline cursor-pointer"
+                            data-testid={`link-settings-email-professor-${index + 1}`}
+                          >
+                            {" "}({course.professor})
+                          </a>
+                        ) : (
+                          <span className="text-white/70"> ({course.professor})</span>
+                        )
+                      )}
                     </span>
                   </div>
                 );
               })}
             </div>
+            
+            {/* Professor Email Inputs */}
+            {semesterSettings && (
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-white/70">Professor Emails (click name above to email)</Label>
+                <div className="space-y-1.5">
+                  <Input
+                    type="email"
+                    placeholder={`${semesterSettings.course1Code || 'Course 1'} professor email`}
+                    defaultValue={semesterSettings.course1ProfessorEmail || ""}
+                    onBlur={(e) => {
+                      const email = e.target.value;
+                      apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
+                        course1ProfessorEmail: email || null,
+                        course2ProfessorEmail: semesterSettings.course2ProfessorEmail,
+                        course3ProfessorEmail: semesterSettings.course3ProfessorEmail
+                      }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
+                    }}
+                    className="h-7 text-xs bg-white/20 border-white/30 text-white placeholder:text-white/50"
+                    data-testid="input-settings-course1-email"
+                  />
+                  <Input
+                    type="email"
+                    placeholder={`${semesterSettings.course2Code || 'Course 2'} professor email`}
+                    defaultValue={semesterSettings.course2ProfessorEmail || ""}
+                    onBlur={(e) => {
+                      const email = e.target.value;
+                      apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
+                        course1ProfessorEmail: semesterSettings.course1ProfessorEmail,
+                        course2ProfessorEmail: email || null,
+                        course3ProfessorEmail: semesterSettings.course3ProfessorEmail
+                      }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
+                    }}
+                    className="h-7 text-xs bg-white/20 border-white/30 text-white placeholder:text-white/50"
+                    data-testid="input-settings-course2-email"
+                  />
+                  <Input
+                    type="email"
+                    placeholder={`${semesterSettings.course3Code || 'Course 3'} professor email`}
+                    defaultValue={semesterSettings.course3ProfessorEmail || ""}
+                    onBlur={(e) => {
+                      const email = e.target.value;
+                      apiRequest("PATCH", "/api/semester-settings/professor-emails", { 
+                        course1ProfessorEmail: semesterSettings.course1ProfessorEmail,
+                        course2ProfessorEmail: semesterSettings.course2ProfessorEmail,
+                        course3ProfessorEmail: email || null
+                      }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
+                    }}
+                    className="h-7 text-xs bg-white/20 border-white/30 text-white placeholder:text-white/50"
+                    data-testid="input-settings-course3-email"
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Weeks */}
             <div className="space-y-1">
