@@ -2548,7 +2548,7 @@ export default function Dashboard() {
         </div>
 
         {/* Middle Section - Evenly Spaced */}
-        <div className="flex items-center justify-evenly flex-1 h-full">
+        <div className="flex items-center justify-between flex-1 h-full px-6">
           {/* Week navigation */}
           <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
             <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
