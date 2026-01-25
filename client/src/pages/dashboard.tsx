@@ -4298,7 +4298,7 @@ export default function Dashboard() {
                   return (
                   <div 
                     key={hour} 
-                    className="grid border-b border-border/50"
+                    className="grid border-b border-border/50 overflow-visible"
                     style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}
                   >
                     <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : 'black' }}>
@@ -4314,7 +4314,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
                             backgroundColor: (isToday || isCurrentHour) ? 'rgba(93, 129, 204, 0.35)' : 'white'
                           }}
@@ -4384,7 +4384,7 @@ export default function Dashboard() {
                                   left: `calc(${taskIdx * columnWidth}% + 2px)`,
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
-                                  zIndex: selectedTaskId === task.id ? 20 : (draggedTask?.id === task.id ? 10 : 1)
+                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : (taskHeight > 44 ? 30 : 1))
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
