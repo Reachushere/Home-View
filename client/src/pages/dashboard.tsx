@@ -3937,7 +3937,9 @@ export default function Dashboard() {
               ) : dueThisWeekTasks.length === 0 ? (
                 <div className="text-white/60 text-xs">No other tasks this week</div>
               ) : (
-                renderGroupedTasks(dueThisWeekTasks, true)
+                <div className="space-y-0.5">
+                  {dueThisWeekTasks.map(task => renderTask(task, true))}
+                </div>
               )}
             </div>
           </section>
