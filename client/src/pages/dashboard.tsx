@@ -2049,6 +2049,41 @@ export default function Dashboard() {
     });
   };
   
+  // Get all multi-hour tasks for the week to render as absolute positioned elements
+  const getMultiHourTasksForWeek = () => {
+    return allTasks.filter(t => {
+      if (t.isCompleted) return false;
+      if (!t.eventStartTime || !t.eventEndTime) return false;
+      
+      const dueDate = new Date(t.dueDate);
+      // Check if task is in current week view
+      const isInWeek = weekDays.some(day => isSameDay(day, dueDate));
+      if (!isInWeek) return false;
+      
+      const [startHour] = t.eventStartTime.split(':').map(Number);
+      const [endHour] = t.eventEndTime.split(':').map(Number);
+      
+      // Only return tasks that span multiple hours
+      return endHour > startHour;
+    }).map(t => {
+      const dueDate = new Date(t.dueDate);
+      const dayIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
+      const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
+      const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
+      
+      // Calculate position: 70px for time column, then each day is (100% - 70px) / 7
+      const startMinutes = startHour * 60 + startMin;
+      const endMinutes = endHour * 60 + endMin;
+      const durationMinutes = endMinutes - startMinutes;
+      
+      // Top position: hour * 44px + minute offset
+      const topPx = (startHour * 44) + ((startMin / 60) * 44);
+      const heightPx = (durationMinutes / 60) * 44;
+      
+      return { task: t, dayIdx, topPx, heightPx };
+    });
+  };
+  
   // Check if a calendar event conflicts with any task
   const eventConflictsWithTask = (event: CalendarEvent) => {
     const eventStart = new Date(event.startDate);
@@ -4567,48 +4602,16 @@ export default function Dashboard() {
                         >
                           {/* Half-hour dotted line */}
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" />
-                          {/* Render continuing tasks from previous hours */}
-                          {getContinuingTasksForHour(day, hour).map((task) => {
-                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                            const colors = courseColors[courseCode];
-                            const today = startOfDay(new Date());
-                            const tomorrow = addDays(today, 1);
-                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                            const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
-                            const isFinalHour = endHour === hour;
-                            const heightPx = isFinalHour ? Math.max(4, (endMin / 60) * 44) : 44;
-                            
-                            return (
-                              <div
-                                key={`cont-${task.id}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedTaskId(task.id);
-                                }}
-                                className={`absolute cursor-pointer ${
-                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
-                                } ${isFinalHour ? "rounded-b" : ""} ${
-                                  isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
-                                } ${
-                                  task.isCompleted
-                                    ? "bg-gray-200"
-                                    : colors 
-                                      ? colors.bg
-                                      : "bg-gray-200"
-                                }`}
-                                style={{ 
-                                  top: '-4px',
-                                  left: '2px',
-                                  width: 'calc(100% - 4px)',
-                                  height: `${heightPx + 4}px`,
-                                  zIndex: 9
-                                }}
-                                data-testid={`task-continuation-${task.id}-hour-${hour}`}
-                              />
-                            );
-                          })}
-                          {hourTasks.map((task, taskIdx) => {
+                          {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
+                          {hourTasks.filter(task => {
+                            // Skip multi-hour tasks - they're rendered at scroll container level
+                            if (task.eventStartTime && task.eventEndTime) {
+                              const [startHour] = task.eventStartTime.split(':').map(Number);
+                              const [endHour] = task.eventEndTime.split(':').map(Number);
+                              if (endHour > startHour) return false;
+                            }
+                            return true;
+                          }).map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                             const colors = courseColors[courseCode];
                             const today = startOfDay(new Date());
@@ -4619,21 +4622,14 @@ export default function Dashboard() {
                             // Calculate height based on duration for events with start/end times
                             let taskHeight = 40; // Default height for single hour
                             let topOffset = 2; // Default top offset
-                            let spansMultipleHours = false;
                             if (task.eventStartTime && task.eventEndTime) {
                               const [startHour, startMin] = task.eventStartTime.split(':').map(Number);
                               const [endHour, endMin] = task.eventEndTime.split(':').map(Number);
                               const startMinutes = startHour * 60 + startMin;
                               const endMinutes = endHour * 60 + endMin;
                               const durationMinutes = endMinutes - startMinutes;
-                              spansMultipleHours = endHour > startHour;
-                              // Each hour slot is 44px, so per minute is 44/60 = 0.733px
-                              if (spansMultipleHours) {
-                                // For multi-hour tasks, extend 4px past slot to fully overlap continuation
-                                taskHeight = 44 - (startMin / 60) * 44 + 4;
-                              } else {
-                                taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
-                              }
+                              // Single hour tasks only now
+                              taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               // Offset for minutes past the hour
                               topOffset = (startMin / 60) * 44;
                             }
@@ -4656,7 +4652,7 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute ${spansMultipleHours ? "rounded-t" : "rounded"} pt-1 px-0.5 pb-2 hover:opacity-90 ${spansMultipleHours ? "" : "shadow-sm"} cursor-grab active:cursor-grabbing ${
+                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -4664,10 +4660,10 @@ export default function Dashboard() {
                                   isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted 
-                                    ? `bg-gray-200 ${spansMultipleHours ? "" : "border border-gray-300"}` 
+                                    ? "bg-gray-200 border border-gray-300" 
                                     : colors 
-                                      ? `${colors.bg} ${spansMultipleHours ? "" : `border ${colors.border}`}` 
-                                      : `bg-gray-200 ${spansMultipleHours ? "" : "border border-gray-400"}`
+                                      ? `${colors.bg} border ${colors.border}` 
+                                      : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -4734,6 +4730,80 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
+                  );
+                })}
+                
+                {/* Multi-hour tasks overlay - rendered as single absolute positioned elements */}
+                {getMultiHourTasksForWeek().map(({ task, dayIdx, topPx, heightPx }) => {
+                  const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                  const colors = courseColors[courseCode];
+                  const today = startOfDay(new Date());
+                  const tomorrow = addDays(today, 1);
+                  const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                  const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                  
+                  return (
+                    <div
+                      key={`multi-${task.id}`}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, task)}
+                      onDragEnd={handleDragEnd}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedTaskId(task.id);
+                      }}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation();
+                        if (task.isCompleted) {
+                          completeMutation.mutate({ id: task.id, isCompleted: false });
+                        }
+                      }}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        if (confirm('Delete this task?')) {
+                          deleteMutation.mutate(task.id);
+                          setSelectedTaskId(null);
+                        }
+                      }}
+                      className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                        draggedTask?.id === task.id ? "opacity-50" : ""
+                      } ${
+                        selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
+                      } ${
+                        isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
+                      } ${
+                        task.isCompleted 
+                          ? "bg-gray-200 border border-gray-300" 
+                          : colors 
+                            ? `${colors.bg} border ${colors.border}` 
+                            : "bg-gray-200 border border-gray-400"
+                      }`}
+                      style={{
+                        top: `${topPx}px`,
+                        left: `calc(70px + (${dayIdx} * ((100% - 70px) / 7)) + 2px)`,
+                        width: `calc(((100% - 70px) / 7) - 4px)`,
+                        height: `${heightPx}px`,
+                        zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25)
+                      }}
+                      data-testid={`multi-hour-task-${task.id}`}
+                    >
+                      <div className="flex items-center gap-0.5">
+                        <Checkbox
+                          checked={task.isCompleted || false}
+                          onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <span className={`text-[9px] leading-tight font-medium line-clamp-2 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}>
+                          {task.name}
+                        </span>
+                      </div>
+                      {task.eventStartTime && task.eventEndTime && (
+                        <div className="text-[7px] text-muted-foreground ml-3">
+                          {task.eventStartTime} - {task.eventEndTime}
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
             </div>
