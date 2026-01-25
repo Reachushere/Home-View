@@ -3828,21 +3828,27 @@ export default function Dashboard() {
                     {attachments.map((file, idx) => {
                       const matchingFile = findFileByUrl(file.url);
                       return (
-                        <button
-                          key={idx}
-                          className="flex items-center gap-1.5 text-[10px] text-white/80 hover:text-white cursor-pointer"
-                          onClick={() => {
-                            if (matchingFile) {
-                              setPreviewFile(matchingFile);
-                            } else {
-                              window.open(file.url, '_blank');
-                            }
-                          }}
-                          data-testid={`file-link-${task.id}-${idx}`}
-                        >
-                          <FileText className="h-3 w-3" />
-                          <span className="truncate max-w-[180px]">{file.name}</span>
-                        </button>
+                        <div key={idx} className="flex items-center gap-2">
+                          <button
+                            className="flex items-center gap-1.5 text-[10px] text-white/80 hover:text-white cursor-pointer flex-1"
+                            onClick={() => {
+                              if (matchingFile) {
+                                setPreviewFile(matchingFile);
+                              } else {
+                                window.open(file.url, '_blank');
+                              }
+                            }}
+                            data-testid={`file-link-${task.id}-${idx}`}
+                          >
+                            <FileText className="h-3 w-3" />
+                            <span className="truncate max-w-[180px]">{file.name}</span>
+                          </button>
+                          {showDaysUntil && (
+                            <span className="text-[9px] text-white/60 whitespace-nowrap">
+                              {format(new Date(task.dueDate), 'MMM d')} (+{daysUntil}d)
+                            </span>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
