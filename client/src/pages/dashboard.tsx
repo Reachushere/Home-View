@@ -2552,7 +2552,7 @@ export default function Dashboard() {
           {/* Week navigation with Today/Month above */}
           <div className="flex flex-col items-center gap-0.5 flex-shrink-0" style={{ marginLeft: '-5px' }}>
             {/* Today/Month buttons - smaller, above */}
-            <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-1 py-0.5">
+            <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-1 py-0.5" style={{ marginTop: '3px' }}>
               <Button 
                 variant="ghost"
                 className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
