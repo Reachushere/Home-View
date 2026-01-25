@@ -2588,7 +2588,7 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white" data-testid="button-hamburger-menu">
+              <Button variant="ghost" size="icon" className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white" data-testid="button-hamburger-menu">
                 <Menu className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
@@ -2616,7 +2616,7 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
@@ -2628,7 +2628,7 @@ export default function Dashboard() {
             variant="ghost"
             size="icon"
             onClick={toggleMute}
-            className={`h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+            className={`h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
           >
@@ -2639,7 +2639,7 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
@@ -2655,7 +2655,7 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
             data-testid="button-completed-tasks"
             onClick={() => setIsCompletedTasksOpen(true)}
           >
