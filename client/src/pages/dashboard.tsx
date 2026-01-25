@@ -4545,40 +4545,6 @@ export default function Dashboard() {
                         >
                           {/* Half-hour dotted line */}
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" />
-                          {/* Render continuing tasks from previous hours */}
-                          {getContinuingTasksForHour(day, hour).map((task) => {
-                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                            const colors = courseColors[courseCode];
-                            const today = startOfDay(new Date());
-                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                            // Check if this is the final hour for this task
-                            const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
-                            const isFinalHour = endHour === hour;
-                            const heightPx = isFinalHour ? ((endMin / 60) * 44) : 44;
-                            
-                            return (
-                              <div
-                                key={`cont-${task.id}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedTaskId(task.id);
-                                }}
-                                className={`absolute left-[2px] right-[2px] cursor-pointer ${
-                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
-                                } ${isFinalHour ? "rounded-b" : ""} ${
-                                  colors 
-                                    ? `${colors.bg} border-l border-r ${isFinalHour ? "border-b" : ""} ${colors.border}` 
-                                    : "bg-gray-100 border-l border-r border-gray-400"
-                                }`}
-                                style={{ 
-                                  top: 0,
-                                  height: `${heightPx}px`,
-                                  zIndex: 5
-                                }}
-                                data-testid={`task-continuation-${task.id}-hour-${hour}`}
-                              />
-                            );
-                          })}
                           {hourTasks.map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                             const colors = courseColors[courseCode];
@@ -4620,12 +4586,12 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm overflow-hidden cursor-grab active:cursor-grabbing ${
+                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
-                                  isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                                  isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
