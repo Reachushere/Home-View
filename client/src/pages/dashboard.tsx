@@ -2538,13 +2538,17 @@ export default function Dashboard() {
         border: '0.1px solid white',
         height: '52px'
       }}>
-        {/* Logo, Title, and Week Navigation */}
+        {/* Logo and Title - Fixed Left */}
         <div className="flex items-center px-4 gap-3 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" style={{ marginLeft: '-7px' }} />
           <div className="flex flex-col">
             <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
             <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
           </div>
+        </div>
+
+        {/* Middle Section - Evenly Spaced */}
+        <div className="flex items-center justify-evenly flex-1 h-full">
           {/* Week navigation */}
           <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
             <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
@@ -2581,100 +2585,99 @@ export default function Dashboard() {
               </Button>
             </div>
           </div>
+
+          {/* Navigation Controls */}
+          <div className="flex items-center gap-2">
+            {/* Hamburger Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white" data-testid="button-hamburger-menu">
+                  <Menu className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
+                  <GraduationCap className="h-4 w-4 mr-2" />
+                  School
+                </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
+                  <Palette className="h-4 w-4 mr-2" />
+                  Courses
+                </DropdownMenuItem>
+                <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Settings
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Settings Gear */}
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
+              data-testid="button-settings-panel"
+              onClick={() => setIsSettingsPanelOpen(true)}
+            >
+              <Settings className="h-[14px] w-[14px] text-white" />
+            </Button>
+
+            {/* Bell */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleMute}
+              className={`h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+              data-testid="button-mute-toggle"
+              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+            >
+              {isMuted ? <BellOff className="h-[14px] w-[14px] text-white" /> : <Bell className="h-[14px] w-[14px] text-white" />}
+            </Button>
+
+            {/* Sync */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
+              onClick={() => syncAllCalendarMutation.mutate()}
+              disabled={syncAllCalendarMutation.isPending}
+              data-testid="button-sync-calendar"
+            >
+              {syncAllCalendarMutation.isPending ? (
+                <Loader2 className="h-[14px] w-[14px] text-white animate-spin" />
+              ) : (
+                <RefreshCw className="h-[14px] w-[14px] text-white" />
+              )}
+            </Button>
+
+            {/* Completed Tasks Checkbox */}
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
+              data-testid="button-completed-tasks"
+              onClick={() => setIsCompletedTasksOpen(true)}
+            >
+              <CheckSquare className="h-[14px] w-[14px] text-white" />
+            </Button>
+          </div>
+
+          {/* Quick Add Buttons */}
+          <div className="flex items-center gap-1">
+            <Button size="sm" className="!h-7 !min-h-0 px-3 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
+            <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
+            <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
+            <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
+            <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
+            <Button size="sm" className="!h-7 !min-h-0 px-2 hover:opacity-80 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ backgroundColor: '#7f1d1d' }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
+          </div>
         </div>
 
-        {/* Navigation and Controls */}
-        <div className="flex items-center gap-2 px-2 h-full">
-          {/* Hamburger Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white" data-testid="button-hamburger-menu">
-                <Menu className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
-              <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
-                <User className="h-4 w-4 mr-2" />
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
-                <GraduationCap className="h-4 w-4 mr-2" />
-                School
-              </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
-                <Palette className="h-4 w-4 mr-2" />
-                Courses
-              </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Settings Gear - next to hamburger */}
-          <Button 
-            size="icon"
-            variant="ghost"
-            className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
-            data-testid="button-settings-panel"
-            onClick={() => setIsSettingsPanelOpen(true)}
-          >
-            <Settings className="h-[14px] w-[14px] text-white" />
-          </Button>
-
-          {/* Bell */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleMute}
-            className={`h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
-            data-testid="button-mute-toggle"
-            title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-          >
-            {isMuted ? <BellOff className="h-[14px] w-[14px] text-white" /> : <Bell className="h-[14px] w-[14px] text-white" />}
-          </Button>
-
-          {/* Sync */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
-            onClick={() => syncAllCalendarMutation.mutate()}
-            disabled={syncAllCalendarMutation.isPending}
-            data-testid="button-sync-calendar"
-          >
-            {syncAllCalendarMutation.isPending ? (
-              <Loader2 className="h-[14px] w-[14px] text-white animate-spin" />
-            ) : (
-              <RefreshCw className="h-[14px] w-[14px] text-white" />
-            )}
-          </Button>
-
-          {/* Completed Tasks Checkbox */}
-          <Button 
-            size="icon"
-            variant="ghost"
-            className="h-[29px] w-[29px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
-            data-testid="button-completed-tasks"
-            onClick={() => setIsCompletedTasksOpen(true)}
-          >
-            <CheckSquare className="h-[14px] w-[14px] text-white" />
-          </Button>
-
-        </div>
-
-        {/* Quick Add Buttons */}
-        <div className="flex items-center gap-1 px-2 h-full flex-1 min-w-0 justify-center overflow-hidden">
-          <Button size="sm" className="!h-7 !min-h-0 px-3 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
-          <Button size="sm" className="!h-7 !min-h-0 px-2 hover:opacity-80 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ backgroundColor: '#7f1d1d' }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
-        </div>
-
-        {/* Timer and Clock - Far Right */}
+        {/* Timer and Clock - Fixed Right */}
         <div className="flex items-center gap-3 px-3 h-full flex-shrink-0">
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 py-1.5">
