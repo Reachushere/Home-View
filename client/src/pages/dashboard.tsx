@@ -4545,6 +4545,47 @@ export default function Dashboard() {
                         >
                           {/* Half-hour dotted line */}
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" />
+                          {/* Render continuing tasks from previous hours */}
+                          {getContinuingTasksForHour(day, hour).map((task) => {
+                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                            const colors = courseColors[courseCode];
+                            const today = startOfDay(new Date());
+                            const tomorrow = addDays(today, 1);
+                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                            const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
+                            const isFinalHour = endHour === hour;
+                            const heightPx = isFinalHour ? Math.max(4, (endMin / 60) * 44) : 44;
+                            
+                            return (
+                              <div
+                                key={`cont-${task.id}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTaskId(task.id);
+                                }}
+                                className={`absolute cursor-pointer ${
+                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
+                                } ${isFinalHour ? "rounded-b" : ""} ${
+                                  isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
+                                } ${
+                                  task.isCompleted
+                                    ? `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-300`
+                                    : colors 
+                                      ? `${colors.bg} border-l border-r ${isFinalHour ? "border-b" : ""} ${colors.border}` 
+                                      : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
+                                }`}
+                                style={{ 
+                                  top: '0px',
+                                  left: '2px',
+                                  width: 'calc(100% - 4px)',
+                                  height: `${heightPx}px`,
+                                  zIndex: 10
+                                }}
+                                data-testid={`task-continuation-${task.id}-hour-${hour}`}
+                              />
+                            );
+                          })}
                           {hourTasks.map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                             const colors = courseColors[courseCode];
@@ -4565,8 +4606,14 @@ export default function Dashboard() {
                               const durationMinutes = endMinutes - startMinutes;
                               spansMultipleHours = endHour > startHour;
                               // Each hour slot is 44px, so per minute is 44/60 = 0.733px
-                              // For ALL tasks (including multi-hour), render as ONE element with full height
-                              taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
+                              if (spansMultipleHours) {
+                                // For multi-hour tasks, extend to bottom of slot (44px from top of slot)
+                                // minus the top offset, so it reaches the slot bottom
+                                const firstHourMinutes = 60 - startMin;
+                                taskHeight = (firstHourMinutes / 60) * 44;
+                              } else {
+                                taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
+                              }
                               // Offset for minutes past the hour
                               topOffset = (startMin / 60) * 44 + 2;
                             }
@@ -4589,7 +4636,7 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                                className={`absolute ${spansMultipleHours ? "rounded-t" : "rounded"} pt-1 px-0.5 pb-2 hover:opacity-90 ${spansMultipleHours ? "" : "shadow-sm"} cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -4597,17 +4644,17 @@ export default function Dashboard() {
                                   isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted 
-                                    ? "bg-gray-200 border border-gray-300" 
+                                    ? `bg-gray-200 border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} border-gray-300` 
                                     : colors 
-                                      ? `${colors.bg} border ${colors.border}` 
-                                      : "bg-gray-200 border border-gray-400"
+                                      ? `${colors.bg} border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} ${colors.border}` 
+                                      : `bg-gray-200 border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} border-gray-400`
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
                                   left: `calc(${taskIdx * columnWidth}% + 2px)`,
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
-                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : (taskHeight > 44 ? 30 : 10))
+                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 10)
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
