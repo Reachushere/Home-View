@@ -2674,7 +2674,7 @@ export default function Dashboard() {
         </div>
 
         {/* Timer and Clock - Far Right */}
-        <div className="flex items-center gap-3 px-3 h-full flex-shrink-0 border-l border-white/20">
+        <div className="flex items-center gap-3 px-3 h-full flex-shrink-0">
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 py-1">
             <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
