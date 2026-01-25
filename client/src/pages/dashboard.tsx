@@ -3832,9 +3832,14 @@ export default function Dashboard() {
                     </div>
                   )}
                   {showDaysUntil && (
-                    <span className="text-[11px] text-white/70 font-normal flex-shrink-0">
-                      {format(new Date(task.dueDate), 'EEEE')} (+{daysUntil})
-                    </span>
+                    <div className="flex flex-col items-end flex-shrink-0">
+                      <span className="text-[11px] text-white/70 font-normal">
+                        {format(new Date(task.dueDate), 'EEEE')} (+{daysUntil})
+                      </span>
+                      <span className="text-[9px] text-white/60">
+                        {format(new Date(task.dueDate), 'MMM d')}
+                      </span>
+                    </div>
                   )}
                 </div>
                 {attachments.length > 0 && (
