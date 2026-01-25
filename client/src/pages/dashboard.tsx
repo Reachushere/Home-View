@@ -4340,7 +4340,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className={`border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden ${isSameDay(day, new Date()) ? 'animate-today-column' : ''}`}
+                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
                       style={{ 
                         backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white'
                       }}
@@ -4428,7 +4428,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className={`px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible backdrop-blur-md ${isSameDay(day, new Date()) ? 'animate-today-column' : ''}`}
+                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible backdrop-blur-md"
                         style={{ 
                           backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg
                         }}
@@ -4576,7 +4576,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className={`px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible backdrop-blur-md ${isSameDay(day, new Date()) ? 'animate-today-column' : ''}`}
+                      className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible backdrop-blur-md"
                       style={{ 
                         backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'rgba(156, 163, 175, 0.25)'
                       }}
