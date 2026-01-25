@@ -2541,7 +2541,10 @@ export default function Dashboard() {
         {/* Logo and Title */}
         <div className="flex items-center px-4 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" style={{ marginLeft: '-7px' }} />
-          <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule ({currentSemesterName})</span>
+          <div className="flex flex-col">
+            <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
+            <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
+          </div>
         </div>
 
         {/* Navigation and Controls */}
