@@ -206,10 +206,14 @@
   animation: slow-blink 60s ease-in-out infinite;
 }
 
-/* Light pulse for today column - prominent brightness pulse */
+/* Light pulse for today column - consistent overlay pulse */
 @keyframes today-pulse {
-  0%, 100% { filter: brightness(1.4); }
-  50% { filter: brightness(0.8); }
+  0%, 100% { 
+    box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.15);
+  }
+  50% { 
+    box-shadow: inset 0 0 0 100px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .animate-today-column {
