@@ -213,7 +213,7 @@
 }
 
 .animate-today-column {
-  animation: today-pulse 1s ease-in-out infinite;
+  animation: today-pulse 2s ease-in-out infinite;
 }
 
 /* Silver shimmer header for task boxes */

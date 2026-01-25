@@ -4304,7 +4304,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex items-center justify-center h-full ${isToday ? "animate-today-column" : ""}`}
+                    className="border-l border-border flex items-center justify-center h-full"
                     style={{ 
                       backgroundColor: isToday ? "#2d4a6f" : "black"
                     }}
@@ -4573,7 +4573,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""} ${isToday ? "animate-today-column" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 transition-colors backdrop-blur-md overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
                             backgroundColor: (isToday || isCurrentHour) ? 'rgba(93, 129, 204, 0.35)' : 'white'
                           }}
@@ -4673,11 +4673,8 @@ export default function Dashboard() {
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
                               >
-                                {/* Silver shimmer header for due today tasks */}
-                                {isDueToday && (
-                                  <div className="silver-shimmer-header h-2 w-full" />
-                                )}
-                                <div className={`flex items-center gap-0.5 px-0.5 ${isDueToday ? "pt-0.5" : "pt-1"}`}>
+                                {/* Silver shimmer header with checkbox and title for due today tasks */}
+                                <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   <Checkbox
                                     checked={task.isCompleted || false}
                                     onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
@@ -4788,11 +4785,8 @@ export default function Dashboard() {
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
                     >
-                      {/* Silver shimmer header for due today tasks */}
-                      {isDueToday && (
-                        <div className="silver-shimmer-header h-3 w-full" />
-                      )}
-                      <div className={`flex items-center gap-0.5 px-0.5 ${isDueToday ? "pt-0.5" : "pt-1"}`}>
+                      {/* Silver shimmer header with checkbox and title for due today tasks */}
+                      <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                         <Checkbox
                           checked={task.isCompleted || false}
                           onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
