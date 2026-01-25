@@ -4185,14 +4185,24 @@ export default function Dashboard() {
                           toast({ title: "Pulling...", description: "Getting data from production." });
                           
                           const exportRes = await fetch("https://home-view--bkh416.replit.app/api/export");
+                          if (!exportRes.ok) {
+                            toast({ title: "Pull failed", description: `Export failed: ${exportRes.status}`, variant: "destructive" });
+                            return;
+                          }
                           const exportData = await exportRes.json();
+                          console.log("Export data:", exportData);
                           
                           const importRes = await fetch("/api/import", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(exportData),
                           });
+                          if (!importRes.ok) {
+                            toast({ title: "Pull failed", description: `Import failed: ${importRes.status}`, variant: "destructive" });
+                            return;
+                          }
                           const result = await importRes.json();
+                          console.log("Import result:", result);
                           
                           if (result.success) {
                             toast({ 
@@ -4203,10 +4213,11 @@ export default function Dashboard() {
                             queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                             queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
                           } else {
-                            toast({ title: "Pull failed", description: result.error, variant: "destructive" });
+                            toast({ title: "Pull failed", description: result.error || "Unknown error", variant: "destructive" });
                           }
-                        } catch (err) {
-                          toast({ title: "Pull failed", description: "Could not connect to production.", variant: "destructive" });
+                        } catch (err: any) {
+                          console.error("Pull error:", err);
+                          toast({ title: "Pull failed", description: err?.message || "Could not connect to production.", variant: "destructive" });
                         }
                       }}
                       data-testid="button-pull-production"
