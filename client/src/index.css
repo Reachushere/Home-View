@@ -189,6 +189,36 @@
   animation: clap 0.8s ease-in-out infinite;
 }
 
+/* Left hand clapping animation */
+@keyframes clap-left {
+  0%, 100% {
+    transform: rotate(15deg) translateX(0);
+  }
+  50% {
+    transform: rotate(-5deg) translateX(20px);
+  }
+}
+
+.animate-clap-left {
+  animation: clap-left 0.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Right hand clapping animation */
+@keyframes clap-right {
+  0%, 100% {
+    transform: rotate(-15deg) scaleX(-1) translateX(0);
+  }
+  50% {
+    transform: rotate(5deg) scaleX(-1) translateX(20px);
+  }
+}
+
+.animate-clap-right {
+  animation: clap-right 0.4s ease-in-out infinite;
+  transform-origin: center;
+}
+
 @keyframes shimmer {
   0% {
     opacity: 0;

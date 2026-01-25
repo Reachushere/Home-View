@@ -5206,12 +5206,17 @@ export default function Dashboard() {
                   </text>
                 </svg>
               </div>
-              {/* Animoji with clapping animation */}
-              <img 
-                src={celebrationAnimoji} 
-                alt="Celebration" 
-                className="w-52 h-52 object-contain drop-shadow-2xl animate-clap"
-              />
+              {/* Animoji with clapping hands */}
+              <div className="relative">
+                <img 
+                  src={celebrationAnimoji} 
+                  alt="Celebration" 
+                  className="w-52 h-52 object-contain drop-shadow-2xl"
+                />
+                {/* Clapping hands */}
+                <div className="absolute -left-8 bottom-12 text-4xl animate-clap-left">👏</div>
+                <div className="absolute -right-8 bottom-12 text-4xl animate-clap-right">👏</div>
+              </div>
             </div>
           </div>
         )}
