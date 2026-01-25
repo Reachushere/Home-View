@@ -221,10 +221,6 @@
   background: linear-gradient(90deg, #a0a0a0 0%, #e0e0e0 20%, #ffffff 50%, #e0e0e0 80%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: silver-shimmer 2s ease-in-out infinite;
-  border-top: 1px solid #888;
-  border-left: 1px solid #888;
-  border-right: 1px solid #888;
-  border-radius: 4px 4px 0 0;
 }
 
 @keyframes silver-shimmer {
