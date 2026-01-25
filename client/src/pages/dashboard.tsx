@@ -3651,11 +3651,9 @@ export default function Dashboard() {
             data-testid="calendar-resize-handle"
           >
             <div className="w-16 h-1.5 rounded-full bg-muted-foreground/40" />
-            {isResizing && (
-              <span className="absolute right-2 text-xs text-muted-foreground font-medium" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-                {calendarHeight}px
-              </span>
-            )}
+            <span className="absolute right-2 text-xs text-muted-foreground font-medium" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+              {calendarHeight}px
+            </span>
           </div>
         </div>
         ) : (
