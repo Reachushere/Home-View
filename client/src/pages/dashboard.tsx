@@ -5261,7 +5261,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 items-stretch flex-shrink-0">
+        <div className="flex gap-4 mb-3 mt-[1px] items-stretch flex-shrink-0">
           {/* Due Today */}
           <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
