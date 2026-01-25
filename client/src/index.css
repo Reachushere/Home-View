@@ -206,6 +206,16 @@
   animation: slow-blink 60s ease-in-out infinite;
 }
 
+/* Light pulse for today column */
+@keyframes today-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-today-column {
+  animation: today-pulse 3s ease-in-out infinite;
+}
+
 /* Clapping animation for celebration animoji */
 @keyframes clap {
   0%, 100% {
