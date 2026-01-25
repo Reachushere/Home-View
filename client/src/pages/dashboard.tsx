@@ -3827,7 +3827,7 @@ export default function Dashboard() {
                     {task.title}
                   </button>
                   {attachments.length > 0 && (
-                    <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2.5} />
+                    <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2.5} style={{ marginLeft: '-35px' }} />
                   )}
                   {showDaysUntil && (
                     <span className="text-[11px] text-white/70 font-normal flex-shrink-0">
