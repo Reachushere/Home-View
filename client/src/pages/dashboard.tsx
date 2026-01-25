@@ -3819,6 +3819,11 @@ export default function Dashboard() {
                     style={{ accentColor: getCourseColor(task.courseName) }}
                     data-testid={`checkbox-task-${task.id}`}
                   />
+                  {showDaysUntil && (
+                    <span className="text-[10px] text-black font-normal flex-shrink-0 w-[85px]">
+                      {task.courseName?.split(' - ')[0] || ''}
+                    </span>
+                  )}
                   <button 
                     className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
                     onClick={() => setEditingTask(task)}
@@ -3901,7 +3906,7 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
-                <div className="text-white/60 text-xs">No tasks due today</div>
+                <div className="text-white/60 text-xs">No tasks today</div>
               ) : (
                 renderGroupedTasks(dueTodayTasks, false)
               )}
@@ -3918,7 +3923,7 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
-                <div className="text-white/60 text-xs">No tasks due tomorrow</div>
+                <div className="text-white/60 text-xs">No tasks tomorrow</div>
               ) : (
                 renderGroupedTasks(dueTomorrowTasks, false)
               )}
