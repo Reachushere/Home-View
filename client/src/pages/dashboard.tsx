@@ -4840,7 +4840,7 @@ export default function Dashboard() {
         </Dialog>
 
         {/* Copyright Symbol */}
-        <div className="fixed right-0 top-1/2 -translate-y-1/2 text-white text-xs font-medium" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
+        <div className="fixed right-0 bottom-2 text-white text-xs font-medium" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
           © 2026
         </div>
 
