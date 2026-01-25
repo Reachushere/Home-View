@@ -4545,6 +4545,44 @@ export default function Dashboard() {
                         >
                           {/* Half-hour dotted line */}
                           <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" />
+                          {/* Render continuing tasks from previous hours */}
+                          {getContinuingTasksForHour(day, hour).map((task) => {
+                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                            const colors = courseColors[courseCode];
+                            const today = startOfDay(new Date());
+                            const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                            // Check if this is the final hour for this task
+                            const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
+                            const isFinalHour = endHour === hour;
+                            const heightPx = isFinalHour ? ((endMin / 60) * 44) : 44;
+                            
+                            return (
+                              <div
+                                key={`cont-${task.id}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTaskId(task.id);
+                                }}
+                                className={`absolute cursor-pointer ${
+                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
+                                } ${isFinalHour ? "rounded-b" : ""} ${
+                                  isDueToday ? "animate-shimmer" : ""
+                                } ${
+                                  colors 
+                                    ? `${colors.bg} border-l border-r ${isFinalHour ? "border-b" : ""} ${colors.border}` 
+                                    : "bg-gray-100 border-l border-r border-b-0 border-gray-400" + (isFinalHour ? " border-b" : "")
+                                }`}
+                                style={{ 
+                                  top: 0,
+                                  left: '2px',
+                                  width: 'calc(100% - 4px)',
+                                  height: `${heightPx}px`,
+                                  zIndex: 5
+                                }}
+                                data-testid={`task-continuation-${task.id}-hour-${hour}`}
+                              />
+                            );
+                          })}
                           {hourTasks.map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                             const colors = courseColors[courseCode];
@@ -4556,14 +4594,22 @@ export default function Dashboard() {
                             // Calculate height based on duration for events with start/end times
                             let taskHeight = 40; // Default height for single hour
                             let topOffset = 2; // Default top offset
+                            let spansMultipleHours = false;
                             if (task.eventStartTime && task.eventEndTime) {
                               const [startHour, startMin] = task.eventStartTime.split(':').map(Number);
                               const [endHour, endMin] = task.eventEndTime.split(':').map(Number);
                               const startMinutes = startHour * 60 + startMin;
                               const endMinutes = endHour * 60 + endMin;
                               const durationMinutes = endMinutes - startMinutes;
+                              spansMultipleHours = endHour > startHour;
                               // Each hour slot is 44px, so per minute is 44/60 = 0.733px
-                              taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
+                              // For multi-hour tasks, only render the first hour portion (continuation blocks handle the rest)
+                              if (spansMultipleHours) {
+                                const firstHourMinutes = 60 - startMin;
+                                taskHeight = (firstHourMinutes / 60) * 44 - 2;
+                              } else {
+                                taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
+                              }
                               // Offset for minutes past the hour
                               topOffset = (startMin / 60) * 44 + 2;
                             }
@@ -4586,7 +4632,7 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute rounded pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                                className={`absolute ${spansMultipleHours ? "rounded-t" : "rounded"} pt-1 px-0.5 pb-2 hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -4594,10 +4640,10 @@ export default function Dashboard() {
                                   isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted 
-                                    ? "bg-gray-200 border border-gray-300" 
+                                    ? `bg-gray-200 border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} border-gray-300` 
                                     : colors 
-                                      ? `${colors.bg} border ${colors.border}` 
-                                      : "bg-gray-200 border border-gray-400"
+                                      ? `${colors.bg} border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} ${colors.border}` 
+                                      : `bg-gray-200 border-t border-l border-r ${spansMultipleHours ? "" : "border-b"} border-gray-400`
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
