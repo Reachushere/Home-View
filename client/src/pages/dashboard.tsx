@@ -3827,7 +3827,7 @@ export default function Dashboard() {
                     {task.title}
                   </button>
                   {attachments.length > 0 && (
-                    <div className="flex-shrink-0" style={{ marginRight: '70px' }}>
+                    <div className="flex-shrink-0" style={{ marginRight: '55px' }}>
                       <Paperclip className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
                     </div>
                   )}
