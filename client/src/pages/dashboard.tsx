@@ -272,30 +272,33 @@ export default function Dashboard() {
       
       playClapping();
       
-      // Crowd yelling "Hooray!" using multiple browser TTS voices
+      // Crowd yelling "Hooray!" using multiple English voices at once
       const sayHooray = () => {
-        const voices = window.speechSynthesis.getVoices();
+        const allVoices = window.speechSynthesis.getVoices();
+        // Filter to only English voices
+        const englishVoices = allVoices.filter(v => v.lang.startsWith('en'));
+        const voices = englishVoices.length > 0 ? englishVoices : allVoices;
         
-        // Create multiple utterances at different pitches and times for crowd effect
+        // Create multiple utterances at different pitches - all at once for crowd effect
         const crowdSettings = [
-          { pitch: 0.8, rate: 0.9, delay: 0 },
-          { pitch: 1.0, rate: 1.0, delay: 50 },
-          { pitch: 1.2, rate: 1.1, delay: 100 },
-          { pitch: 0.9, rate: 0.95, delay: 80 },
-          { pitch: 1.1, rate: 1.05, delay: 30 },
+          { pitch: 0.7, rate: 1.0 },
+          { pitch: 0.9, rate: 1.0 },
+          { pitch: 1.0, rate: 1.0 },
+          { pitch: 1.1, rate: 1.0 },
+          { pitch: 1.3, rate: 1.0 },
         ];
         
-        crowdSettings.forEach(({ pitch, rate, delay }) => {
-          setTimeout(() => {
-            const utterance = new SpeechSynthesisUtterance("Hooray!");
-            utterance.rate = rate;
-            utterance.pitch = pitch;
-            utterance.volume = 0.8;
-            if (voices.length > 0) {
-              utterance.voice = voices[Math.floor(Math.random() * voices.length)];
-            }
-            window.speechSynthesis.speak(utterance);
-          }, delay);
+        // Say all at once (no delay between them)
+        crowdSettings.forEach(({ pitch, rate }, index) => {
+          const utterance = new SpeechSynthesisUtterance("Hooray!");
+          utterance.lang = 'en-US';
+          utterance.rate = rate;
+          utterance.pitch = pitch;
+          utterance.volume = 0.7;
+          if (voices.length > 0) {
+            utterance.voice = voices[index % voices.length];
+          }
+          window.speechSynthesis.speak(utterance);
         });
       };
       
