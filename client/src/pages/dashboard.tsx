@@ -2829,297 +2829,687 @@ export default function Dashboard() {
                   →
                 </button>
               </div>
-              
-              {/* Swipeable container */}
-              <div 
-                className="select-none cursor-grab active:cursor-grabbing"
-                onMouseDown={(e) => {
-                  (e.currentTarget as any).mouseStartX = e.clientX;
-                  (e.currentTarget as any).isMouseDown = true;
-                }}
-                onMouseMove={(e) => {
-                  if (!(e.currentTarget as any).isMouseDown) return;
-                }}
-                onMouseUp={(e) => {
-                  if (!(e.currentTarget as any).isMouseDown) return;
-                  (e.currentTarget as any).isMouseDown = false;
-                  const startX = (e.currentTarget as any).mouseStartX;
-                  const diff = e.clientX - startX;
-                  if (Math.abs(diff) > 50) {
-                    if (diff > 0 && currentPagLevel > 1) {
-                      setCurrentPagLevel(currentPagLevel - 1);
-                    } else if (diff < 0 && currentPagLevel < 3) {
-                      setCurrentPagLevel(currentPagLevel + 1);
-                    }
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as any).isMouseDown = false;
-                }}
-                onTouchStart={(e) => {
-                  const touch = e.touches[0];
-                  (e.currentTarget as any).touchStartX = touch.clientX;
-                }}
-                onTouchEnd={(e) => {
-                  const touch = e.changedTouches[0];
-                  const startX = (e.currentTarget as any).touchStartX;
-                  const diff = touch.clientX - startX;
-                  if (Math.abs(diff) > 50) {
-                    if (diff > 0 && currentPagLevel > 1) {
-                      setCurrentPagLevel(currentPagLevel - 1);
-                    } else if (diff < 0 && currentPagLevel < 3) {
-                      setCurrentPagLevel(currentPagLevel + 1);
-                    }
-                  }
-                }}
-              >
               {/* Level I */}
               <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
-                <div className="border-2 border-black">
-                  <div className="flex border-b border-black">
-                    <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL I</div>
-                    <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
+              <div className="border-2 border-black">
+                <div className="flex border-b border-black">
+                  <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL I</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
+                  <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+                </div>
+                <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                  <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
                   </div>
-                  <div className="flex border-b border-black">
-                    <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-                    <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
+                  <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA101']?.percent || ''} onChange={(e) => updatePercent('PPA101', e.target.value)} />
                   </div>
-                  <div className={`flex border-b border-black ${checkedCourses['PPA101'] ? 'bg-gray-300 text-gray-500' : ''}`}>
-                    <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
-                    </div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black">PPA 101</div>
-                    <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA101']?.percent || ''} onChange={(e) => updatePercent('PPA101', e.target.value)} />
+                </div>
+                <div className={`flex border-b border-black ${checkedCourses['PPA102'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                  <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
+                  <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA102']?.grade || ''} onChange={(e) => updateGrade('PPA102', e.target.value)}>
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA102']?.percent || ''} onChange={(e) => updatePercent('PPA102', e.target.value)} />
+                  </div>
+                </div>
+                <div className={`flex border-b border-black ${checkedCourses['PPA125'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                  <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
+                  <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA125']?.grade || ''} onChange={(e) => updateGrade('PPA125', e.target.value)}>
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA125']?.percent || ''} onChange={(e) => updatePercent('PPA125', e.target.value)} />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] font-semibold">CORE ELECTIVES:</div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
+                <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
+                  <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
+                  </div>
+                </div>
+                <div className={`flex border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
+                  <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
+                  <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
+                  <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex flex-col">
+                    <div className="flex-1"></div>
+                    <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-300' : ''}`}>
+                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['LIBERAL'] || false} disabled={!openElectives['LIBERAL']?.trim()} onChange={() => toggleCourse('LIBERAL')} />
                     </div>
                   </div>
-                  <div className={`flex border-b border-black ${checkedCourses['PPA102'] ? 'bg-gray-300 text-gray-500' : ''}`}>
-                    <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
+                  <div className="flex-1 flex flex-col">
+                    <div className="px-1 pt-0.5 text-[8px]">
+                      <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
                     </div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black">PPA 102</div>
-                    <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes</div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA102']?.grade || ''} onChange={(e) => updateGrade('PPA102', e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA102']?.percent || ''} onChange={(e) => updatePercent('PPA102', e.target.value)} />
-                    </div>
-                  </div>
-                  <div className={`flex border-b border-black ${checkedCourses['PPA125'] ? 'bg-gray-300 text-gray-500' : ''}`}>
-                    <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
-                    </div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black">PPA 125</div>
-                    <div className="flex-1 px-1 py-0.5">Rights, Equity and the State</div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA125']?.grade || ''} onChange={(e) => updateGrade('PPA125', e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA125']?.percent || ''} onChange={(e) => updatePercent('PPA125', e.target.value)} />
-                    </div>
-                  </div>
-                  <div className="flex border-b border-black">
-                    <div className="w-5 border-r border-black"></div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] font-semibold">ELECTIVES:</div>
-                    <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from:</div>
-                    <div className="w-12 border-l border-black"></div>
-                  </div>
-                  <div className={`flex border-b border-black ${checkedCourses['ELECTIVE1'] ? 'bg-gray-300 text-gray-500' : ''}`}>
-                    <div className="w-5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
-                    </div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
-                    <div className="flex-1 px-1 py-0.5">Canadian Politics & Government</div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
-                    </div>
-                  </div>
-                  <div className={`flex border-b border-black ${checkedCourses['ELECTIVE2'] ? 'bg-gray-300 text-gray-500' : ''}`}>
-                    <div className="w-5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
-                    </div>
-                    <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
-                    <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
-                    </div>
-                  </div>
-                  <div className={`flex border-b border-black ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : ''}`}>
-                    <div className="w-5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['LIBERAL'] || false} onChange={() => toggleCourse('LIBERAL')} />
-                    </div>
-                    <div className="flex-1 px-1 py-0.5">
-                      <div className="text-[8px]">Liberal Studies Elective (Lower Level)</div>
+                    <div className="px-1 pb-1 flex items-end">
                       <input 
                         type="text" 
-                        className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm mt-0.5 ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                        className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
                         placeholder="Course..."
                         value={openElectives['LIBERAL'] || ''}
                         onChange={(e) => updateOpenElective('LIBERAL', e.target.value)}
+                        data-testid="input-pag-liberal"
                       />
                     </div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                  <div className={`w-12 border-l border-black flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-300' : ''}`}>
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} />
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black flex flex-col">
+                    <div className="flex-1"></div>
+                    <div className={`h-[46px] flex items-start justify-center pt-2 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
+                    </div>
+                    <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN2'] || false} disabled={!openElectives['OPEN2']?.trim()} onChange={() => toggleCourse('OPEN2')} />
                     </div>
                   </div>
-                  <div className={`flex ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : ''}`}>
-                    <div className="w-5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN1'] || false} onChange={() => toggleCourse('OPEN1')} />
+                  <div className="flex-1 flex flex-col">
+                    <div className="px-1 pt-0.5 text-[8px]">
+                      OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.
                     </div>
-                    <div className="flex-1 px-1 py-0.5">
-                      <div className="text-[8px]">Open Elective</div>
+                    <div className="px-1 pt-2 pb-5 flex items-end">
                       <input 
                         type="text" 
-                        className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm mt-0.5 ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
-                        placeholder="Course..."
+                        className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                        placeholder="Course 1..."
                         value={openElectives['OPEN1'] || ''}
                         onChange={(e) => updateOpenElective('OPEN1', e.target.value)}
+                        data-testid="input-pag-open1"
                       />
                     </div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                    <div className="px-1 pt-1 pb-1 flex items-end">
+                      <input 
+                        type="text" 
+                        className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`}
+                        placeholder="Course 2..."
+                        value={openElectives['OPEN2'] || ''}
+                        onChange={(e) => updateOpenElective('OPEN2', e.target.value)}
+                        data-testid="input-pag-open2"
+                      />
+                    </div>
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col">
+                    <div className="pt-5"></div>
+                    <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-gray-300' : ''}`}>
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
                         {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
                       </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
+                    </div>
+                    <div className="flex-1"></div>
+                    <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN2'] ? 'bg-gray-300' : ''}`}>
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN2']?.grade || ''} onChange={(e) => updateGrade('OPEN2', e.target.value)}>
+                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                      </select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN2']?.percent || ''} onChange={(e) => updatePercent('OPEN2', e.target.value)} />
                     </div>
                   </div>
                 </div>
               </div>
+        </div>
 
               {/* Level II */}
-              <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 2 ? '' : 'hidden'}`}>
-                <div className="border-2 border-black">
-                  <div className="flex border-b border-black">
-                    <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL II</div>
-                    <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
+              <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
+              <div className="border-2 border-black">
+                <div className="flex border-b border-black">
+                  <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL II</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
+                  <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
                   </div>
-                  <div className="flex border-b border-black">
-                    <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-                    <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 211</div>
+                  <div className="flex-1 px-1 py-0.5">Public Policy</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                   </div>
-                  {[
-                    { code: 'PPA 211', title: 'Comparative Public Admin' },
-                    { code: 'PPA 220', title: 'Statistics for Public Admin' },
-                    { code: 'PPA 230', title: 'Economics for Public Admin' },
-                    { code: 'PPA 231', title: 'Law and Public Admin' },
-                    { code: 'PPA 240', title: 'Urban Governance' },
-                  ].map((course, idx) => (
-                    <div key={course.code} className="flex border-b border-black">
-                      <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
-                        <input type="checkbox" className="checkbox-black" />
-                      </div>
-                      <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-                      <div className="w-14 px-1 py-0.5 border-r border-black">{course.code}</div>
-                      <div className="flex-1 px-1 py-0.5">{course.title}</div>
-                      <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
-                        <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                          {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                        </select>
-                        <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                      </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black text-[8px] font-semibold">CORE ELECTIVES:</div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">THREE</span> from the following:</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 120</div>
+                  <div className="flex-1 px-1 py-0.5">Canadian Politics and Government</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 121</div>
+                  <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 122</div>
+                  <div className="flex-1 px-1 py-0.5">Local Politics and Government</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 124</div>
+                  <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 235</div>
+                  <div className="flex-1 px-1 py-0.5">Theories of the State</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 303</div>
+                  <div className="flex-1 px-1 py-0.5">Public Budget Policy/Politics</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 px-1 py-0.5 border-r border-black">PPA 319</div>
+                  <div className="flex-1 px-1 py-0.5">Politics of Work and Labour</div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-14 border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A:</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
+                <div className="flex items-stretch">
+                  <div className="w-5 border-r border-black flex items-center justify-center">
+                    <input type="checkbox" className="checkbox-black" />
+                  </div>
+                  <div className="w-14 border-r border-black h-11 flex items-start justify-center text-[8px] text-center px-0.5">
+                    <span className="leading-none -mt-2"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
+                  </div>
+                  <div className="flex-1 h-11 px-1 flex items-center">
+                    <input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course..." />
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5">
+                    <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                      {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                    <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                  </div>
+                </div>
+                <div className="h-px bg-black"></div>
+                <div className="flex items-stretch">
+                  <div className="w-5 border-r border-black flex flex-col">
+                    <div className="h-7 border-b border-black"></div>
+                    <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-9 flex items-center justify-center border-b border-black"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-9 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                  </div>
+                  <div className="w-14 border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+                    <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <div className="h-7 px-1 text-[8px] leading-tight flex items-center border-b border-black"><span><b>CORE ELECTIVE: ONE</b> course required from the following:</span></div>
+                    <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
+                    <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
+                    <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
+                    <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
+                    <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
+                    <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
+                    <div className="h-9 px-1 text-[8px] flex items-center border-b border-black">ECN 220 Evolution of the Global Economy</div>
+                    <div className="h-9 px-1 text-[8px] flex items-center">ECN 320 Introduction to Financial Economics</div>
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col">
+                    <div className="h-7 border-b border-black"></div>
+                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                     </div>
-                  ))}
-                  <div className="flex border-b border-black">
-                    <div className="w-5 border-r border-black"></div>
-                    <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> Core Electives</div>
-                    <div className="w-12 border-l border-black"></div>
-                  </div>
-                  <div className="flex border-b border-black">
-                    <div className="w-5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" />
+                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                     </div>
-                    <div className="flex-1 px-1 py-0.5">Core Elective 1</div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
+                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-black">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-9 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                       <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                     </div>
                   </div>
-                  <div className="flex">
-                    <div className="w-5 border-r border-black flex items-center justify-center">
-                      <input type="checkbox" className="checkbox-black" />
+                </div>
+                <div className="h-px bg-black"></div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-14 border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
+                <div className="flex items-stretch">
+                  <div className="w-5 border-r border-black flex flex-col">
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                  </div>
+                  <div className="w-14 border-r border-black h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
+                    <span className="leading-tight"><span className="font-bold">TWO</span> one-term courses required - options are listed in PR Table I.</span>
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col">
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                     </div>
-                    <div className="flex-1 px-1 py-0.5">Core Elective 2</div>
-                    <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
                       <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                     </div>
                   </div>
                 </div>
               </div>
+        </div>
 
-              {/* Level III */}
+        {/* Level III */}
               <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 3 ? '' : 'hidden'}`}>
-                <div className="border-2 border-black">
-                  <div className="flex border-b border-black">
-                    <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL III</div>
-                    <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
-                  </div>
-                  <div className="flex border-b border-black">
-                    <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-                    <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
-                  </div>
-                  {[
-                    { code: 'PPA 333', title: 'Research Methods' },
-                    { code: 'PPA 335', title: 'Theories of Bureaucracy' },
-                    { code: 'PPA 401', title: 'Collaborative Governance' },
-                    { code: 'PPA 402', title: 'Program Evaluation' },
-                    { code: 'PPA 411', title: 'Advanced Public Policy' },
-                  ].map((course, idx) => (
-                    <div key={course.code} className="flex border-b border-black">
-                      <div className="w-5 px-0.5 py-0.5 border-r border-black flex items-center justify-center">
+              <div className="border-2 border-black">
+                <div className="flex border-b border-black">
+                  <div className="font-bold px-1 py-0.5 border-r border-black w-16">LEVEL III</div>
+                  <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
+                </div>
+                <div className="flex border-b border-black">
+                  <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
+                  <div className="w-12 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
+                </div>
+                <table className="w-full border-collapse">
+                  <colgroup>
+                    <col style={{ width: '1.25rem' }} />
+                    <col style={{ width: '55px' }} />
+                    <col style={{ width: '55px' }} />
+                    <col />
+                    <col style={{ width: '3rem' }} />
+                  </colgroup>
+                  <tbody>
+                    <tr className="border-b border-black">
+                      <td className="px-0.5 py-0.5 border-r border-black text-center align-middle">
                         <input type="checkbox" className="checkbox-black" />
-                      </div>
-                      <div className="w-14 px-1 py-0.5 border-r border-black">Core Req</div>
-                      <div className="w-14 px-1 py-0.5 border-r border-black">{course.code}</div>
-                      <div className="flex-1 px-1 py-0.5">{course.title}</div>
-                      <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-1.5 py-0.5">
-                        <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                          {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                        </select>
-                        <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                      </div>
-                    </div>
-                  ))}
-                  <div className="flex border-b border-black">
-                    <div className="w-5 border-r border-black"></div>
-                    <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">THREE</span> 300/400 level courses</div>
-                    <div className="w-12 border-l border-black"></div>
+                      </td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[8px]">Core Req</td>
+                      <td className="px-1 py-0.5 border-r border-black align-middle text-[9px]">PPA 333</td>
+                      <td className="px-1 py-0.5 align-middle text-[9px]">Research Methods in Public Administration</td>
+                      <td className="border-l border-black align-middle">
+                        <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
+                          <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                            {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                          </select>
+                          <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                        </div>
+                      </td>
+                    </tr>
+                    {[
+                      { code: 'PPA 235', title: 'Theories of the State' },
+                      { code: 'PPA 301', title: 'Administrative Law T' },
+                      { code: 'PPA 303', title: 'Public Budget Policy/Politics' },
+                      { code: 'PPA 319', title: 'Politics of Work and Labour' },
+                      { code: 'PPA 335', title: 'Theories of Bureaucracy' },
+                      { code: 'PPA 401', title: 'Collaborative Governance' },
+                      { code: 'PPA 402', title: 'Program Planning and Evaluation' },
+                      { code: 'PPA 403', title: 'e-Government' },
+                      { code: 'PPA 404', title: 'Issues in Public Administration' },
+                      { code: 'PPA 411', title: 'Advanced Public Policy' },
+                      { code: 'PPA 414', title: 'Comparative Public Policy' },
+                      { code: 'PPA 425', title: 'Intergovernmental Relations' },
+                      { code: 'PPA 490', title: 'Public Admin Themes' },
+                      { code: 'PPA 501', title: 'Public Sector Leadership' },
+                    ].map((course, idx, arr) => (
+                      <tr key={course.code} className={idx < arr.length - 1 ? 'border-b border-black' : ''}>
+                        {idx === 0 && (
+                          <>
+                            <td rowSpan={14} className="px-0.5 py-0.5 border-r border-black text-center align-middle">
+                              <div className="flex flex-col gap-0">
+                                {Array(14).fill(0).map((_, i) => (
+                                  <div key={i} className={`h-11 flex items-center justify-center ${i < 13 ? 'border-b border-black' : ''}`}>
+                                    <input type="checkbox" className="checkbox-black" />
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td rowSpan={14} className="px-1 py-0.5 border-r border-black text-[8px] align-middle">
+                              <div className="font-semibold">CORE ELECTIVES:</div>
+                              <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
+                            </td>
+                          </>
+                        )}
+                        <td className={`h-11 px-1 py-0.5 border-r border-black align-middle text-[9px]`}>{course.code}</td>
+                        <td className={`h-11 px-1 py-0.5 align-middle text-[9px]`}>{course.title}</td>
+                        <td className="border-l border-black align-middle">
+                          <div className="flex flex-col items-center justify-center gap-1.5">
+                            <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
+                              {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                            </select>
+                            <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="h-px bg-black"></div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-[55px] border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE REQUIRED:</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black flex flex-col">
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
                   </div>
-                  {[1, 2, 3].map((n) => (
-                    <div key={n} className="flex border-b border-black last:border-b-0">
-                      <div className="w-5 border-r border-black flex items-center justify-center">
-                        <input type="checkbox" className="checkbox-black" />
-                      </div>
-                      <div className="flex-1 px-1 py-0.5">Any POG 300/400 level course</div>
-                      <div className="w-12 border-l border-black flex flex-col items-center justify-center gap-0.5 py-0.5">
-                        <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                          {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                        </select>
-                        <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                      </div>
+                  <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center">
+                    Select&nbsp;<span className="font-bold">ONE</span>
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
+                    <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col">
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
                     </div>
-                  ))}
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                  </div>
+                </div>
+                <div className="h-px bg-black"></div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-[55px] border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black flex flex-col">
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                  </div>
+                  <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+                    <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
+                    <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
+                    <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col">
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                  </div>
+                </div>
+                <div className="h-px bg-black"></div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-[55px] border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A / B:</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black flex flex-col">
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                  </div>
+                  <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+                    <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED,<br/><br/><span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/><br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col">
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                  </div>
+                </div>
+                <div className="h-px bg-black"></div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black"></div>
+                  <div className="w-[55px] border-r border-black"></div>
+                  <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE:</div>
+                  <div className="w-12 border-l border-black"></div>
+                </div>
+                <div className="flex">
+                  <div className="w-5 border-r border-black flex flex-col">
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                  </div>
+                  <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
+                    <div className="leading-tight"><span className="font-bold">SIX</span> one-term level courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
+                  </div>
+                  <div className="flex-1 flex flex-col">
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 5..." /></div>
+                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 6..." /></div>
+                  </div>
+                  <div className="w-12 border-l border-black flex flex-col">
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
+                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+                    </div>
+                  </div>
                 </div>
               </div>
               </div>
