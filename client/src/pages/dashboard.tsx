@@ -2674,8 +2674,9 @@ export default function Dashboard() {
           </Button>
         </div>
 
-        {/* Pomodoro Timer */}
-        <div className="flex items-center gap-2 px-2 h-full flex-shrink-0">
+        {/* Timer and Clock - Far Right */}
+        <div className="flex items-center gap-3 px-3 h-full flex-shrink-0 border-l border-white/20">
+          {/* Pomodoro Timer */}
           <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 py-1">
             <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
@@ -2695,28 +2696,28 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Clock and Date - Far Right */}
-        <div className="flex items-center gap-1.5 px-3 h-full flex-shrink-0 border-l border-white/20" data-testid="digital-clock">
-          <span className="text-xs text-white font-medium">
-            {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-          </span>
-          <div className="w-[1px] h-4 bg-white/50" />
-          <div className="flex items-baseline">
-            <span className="text-sm font-semibold text-white tabular-nums">
-              {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+          
+          {/* Clock */}
+          <div className="flex items-center gap-1.5" data-testid="digital-clock">
+            <span className="text-xs text-white font-medium">
+              {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <span className="text-xs text-white tabular-nums">
-              :{String(currentTime.getSeconds()).padStart(2, '0')}
-            </span>
-            <span className="text-xs font-bold text-white ml-0.5 uppercase">
-              {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
-            </span>
+            <div className="w-[1px] h-4 bg-white/50" />
+            <div className="flex items-baseline">
+              <span className="text-sm font-semibold text-white tabular-nums">
+                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+              </span>
+              <span className="text-xs text-white tabular-nums">
+                :{String(currentTime.getSeconds()).padStart(2, '0')}
+              </span>
+              <span className="text-xs font-bold text-white ml-0.5 uppercase">
+                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
+              </span>
+            </div>
+            {profileData.travelTimezone && (
+              <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
+            )}
           </div>
-          {profileData.travelTimezone && (
-            <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
-          )}
         </div>
       </div>
 
