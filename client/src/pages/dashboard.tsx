@@ -3819,18 +3819,18 @@ export default function Dashboard() {
                     style={{ accentColor: getCourseColor(task.courseName) }}
                     data-testid={`checkbox-task-${task.id}`}
                   />
-                  <div className="flex-1 flex items-center gap-1 min-w-0">
-                    <button 
-                      className="text-[11px] text-white font-normal truncate text-left hover:underline cursor-pointer"
-                      onClick={() => setEditingTask(task)}
-                      data-testid={`task-link-${task.id}`}
-                    >
-                      {task.title}
-                    </button>
-                    {attachments.length > 0 && (
-                      <Paperclip className="h-3.5 w-3.5 text-white flex-shrink-0" strokeWidth={2.5} />
-                    )}
-                  </div>
+                  <button 
+                    className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer"
+                    onClick={() => setEditingTask(task)}
+                    data-testid={`task-link-${task.id}`}
+                  >
+                    {task.title}
+                  </button>
+                  {attachments.length > 0 && (
+                    <div className="flex-shrink-0" style={{ marginRight: '35px' }}>
+                      <Paperclip className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+                    </div>
+                  )}
                   {showDaysUntil && (
                     <span className="text-[11px] text-white/70 font-normal flex-shrink-0">
                       {format(new Date(task.dueDate), 'EEEE')} (+{daysUntil})
