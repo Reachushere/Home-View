@@ -2520,1084 +2520,279 @@ export default function Dashboard() {
           onClick={() => setIsTodayExpanded(false)}
         />
       )}
-      {/* Left Column - Header Bar + Sidebar */}
-      <div className="flex flex-col relative z-10" style={{ width: 350, marginLeft: '11px', marginTop: '64px', maxHeight: 'calc(100vh - 64px - 12px)' }}>
-        {/* Sidebar Container */}
-        <div className="relative flex-1 flex flex-col mb-3 pt-1 min-h-0 overflow-hidden">
-        
-        {/* Header box behind clock and timer */}
-        <div className="absolute left-0 right-0 z-0 rounded-t-md border-[0.1px] border-white border-b-0" style={{ top: '2px', height: '52px', background: 'black' }} />
-        
-        {/* Digital Clock and Pomodoro Timer - Same line */}
-        <div className="absolute left-0 right-0 z-10 flex items-center justify-between px-3" style={{ top: '5px', height: '52px' }}>
-          {/* Clock on the left */}
+
+      {/* Unified Header Bar */}
+      <div className="absolute z-20 left-0 right-0 top-0 flex items-center rounded-md overflow-hidden mx-3 mt-2" style={{ 
+        background: 'black',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
+        border: '0.1px solid white',
+        height: '52px'
+      }}>
+        {/* Logo and Title */}
+        <div className="flex items-center px-4 gap-2 h-full flex-shrink-0">
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" style={{ marginLeft: '-7px' }} />
+          <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule ({currentSemesterName})</span>
+        </div>
+
+        {/* Navigation and Controls */}
+        <div className="flex items-center gap-2 px-2 h-full">
+          {/* Hamburger Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="hover:bg-white/20 rounded-md h-7 w-7" data-testid="button-hamburger-menu">
+                <Menu className="!h-5 !w-5 text-white" strokeWidth={2.5} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
+                <User className="h-4 w-4 mr-2" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
+                <GraduationCap className="h-4 w-4 mr-2" />
+                School
+              </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
+                <Palette className="h-4 w-4 mr-2" />
+                Courses
+              </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          
+          {/* Week navigation */}
+          <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
+            <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+            </Button>
+            <div className="flex items-center gap-1 mx-2 whitespace-nowrap">
+              <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+              <span className="text-[11px] text-white/50">—</span>
+              <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+            </div>
+            <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+              <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+            </Button>
+          </div>
+
+          {/* Bell */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMute}
+            className={`h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+            data-testid="button-mute-toggle"
+            title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+          >
+            {isMuted ? <BellOff className="h-[14px] w-[14px] text-white" /> : <Bell className="h-[14px] w-[14px] text-white" />}
+          </Button>
+
+          {/* Sync */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            onClick={() => syncAllCalendarMutation.mutate()}
+            disabled={syncAllCalendarMutation.isPending}
+            data-testid="button-sync-calendar"
+          >
+            {syncAllCalendarMutation.isPending ? (
+              <Loader2 className="h-[14px] w-[14px] text-white animate-spin" />
+            ) : (
+              <RefreshCw className="h-[14px] w-[14px] text-white" />
+            )}
+          </Button>
+
+          {/* View Buttons */}
+          <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-0.5 py-0.5">
+            <Button 
+              variant="ghost"
+              className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
+              onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+              data-testid="button-today"
+            >
+              <Sun className="h-3 w-3 mr-1 text-white" />
+              Today
+            </Button>
+            <div className="w-[1px] h-4 bg-white/50" />
+            <Button 
+              variant="ghost"
+              className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
+              onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+              data-testid="button-month-view"
+            >
+              <CalendarDays className="h-3 w-3 mr-1 text-white" />
+              {calendarView === "month" ? "Week" : "Month"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Quick Add Buttons */}
+        <div className="flex items-center gap-1 px-2 h-full flex-1 justify-center">
+          <Button size="sm" className="!h-7 !min-h-0 px-3 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
+          <Button size="sm" className="!h-7 !min-h-0 px-2 hover:opacity-80 text-white text-[10px] border-0 font-medium rounded-md" style={{ backgroundColor: '#7f1d1d' }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
+        </div>
+
+        {/* Clock and Timer Section */}
+        <div className="flex items-center gap-3 px-3 h-full flex-shrink-0 border-l border-white/20">
+          {/* Clock */}
           <div className="flex items-center gap-1.5" data-testid="digital-clock">
-            <span className="text-sm text-white font-medium">
+            <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <div className="w-[1px] h-5 bg-white/50" />
+            <div className="w-[1px] h-4 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-base font-semibold text-white tabular-nums">
+              <span className="text-sm font-semibold text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-sm text-white tabular-nums">
+              <span className="text-xs text-white tabular-nums">
                 :{new Intl.DateTimeFormat('en-US', { second: '2-digit', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <span className="text-sm font-bold text-white ml-0.5 uppercase">
+              <span className="text-xs font-bold text-white ml-0.5 uppercase">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
             {profileData.travelTimezone && (
-              <span className="text-xs text-orange-400 font-medium ml-1">Travel</span>
+              <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
             )}
           </div>
-          {/* Timer and controls on the right */}
-          <div className="flex items-center gap-2 bg-white/20 rounded-md px-3 py-1.5">
-            <div className={`text-sm font-mono font-bold px-2 py-1 rounded ${
+          
+          {/* Timer */}
+          <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 py-1">
+            <div className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
             }`} style={pomodoroMode === "work" ? { backgroundColor: '#7f1d1d' } : undefined} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center gap-1.5">
-              <button
-                className="p-0.5 hover:bg-white/20 rounded transition-colors"
-                onClick={togglePomodoro}
-                data-testid="button-pomodoro-toggle"
-              >
+            <div className="flex items-center gap-1">
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
                 {pomodoroRunning ? <Pause className="h-3 w-3 text-white" strokeWidth={2.5} /> : <Play className="h-3 w-3 text-white" strokeWidth={2.5} />}
               </button>
-              <button
-                className="p-0.5 hover:bg-white/20 rounded transition-colors"
-                onClick={resetPomodoro}
-                data-testid="button-pomodoro-reset"
-              >
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
                 <RotateCcw className="h-3 w-3 text-white" strokeWidth={2.5} />
               </button>
-              <button
-                className="p-0.5 hover:bg-white/20 rounded transition-colors"
-                onClick={skipPomodoro}
-                data-testid="button-pomodoro-skip"
-              >
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
                 <SkipForward className="h-3 w-3 text-white" strokeWidth={2.5} />
               </button>
             </div>
           </div>
         </div>
-        
-        {/* Sidebar with blur/fade effect */}
-        <aside className="flex-1 text-white rounded-md shadow-lg border-[0.1px] border-white flex flex-col min-h-0" style={{ width: 350, background: 'rgb(1, 160, 175)', marginTop: '2px' }}>
-        <div className="flex-1 pb-4 pt-0 pr-0 flex flex-col min-h-0" style={{ paddingLeft: '11px' }}>
-          {/* Spacer for clock and pomodoro timer */}
-          <div className="flex-shrink-0" style={{ height: '52px' }} />
 
-          {/* Scrollable sidebar content */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col gap-4 custom-scrollbar pr-1" style={{ minHeight: 0 }}>
-        {/* Course Legend */}
-        <div className="pl-0.5 pr-1 space-y-3 mb-4" style={{ marginTop: '10px', marginLeft: '15px' }}>
-          <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Courses</h3>
-          {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
-            const courseCode = course.name.split(' - ')[0];
-            const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
-            const tomorrow = addDays(startOfDay(new Date()), 1);
-            const hasDueTomorrow = allTasks.some(task => 
-              task.courseName?.includes(courseCode) && 
-              !task.isCompleted &&
-              isSameDay(new Date(task.dueDate), tomorrow)
-            );
-            return (
-              <div key={index} className="flex items-center gap-1.5">
-                <div 
-                  className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
-                  style={{ backgroundColor: course.color }}
-                />
-                <span className="text-[10px]">
-                  <span className="font-medium">{courseCode}</span>
-                  {courseName !== courseCode && <span className="text-white"> - {courseName}</span>}
-                  {course.professor && <span className="text-white/70"> ({course.professor})</span>}
-                </span>
-              </div>
-            );
-          })}
+        {/* Settings Gear and Completed Tasks */}
+        <div className="flex items-center gap-2 px-3 h-full flex-shrink-0">
+          <Button 
+            size="icon"
+            variant="ghost"
+            className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
+            data-testid="button-settings-panel"
+            onClick={() => setIsSettingsPanelOpen(true)}
+          >
+            <Settings className="h-4 w-4 text-white" />
+          </Button>
+          <Button 
+            size="icon"
+            variant="ghost"
+            className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
+            data-testid="button-completed-tasks"
+            onClick={() => setIsCompletedTasksOpen(true)}
+          >
+            <CheckSquare className="h-4 w-4 text-white" />
+          </Button>
         </div>
+      </div>
 
-        <nav className="flex flex-col gap-0.5 mt-1 pb-4" style={{ maxWidth: '280px', marginLeft: '15px' }}>
-          <h3 className="text-xs font-semibold text-white uppercase tracking-wide px-1 mb-0.5">Weeks</h3>
-          {[...weeks].sort((a, b) => {
-            const aFinished = parseISO(a.endDate) < new Date();
-            const bFinished = parseISO(b.endDate) < new Date();
-            if (aFinished && !bFinished) return 1;
-            if (!aFinished && bFinished) return -1;
-            return a.weekNumber - b.weekNumber;
-          }).map((week) => {
-            const weekEndDate = parseISO(week.endDate);
-            const isWeekFinished = weekEndDate < new Date();
-            const isSelected = selectedWeek === week.weekNumber && !selectedDate;
-            return (
-              <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
-                <Button
-                  variant="ghost"
-                  className={`justify-start gap-1 h-auto py-1 px-1 ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent flex-shrink-0" : "flex-1"}`}
-                  size="sm"
-                  onClick={() => {
-                    setSelectedWeek(week.weekNumber);
-                    setSelectedDate(null);
-                  }}
-                  data-testid={`button-week-${week.weekNumber}`}
-                >
-                  <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
-                    <Calendar className={`h-3 w-3 ${isSelected ? 'text-black' : ''}`} />
-                    <span className={`text-xs ${isSelected ? 'text-black' : ''}`}>Week {week.weekNumber}</span>
-                    <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-                      ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
+      {/* Settings Panel Popup - Contains sidebar content */}
+      <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col" style={{ background: 'rgb(1, 160, 175)' }}>
+          <DialogHeader>
+            <DialogTitle className="text-white">Courses & Weeks</DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+            {/* Course Legend */}
+            <div className="space-y-2">
+              {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
+                const courseCode = course.name.split(' - ')[0];
+                const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
+                const tomorrow = addDays(startOfDay(new Date()), 1);
+                const hasDueTomorrow = allTasks.some(task => 
+                  task.courseName?.includes(courseCode) && 
+                  !task.isCompleted &&
+                  isSameDay(new Date(task.dueDate), tomorrow)
+                );
+                return (
+                  <div key={index} className="flex items-center gap-1.5">
+                    <div 
+                      className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
+                      style={{ backgroundColor: course.color }}
+                    />
+                    <span className="text-[10px] text-white">
+                      <span className="font-medium">{courseCode}</span>
+                      {courseName !== courseCode && <span> - {courseName}</span>}
+                      {course.professor && <span className="text-white/70"> ({course.professor})</span>}
                     </span>
                   </div>
-                  {!isSelected && week.taskCount > 0 && (
-                    <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto">
-                      {week.taskCount}
-                    </Badge>
-                  )}
-                </Button>
-                {/* Task count for selected week - positioned at right edge */}
-                {isSelected && week.taskCount > 0 && (
-                  <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto mr-1 text-black border-black">
-                    {week.taskCount}
-                  </Badge>
-                )}
-              </div>
-            );
-          })}
-        </nav>
+                );
+              })}
+            </div>
 
-        {/* PAG Level Carousel */}
-        <div className="mt-auto">
-          {/* Navigation with arrows and dots */}
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <button
-              onClick={() => setCurrentPagLevel(prev => prev > 1 ? prev - 1 : 3)}
-              className="w-5 h-5 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
-              data-testid="button-pag-prev"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" />
-            </button>
-            {[1, 2, 3].map((level) => (
-              <button
-                key={level}
-                onClick={() => setCurrentPagLevel(level)}
-                className={`w-2.5 h-2.5 rounded-full transition-colors ${currentPagLevel === level ? 'bg-white' : 'bg-white/30 hover:bg-white/50'}`}
-                data-testid={`button-pag-level-${level}`}
-              />
-            ))}
-            <button
-              onClick={() => setCurrentPagLevel(prev => prev < 3 ? prev + 1 : 1)}
-              className="w-5 h-5 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/40 text-white transition-colors"
-              data-testid="button-pag-next"
-            >
-              <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          
-          {/* Level I */}
-          <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-300 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 1 ? '' : 'hidden'}`}>
-          <div className="border-[0.1px] border-white">
-            <div className="flex border-b border-white">
-              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL I</div>
-              <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - CERTIFICATE</div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
-              <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-              <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
-            </div>
-            <div className={`flex border-b border-white ${checkedCourses['PPA101'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA101'] || false} onChange={() => toggleCourse('PPA101')} />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 101</div>
-              <div className="flex-1 px-1 py-0.5">Canadian Public Administration I: Institutions</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA101']?.grade || ''} onChange={(e) => updateGrade('PPA101', e.target.value)}>
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA101']?.percent || ''} onChange={(e) => updatePercent('PPA101', e.target.value)} />
-              </div>
-            </div>
-            <div className={`flex border-b border-white ${checkedCourses['PPA102'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA102'] || false} onChange={() => toggleCourse('PPA102')} />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 102</div>
-              <div className="flex-1 px-1 py-0.5">Canadian Public Administration II: Processes *</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA102']?.grade || ''} onChange={(e) => updateGrade('PPA102', e.target.value)}>
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA102']?.percent || ''} onChange={(e) => updatePercent('PPA102', e.target.value)} />
-              </div>
-            </div>
-            <div className={`flex border-b border-white ${checkedCourses['PPA125'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" checked={checkedCourses['PPA125'] || false} onChange={() => toggleCourse('PPA125')} />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 125</div>
-              <div className="flex-1 px-1 py-0.5">(Formerly PPA521) Rights, Equity and the State</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['PPA125']?.grade || ''} onChange={(e) => updateGrade('PPA125', e.target.value)}>
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['PPA125']?.percent || ''} onChange={(e) => updatePercent('PPA125', e.target.value)} />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white text-[8px] font-semibold">CORE ELECTIVES:</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">TWO</span> from the following:</div>
-              <div className="w-14 border-l border-black"></div>
-            </div>
-            <div className={`flex border-b border-white ${checkedCourses['ELECTIVE1'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE1'] || false} onChange={() => toggleCourse('ELECTIVE1')} />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 120</div>
-              <div className="flex-1 px-1 py-0.5">Canadian Politics & Government **</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE1']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE1', e.target.value)}>
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE1']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE1', e.target.value)} />
-              </div>
-            </div>
-            <div className={`flex border-b border-white ${checkedCourses['ELECTIVE2'] ? 'bg-gray-500 text-gray-500' : ''}`}>
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" checked={checkedCourses['ELECTIVE2'] || false} onChange={() => toggleCourse('ELECTIVE2')} />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 121</div>
-              <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['ELECTIVE2']?.grade || ''} onChange={(e) => updateGrade('ELECTIVE2', e.target.value)}>
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['ELECTIVE2']?.percent || ''} onChange={(e) => updatePercent('ELECTIVE2', e.target.value)} />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 122</div>
-              <div className="flex-1 px-1 py-0.5">Local Politics</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 124</div>
-              <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex flex-col">
-                <div className="flex-1"></div>
-                <div className={`flex items-center justify-center pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-500' : ''}`}>
-                  <input type="checkbox" className="checkbox-black" checked={checkedCourses['LIBERAL'] || false} disabled={!openElectives['LIBERAL']?.trim()} onChange={() => toggleCourse('LIBERAL')} />
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="px-1 pt-0.5 text-[8px]">
-                  <span>LIBERAL STUDIES ELECTIVE TABLE A: <span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
-                </div>
-                <div className="px-1 pb-1 flex items-end">
-                  <input 
-                    type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['LIBERAL'] ? 'bg-gray-500 text-gray-500' : 'bg-white'}`}
-                    placeholder="Course..."
-                    value={openElectives['LIBERAL'] || ''}
-                    onChange={(e) => updateOpenElective('LIBERAL', e.target.value)}
-                    data-testid="input-pag-liberal"
-                  />
-                </div>
-              </div>
-              <div className={`w-14 border-l border-white flex flex-col items-center justify-end gap-1.5 pb-1 ${checkedCourses['LIBERAL'] ? 'bg-gray-500' : ''}`}>
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['LIBERAL']?.grade || ''} onChange={(e) => updateGrade('LIBERAL', e.target.value)}>
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['LIBERAL']?.percent || ''} onChange={(e) => updatePercent('LIBERAL', e.target.value)} />
-              </div>
-            </div>
-            <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
-                <div className="flex-1"></div>
-                <div className={`h-[46px] flex items-start justify-center pt-2 ${checkedCourses['OPEN1'] ? 'bg-gray-500' : ''}`}>
-                  <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN1'] || false} disabled={!openElectives['OPEN1']?.trim()} onChange={() => toggleCourse('OPEN1')} />
-                </div>
-                <div className={`h-[26px] flex items-center justify-center ${checkedCourses['OPEN2'] ? 'bg-gray-500' : ''}`}>
-                  <input type="checkbox" className="checkbox-black" checked={checkedCourses['OPEN2'] || false} disabled={!openElectives['OPEN2']?.trim()} onChange={() => toggleCourse('OPEN2')} />
-                </div>
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="px-1 pt-0.5 text-[8px]">
-                  OPEN ELECTIVE: <span className="font-bold">TWO</span> one-term courses required - options are listed in <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800 font-bold">PR Table I</a>.
-                </div>
-                <div className="px-1 pt-2 pb-5 flex items-end">
-                  <input 
-                    type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN1'] ? 'bg-gray-500 text-gray-500' : 'bg-white'}`}
-                    placeholder="Course 1..."
-                    value={openElectives['OPEN1'] || ''}
-                    onChange={(e) => updateOpenElective('OPEN1', e.target.value)}
-                    data-testid="input-pag-open1"
-                  />
-                </div>
-                <div className="px-1 pt-1 pb-1 flex items-end">
-                  <input 
-                    type="text" 
-                    className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses['OPEN2'] ? 'bg-gray-500 text-gray-500' : 'bg-white'}`}
-                    placeholder="Course 2..."
-                    value={openElectives['OPEN2'] || ''}
-                    onChange={(e) => updateOpenElective('OPEN2', e.target.value)}
-                    data-testid="input-pag-open2"
-                  />
-                </div>
-              </div>
-              <div className="w-14 border-l border-white flex flex-col">
-                <div className="pt-5"></div>
-                <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN1'] ? 'bg-gray-500' : ''}`}>
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN1']?.grade || ''} onChange={(e) => updateGrade('OPEN1', e.target.value)}>
-                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                  </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN1']?.percent || ''} onChange={(e) => updatePercent('OPEN1', e.target.value)} />
-                </div>
-                <div className="flex-1"></div>
-                <div className={`flex flex-col items-center justify-center gap-0.5 py-1 ${checkedCourses['OPEN2'] ? 'bg-gray-500' : ''}`}>
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades['OPEN2']?.grade || ''} onChange={(e) => updateGrade('OPEN2', e.target.value)}>
-                    {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                  </select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades['OPEN2']?.percent || ''} onChange={(e) => updatePercent('OPEN2', e.target.value)} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-          {/* Level II */}
-          <div className={`rounded-md p-2 text-[9px] ${allCoursesChecked ? 'bg-gray-500 text-gray-500' : 'bg-white text-black'} ${currentPagLevel === 2 ? '' : 'hidden'}`}>
-          <div className="border-[0.1px] border-white">
-            <div className="flex border-b border-white">
-              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL II</div>
-              <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DIPLOMA</div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
-              <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-              <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">Core Req</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 211</div>
-              <div className="flex-1 px-1 py-0.5">Public Policy</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-1.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white text-[8px] font-semibold">CORE ELECTIVES:</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px]">Select <span className="font-bold">THREE</span> from the following:</div>
-              <div className="w-14 border-l border-black"></div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 120</div>
-              <div className="flex-1 px-1 py-0.5">Canadian Politics and Government</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 121</div>
-              <div className="flex-1 px-1 py-0.5">Ontario Politics and Government</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 122</div>
-              <div className="flex-1 px-1 py-0.5">Local Politics</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 124</div>
-              <div className="flex-1 px-1 py-0.5">Indigenous Politics and Government</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 235</div>
-              <div className="flex-1 px-1 py-0.5">Theories of the State</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 303</div>
-              <div className="flex-1 px-1 py-0.5">Public Budget Policy/Politics</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 px-1 py-0.5 border-r border-white">PPA 319</div>
-              <div className="flex-1 px-1 py-0.5">Politics of Work and Labour</div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5 py-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A:</div>
-              <div className="w-14 border-l border-black"></div>
-            </div>
-            <div className="flex items-stretch">
-              <div className="w-5 border-r border-white flex items-center justify-center">
-                <input type="checkbox" className="checkbox-black" />
-              </div>
-              <div className="w-14 border-r border-white h-11 flex items-start justify-center text-[8px] text-center px-0.5">
-                <span className="leading-none -mt-2"><span className="font-bold">ONE</span> one-term course (LOWER LEVEL) required.</span>
-              </div>
-              <div className="flex-1 h-11 px-1 flex items-center">
-                <input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course..." />
-              </div>
-              <div className="w-14 border-l border-white flex flex-col items-center justify-center gap-0.5">
-                <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                  {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                </select>
-                <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-              </div>
-            </div>
-            <div className="h-px bg-black"></div>
-            <div className="flex items-stretch">
-              <div className="w-5 border-r border-white flex flex-col">
-                <div className="h-7 border-b border-white"></div>
-                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center border-b border-white"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-9 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-              </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
-                <span className="leading-tight"><span className="font-bold">ONE</span> course required</span>
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="h-7 px-1 text-[8px] leading-tight flex items-center border-b border-white"><span><b>CORE ELECTIVE: ONE</b> course required from the following:</span></div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 101 Principles of Microeconomics ** (Anti-req ECN104)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 104 Introductory Microeconomics ** (Anti-req ECN110)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 110 The Economy and Society ** (Anti-req ECN104)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 201 Principles of Macroeconomics ** (Anti-req ECN204)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 204 Introductory Macroeconomics ** (Anti-req ECN210)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 210 Understanding Economics ** (Anti-req ECN101,104, 201 and 204)</div>
-                <div className="h-9 px-1 text-[8px] flex items-center border-b border-white">ECN 220 Evolution of the Global Economy</div>
-                <div className="h-9 px-1 text-[8px] flex items-center">ECN 320 Introduction to Financial Economics</div>
-              </div>
-              <div className="w-14 border-l border-white flex flex-col">
-                <div className="h-7 border-b border-white"></div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5 border-b border-white">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-9 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-              </div>
-            </div>
-            <div className="h-px bg-black"></div>
-            <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE</div>
-              <div className="w-14 border-l border-black"></div>
-            </div>
-            <div className="flex items-stretch">
-              <div className="w-5 border-r border-white flex flex-col">
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-              </div>
-              <div className="w-14 border-r border-white h-[88px] flex items-center justify-center text-[8px] text-center px-0.5">
-                <span className="leading-tight"><span className="font-bold">TWO</span> one-term courses required - options are listed in <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800 font-bold">PR Table I</a>.</span>
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
-              </div>
-              <div className="w-14 border-l border-white flex flex-col">
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Level III */}
-          <div className={`rounded-md p-2 text-[9px] bg-white text-black ${currentPagLevel === 3 ? '' : 'hidden'}`}>
-          <div className="border-[0.1px] border-white">
-            <div className="flex border-b border-white">
-              <div className="font-bold px-1 py-0.5 border-r border-white w-16">LEVEL III</div>
-              <div className="font-bold px-1 py-0.5 flex-1 text-center">PAG - DEGREE</div>
-            </div>
-            <div className="flex border-b border-white">
-              <div className="w-5 px-0.5 py-0.5 border-r border-white"></div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Type</div>
-              <div className="w-14 px-1 py-0.5 border-r border-white font-bold">Code</div>
-              <div className="flex-1 px-1 py-0.5 font-bold">COURSES</div>
-              <div className="w-14 px-1 py-0.5 border-l border-black font-bold text-center">Grade</div>
-            </div>
-            <table className="w-full border-collapse">
-              <colgroup>
-                <col style={{ width: '20px' }} />
-                <col style={{ width: '56px' }} />
-                <col style={{ width: '56px' }} />
-                <col />
-                <col style={{ width: '56px' }} />
-              </colgroup>
-              <tbody>
-                <tr className="border-b border-white">
-                  <td className="px-0.5 py-0.5 border-r border-white text-center align-middle">
-                    <input type="checkbox" className="checkbox-black" />
-                  </td>
-                  <td className="px-1 py-0.5 border-r border-white align-middle text-[8px]">Core Req</td>
-                  <td className="px-1 py-0.5 border-r border-white align-middle text-[9px]">PPA 333</td>
-                  <td className="px-1 py-0.5 align-middle text-[9px]">Research Methods in Public Administration</td>
-                  <td className="border-l border-black align-middle">
-                    <div className="flex flex-col items-center justify-center gap-1.5 py-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                        {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                      </select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                  </td>
-                </tr>
-                {[
-                  { code: 'PPA 235', title: 'Theories of the State' },
-                  { code: 'PPA 301', title: 'Administrative Law T' },
-                  { code: 'PPA 303', title: 'Public Budget Policy/Politics' },
-                  { code: 'PPA 319', title: 'Politics of Work and Labour' },
-                  { code: 'PPA 335', title: 'Theories of Bureaucracy' },
-                  { code: 'PPA 401', title: 'Collaborative Governance' },
-                  { code: 'PPA 402', title: 'Program Planning and Evaluation' },
-                  { code: 'PPA 403', title: 'e-Government' },
-                  { code: 'PPA 404', title: 'Issues in Public Administration' },
-                  { code: 'PPA 411', title: 'Advanced Public Policy' },
-                  { code: 'PPA 414', title: 'Comparative Public Policy' },
-                  { code: 'PPA 425', title: 'Intergovernmental Relations' },
-                  { code: 'PPA 490', title: 'Public Admin Themes' },
-                  { code: 'PPA 501', title: 'Public Sector Leadership' },
-                ].map((course, idx, arr) => (
-                  <tr key={course.code} className={idx < arr.length - 1 ? 'border-b border-white' : ''}>
-                    {idx === 0 && (
-                      <>
-                        <td rowSpan={14} className="px-0.5 py-0.5 border-r border-white text-center align-middle">
-                          <div className="flex flex-col gap-0">
-                            {Array(14).fill(0).map((_, i) => (
-                              <div key={i} className={`h-11 flex items-center justify-center ${i < 13 ? 'border-b border-white' : ''}`}>
-                                <input type="checkbox" className="checkbox-black" />
-                              </div>
-                            ))}
-                          </div>
-                        </td>
-                        <td rowSpan={14} className="px-1 py-0.5 border-r border-white text-[8px] align-middle">
-                          <div className="font-semibold">CORE ELECTIVES:</div>
-                          <div>Select <span className="font-bold">EIGHT</span> from the following:</div>
-                        </td>
-                      </>
-                    )}
-                    <td className={`h-11 px-1 py-0.5 border-r border-white align-middle text-[9px]`}>{course.code}</td>
-                    <td className={`h-11 px-1 py-0.5 align-middle text-[9px]`}>{course.title}</td>
-                    <td className="border-l border-black align-middle">
-                      <div className="flex flex-col items-center justify-center gap-1.5">
-                        <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">
-                          {gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}
-                        </select>
-                        <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
+            {/* Weeks */}
+            <div className="space-y-1">
+              {[...weeks].sort((a, b) => {
+                const aFinished = parseISO(a.endDate) < new Date();
+                const bFinished = parseISO(b.endDate) < new Date();
+                if (aFinished && !bFinished) return 1;
+                if (!aFinished && bFinished) return -1;
+                return a.weekNumber - b.weekNumber;
+              }).map((week) => {
+                const weekEnd = parseISO(week.endDate);
+                const isWeekFinished = weekEnd < new Date();
+                const isSelected = selectedWeek === week.weekNumber && !selectedDate;
+                return (
+                  <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
+                    <Button
+                      variant="ghost"
+                      className={`justify-start gap-1 h-auto py-1 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
+                      size="sm"
+                      onClick={() => {
+                        setSelectedWeek(week.weekNumber);
+                        setSelectedDate(null);
+                        setIsSettingsPanelOpen(false);
+                      }}
+                      data-testid={`button-week-panel-${week.weekNumber}`}
+                    >
+                      <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
+                        <Calendar className={`h-3 w-3 ${isSelected ? 'text-black' : 'text-white'}`} />
+                        <span className={`text-xs ${isSelected ? 'text-black' : 'text-white'}`}>Week {week.weekNumber}</span>
+                        <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`}>
+                          ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
+                        </span>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="h-px bg-black"></div>
-            <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE REQUIRED:</div>
-              <div className="w-14 border-l border-black"></div>
-            </div>
-            <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-              </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center">
-                Select&nbsp;<span className="font-bold">ONE</span>
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="h-11 px-1 flex items-center text-[9px]">PPA 50A/B (Formerly PPA030) ***Practicum1</div>
-                <div className="h-11 px-1 flex items-center text-[9px]">Course Base Option: Need 3 RG2 CORE ELECTIVE and 6 OE</div>
-              </div>
-              <div className="w-14 border-l border-white flex flex-col">
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-              </div>
-            </div>
-            <div className="h-px bg-black"></div>
-            <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">CORE ELECTIVE</div>
-              <div className="w-14 border-l border-black"></div>
-            </div>
-            <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-              </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
-                <div className="leading-tight">Select <span className="font-bold">THREE</span><br/>courses not<br/>previously<br/>taken:</div>
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
-                <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
-                <div className="h-11 px-1 flex items-center text-[9px]">Any POG – 300 or 400 level courses</div>
-              </div>
-              <div className="w-14 border-l border-white flex flex-col">
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-              </div>
-            </div>
-            <div className="h-px bg-black"></div>
-            <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">LIBERAL STUDIES ELECTIVE TABLE A / B:</div>
-              <div className="w-14 border-l border-black"></div>
-            </div>
-            <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-              </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
-                <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED,<br/><br/><span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/><br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
-              </div>
-              <div className="w-14 border-l border-white flex flex-col">
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-              </div>
-            </div>
-            <div className="h-px bg-black"></div>
-            <div className="flex">
-              <div className="w-5 border-r border-white"></div>
-              <div className="w-14 border-r border-white"></div>
-              <div className="flex-1 px-1 py-0.5 text-[8px] font-bold">OPEN ELECTIVE:</div>
-              <div className="w-14 border-l border-black"></div>
-            </div>
-            <div className="flex">
-              <div className="w-5 border-r border-white flex flex-col">
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-              </div>
-              <div className="w-14 border-r border-white flex items-center justify-center text-[8px] text-center px-0.5">
-                <div className="leading-tight"><span className="font-bold">SIX</span> one-term level courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
-              </div>
-              <div className="flex-1 flex flex-col">
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 5..." /></div>
-                <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 6..." /></div>
-              </div>
-              <div className="w-14 border-l border-white flex flex-col">
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-                <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                  <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                  <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                </div>
-              </div>
+                      {week.taskCount > 0 && (
+                        <Badge variant="outline" className={`text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto ${isSelected ? 'text-black border-black' : 'text-white border-white'}`}>
+                          {week.taskCount}
+                        </Badge>
+                      )}
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
-        </div>
-        </div>
-        </div>
-      </aside>
-      </div>
-      </div>
+        </DialogContent>
+      </Dialog>
 
-      {/* Quick Actions Header Bar - positioned absolutely to align with left panel */}
-      <div className="absolute z-20 flex items-center rounded-md overflow-hidden" style={{ 
-        width: '350px',
-        left: '11px',
-        top: '8px',
-        background: 'black',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-        border: '0.1px solid white'
-      }}>
-        <div className="flex items-center px-4 gap-2 w-full h-[44px]">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" style={{ marginLeft: '-7px' }} />
-          <span className="text-sm text-white font-medium" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule ({currentSemesterName})</span>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '127px', paddingRight: '24px', marginTop: '0px' }}>
-        {/* Title Row - aligned with sidebar header */}
-        <div className="flex items-start justify-between mb-0 flex-shrink-0">
-          </div>
+      {/* Main Content - Full width, positioned below unified header */}
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
         
-        {/* Menu Bar Container - clips scroll content */}
-        <div className="flex-shrink-0 relative z-10 flex gap-2" style={{ marginTop: '0px', marginRight: '-7px', marginLeft: '-111px' }}>
-        {/* Sleek Menu Bar */}
-        <div className="flex items-center mb-0 rounded-md overflow-hidden flex-1" style={{ 
-          background: 'black',
-          boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-          border: '0.1px solid white'
-        }}>
-          {/* Navigation Section */}
-          <div className="flex items-center px-4 gap-2 h-[44px]">
-            {/* Hamburger Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hover:bg-white/20 rounded-md -ml-2.5 -mr-1"
-                  data-testid="button-hamburger-menu"
-                >
-                  <Menu className="!h-6 !w-6 text-white" strokeWidth={2.5} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
-                  <User className="h-4 w-4 mr-2" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  School
-                </DropdownMenuItem>
-                <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
-                  <Palette className="h-4 w-4 mr-2" />
-                  Courses
-                </DropdownMenuItem>
-                <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
-                  <Settings className="h-4 w-4 mr-2" />
-                  Settings
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {/* Week navigation */}
-            <div className="flex items-center bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm">
-              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
-              <div className="flex items-center gap-1 mx-2 whitespace-nowrap">
-                <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
-                <span className="text-[11px] text-white/50">—</span>
-                <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
-              </div>
-              <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
-            </div>
-
-            {/* Bell */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMute}
-              className={`h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
-              data-testid="button-mute-toggle"
-              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-            >
-              {isMuted ? <BellOff className="h-[14px] w-[14px] text-white" /> : <Bell className="h-[14px] w-[14px] text-white" />}
-            </Button>
-
-            {/* Sync */}
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white"
-              onClick={() => syncAllCalendarMutation.mutate()}
-              disabled={syncAllCalendarMutation.isPending}
-              data-testid="button-sync-calendar"
-            >
-              {syncAllCalendarMutation.isPending ? (
-                <Loader2 className="h-[14px] w-[14px] text-white animate-spin" />
-              ) : (
-                <RefreshCw className="h-[14px] w-[14px] text-white" />
-              )}
-            </Button>
-
-            {/* View Buttons */}
-            <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-0.5 py-0.5">
-              <Button 
-                variant="ghost"
-                className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
-                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-                data-testid="button-today"
-              >
-                <Sun className="h-3 w-3 mr-1 text-white" />
-                Today
-              </Button>
-              <div className="w-[1px] h-4 bg-white/50" />
-              <Button 
-                variant="ghost"
-                className="!h-6 !min-h-0 px-2 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
-                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-                data-testid="button-month-view"
-              >
-                <CalendarDays className="h-3 w-3 mr-1 text-white" />
-                {calendarView === "month" ? "Week" : "Month"}
-              </Button>
-            </div>
-
-            </div>
-
-          {/* Quick Add Section */}
-          <div className="flex items-center pl-3 py-2 gap-1 flex-1 justify-end" style={{ paddingRight: '152px', transform: 'translateX(-20px)' }}>
-            <Button 
-              size="sm"
-              className="!h-7 !min-h-0 px-4 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
-              data-testid="button-add-class"
-              onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}
-            >
-              + Class
-            </Button>
-            <Button 
-              size="sm"
-              className="!h-7 !min-h-0 px-2.5 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
-              data-testid="button-add-module"
-              onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}
-            >
-              + Module
-            </Button>
-            <Button 
-              size="sm"
-              className="!h-7 !min-h-0 px-2.5 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
-              data-testid="button-add-reading"
-              onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}
-            >
-              + Reading
-            </Button>
-            <Button 
-              size="sm"
-              className="!h-7 !min-h-0 px-3 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
-              data-testid="button-add-discussion"
-              onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}
-            >
-              + Discussion
-            </Button>
-            <Button 
-              size="sm"
-              className="!h-7 !min-h-0 px-3 bg-white/10 hover:bg-white/20 text-white text-[11px] border-0 font-medium rounded-md"
-              data-testid="button-add-assignment"
-              onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}
-            >
-              + Assignment
-            </Button>
-            <Button 
-              size="sm"
-              className="!h-7 !min-h-0 px-2.5 hover:opacity-80 text-white text-[11px] border-0 font-medium rounded-md"
-              style={{ backgroundColor: '#7f1d1d' }}
-              data-testid="button-add-exam"
-              onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}
-            >
-              + Exam
-            </Button>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
-              data-testid="button-completed-tasks"
-              onClick={() => setIsCompletedTasksOpen(true)}
-            >
-              <CheckSquare className="h-4 w-4 text-white" />
-            </Button>
-          </div>
-          
-          {/* Completed Tasks Popup */}
+        {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
             <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col">
               <DialogHeader>
@@ -4015,11 +3210,9 @@ export default function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
-        </div>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginRight: '-7px', marginLeft: '-111px', paddingRight: '0px', transform: 'translate(2px, 8px)' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginTop: '8px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
