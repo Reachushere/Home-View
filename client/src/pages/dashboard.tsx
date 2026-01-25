@@ -4550,12 +4550,14 @@ export default function Dashboard() {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                             const colors = courseColors[courseCode];
                             const today = startOfDay(new Date());
+                            const tomorrow = addDays(today, 1);
                             const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                            const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                             // Check if this is the final hour for this task
                             const [endHour, endMin] = (task.eventEndTime || "").split(':').map(Number);
                             const isFinalHour = endHour === hour;
-                            // Height fills full slot except final hour which is partial
-                            const heightPx = isFinalHour ? Math.max(2, (endMin / 60) * 44 - 2) : 42;
+                            // Height: full 44px for middle hours, partial for final hour based on end minutes
+                            const heightPx = isFinalHour ? Math.max(4, (endMin / 60) * 44) : 44;
                             
                             return (
                               <div
@@ -4567,7 +4569,7 @@ export default function Dashboard() {
                                 className={`absolute cursor-pointer ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${isFinalHour ? "rounded-b" : ""} ${
-                                  isDueToday ? "animate-shimmer" : ""
+                                  isDueToday ? "animate-blink animate-shimmer" : isDueTomorrow ? "animate-slow-blink" : ""
                                 } ${
                                   task.isCompleted
                                     ? `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-300`
@@ -4576,7 +4578,7 @@ export default function Dashboard() {
                                       : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
                                 }`}
                                 style={{ 
-                                  top: '2px',
+                                  top: 0,
                                   left: '2px',
                                   width: 'calc(100% - 4px)',
                                   height: `${heightPx}px`,
