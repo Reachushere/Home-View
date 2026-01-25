@@ -3836,7 +3836,7 @@ export default function Dashboard() {
                 <DialogTitle>Add New Task</DialogTitle>
               </DialogHeader>
               <TaskForm 
-                key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}`}
+                key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
                 weekNumber={selectedWeek}
                 initialDate={selectedDate}
                 initialType={newTaskType}
