@@ -2656,22 +2656,22 @@ export default function Dashboard() {
 
         {/* Quick Add Buttons */}
         <div className="flex items-center gap-1 px-2 h-full flex-1 min-w-0 justify-center overflow-hidden">
+          {/* Completed Tasks Checkbox - left of Class */}
+          <Button 
+            size="icon"
+            variant="ghost"
+            className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white mr-1"
+            data-testid="button-completed-tasks"
+            onClick={() => setIsCompletedTasksOpen(true)}
+          >
+            <CheckSquare className="h-[14px] w-[14px] text-white" />
+          </Button>
           <Button size="sm" className="!h-7 !min-h-0 px-3 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2.5 bg-white/10 hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2 hover:opacity-80 text-white text-[10px] border-0 font-medium rounded-md" style={{ backgroundColor: '#7f1d1d' }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
-          {/* Completed Tasks Checkbox - right after Exam */}
-          <Button 
-            size="icon"
-            variant="ghost"
-            className="h-[25px] w-[25px] hover:bg-white/20 rounded-md border-[0.1px] border-white ml-1"
-            data-testid="button-completed-tasks"
-            onClick={() => setIsCompletedTasksOpen(true)}
-          >
-            <CheckSquare className="h-[14px] w-[14px] text-white" />
-          </Button>
         </div>
 
         {/* Timer and Clock - Far Right */}
