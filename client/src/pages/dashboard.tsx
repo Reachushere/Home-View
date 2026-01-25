@@ -4578,10 +4578,10 @@ export default function Dashboard() {
                                       : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
                                 }`}
                                 style={{ 
-                                  top: 0,
+                                  top: '-1px',
                                   left: '2px',
                                   width: 'calc(100% - 4px)',
-                                  height: `${heightPx}px`,
+                                  height: `${heightPx + 1}px`,
                                   zIndex: 5
                                 }}
                                 data-testid={`task-continuation-${task.id}-hour-${hour}`}
@@ -4652,8 +4652,8 @@ export default function Dashboard() {
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
-                                  left: '2px',
-                                  width: 'calc(100% - 4px)',
+                                  left: `calc(${taskIdx * columnWidth}% + 2px)`,
+                                  width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : (taskHeight > 44 ? 30 : 1))
                                 }}
