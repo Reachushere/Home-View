@@ -4310,7 +4310,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex items-center justify-center h-full ${isToday ? "animate-today-column" : ""}`}
+                    className="border-l border-border flex items-center justify-center h-full"
                     style={{ 
                       backgroundColor: isToday ? "#2d4a6f" : "black"
                     }}
