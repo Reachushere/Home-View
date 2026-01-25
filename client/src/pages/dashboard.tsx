@@ -1865,8 +1865,8 @@ export default function Dashboard() {
           
           connections.push({
             taskId: task.id,
-            fromX: boxRect.left + boxRect.width / 2,
-            fromY: boxRect.top,
+            fromX: boxRect.left,
+            fromY: boxRect.top + boxRect.height / 2,
             toX: calRect.left + calRect.width / 2,
             toY: calRect.bottom,
             color
