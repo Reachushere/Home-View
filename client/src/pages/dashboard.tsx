@@ -2899,9 +2899,10 @@ export default function Dashboard() {
                   !task.isCompleted &&
                   isSameDay(new Date(task.dueDate), tomorrow)
                 );
-                const professorEmail = index === 0 ? semesterSettings?.course1ProfessorEmail :
-                                       index === 1 ? semesterSettings?.course2ProfessorEmail :
-                                       semesterSettings?.course3ProfessorEmail;
+                // Match professor email by course code, not index
+                const professorEmail = semesterSettings?.course1Code === courseCode ? semesterSettings?.course1ProfessorEmail :
+                                       semesterSettings?.course2Code === courseCode ? semesterSettings?.course2ProfessorEmail :
+                                       semesterSettings?.course3Code === courseCode ? semesterSettings?.course3ProfessorEmail : null;
                 return (
                   <div key={index} className="flex items-center gap-1.5">
                     <div 
