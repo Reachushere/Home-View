@@ -65,6 +65,7 @@ import {
   Palette,
   ExternalLink,
   Volume2,
+  CheckSquare,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -187,7 +188,8 @@ export default function Dashboard() {
     return null;
   });
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isWeeklyFilesFlyoutOpen, setIsWeeklyFilesFlyoutOpen] = useState(true);
+  const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
+  const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   
   // Calculate if it's nighttime in Toronto based on approximate sunrise/sunset
   const isNighttime = useMemo(() => {
@@ -1643,6 +1645,45 @@ export default function Dashboard() {
   }));
   const completedTasks = displayTasks.filter(t => t.isCompleted);
   
+  // New task filters for Due Today, Due Tomorrow, Due This Week boxes
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  // Due Today: all tasks due today (not prep tasks, actual due dates)
+  const dueTodayTasks = allTasks.filter(t => {
+    if (t.isMissed || t.isCompleted) return false;
+    return t.dueDate && isSameDay(new Date(t.dueDate), today);
+  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  
+  // Due Tomorrow: all tasks due tomorrow
+  const dueTomorrowTasks = allTasks.filter(t => {
+    if (t.isMissed || t.isCompleted) return false;
+    return t.dueDate && isSameDay(new Date(t.dueDate), tomorrow);
+  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  
+  // Due This Week: tasks due on remaining school week days (not today, not tomorrow)
+  // School week is Mon-Fri, so we need to find remaining days until Friday
+  const dueThisWeekTasks = allTasks.filter(t => {
+    if (t.isMissed || t.isCompleted) return false;
+    if (!t.dueDate) return false;
+    const dueDate = new Date(t.dueDate);
+    const dueDateStart = startOfDay(dueDate);
+    const todayStart = startOfDay(today);
+    const tomorrowStart = startOfDay(tomorrow);
+    // Not today or tomorrow
+    if (isSameDay(dueDateStart, todayStart) || isSameDay(dueDateStart, tomorrowStart)) return false;
+    // Must be after tomorrow
+    if (dueDateStart <= tomorrowStart) return false;
+    // Must be within the current school week (Mon-Fri)
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+    // Find end of school week (Friday)
+    const daysUntilFriday = dayOfWeek === 0 ? 5 : dayOfWeek === 6 ? 6 : 5 - dayOfWeek;
+    const endOfSchoolWeek = new Date(today);
+    endOfSchoolWeek.setDate(today.getDate() + daysUntilFriday);
+    endOfSchoolWeek.setHours(23, 59, 59, 999);
+    return dueDateStart <= endOfSchoolWeek;
+  }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+  
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
   const cfnf400Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).length, missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length) * 64;
@@ -2532,7 +2573,7 @@ export default function Dashboard() {
         
         {/* Sidebar with blur/fade effect */}
         <aside className="flex-1 text-white rounded-md shadow-lg border-[0.1px] border-white flex flex-col min-h-0" style={{ width: 350, background: 'rgb(1, 160, 175)', marginTop: '2px' }}>
-        <div className={`flex-1 pb-4 pt-0 pr-0 flex flex-col transition-all duration-300 min-h-0 ${isWeeklyFilesFlyoutOpen ? 'opacity-60 blur-[1px]' : 'opacity-100 blur-0'}`} style={{ paddingLeft: '11px' }}>
+        <div className="flex-1 pb-4 pt-0 pr-0 flex flex-col min-h-0" style={{ paddingLeft: '11px' }}>
           {/* Spacer for clock and pomodoro timer */}
           <div className="flex-shrink-0" style={{ height: '52px' }} />
 
@@ -3531,7 +3572,68 @@ export default function Dashboard() {
             >
               + Exam
             </Button>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
+              data-testid="button-completed-tasks"
+              onClick={() => setIsCompletedTasksOpen(true)}
+            >
+              <CheckSquare className="h-4 w-4 text-white" />
+            </Button>
           </div>
+          
+          {/* Completed Tasks Popup */}
+          <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
+            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <CheckSquare className="h-5 w-5" />
+                  Completed Tasks
+                </DialogTitle>
+              </DialogHeader>
+              <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                {(() => {
+                  const completedTasks = tasks
+                    .filter(t => t.isCompleted)
+                    .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
+                  
+                  if (completedTasks.length === 0) {
+                    return <div className="text-muted-foreground text-sm py-4 text-center">No completed tasks yet</div>;
+                  }
+                  
+                  const getCourseColor = (courseName: string | null | undefined) => {
+                    if (!courseName) return '#888888';
+                    if (courseName.startsWith('CPPA122')) return '#22c55e';
+                    if (courseName.startsWith('CFNF400')) return '#ec4899';
+                    if (courseName.startsWith('CASL101')) return '#6366f1';
+                    return '#888888';
+                  };
+                  
+                  return completedTasks.map(task => (
+                    <div key={task.id} className="flex items-center gap-3 p-2 rounded-md bg-muted/50 border border-border">
+                      <input
+                        type="checkbox"
+                        checked={true}
+                        onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
+                        className="h-4 w-4 rounded-sm cursor-pointer flex-shrink-0"
+                        style={{ accentColor: getCourseColor(task.courseName) }}
+                        data-testid={`completed-checkbox-${task.id}`}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">{task.title}</div>
+                        <div className="text-xs text-muted-foreground flex items-center gap-2">
+                          <span style={{ color: getCourseColor(task.courseName) }}>{task.courseName?.split(' - ')[0]}</span>
+                          <span>•</span>
+                          <span>{format(new Date(task.dueDate), 'MMM d, yyyy')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </DialogContent>
+          </Dialog>
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -4427,242 +4529,178 @@ export default function Dashboard() {
           </Card>
         </div>
         )}
-        {/* Be Prepared, Do Today, and Missed Tasks Side by Side */}
+        {/* Due Today, Due Tomorrow, Due This Week - Grouped by Course */}
         {(() => {
-          // Calculate dynamic height based on max tasks in any course column
-          const cppa122Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).length;
-          const cfnf400Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).length;
-          const casl101Tasks = upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).length;
-          const maxTasks = Math.max(cppa122Tasks, cfnf400Tasks, casl101Tasks, 2);
-          // Base height 390px fits 3 course rows with 1 task with media controls each
-          const dynamicHeight = maxTasks <= 2 ? 390 : 390 + (maxTasks - 2) * 95;
-          // Calculate exact row height: container height minus header (~28px), divided by 3 rows
-          // Each row needs ~110px to fit a task with media controls (h-5 controls + mb-1 + 60px card + pb-2 + margins)
-          const rowHeight = Math.floor((dynamicHeight - 28) / 3);
+          // Helper function to get course color
+          const getCourseColor = (courseName: string | null | undefined) => {
+            if (!courseName) return '#888888';
+            if (courseName.startsWith('CPPA122')) return '#22c55e'; // green
+            if (courseName.startsWith('CFNF400')) return '#ec4899'; // pink
+            if (courseName.startsWith('CASL101')) return '#6366f1'; // indigo
+            return '#888888';
+          };
+          
+          // Helper function to parse task attachments
+          const parseAttachments = (attachments: any[] | null | undefined) => {
+            if (!attachments || attachments.length === 0) return [];
+            return attachments.map(att => {
+              if (typeof att === 'string') {
+                try {
+                  const parsed = JSON.parse(att);
+                  return { name: parsed.name || parsed.url?.split('/').pop() || 'File', url: parsed.url || att };
+                } catch {
+                  return { name: att.split('/').pop() || 'File', url: att };
+                }
+              }
+              return { name: att.name || att.url?.split('/').pop() || 'File', url: att.url || '' };
+            });
+          };
+          
+          // Helper to find matching file from allFiles
+          const findFileByUrl = (url: string) => {
+            return allFiles.find(f => f.objectPath === url || f.objectPath.includes(url) || url.includes(f.objectPath));
+          };
+          
+          // Group tasks by course
+          const groupByCourse = (tasks: typeof dueTodayTasks) => {
+            const grouped: Record<string, typeof tasks> = {};
+            const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
+            tasks.forEach(task => {
+              const courseCode = task.courseName?.split(' - ')[0] || task.courseName?.split(' ')[0] || 'OTHER';
+              if (!grouped[courseCode]) grouped[courseCode] = [];
+              grouped[courseCode].push(task);
+            });
+            return Object.entries(grouped).sort(([a], [b]) => {
+              const aIdx = courseOrder.indexOf(a);
+              const bIdx = courseOrder.indexOf(b);
+              if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
+              if (aIdx === -1) return 1;
+              if (bIdx === -1) return -1;
+              return aIdx - bIdx;
+            });
+          };
+          
+          // Render a single task row
+          const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false) => {
+            const attachments = parseAttachments(task.attachments);
+            const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+            return (
+              <div key={task.id} className="mb-1.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={task.isCompleted ?? false}
+                    onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
+                    className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer flex-shrink-0"
+                    style={{ accentColor: getCourseColor(task.courseName) }}
+                    data-testid={`checkbox-task-${task.id}`}
+                  />
+                  {showDaysUntil && (
+                    <span className="text-[10px] text-white/70 font-normal w-16 flex-shrink-0">
+                      {format(new Date(task.dueDate), 'EEE')} (+{daysUntil})
+                    </span>
+                  )}
+                  <span className="text-xs text-white font-normal truncate">{task.title}</span>
+                </div>
+                {attachments.length > 0 && (
+                  <div className="ml-6 mt-0.5 space-y-0.5">
+                    {attachments.map((file, idx) => {
+                      const matchingFile = findFileByUrl(file.url);
+                      return (
+                        <button
+                          key={idx}
+                          className="flex items-center gap-1.5 text-[10px] text-white/80 hover:text-white cursor-pointer"
+                          onClick={() => {
+                            if (matchingFile) {
+                              setPreviewFile(matchingFile);
+                            } else {
+                              window.open(file.url, '_blank');
+                            }
+                          }}
+                          data-testid={`file-link-${task.id}-${idx}`}
+                        >
+                          <FileText className="h-3 w-3" />
+                          <span className="truncate max-w-[180px]">{file.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          };
+          
+          // Render grouped tasks with course headers
+          const renderGroupedTasks = (tasks: typeof dueTodayTasks, showDaysUntil = false) => {
+            const grouped = groupByCourse(tasks);
+            return grouped.map(([courseCode, courseTasks]) => {
+              const courseName = courseTasks[0]?.courseName || courseCode;
+              return (
+                <div key={courseCode} className="mb-3 last:mb-0">
+                  <div 
+                    className="text-[10px] font-bold mb-1 pb-0.5 border-b border-white/30"
+                    style={{ color: getCourseColor(courseName) }}
+                  >
+                    {courseName}
+                  </div>
+                  <div className="space-y-0.5">
+                    {courseTasks.map(task => renderTask(task, showDaysUntil))}
+                  </div>
+                </div>
+              );
+            });
+          };
+          
           return (
-        <div className="flex gap-4 mb-3 items-stretch flex-shrink-0" style={{ height: `${dynamicHeight}px` }}>
-          {/* Upcoming Tasks Section (Be Prepared) - Now on Left */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-upcoming">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
-              <Clock className="h-3 w-3 text-white" />
-              BE PREPARED: Upcoming Tasks ({upcomingTasks.length})
-            </h4>
-            <div className="flex-1 flex overflow-hidden">
-              {isLoading ? (
-                <div className="text-muted-foreground text-xs p-3">Loading...</div>
-              ) : (
-                <>
-                  {/* CPPA122 Column - Green */}
-                  <div className="flex-1 p-2 overflow-hidden">
-                    <div className="text-[9px] font-normal text-white mb-1.5 text-center drop-shadow-md">CPPA122 - Local Politics</div>
-                    <div className="space-y-1.5">
-                      {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => {
-                        const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
-                        return (
-                          <div key={task.id} className="relative">
-                            <TaskCard
-                              task={task}
-                              onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                              onReschedule={() => setRescheduleTask(task)}
-                              onEdit={() => setEditingTask(task)}
-                              onDelete={() => deleteMutation.mutate(task.id)}
-                              cardBgClass="bg-green-50 dark:bg-green-900/20"
-                              compact
-                            />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-9px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
-                              <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
-                              <div className="working-dots mt-0.5">
-                                <div className="working-dot"></div>
-                                <div className="working-dot"></div>
-                                <div className="working-dot"></div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {upcomingTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
-                        <div className="text-center py-2 text-white/80 text-[10px]">No tasks</div>
-                      )}
-                    </div>
-                  </div>
-                  {/* CFNF400 Column - Pink */}
-                  <div className="flex-1 p-2 overflow-hidden">
-                    <div className="text-[9px] font-normal text-white mb-1.5 text-center drop-shadow-md">CFNF400 - Human Sexuality</div>
-                    <div className="space-y-1.5">
-                      {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => {
-                        const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
-                        return (
-                          <div key={task.id} className="relative">
-                            <TaskCard
-                              task={task}
-                              onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                              onReschedule={() => setRescheduleTask(task)}
-                              onEdit={() => setEditingTask(task)}
-                              onDelete={() => deleteMutation.mutate(task.id)}
-                              cardBgClass="bg-pink-50 dark:bg-pink-900/20"
-                              compact
-                            />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-9px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
-                              <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
-                              <div className="working-dots mt-0.5">
-                                <div className="working-dot"></div>
-                                <div className="working-dot"></div>
-                                <div className="working-dot"></div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {upcomingTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
-                        <div className="text-center py-2 text-white/80 text-[10px]">No tasks</div>
-                      )}
-                    </div>
-                  </div>
-                  {/* CASL101 Column - Purple */}
-                  <div className="flex-1 p-2 overflow-hidden">
-                    <div className="text-[9px] font-normal text-white mb-1.5 text-center drop-shadow-md">CASL101 - American Sign Language</div>
-                    <div className="space-y-1.5">
-                      {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => {
-                        const daysUntilDue = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
-                        return (
-                          <div key={task.id} className="relative">
-                            <TaskCard
-                              task={task}
-                              onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })}
-                              onReschedule={() => setRescheduleTask(task)}
-                              onEdit={() => setEditingTask(task)}
-                              onDelete={() => deleteMutation.mutate(task.id)}
-                              cardBgClass="bg-indigo-50 dark:bg-indigo-900/20"
-                              compact
-                            />
-                            <div className="absolute top-1/2 -translate-y-[calc(50%+2px)] right-[-9px] w-6 h-6 rounded-sm flex flex-col items-center justify-center z-10 border-[0.1px] border-white/20" style={{ background: 'rgba(0,0,0,0.85)' }}>
-                              <span className="text-xs font-bold text-white leading-none">{daysUntilDue}</span>
-                              <div className="working-dots mt-0.5">
-                                <div className="working-dot"></div>
-                                <div className="working-dot"></div>
-                                <div className="working-dot"></div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      {upcomingTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
-                        <div className="text-center py-2 text-white/80 text-[10px]">No tasks</div>
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </section>
-
-          {/* Do Today Section (Urgent) - Now in Middle */}
-          <section className={`w-[240px] flex-shrink-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col ${doTodayBounce && todayTasks.length > 0 ? 'animate-gentle-bounce' : ''}`} style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
+        <div className="flex gap-4 mb-3 items-start flex-shrink-0">
+          {/* Due Today */}
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
-              URGENT: Do Today ({todayTasks.length})
+              DUE TODAY ({dueTodayTasks.length})
             </h4>
-            <div className="flex-1 flex flex-col pt-2">
+            <div className="flex-1 p-3">
               {isLoading ? (
-                <div className="text-muted-foreground text-xs p-2">Loading...</div>
+                <div className="text-white/60 text-xs">Loading...</div>
+              ) : dueTodayTasks.length === 0 ? (
+                <div className="text-white/60 text-xs">No tasks due today</div>
               ) : (
-                <>
-                  {/* CPPA122 Row - Green */}
-                  <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                    <div className="text-[9px] font-normal text-white mb-1.5 drop-shadow-md">CPPA122 - Local Politics</div>
-                    <div className="space-y-1">
-                      {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
-                        <div key={task.id}>
-                          <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact urgentBlink />
-                        </div>
-                      ))}
-                      {todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
-                        <div className="text-[9px] text-green-600 dark:text-green-400 opacity-60">-</div>
-                      )}
-                    </div>
-                  </div>
-                  {/* CFNF400 Row - Pink */}
-                  <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                    <div className="text-[9px] font-normal text-white mb-1.5 drop-shadow-md">CFNF400 - Human Sexuality</div>
-                    <div className="space-y-1">
-                      {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
-                        <div key={task.id}>
-                          <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact urgentBlink />
-                        </div>
-                      ))}
-                      {todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
-                        <div className="text-[9px] text-pink-600 dark:text-pink-400 opacity-60">-</div>
-                      )}
-                    </div>
-                  </div>
-                  {/* CASL101 Row - Purple */}
-                  <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                    <div className="text-[9px] font-normal text-white mb-1.5 drop-shadow-md">CASL101 - American Sign Language</div>
-                    <div className="space-y-1">
-                      {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
-                        <div key={task.id}>
-                          <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact urgentBlink />
-                        </div>
-                      ))}
-                      {todayTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
-                        <div className="text-[9px] text-purple-600 dark:text-purple-400 opacity-60">-</div>
-                      )}
-                    </div>
-                  </div>
-                </>
+                renderGroupedTasks(dueTodayTasks, false)
               )}
             </div>
           </section>
 
-          {/* Missed Tasks Section (Overdue) - Now on Right */}
-          <section className="w-[240px] flex-shrink-0 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-missed">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
-              <Clock className="h-3 w-3 text-white" />
-              OVERDUE: Missed Tasks ({missedTasks.length})
+          {/* Due Tomorrow */}
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-tomorrow">
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
+              <Calendar className="h-3 w-3 text-white" />
+              DUE TOMORROW ({dueTomorrowTasks.length})
             </h4>
-            <div className="flex-1 flex flex-col pt-2">
-              {/* CPPA122 Row - Green */}
-              <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                <div className="text-[9px] font-normal text-white mb-1.5 drop-shadow-md">CPPA122 - Local Politics</div>
-                <div className="space-y-1">
-                  {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).map((task) => (
-                    <div key={task.id}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-green-50 dark:bg-green-900/20" compact overdueBlink blinkSyncDelay={blinkSyncDelay} />
-                    </div>
-                  ))}
-                  {missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length === 0 && (
-                    <div className="text-[9px] text-green-600 dark:text-green-400 opacity-60">-</div>
-                  )}
-                </div>
-              </div>
-              {/* CFNF400 Row - Pink */}
-              <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                <div className="text-[9px] font-normal text-white mb-1.5 drop-shadow-md">CFNF400 - Human Sexuality</div>
-                <div className="space-y-1">
-                  {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).map((task) => (
-                    <div key={task.id}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-pink-50 dark:bg-pink-900/20" compact overdueBlink blinkSyncDelay={blinkSyncDelay} />
-                    </div>
-                  ))}
-                  {missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length === 0 && (
-                    <div className="text-[9px] text-pink-600 dark:text-pink-400 opacity-60">-</div>
-                  )}
-                </div>
-              </div>
-              {/* CASL101 Row - Purple */}
-              <div className="px-2 py-1" style={{ minHeight: `${rowHeight}px` }}>
-                <div className="text-[9px] font-normal text-white mb-1.5 drop-shadow-md">CASL101 - American Sign Language</div>
-                <div className="space-y-1">
-                  {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).map((task) => (
-                    <div key={task.id}>
-                      <TaskCard task={task} onComplete={(isCompleted) => completeMutation.mutate({ id: task.id, isCompleted })} onReschedule={() => setRescheduleTask(task)} onEdit={() => setEditingTask(task)} onDelete={() => deleteMutation.mutate(task.id)} cardBgClass="bg-indigo-50 dark:bg-indigo-900/20" compact overdueBlink blinkSyncDelay={blinkSyncDelay} />
-                    </div>
-                  ))}
-                  {missedTasks.filter(t => t.courseName?.startsWith("CASL101")).length === 0 && (
-                    <div className="text-[9px] text-purple-600 dark:text-purple-400 opacity-60">-</div>
-                  )}
-                </div>
-              </div>
+            <div className="flex-1 p-3">
+              {isLoading ? (
+                <div className="text-white/60 text-xs">Loading...</div>
+              ) : dueTomorrowTasks.length === 0 ? (
+                <div className="text-white/60 text-xs">No tasks due tomorrow</div>
+              ) : (
+                renderGroupedTasks(dueTomorrowTasks, false)
+              )}
+            </div>
+          </section>
+
+          {/* Due This Week */}
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-this-week">
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
+              <Calendar className="h-3 w-3 text-white" />
+              DUE THIS WEEK ({dueThisWeekTasks.length})
+            </h4>
+            <div className="flex-1 p-3">
+              {isLoading ? (
+                <div className="text-white/60 text-xs">Loading...</div>
+              ) : dueThisWeekTasks.length === 0 ? (
+                <div className="text-white/60 text-xs">No other tasks this week</div>
+              ) : (
+                renderGroupedTasks(dueThisWeekTasks, true)
+              )}
             </div>
           </section>
         </div>
@@ -4844,249 +4882,6 @@ export default function Dashboard() {
           © 2026
         </div>
 
-        {/* Weekly Files Flyout Tab - Fixed position outside overflow containers */}
-        {calendarView === "week" && (
-          <div 
-            className="fixed z-50 flex flex-row-reverse items-center transition-transform duration-300 ease-in-out"
-            style={{ top: 'calc(50% - 114px)', transform: `translateY(-50%) translateX(${isWeeklyFilesFlyoutOpen ? '-320px' : '0'})`, left: '350px' }}
-          >
-            {/* Flyout Panel */}
-            <div 
-              className={`shadow-xl transition-all duration-300 ease-in-out overflow-hidden ${isWeeklyFilesFlyoutOpen ? 'w-80 border border-white/50 rounded-l-md' : 'w-0 border-0'}`}
-              style={{ maxHeight: '70vh', background: '#1a1a1a' }}
-            >
-              <div className="w-80 flex flex-col">
-                <div className="p-3 flex items-center justify-between" style={{ borderBottom: '1px solid rgb(255, 255, 255, 0.3)' }}>
-                  <div className="flex items-center gap-2">
-                    <RouterLink href="/files">
-                      <Button 
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 hover:bg-white/20 rounded-md border-[0.1px] border-white/50"
-                        data-testid="button-files-link-flyout"
-                      >
-                        <FolderOpen className="h-4 w-4 text-white" />
-                      </Button>
-                    </RouterLink>
-                    <h3 className="text-white font-semibold text-sm">Week {selectedWeek} Files</h3>
-                  </div>
-                  <span className="text-xs text-white/60">{currentWeekFiles.length} files</span>
-                </div>
-                <div className="flex-1 overflow-y-auto overflow-x-hidden p-2">
-                  {/* Overdue Files Section */}
-                  {(() => {
-                    // Get files from overdue tasks - attachments may be JSON strings or objects
-                    const overdueFilesFromTasks = missedTasks
-                      .filter(t => t.attachments && t.attachments.length > 0)
-                      .flatMap(t => t.attachments!.map(att => {
-                        // Parse attachment - could be JSON string, object, or plain URL string
-                        let parsed: { name?: string; url?: string } = {};
-                        if (typeof att === 'string') {
-                          try {
-                            parsed = JSON.parse(att);
-                          } catch {
-                            // Plain URL string
-                            parsed = { url: att, name: att.split('/').pop() || att };
-                          }
-                        } else {
-                          parsed = att as any;
-                        }
-                        return {
-                          url: parsed.url || '',
-                          name: parsed.name || parsed.url?.split('/').pop() || 'File',
-                          taskId: t.id,
-                          taskTitle: t.title,
-                          courseName: t.courseName
-                        };
-                      }));
-                    
-                    if (overdueFilesFromTasks.length === 0) return null;
-                    
-                    // Group by course
-                    const groupedOverdue: Record<string, typeof overdueFilesFromTasks> = {};
-                    overdueFilesFromTasks.forEach(file => {
-                      const courseCode = file.courseName?.split(" ")[0]?.toUpperCase() || 'OTHER';
-                      if (!groupedOverdue[courseCode]) {
-                        groupedOverdue[courseCode] = [];
-                      }
-                      groupedOverdue[courseCode].push(file);
-                    });
-                    
-                    const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
-                    const sortedOverdue = Object.entries(groupedOverdue).sort(([a], [b]) => {
-                      const aIdx = courseOrder.indexOf(a);
-                      const bIdx = courseOrder.indexOf(b);
-                      if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
-                      if (aIdx === -1) return 1;
-                      if (bIdx === -1) return -1;
-                      return aIdx - bIdx;
-                    });
-                    
-                    return (
-                      <div className="mb-4">
-                        <div className="mb-3">
-                          <span className="text-[11px] font-bold text-white">OVERDUE</span>
-                          <div className="bg-white/30" style={{ height: '0.1px', marginTop: '1px' }}></div>
-                        </div>
-                        <div className="space-y-2">
-                          {sortedOverdue.map(([courseCode, files]) => {
-                            const colors = courseColors[courseCode];
-                            // Use coursesData lookup for consistent naming
-                            const courseInfo = coursesData.courses.find(c => c.name.toUpperCase().startsWith(courseCode));
-                            const displayName = courseInfo?.name || courseCode;
-                            return (
-                              <div key={courseCode}>
-                                <div className={`text-[10px] font-bold mb-1 ${
-                                  courseCode === 'CPPA122' ? 'text-green-400' :
-                                  courseCode === 'CFNF400' ? 'text-pink-400' :
-                                  courseCode === 'CASL101' ? 'text-indigo-400' : 
-                                  'text-white'
-                                }`}>
-                                  {displayName}
-                                </div>
-                                <div className="space-y-1">
-                                  {files.map((file, idx) => {
-                                    // Find matching file from allFiles by objectPath
-                                    const matchingFile = allFiles.find(f => f.objectPath === file.url);
-                                    // Skip if file is already completed/listened
-                                    if (matchingFile?.listened) return null;
-                                    return (
-                                    <div
-                                      key={`overdue-${file.taskId}-${idx}`}
-                                      className="flex items-center gap-2 p-1.5 text-xs group text-white animate-urgent-blink border-b border-white/40 last:border-b-0"
-                                      style={{ animationDelay: blinkSyncDelay }}
-                                      data-testid={`flyout-overdue-file-${file.taskId}-${idx}`}
-                                    >
-                                      <Checkbox
-                                        className="h-3 w-3 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
-                                        onCheckedChange={(checked) => {
-                                          if (checked && matchingFile) {
-                                            markFileCompletedMutation.mutate({ fileId: matchingFile.id });
-                                          }
-                                        }}
-                                        onClick={(e) => e.stopPropagation()}
-                                        data-testid={`flyout-overdue-file-checkbox-${file.taskId}-${idx}`}
-                                      />
-                                      <button
-                                        onClick={() => {
-                                          if (matchingFile) {
-                                            // Use the actual file record from the files table
-                                            setPreviewFile(matchingFile);
-                                          } else {
-                                            // Fallback: open URL directly if no matching file found
-                                            window.open(file.url, '_blank');
-                                          }
-                                        }}
-                                        className="flex items-center gap-2 flex-1 text-left min-w-0"
-                                      >
-                                        <span className="truncate font-medium text-[10px]">{matchingFile?.displayName || matchingFile?.originalName || file.name || file.url}</span>
-                                      </button>
-                                    </div>
-                                  );})}
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })()}
-                  
-                  {/* Current Week Files */}
-                  {currentWeekFiles.length === 0 && missedTasks.filter(t => t.attachments && t.attachments.length > 0).length === 0 ? (
-                    <div className="text-gray-500 text-sm text-center py-8">
-                      No files in Week {selectedWeek}
-                    </div>
-                  ) : currentWeekFiles.length > 0 ? (
-                    <div className={`space-y-3 ${missedTasks.filter(t => t.attachments && t.attachments.length > 0).length > 0 ? 'mt-7' : 'mt-0'}`}>
-                      {(() => {
-                        // Group files by course
-                        const groupedFiles: Record<string, typeof currentWeekFiles> = {};
-                        currentWeekFiles.forEach(file => {
-                          const folderParts = file.folder?.split('-') || [];
-                          const courseCode = folderParts.length >= 3 ? folderParts[2].toUpperCase() : 'OTHER';
-                          if (!groupedFiles[courseCode]) {
-                            groupedFiles[courseCode] = [];
-                          }
-                          groupedFiles[courseCode].push(file);
-                        });
-                        
-                        // Sort courses in order: CPPA122 (green), CFNF400 (pink), CASL101 (indigo), then others
-                        const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
-                        const sortedEntries = Object.entries(groupedFiles).sort(([a], [b]) => {
-                          const aIdx = courseOrder.indexOf(a);
-                          const bIdx = courseOrder.indexOf(b);
-                          if (aIdx === -1 && bIdx === -1) return a.localeCompare(b);
-                          if (aIdx === -1) return 1;
-                          if (bIdx === -1) return -1;
-                          return aIdx - bIdx;
-                        });
-                        
-                        return sortedEntries.map(([courseCode, files]) => {
-                          const colors = courseColors[courseCode];
-                          const courseInfo = coursesData.courses.find(c => c.name.toUpperCase().startsWith(courseCode));
-                          const courseName = courseInfo?.name || courseCode;
-                          return (
-                            <div key={courseCode}>
-                              {/* Course header */}
-                              <div className={`text-[10px] font-bold mb-1 ${
-                                courseCode === 'CPPA122' ? 'text-green-400' :
-                                courseCode === 'CFNF400' ? 'text-pink-400' :
-                                courseCode === 'CASL101' ? 'text-indigo-400' : 
-                                'text-white'
-                              }`}>
-                                {courseName}
-                              </div>
-                              {/* Files for this course */}
-                              <div className="space-y-1">
-                                {files.map(file => (
-                                  <div
-                                    key={file.id}
-                                    className="flex items-center gap-2 p-1.5 text-xs group text-white border-b border-white/40 last:border-b-0"
-                                    data-testid={`flyout-file-${file.id}`}
-                                  >
-                                    <Checkbox
-                                      className="h-3 w-3 border-white data-[state=checked]:bg-white data-[state=checked]:border-white"
-                                      onCheckedChange={(checked) => {
-                                        if (checked) {
-                                          markFileCompletedMutation.mutate({ fileId: file.id });
-                                        }
-                                      }}
-                                      onClick={(e) => e.stopPropagation()}
-                                      data-testid={`flyout-file-checkbox-${file.id}`}
-                                    />
-                                    <button
-                                      onClick={() => setPreviewFile(file)}
-                                      className="flex items-center gap-2 flex-1 text-left min-w-0"
-                                    >
-                                      <span className="truncate font-medium text-[10px]">{file.displayName}</span>
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        });
-                      })()}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-            {/* Tab Button */}
-            <button
-              onClick={() => setIsWeeklyFilesFlyoutOpen(!isWeeklyFilesFlyoutOpen)}
-              className="border border-r-0 border-white rounded-l-md px-1 py-3 hover:opacity-80 transition-colors shadow-lg"
-              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', background: '#1a1a1a' }}
-              data-testid="weekly-files-flyout-tab"
-            >
-              <span className="text-white text-[10px] font-medium tracking-wide flex items-center gap-2">
-                Week {selectedWeek} Files
-                {isWeeklyFilesFlyoutOpen ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
-              </span>
-            </button>
-          </div>
-        )}
       </main>
       </div>
     </div>
