@@ -3819,11 +3819,6 @@ export default function Dashboard() {
                     style={{ accentColor: getCourseColor(task.courseName) }}
                     data-testid={`checkbox-task-${task.id}`}
                   />
-                  {showDaysUntil && (
-                    <span className="text-[10px] text-black font-normal flex-shrink-0 w-[85px]">
-                      {task.courseName?.split(' - ')[0] || ''}
-                    </span>
-                  )}
                   <button 
                     className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
                     onClick={() => setEditingTask(task)}
@@ -3943,7 +3938,20 @@ export default function Dashboard() {
                 <div className="text-white/60 text-xs">No other tasks this week</div>
               ) : (
                 <div className="space-y-0.5">
-                  {dueThisWeekTasks.map(task => renderTask(task, true))}
+                  {dueThisWeekTasks.map((task, idx) => {
+                    const prevTask = idx > 0 ? dueThisWeekTasks[idx - 1] : null;
+                    const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
+                    return (
+                      <div key={task.id}>
+                        {showCourseHeader && (
+                          <div className="text-[10px] text-black font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                            {task.courseName}
+                          </div>
+                        )}
+                        {renderTask(task, true)}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
