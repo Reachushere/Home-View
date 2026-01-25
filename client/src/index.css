@@ -231,11 +231,12 @@
 /* Task box border blink for due today */
 .task-blink-border {
   animation: task-border-blink 1.5s ease-in-out infinite;
+  border: 2px solid #5979CC !important;
 }
 
 @keyframes task-border-blink {
-  0%, 100% { box-shadow: 0 0 0 2px rgba(150, 180, 255, 0.8), 0 0 8px 2px rgba(150, 180, 255, 0.4); }
-  50% { box-shadow: 0 0 0 1px rgba(150, 180, 255, 0.3), 0 0 2px 1px rgba(150, 180, 255, 0.1); }
+  0%, 100% { box-shadow: 0 0 8px 2px rgba(150, 180, 255, 0.5); }
+  50% { box-shadow: 0 0 2px 1px rgba(150, 180, 255, 0.2); }
 }
 
 /* Clapping animation for celebration animoji */
