@@ -1947,12 +1947,34 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
+          // For multi-hour tasks, find the last continuation block to get the actual bottom
+          let toY = calRect.bottom + 25;
+          const continuations = document.querySelectorAll(`[data-testid^="task-continuation-${task.id}-hour-"]`);
+          if (continuations.length > 0) {
+            let lastContinuation: Element | null = null;
+            let maxHour = -1;
+            continuations.forEach(cont => {
+              const match = cont.getAttribute('data-testid')?.match(/hour-(\d+)$/);
+              if (match) {
+                const hour = parseInt(match[1], 10);
+                if (hour > maxHour) {
+                  maxHour = hour;
+                  lastContinuation = cont;
+                }
+              }
+            });
+            if (lastContinuation) {
+              const contRect = (lastContinuation as HTMLElement).getBoundingClientRect();
+              toY = contRect.bottom + 25;
+            }
+          }
+          
           connections.push({
             taskId: task.id,
             fromX,
             fromY,
             toX: calRect.left + calRect.width / 2,
-            toY: calRect.bottom + 25,
+            toY,
             color,
             isToday: todayTaskIds.has(task.id)
           });
@@ -4576,11 +4598,11 @@ export default function Dashboard() {
                                       : `bg-gray-200 border-l border-r ${isFinalHour ? "border-b" : ""} border-gray-400`
                                 }`}
                                 style={{ 
-                                  top: '0px',
+                                  top: '-2px',
                                   left: '2px',
                                   width: 'calc(100% - 4px)',
-                                  height: `${heightPx}px`,
-                                  zIndex: 10
+                                  height: `${heightPx + 2}px`,
+                                  zIndex: 9
                                 }}
                                 data-testid={`task-continuation-${task.id}-hour-${hour}`}
                               />
@@ -4607,15 +4629,13 @@ export default function Dashboard() {
                               spansMultipleHours = endHour > startHour;
                               // Each hour slot is 44px, so per minute is 44/60 = 0.733px
                               if (spansMultipleHours) {
-                                // For multi-hour tasks, extend to bottom of slot (44px from top of slot)
-                                // minus the top offset, so it reaches the slot bottom
-                                const firstHourMinutes = 60 - startMin;
-                                taskHeight = (firstHourMinutes / 60) * 44;
+                                // For multi-hour tasks, calculate height to reach exactly to slot bottom + 2px overlap
+                                taskHeight = 44 - (startMin / 60) * 44 + 2;
                               } else {
                                 taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               }
-                              // Offset for minutes past the hour
-                              topOffset = (startMin / 60) * 44 + 2;
+                              // Offset for minutes past the hour (no extra offset)
+                              topOffset = (startMin / 60) * 44;
                             }
                             
                             return (
