@@ -2552,7 +2552,7 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-white/20 rounded-md h-7 w-7" data-testid="button-hamburger-menu">
+              <Button variant="ghost" size="icon" className="!h-7 !w-7 !min-h-0 hover:bg-white/20 rounded-md border-[0.1px] border-white/50" data-testid="button-hamburger-menu">
                 <Menu className="!h-5 !w-5 text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
