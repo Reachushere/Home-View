@@ -1718,9 +1718,15 @@ export default function Dashboard() {
   const weekStartDate = selectedWeekInfo ? parseISO(selectedWeekInfo.startDate) : new Date(2026, 0, 17);
   const weekEndDate = selectedWeekInfo ? parseISO(selectedWeekInfo.endDate) : new Date(2026, 0, 23);
   
-  // Generate weekdays for the weekly view - reorder so Sunday is first and Saturday is last
+  // Generate weekdays for the weekly view
+  // School week runs Saturday to Friday, but we display Sunday-Saturday visually
+  // The Saturday column should show the SAME Saturday that started this school week
+  // When today IS Saturday, the week shows Saturday through Friday (new school week)
+  // When today is Sunday-Friday, we show the same dates throughout the week
   const rawWeekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate });
-  // Move Saturday (first day) to the end so order is Sun-Sat
+  // Reorder so display is: Sun, Mon, Tue, Wed, Thu, Fri, Sat
+  // rawWeekDays[0] = Saturday (start of school week), rawWeekDays[1-6] = Sun-Fri
+  // Move Saturday to end: [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
   const weekDays = rawWeekDays.length === 7 ? [...rawWeekDays.slice(1), rawWeekDays[0]] : rawWeekDays;
   
   // Time slots for the day view (7am-11pm)
