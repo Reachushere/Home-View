@@ -1868,7 +1868,7 @@ export default function Dashboard() {
             fromX: boxRect.left,
             fromY: boxRect.top + boxRect.height / 2,
             toX: calRect.left + calRect.width / 2,
-            toY: calRect.bottom,
+            toY: calRect.bottom + 6,
             color
           });
         }
