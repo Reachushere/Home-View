@@ -231,7 +231,7 @@
 /* Task box border blink for due today */
 .task-blink-border {
   animation: task-border-blink 1.5s ease-in-out infinite;
-  border: 2px solid #5979CC !important;
+  border: 1px solid black !important;
 }
 
 @keyframes task-border-blink {
