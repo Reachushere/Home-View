@@ -1580,12 +1580,12 @@ export default function Dashboard() {
 
   // Mutation for updating task time when dragged to new slot
   const updateTaskTimeMutation = useMutation({
-    mutationFn: async ({ id, newDate, newHour }: { id: number; newDate: Date; newHour: number }) => {
+    mutationFn: async ({ id, newDate, newHour, newMinutes = 0 }: { id: number; newDate: Date; newHour: number; newMinutes?: number }) => {
       const updatedDueDate = new Date(newDate);
-      updatedDueDate.setHours(newHour, 0, 0, 0);
+      updatedDueDate.setHours(newHour, newMinutes, 0, 0);
       return apiRequest("PATCH", `/api/tasks/${id}`, { 
         dueDate: updatedDueDate.toISOString(),
-        eventStartTime: `${newHour.toString().padStart(2, '0')}:00`
+        eventStartTime: `${newHour.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`
       });
     },
     onSuccess: () => {
@@ -1689,6 +1689,12 @@ export default function Dashboard() {
   const handleDrop = async (e: React.DragEvent, day: Date, hour: number) => {
     e.preventDefault();
     
+    // Detect if drop was in top or bottom half of cell for half-hour precision
+    const rect = e.currentTarget.getBoundingClientRect();
+    const dropY = e.clientY - rect.top;
+    const isBottomHalf = dropY > rect.height / 2;
+    const minutes = isBottomHalf ? 30 : 0;
+    
     // Check if files are being dropped from external app
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
@@ -1708,8 +1714,8 @@ export default function Dashboard() {
         console.error('Failed to upload dropped file:', error);
       }
     } else if (draggedTask) {
-      // Moving an existing task
-      updateTaskTimeMutation.mutate({ id: draggedTask.id, newDate: day, newHour: hour });
+      // Moving an existing task - include minutes for half-hour precision
+      updateTaskTimeMutation.mutate({ id: draggedTask.id, newDate: day, newHour: hour, newMinutes: minutes });
     }
     
     setDraggedTask(null);
