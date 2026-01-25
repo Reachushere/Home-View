@@ -3226,7 +3226,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar mx-3" style={{ marginTop: '8px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar px-3" style={{ marginTop: '8px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-1 relative" style={{ height: calendarHeight }}>
@@ -3890,7 +3890,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 items-start flex-shrink-0">
+        <div className="flex gap-4 mb-3 items-stretch flex-shrink-0">
           {/* Due Today */}
           <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
