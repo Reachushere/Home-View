@@ -2722,7 +2722,7 @@ export default function Dashboard() {
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" />
           <div className="flex flex-col">
             <span className="text-sm text-white font-bold whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
-            <span className="text-[10px] text-white/70 font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
+            <span className="text-[10px] text-white/80 font-semibold whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
           </div>
           {/* Week navigation with arrows centered, Today/Month and dates stacked */}
           <div className="flex items-center gap-1">
