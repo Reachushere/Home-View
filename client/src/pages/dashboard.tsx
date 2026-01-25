@@ -2532,7 +2532,7 @@ export default function Dashboard() {
       )}
 
       {/* Unified Header Bar */}
-      <div className="absolute z-20 left-0 right-0 top-0 flex items-center rounded-md overflow-hidden mx-3 mt-2" style={{ 
+      <div className="absolute z-20 left-0 right-0 top-0 flex items-center rounded-md mx-3 mt-2" style={{ 
         background: 'black',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '0.1px solid white',
@@ -2641,7 +2641,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Add Buttons */}
-        <div className="flex items-center gap-1 px-2 h-full flex-1 justify-center">
+        <div className="flex items-center gap-1 px-2 h-full flex-1 min-w-0 justify-center overflow-hidden">
           <Button size="sm" className="!h-7 !min-h-0 px-3 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
           <Button size="sm" className="!h-7 !min-h-0 px-2 bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-0 font-medium rounded-md" data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
