@@ -2538,19 +2538,15 @@ export default function Dashboard() {
         border: '0.1px solid white',
         height: '52px'
       }}>
-        {/* Logo and Title - Fixed Left */}
+        {/* Logo, Title, and Week Navigation - Fixed Left */}
         <div className="flex items-center pl-3 gap-3 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-8 w-8" />
           <div className="flex flex-col">
             <span className="text-sm text-white font-medium whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{profileData.firstName}'s Schedule</span>
             <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>{currentSemesterName}</span>
           </div>
-        </div>
-
-        {/* All items with equal gaps */}
-        <div className="flex items-center flex-1 h-full justify-center gap-3 min-w-0 overflow-hidden">
           {/* Week navigation with Today/Month above */}
-          <div className="flex flex-col items-center gap-0.5 flex-shrink-0" style={{ marginLeft: '-25px' }}>
+          <div className="flex flex-col items-center gap-0.5">
             {/* Today/Month buttons - smaller, above */}
             <div className="flex items-center gap-0.5 bg-white/15 backdrop-blur-sm rounded-md px-1 py-0.5" style={{ marginTop: '5px' }}>
               <Button 
@@ -2586,6 +2582,10 @@ export default function Dashboard() {
               </Button>
             </div>
           </div>
+        </div>
+
+        {/* All items with equal gaps */}
+        <div className="flex items-center flex-1 h-full justify-center gap-3 min-w-0 overflow-hidden">
 
           {/* Hamburger Menu */}
           <DropdownMenu>
