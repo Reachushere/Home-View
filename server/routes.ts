@@ -1976,10 +1976,10 @@ export async function registerRoutes(
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const targetEntity = entityId || "media_player.byhome";
       
-      // Use media_player.play_media with TUNEIN - exact format from documentation
+      // Use media_player.play_media with "custom" type - sends text command like voice
       console.log(`Attempting to play radio on ${targetEntity}`);
       
-      // Use the exact format that works: station name with TUNEIN type
+      // Use "custom" media type which sends command text like you would say to Alexa
       const playResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
         headers: {
@@ -1988,13 +1988,13 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           entity_id: targetEntity,
-          media_content_id: "CHUM 104.5",
-          media_content_type: "TUNEIN"
+          media_content_id: "play CHUM FM on TuneIn",
+          media_content_type: "custom"
         }),
       });
       
       const playResponseText = await playResponse.text();
-      console.log(`media_player.play_media TUNEIN response (${playResponse.status}):`, playResponseText);
+      console.log(`media_player.play_media custom response (${playResponse.status}):`, playResponseText);
 
       console.log(`Playing CHUM FM on ${targetEntity}`);
       res.json({ success: true });
