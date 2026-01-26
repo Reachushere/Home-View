@@ -295,6 +295,13 @@ export default function Dashboard() {
       celebrationAudioRef.current.volume = 0.7;
       celebrationAudioRef.current.play().catch(() => {});
       
+      // Send "Hooray!" to Home Assistant TTS (Echo speaker)
+      fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: "Hooray! Great job!" })
+      }).catch(() => {});
+      
       // Play clapping sound pattern using Web Audio API
       const playClapping = () => {
         try {
