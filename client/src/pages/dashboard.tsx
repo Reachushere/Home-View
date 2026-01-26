@@ -4333,7 +4333,7 @@ export default function Dashboard() {
           }}>
             <DialogContent className="max-w-[95vw] sm:max-w-3xl">
               <DialogHeader>
-                <DialogTitle>Add New Task</DialogTitle>
+                <DialogTitle>Add New {newTaskType.charAt(0).toUpperCase() + newTaskType.slice(1)}</DialogTitle>
               </DialogHeader>
               <TaskForm 
                 key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
