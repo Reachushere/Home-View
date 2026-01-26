@@ -4343,9 +4343,9 @@ export default function Dashboard() {
           
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
-            <DialogContent className="max-w-md bg-white/80 backdrop-blur-xl border border-black/10 shadow-2xl text-black" style={{ top: '55%' }}>
+            <DialogContent className="max-w-md bg-white/50 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] text-gray-800 rounded-2xl" style={{ top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-black">Profile</DialogTitle>
+                <DialogTitle className="text-gray-900 font-semibold">Profile</DialogTitle>
               </DialogHeader>
               <ProfileForm 
                 profileData={profileData} 
@@ -4357,9 +4357,9 @@ export default function Dashboard() {
           
           {/* School Dialog */}
           <Dialog open={isSchoolDialogOpen} onOpenChange={setIsSchoolDialogOpen}>
-            <DialogContent className="max-w-md bg-white/80 backdrop-blur-xl border border-black/10 shadow-2xl text-black" style={{ top: '55%' }}>
+            <DialogContent className="max-w-md bg-white/50 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] text-gray-800 rounded-2xl" style={{ top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-black">School Settings</DialogTitle>
+                <DialogTitle className="text-gray-900 font-semibold">School Settings</DialogTitle>
               </DialogHeader>
               <SchoolForm 
                 schoolData={schoolData}
@@ -4371,9 +4371,9 @@ export default function Dashboard() {
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto overflow-x-hidden bg-white/80 backdrop-blur-xl border border-black/10 shadow-2xl text-black" style={{ top: '55%' }}>
+            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto overflow-x-hidden bg-white/50 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] text-gray-800 rounded-2xl" style={{ top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-black">Courses</DialogTitle>
+                <DialogTitle className="text-gray-900 font-semibold">Courses</DialogTitle>
               </DialogHeader>
               <CoursesForm 
                 coursesData={coursesData}
@@ -4384,9 +4384,9 @@ export default function Dashboard() {
           
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent className="max-w-4xl bg-white/80 backdrop-blur-xl border border-black/10 shadow-2xl text-black" style={{ top: '55%' }}>
+            <DialogContent className="max-w-4xl bg-white/50 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.12)] text-gray-800 rounded-2xl" style={{ top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-black">Settings</DialogTitle>
+                <DialogTitle className="text-gray-900 font-semibold">Settings</DialogTitle>
               </DialogHeader>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
