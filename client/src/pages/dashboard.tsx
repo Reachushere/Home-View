@@ -3453,7 +3453,7 @@ export default function Dashboard() {
                   <Button
                     variant="destructive"
                     size="sm"
-                    className="h-6 w-[155px] text-[9px]"
+                    className="h-6 w-[155px] text-[9px] bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/stop-radio', {
