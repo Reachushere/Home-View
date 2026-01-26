@@ -4371,7 +4371,7 @@ export default function Dashboard() {
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-lg text-[11px] bg-black/90 border border-white/10 text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
+            <DialogContent className="max-w-xl text-[11px] bg-black/90 border border-white/10 text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
               <DialogHeader>
                 <DialogTitle className="text-white text-sm">Courses</DialogTitle>
               </DialogHeader>
