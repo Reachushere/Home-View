@@ -395,6 +395,133 @@ export default function Dashboard() {
     localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
   }, [colorSettings]);
   
+  // Grid size settings for resizable calendar columns and rows
+  const [gridSizes, setGridSizes] = useState<{
+    timeColumnWidth: number;
+    dayColumnWidths: number[];
+    allDayRowHeight: number;
+    courseRowHeight: number;
+    timeSlotHeight: number;
+  }>(() => {
+    const saved = localStorage.getItem('gridSizes');
+    return saved ? JSON.parse(saved) : {
+      timeColumnWidth: 70,
+      dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
+      allDayRowHeight: 44,
+      courseRowHeight: 24,
+      timeSlotHeight: 44
+    };
+  });
+  
+  // Save grid sizes to localStorage
+  useEffect(() => {
+    localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
+  }, [gridSizes]);
+  
+  // Column resize state
+  const [columnResizing, setColumnResizing] = useState<{
+    isResizing: boolean;
+    columnIndex: number; // -1 for time column, 0-6 for day columns
+    startX: number;
+    startWidth: number;
+  } | null>(null);
+  
+  // Row resize state
+  const [rowResizing, setRowResizing] = useState<{
+    isResizing: boolean;
+    rowType: 'allDay' | 'course' | 'timeSlot';
+    startY: number;
+    startHeight: number;
+  } | null>(null);
+  
+  // Handle column resize
+  const handleColumnResizeStart = (e: React.MouseEvent, columnIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startWidth = columnIndex === -1 
+      ? gridSizes.timeColumnWidth 
+      : gridSizes.dayColumnWidths[columnIndex];
+    setColumnResizing({
+      isResizing: true,
+      columnIndex,
+      startX: e.clientX,
+      startWidth
+    });
+  };
+  
+  // Handle row resize
+  const handleRowResizeStart = (e: React.MouseEvent, rowType: 'allDay' | 'course' | 'timeSlot') => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startHeight = rowType === 'allDay' 
+      ? gridSizes.allDayRowHeight 
+      : rowType === 'course' 
+        ? gridSizes.courseRowHeight 
+        : gridSizes.timeSlotHeight;
+    setRowResizing({
+      isResizing: true,
+      rowType,
+      startY: e.clientY,
+      startHeight
+    });
+  };
+  
+  // Global mouse move/up handlers for resizing
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (columnResizing?.isResizing) {
+        const delta = e.clientX - columnResizing.startX;
+        if (columnResizing.columnIndex === -1) {
+          // Resizing time column
+          const newWidth = Math.max(50, Math.min(150, columnResizing.startWidth + delta));
+          setGridSizes(prev => ({ ...prev, timeColumnWidth: newWidth }));
+        } else {
+          // Resizing day column - adjust flex proportion
+          const newWidths = [...gridSizes.dayColumnWidths];
+          const newProportion = Math.max(0.5, columnResizing.startWidth + delta / 100);
+          newWidths[columnResizing.columnIndex] = newProportion;
+          setGridSizes(prev => ({ ...prev, dayColumnWidths: newWidths }));
+        }
+      }
+      if (rowResizing?.isResizing) {
+        const delta = e.clientY - rowResizing.startY;
+        const newHeight = Math.max(20, rowResizing.startHeight + delta);
+        if (rowResizing.rowType === 'allDay') {
+          setGridSizes(prev => ({ ...prev, allDayRowHeight: Math.min(100, newHeight) }));
+        } else if (rowResizing.rowType === 'course') {
+          setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(60, newHeight) }));
+        } else {
+          setGridSizes(prev => ({ ...prev, timeSlotHeight: Math.min(100, newHeight) }));
+        }
+      }
+    };
+    
+    const handleMouseUp = () => {
+      setColumnResizing(null);
+      setRowResizing(null);
+    };
+    
+    if (columnResizing?.isResizing || rowResizing?.isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = columnResizing?.isResizing ? 'col-resize' : 'row-resize';
+      document.body.style.userSelect = 'none';
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [columnResizing, rowResizing, gridSizes.dayColumnWidths]);
+  
+  // Generate grid template columns based on sizes
+  const getGridTemplateColumns = () => {
+    const dayColumns = gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' ');
+    return `${gridSizes.timeColumnWidth}px ${dayColumns}`;
+  };
+  
   const [draggedBox, setDraggedBox] = useState<string | null>(null);
   
   // Save box order to localStorage
@@ -4636,9 +4763,15 @@ export default function Dashboard() {
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: 'calc(70px + (6 / 7) * (100% - 70px))' }} />
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
-            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-              <div className="flex items-center justify-center" style={{ backgroundColor: colorSettings.headerBar }}>
+            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
+              <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
+                {/* Time column resize handle */}
+                <div 
+                  className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                  onMouseDown={(e) => handleColumnResizeStart(e, -1)}
+                  data-testid="resize-time-column"
+                />
               </div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
@@ -4662,7 +4795,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex items-center justify-center h-full ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
+                    className={`border-l border-border flex items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ 
                       backgroundColor: isToday ? (hasTodayTasks && blinkSettings.todayColumnBlink ? undefined : '#1a365d') : "black"
                     }}
@@ -4674,87 +4807,102 @@ export default function Dashboard() {
                       </div>
                       <div className="text-xs font-medium tracking-wide text-white/80">{dayName}</div>
                     </div>
+                    {/* Column resize handle */}
+                    <div 
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                      onMouseDown={(e) => handleColumnResizeStart(e, idx)}
+                      data-testid={`resize-column-${idx}`}
+                    />
                   </div>
                 );
               })}
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px 1fr', minHeight: '44px' }}>
-              <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
+            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+              <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
+                {/* Time column resize handle */}
+                <div 
+                  className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                  onMouseDown={(e) => handleColumnResizeStart(e, -1)}
+                />
               </div>
-              <div className="grid relative" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                {/* Day cells as background */}
-                {weekDays.map((day, dayIdx) => {
-                  // Only show true all-day tasks (midnight due) and all-day calendar events - NO prep tasks here
-                  const allDayTasks = getAllDayTasks(day);
-                  const allDayEvents = getAllDayCalendarEvents(day);
-                  
-                  return (
-                    <div 
-                      key={dayIdx} 
-                      className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
-                      style={{ 
-                        backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white'
-                      }}
-                      data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
-                    >
-                      {/* Regular all-day tasks only - prep tasks moved to course rows */}
-                      {allDayTasks.map(task => {
-                        const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                        const colors = courseColors[courseCode];
-                        const today = startOfDay(new Date());
-                        const tomorrow = addDays(today, 1);
-                        const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                        const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                        return (
-                          <div
-                            key={task.id}
-                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
-                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                            } ${
-                              task.isCompleted 
-                                ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                                : colors 
-                                  ? `${colors.bg} text-black border ${colors.border}` 
-                                  : "bg-gray-200 text-black border border-gray-400"
-                            }`}
-                            data-testid={`all-day-task-${task.id}`}
-                          >
-                            <Checkbox
-                              checked={task.isCompleted || false}
-                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                              className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                              data-testid={`checkbox-allday-${task.id}`}
-                            />
-                            <span 
-                              onClick={() => setEditingTask(task)}
-                              className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
-                            >
-                              {task.title}
-                            </span>
-                          </div>
-                        );
-                      })}
-                      {/* All-day Google Calendar events */}
-                      {allDayEvents.map(event => (
-                        <a
-                          key={event.id}
-                          href={event.htmlLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80"
-                          data-testid={`all-day-gcal-${event.id}`}
+              {/* Day cells */}
+              {weekDays.map((day, dayIdx) => {
+                // Only show true all-day tasks (midnight due) and all-day calendar events - NO prep tasks here
+                const allDayTasks = getAllDayTasks(day);
+                const allDayEvents = getAllDayCalendarEvents(day);
+                
+                return (
+                  <div 
+                    key={dayIdx} 
+                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
+                    style={{ 
+                      backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white'
+                    }}
+                    data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
+                  >
+                    {/* Regular all-day tasks only - prep tasks moved to course rows */}
+                    {allDayTasks.map(task => {
+                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                      const colors = courseColors[courseCode];
+                      const today = startOfDay(new Date());
+                      const tomorrow = addDays(today, 1);
+                      const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                      const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                      return (
+                        <div
+                          key={task.id}
+                          className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
+                            isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                          } ${
+                            task.isCompleted 
+                              ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                              : colors 
+                                ? `${colors.bg} text-black border ${colors.border}` 
+                                : "bg-gray-200 text-black border border-gray-400"
+                          }`}
+                          data-testid={`all-day-task-${task.id}`}
                         >
-                          <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                          <span className="truncate">{event.title}</span>
-                        </a>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
+                          <Checkbox
+                            checked={task.isCompleted || false}
+                            onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                            className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                            data-testid={`checkbox-allday-${task.id}`}
+                          />
+                          <span 
+                            onClick={() => setEditingTask(task)}
+                            className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
+                          >
+                            {task.title}
+                          </span>
+                        </div>
+                      );
+                    })}
+                    {/* All-day Google Calendar events */}
+                    {allDayEvents.map(event => (
+                      <a
+                        key={event.id}
+                        href={event.htmlLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80"
+                        data-testid={`all-day-gcal-${event.id}`}
+                      >
+                        <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
+                        <span className="truncate">{event.title}</span>
+                      </a>
+                    ))}
+                  </div>
+                );
+              })}
+              {/* Row resize handle at bottom */}
+              <div 
+                className="absolute left-0 right-0 bottom-0 h-1 cursor-row-resize hover:bg-blue-400/50 z-50"
+                onMouseDown={(e) => handleRowResizeStart(e, 'allDay')}
+                data-testid="resize-allday-row"
+              />
             </div>
             
                           
@@ -4763,10 +4911,15 @@ export default function Dashboard() {
                 { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', colors: courseColors['CPPA122'] },
                 { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', colors: courseColors['CFNF400'] },
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
-              ].map(course => (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minHeight: '24px' }}>
-                  <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
+              ].map((course, courseIdx) => (
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
+                  <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {course.name}
+                    {/* Time column resize handle */}
+                    <div 
+                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                      onMouseDown={(e) => handleColumnResizeStart(e, -1)}
+                    />
                   </div>
                   {weekDays.map((day, dayIdx) => {
                     // Get prep tasks for this course and day
@@ -4908,13 +5061,26 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
+                  {/* Row resize handle at bottom of last course row */}
+                  {courseIdx === 2 && (
+                    <div 
+                      className="absolute left-0 right-0 bottom-0 h-1 cursor-row-resize hover:bg-blue-400/50 z-50"
+                      onMouseDown={(e) => handleRowResizeStart(e, 'course')}
+                      data-testid="resize-course-row"
+                    />
+                  )}
                 </div>
               ))}
               
               {/* OTHER Row - For tasks without a course */}
-              <div className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minHeight: '24px' }}>
-                <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
+              <div className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
+                <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                   OTHER
+                  {/* Time column resize handle */}
+                  <div 
+                    className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                    onMouseDown={(e) => handleColumnResizeStart(e, -1)}
+                  />
                 </div>
                 {weekDays.map((day, dayIdx) => {
                   // Get prep tasks without a course
@@ -5058,12 +5224,25 @@ export default function Dashboard() {
                   return (
                   <div 
                     key={hour} 
-                    className="grid border-b border-border/50 overflow-visible"
-                    style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}
+                    className="grid border-b border-border/50 overflow-visible relative"
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${gridSizes.timeSlotHeight}px` }}
                   >
-                    <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
+                    <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
+                      {/* Time column resize handle */}
+                      <div 
+                        className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                        onMouseDown={(e) => handleColumnResizeStart(e, -1)}
+                      />
                     </div>
+                    {/* Row resize handle at bottom of first time slot only */}
+                    {hourIdx === 0 && (
+                      <div 
+                        className="absolute left-0 right-0 bottom-0 h-1 cursor-row-resize hover:bg-blue-400/50 z-50"
+                        onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
+                        data-testid="resize-timeslot-row"
+                      />
+                    )}
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
