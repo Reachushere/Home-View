@@ -238,6 +238,21 @@
   color: black !important;
 }
 
+/* White text blinking animation for files in task boxes */
+@keyframes file-text-blink {
+  0%, 100% { 
+    opacity: 0.6;
+  }
+  50% { 
+    opacity: 1;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  }
+}
+
+.animate-file-text-blink {
+  animation: file-text-blink 1.5s ease-in-out infinite;
+}
+
 /* Prominent pulse for today date header - dark to light */
 @keyframes today-date-pulse {
   0%, 100% { 

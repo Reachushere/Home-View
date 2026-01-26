@@ -5304,7 +5304,7 @@ export default function Dashboard() {
                       return (
                         <div key={idx} className="flex items-center gap-2">
                           <button
-                            className="flex items-center gap-1.5 text-[10px] text-white/80 hover:text-white cursor-pointer flex-1"
+                            className="flex items-center gap-1.5 text-[10px] text-white hover:text-white cursor-pointer flex-1 animate-file-text-blink"
                             onClick={() => {
                               if (matchingFile) {
                                 setPreviewFile(matchingFile);
