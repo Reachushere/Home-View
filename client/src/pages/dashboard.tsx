@@ -208,6 +208,7 @@ export default function Dashboard() {
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
+  const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
@@ -3472,11 +3473,12 @@ export default function Dashboard() {
                 
                 {/* Volume Controls */}
                 <div className="flex flex-col gap-2">
-                  <Label className="text-white">Volume</Label>
+                  <Label className="text-white">Volume: {radioVolume}%</Label>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
-                      className="flex-1 border-white/30 hover:bg-white/10 text-white"
+                      size="icon"
+                      className="border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
                           const res = await fetch('/api/media/volume', {
@@ -3485,19 +3487,27 @@ export default function Dashboard() {
                             body: JSON.stringify({ direction: 'down' })
                           });
                           const data = await res.json();
-                          toast({ title: `Volume: ${data.newVolume}%` });
+                          if (data.newVolume !== undefined) {
+                            setRadioVolume(data.newVolume);
+                          }
                         } catch (error) {
                           toast({ title: "Error adjusting volume", variant: "destructive" });
                         }
                       }}
                       data-testid="button-volume-down"
                     >
-                      <VolumeX className="h-4 w-4 mr-2" />
-                      Down
+                      <VolumeX className="h-4 w-4" />
                     </Button>
+                    <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-blue-500 rounded-full transition-all duration-200" 
+                        style={{ width: `${radioVolume}%` }}
+                      />
+                    </div>
                     <Button
                       variant="outline"
-                      className="flex-1 border-white/30 hover:bg-white/10 text-white"
+                      size="icon"
+                      className="border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
                           const res = await fetch('/api/media/volume', {
@@ -3506,15 +3516,16 @@ export default function Dashboard() {
                             body: JSON.stringify({ direction: 'up' })
                           });
                           const data = await res.json();
-                          toast({ title: `Volume: ${data.newVolume}%` });
+                          if (data.newVolume !== undefined) {
+                            setRadioVolume(data.newVolume);
+                          }
                         } catch (error) {
                           toast({ title: "Error adjusting volume", variant: "destructive" });
                         }
                       }}
                       data-testid="button-volume-up"
                     >
-                      <Volume2 className="h-4 w-4 mr-2" />
-                      Up
+                      <Volume2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
