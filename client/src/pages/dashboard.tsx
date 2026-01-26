@@ -5206,7 +5206,7 @@ export default function Dashboard() {
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
                 {/* Time column resize handle */}
                 <div 
-                  className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                  className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
                   onMouseDown={(e) => handleColumnResizeStart(e, -1)}
                   data-testid="resize-time-column"
                 />
@@ -5247,7 +5247,7 @@ export default function Dashboard() {
                     </div>
                     {/* Column resize handle */}
                     <div 
-                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                      className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
                       onMouseDown={(e) => handleColumnResizeStart(e, idx)}
                       data-testid={`resize-column-${idx}`}
                     />
@@ -5262,7 +5262,7 @@ export default function Dashboard() {
                 ALL DAY
                 {/* Time column resize handle */}
                 <div 
-                  className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                  className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
                   onMouseDown={(e) => handleColumnResizeStart(e, -1)}
                 />
               </div>
@@ -5337,7 +5337,7 @@ export default function Dashboard() {
               })}
               {/* Row resize handle at bottom */}
               <div 
-                className="absolute left-0 right-0 bottom-0 h-1 cursor-row-resize hover:bg-blue-400/50 z-50"
+                className="absolute left-0 right-0 bottom-0 h-[2px] cursor-row-resize hover:bg-blue-400/50 z-50"
                 onMouseDown={(e) => handleRowResizeStart(e, 'allDay')}
                 data-testid="resize-allday-row"
               />
@@ -5355,7 +5355,7 @@ export default function Dashboard() {
                     {course.name}
                     {/* Time column resize handle */}
                     <div 
-                      className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                      className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
                       onMouseDown={(e) => handleColumnResizeStart(e, -1)}
                     />
                   </div>
@@ -5502,7 +5502,7 @@ export default function Dashboard() {
                   {/* Row resize handle at bottom of last course row */}
                   {courseIdx === 2 && (
                     <div 
-                      className="absolute left-0 right-0 bottom-0 h-1 cursor-row-resize hover:bg-blue-400/50 z-50"
+                      className="absolute left-0 right-0 bottom-0 h-[2px] cursor-row-resize hover:bg-blue-400/50 z-50"
                       onMouseDown={(e) => handleRowResizeStart(e, 'course')}
                       data-testid="resize-course-row"
                     />
@@ -5516,7 +5516,7 @@ export default function Dashboard() {
                   OTHER
                   {/* Time column resize handle */}
                   <div 
-                    className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
+                    className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
                     onMouseDown={(e) => handleColumnResizeStart(e, -1)}
                   />
                 </div>
@@ -5844,7 +5844,7 @@ export default function Dashboard() {
                     })}
                     {/* Individual time slot row resize handle */}
                     <div 
-                      className="absolute bottom-0 left-0 right-0 h-2 cursor-row-resize z-[50] opacity-0 group-hover/row:opacity-100 hover:bg-blue-400/50 transition-opacity"
+                      className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/row:opacity-100 hover:bg-blue-400/50 transition-opacity"
                       onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot', hour)}
                       data-testid={`resize-timeslot-row-${hour}`}
                     />
@@ -5936,11 +5936,11 @@ export default function Dashboard() {
           </Card>
                     {/* Resize Handle */}
           <div
-            className={`absolute bottom-0 left-0 right-0 h-4 cursor-ns-resize flex items-center justify-center hover:bg-muted/50 transition-colors ${isResizing ? 'bg-primary/20' : ''}`}
+            className={`absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize flex items-center justify-center hover:bg-muted/50 transition-colors ${isResizing ? 'bg-primary/20' : ''}`}
             onMouseDown={handleResizeStart}
             data-testid="calendar-resize-handle"
           >
-            <div className="w-16 h-1.5 rounded-full bg-muted-foreground/40" />
+            <div className="w-12 h-[2px] rounded-full bg-muted-foreground/40" />
           </div>
           </div>
           
