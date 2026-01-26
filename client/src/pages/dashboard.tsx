@@ -7451,11 +7451,9 @@ function TaskForm({
   const getDefaultDate = () => {
     if (task?.dueDate) return format(new Date(task.dueDate), "yyyy-MM-dd'T'HH:mm");
     if (initialDate) {
-      // Set default time to 9 AM if the initialDate is at midnight
+      // Always set default time to 6 PM for new tasks
       const date = new Date(initialDate);
-      if (date.getHours() === 0 && date.getMinutes() === 0) {
-        date.setHours(9, 0, 0, 0);
-      }
+      date.setHours(18, 0, 0, 0);
       return format(date, "yyyy-MM-dd'T'HH:mm");
     }
     return "";
