@@ -1975,8 +1975,14 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const targetEntity = entityId || "media_player.byhome";
-      // CHUM FM Toronto TuneIn station ID is s17526
-      const station = stationId || "s17526";
+      // Map station names to TuneIn station IDs
+      const stationMap: Record<string, string> = {
+        'CHUM FM': 's17526',
+        'chum fm': 's17526',
+        's17526': 's17526'
+      };
+      // Use the mapped ID or default to CHUM FM
+      const station = stationMap[stationId] || stationMap['CHUM FM'];
       
       // Use media_player.play_media with TUNEIN media content type
       const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
