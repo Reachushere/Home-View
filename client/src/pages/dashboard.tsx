@@ -3067,7 +3067,7 @@ export default function Dashboard() {
         </div>
 
         {/* Timer and Clock - Fixed Right */}
-        <div className="flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '9px', marginLeft: '0px' }}>
+        <div className="flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '11px', marginLeft: '-2px' }}>
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 h-[30px]">
             <div className={`text-xs font-bold px-1.5 py-0.5 rounded ${
