@@ -3484,9 +3484,9 @@ export default function Dashboard() {
 
       {/* Settings Panel Popup - Contains sidebar content */}
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
-        <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col" style={{ background: 'rgb(1, 160, 175)' }}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white">
           <DialogHeader>
-            <DialogTitle className="text-white">Courses & Weeks</DialogTitle>
+            <DialogTitle className="text-white text-sm">Courses & Weeks</DialogTitle>
           </DialogHeader>
           <div className="flex-1 overflow-y-auto space-y-4 pr-2">
             {/* Course Legend */}
