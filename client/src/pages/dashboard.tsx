@@ -406,14 +406,25 @@ export default function Dashboard() {
     allDayRowHeight: number;
     courseRowHeight: number;
     timeSlotHeight: number;
+    timeSlotHeights: number[]; // Individual heights for each hour (0-23)
   }>(() => {
     const saved = localStorage.getItem('gridSizes');
-    return saved ? JSON.parse(saved) : {
+    const defaultHeights = Array(24).fill(44); // Default 44px for each hour
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Ensure timeSlotHeights exists for backwards compatibility
+      if (!parsed.timeSlotHeights) {
+        parsed.timeSlotHeights = defaultHeights;
+      }
+      return parsed;
+    }
+    return {
       timeColumnWidth: 70,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 44,
       courseRowHeight: 24,
-      timeSlotHeight: 44
+      timeSlotHeight: 44,
+      timeSlotHeights: defaultHeights
     };
   });
   
@@ -434,6 +445,7 @@ export default function Dashboard() {
   const [rowResizing, setRowResizing] = useState<{
     isResizing: boolean;
     rowType: 'allDay' | 'course' | 'timeSlot';
+    hourIndex?: number; // For individual time slot row resizing
     startY: number;
     startHeight: number;
   } | null>(null);
@@ -454,17 +466,23 @@ export default function Dashboard() {
   };
   
   // Handle row resize
-  const handleRowResizeStart = (e: React.MouseEvent, rowType: 'allDay' | 'course' | 'timeSlot') => {
+  const handleRowResizeStart = (e: React.MouseEvent, rowType: 'allDay' | 'course' | 'timeSlot', hourIndex?: number) => {
     e.preventDefault();
     e.stopPropagation();
-    const startHeight = rowType === 'allDay' 
-      ? gridSizes.allDayRowHeight 
-      : rowType === 'course' 
-        ? gridSizes.courseRowHeight 
-        : gridSizes.timeSlotHeight;
+    let startHeight: number;
+    if (rowType === 'allDay') {
+      startHeight = gridSizes.allDayRowHeight;
+    } else if (rowType === 'course') {
+      startHeight = gridSizes.courseRowHeight;
+    } else if (hourIndex !== undefined) {
+      startHeight = gridSizes.timeSlotHeights[hourIndex];
+    } else {
+      startHeight = gridSizes.timeSlotHeight;
+    }
     setRowResizing({
       isResizing: true,
       rowType,
+      hourIndex,
       startY: e.clientY,
       startHeight
     });
@@ -494,7 +512,15 @@ export default function Dashboard() {
           setGridSizes(prev => ({ ...prev, allDayRowHeight: Math.min(100, newHeight) }));
         } else if (rowResizing.rowType === 'course') {
           setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(60, newHeight) }));
+        } else if (rowResizing.rowType === 'timeSlot' && rowResizing.hourIndex !== undefined) {
+          // Individual time slot row resizing
+          setGridSizes(prev => {
+            const newHeights = [...prev.timeSlotHeights];
+            newHeights[rowResizing.hourIndex!] = Math.min(150, newHeight);
+            return { ...prev, timeSlotHeights: newHeights };
+          });
         } else if (rowResizing.rowType === 'timeSlot') {
+          // Global time slot resizing (fallback)
           setGridSizes(prev => ({ ...prev, timeSlotHeight: Math.min(100, newHeight) }));
         }
       }
@@ -2366,14 +2392,32 @@ export default function Dashboard() {
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
       
-      // Calculate position using dynamic grid sizes
+      // Calculate position using dynamic grid sizes with individual row heights
       const startMinutes = startHour * 60 + startMin;
       const endMinutes = endHour * 60 + endMin;
-      const durationMinutes = endMinutes - startMinutes;
       
-      // Top position: (hour - 7) * timeSlotHeight + minute offset (timeSlots start at 7 AM)
-      const topPx = ((startHour - 7) * gridSizes.timeSlotHeight) + ((startMin / 60) * gridSizes.timeSlotHeight);
-      const heightPx = (durationMinutes / 60) * gridSizes.timeSlotHeight;
+      // Calculate cumulative top position from hours 7 to startHour
+      let topPx = 0;
+      for (let h = 7; h < startHour; h++) {
+        topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+      }
+      // Add minute offset within the starting hour
+      const startHourHeight = gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight;
+      topPx += (startMin / 60) * startHourHeight;
+      
+      // Calculate height by summing heights of all hours the task spans
+      let heightPx = 0;
+      // Remaining minutes in starting hour
+      heightPx += ((60 - startMin) / 60) * startHourHeight;
+      // Full hours in between
+      for (let h = startHour + 1; h < endHour; h++) {
+        heightPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+      }
+      // Minutes in ending hour (if different from start hour)
+      if (endHour > startHour) {
+        const endHourHeight = gridSizes.timeSlotHeights[endHour] || gridSizes.timeSlotHeight;
+        heightPx += (endMin / 60) * endHourHeight;
+      }
       
       return { task: t, dayIdx, topPx, heightPx };
     });
@@ -5283,8 +5327,8 @@ export default function Dashboard() {
                   return (
                   <div 
                     key={hour} 
-                    className="grid border-b border-border/50 overflow-visible relative"
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${gridSizes.timeSlotHeight}px` }}
+                    className="grid border-b border-border/50 overflow-visible relative group/row"
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight}px` }}
                   >
                     <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
@@ -5463,6 +5507,12 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
+                    {/* Individual time slot row resize handle */}
+                    <div 
+                      className="absolute bottom-0 left-0 right-0 h-2 cursor-row-resize z-[50] opacity-0 group-hover/row:opacity-100 hover:bg-blue-400/50 transition-opacity"
+                      onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot', hour)}
+                      data-testid={`resize-timeslot-row-${hour}`}
+                    />
                                       </div>
                   );
                 })}
@@ -5549,13 +5599,7 @@ export default function Dashboard() {
             </div>
                       </CardContent>
           </Card>
-          {/* Time slot row resize handle - outside Card to avoid overflow clipping */}
-          <div 
-            className="h-3 cursor-row-resize bg-blue-300/80 hover:bg-blue-500 z-[100] flex-shrink-0 absolute bottom-5 left-0 right-0"
-            onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
-            data-testid="resize-timeslot-row"
-          />
-          {/* Resize Handle */}
+                    {/* Resize Handle */}
           <div
             className={`absolute bottom-0 left-0 right-0 h-4 cursor-ns-resize flex items-center justify-center hover:bg-muted/50 transition-colors ${isResizing ? 'bg-primary/20' : ''}`}
             onMouseDown={handleResizeStart}
