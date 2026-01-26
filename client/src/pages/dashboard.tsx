@@ -4331,7 +4331,7 @@ export default function Dashboard() {
               setNewTaskType("module"); // Reset to default
             }
           }}>
-            <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-[95vw] sm:max-w-3xl">
               <DialogHeader>
                 <DialogTitle>Add New Task</DialogTitle>
               </DialogHeader>
@@ -7592,376 +7592,356 @@ function TaskForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-          placeholder="Assignment title"
-          required
-          data-testid="input-title"
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="courseName">Course</Label>
-        <Select value={formData.courseName} onValueChange={(v) => setFormData(prev => ({ ...prev, courseName: v }))}>
-          <SelectTrigger data-testid="select-course">
-            <SelectValue placeholder="Select a course" />
-          </SelectTrigger>
-          <SelectContent>
-            {COURSES.map(course => {
-              const colors = courseColors[course.code];
-              return (
-                <SelectItem key={course.code} value={`${course.code} - ${course.name}`}>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${colors?.dot}`} />
-                    {course.code} - {course.name}
-                  </div>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="type">Type</Label>
-        <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
-          <SelectTrigger data-testid="select-type">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {TASK_TYPES.map(type => (
-              <SelectItem key={type} value={type}>
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="dueDate">Due Date</Label>
-        <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className="w-full justify-start text-left font-normal"
-              data-testid="input-duedate"
-            >
-              <CalendarDays className="mr-2 h-4 w-4" />
-              {formData.dueDate ? format(new Date(formData.dueDate), "MMM d, yyyy 'at' h:mm a") : "Pick a date"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <div className="p-3">
-              <CalendarPicker
-                mode="single"
-                selected={tempDate}
-                onSelect={(date) => {
-                  if (date) {
-                    setTempDate(date);
-                  }
-                }}
-                initialFocus
-              />
-              <div className="border-t pt-3 mt-3">
-                <Label className="text-sm font-medium">Time</Label>
-                <div className="flex items-center gap-2 mt-2">
-                  <Select value={tempHour} onValueChange={setTempHour}>
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 24 }, (_, i) => (
-                        <SelectItem key={i} value={i.toString().padStart(2, '0')}>
-                          {i.toString().padStart(2, '0')}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <span>:</span>
-                  <Select value={tempMinute} onValueChange={setTempMinute}>
-                    <SelectTrigger className="w-20">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {['00', '15', '30', '45'].map((min) => (
-                        <SelectItem key={min} value={min}>
-                          {min}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setIsDatePickerOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  size="sm"
-                  onClick={() => {
-                    if (tempDate) {
-                      const newDate = new Date(tempDate);
-                      newDate.setHours(parseInt(tempHour), parseInt(tempMinute), 0, 0);
-                      setFormData(prev => ({ ...prev, dueDate: format(newDate, "yyyy-MM-dd'T'HH:mm") }));
-                    }
-                    setIsDatePickerOpen(false);
-                  }}
-                  data-testid="button-apply-date"
-                >
-                  Apply
-                </Button>
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="eventStartTime">Start Time (optional)</Label>
-          <Input
-            id="eventStartTime"
-            type="time"
-            value={formData.eventStartTime}
-            onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
-            data-testid="input-start-time"
-          />
-        </div>
-        <div>
-          <Label htmlFor="eventEndTime">End Time (optional)</Label>
-          <Input
-            id="eventEndTime"
-            type="time"
-            value={formData.eventEndTime}
-            onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
-            data-testid="input-end-time"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label>Reminders</Label>
-        <div className="grid grid-cols-2 gap-3">
+      {/* Two column layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Left Column */}
+        <div className="space-y-4">
           <div>
-            <Label className="text-xs text-muted-foreground">Reminder 1</Label>
-            <Select 
-              value={String(formData.reminder1)} 
-              onValueChange={(v) => setFormData(prev => ({ ...prev, reminder1: parseInt(v) }))}
-            >
-              <SelectTrigger data-testid="select-reminder1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {REMINDER_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={String(opt.value)}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label htmlFor="title">Title</Label>
+            <Input
+              id="title"
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              placeholder="Assignment title"
+              required
+              data-testid="input-title"
+            />
           </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Reminder 2</Label>
-            <Select 
-              value={String(formData.reminder2)} 
-              onValueChange={(v) => setFormData(prev => ({ ...prev, reminder2: parseInt(v) }))}
-            >
-              <SelectTrigger data-testid="select-reminder2">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {REMINDER_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={String(opt.value)}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <Label className="text-xs text-muted-foreground">Reminder 3 (optional)</Label>
-            <Select 
-              value={String(formData.reminder3)} 
-              onValueChange={(v) => setFormData(prev => ({ ...prev, reminder3: parseInt(v) }))}
-            >
-              <SelectTrigger data-testid="select-reminder3">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {REMINDER_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={String(opt.value)}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Reminder 4 (optional)</Label>
-            <Select 
-              value={String(formData.reminder4)} 
-              onValueChange={(v) => setFormData(prev => ({ ...prev, reminder4: parseInt(v) }))}
-            >
-              <SelectTrigger data-testid="select-reminder4">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {REMINDER_OPTIONS.map(opt => (
-                  <SelectItem key={opt.value} value={String(opt.value)}>
-                    {opt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
 
-      <div>
-        <Label htmlFor="prepDays">Prep Days (optional - days before due date to start)</Label>
-        <Input
-          id="prepDays"
-          type="number"
-          min="0"
-          max="30"
-          value={formData.prepDays}
-          onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
-          placeholder="0"
-          data-testid="input-prepdays"
-        />
-        {formData.prepDays > 0 && formData.dueDate && (
-          <p className="text-xs text-muted-foreground mt-1">
-            Prep starts: {format(new Date(new Date(formData.dueDate).getTime() - formData.prepDays * 24 * 60 * 60 * 1000), "MMM d, yyyy")}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="priority">Priority</Label>
-        <Select value={formData.priority} onValueChange={(v) => setFormData(prev => ({ ...prev, priority: v }))}>
-          <SelectTrigger data-testid="select-priority">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="low">Low</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-3 border rounded-lg p-3 bg-muted/30">
-        <div className="flex items-center gap-2">
-          <Repeat2 className="h-4 w-4 text-muted-foreground" />
-          <Label className="font-medium">Repeat</Label>
-        </div>
-        
-        <div>
-          <Select 
-            value={formData.repeatType} 
-            onValueChange={(v) => setFormData(prev => ({ 
-              ...prev, 
-              repeatType: v as typeof REPEAT_TYPES[number]
-            }))}
-          >
-            <SelectTrigger data-testid="select-repeat-type">
-              <SelectValue placeholder="No repeat" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No repeat</SelectItem>
-              <SelectItem value="daily">Daily</SelectItem>
-              <SelectItem value="weekly">Weekly</SelectItem>
-              <SelectItem value="monthly">Monthly</SelectItem>
-              <SelectItem value="custom">Custom...</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {formData.repeatType === "custom" && (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label className="text-xs text-muted-foreground">Every</Label>
-              <Input
-                type="number"
-                min="1"
-                max="52"
-                value={formData.repeatInterval}
-                onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
-                data-testid="input-repeat-interval"
-              />
+              <Label htmlFor="courseName">Course</Label>
+              <Select value={formData.courseName} onValueChange={(v) => setFormData(prev => ({ ...prev, courseName: v }))}>
+                <SelectTrigger data-testid="select-course">
+                  <SelectValue placeholder="Select" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COURSES.map(course => {
+                    const colors = courseColors[course.code];
+                    return (
+                      <SelectItem key={course.code} value={`${course.code} - ${course.name}`}>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${colors?.dot}`} />
+                          {course.code}
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
             </div>
+
             <div>
-              <Label className="text-xs text-muted-foreground">Unit</Label>
-              <Select 
-                value={formData.repeatIntervalUnit} 
-                onValueChange={(v) => setFormData(prev => ({ 
-                  ...prev, 
-                  repeatIntervalUnit: v as typeof REPEAT_INTERVAL_UNITS[number]
-                }))}
-              >
-                <SelectTrigger data-testid="select-repeat-unit">
+              <Label htmlFor="type">Type</Label>
+              <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
+                <SelectTrigger data-testid="select-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="days">Days</SelectItem>
-                  <SelectItem value="weeks">Weeks</SelectItem>
+                  {TASK_TYPES.map(type => (
+                    <SelectItem key={type} value={type}>
+                      {type.charAt(0).toUpperCase() + type.slice(1)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
-        )}
 
-        {formData.repeatType !== "none" && (
           <div>
-            <Label className="text-xs text-muted-foreground">End Repeat (optional)</Label>
-            <Input
-              type="date"
-              value={formData.repeatEndDate}
-              onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
-              data-testid="input-repeat-end-date"
-            />
-            {!formData.repeatEndDate && (
-              <p className="text-xs text-muted-foreground mt-1">
-                If no end date, repeats for 6 months
-              </p>
-            )}
+            <Label htmlFor="dueDate">Due Date</Label>
+            <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal"
+                  data-testid="input-duedate"
+                >
+                  <CalendarDays className="mr-2 h-4 w-4" />
+                  {formData.dueDate ? format(new Date(formData.dueDate), "MMM d, yyyy 'at' h:mm a") : "Pick a date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <div className="p-3">
+                  <CalendarPicker
+                    mode="single"
+                    selected={tempDate}
+                    onSelect={(date) => {
+                      if (date) {
+                        setTempDate(date);
+                      }
+                    }}
+                    initialFocus
+                  />
+                  <div className="border-t pt-3 mt-3">
+                    <Label className="text-sm font-medium">Time</Label>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Select value={tempHour} onValueChange={setTempHour}>
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 24 }, (_, i) => (
+                            <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                              {i.toString().padStart(2, '0')}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <span>:</span>
+                      <Select value={tempMinute} onValueChange={setTempMinute}>
+                        <SelectTrigger className="w-20">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {['00', '15', '30', '45'].map((min) => (
+                            <SelectItem key={min} value={min}>
+                              {min}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsDatePickerOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      size="sm"
+                      onClick={() => {
+                        if (tempDate) {
+                          const newDate = new Date(tempDate);
+                          newDate.setHours(parseInt(tempHour), parseInt(tempMinute), 0, 0);
+                          setFormData(prev => ({ ...prev, dueDate: format(newDate, "yyyy-MM-dd'T'HH:mm") }));
+                        }
+                        setIsDatePickerOpen(false);
+                      }}
+                      data-testid="button-apply-date"
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
-        )}
-      </div>
 
-      <div>
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          value={formData.description}
-          onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          placeholder="Add notes or details..."
-          data-testid="input-description"
-        />
-      </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label htmlFor="eventStartTime">Start</Label>
+              <Input
+                id="eventStartTime"
+                type="time"
+                value={formData.eventStartTime}
+                onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
+                data-testid="input-start-time"
+              />
+            </div>
+            <div>
+              <Label htmlFor="eventEndTime">End</Label>
+              <Input
+                id="eventEndTime"
+                type="time"
+                value={formData.eventEndTime}
+                onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
+                data-testid="input-end-time"
+              />
+            </div>
+            <div>
+              <Label htmlFor="prepDays">Prep Days</Label>
+              <Input
+                id="prepDays"
+                type="number"
+                min="0"
+                max="30"
+                value={formData.prepDays}
+                onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
+                placeholder="0"
+                data-testid="input-prepdays"
+              />
+            </div>
+          </div>
 
-      <div>
-        <Label htmlFor="referenceLink">Reference Link (optional)</Label>
-        <Input
-          id="referenceLink"
-          type="url"
-          value={formData.referenceLink}
-          onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
-          placeholder="https://example.com/resource"
-          data-testid="input-reference-link"
-        />
-      </div>
+          <div>
+            <Label>Reminders</Label>
+            <div className="grid grid-cols-4 gap-2">
+              <Select 
+                value={String(formData.reminder1)} 
+                onValueChange={(v) => setFormData(prev => ({ ...prev, reminder1: parseInt(v) }))}
+              >
+                <SelectTrigger data-testid="select-reminder1" className="text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {REMINDER_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={String(opt.value)}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select 
+                value={String(formData.reminder2)} 
+                onValueChange={(v) => setFormData(prev => ({ ...prev, reminder2: parseInt(v) }))}
+              >
+                <SelectTrigger data-testid="select-reminder2" className="text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {REMINDER_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={String(opt.value)}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select 
+                value={String(formData.reminder3)} 
+                onValueChange={(v) => setFormData(prev => ({ ...prev, reminder3: parseInt(v) }))}
+              >
+                <SelectTrigger data-testid="select-reminder3" className="text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {REMINDER_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={String(opt.value)}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select 
+                value={String(formData.reminder4)} 
+                onValueChange={(v) => setFormData(prev => ({ ...prev, reminder4: parseInt(v) }))}
+              >
+                <SelectTrigger data-testid="select-reminder4" className="text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {REMINDER_OPTIONS.map(opt => (
+                    <SelectItem key={opt.value} value={String(opt.value)}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="priority">Priority</Label>
+              <Select value={formData.priority} onValueChange={(v) => setFormData(prev => ({ ...prev, priority: v }))}>
+                <SelectTrigger data-testid="select-priority">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Repeat</Label>
+              <Select 
+                value={formData.repeatType} 
+                onValueChange={(v) => setFormData(prev => ({ 
+                  ...prev, 
+                  repeatType: v as typeof REPEAT_TYPES[number]
+                }))}
+              >
+                <SelectTrigger data-testid="select-repeat-type">
+                  <SelectValue placeholder="No repeat" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No repeat</SelectItem>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                  <SelectItem value="custom">Custom...</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {formData.repeatType === "custom" && (
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-muted-foreground">Every</Label>
+                <Input
+                  type="number"
+                  min="1"
+                  max="52"
+                  value={formData.repeatInterval}
+                  onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
+                  data-testid="input-repeat-interval"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Unit</Label>
+                <Select 
+                  value={formData.repeatIntervalUnit} 
+                  onValueChange={(v) => setFormData(prev => ({ 
+                    ...prev, 
+                    repeatIntervalUnit: v as typeof REPEAT_INTERVAL_UNITS[number]
+                  }))}
+                >
+                  <SelectTrigger data-testid="select-repeat-unit">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="days">Days</SelectItem>
+                    <SelectItem value="weeks">Weeks</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          {formData.repeatType !== "none" && (
+            <div>
+              <Label className="text-xs text-muted-foreground">End Repeat (optional)</Label>
+              <Input
+                type="date"
+                value={formData.repeatEndDate}
+                onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
+                data-testid="input-repeat-end-date"
+              />
+            </div>
+          )}
+
+          <div>
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Add notes or details..."
+              rows={3}
+              data-testid="input-description"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="referenceLink">Reference Link</Label>
+            <Input
+              id="referenceLink"
+              type="url"
+              value={formData.referenceLink}
+              onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
+              placeholder="https://example.com"
+              data-testid="input-reference-link"
+            />
+          </div>
 
       <div>
         <Label>Attachments (optional)</Label>
