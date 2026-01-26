@@ -734,13 +734,21 @@
 [data-radix-select-viewport],
 [data-radix-select-item],
 [data-radix-dropdown-menu-content],
-[data-radix-dropdown-menu-item] {
+[data-radix-dropdown-menu-item],
+[role="listbox"],
+[role="option"],
+[data-radix-popper-content-wrapper] div,
+[data-radix-collection-item] {
   background-color: white !important;
   color: black !important;
 }
 
 [data-radix-select-item] *,
-[data-radix-dropdown-menu-item] * {
+[data-radix-dropdown-menu-item] *,
+[role="option"] *,
+[role="option"] span,
+[data-radix-collection-item] *,
+[data-radix-popper-content-wrapper] span {
   color: black !important;
 }
 
