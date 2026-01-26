@@ -7874,10 +7874,15 @@ function TaskForm({
                   {COURSES.map(course => {
                     const colors = courseColors[course.code];
                     return (
-                      <SelectItem key={course.code} value={`${course.code} - ${course.name}`}>
+                      <SelectItem 
+                        key={course.code} 
+                        value={`${course.code} - ${course.name}`}
+                        className={`${colors?.bg} ${colors?.text} my-0.5 rounded`}
+                      >
                         <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${colors?.dot}`} />
-                          {course.code}
+                          <span className="font-semibold">{course.code}</span>
+                          <span>-</span>
+                          <span>{course.name}</span>
                         </div>
                       </SelectItem>
                     );
