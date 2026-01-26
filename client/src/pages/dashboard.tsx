@@ -4460,6 +4460,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Task Boxes Background</Label>
                       <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.boxBackground}</span>
                         <input
                           type="color"
                           value={colorSettings.boxBackground}
@@ -4467,7 +4468,6 @@ export default function Dashboard() {
                           className="w-8 h-8 rounded cursor-pointer border-0"
                           data-testid="color-box-background"
                         />
-                        <span className="text-xs text-muted-foreground font-mono">{colorSettings.boxBackground}</span>
                       </div>
                     </div>
                     
@@ -4475,6 +4475,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Header & Menu Bar</Label>
                       <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
                         <input
                           type="color"
                           value={colorSettings.headerBar}
@@ -4482,7 +4483,6 @@ export default function Dashboard() {
                           className="w-8 h-8 rounded cursor-pointer border-0"
                           data-testid="color-header-bar"
                         />
-                        <span className="text-xs text-muted-foreground font-mono">{colorSettings.headerBar}</span>
                       </div>
                     </div>
                   </div>
