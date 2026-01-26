@@ -5551,7 +5551,7 @@ export default function Dashboard() {
           </Card>
           {/* Time slot row resize handle - outside Card to avoid overflow clipping */}
           <div 
-            className="h-2 cursor-row-resize hover:bg-blue-400/50 z-[100] flex-shrink-0 absolute bottom-5 left-0 right-0"
+            className="h-3 cursor-row-resize bg-blue-300/80 hover:bg-blue-500 z-[100] flex-shrink-0 absolute bottom-5 left-0 right-0"
             onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
             data-testid="resize-timeslot-row"
           />
