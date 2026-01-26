@@ -6999,7 +6999,7 @@ function ProfileForm({
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="Enter your first name"
-          className="text-black"
+          className="!text-black"
           data-testid="input-profile-firstname"
         />
       </div>
@@ -7010,7 +7010,7 @@ function ProfileForm({
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           placeholder="Enter your last name"
-          className="text-black"
+          className="!text-black"
           data-testid="input-profile-lastname"
         />
       </div>
@@ -7021,14 +7021,14 @@ function ProfileForm({
           type="date"
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
-          className="text-black"
+          className="!text-black"
           data-testid="input-profile-birthdate"
         />
       </div>
       <div className="space-y-2">
         <Label htmlFor="timezone">Home Time Zone</Label>
         <Select value={timezone} onValueChange={setTimezone}>
-          <SelectTrigger data-testid="select-profile-timezone">
+          <SelectTrigger className="!text-black" data-testid="select-profile-timezone">
             <SelectValue placeholder="Select time zone" />
           </SelectTrigger>
           <SelectContent>
@@ -7053,7 +7053,7 @@ function ProfileForm({
             <Label htmlFor="travelTimezone" className="text-sm">Travel Time Zone</Label>
             <p className="text-xs text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
             <Select value={travelTimezone || timezone} onValueChange={setTravelTimezone}>
-              <SelectTrigger data-testid="select-travel-timezone">
+              <SelectTrigger className="!text-black" data-testid="select-travel-timezone">
                 <SelectValue placeholder="Select travel time zone" />
               </SelectTrigger>
               <SelectContent>
