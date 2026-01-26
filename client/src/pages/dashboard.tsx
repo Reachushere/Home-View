@@ -6134,8 +6134,8 @@ export default function Dashboard() {
                       <div 
                         className="working-indicator" 
                         style={{ 
-                          backgroundColor: '#01a0af', 
-                          background: '#01a0af',
+                          backgroundColor: colorSettings.boxBackground, 
+                          background: colorSettings.boxBackground,
                           width: '32px', 
                           height: '32px',
                           minWidth: '32px', 
