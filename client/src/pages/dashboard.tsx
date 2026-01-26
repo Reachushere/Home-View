@@ -4322,9 +4322,9 @@ export default function Dashboard() {
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
-            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col">
+            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
+                <DialogTitle className="flex items-center gap-2 text-white text-sm">
                   <CheckSquare className="h-5 w-5" />
                   Completed Tasks
                 </DialogTitle>
