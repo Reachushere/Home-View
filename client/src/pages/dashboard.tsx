@@ -7031,9 +7031,9 @@ function ProfileForm({
           <SelectTrigger className="!text-black" data-testid="select-profile-timezone">
             <SelectValue placeholder="Select time zone" />
           </SelectTrigger>
-          <SelectContent className="[&_*]:!text-black">
+          <SelectContent className="bg-white">
             {timezones.map(tz => (
-              <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+              <SelectItem key={tz.value} value={tz.value} className="text-black">{tz.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -7056,9 +7056,9 @@ function ProfileForm({
               <SelectTrigger className="!text-black" data-testid="select-travel-timezone">
                 <SelectValue placeholder="Select travel time zone" />
               </SelectTrigger>
-              <SelectContent className="[&_*]:!text-black">
+              <SelectContent className="bg-white">
                 {timezones.map(tz => (
-                  <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
+                  <SelectItem key={tz.value} value={tz.value} className="text-black">{tz.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -7189,9 +7189,9 @@ function SchoolForm({
               <SelectTrigger className="!text-black" data-testid="select-number-of-weeks">
                 <SelectValue placeholder="Select weeks" />
               </SelectTrigger>
-              <SelectContent className="[&_*]:!text-black">
+              <SelectContent className="bg-white">
                 {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                  <SelectItem key={w} value={String(w)}>{w} weeks</SelectItem>
+                  <SelectItem key={w} value={String(w)} className="text-black">{w} weeks</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -7213,9 +7213,9 @@ function SchoolForm({
               <SelectTrigger className="!text-black" data-testid="select-first-day-of-week">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
-              <SelectContent className="[&_*]:!text-black">
+              <SelectContent className="bg-white">
                 {daysOfWeek.map(day => (
-                  <SelectItem key={day.value} value={day.value}>{day.label}</SelectItem>
+                  <SelectItem key={day.value} value={day.value} className="text-black">{day.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
