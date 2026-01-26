@@ -3422,7 +3422,7 @@ export default function Dashboard() {
                     }}
                     data-testid="button-play-chumfm"
                   >
-                    <Play style={{ width: 8, height: 8 }} className="mr-1" />
+                    <Play style={{ width: 10, height: 10 }} className="mr-1" />
                     Play CHUM FM (select)
                   </Button>
                   <Button
@@ -3447,7 +3447,7 @@ export default function Dashboard() {
                     }}
                     data-testid="button-play-chumfm-all"
                   >
-                    <Play style={{ width: 8, height: 8 }} className="mr-1" />
+                    <Play style={{ width: 10, height: 10 }} className="mr-1" />
                     Play CHUM FM (on all)
                   </Button>
                   <Button
@@ -3469,7 +3469,7 @@ export default function Dashboard() {
                     }}
                     data-testid="button-stop-radio"
                   >
-                    <Square style={{ width: 6, height: 6 }} className="mr-1 fill-current" />
+                    <Square style={{ width: 8, height: 8 }} className="mr-1 fill-current" />
                     Stop
                   </Button>
                 </div>
