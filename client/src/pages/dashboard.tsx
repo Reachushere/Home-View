@@ -207,6 +207,7 @@ export default function Dashboard() {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
+  const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
@@ -3376,6 +3377,22 @@ export default function Dashboard() {
                 </DialogTitle>
               </DialogHeader>
               <div className="flex flex-col gap-4 py-4">
+                {/* Speaker Selection */}
+                <div className="flex flex-col gap-2">
+                  <Label>Speaker</Label>
+                  <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
+                    <SelectTrigger data-testid="select-speaker">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="media_player.echo_lr_studio_white_am">LR Studio (White)</SelectItem>
+                      <SelectItem value="media_player.echo_show_pug_am">Echo Show (Pug)</SelectItem>
+                      <SelectItem value="media_player.echo_lr_hub_am">LR Hub</SelectItem>
+                      <SelectItem value="media_player.cat_wr">Cat WR</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 {/* Play/Stop Buttons */}
                 <div className="flex gap-2">
                   <Button
@@ -3387,11 +3404,12 @@ export default function Dashboard() {
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ 
                             stationId: 'CHUM FM',
-                            entityId: 'media_player.echo_lr_studio_white_am'
+                            entityId: selectedSpeaker
                           })
                         });
                         if (response.ok) {
-                          toast({ title: "Playing CHUM FM" });
+                          const speakerName = selectedSpeaker.replace('media_player.', '').replace(/_/g, ' ');
+                          toast({ title: "Playing CHUM FM", description: `on ${speakerName}` });
                         } else {
                           toast({ title: "Failed to play radio", variant: "destructive" });
                         }
