@@ -115,17 +115,18 @@ SelectLabel.displayName = SelectPrimitive.Label.displayName
 const SelectItem = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Item>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>
->(({ className, children, ...props }, ref) => (
+>(({ className, children, style, ...props }, ref) => (
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      !style?.backgroundColor && "focus:bg-accent",
       className
     )}
-    style={{ color: 'black' }}
+    style={{ color: style?.color || 'black', ...style }}
     {...props}
   >
-    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center" style={{ color: 'black' }}>
+    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center" style={{ color: style?.color || 'black' }}>
       <SelectPrimitive.ItemIndicator>
         <Check className="h-4 w-4" />
       </SelectPrimitive.ItemIndicator>
