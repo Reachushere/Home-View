@@ -206,26 +206,36 @@
   animation: slow-blink 60s ease-in-out infinite;
 }
 
-/* File name blinking animation - prominent dark green to light */
+/* File name blinking animation - prominent dark green to light with white text throughout */
 @keyframes file-blink {
   0%, 100% { 
     background-color: rgba(34, 80, 34, 0.9);
-    color: white;
-    text-shadow: none;
   }
   50% { 
     background-color: rgba(134, 239, 172, 0.9);
-    color: black;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 16px rgba(255, 255, 255, 0.8);
   }
 }
 
 .animate-file-blink {
   animation: file-blink 1s ease-in-out infinite;
+  color: white !important;
 }
 
 .animate-file-blink svg {
-  transition: color 0.5s ease-in-out;
+  color: white !important;
+}
+
+.animate-file-blink button {
+  border-color: white !important;
+}
+
+.animate-file-blink button[data-state="checked"] {
+  background-color: white !important;
+  border-color: white !important;
+}
+
+.animate-file-blink button[data-state="checked"] svg {
+  color: black !important;
 }
 
 /* Prominent pulse for today date header - dark to light */
