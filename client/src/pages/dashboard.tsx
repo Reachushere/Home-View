@@ -7845,11 +7845,11 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 text-[10px]">
+    <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
       {/* Two column layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left Column */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div>
             <Label htmlFor="title">Title</Label>
             <Input
