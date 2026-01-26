@@ -7176,7 +7176,9 @@ function FileSelector({
     queryKey: ["/api/files"],
   });
 
-  const availableFiles = files.filter(f => !excludePaths.includes(f.objectPath));
+  const availableFiles = files
+    .filter(f => !excludePaths.includes(f.objectPath))
+    .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
   if (availableFiles.length === 0) {
     return (
