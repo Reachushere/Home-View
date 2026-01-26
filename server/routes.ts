@@ -2058,8 +2058,9 @@ export async function registerRoutes(
       
       console.log(`Stopping media on all devices`);
       
-      for (const device of devices) {
-        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+      // Send all stop commands in parallel for faster execution
+      await Promise.all(devices.map(device => 
+        fetch(`${haUrl}/api/services/media_player/media_stop`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
@@ -2068,8 +2069,8 @@ export async function registerRoutes(
           body: JSON.stringify({
             entity_id: device
           }),
-        });
-      }
+        }).catch(err => console.error(`Failed to stop ${device}:`, err))
+      ));
       
       console.log(`All devices stopped`);
       res.json({ success: true });
