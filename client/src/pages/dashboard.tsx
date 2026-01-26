@@ -6644,12 +6644,13 @@ export default function Dashboard() {
                 : conn.color === "#ec4899" ? "arrowhead-pink" 
                 : conn.color === "#6366f1" ? "arrowhead-indigo"
                 : "arrowhead-black";
-              // Draw path that goes left first, then curves down to calendar (boxes are above calendar)
-              // This avoids crossing other checkboxes in the task list
+              // Draw path that goes left first, then straight down to bottom of task boxes, then curves to calendar
               const exitX = conn.fromX - 21; // Go 21px left first to clear all checkboxes
-              const midY = (conn.fromY + conn.toY) / 2;
-              // Path: start at checkbox, go left, then curve down to calendar
-              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} Q ${exitX} ${midY}, ${conn.toX} ${conn.toY}`;
+              // Get the task boxes container bottom
+              const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
+              const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
+              // Path: start at checkbox, go left, go straight down to container bottom, then curve to calendar
+              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               return (
                 <g key={conn.taskId}>
                   {/* Glow/outline for visibility on dark backgrounds */}
