@@ -5289,6 +5289,14 @@ export default function Dashboard() {
                     <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
+                    {/* Row resize handle at bottom of first time slot only */}
+                    {hourIdx === 0 && (
+                      <div 
+                        className="absolute left-0 right-0 bottom-0 h-1 cursor-row-resize hover:bg-blue-400/50 z-50"
+                        onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
+                        data-testid="resize-timeslot-row"
+                      />
+                    )}
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
