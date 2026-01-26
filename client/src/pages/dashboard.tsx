@@ -2158,20 +2158,22 @@ export default function Dashboard() {
       const courseInfo = coursesData.courses.find((c) => c.name === courseName);
       const fullCourseName = courseInfo?.name || courseName;
       
-      // Calculate the start of the school week (Saturday, or Sunday if Saturday passed)
+      // Calculate the start and end of the school week
       const today = new Date();
       const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
       const saturdayPassed = todayDayOfWeek !== 6;
       
-      // weekDays[0] is Saturday of the current week
+      // weekDays[0] is Saturday, weekDays[6] is Friday
       // If Saturday passed, start from Sunday (weekDays[1])
       const weekStartDay = saturdayPassed ? weekDays[1] : weekDays[0];
+      const weekEndDay = weekDays[6]; // Friday is always the end
       
-      // Update the task's courseName and set startDate to beginning of school week
+      // Update the task's courseName, startDate to beginning and dueDate to Friday
       updateTaskFieldsMutation.mutate({
         id: draggedTask.id,
         courseName: fullCourseName,
         startDate: format(weekStartDay, "yyyy-MM-dd'T'HH:mm:ss"),
+        dueDate: format(weekEndDay, "yyyy-MM-dd'T'23:59:59"),
       });
     }
     
@@ -5384,7 +5386,21 @@ export default function Dashboard() {
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {course.name}
                   </div>
-                  <div className="border-l border-border/50" style={{ backgroundColor: course.bg }} />
+                  <div 
+                    className="border-l border-border/50" 
+                    style={{ backgroundColor: course.bg }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.style.backgroundColor = 'rgba(93, 129, 204, 0.5)';
+                    }}
+                    onDragLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = course.bg;
+                    }}
+                    onDrop={(e) => {
+                      e.currentTarget.style.backgroundColor = course.bg;
+                      handleCourseRowDrop(e, course.name, weekDays[0]);
+                    }}
+                  />
                   {weekDays.map((day, dayIdx) => {
                     // Get prep tasks for this course and day
                     // School week starts Saturday. Tasks span Sat-Fri, or Sun-Fri once Saturday has passed
