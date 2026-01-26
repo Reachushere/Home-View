@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -7494,6 +7496,27 @@ function TaskForm({
   });
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Date picker popover state
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [tempDate, setTempDate] = useState<Date | undefined>(() => {
+    if (formData.dueDate) {
+      return new Date(formData.dueDate);
+    }
+    return undefined;
+  });
+  const [tempHour, setTempHour] = useState(() => {
+    if (formData.dueDate) {
+      return new Date(formData.dueDate).getHours().toString().padStart(2, '0');
+    }
+    return "18";
+  });
+  const [tempMinute, setTempMinute] = useState(() => {
+    if (formData.dueDate) {
+      return new Date(formData.dueDate).getMinutes().toString().padStart(2, '0');
+    }
+    return "00";
+  });
 
   const { uploadFile, isUploading } = useUpload({
     onSuccess: (response) => {
@@ -7621,14 +7644,85 @@ function TaskForm({
 
       <div>
         <Label htmlFor="dueDate">Due Date</Label>
-        <Input
-          id="dueDate"
-          type="datetime-local"
-          value={formData.dueDate}
-          onChange={(e) => setFormData(prev => ({ ...prev, dueDate: e.target.value }))}
-          required
-          data-testid="input-duedate"
-        />
+        <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full justify-start text-left font-normal"
+              data-testid="input-duedate"
+            >
+              <CalendarDays className="mr-2 h-4 w-4" />
+              {formData.dueDate ? format(new Date(formData.dueDate), "MMM d, yyyy 'at' h:mm a") : "Pick a date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <div className="p-3">
+              <CalendarPicker
+                mode="single"
+                selected={tempDate}
+                onSelect={(date) => {
+                  if (date) {
+                    setTempDate(date);
+                  }
+                }}
+                initialFocus
+              />
+              <div className="border-t pt-3 mt-3">
+                <Label className="text-sm font-medium">Time</Label>
+                <div className="flex items-center gap-2 mt-2">
+                  <Select value={tempHour} onValueChange={setTempHour}>
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 24 }, (_, i) => (
+                        <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                          {i.toString().padStart(2, '0')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <span>:</span>
+                  <Select value={tempMinute} onValueChange={setTempMinute}>
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['00', '15', '30', '45'].map((min) => (
+                        <SelectItem key={min} value={min}>
+                          {min}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setIsDatePickerOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={() => {
+                    if (tempDate) {
+                      const newDate = new Date(tempDate);
+                      newDate.setHours(parseInt(tempHour), parseInt(tempMinute), 0, 0);
+                      setFormData(prev => ({ ...prev, dueDate: format(newDate, "yyyy-MM-dd'T'HH:mm") }));
+                    }
+                    setIsDatePickerOpen(false);
+                  }}
+                  data-testid="button-apply-date"
+                >
+                  Apply
+                </Button>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
