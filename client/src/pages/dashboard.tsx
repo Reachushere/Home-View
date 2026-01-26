@@ -4772,7 +4772,7 @@ export default function Dashboard() {
                   </p>
                   <div className="flex gap-2">
                     <Button
-                      className="bg-teal-500 hover:bg-teal-600 text-white"
+                      className="bg-[#5979CC] hover:bg-[#6989DC] text-white shadow-lg shadow-[#5979CC]/30"
                       size="sm"
                       onClick={async () => {
                         try {
@@ -4870,7 +4870,7 @@ export default function Dashboard() {
                   Cancel
                 </Button>
                 <Button 
-                  className="bg-teal-500 hover:bg-teal-600 text-white"
+                  className="bg-[#5979CC] hover:bg-[#6989DC] text-white shadow-lg shadow-[#5979CC]/30"
                   onClick={() => {
                     localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
                     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
@@ -7100,7 +7100,7 @@ function ProfileForm({
         <Button type="button" variant="outline" className="flex-1" onClick={onCancel} data-testid="button-cancel-profile">
           Cancel
         </Button>
-        <Button type="submit" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-save-profile">
+        <Button type="submit" className="flex-1 bg-[#5979CC] hover:bg-[#6989DC] text-white shadow-lg shadow-[#5979CC]/30" data-testid="button-save-profile">
           Save Profile
         </Button>
       </div>
@@ -7403,7 +7403,7 @@ function SchoolForm({
         <Button type="button" variant="outline" className="flex-1" onClick={onCancel} data-testid="button-cancel-school">
           Cancel
         </Button>
-        <Button type="submit" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-save-school">
+        <Button type="submit" className="flex-1 bg-[#5979CC] hover:bg-[#6989DC] text-white shadow-lg shadow-[#5979CC]/30" data-testid="button-save-school">
           Save School Settings
         </Button>
       </div>
@@ -7474,7 +7474,7 @@ function CoursesForm({
         <Button type="button" variant="outline" className="flex-1 text-xs h-8" onClick={onCancel} data-testid="button-cancel-courses">
           Cancel
         </Button>
-        <Button type="submit" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white text-xs h-8" data-testid="button-save-courses">
+        <Button type="submit" className="flex-1 bg-[#5979CC] hover:bg-[#6989DC] text-white shadow-lg shadow-[#5979CC]/30 text-xs h-8" data-testid="button-save-courses">
           Save Courses
         </Button>
       </div>
@@ -8087,7 +8087,7 @@ function TaskForm({
       </div>
 
       <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={createMutation.isPending} className="bg-teal-500 hover:bg-teal-600 text-white border border-black" data-testid="button-submit-task">
+        <Button type="submit" disabled={createMutation.isPending} className="bg-[#5979CC] hover:bg-[#6989DC] text-white shadow-lg shadow-[#5979CC]/30 border border-black" data-testid="button-submit-task">
           {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
         </Button>
       </div>
