@@ -3370,19 +3370,19 @@ export default function Dashboard() {
                 <Radio className="h-[14px] w-[14px] text-white" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
+            <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-white text-sm">
-                  <Radio className="h-5 w-5" />
+                <DialogTitle className="flex items-center gap-2 text-white text-xs">
+                  <Radio className="h-4 w-4" />
                   Radio Controls
                 </DialogTitle>
               </DialogHeader>
-              <div className="flex flex-col gap-4 py-4">
+              <div className="flex flex-col gap-3 py-2">
                 {/* Speaker Selection */}
-                <div className="flex flex-col gap-2">
-                  <Label className="text-white">Speaker</Label>
+                <div className="flex flex-col gap-1">
+                  <Label className="text-white text-[10px]">Speaker</Label>
                   <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
-                    <SelectTrigger data-testid="select-speaker" className="bg-black/50 border-white/30 text-white">
+                    <SelectTrigger data-testid="select-speaker" className="h-8 text-[10px] bg-black/50 border-white/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-900 border-white/20">
@@ -3395,10 +3395,11 @@ export default function Dashboard() {
                 </div>
 
                 {/* Play/Stop Buttons */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   <Button
                     variant="outline"
-                    className="w-full border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-200"
+                    size="sm"
+                    className="w-full text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_10px_rgba(59,130,246,0.4)] hover:shadow-[0_0_15px_rgba(59,130,246,0.6)] transition-all duration-200"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/play-radio', {
@@ -3421,12 +3422,13 @@ export default function Dashboard() {
                     }}
                     data-testid="button-play-chumfm"
                   >
-                    <Play className="h-4 w-4 mr-2" />
+                    <Play className="h-3 w-3 mr-1.5" />
                     Play CHUM FM (select speaker)
                   </Button>
                   <Button
                     variant="outline"
-                    className="w-full border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-200"
+                    size="sm"
+                    className="w-full text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_10px_rgba(59,130,246,0.4)] hover:shadow-[0_0_15px_rgba(59,130,246,0.6)] transition-all duration-200"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/play-radio-all', {
@@ -3445,12 +3447,13 @@ export default function Dashboard() {
                     }}
                     data-testid="button-play-chumfm-all"
                   >
-                    <Play className="h-4 w-4 mr-2" />
+                    <Play className="h-3 w-3 mr-1.5" />
                     Play CHUM FM (on all)
                   </Button>
                   <Button
                     variant="destructive"
-                    className="w-full"
+                    size="sm"
+                    className="w-full text-[10px]"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/stop-radio', {
@@ -3466,19 +3469,19 @@ export default function Dashboard() {
                     }}
                     data-testid="button-stop-radio"
                   >
-                    <Square className="h-4 w-4 mr-2 fill-current" />
+                    <Square className="h-3 w-3 mr-1.5 fill-current" />
                     Stop
                   </Button>
                 </div>
                 
                 {/* Volume Controls */}
-                <div className="flex flex-col gap-2">
-                  <Label className="text-white">Volume: {radioVolume}%</Label>
-                  <div className="flex items-center gap-2">
+                <div className="flex flex-col gap-1.5">
+                  <Label className="text-white text-[10px]">Volume: {radioVolume}%</Label>
+                  <div className="flex items-center gap-1.5">
                     <Button
                       variant="outline"
                       size="icon"
-                      className="border-white/30 hover:bg-white/10 text-white"
+                      className="h-7 w-7 border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
                           const res = await fetch('/api/media/volume', {
@@ -3496,7 +3499,7 @@ export default function Dashboard() {
                       }}
                       data-testid="button-volume-down"
                     >
-                      <VolumeX className="h-4 w-4" />
+                      <VolumeX className="h-3.5 w-3.5" />
                     </Button>
                     <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
                       <div 
@@ -3507,7 +3510,7 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="border-white/30 hover:bg-white/10 text-white"
+                      className="h-7 w-7 border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
                           const res = await fetch('/api/media/volume', {
@@ -3525,7 +3528,7 @@ export default function Dashboard() {
                       }}
                       data-testid="button-volume-up"
                     >
-                      <Volume2 className="h-4 w-4" />
+                      <Volume2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 </div>
