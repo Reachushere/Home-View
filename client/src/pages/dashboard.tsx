@@ -4403,27 +4403,13 @@ export default function Dashboard() {
                 {/* Left Column */}
                 <div className="space-y-4">
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Background Image & Color</Label>
+                  <Label className="text-sm font-medium">Background Image and Colours</Label>
                   <p className="text-xs text-muted-foreground">
-                    Upload a custom background image or set a solid background color.
+                    Upload a custom background image or customise colours.
                   </p>
                   
-                  {/* Main Background Color */}
-                  <div className="flex items-center justify-between">
-                    <Label className="text-xs">Main Background Color</Label>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
-                      <input
-                        type="color"
-                        value={colorSettings.mainBackground}
-                        onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackground: e.target.value }))}
-                        className="w-8 h-8 rounded cursor-pointer border-0"
-                        data-testid="color-main-background"
-                      />
-                    </div>
-                  </div>
                   {customBackground && (
-                    <div className="relative w-full h-24 rounded-md overflow-hidden border">
+                    <div className="relative w-full h-20 rounded-md overflow-hidden border">
                       <img 
                         src={customBackground} 
                         alt="Current background" 
@@ -4475,6 +4461,53 @@ export default function Dashboard() {
                       <Upload className="h-4 w-4 mr-2" />
                       {customBackground ? "Change Background" : "Upload Background"}
                     </Button>
+                  </div>
+                  
+                  <div className="space-y-2 pt-2 border-t">
+                    {/* Main Background Colour */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Main Background Colour</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
+                        <input
+                          type="color"
+                          value={colorSettings.mainBackground}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackground: e.target.value }))}
+                          className="w-8 h-8 rounded cursor-pointer border-0"
+                          data-testid="color-main-background"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Box Background Colour */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Task Boxes Background</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.boxBackground}</span>
+                        <input
+                          type="color"
+                          value={colorSettings.boxBackground}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, boxBackground: e.target.value }))}
+                          className="w-8 h-8 rounded cursor-pointer border-0"
+                          data-testid="color-box-background"
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Header Bar Colour */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Header & Menu Bar</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
+                        <input
+                          type="color"
+                          value={colorSettings.headerBar}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, headerBar: e.target.value }))}
+                          className="w-8 h-8 rounded cursor-pointer border-0"
+                          data-testid="color-header-bar"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
@@ -4553,45 +4586,6 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                {/* Color Settings */}
-                <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Colors</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Customize the colors of boxes and headers.
-                  </p>
-                  
-                  <div className="space-y-2">
-                    {/* Box Background Color */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Task Boxes Background</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.boxBackground}</span>
-                        <input
-                          type="color"
-                          value={colorSettings.boxBackground}
-                          onChange={(e) => setColorSettings(prev => ({ ...prev, boxBackground: e.target.value }))}
-                          className="w-8 h-8 rounded cursor-pointer border-0"
-                          data-testid="color-box-background"
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* Header Bar Color */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Header & Menu Bar</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
-                        <input
-                          type="color"
-                          value={colorSettings.headerBar}
-                          onChange={(e) => setColorSettings(prev => ({ ...prev, headerBar: e.target.value }))}
-                          className="w-8 h-8 rounded cursor-pointer border-0"
-                          data-testid="color-header-bar"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 </div>
                 
                 {/* Right Column */}
