@@ -433,10 +433,10 @@ export default function Dashboard() {
     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
   }, [blinkSettings]);
   
-  // Box order for drag and drop (this-week, tomorrow, today)
+  // Box order for drag and drop (this-week, today, tomorrow)
   const [boxOrder, setBoxOrder] = useState<string[]>(() => {
     const saved = localStorage.getItem('boxOrder');
-    return saved ? JSON.parse(saved) : ['this-week', 'tomorrow', 'today'];
+    return saved ? JSON.parse(saved) : ['this-week', 'today', 'tomorrow'];
   });
   
   // Color settings
@@ -4920,6 +4920,19 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-[6px] relative flex" style={{ height: calendarHeight, order: 2 }}>
+          {/* Files Flyout Toggle Tab - sticks to right edge */}
+          {!isFilesFlyoutOpen && (
+            <div
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-[60] cursor-pointer"
+              onClick={() => setIsFilesFlyoutOpen(true)}
+              data-testid="files-flyout-tab"
+            >
+              <div className="flex items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-1 py-6 hover:bg-black/70 transition-colors">
+                <ChevronLeft className="h-5 w-5 text-yellow-500" />
+                <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400 -ml-1" />
+              </div>
+            </div>
+          )}
           {/* Calendar wrapper - shrinks when flyout opens */}
           <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? 'w-[80%]' : 'w-full'}`}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
