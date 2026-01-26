@@ -6999,6 +6999,7 @@ function ProfileForm({
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="Enter your first name"
+          className="text-black"
           data-testid="input-profile-firstname"
         />
       </div>
@@ -7009,6 +7010,7 @@ function ProfileForm({
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           placeholder="Enter your last name"
+          className="text-black"
           data-testid="input-profile-lastname"
         />
       </div>
@@ -7019,6 +7021,7 @@ function ProfileForm({
           type="date"
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
+          className="text-black"
           data-testid="input-profile-birthdate"
         />
       </div>
