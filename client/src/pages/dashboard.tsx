@@ -4548,9 +4548,9 @@ export default function Dashboard() {
               setNewTaskType("module"); // Reset to default
             }
           }}>
-            <DialogContent className="max-w-[95vw] sm:max-w-3xl">
+            <DialogContent className="max-w-[95vw] sm:max-w-3xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
               <DialogHeader>
-                <DialogTitle>Add New {newTaskType.charAt(0).toUpperCase() + newTaskType.slice(1)}</DialogTitle>
+                <DialogTitle className="text-white">Add New {newTaskType.charAt(0).toUpperCase() + newTaskType.slice(1)}</DialogTitle>
               </DialogHeader>
               <TaskForm 
                 key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
