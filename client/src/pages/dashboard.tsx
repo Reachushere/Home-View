@@ -6647,8 +6647,9 @@ export default function Dashboard() {
               // Draw path that goes straight down from the task box to avoid crossing other boxes
               // Use a simple curved path from task to calendar entry
               const controlY = conn.fromY + (conn.toY - conn.fromY) * 0.3;
+              const startX = conn.fromX + 4; // Start 4px closer to checkbox
               // Path: start at checkbox, curve smoothly down to calendar
-              const path = `M ${conn.fromX} ${conn.fromY} Q ${conn.fromX} ${controlY}, ${conn.toX} ${conn.toY}`;
+              const path = `M ${startX} ${conn.fromY} Q ${startX} ${controlY}, ${conn.toX} ${conn.toY}`;
               return (
                 <g key={conn.taskId}>
                   {/* Glow/outline for visibility on dark backgrounds */}
