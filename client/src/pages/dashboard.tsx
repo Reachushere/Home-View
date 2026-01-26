@@ -4934,7 +4934,7 @@ export default function Dashboard() {
             </div>
           )}
           {/* Calendar wrapper - shrinks when flyout opens */}
-          <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? 'w-[80%]' : 'w-full'}`}>
+          <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? 'w-[67%]' : 'w-full'}`}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth}px))` }} />
@@ -5687,32 +5687,32 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar */}
-          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'w-[20%] opacity-100' : 'w-0 opacity-0'}`}>
+          <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'w-[33%] opacity-100' : 'w-0 opacity-0'}`}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white">
               {/* Header */}
-              <div className="flex items-center justify-between px-3 py-2 border-b border-white/20 bg-black/30">
-                <div className="flex items-center gap-2">
-                  <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
-                  <span className="text-sm font-medium">Files</span>
+              <div className="flex items-center justify-between px-2 py-1.5 border-b border-white/20 bg-black/30">
+                <div className="flex items-center gap-1.5">
+                  <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" />
+                  <span className="text-[11px] font-medium">Files</span>
                 </div>
                 <Button 
                   size="icon" 
                   variant="ghost" 
                   onClick={() => setIsFilesFlyoutOpen(false)}
-                  className="h-7 w-7 text-white/70 hover:text-white hover:bg-white/20"
+                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20"
                   data-testid="button-close-inline-files"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3 w-3" />
                 </Button>
               </div>
               
               {/* Files Tree */}
-              <div className="flex-1 overflow-y-auto py-2">
-                <p className="text-xs text-white/40 px-3 mb-2">
+              <div className="flex-1 overflow-y-auto py-1">
+                <p className="text-[9px] text-white/40 px-2 mb-1">
                   Click to open. Drag to tasks.
                 </p>
                 
-                {/* Folder Tree Structure */}
+                {/* Folder Tree Structure - Full hierarchy */}
                 <div className="space-y-0">
                   {FLYOUT_WEEKS.map((week) => {
                     const weekFiles = getFilesInFlyoutWeek(week.id);
@@ -5723,33 +5723,114 @@ export default function Dashboard() {
                     
                     return (
                       <div key={week.id}>
+                        {/* Week folder row */}
                         <div 
-                          className="flex items-center gap-1 px-2 py-1 hover:bg-white/10 cursor-pointer text-xs"
+                          className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
                           onClick={() => toggleFlyoutFolder(week.id)}
                         >
-                          {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
-                          <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />
-                          <span className="text-white/90 truncate">{week.name}</span>
-                          <span className="text-white/40 ml-auto">{weekFiles.length}</span>
+                          {isWeekExpanded ? <ChevronDown className="h-2.5 w-2.5 text-white/60" /> : <ChevronRight className="h-2.5 w-2.5 text-white/60" />}
+                          {isWeekExpanded ? <FolderOpen className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" />}
+                          <span className="text-[10px] text-white/90 truncate flex-1">{week.name}</span>
+                          <span className="text-[9px] text-white/40">{weekFiles.length}</span>
                         </div>
                         
+                        {/* Course folders inside week */}
                         {isWeekExpanded && (
-                          <div className="ml-4">
-                            {weekFiles.slice(0, 10).map((file) => (
-                              <div 
-                                key={file.id}
-                                className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer text-xs"
-                                draggable
-                                onDragStart={(e) => {
-                                  e.dataTransfer.setData("text/plain", file.objectPath);
-                                  e.dataTransfer.setData("application/x-file-attachment", JSON.stringify(file));
-                                }}
-                                onClick={() => setPreviewFile(file)}
-                              >
-                                <FileText className="h-3 w-3 text-white/50" />
-                                <span className="text-white/80 truncate">{file.originalName || file.objectPath.split('/').pop()}</span>
-                              </div>
-                            ))}
+                          <div className="ml-3">
+                            {FLYOUT_COURSES.map((course) => {
+                              const courseFiles = getFilesInFlyoutCourse(week.id, course.id);
+                              const courseFolderId = `${week.id}-${course.id}`;
+                              const isCourseExpanded = flyoutExpandedFolders.has(courseFolderId);
+                              
+                              if (courseFiles.length === 0) return null;
+                              
+                              return (
+                                <div key={courseFolderId}>
+                                  {/* Course folder row */}
+                                  <div
+                                    className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                                    onClick={() => toggleFlyoutFolder(courseFolderId)}
+                                  >
+                                    {isCourseExpanded ? <ChevronDown className="h-2.5 w-2.5 text-white/60" /> : <ChevronRight className="h-2.5 w-2.5 text-white/60" />}
+                                    {isCourseExpanded ? <FolderOpen className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" />}
+                                    <span className={`text-[10px] truncate flex-1 ${course.color}`}>{course.name}</span>
+                                    <span className="text-[9px] text-white/40">{courseFiles.length}</span>
+                                  </div>
+                                  
+                                  {/* Content folders inside course */}
+                                  {isCourseExpanded && (
+                                    <div className="ml-3">
+                                      {FLYOUT_CONTENT.map((content) => {
+                                        const contentFolderId = `${week.id}-${course.id}-${content.id}`;
+                                        const contentFiles = getFilesInFlyoutFolder(contentFolderId);
+                                        const isContentExpanded = flyoutExpandedFolders.has(contentFolderId);
+                                        
+                                        if (contentFiles.length === 0) return null;
+                                        
+                                        return (
+                                          <div key={contentFolderId}>
+                                            {/* Content folder row */}
+                                            <div
+                                              className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                                              onClick={() => toggleFlyoutFolder(contentFolderId)}
+                                            >
+                                              {isContentExpanded ? <ChevronDown className="h-2.5 w-2.5 text-white/60" /> : <ChevronRight className="h-2.5 w-2.5 text-white/60" />}
+                                              {isContentExpanded ? <FolderOpen className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" />}
+                                              <span className="text-[10px] text-white/90 truncate flex-1">{content.name}</span>
+                                              <span className="text-[9px] text-white/40">{contentFiles.length}</span>
+                                            </div>
+                                            
+                                            {/* Files inside content folder */}
+                                            {isContentExpanded && (
+                                              <div className="ml-3 space-y-0">
+                                                {contentFiles.map((file) => (
+                                                  <div
+                                                    key={file.id}
+                                                    draggable
+                                                    onDragStart={(e) => {
+                                                      e.dataTransfer.setData('application/json', JSON.stringify({ 
+                                                        url: file.objectPath, 
+                                                        name: file.displayName || file.originalName 
+                                                      }));
+                                                      setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
+                                                    }}
+                                                    onDragEnd={() => setDraggedFile(null)}
+                                                    className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                                                    onClick={() => setPreviewFile(file)}
+                                                  >
+                                                    <Checkbox
+                                                      checked={file.listened || false}
+                                                      onCheckedChange={async (checked) => {
+                                                        try {
+                                                          await fetch(`/api/files/${file.id}`, {
+                                                            method: 'PATCH',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({ listened: checked === true })
+                                                          });
+                                                          queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                        } catch (err) {
+                                                          console.error('Failed to update listened status:', err);
+                                                        }
+                                                      }}
+                                                      onClick={(e) => e.stopPropagation()}
+                                                      className="h-2.5 w-2.5 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                                    />
+                                                    <FileText className="h-2.5 w-2.5 text-white/50 shrink-0" />
+                                                    <span className={`text-[9px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
+                                                      {file.displayName || file.originalName}
+                                                    </span>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            )}
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
                         )}
                       </div>
