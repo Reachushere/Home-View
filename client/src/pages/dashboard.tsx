@@ -42,6 +42,7 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   X,
   Link,
   Paperclip,
@@ -202,6 +203,60 @@ export default function Dashboard() {
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(false);
+  const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
+  
+  const toggleFlyoutFolder = (folderId: string) => {
+    setFlyoutExpandedFolders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(folderId)) {
+        newSet.delete(folderId);
+      } else {
+        newSet.add(folderId);
+      }
+      return newSet;
+    });
+  };
+  
+  // Week folders for files flyout
+  const FLYOUT_WEEKS = [
+    { id: "week-1", name: "Week 1" },
+    { id: "week-2", name: "Week 2" },
+    { id: "week-3", name: "Week 3" },
+    { id: "week-4", name: "Week 4" },
+    { id: "week-5", name: "Week 5" },
+    { id: "week-6", name: "Week 6" },
+    { id: "week-7", name: "Week 7" },
+    { id: "week-8", name: "Week 8" },
+    { id: "week-9", name: "Week 9" },
+    { id: "week-10", name: "Week 10" },
+    { id: "week-11", name: "Week 11" },
+    { id: "week-12", name: "Week 12" },
+    { id: "week-13", name: "Week 13" },
+  ];
+  
+  const FLYOUT_COURSES = [
+    { id: "cppa122", name: "CPPA122", color: "text-green-500" },
+    { id: "cfnf400", name: "CFNF400", color: "text-pink-500" },
+    { id: "casl101", name: "CASL101", color: "text-purple-500" },
+  ];
+  
+  const FLYOUT_CONTENT = [
+    { id: "module", name: "Module" },
+    { id: "reading", name: "Reading" },
+  ];
+  
+  // Get files for a specific folder path
+  const getFilesInFlyoutFolder = (folderId: string) => {
+    return weeklyFiles.filter(f => f.folder === folderId);
+  };
+  
+  const getFilesInFlyoutWeek = (weekId: string) => {
+    return weeklyFiles.filter(f => f.folder?.startsWith(weekId + "-"));
+  };
+  
+  const getFilesInFlyoutCourse = (weekId: string, courseId: string) => {
+    return weeklyFiles.filter(f => f.folder?.startsWith(`${weekId}-${courseId}-`));
+  };
   const [draggedFile, setDraggedFile] = useState<{ url: string; name: string } | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [lastCompletedTaskId, setLastCompletedTaskId] = useState<number | null>(null);
@@ -6253,134 +6308,166 @@ export default function Dashboard() {
               <span className="text-gray-500">All Files</span>
             </div>
             
-            {/* Files Tree */}
+            {/* Files Tree - Windows Explorer Style */}
             <div className="flex-1 overflow-y-auto py-2">
               <p className="text-xs text-gray-500 px-3 mb-2">
-                Drag files to task boxes or calendar entries to attach them.
+                Click files to open media controls. Drag files to task boxes.
               </p>
               
-              {/* File rows - Windows Explorer style */}
-              <div className="space-y-1 px-1">
-                {weeklyFiles.map((file) => (
-                  <div
-                    key={file.id}
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData('application/json', JSON.stringify({ 
-                        url: file.objectPath, 
-                        name: file.displayName || file.originalName 
-                      }));
-                      setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
-                    }}
-                    onDragEnd={() => setDraggedFile(null)}
-                    className="flex flex-col gap-1 p-2 bg-[#ffd251] border-2 border-black rounded-[8px] hover:brightness-105 cursor-move mx-2"
-                    data-testid={`draggable-file-${file.id}`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <Checkbox
-                        checked={file.listened || false}
-                        onCheckedChange={async (checked) => {
-                          try {
-                            await fetch(`/api/files/${file.id}`, {
-                              method: 'PATCH',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ listened: checked === true })
-                            });
-                            queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                          } catch (err) {
-                            console.error('Failed to update listened status:', err);
-                          }
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 border-2 border-black data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                        data-testid={`checkbox-listened-flyout-${file.id}`}
-                      />
-                      <a 
-                        href={file.objectPath} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className={`font-medium text-[10px] truncate hover:underline cursor-pointer text-black flex-1 ${file.listened ? 'line-through opacity-60' : ''}`}
-                        onClick={(e) => e.stopPropagation()}
-                        data-testid={`text-filename-flyout-${file.id}`}
+              {/* Folder Tree Structure */}
+              <div className="space-y-0">
+                {FLYOUT_WEEKS.map((week) => {
+                  const weekFiles = getFilesInFlyoutWeek(week.id);
+                  const isWeekExpanded = flyoutExpandedFolders.has(week.id);
+                  const hasFiles = weekFiles.length > 0;
+                  
+                  if (!hasFiles) return null;
+                  
+                  return (
+                    <div key={week.id}>
+                      {/* Week folder row */}
+                      <div
+                        className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${isWeekExpanded ? 'bg-[#252525]' : ''}`}
+                        onClick={() => toggleFlyoutFolder(week.id)}
+                        data-testid={`flyout-folder-${week.id}`}
                       >
-                        {file.displayName || file.originalName}
-                      </a>
-                      <Badge variant="secondary" className="text-[8px] py-0 px-1 bg-black/20 text-black border-0">
-                        {file.contentType?.split('/')[1] || 'file'}
-                      </Badge>
-                    </div>
-
-                    {/* Media Controls Bar */}
-                    <div className="flex items-center w-[calc(100%+16px)] bg-black rounded-b-[6px] -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
-                      <div className="flex items-center gap-[26px]">
-                        <Play 
-                          className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            try {
-                              await fetch('/api/media/play', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ mediaUrl: file.objectPath, entityId: 'media_player.echo_lr_studio_white_am' })
-                              });
-                            } catch (err) {
-                              console.error('Play error:', err);
-                            }
-                          }}
-                          data-testid={`button-play-flyout-${file.id}`}
-                        />
-                        <Square 
-                          className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            try {
-                              await fetch('/api/media/stop', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ entityId: 'media_player.echo_lr_studio_white_am' })
-                              });
-                            } catch (err) {
-                              console.error('Stop error:', err);
-                            }
-                          }}
-                          data-testid={`button-stop-flyout-${file.id}`}
-                        />
-                        <VolumeX 
-                          className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
-                          onClick={async (e: React.MouseEvent) => {
-                            e.stopPropagation();
-                            try {
-                              await fetch('/api/media/volume', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ action: 'down', entityId: 'media_player.echo_lr_studio_white_am' })
-                              });
-                            } catch (err) {
-                              console.error('Volume error:', err);
-                            }
-                          }}
-                          data-testid={`button-vol-down-flyout-${file.id}`}
-                        />
-                        <Volume2 
-                          className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            try {
-                              await fetch('/api/media/volume', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ action: 'up', entityId: 'media_player.echo_lr_studio_white_am' })
-                              });
-                            } catch (err) {
-                              console.error('Volume error:', err);
-                            }
-                          }}
-                          data-testid={`button-vol-up-flyout-${file.id}`}
-                        />
+                        {isWeekExpanded ? (
+                          <ChevronDown className="h-3 w-3 text-gray-500" />
+                        ) : (
+                          <ChevronRight className="h-3 w-3 text-gray-500" />
+                        )}
+                        {isWeekExpanded ? (
+                          <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                        ) : (
+                          <FolderOpen className="h-4 w-4 text-yellow-600 fill-yellow-400" />
+                        )}
+                        <span className="text-sm flex-1">{week.name}</span>
+                        <span className="text-xs text-gray-500">{weekFiles.length}</span>
                       </div>
+                      
+                      {/* Course folders inside week */}
+                      {isWeekExpanded && (
+                        <div className="ml-4">
+                          {FLYOUT_COURSES.map((course) => {
+                            const courseFiles = getFilesInFlyoutCourse(week.id, course.id);
+                            const courseFolderId = `${week.id}-${course.id}`;
+                            const isCourseExpanded = flyoutExpandedFolders.has(courseFolderId);
+                            
+                            if (courseFiles.length === 0) return null;
+                            
+                            return (
+                              <div key={courseFolderId}>
+                                {/* Course folder row */}
+                                <div
+                                  className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isCourseExpanded ? 'bg-[#252525]' : ''}`}
+                                  onClick={() => toggleFlyoutFolder(courseFolderId)}
+                                  data-testid={`flyout-folder-${courseFolderId}`}
+                                >
+                                  {isCourseExpanded ? (
+                                    <ChevronDown className="h-3 w-3 text-gray-500" />
+                                  ) : (
+                                    <ChevronRight className="h-3 w-3 text-gray-500" />
+                                  )}
+                                  {isCourseExpanded ? (
+                                    <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                                  ) : (
+                                    <FolderOpen className="h-4 w-4 text-yellow-600 fill-yellow-400" />
+                                  )}
+                                  <span className={`text-sm flex-1 ${course.color}`}>{course.name}</span>
+                                  <span className="text-xs text-gray-500">{courseFiles.length}</span>
+                                </div>
+                                
+                                {/* Content folders inside course */}
+                                {isCourseExpanded && (
+                                  <div className="ml-4">
+                                    {FLYOUT_CONTENT.map((content) => {
+                                      const contentFolderId = `${week.id}-${course.id}-${content.id}`;
+                                      const contentFiles = getFilesInFlyoutFolder(contentFolderId);
+                                      const isContentExpanded = flyoutExpandedFolders.has(contentFolderId);
+                                      
+                                      if (contentFiles.length === 0) return null;
+                                      
+                                      return (
+                                        <div key={contentFolderId}>
+                                          {/* Content folder row */}
+                                          <div
+                                            className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-[#2d2d2d] ${isContentExpanded ? 'bg-[#252525]' : ''}`}
+                                            onClick={() => toggleFlyoutFolder(contentFolderId)}
+                                            data-testid={`flyout-folder-${contentFolderId}`}
+                                          >
+                                            {isContentExpanded ? (
+                                              <ChevronDown className="h-3 w-3 text-gray-500" />
+                                            ) : (
+                                              <ChevronRight className="h-3 w-3 text-gray-500" />
+                                            )}
+                                            {isContentExpanded ? (
+                                              <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                                            ) : (
+                                              <FolderOpen className="h-4 w-4 text-yellow-600 fill-yellow-400" />
+                                            )}
+                                            <span className="text-sm flex-1">{content.name}</span>
+                                            <span className="text-xs text-gray-500">{contentFiles.length}</span>
+                                          </div>
+                                          
+                                          {/* Files inside content folder */}
+                                          {isContentExpanded && (
+                                            <div className="ml-4 space-y-1 py-1">
+                                              {contentFiles.map((file) => (
+                                                <div
+                                                  key={file.id}
+                                                  draggable
+                                                  onDragStart={(e) => {
+                                                    e.dataTransfer.setData('application/json', JSON.stringify({ 
+                                                      url: file.objectPath, 
+                                                      name: file.displayName || file.originalName 
+                                                    }));
+                                                    setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
+                                                  }}
+                                                  onDragEnd={() => setDraggedFile(null)}
+                                                  className="flex items-center gap-2 px-2 py-1 hover:bg-[#2d2d2d] cursor-pointer rounded"
+                                                  onClick={() => setPreviewFile(file)}
+                                                  data-testid={`flyout-file-${file.id}`}
+                                                >
+                                                  <Checkbox
+                                                    checked={file.listened || false}
+                                                    onCheckedChange={async (checked) => {
+                                                      try {
+                                                        await fetch(`/api/files/${file.id}`, {
+                                                          method: 'PATCH',
+                                                          headers: { 'Content-Type': 'application/json' },
+                                                          body: JSON.stringify({ listened: checked === true })
+                                                        });
+                                                        queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                      } catch (err) {
+                                                        console.error('Failed to update listened status:', err);
+                                                      }
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    className="h-3 w-3 border border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                                    data-testid={`checkbox-listened-flyout-${file.id}`}
+                                                  />
+                                                  <FileText className="h-3 w-3 text-gray-400 shrink-0" />
+                                                  <span className={`text-xs truncate flex-1 hover:underline ${file.listened ? 'line-through text-gray-500' : 'text-gray-300'}`}>
+                                                    {file.displayName || file.originalName}
+                                                  </span>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
+                
                 {weeklyFiles.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
                     <FolderOpen className="h-12 w-12 mx-auto mb-2 opacity-50 text-yellow-600" />
