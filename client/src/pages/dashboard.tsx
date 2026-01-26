@@ -5204,12 +5204,6 @@ export default function Dashboard() {
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
-                {/* Time column resize handle */}
-                <div 
-                  className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
-                  onMouseDown={(e) => handleColumnResizeStart(e, -1)}
-                  data-testid="resize-time-column"
-                />
               </div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
@@ -5245,12 +5239,6 @@ export default function Dashboard() {
                       </div>
                       <div className="text-xs font-medium tracking-wide text-white/80">{dayName}</div>
                     </div>
-                    {/* Column resize handle */}
-                    <div 
-                      className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
-                      onMouseDown={(e) => handleColumnResizeStart(e, idx)}
-                      data-testid={`resize-column-${idx}`}
-                    />
                   </div>
                 );
               })}
@@ -5260,11 +5248,6 @@ export default function Dashboard() {
             <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
               <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
-                {/* Time column resize handle */}
-                <div 
-                  className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
-                  onMouseDown={(e) => handleColumnResizeStart(e, -1)}
-                />
               </div>
               {/* Day cells */}
               {weekDays.map((day, dayIdx) => {
@@ -5335,13 +5318,7 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Row resize handle at bottom */}
-              <div 
-                className="absolute left-0 right-0 bottom-0 h-[2px] cursor-row-resize hover:bg-blue-400/50 z-50"
-                onMouseDown={(e) => handleRowResizeStart(e, 'allDay')}
-                data-testid="resize-allday-row"
-              />
-            </div>
+              </div>
             
                           
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
@@ -5353,11 +5330,6 @@ export default function Dashboard() {
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {course.name}
-                    {/* Time column resize handle */}
-                    <div 
-                      className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
-                      onMouseDown={(e) => handleColumnResizeStart(e, -1)}
-                    />
                   </div>
                   {weekDays.map((day, dayIdx) => {
                     // Get prep tasks for this course and day
@@ -5499,26 +5471,13 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
-                  {/* Row resize handle at bottom of last course row */}
-                  {courseIdx === 2 && (
-                    <div 
-                      className="absolute left-0 right-0 bottom-0 h-[2px] cursor-row-resize hover:bg-blue-400/50 z-50"
-                      onMouseDown={(e) => handleRowResizeStart(e, 'course')}
-                      data-testid="resize-course-row"
-                    />
-                  )}
-                </div>
+                  </div>
               ))}
               
               {/* OTHER Row - For tasks without a course */}
               <div className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
                 <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                   OTHER
-                  {/* Time column resize handle */}
-                  <div 
-                    className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize hover:bg-blue-400/50 z-50"
-                    onMouseDown={(e) => handleColumnResizeStart(e, -1)}
-                  />
                 </div>
                 {weekDays.map((day, dayIdx) => {
                   // Get prep tasks without a course
@@ -5934,14 +5893,6 @@ export default function Dashboard() {
             </div>
                       </CardContent>
           </Card>
-                    {/* Resize Handle */}
-          <div
-            className={`absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize flex items-center justify-center hover:bg-muted/50 transition-colors ${isResizing ? 'bg-primary/20' : ''}`}
-            onMouseDown={handleResizeStart}
-            data-testid="calendar-resize-handle"
-          >
-            <div className="w-12 h-[2px] rounded-full bg-muted-foreground/40" />
-          </div>
           </div>
           
           {/* Inline Files Flyout - appears next to calendar */}
