@@ -3290,8 +3290,8 @@ export default function Dashboard() {
 
         {/* All items with equal gaps - spread between arrow and exam */}
         <div className="flex items-center flex-1 h-full min-w-0 overflow-hidden pl-[6px] pr-4">
-          {/* Icon buttons and task buttons evenly spaced */}
-          <div className="flex items-center flex-1 justify-between" style={{ gap: `${blinkSettings.buttonSpacing}px` }}>
+          {/* Icon buttons and task buttons with adjustable spacing */}
+          <div className="flex items-center flex-wrap" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
