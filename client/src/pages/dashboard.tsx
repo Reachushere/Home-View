@@ -4664,7 +4664,7 @@ export default function Dashboard() {
                     key={idx} 
                     className={`border-l border-border flex items-center justify-center h-full ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ 
-                      backgroundColor: isToday ? (hasTodayTasks && blinkSettings.todayColumnBlink ? undefined : 'rgba(93, 129, 204, 0.5)') : "black"
+                      backgroundColor: isToday ? (hasTodayTasks && blinkSettings.todayColumnBlink ? undefined : '#1a365d') : "black"
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
