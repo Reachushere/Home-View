@@ -7179,7 +7179,7 @@ function FileSelector({
 
   if (availableFiles.length === 0) {
     return (
-      <Button type="button" variant="outline" disabled className="flex-1" data-testid="button-select-file-empty">
+      <Button type="button" variant="outline" disabled className="flex-1 !text-black bg-white" data-testid="button-select-file-empty">
         <FolderOpen className="h-4 w-4 mr-2" />
         No Files
       </Button>
@@ -7188,7 +7188,7 @@ function FileSelector({
 
   return (
     <Select onValueChange={onSelect}>
-      <SelectTrigger className="flex-1" data-testid="select-existing-file">
+      <SelectTrigger className="flex-1 !text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-existing-file">
         <FolderOpen className="h-4 w-4 mr-2" />
         <SelectValue placeholder="Select File" />
       </SelectTrigger>
