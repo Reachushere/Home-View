@@ -7851,7 +7851,7 @@ function TaskForm({
         {/* Left Column */}
         <div className="space-y-5">
           <div>
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="text-[10px]">Title</Label>
             <Input
               id="title"
               value={formData.title}
@@ -7859,7 +7859,7 @@ function TaskForm({
               placeholder="Assignment title"
               required
               data-testid="input-title"
-              className="!text-black bg-white"
+              className="!text-black bg-white text-[10px] h-7"
             />
           </div>
 
