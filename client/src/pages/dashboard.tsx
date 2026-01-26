@@ -5354,11 +5354,11 @@ export default function Dashboard() {
               <Calendar className="h-3 w-3 text-white" />
               TODAY ({dueTodayTasks.length})
             </h4>
-            <div className="flex-1 p-3">
+            <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="text-white/60 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
-                <div className="text-white/60 text-xs">No tasks today</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks today</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueTodayTasks.map((task, idx) => {
@@ -5386,11 +5386,11 @@ export default function Dashboard() {
               <Calendar className="h-3 w-3 text-white" />
               TOMORROW ({dueTomorrowTasks.length})
             </h4>
-            <div className="flex-1 p-3">
+            <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="text-white/60 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
-                <div className="text-white/60 text-xs">No tasks tomorrow</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueTomorrowTasks.map((task, idx) => {
