@@ -8255,7 +8255,6 @@ function TaskForm({
             />
             <Button
               type="button"
-              variant="outline"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
               className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40"
@@ -8286,7 +8285,7 @@ function TaskForm({
             />
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 mt-4">
             <Input
               value={newAttachment}
               onChange={(e) => setNewAttachment(e.target.value)}
