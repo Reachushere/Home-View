@@ -3498,7 +3498,7 @@ export default function Dashboard() {
                     >
                       <VolumeX className="h-4 w-4" />
                     </Button>
-                    <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
+                    <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-blue-500 rounded-full transition-all duration-200" 
                         style={{ width: `${radioVolume}%` }}
