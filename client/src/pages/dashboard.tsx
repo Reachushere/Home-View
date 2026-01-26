@@ -3395,11 +3395,11 @@ export default function Dashboard() {
                 </div>
 
                 {/* Play/Stop Buttons */}
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 items-center">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_10px_rgba(59,130,246,0.4)] hover:shadow-[0_0_15px_rgba(59,130,246,0.6)] transition-all duration-200"
+                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/play-radio', {
@@ -3422,13 +3422,13 @@ export default function Dashboard() {
                     }}
                     data-testid="button-play-chumfm"
                   >
-                    <Play className="h-3 w-3 mr-1.5" />
+                    <Play className="h-2 w-2 mr-1" />
                     Play CHUM FM (select)
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_10px_rgba(59,130,246,0.4)] hover:shadow-[0_0_15px_rgba(59,130,246,0.6)] transition-all duration-200"
+                    className="h-6 w-[155px] text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/play-radio-all', {
@@ -3447,13 +3447,13 @@ export default function Dashboard() {
                     }}
                     data-testid="button-play-chumfm-all"
                   >
-                    <Play className="h-3 w-3 mr-1.5" />
+                    <Play className="h-2 w-2 mr-1" />
                     Play CHUM FM (on all)
                   </Button>
                   <Button
                     variant="destructive"
                     size="sm"
-                    className="w-full text-[10px]"
+                    className="h-6 w-[155px] text-[9px]"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/stop-radio', {
@@ -3469,7 +3469,7 @@ export default function Dashboard() {
                     }}
                     data-testid="button-stop-radio"
                   >
-                    <Square className="h-3 w-3 mr-1.5 fill-current" />
+                    <Square className="h-1.5 w-1.5 mr-1 fill-current" />
                     Stop
                   </Button>
                 </div>
