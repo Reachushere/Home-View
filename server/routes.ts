@@ -1975,39 +1975,37 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // List all Echo entities like the entrance announcement format
-      const allEntities = [
+      // Use notify.alexa_media like we do for TTS - this is proven to work
+      // Target multiple devices with dash format like entrance announcement
+      const targetDevices = [
         "media_player.byhome",
         "media_player.echo_lr_studio_white_am",
         "media_player.echo_kitchen_studio_black_am",
-        "media_player.echo_lr_hub_am",
-        "media_player.echo_show_pug_am",
-        "media_player.everywhere_2"
+        "media_player.echo_lr_hub_am"
       ];
       
-      const targetEntity = entityId || allEntities;
+      console.log(`Attempting to play CHUM FM via notify.alexa_media`);
       
-      // Use media_player.play_media with "custom" type - sends text command like voice
-      console.log(`Attempting to play radio on entities:`, targetEntity);
-      
-      // Use "custom" media type which sends command text like you would say to Alexa
-      const playResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+      // Try using notify.alexa_media with the "command" data type
+      const notifyResponse = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: targetEntity,
-          media_content_id: "play CHUM FM",
-          media_content_type: "custom"
+          message: "play CHUM FM on TuneIn",
+          target: targetDevices,
+          data: {
+            type: "command"
+          }
         }),
       });
       
-      const playResponseText = await playResponse.text();
-      console.log(`media_player.play_media custom response (${playResponse.status}):`, playResponseText);
+      const notifyResponseText = await notifyResponse.text();
+      console.log(`notify.alexa_media command response (${notifyResponse.status}):`, notifyResponseText);
 
-      console.log(`Playing CHUM FM on entities`);
+      console.log(`Playing CHUM FM via notify service`);
       res.json({ success: true });
     } catch (error) {
       console.error("Play radio error:", error);
