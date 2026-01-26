@@ -3475,7 +3475,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Volume Controls */}
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-1.5 mt-2">
                   <Label className="text-white text-[10px]">Volume: {radioVolume}%</Label>
                   <div className="flex items-center gap-1">
                     <button
