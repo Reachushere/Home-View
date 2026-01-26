@@ -4919,7 +4919,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-3 mt-[5px] relative flex" style={{ height: calendarHeight, order: 2 }}>
+        <div className="mb-3 mt-[5px] relative flex gap-4" style={{ height: calendarHeight, order: 2 }}>
           {/* Files Flyout Toggle Tab - sticks to right edge */}
           {!isFilesFlyoutOpen && (
             <div
@@ -6081,49 +6081,6 @@ export default function Dashboard() {
           
           return (
         <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }}>
-          {/* Due Today */}
-          <section 
-            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('today') + 1 }} 
-            data-testid="section-due-today"
-            onDragOver={(e) => handleBoxDragOver(e, 'today')}
-          >
-            <h4 
-              className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
-              draggable
-              onDragStart={() => handleBoxDragStart('today')}
-              onDragEnd={handleBoxDragEnd}
-            >
-              <Calendar className="h-3 w-3 text-white" />
-              TODAY ({dueTodayTasks.length})
-            </h4>
-            <div className="flex-1 p-3 flex flex-col">
-              {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
-              ) : dueTodayTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks today</div>
-              ) : (
-                <div className="space-y-0.5">
-                  {dueTodayTasks.map((task, idx) => {
-                    const prevTask = idx > 0 ? dueTodayTasks[idx - 1] : null;
-                    const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
-                    return (
-                      <div key={task.id}>
-                        {showCourseHeader && (
-                          <div className="text-[10px] text-black font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
-                            {task.courseName}
-                          </div>
-                        )}
-                        {renderTask(task, false)}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </section>
-
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
@@ -6150,6 +6107,49 @@ export default function Dashboard() {
                 <div className="space-y-0.5">
                   {dueTomorrowTasks.map((task, idx) => {
                     const prevTask = idx > 0 ? dueTomorrowTasks[idx - 1] : null;
+                    const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
+                    return (
+                      <div key={task.id}>
+                        {showCourseHeader && (
+                          <div className="text-[10px] text-black font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                            {task.courseName}
+                          </div>
+                        )}
+                        {renderTask(task, false)}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Due Today */}
+          <section 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('today') + 1 }} 
+            data-testid="section-due-today"
+            onDragOver={(e) => handleBoxDragOver(e, 'today')}
+          >
+            <h4 
+              className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
+              draggable
+              onDragStart={() => handleBoxDragStart('today')}
+              onDragEnd={handleBoxDragEnd}
+            >
+              <Calendar className="h-3 w-3 text-white" />
+              TODAY ({dueTodayTasks.length})
+            </h4>
+            <div className="flex-1 p-3 flex flex-col">
+              {isLoading ? (
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
+              ) : dueTodayTasks.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks today</div>
+              ) : (
+                <div className="space-y-0.5">
+                  {dueTodayTasks.map((task, idx) => {
+                    const prevTask = idx > 0 ? dueTodayTasks[idx - 1] : null;
                     const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
                     return (
                       <div key={task.id}>
