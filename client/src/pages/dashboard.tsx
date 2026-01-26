@@ -4919,7 +4919,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-3 mt-[6px] relative flex" style={{ height: calendarHeight, order: 2 }}>
+        <div className="mb-3 mt-[5px] relative flex" style={{ height: calendarHeight, order: 2 }}>
           {/* Files Flyout Toggle Tab - sticks to right edge */}
           {!isFilesFlyoutOpen && (
             <div
