@@ -1976,11 +1976,11 @@ export async function registerRoutes(
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const targetEntity = entityId || "media_player.byhome";
       
-      // Use alexa_media.play_media service (specific to Alexa Media Player integration)
+      // Use media_player.play_media with TUNEIN - exact format from documentation
       console.log(`Attempting to play radio on ${targetEntity}`);
       
-      // Try alexa_media.play_media service with TuneIn station
-      const playResponse = await fetch(`${haUrl}/api/services/alexa_media/play_media`, {
+      // Use the exact format that works: station name with TUNEIN type
+      const playResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
@@ -1988,33 +1988,13 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           entity_id: targetEntity,
-          media_id: "CHUM FM",
-          media_type: "TUNEIN"
+          media_content_id: "CHUM 104.5",
+          media_content_type: "TUNEIN"
         }),
       });
       
       const playResponseText = await playResponse.text();
-      console.log(`alexa_media.play_media response (${playResponse.status}):`, playResponseText);
-
-      if (!playResponse.ok) {
-        // Try with media_player.play_media and media_content_id format
-        console.log("alexa_media.play_media failed, trying media_player.play_media...");
-        const mpResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: targetEntity,
-            media_content_id: "play CHUM FM",
-            media_content_type: "AMAZON_MUSIC"
-          }),
-        });
-        
-        const mpResponseText = await mpResponse.text();
-        console.log(`media_player.play_media response (${mpResponse.status}):`, mpResponseText);
-      }
+      console.log(`media_player.play_media TUNEIN response (${playResponse.status}):`, playResponseText);
 
       console.log(`Playing CHUM FM on ${targetEntity}`);
       res.json({ success: true });
