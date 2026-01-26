@@ -1974,10 +1974,9 @@ export async function registerRoutes(
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const targetEntity = entityId || "media_player.byhome";
+      const targetEntity = entityId || "media_player.echo_king_l_am";
       
-      // Try using notify.alexa_media service to send a voice command
-      // This is the most reliable way to trigger TuneIn playback on Alexa
+      // Use notify.alexa_media service to send a voice command (same format as user's working automation)
       const notifyResponse = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -1985,11 +1984,11 @@ export async function registerRoutes(
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          target: targetEntity,
           message: "play CHUM FM on TuneIn",
           data: {
             type: "tts"
-          }
+          },
+          target: [targetEntity]
         }),
       });
 
