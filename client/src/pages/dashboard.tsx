@@ -3047,10 +3047,6 @@ export default function Dashboard() {
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-files" onClick={() => window.location.href = '/files'}>
-                <FolderOpen className="h-4 w-4 mr-2" />
-                Files
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
