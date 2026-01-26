@@ -3479,7 +3479,7 @@ export default function Dashboard() {
                   <Label className="text-white text-[10px]">Volume: {radioVolume}%</Label>
                   <div className="flex items-center gap-1">
                     <button
-                      className="text-white hover:text-white/70 text-lg font-bold px-1"
+                      className="text-white hover:text-white/70 text-base px-1"
                       onClick={async () => {
                         try {
                           const res = await fetch('/api/media/volume', {
@@ -3506,7 +3506,7 @@ export default function Dashboard() {
                       />
                     </div>
                     <button
-                      className="text-white hover:text-white/70 text-lg font-bold px-1"
+                      className="text-white hover:text-white/70 text-base px-1"
                       onClick={async () => {
                         try {
                           const res = await fetch('/api/media/volume', {
