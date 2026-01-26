@@ -5463,8 +5463,8 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {/* Row resize handle at bottom of first time slot only */}
-                    {hourIdx === 0 && (
+                    {/* Row resize handle at bottom of last time slot only */}
+                    {hourIdx === timeSlots.length - 1 && (
                       <div 
                         className="absolute left-0 right-0 bottom-0 h-1 cursor-row-resize hover:bg-blue-400/50 z-50"
                         onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
