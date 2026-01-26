@@ -7851,7 +7851,7 @@ function TaskForm({
         {/* Left Column */}
         <div className="space-y-6">
           <div>
-            <Label htmlFor="title" className="text-[10px]">Title</Label>
+            <Label htmlFor="title" className="text-xs">Title</Label>
             <Input
               id="title"
               value={formData.title}
@@ -7859,15 +7859,15 @@ function TaskForm({
               placeholder="Assignment title"
               required
               data-testid="input-title"
-              className="!text-black bg-white text-[10px] h-7"
+              className="!text-black bg-white text-xs h-8"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="courseName">Course</Label>
+              <Label htmlFor="courseName" className="text-xs">Course</Label>
               <Select value={formData.courseName} onValueChange={(v) => setFormData(prev => ({ ...prev, courseName: v }))}>
-                <SelectTrigger className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-course">
+                <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }} data-testid="select-course">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -7899,9 +7899,9 @@ function TaskForm({
             </div>
 
             <div>
-              <Label htmlFor="type">Type</Label>
+              <Label htmlFor="type" className="text-xs">Type</Label>
               <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
-                <SelectTrigger className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-type">
+                <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }} data-testid="select-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -7916,12 +7916,12 @@ function TaskForm({
           </div>
 
           <div>
-            <Label htmlFor="dueDate">Due Date</Label>
+            <Label htmlFor="dueDate" className="text-xs">Due Date</Label>
             <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal"
+                  className="w-full justify-start text-left font-normal text-xs h-8"
                   data-testid="input-duedate"
                 >
                   <CalendarDays className="mr-2 h-4 w-4" />
@@ -8000,29 +8000,29 @@ function TaskForm({
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label htmlFor="eventStartTime">Start</Label>
+              <Label htmlFor="eventStartTime" className="text-xs">Start</Label>
               <Input
                 id="eventStartTime"
                 type="time"
                 value={formData.eventStartTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
                 data-testid="input-start-time"
-                className="!text-black bg-white"
+                className="!text-black bg-white text-xs h-8"
               />
             </div>
             <div>
-              <Label htmlFor="eventEndTime">End</Label>
+              <Label htmlFor="eventEndTime" className="text-xs">End</Label>
               <Input
                 id="eventEndTime"
                 type="time"
                 value={formData.eventEndTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
                 data-testid="input-end-time"
-                className="!text-black bg-white"
+                className="!text-black bg-white text-xs h-8"
               />
             </div>
             <div>
-              <Label htmlFor="prepDays">Prep Days</Label>
+              <Label htmlFor="prepDays" className="text-xs">Prep Days</Label>
               <Input
                 id="prepDays"
                 type="number"
@@ -8032,19 +8032,19 @@ function TaskForm({
                 onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
                 placeholder="0"
                 data-testid="input-prepdays"
-                className="!text-black bg-white"
+                className="!text-black bg-white text-xs h-8"
               />
             </div>
           </div>
 
           <div>
-            <Label>Reminders</Label>
+            <Label className="text-xs">Reminders</Label>
             <div className="grid grid-cols-4 gap-2">
               <Select 
                 value={String(formData.reminder1)} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, reminder1: parseInt(v) }))}
               >
-                <SelectTrigger data-testid="select-reminder1" className="text-xs !text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-reminder1" className="text-xs !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -8059,7 +8059,7 @@ function TaskForm({
                 value={String(formData.reminder2)} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, reminder2: parseInt(v) }))}
               >
-                <SelectTrigger data-testid="select-reminder2" className="text-xs !text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-reminder2" className="text-xs !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -8074,7 +8074,7 @@ function TaskForm({
                 value={String(formData.reminder3)} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, reminder3: parseInt(v) }))}
               >
-                <SelectTrigger data-testid="select-reminder3" className="text-xs !text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-reminder3" className="text-xs !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -8089,7 +8089,7 @@ function TaskForm({
                 value={String(formData.reminder4)} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, reminder4: parseInt(v) }))}
               >
-                <SelectTrigger data-testid="select-reminder4" className="text-xs !text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-reminder4" className="text-xs !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -8108,9 +8108,9 @@ function TaskForm({
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="priority">Priority</Label>
+              <Label htmlFor="priority" className="text-xs">Priority</Label>
               <Select value={formData.priority} onValueChange={(v) => setFormData(prev => ({ ...prev, priority: v }))}>
-                <SelectTrigger data-testid="select-priority" className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-priority" className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -8121,7 +8121,7 @@ function TaskForm({
               </Select>
             </div>
             <div>
-              <Label>Repeat</Label>
+              <Label className="text-xs">Repeat</Label>
               <Select 
                 value={formData.repeatType} 
                 onValueChange={(v) => setFormData(prev => ({ 
@@ -8129,7 +8129,7 @@ function TaskForm({
                   repeatType: v as typeof REPEAT_TYPES[number]
                 }))}
               >
-                <SelectTrigger data-testid="select-repeat-type" className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-repeat-type" className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }}>
                   <SelectValue placeholder="No repeat" />
                 </SelectTrigger>
                 <SelectContent>
@@ -8154,7 +8154,7 @@ function TaskForm({
                   value={formData.repeatInterval}
                   onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
                   data-testid="input-repeat-interval"
-                  className="!text-black bg-white"
+                  className="!text-black bg-white text-xs h-8"
                 />
               </div>
               <div>
@@ -8166,7 +8166,7 @@ function TaskForm({
                     repeatIntervalUnit: v as typeof REPEAT_INTERVAL_UNITS[number]
                   }))}
                 >
-                  <SelectTrigger data-testid="select-repeat-unit" className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
+                  <SelectTrigger data-testid="select-repeat-unit" className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -8186,13 +8186,13 @@ function TaskForm({
                 value={formData.repeatEndDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
                 data-testid="input-repeat-end-date"
-                className="!text-black bg-white"
+                className="!text-black bg-white text-xs h-8"
               />
             </div>
           )}
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="text-xs">Description</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -8200,12 +8200,12 @@ function TaskForm({
               placeholder="Add notes or details..."
               rows={3}
               data-testid="input-description"
-              className="!text-black bg-white"
+              className="!text-black bg-white text-xs"
             />
           </div>
 
           <div>
-            <Label htmlFor="referenceLink">Reference Link</Label>
+            <Label htmlFor="referenceLink" className="text-xs">Reference Link</Label>
             <Input
               id="referenceLink"
               type="url"
@@ -8213,14 +8213,14 @@ function TaskForm({
               onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
               placeholder="https://example.com"
               data-testid="input-reference-link"
-              className="!text-black bg-white"
+              className="!text-black bg-white text-xs h-8"
             />
           </div>
         </div>
       </div>
 
       <div>
-        <Label>Attachments (optional)</Label>
+        <Label className="text-xs">Attachments (optional)</Label>
         <div className="space-y-2">
           {formData.attachments.map((attachment, idx) => (
             <div key={idx} className="flex items-center gap-2 text-sm">
