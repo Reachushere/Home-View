@@ -6131,7 +6131,7 @@ export default function Dashboard() {
                       <span className="text-[11px] text-white font-normal">
                         {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')}
                       </span>
-                      <div className="working-indicator" title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}>
+                      <div className="working-indicator" style={{ backgroundColor: '#01a0af', minWidth: '32px', minHeight: '32px' }} title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}>
                         <div className="circle"></div>
                         <div className="circle"></div>
                         <div className="circle"></div>
