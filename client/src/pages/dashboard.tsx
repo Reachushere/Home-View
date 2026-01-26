@@ -5716,25 +5716,49 @@ export default function Dashboard() {
                 
                 {/* Folder Tree Structure - Full hierarchy */}
                 <div className="space-y-0">
-                  {FLYOUT_WEEKS.map((week) => {
-                    const weekFiles = getFilesInFlyoutWeek(week.id);
-                    const isWeekExpanded = flyoutExpandedFolders.has(week.id);
-                    const hasFiles = weekFiles.length > 0;
+                  {(() => {
+                    // Get current week number based on today's date
+                    const today = new Date();
+                    const currentWeekData = weeks.find(w => {
+                      const start = new Date(w.startDate);
+                      const end = new Date(w.endDate);
+                      return today >= start && today <= end;
+                    });
+                    const currentWeekNum = currentWeekData?.weekNumber || selectedWeek;
                     
-                    if (!hasFiles) return null;
+                    // Sort weeks: current and future first, then past weeks at bottom
+                    const sortedWeeks = [...FLYOUT_WEEKS].sort((a, b) => {
+                      const aNum = parseInt(a.id.replace('week-', ''));
+                      const bNum = parseInt(b.id.replace('week-', ''));
+                      const aIsPast = aNum < currentWeekNum;
+                      const bIsPast = bNum < currentWeekNum;
+                      
+                      if (aIsPast && !bIsPast) return 1; // a goes after b
+                      if (!aIsPast && bIsPast) return -1; // a goes before b
+                      return aNum - bNum; // normal order within groups
+                    });
                     
-                    return (
-                      <div key={week.id}>
-                        {/* Week folder row */}
-                        <div 
-                          className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
-                          onClick={() => toggleFlyoutFolder(week.id)}
-                        >
-                          {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
-                          {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                          <span className="text-[11px] text-white/90 truncate flex-1">{week.name}</span>
-                          <span className="text-[10px] text-white/40">{weekFiles.length}</span>
-                        </div>
+                    return sortedWeeks.map((week) => {
+                      const weekNum = parseInt(week.id.replace('week-', ''));
+                      const isPastWeek = weekNum < currentWeekNum;
+                      const weekFiles = getFilesInFlyoutWeek(week.id);
+                      const isWeekExpanded = flyoutExpandedFolders.has(week.id);
+                      const hasFiles = weekFiles.length > 0;
+                      
+                      if (!hasFiles) return null;
+                      
+                      return (
+                        <div key={week.id}>
+                          {/* Week folder row */}
+                          <div 
+                            className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                            onClick={() => toggleFlyoutFolder(week.id)}
+                          >
+                            {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
+                            {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
+                            <span className={`text-[11px] truncate flex-1 ${isPastWeek ? 'line-through text-white/50' : 'text-white/90'}`}>{week.name}</span>
+                            <span className="text-[10px] text-white/40">{weekFiles.length}</span>
+                          </div>
                         
                         {/* Course folders inside week */}
                         {isWeekExpanded && (
@@ -5837,7 +5861,8 @@ export default function Dashboard() {
                         )}
                       </div>
                     );
-                  })}
+                  });
+                })()}
                 </div>
               </div>
             </div>
