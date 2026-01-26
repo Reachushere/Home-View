@@ -1976,26 +1976,26 @@ export async function registerRoutes(
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const targetEntity = entityId || "media_player.byhome";
       
-      // Use alexa_media_player's native routine/command approach
-      // Send a voice command to Alexa to play the radio station
-      const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+      // Try using notify.alexa_media service to send a voice command
+      // This is the most reliable way to trigger TuneIn playback on Alexa
+      const notifyResponse = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          entity_id: targetEntity,
-          media_content_id: "play CHUM FM",
-          media_content_type: "custom"
+          target: targetEntity,
+          message: "play CHUM FM on TuneIn",
+          data: {
+            type: "tts"
+          }
         }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Home Assistant play radio error:", errorText);
-        // Try fallback with routine command
-        const fallbackResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+      if (!notifyResponse.ok) {
+        // Fallback: Try using alexa_media_player sequence command
+        const sequenceResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
@@ -2008,8 +2008,38 @@ export async function registerRoutes(
           }),
         });
         
-        if (!fallbackResponse.ok) {
-          return res.status(response.status).json({ error: "Failed to play radio", details: errorText });
+        if (!sequenceResponse.ok) {
+          // Final fallback: Try routine service
+          const routineResponse = await fetch(`${haUrl}/api/services/alexa_media/update_last_called`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity_id: targetEntity
+            }),
+          });
+          
+          // Then try play_media with MUSIC type
+          const musicResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              entity_id: targetEntity,
+              media_content_id: "CHUM FM",
+              media_content_type: "MUSIC"
+            }),
+          });
+          
+          if (!musicResponse.ok) {
+            const errorText = await musicResponse.text();
+            console.error("All radio playback attempts failed:", errorText);
+            return res.status(500).json({ error: "Failed to play radio", details: errorText });
+          }
         }
       }
 
