@@ -7179,8 +7179,8 @@ function FileSelector({
 
   if (availableFiles.length === 0) {
     return (
-      <Button type="button" variant="outline" disabled className="flex-1 !text-black bg-white" data-testid="button-select-file-empty">
-        <FolderOpen className="h-4 w-4 mr-2" />
+      <Button type="button" variant="outline" disabled className="flex-1 !text-black bg-white h-8" style={{ fontSize: '12px' }} data-testid="button-select-file-empty">
+        <FolderOpen className="h-3 w-3 mr-1" />
         No Files
       </Button>
     );
@@ -7188,8 +7188,8 @@ function FileSelector({
 
   return (
     <Select onValueChange={onSelect}>
-      <SelectTrigger className="flex-1 !text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-existing-file">
-        <FolderOpen className="h-4 w-4 mr-2" />
+      <SelectTrigger className="flex-1 !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black', fontSize: '12px' }} data-testid="select-existing-file">
+        <FolderOpen className="h-3 w-3 mr-1" />
         <SelectValue placeholder="Select File" />
       </SelectTrigger>
       <SelectContent>
@@ -7859,7 +7859,8 @@ function TaskForm({
               placeholder="Assignment title"
               required
               data-testid="input-title"
-              className="!text-black bg-white text-xs h-8"
+              className="!text-black bg-white h-8"
+              style={{ fontSize: '12px' }}
             />
           </div>
 
@@ -8257,17 +8258,18 @@ function TaskForm({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40"
+              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8"
+              style={{ fontSize: '12px' }}
               data-testid="button-upload-file"
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
                   Uploading...
                 </>
               ) : (
                 <>
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload className="h-3 w-3 mr-1" />
                   Upload New
                 </>
               )}
@@ -8297,6 +8299,8 @@ function TaskForm({
             <Button
               type="button"
               variant="outline"
+              className="h-8"
+              style={{ fontSize: '12px' }}
               onClick={() => {
                 if (newAttachment.trim()) {
                   setFormData(prev => ({
@@ -8315,7 +8319,7 @@ function TaskForm({
       </div>
 
       <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={createMutation.isPending} className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40" data-testid="button-submit-task">
+        <Button type="submit" disabled={createMutation.isPending} className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8" style={{ fontSize: '12px' }} data-testid="button-submit-task">
           {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
         </Button>
       </div>
