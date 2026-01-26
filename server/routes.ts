@@ -1975,8 +1975,8 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Use just one device - the living room studio white which worked
-      const device = "media_player.echo_lr_studio_white_am";
+      // Use the entity passed from the frontend
+      const device = entityId || "media_player.echo_lr_studio_white_am";
       
       console.log(`Playing CHUM FM on ${device}`);
       
@@ -2000,6 +2000,48 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Play radio error:", error);
       res.status(500).json({ error: "Failed to play radio" });
+    }
+  });
+
+  // POST /api/media/play-radio-all - Play radio on ALL Echo devices
+  app.post("/api/media/play-radio-all", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(400).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // All Echo devices
+      const devices = [
+        "media_player.echo_lr_studio_white_am",
+        "media_player.echo_show_pug_am",
+        "media_player.echo_lr_hub_am",
+        "media_player.cat_wr"
+      ];
+      
+      console.log(`Playing CHUM FM on ALL devices: ${devices.join(', ')}`);
+      
+      for (const device of devices) {
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: device,
+            media_content_id: "play CHUM FM on TuneIn",
+            media_content_type: "custom"
+          }),
+        });
+      }
+      
+      console.log(`All devices started`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Play radio all error:", error);
+      res.status(500).json({ error: "Failed to play radio on all devices" });
     }
   });
 

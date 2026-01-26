@@ -3394,23 +3394,69 @@ export default function Dashboard() {
                 </div>
 
                 {/* Play/Stop Buttons */}
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-200"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/media/play-radio', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                              stationId: 'CHUM FM',
+                              entityId: selectedSpeaker
+                            })
+                          });
+                          if (response.ok) {
+                            const speakerName = selectedSpeaker.replace('media_player.', '').replace(/_/g, ' ');
+                            toast({ title: "Playing CHUM FM", description: `on ${speakerName}` });
+                          } else {
+                            toast({ title: "Failed to play radio", variant: "destructive" });
+                          }
+                        } catch (error) {
+                          toast({ title: "Error playing radio", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-play-chumfm"
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      Play CHUM FM
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch('/api/media/stop-radio', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                          });
+                          if (response.ok) {
+                            toast({ title: "Radio stopped" });
+                          }
+                        } catch (error) {
+                          toast({ title: "Error stopping radio", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-stop-radio"
+                    >
+                      <Square className="h-4 w-4 mr-2 fill-current" />
+                      Stop
+                    </Button>
+                  </div>
                   <Button
                     variant="outline"
-                    className="flex-1 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-200"
+                    className="w-full border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-200"
                     onClick={async () => {
                       try {
-                        const response = await fetch('/api/media/play-radio', {
+                        const response = await fetch('/api/media/play-radio-all', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ 
-                            stationId: 'CHUM FM',
-                            entityId: selectedSpeaker
-                          })
+                          body: JSON.stringify({ stationId: 'CHUM FM' })
                         });
                         if (response.ok) {
-                          const speakerName = selectedSpeaker.replace('media_player.', '').replace(/_/g, ' ');
-                          toast({ title: "Playing CHUM FM", description: `on ${speakerName}` });
+                          toast({ title: "Playing CHUM FM", description: "on all devices" });
                         } else {
                           toast({ title: "Failed to play radio", variant: "destructive" });
                         }
@@ -3418,30 +3464,10 @@ export default function Dashboard() {
                         toast({ title: "Error playing radio", variant: "destructive" });
                       }
                     }}
-                    data-testid="button-play-chumfm"
+                    data-testid="button-play-chumfm-all"
                   >
                     <Play className="h-4 w-4 mr-2" />
-                    Play CHUM FM
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch('/api/media/stop-radio', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                        });
-                        if (response.ok) {
-                          toast({ title: "Radio stopped" });
-                        }
-                      } catch (error) {
-                        toast({ title: "Error stopping radio", variant: "destructive" });
-                      }
-                    }}
-                    data-testid="button-stop-radio"
-                  >
-                    <Square className="h-4 w-4 mr-2 fill-current" />
-                    Stop
+                    Play CHUM FM on All
                   </Button>
                 </div>
                 
