@@ -1970,6 +1970,17 @@ export default function Dashboard() {
     },
   });
 
+  // General task update mutation (for courseName, startDate, etc.)
+  const updateTaskFieldsMutation = useMutation({
+    mutationFn: async ({ id, ...fields }: { id: number; [key: string]: any }) => {
+      return apiRequest("PATCH", `/api/tasks/${id}`, fields);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+    },
+  });
+
   // Mutation for creating new semester
   const createSemesterMutation = useMutation({
     mutationFn: async (data: typeof newSemesterForm) => {
@@ -2130,6 +2141,38 @@ export default function Dashboard() {
     } else if (draggedTask) {
       // Moving an existing task - include minutes for half-hour precision
       updateTaskTimeMutation.mutate({ id: draggedTask.id, newDate: day, newHour: hour, newMinutes: minutes });
+    }
+    
+    setDraggedTask(null);
+    setDragOverSlot(null);
+  };
+
+  // Handle dropping a task onto a course row
+  const handleCourseRowDrop = async (e: React.DragEvent, courseName: string, day: Date) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (draggedTask) {
+      // Find the full course info from coursesData
+      // The course.name already contains the full name like "CPPA122 - Local Politics"
+      const courseInfo = coursesData.courses.find((c) => c.name === courseName);
+      const fullCourseName = courseInfo?.name || courseName;
+      
+      // Calculate the start of the school week (Saturday, or Sunday if Saturday passed)
+      const today = new Date();
+      const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+      const saturdayPassed = todayDayOfWeek !== 6;
+      
+      // weekDays[0] is Saturday of the current week
+      // If Saturday passed, start from Sunday (weekDays[1])
+      const weekStartDay = saturdayPassed ? weekDays[1] : weekDays[0];
+      
+      // Update the task's courseName and set startDate to beginning of school week
+      updateTaskFieldsMutation.mutate({
+        id: draggedTask.id,
+        courseName: fullCourseName,
+        startDate: format(weekStartDay, "yyyy-MM-dd'T'HH:mm:ss"),
+      });
     }
     
     setDraggedTask(null);
@@ -5381,6 +5424,17 @@ export default function Dashboard() {
                           backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg
                         }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.currentTarget.style.backgroundColor = 'rgba(93, 129, 204, 0.5)';
+                        }}
+                        onDragLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg;
+                        }}
+                        onDrop={(e) => {
+                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg;
+                          handleCourseRowDrop(e, course.name, day);
+                        }}
                       >
                         {coursePrepTasks.map(task => {
                           const taskDueDate = startOfDay(new Date(task.dueDate));
