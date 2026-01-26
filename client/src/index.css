@@ -257,7 +257,7 @@
 }
 
 .animate-file-box-blink-fast {
-  animation: file-box-blink 1s ease-in-out infinite;
+  animation: file-box-blink 0.6s ease-in-out infinite;
   border-radius: 4px;
   padding-top: 2px;
   padding-bottom: 2px;
