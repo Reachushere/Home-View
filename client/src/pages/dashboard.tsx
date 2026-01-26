@@ -5549,7 +5549,7 @@ export default function Dashboard() {
             </div>
             {/* Time slot row resize handle - outside scroll container */}
             <div 
-              className="h-1 cursor-row-resize hover:bg-blue-400/50 z-50 flex-shrink-0"
+              className="h-2 cursor-row-resize bg-blue-200 hover:bg-blue-400 z-50 flex-shrink-0"
               onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
               data-testid="resize-timeslot-row"
             />
