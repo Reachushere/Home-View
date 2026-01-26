@@ -1966,11 +1966,30 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // All Echo devices (excluding lr studio)
+      // All Echo devices (excluding lr studio and lr couch left)
       const devices = [
-        "media_player.echo_show_pug_am",
+        "media_player.cat_wr",
+        "media_player.echo_cat_left_am",
+        "media_player.echo_cat_right_am",
+        "media_player.echo_cat_washroom_middle",
+        "media_player.echo_closet_am",
+        "media_player.echo_lr_couch_r_am",
+        "media_player.echo_hallway_entrance_am",
+        "media_player.echo_king_l_am",
+        "media_player.echo_king_r_am",
+        "media_player.echo_king_tv_am",
+        "media_player.echo_kitchen_cupboards_left_am",
+        "media_player.echo_kitchen_cupboards_r_am",
+        "media_player.echo_kitchen_fridge_am",
+        "media_player.echo_kitchen_hutch_am",
+        "media_player.echo_kitchen_island_corner_am",
+        "media_player.echo_kitchen_studio_black_am",
         "media_player.echo_lr_hub_am",
-        "media_player.cat_wr"
+        "media_player.echo_lr_tv_shelf_am",
+        "media_player.echo_queen_balcony_am",
+        "media_player.echo_queen_bed_l_am",
+        "media_player.echo_queen_bed_r_am",
+        "media_player.echo_show_pug_am"
       ];
       
       console.log(`Playing CHUM FM on ALL devices: ${devices.join(', ')}`);
