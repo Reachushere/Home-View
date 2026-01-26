@@ -347,16 +347,21 @@ export default function Dashboard() {
     todayColumnBlink: boolean;
     allDayFilesBlink: boolean;
     taskBoxFilesBlink: boolean;
-    blinkSpeed: number;
+    todayColumnBlinkSpeed: number;
+    allDayFilesBlinkSpeed: number;
+    taskBoxFilesBlinkSpeed: number;
     buttonSpacing: number;
   }>(() => {
     const saved = localStorage.getItem('blinkSettings');
-    return saved ? JSON.parse(saved) : {
-      todayColumnBlink: true,
-      allDayFilesBlink: true,
-      taskBoxFilesBlink: true,
-      blinkSpeed: 0.6,
-      buttonSpacing: 0
+    const parsed = saved ? JSON.parse(saved) : {};
+    return {
+      todayColumnBlink: parsed.todayColumnBlink ?? true,
+      allDayFilesBlink: parsed.allDayFilesBlink ?? true,
+      taskBoxFilesBlink: parsed.taskBoxFilesBlink ?? true,
+      todayColumnBlinkSpeed: parsed.todayColumnBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
+      allDayFilesBlinkSpeed: parsed.allDayFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
+      taskBoxFilesBlinkSpeed: parsed.taskBoxFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
+      buttonSpacing: parsed.buttonSpacing ?? 0
     };
   });
   
@@ -2389,13 +2394,13 @@ export default function Dashboard() {
       {/* Dynamic CSS for blink speed */}
       <style>{`
         .animate-file-box-blink-fast {
-          animation: file-box-blink ${blinkSettings.blinkSpeed}s ease-in-out infinite !important;
+          animation: file-box-blink ${blinkSettings.taskBoxFilesBlinkSpeed}s ease-in-out infinite !important;
         }
         .animate-file-blink {
-          animation: file-blink ${blinkSettings.blinkSpeed}s ease-in-out infinite !important;
+          animation: file-blink ${blinkSettings.allDayFilesBlinkSpeed}s ease-in-out infinite !important;
         }
         .animate-today-date {
-          animation: today-date-pulse ${blinkSettings.blinkSpeed}s ease-in-out infinite !important;
+          animation: today-date-pulse ${blinkSettings.todayColumnBlinkSpeed}s ease-in-out infinite !important;
         }
       `}</style>
       {/* New Semester Banner - Shows when past Week 13 */}
@@ -4325,58 +4330,101 @@ export default function Dashboard() {
                     Control blinking animations and button spacing.
                   </p>
                   
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Today Column Blink</Label>
-                      <input
-                        type="checkbox"
-                        checked={blinkSettings.todayColumnBlink}
-                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlink: e.target.checked }))}
-                        className="h-4 w-4 rounded border-gray-300"
-                        data-testid="toggle-today-column-blink"
-                      />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">All Day Files Blink</Label>
-                      <input
-                        type="checkbox"
-                        checked={blinkSettings.allDayFilesBlink}
-                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlink: e.target.checked }))}
-                        className="h-4 w-4 rounded border-gray-300"
-                        data-testid="toggle-allday-files-blink"
-                      />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Task Box Files Blink</Label>
-                      <input
-                        type="checkbox"
-                        checked={blinkSettings.taskBoxFilesBlink}
-                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, taskBoxFilesBlink: e.target.checked }))}
-                        className="h-4 w-4 rounded border-gray-300"
-                        data-testid="toggle-taskbox-files-blink"
-                      />
-                    </div>
-                    
-                    <div className="space-y-1 pt-2">
+                  <div className="space-y-3">
+                    {/* Today Column Blink */}
+                    <div className="border rounded p-2 space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label className="text-xs">Blink Speed</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.blinkSpeed}s</span>
+                        <Label className="text-xs font-medium">Today Column Blink</Label>
+                        <input
+                          type="checkbox"
+                          checked={blinkSettings.todayColumnBlink}
+                          onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlink: e.target.checked }))}
+                          className="h-4 w-4 rounded border-gray-300"
+                          data-testid="toggle-today-column-blink"
+                        />
                       </div>
-                      <input
-                        type="range"
-                        min="0.2"
-                        max="2"
-                        step="0.1"
-                        value={blinkSettings.blinkSpeed}
-                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, blinkSpeed: Number(e.target.value) }))}
-                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                        data-testid="slider-blink-speed"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Faster (0.2s) ← → Slower (2s)
-                      </p>
+                      {blinkSettings.todayColumnBlink && (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-[10px] text-muted-foreground">Speed</Label>
+                            <span className="text-[10px] text-muted-foreground">{blinkSettings.todayColumnBlinkSpeed}s</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0.2"
+                            max="2"
+                            step="0.1"
+                            value={blinkSettings.todayColumnBlinkSpeed}
+                            onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlinkSpeed: Number(e.target.value) }))}
+                            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer"
+                            data-testid="slider-today-column-speed"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* All Day Files Blink */}
+                    <div className="border rounded p-2 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs font-medium">All Day Files Blink</Label>
+                        <input
+                          type="checkbox"
+                          checked={blinkSettings.allDayFilesBlink}
+                          onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlink: e.target.checked }))}
+                          className="h-4 w-4 rounded border-gray-300"
+                          data-testid="toggle-allday-files-blink"
+                        />
+                      </div>
+                      {blinkSettings.allDayFilesBlink && (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-[10px] text-muted-foreground">Speed</Label>
+                            <span className="text-[10px] text-muted-foreground">{blinkSettings.allDayFilesBlinkSpeed}s</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0.2"
+                            max="2"
+                            step="0.1"
+                            value={blinkSettings.allDayFilesBlinkSpeed}
+                            onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlinkSpeed: Number(e.target.value) }))}
+                            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer"
+                            data-testid="slider-allday-files-speed"
+                          />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Task Box Files Blink */}
+                    <div className="border rounded p-2 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs font-medium">Task Box Files Blink</Label>
+                        <input
+                          type="checkbox"
+                          checked={blinkSettings.taskBoxFilesBlink}
+                          onChange={(e) => setBlinkSettings(prev => ({ ...prev, taskBoxFilesBlink: e.target.checked }))}
+                          className="h-4 w-4 rounded border-gray-300"
+                          data-testid="toggle-taskbox-files-blink"
+                        />
+                      </div>
+                      {blinkSettings.taskBoxFilesBlink && (
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <Label className="text-[10px] text-muted-foreground">Speed</Label>
+                            <span className="text-[10px] text-muted-foreground">{blinkSettings.taskBoxFilesBlinkSpeed}s</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="0.2"
+                            max="2"
+                            step="0.1"
+                            value={blinkSettings.taskBoxFilesBlinkSpeed}
+                            onChange={(e) => setBlinkSettings(prev => ({ ...prev, taskBoxFilesBlinkSpeed: Number(e.target.value) }))}
+                            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer"
+                            data-testid="slider-taskbox-files-speed"
+                          />
+                        </div>
+                      )}
                     </div>
                     
                     <div className="space-y-1 pt-2">
