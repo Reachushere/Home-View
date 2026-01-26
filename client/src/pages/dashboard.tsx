@@ -5289,7 +5289,7 @@ export default function Dashboard() {
                       return (
                         <button
                           key={idx}
-                          className="flex items-center gap-1.5 text-[10px] text-black cursor-pointer w-full animate-file-box-blink"
+                          className="flex items-center gap-1.5 text-[10px] text-black cursor-pointer w-full animate-file-box-blink pl-6"
                           onClick={() => {
                             if (matchingFile) {
                               setPreviewFile(matchingFile);
