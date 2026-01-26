@@ -1942,7 +1942,7 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           entity_id: device,
-          media_content_id: "play CHUM FM on TuneIn",
+          media_content_id: "play 104.5 chumfm",
           media_content_type: "custom"
         }),
       });
@@ -2003,7 +2003,7 @@ export async function registerRoutes(
           },
           body: JSON.stringify({
             entity_id: device,
-            media_content_id: "play CHUM FM on TuneIn",
+            media_content_id: "play 104.5 chumfm",
             media_content_type: "custom"
           }),
         });
