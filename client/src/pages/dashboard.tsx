@@ -2323,6 +2323,10 @@ export default function Dashboard() {
       const todayTaskIds = new Set(dueTodayTasks.map(t => t.id));
       const allTasksToConnect = [...dueTodayTasks, ...dueTomorrowTasks, ...dueThisWeekTasks];
       
+      // Get the task boxes container to start arrows from below it
+      const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
+      const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom : 0;
+      
       allTasksToConnect.forEach(task => {
         // Find the task card in the bottom boxes
         const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
@@ -2341,20 +2345,20 @@ export default function Dashboard() {
           else if (courseCode === "CFNF400") color = "#ec4899";
           else if (courseCode === "CASL101") color = "#6366f1";
           
-          // Start arrow from center of checkbox, or fall back to center of task box
+          // Get checkbox X position for starting point
           let fromX: number;
-          let fromY: number;
           if (checkboxEl) {
             const checkboxRect = checkboxEl.getBoundingClientRect();
             fromX = checkboxRect.left + checkboxRect.width / 2;
-            fromY = checkboxRect.bottom;
           } else {
             const boxRect = boxTaskEl.getBoundingClientRect();
             fromX = boxRect.left + boxRect.width / 2;
-            fromY = boxRect.bottom;
           }
           
-          // Arrow points to top of calendar entry (since boxes are now above calendar)
+          // Start arrow from just below the task boxes container (not from individual task)
+          const fromY = containerBottom + 5;
+          
+          // Arrow points to top of calendar entry
           let toY = calRect.top - 10;
           
           connections.push({
@@ -6368,7 +6372,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }}>
+        <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }} data-task-boxes-container="true">
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
