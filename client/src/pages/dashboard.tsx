@@ -474,6 +474,7 @@ export default function Dashboard() {
   // Grid size settings for resizable calendar columns and rows
   const [gridSizes, setGridSizes] = useState<{
     timeColumnWidth: number;
+    moduleColumnWidth: number;
     dayColumnWidths: number[];
     allDayRowHeight: number;
     courseRowHeight: number;
@@ -488,10 +489,15 @@ export default function Dashboard() {
       if (!parsed.timeSlotHeights) {
         parsed.timeSlotHeights = defaultHeights;
       }
+      // Ensure moduleColumnWidth exists for backwards compatibility
+      if (!parsed.moduleColumnWidth) {
+        parsed.moduleColumnWidth = 70;
+      }
       return parsed;
     }
     return {
       timeColumnWidth: 70,
+      moduleColumnWidth: 70,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 44,
       courseRowHeight: 24,
@@ -621,7 +627,7 @@ export default function Dashboard() {
   // Generate grid template columns based on sizes
   const getGridTemplateColumns = () => {
     const dayColumns = gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' ');
-    return `${gridSizes.timeColumnWidth}px ${dayColumns}`;
+    return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${dayColumns}`;
   };
   
   const [draggedBox, setDraggedBox] = useState<string | null>(null);
@@ -5198,12 +5204,15 @@ export default function Dashboard() {
           <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? 'w-[67%]' : 'w-full'}`}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
             {/* Friday/Saturday divider line */}
-            <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth}px))` }} />
+            <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
+              </div>
+              <div className="flex items-center justify-center relative border-l border-border" style={{ backgroundColor: colorSettings.headerBar }}>
+                <span className="text-xs font-medium tracking-wide text-white">MODULE</span>
               </div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
@@ -5249,6 +5258,7 @@ export default function Dashboard() {
               <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
+              <div className="border-l border-border/50" style={{ backgroundColor: 'rgba(156, 163, 175, 0.15)' }} />
               {/* Day cells */}
               {weekDays.map((day, dayIdx) => {
                 // Only show true all-day tasks (midnight due) and all-day calendar events - NO prep tasks here
@@ -5331,6 +5341,7 @@ export default function Dashboard() {
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {course.name}
                   </div>
+                  <div className="border-l border-border/50" style={{ backgroundColor: course.bg }} />
                   {weekDays.map((day, dayIdx) => {
                     // Get prep tasks for this course and day
                     const coursePrepTasks = weekPlanningTasks.filter(task => {
@@ -5479,6 +5490,7 @@ export default function Dashboard() {
                 <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                   OTHER
                 </div>
+                <div className="border-l border-border/50" style={{ backgroundColor: 'rgba(156, 163, 175, 0.25)' }} />
                 {weekDays.map((day, dayIdx) => {
                   // Get prep tasks without a course
                   const otherPrepTasks = weekPlanningTasks.filter(task => {
@@ -5627,6 +5639,7 @@ export default function Dashboard() {
                     <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
+                    <div className="border-l border-border/50" style={{ backgroundColor: isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : 'rgba(156, 163, 175, 0.15)' }} />
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
@@ -5856,8 +5869,8 @@ export default function Dashboard() {
                       }`}
                       style={{
                         top: `${topPx}px`,
-                        left: `calc(${gridSizes.timeColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth}px) / 7)) + 2px)`,
-                        width: `calc(((100% - ${gridSizes.timeColumnWidth}px) / 7) - 4px)`,
+                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
+                        width: `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25)
                       }}
