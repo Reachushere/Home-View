@@ -3369,9 +3369,9 @@ export default function Dashboard() {
                 <Radio className="h-[14px] w-[14px] text-white" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[400px]">
+            <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
+                <DialogTitle className="flex items-center gap-2 text-white text-sm">
                   <Radio className="h-5 w-5" />
                   Radio Controls
                 </DialogTitle>
@@ -3379,12 +3379,12 @@ export default function Dashboard() {
               <div className="flex flex-col gap-4 py-4">
                 {/* Speaker Selection */}
                 <div className="flex flex-col gap-2">
-                  <Label>Speaker</Label>
+                  <Label className="text-white">Speaker</Label>
                   <Select value={selectedSpeaker} onValueChange={setSelectedSpeaker}>
-                    <SelectTrigger data-testid="select-speaker">
+                    <SelectTrigger data-testid="select-speaker" className="bg-black/50 border-white/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-gray-900 border-white/20">
                       <SelectItem value="media_player.echo_lr_studio_white_am">LR Studio (White)</SelectItem>
                       <SelectItem value="media_player.echo_show_pug_am">Echo Show (Pug)</SelectItem>
                       <SelectItem value="media_player.echo_lr_hub_am">LR Hub</SelectItem>
@@ -3396,7 +3396,7 @@ export default function Dashboard() {
                 {/* Play/Stop Buttons */}
                 <div className="flex gap-2">
                   <Button
-                    className="flex-1"
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-200"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/play-radio', {
@@ -3446,11 +3446,12 @@ export default function Dashboard() {
                 
                 {/* Volume Controls */}
                 <div className="flex flex-col gap-2">
-                  <Label>Volume</Label>
+                  <Label className="text-white">Volume</Label>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="icon"
+                      className="border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
                           await fetch('/api/media/volume', {
@@ -3466,12 +3467,13 @@ export default function Dashboard() {
                     >
                       <VolumeX className="h-4 w-4" />
                     </Button>
-                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-primary w-1/2 rounded-full" />
+                    <div className="flex-1 h-2 bg-white/20 rounded-full overflow-hidden">
+                      <div className="h-full bg-blue-500 w-1/2 rounded-full" />
                     </div>
                     <Button
                       variant="outline"
                       size="icon"
+                      className="border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
                           await fetch('/api/media/volume', {
