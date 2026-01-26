@@ -4377,10 +4377,10 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-3 mt-[6px] relative" style={{ height: calendarHeight }}>
+        <div className="mb-3 mt-[6px] relative" style={{ height: calendarHeight, order: 2 }}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: 'calc(70px + (6 / 7) * (100% - 70px))' }} />
@@ -5120,7 +5120,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-3" style={{ height: calendarHeight }}>
+        <div className="mb-3" style={{ height: calendarHeight, order: 2 }}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm">
             <CardContent className="p-0 h-full overflow-auto">
               {/* Month Header */}
@@ -5351,7 +5351,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 mt-[1px] items-stretch flex-shrink-0">
+        <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }}>
           {/* Due Today */}
           <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
@@ -5452,7 +5452,7 @@ export default function Dashboard() {
         })()}
 
         {/* To Do Section - Random tasks */}
-        <div className="mb-3 flex-shrink-0">
+        <div className="mb-3 flex-shrink-0" style={{ order: 3 }}>
           <section className="rounded-md shadow-md border-[0.1px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgb(1, 160, 175)' }} data-testid="section-todo">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
