@@ -341,6 +341,29 @@ export default function Dashboard() {
   const [customBackground, setCustomBackground] = useState<string | null>(() => {
     return localStorage.getItem('customBackground');
   });
+  
+  // Blinking and spacing settings
+  const [blinkSettings, setBlinkSettings] = useState<{
+    todayColumnBlink: boolean;
+    allDayFilesBlink: boolean;
+    taskBoxFilesBlink: boolean;
+    blinkSpeed: number;
+    buttonSpacing: number;
+  }>(() => {
+    const saved = localStorage.getItem('blinkSettings');
+    return saved ? JSON.parse(saved) : {
+      todayColumnBlink: true,
+      allDayFilesBlink: true,
+      taskBoxFilesBlink: true,
+      blinkSpeed: 0.6,
+      buttonSpacing: 0
+    };
+  });
+  
+  // Save blink settings to localStorage
+  useEffect(() => {
+    localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
+  }, [blinkSettings]);
   const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }>(() => {
     const saved = localStorage.getItem('profileData');
     return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
@@ -2311,6 +2334,18 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
+      {/* Dynamic CSS for blink speed */}
+      <style>{`
+        .animate-file-box-blink-fast {
+          animation: file-box-blink ${blinkSettings.blinkSpeed}s ease-in-out infinite !important;
+        }
+        .animate-file-blink {
+          animation: file-blink ${blinkSettings.blinkSpeed}s ease-in-out infinite !important;
+        }
+        .animate-today-date {
+          animation: today-date-pulse ${blinkSettings.blinkSpeed}s ease-in-out infinite !important;
+        }
+      `}</style>
       {/* New Semester Banner - Shows when past Week 13 */}
       {isPastSemester && (
         <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 flex items-center justify-between">
@@ -2930,7 +2965,7 @@ export default function Dashboard() {
         {/* All items with equal gaps - spread between arrow and exam */}
         <div className="flex items-center flex-1 h-full min-w-0 overflow-hidden pl-[6px] pr-4">
           {/* Icon buttons and task buttons evenly spaced */}
-          <div className="flex items-center flex-1 justify-between">
+          <div className="flex items-center flex-1 justify-between" style={{ gap: `${blinkSettings.buttonSpacing}px` }}>
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -4176,6 +4211,89 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
+                {/* Blinking & Spacing Settings */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Blinking & Spacing</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Control blinking animations and button spacing.
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Today Column Blink</Label>
+                      <input
+                        type="checkbox"
+                        checked={blinkSettings.todayColumnBlink}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlink: e.target.checked }))}
+                        className="h-4 w-4 rounded border-gray-300"
+                        data-testid="toggle-today-column-blink"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">All Day Files Blink</Label>
+                      <input
+                        type="checkbox"
+                        checked={blinkSettings.allDayFilesBlink}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlink: e.target.checked }))}
+                        className="h-4 w-4 rounded border-gray-300"
+                        data-testid="toggle-allday-files-blink"
+                      />
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Task Box Files Blink</Label>
+                      <input
+                        type="checkbox"
+                        checked={blinkSettings.taskBoxFilesBlink}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, taskBoxFilesBlink: e.target.checked }))}
+                        className="h-4 w-4 rounded border-gray-300"
+                        data-testid="toggle-taskbox-files-blink"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1 pt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Blink Speed</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.blinkSpeed}s</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0.2"
+                        max="2"
+                        step="0.1"
+                        value={blinkSettings.blinkSpeed}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, blinkSpeed: Number(e.target.value) }))}
+                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-blink-speed"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Faster (0.2s) ← → Slower (2s)
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-1 pt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Header Button Spacing</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.buttonSpacing}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="40"
+                        step="2"
+                        value={blinkSettings.buttonSpacing}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
+                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-button-spacing"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Space between hamburger and exam buttons
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
                 {/* Data Sync Section */}
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Data Sync</Label>
@@ -4393,9 +4511,9 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex items-center justify-center h-full ${isToday && hasTodayTasks ? "animate-today-date" : ""}`}
+                    className={`border-l border-border flex items-center justify-center h-full ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ 
-                      backgroundColor: isToday ? (hasTodayTasks ? undefined : 'rgba(93, 129, 204, 0.5)') : "black"
+                      backgroundColor: isToday ? (hasTodayTasks && blinkSettings.todayColumnBlink ? undefined : 'rgba(93, 129, 204, 0.5)') : "black"
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -4426,10 +4544,10 @@ export default function Dashboard() {
                       const isCompleted = completedFiles.has(file.url);
                       const courseCode = file.courseName?.split(' ')[0]?.toUpperCase() || '';
                       const colors = courseColors[courseCode as keyof typeof courseColors];
-                      // Only blink from Wednesday (day 3) onwards
+                      // Only blink from Wednesday (day 3) onwards if enabled
                       const today = new Date();
                       const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-                      const shouldBlink = dayOfWeek >= 3; // Wednesday or later
+                      const shouldBlink = dayOfWeek >= 3 && blinkSettings.allDayFilesBlink; // Wednesday or later AND setting enabled
                       return (
                         <div
                           key={idx}
@@ -5298,7 +5416,7 @@ export default function Dashboard() {
                       return (
                         <button
                           key={idx}
-                          className="flex items-center gap-1.5 text-[10px] text-black cursor-pointer w-full animate-file-box-blink-fast pl-6"
+                          className={`flex items-center gap-1.5 text-[10px] text-black cursor-pointer w-full pl-6 ${blinkSettings.taskBoxFilesBlink ? 'animate-file-box-blink-fast' : 'bg-[rgba(127,219,225,0.8)]'}`}
                           onClick={() => {
                             if (matchingFile) {
                               setPreviewFile(matchingFile);
