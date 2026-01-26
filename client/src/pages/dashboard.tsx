@@ -3395,7 +3395,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Play/Stop Buttons */}
-                <div className="flex flex-col gap-1.5 items-center">
+                <div className="flex flex-col gap-1.5 items-center mt-2">
                   <Button
                     variant="outline"
                     size="sm"
