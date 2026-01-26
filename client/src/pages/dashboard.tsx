@@ -4996,7 +4996,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible backdrop-blur-md"
+                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
                         style={{ 
                           backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg
                         }}
@@ -5157,7 +5157,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={dayIdx} 
-                      className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible backdrop-blur-md"
+                      className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
                       style={{ 
                         backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'rgba(156, 163, 175, 0.25)'
                       }}
@@ -5288,20 +5288,7 @@ export default function Dashboard() {
                   >
                     <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
-                      {/* Time column resize handle */}
-                      <div 
-                        className="absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-blue-400/50 z-50"
-                        onMouseDown={(e) => handleColumnResizeStart(e, -1)}
-                      />
                     </div>
-                    {/* Row resize handle at bottom of first time slot only */}
-                    {hourIdx === 0 && (
-                      <div 
-                        className="absolute left-0 right-0 bottom-0 h-1 cursor-row-resize hover:bg-blue-400/50 z-50"
-                        onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
-                        data-testid="resize-timeslot-row"
-                      />
-                    )}
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
@@ -5312,7 +5299,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 backdrop-blur-md overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
                             backgroundColor: isToday ? 'rgba(93, 129, 204, 0.35)' : isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : undefined
                           }}
