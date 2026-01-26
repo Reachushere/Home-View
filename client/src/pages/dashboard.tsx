@@ -4421,10 +4421,14 @@ export default function Dashboard() {
                       const isCompleted = completedFiles.has(file.url);
                       const courseCode = file.courseName?.split(' ')[0]?.toUpperCase() || '';
                       const colors = courseColors[courseCode as keyof typeof courseColors];
+                      // Only blink from Wednesday (day 3) onwards
+                      const today = new Date();
+                      const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
+                      const shouldBlink = dayOfWeek >= 3; // Wednesday or later
                       return (
                         <div
                           key={idx}
-                          className={`flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded animate-file-blink ${
+                          className={`flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded ${shouldBlink && !isCompleted ? 'animate-file-blink' : ''} ${
                             isCompleted 
                               ? "bg-gray-200 text-gray-400 border border-gray-300" 
                               : colors 
