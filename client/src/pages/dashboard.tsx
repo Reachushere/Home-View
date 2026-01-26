@@ -4772,7 +4772,7 @@ export default function Dashboard() {
                   </p>
                   <div className="flex gap-2">
                     <Button
-                      className="bg-[#5979CC] hover:bg-[#6989DC] text-white shadow-lg shadow-[#5979CC]/30"
+                      className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40"
                       size="sm"
                       onClick={async () => {
                         try {
@@ -4870,7 +4870,7 @@ export default function Dashboard() {
                   Cancel
                 </Button>
                 <Button 
-                  className="bg-[#5979CC] hover:bg-[#6989DC] text-white shadow-lg shadow-[#5979CC]/30"
+                  className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40"
                   onClick={() => {
                     localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
                     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
