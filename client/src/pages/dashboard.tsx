@@ -364,6 +364,39 @@ export default function Dashboard() {
   useEffect(() => {
     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
   }, [blinkSettings]);
+  
+  // Box order for drag and drop (this-week, tomorrow, today)
+  const [boxOrder, setBoxOrder] = useState<string[]>(() => {
+    const saved = localStorage.getItem('boxOrder');
+    return saved ? JSON.parse(saved) : ['this-week', 'tomorrow', 'today'];
+  });
+  
+  const [draggedBox, setDraggedBox] = useState<string | null>(null);
+  
+  // Save box order to localStorage
+  useEffect(() => {
+    localStorage.setItem('boxOrder', JSON.stringify(boxOrder));
+  }, [boxOrder]);
+  
+  const handleBoxDragStart = (boxId: string) => {
+    setDraggedBox(boxId);
+  };
+  
+  const handleBoxDragOver = (e: React.DragEvent, targetBoxId: string) => {
+    e.preventDefault();
+    if (draggedBox && draggedBox !== targetBoxId) {
+      const newOrder = [...boxOrder];
+      const draggedIdx = newOrder.indexOf(draggedBox);
+      const targetIdx = newOrder.indexOf(targetBoxId);
+      newOrder.splice(draggedIdx, 1);
+      newOrder.splice(targetIdx, 0, draggedBox);
+      setBoxOrder(newOrder);
+    }
+  };
+  
+  const handleBoxDragEnd = () => {
+    setDraggedBox(null);
+  };
   const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }>(() => {
     const saved = localStorage.getItem('profileData');
     return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
@@ -5460,7 +5493,15 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }}>
           {/* Due Today */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)', order: 3 }} data-testid="section-due-today">
+          <section 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            style={{ backgroundColor: 'rgb(1, 160, 175)', order: boxOrder.indexOf('today') + 1 }} 
+            data-testid="section-due-today"
+            draggable
+            onDragStart={() => handleBoxDragStart('today')}
+            onDragOver={(e) => handleBoxDragOver(e, 'today')}
+            onDragEnd={handleBoxDragEnd}
+          >
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               TODAY ({dueTodayTasks.length})
@@ -5492,7 +5533,15 @@ export default function Dashboard() {
           </section>
 
           {/* Due Tomorrow */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)', order: 2 }} data-testid="section-due-tomorrow">
+          <section 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            style={{ backgroundColor: 'rgb(1, 160, 175)', order: boxOrder.indexOf('tomorrow') + 1 }} 
+            data-testid="section-due-tomorrow"
+            draggable
+            onDragStart={() => handleBoxDragStart('tomorrow')}
+            onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
+            onDragEnd={handleBoxDragEnd}
+          >
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               TOMORROW ({dueTomorrowTasks.length})
@@ -5524,7 +5573,15 @@ export default function Dashboard() {
           </section>
 
           {/* Due This Week */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)', order: 1 }} data-testid="section-due-this-week">
+          <section 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
+            style={{ backgroundColor: 'rgb(1, 160, 175)', order: boxOrder.indexOf('this-week') + 1 }} 
+            data-testid="section-due-this-week"
+            draggable
+            onDragStart={() => handleBoxDragStart('this-week')}
+            onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
+            onDragEnd={handleBoxDragEnd}
+          >
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               THIS WEEK ({dueThisWeekTasks.length})
