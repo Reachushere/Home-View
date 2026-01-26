@@ -392,10 +392,10 @@
 }
 
 .working-indicator .circle {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background-color: #4dd9e5;
+  background-color: rgba(255, 255, 255, 0.6);
   animation: working-pulse 1.2s ease-in-out infinite;
 }
 
