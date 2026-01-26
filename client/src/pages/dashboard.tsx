@@ -2710,9 +2710,9 @@ export default function Dashboard() {
 
       {/* New Semester Setup Dialog */}
       <Dialog open={isNewSemesterDialogOpen} onOpenChange={setIsNewSemesterDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-white">
               <GraduationCap className="h-5 w-5" />
               Set Up New Semester
             </DialogTitle>
@@ -5090,9 +5090,9 @@ export default function Dashboard() {
           
           {/* Calendar Settings Dialog */}
           <Dialog open={isCalendarSettingsOpen} onOpenChange={setIsCalendarSettingsOpen}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
               <DialogHeader>
-                <DialogTitle>Calendar Settings</DialogTitle>
+                <DialogTitle className="text-white">Calendar Settings</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 {/* Second Google Account Connection */}
@@ -6552,9 +6552,9 @@ export default function Dashboard() {
 
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
             <DialogHeader>
-              <DialogTitle>Reschedule Task</DialogTitle>
+              <DialogTitle className="text-white">Reschedule Task</DialogTitle>
             </DialogHeader>
             {rescheduleTask && (
               <RescheduleForm 
