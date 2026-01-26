@@ -4343,9 +4343,9 @@ export default function Dashboard() {
           
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
-            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col" style={{ background: 'rgb(1, 160, 175)', top: '55%' }}>
+            <DialogContent className="max-w-md text-[11px]" style={{ background: 'rgba(1, 160, 175, 0.85)', top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-white">Profile</DialogTitle>
+                <DialogTitle className="text-white text-sm">Profile</DialogTitle>
               </DialogHeader>
               <ProfileForm 
                 profileData={profileData} 
@@ -4357,9 +4357,9 @@ export default function Dashboard() {
           
           {/* School Dialog */}
           <Dialog open={isSchoolDialogOpen} onOpenChange={setIsSchoolDialogOpen}>
-            <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col" style={{ background: 'rgb(1, 160, 175)', top: '55%' }}>
+            <DialogContent className="max-w-md text-[11px]" style={{ background: 'rgba(1, 160, 175, 0.85)', top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-white">School Settings</DialogTitle>
+                <DialogTitle className="text-white text-sm">School Settings</DialogTitle>
               </DialogHeader>
               <SchoolForm 
                 schoolData={schoolData}
@@ -4371,9 +4371,9 @@ export default function Dashboard() {
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto overflow-x-hidden" style={{ background: 'rgb(1, 160, 175)', top: '55%' }}>
+            <DialogContent className="max-w-lg text-[11px]" style={{ background: 'rgba(1, 160, 175, 0.85)', top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-white">Courses</DialogTitle>
+                <DialogTitle className="text-white text-sm">Courses</DialogTitle>
               </DialogHeader>
               <CoursesForm 
                 coursesData={coursesData}
@@ -4384,9 +4384,9 @@ export default function Dashboard() {
           
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto" style={{ background: 'rgb(1, 160, 175)', top: '55%' }}>
+            <DialogContent className="max-w-4xl text-[11px]" style={{ background: 'rgba(1, 160, 175, 0.85)', top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-white">Settings</DialogTitle>
+                <DialogTitle className="text-white text-sm">Settings</DialogTitle>
               </DialogHeader>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
