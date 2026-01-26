@@ -3422,7 +3422,7 @@ export default function Dashboard() {
                       data-testid="button-play-chumfm"
                     >
                       <Play className="h-4 w-4 mr-2" />
-                      Play CHUM FM
+                      Play CHUM FM (select speaker)
                     </Button>
                     <Button
                       variant="destructive"
