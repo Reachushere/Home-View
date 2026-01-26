@@ -371,6 +371,25 @@ export default function Dashboard() {
     return saved ? JSON.parse(saved) : ['this-week', 'tomorrow', 'today'];
   });
   
+  // Color settings
+  const [colorSettings, setColorSettings] = useState<{
+    boxBackground: string;
+    headerBar: string;
+    mainBackground: string;
+  }>(() => {
+    const saved = localStorage.getItem('colorSettings');
+    return saved ? JSON.parse(saved) : {
+      boxBackground: '#01a0af',
+      headerBar: '#000000',
+      mainBackground: '#1a1a2e'
+    };
+  });
+  
+  // Save color settings to localStorage
+  useEffect(() => {
+    localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
+  }, [colorSettings]);
+  
   const [draggedBox, setDraggedBox] = useState<string | null>(null);
   
   // Save box order to localStorage
@@ -2925,7 +2944,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-hidden relative" style={{ backgroundColor: 'black' }}>
+      <div className="flex flex-1 overflow-hidden relative" style={{ backgroundColor: colorSettings.mainBackground }}>
         {/* Constant fade overlay - disabled for solid black background */}
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -4109,10 +4128,25 @@ export default function Dashboard() {
               </DialogHeader>
               <div className="space-y-4">
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Background Image</Label>
+                  <Label className="text-sm font-medium">Background Image & Color</Label>
                   <p className="text-xs text-muted-foreground">
-                    Upload a custom background image to replace the default campus photo.
+                    Upload a custom background image or set a solid background color.
                   </p>
+                  
+                  {/* Main Background Color */}
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs">Main Background Color</Label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={colorSettings.mainBackground}
+                        onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackground: e.target.value }))}
+                        className="w-8 h-8 rounded cursor-pointer border-0"
+                        data-testid="color-main-background"
+                      />
+                      <span className="text-xs text-muted-foreground font-mono">{colorSettings.mainBackground}</span>
+                    </div>
+                  </div>
                   {customBackground && (
                     <div className="relative w-full h-24 rounded-md overflow-hidden border">
                       <img 
@@ -4241,6 +4275,46 @@ export default function Dashboard() {
                     >
                       Save TTS Settings
                     </Button>
+                  </div>
+                </div>
+                
+                {/* Color Settings */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Colors</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Customize the colors of boxes and headers.
+                  </p>
+                  
+                  <div className="space-y-2">
+                    {/* Box Background Color */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Task Boxes Background</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={colorSettings.boxBackground}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, boxBackground: e.target.value }))}
+                          className="w-8 h-8 rounded cursor-pointer border-0"
+                          data-testid="color-box-background"
+                        />
+                        <span className="text-xs text-muted-foreground font-mono">{colorSettings.boxBackground}</span>
+                      </div>
+                    </div>
+                    
+                    {/* Header Bar Color */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Header & Menu Bar</Label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="color"
+                          value={colorSettings.headerBar}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, headerBar: e.target.value }))}
+                          className="w-8 h-8 rounded cursor-pointer border-0"
+                          data-testid="color-header-bar"
+                        />
+                        <span className="text-xs text-muted-foreground font-mono">{colorSettings.headerBar}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
@@ -4519,7 +4593,7 @@ export default function Dashboard() {
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)' }}>
-              <div className="flex items-center justify-center" style={{ backgroundColor: 'black' }}>
+              <div className="flex items-center justify-center" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
               </div>
               {weekDays.map((day, idx) => {
@@ -4563,7 +4637,7 @@ export default function Dashboard() {
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px 1fr', minHeight: '44px' }}>
-              <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'black' }}>
+              <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
               <div className="grid relative" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
@@ -4689,7 +4763,7 @@ export default function Dashboard() {
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
               ].map(course => (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minHeight: '24px' }}>
-                  <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'black' }}>
+                  <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
                     {course.name}
                   </div>
                   {weekDays.map((day, dayIdx) => {
@@ -4837,7 +4911,7 @@ export default function Dashboard() {
               
               {/* OTHER Row - For tasks without a course */}
               <div className="grid border-b border-border/50 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minHeight: '24px' }}>
-                <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'black' }}>
+                <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
                   OTHER
                 </div>
                 {weekDays.map((day, dayIdx) => {
@@ -4985,7 +5059,7 @@ export default function Dashboard() {
                     className="grid border-b border-border/50 overflow-visible"
                     style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}
                   >
-                    <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : 'black' }}>
+                    <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
@@ -5495,14 +5569,14 @@ export default function Dashboard() {
           {/* Due Today */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundColor: 'rgb(1, 160, 175)', order: boxOrder.indexOf('today') + 1 }} 
+            style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('today') + 1 }} 
             data-testid="section-due-today"
             draggable
             onDragStart={() => handleBoxDragStart('today')}
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
             onDragEnd={handleBoxDragEnd}
           >
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
               <Calendar className="h-3 w-3 text-white" />
               TODAY ({dueTodayTasks.length})
             </h4>
@@ -5535,14 +5609,14 @@ export default function Dashboard() {
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundColor: 'rgb(1, 160, 175)', order: boxOrder.indexOf('tomorrow') + 1 }} 
+            style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('tomorrow') + 1 }} 
             data-testid="section-due-tomorrow"
             draggable
             onDragStart={() => handleBoxDragStart('tomorrow')}
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
             onDragEnd={handleBoxDragEnd}
           >
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
               <Calendar className="h-3 w-3 text-white" />
               TOMORROW ({dueTomorrowTasks.length})
             </h4>
@@ -5575,14 +5649,14 @@ export default function Dashboard() {
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
-            style={{ backgroundColor: 'rgb(1, 160, 175)', order: boxOrder.indexOf('this-week') + 1 }} 
+            style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('this-week') + 1 }} 
             data-testid="section-due-this-week"
             draggable
             onDragStart={() => handleBoxDragStart('this-week')}
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
             onDragEnd={handleBoxDragEnd}
           >
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
               <Calendar className="h-3 w-3 text-white" />
               THIS WEEK ({dueThisWeekTasks.length})
             </h4>
@@ -5617,8 +5691,8 @@ export default function Dashboard() {
 
         {/* To Do Section - Random tasks */}
         <div className="mb-3 flex-shrink-0" style={{ order: 3 }}>
-          <section className="rounded-md shadow-md border-[0.1px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: 'rgb(1, 160, 175)' }} data-testid="section-todo">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
+          <section className="rounded-md shadow-md border-[0.1px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: colorSettings.boxBackground }} data-testid="section-todo">
+            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
               To Do ({todoItems.filter(item => item.trim() !== "").length})
             </h4>
@@ -6145,7 +6219,7 @@ function TaskCard({
       return (
         <div className="relative pt-1 h-full flex flex-col cursor-pointer pb-2" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="h-5 flex items-center justify-around rounded-md px-1 text-white border-[0.1px] border-white no-blink mb-1" style={{ background: 'black' }}>
+          <div className="h-5 flex items-center justify-around rounded-md px-1 text-white border-[0.1px] border-white no-blink mb-1" style={{ background: colorSettings.headerBar }}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
