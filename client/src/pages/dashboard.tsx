@@ -3396,7 +3396,8 @@ export default function Dashboard() {
                 {/* Play/Stop Buttons */}
                 <div className="flex gap-2">
                   <Button
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-200"
+                    variant="outline"
+                    className="flex-1 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)] hover:shadow-[0_0_25px_rgba(59,130,246,0.7)] transition-all duration-200"
                     onClick={async () => {
                       try {
                         const response = await fetch('/api/media/play-radio', {
