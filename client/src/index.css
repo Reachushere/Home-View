@@ -206,11 +206,12 @@
   animation: slow-blink 60s ease-in-out infinite;
 }
 
-/* File name blinking animation - prominent dark to light */
+/* File name blinking animation - prominent dark green to light */
 @keyframes file-blink {
   0%, 100% { 
-    opacity: 0.4;
-    filter: brightness(0.6);
+    opacity: 0.5;
+    filter: brightness(0.7) saturate(1.5) hue-rotate(-10deg);
+    background-color: rgba(34, 80, 34, 0.8);
     text-shadow: none;
   }
   50% { 
