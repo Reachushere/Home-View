@@ -4730,7 +4730,7 @@ export default function Dashboard() {
                   </p>
                   <div className="flex gap-2">
                     <Button
-                      variant="default"
+                      className="bg-teal-500 hover:bg-teal-600 text-white"
                       size="sm"
                       onClick={async () => {
                         try {
