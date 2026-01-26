@@ -4421,7 +4421,43 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', height: '44px' }}>
+            <div className="relative border-b border-border/50 z-30 w-full flex-shrink-0" style={{ minHeight: allTaskFiles.length > 0 ? `${44 + allTaskFiles.length * 18}px` : '44px' }}>
+              {/* File tasks spanning entire week */}
+              {allTaskFiles.length > 0 && (
+                <div 
+                  className="absolute left-[70px] right-0 top-0 flex flex-col gap-0.5 p-0.5 z-20"
+                  style={{ backgroundColor: 'rgba(147, 197, 253, 0.2)' }}
+                >
+                  {allTaskFiles.map((file, idx) => {
+                    const isCompleted = completedFiles.has(file.url);
+                    const courseCode = file.courseName?.split(' ')[0]?.toUpperCase() || '';
+                    const colors = courseColors[courseCode as keyof typeof courseColors];
+                    return (
+                      <div
+                        key={idx}
+                        className={`flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded animate-file-blink ${
+                          isCompleted 
+                            ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                            : colors 
+                              ? `${colors.bg} text-black border ${colors.border}` 
+                              : "bg-blue-100 text-black border border-blue-300"
+                        }`}
+                        data-testid={`file-allday-${idx}`}
+                      >
+                        <Checkbox
+                          checked={isCompleted}
+                          onCheckedChange={() => toggleFileComplete(file.url)}
+                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                          data-testid={`checkbox-file-allday-${idx}`}
+                        />
+                        <FileText className="h-3 w-3 shrink-0" />
+                        <span className={`truncate flex-1 ${isCompleted ? "line-through" : ""}`}>{file.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+              <div className="grid w-full h-full" style={{ gridTemplateColumns: '70px repeat(7, 1fr)', minHeight: '44px', marginTop: allTaskFiles.length > 0 ? `${allTaskFiles.length * 18}px` : '0' }}>
                 <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'black' }}>
                   ALL DAY
                 </div>
@@ -4493,46 +4529,10 @@ export default function Dashboard() {
                     </div>
                   );
                 })}
+              </div>
             </div>
             
-            {/* FILES Row - Spans entire week with checkboxes for each file */}
-            {allTaskFiles.length > 0 && (
-              <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px 1fr', minHeight: '28px' }}>
-                <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'black' }}>
-                  FILES
-                </div>
-                <div className="flex flex-wrap items-center gap-2 p-1 overflow-hidden" style={{ backgroundColor: 'rgba(147, 197, 253, 0.3)' }}>
-                  {allTaskFiles.map((file, idx) => {
-                    const isCompleted = completedFiles.has(file.url);
-                    const courseCode = file.courseName?.split(' ')[0]?.toUpperCase() || '';
-                    const colors = courseColors[courseCode as keyof typeof courseColors];
-                    return (
-                      <div
-                        key={idx}
-                        className={`flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded animate-file-blink ${
-                          isCompleted 
-                            ? "bg-gray-200 text-gray-400 border border-gray-300 line-through" 
-                            : colors 
-                              ? `${colors.bg} text-black border ${colors.border}` 
-                              : "bg-blue-100 text-black border border-blue-300"
-                        }`}
-                        data-testid={`file-row-${idx}`}
-                      >
-                        <Checkbox
-                          checked={isCompleted}
-                          onCheckedChange={() => toggleFileComplete(file.url)}
-                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                          data-testid={`checkbox-file-${idx}`}
-                        />
-                        <FileText className="h-3 w-3 shrink-0" />
-                        <span className="truncate max-w-[120px]">{file.name}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-              
+                          
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
               {[
                 { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', colors: courseColors['CPPA122'] },
