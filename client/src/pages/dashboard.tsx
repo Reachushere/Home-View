@@ -5353,7 +5353,7 @@ export default function Dashboard() {
           return (
         <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }}>
           {/* Due Today */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-today">
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)', order: 3 }} data-testid="section-due-today">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               TODAY ({dueTodayTasks.length})
@@ -5385,7 +5385,7 @@ export default function Dashboard() {
           </section>
 
           {/* Due Tomorrow */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-tomorrow">
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)', order: 2 }} data-testid="section-due-tomorrow">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               TOMORROW ({dueTomorrowTasks.length})
@@ -5417,7 +5417,7 @@ export default function Dashboard() {
           </section>
 
           {/* Due This Week */}
-          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)' }} data-testid="section-due-this-week">
+          <section className="flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px]" style={{ backgroundColor: 'rgb(1, 160, 175)', order: 1 }} data-testid="section-due-this-week">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: 'black' }}>
               <Calendar className="h-3 w-3 text-white" />
               THIS WEEK ({dueThisWeekTasks.length})
