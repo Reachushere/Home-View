@@ -4977,18 +4977,23 @@ export default function Dashboard() {
                           const result = await importRes.json();
                           
                           if (result.success) {
-                            // Also sync file names and remove duplicates on production
-                            await fetch("https://home-view--bkh416.replit.app/api/files/sync-names", { method: "POST" });
+                            // Clean up duplicates and sync file names
+                            try {
+                              await fetch("https://home-view--bkh416.replit.app/api/cleanup-duplicates", { method: "POST" });
+                            } catch (e) {
+                              // Cleanup is optional
+                            }
                             
                             toast({ 
                               title: "Push complete!", 
-                              description: `Pushed ${result.imported.tasks} tasks, ${result.imported.files} files. Files synced.` 
+                              description: `Pushed ${result.imported.tasks} tasks, ${result.imported.files} files.` 
                             });
                           } else {
                             toast({ title: "Push failed", description: result.error, variant: "destructive" });
                           }
-                        } catch (err) {
-                          toast({ title: "Push failed", description: "Could not connect to production.", variant: "destructive" });
+                        } catch (err: any) {
+                          console.error("Push error:", err);
+                          toast({ title: "Push failed", description: err?.message || "Could not connect to production.", variant: "destructive" });
                         }
                       }}
                       data-testid="button-push-production"

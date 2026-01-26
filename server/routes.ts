@@ -708,7 +708,7 @@ export async function registerRoutes(
   app.post("/api/files/sync-names", async (_req, res) => {
     try {
       // First, delete duplicate files (keep only the one with the highest ID for each object_path)
-      const deleteResult = await db.execute(sql`
+      await db.execute(sql`
         DELETE FROM files 
         WHERE id NOT IN (
           SELECT MAX(id) FROM files GROUP BY object_path
@@ -737,6 +737,55 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error syncing file names:", err);
       res.status(500).json({ error: "Failed to sync file names" });
+    }
+  });
+  
+  // POST /api/cleanup-duplicates - Remove duplicate tasks and files (with CORS)
+  app.options("/api/cleanup-duplicates", (_req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.sendStatus(200);
+  });
+  
+  app.post("/api/cleanup-duplicates", async (_req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    
+    try {
+      // Delete duplicate files (keep only the one with the highest ID for each object_path)
+      await db.execute(sql`
+        DELETE FROM files 
+        WHERE id NOT IN (
+          SELECT MAX(id) FROM files GROUP BY object_path
+        )
+      `);
+      
+      // Delete duplicate tasks (keep only the one with highest ID for same title + due_date + course_name)
+      await db.execute(sql`
+        DELETE FROM tasks 
+        WHERE id NOT IN (
+          SELECT MAX(id) FROM tasks GROUP BY title, due_date, course_name
+        )
+      `);
+      
+      // Update file display names with course names
+      await db.execute(sql`
+        UPDATE files SET display_name = REPLACE(display_name, 'CPPA122, ', 'CPPA122 - Local Politics, ') 
+        WHERE display_name LIKE 'CPPA122,%' AND display_name NOT LIKE 'CPPA122 - Local Politics,%'
+      `);
+      await db.execute(sql`
+        UPDATE files SET display_name = REPLACE(display_name, 'CFNF400, ', 'CFNF400 - Human Sexuality, ') 
+        WHERE display_name LIKE 'CFNF400,%' AND display_name NOT LIKE 'CFNF400 - Human Sexuality,%'
+      `);
+      await db.execute(sql`
+        UPDATE files SET display_name = REPLACE(display_name, 'CASL101, ', 'CASL101 - Sign Language, ') 
+        WHERE display_name LIKE 'CASL101,%' AND display_name NOT LIKE 'CASL101 - Sign Language,%'
+      `);
+      
+      res.json({ success: true, message: "Duplicates removed and file names synced" });
+    } catch (err) {
+      console.error("Error cleaning up duplicates:", err);
+      res.status(500).json({ error: "Failed to clean up duplicates" });
     }
   });
 
