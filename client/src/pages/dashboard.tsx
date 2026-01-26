@@ -262,7 +262,10 @@ export default function Dashboard() {
   };
   const [draggedFile, setDraggedFile] = useState<{ url: string; name: string } | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [lastCompletedTaskId, setLastCompletedTaskId] = useState<number | null>(null);
+  const [lastCompletedTaskId, setLastCompletedTaskId] = useState<number | null>(() => {
+    const saved = localStorage.getItem('lastCompletedTaskId');
+    return saved ? parseInt(saved) : null;
+  });
   const celebrationAudioRef = useRef<HTMLAudioElement | null>(null);
   
   // Arrow connections from task boxes to calendar
@@ -1902,6 +1905,7 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
       if (variables.isCompleted) {
         setLastCompletedTaskId(variables.id);
+        localStorage.setItem('lastCompletedTaskId', variables.id.toString());
         setShowCelebration(true);
       }
     },
@@ -1911,6 +1915,7 @@ export default function Dashboard() {
     if (lastCompletedTaskId) {
       completeMutation.mutate({ id: lastCompletedTaskId, isCompleted: false });
       setLastCompletedTaskId(null);
+      localStorage.removeItem('lastCompletedTaskId');
     }
   };
 
@@ -4350,7 +4355,8 @@ export default function Dashboard() {
               <ProfileForm 
                 profileData={profileData} 
                 timezones={timezones} 
-                onSave={saveProfile} 
+                onSave={saveProfile}
+                onCancel={() => setIsProfileDialogOpen(false)} 
               />
             </DialogContent>
           </Dialog>
@@ -4364,7 +4370,8 @@ export default function Dashboard() {
               <SchoolForm 
                 schoolData={schoolData}
                 semesterSettings={semesterSettings}
-                onSave={saveSchool} 
+                onSave={saveSchool}
+                onCancel={() => setIsSchoolDialogOpen(false)} 
               />
             </DialogContent>
           </Dialog>
@@ -4377,7 +4384,8 @@ export default function Dashboard() {
               </DialogHeader>
               <CoursesForm 
                 coursesData={coursesData}
-                onSave={saveCourses} 
+                onSave={saveCourses}
+                onCancel={() => setIsCoursesDialogOpen(false)} 
               />
             </DialogContent>
           </Dialog>
@@ -4815,7 +4823,14 @@ export default function Dashboard() {
                 </div>
                 </div>
               </div>
-              <div className="flex justify-end pt-4 border-t">
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button 
+                  variant="outline"
+                  onClick={() => setIsSettingsDialogOpen(false)}
+                  data-testid="button-cancel-settings"
+                >
+                  Cancel
+                </Button>
                 <Button 
                   className="bg-teal-500 hover:bg-teal-600 text-white"
                   onClick={() => {
@@ -6948,11 +6963,13 @@ function FileSelector({
 function ProfileForm({ 
   profileData, 
   timezones, 
-  onSave 
+  onSave,
+  onCancel 
 }: { 
   profileData: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null };
   timezones: { value: string; label: string }[];
   onSave: (data: { firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }) => void;
+  onCancel: () => void;
 }) {
   const [firstName, setFirstName] = useState(profileData.firstName);
   const [lastName, setLastName] = useState(profileData.lastName);
@@ -7038,9 +7055,14 @@ function ProfileForm({
           </div>
         )}
       </div>
-      <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-save-profile">
-        Save Profile
-      </Button>
+      <div className="flex gap-2">
+        <Button type="button" variant="outline" className="flex-1" onClick={onCancel} data-testid="button-cancel-profile">
+          Cancel
+        </Button>
+        <Button type="submit" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-save-profile">
+          Save Profile
+        </Button>
+      </div>
     </form>
   );
 }
@@ -7048,11 +7070,13 @@ function ProfileForm({
 function SchoolForm({ 
   schoolData, 
   semesterSettings,
-  onSave 
+  onSave,
+  onCancel 
 }: { 
   schoolData: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string };
   semesterSettings: SemesterSettings | null | undefined;
   onSave: (data: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => void;
+  onCancel: () => void;
 }) {
   const [schoolLogo, setSchoolLogo] = useState<string | null>(schoolData.schoolLogo);
   const [numberOfWeeks, setNumberOfWeeks] = useState(schoolData.numberOfWeeks);
@@ -7333,19 +7357,26 @@ function SchoolForm({
         </div>
       )}
       
-      <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-save-school">
-        Save School Settings
-      </Button>
+      <div className="flex gap-2">
+        <Button type="button" variant="outline" className="flex-1" onClick={onCancel} data-testid="button-cancel-school">
+          Cancel
+        </Button>
+        <Button type="submit" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-save-school">
+          Save School Settings
+        </Button>
+      </div>
     </form>
   );
 }
 
 function CoursesForm({ 
   coursesData, 
-  onSave 
+  onSave,
+  onCancel 
 }: { 
   coursesData: { courses: Array<{ name: string; color: string; professor: string }> };
   onSave: (data: { courses: Array<{ name: string; color: string; professor: string }> }) => void;
+  onCancel: () => void;
 }) {
   const [courses, setCourses] = useState(coursesData.courses);
   
@@ -7397,9 +7428,14 @@ function CoursesForm({
         ))}
       </div>
       
-      <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white text-xs h-8" data-testid="button-save-courses">
-        Save Courses
-      </Button>
+      <div className="flex gap-2">
+        <Button type="button" variant="outline" className="flex-1 text-xs h-8" onClick={onCancel} data-testid="button-cancel-courses">
+          Cancel
+        </Button>
+        <Button type="submit" className="flex-1 bg-teal-500 hover:bg-teal-600 text-white text-xs h-8" data-testid="button-save-courses">
+          Save Courses
+        </Button>
+      </div>
     </form>
   );
 }
