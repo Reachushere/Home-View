@@ -7872,22 +7872,24 @@ function TaskForm({
                 </SelectTrigger>
                 <SelectContent>
                   {COURSES.map(course => {
-                    const bgColor = course.code === "CPPA122" ? "#dcfce7" : course.code === "CFNF400" ? "#fce7f3" : "#e0e7ff";
+                    const dotColor = course.code === "CPPA122" ? "#22c55e" : course.code === "CFNF400" ? "#ec4899" : "#6366f1";
                     const textColor = course.code === "CPPA122" ? "#15803d" : course.code === "CFNF400" ? "#be185d" : "#4338ca";
                     return (
                       <SelectItem 
                         key={course.code} 
                         value={`${course.code} - ${course.name}`}
-                        className="p-0 my-0.5"
                       >
-                        <div 
-                          className="flex items-center gap-2 w-full px-2 py-1.5 rounded"
-                          style={{ backgroundColor: bgColor, color: textColor }}
-                        >
-                          <span className="font-semibold">{course.code}</span>
-                          <span>-</span>
-                          <span>{course.name}</span>
-                        </div>
+                        <span className="flex items-center gap-2">
+                          <span 
+                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: dotColor }}
+                          />
+                          <span style={{ color: textColor }}>
+                            <span className="font-semibold">{course.code}</span>
+                            {" - "}
+                            <span>{course.name}</span>
+                          </span>
+                        </span>
                       </SelectItem>
                     );
                   })}
