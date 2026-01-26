@@ -353,6 +353,7 @@ export default function Dashboard() {
     allDayFilesBlinkSpeed: number;
     taskBoxFilesBlinkSpeed: number;
     buttonSpacing: number;
+    showArrows: boolean;
   }>(() => {
     const saved = localStorage.getItem('blinkSettings');
     const parsed = saved ? JSON.parse(saved) : {};
@@ -363,7 +364,8 @@ export default function Dashboard() {
       todayColumnBlinkSpeed: parsed.todayColumnBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       allDayFilesBlinkSpeed: parsed.allDayFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       taskBoxFilesBlinkSpeed: parsed.taskBoxFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
-      buttonSpacing: parsed.buttonSpacing ?? 0
+      buttonSpacing: parsed.buttonSpacing ?? 0,
+      showArrows: parsed.showArrows ?? true
     };
   });
   
@@ -2364,14 +2366,14 @@ export default function Dashboard() {
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
       
-      // Calculate position: 70px for time column, then each day is (100% - 70px) / 7
+      // Calculate position using dynamic grid sizes
       const startMinutes = startHour * 60 + startMin;
       const endMinutes = endHour * 60 + endMin;
       const durationMinutes = endMinutes - startMinutes;
       
-      // Top position: (hour - 7) * 44px + minute offset (timeSlots start at 7 AM)
-      const topPx = ((startHour - 7) * 44) + ((startMin / 60) * 44);
-      const heightPx = (durationMinutes / 60) * 44;
+      // Top position: (hour - 7) * timeSlotHeight + minute offset (timeSlots start at 7 AM)
+      const topPx = ((startHour - 7) * gridSizes.timeSlotHeight) + ((startMin / 60) * gridSizes.timeSlotHeight);
+      const heightPx = (durationMinutes / 60) * gridSizes.timeSlotHeight;
       
       return { task: t, dayIdx, topPx, heightPx };
     });
@@ -4590,6 +4592,23 @@ export default function Dashboard() {
                       )}
                     </div>
                     
+                    {/* Show Arrows Toggle */}
+                    <div className="border rounded p-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs font-medium">Show Connection Arrows</Label>
+                        <input
+                          type="checkbox"
+                          checked={blinkSettings.showArrows}
+                          onChange={(e) => setBlinkSettings(prev => ({ ...prev, showArrows: e.target.checked }))}
+                          className="h-4 w-4 rounded border-gray-300"
+                          data-testid="toggle-show-arrows"
+                        />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        Lines connecting task boxes to calendar entries
+                      </p>
+                    </div>
+                    
                     <div className="space-y-1 pt-2">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs">Header Button Spacing</Label>
@@ -4800,7 +4819,7 @@ export default function Dashboard() {
         <div className="mb-3 mt-[6px] relative" style={{ height: calendarHeight, order: 2 }}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
             {/* Friday/Saturday divider line */}
-            <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: 'calc(70px + (6 / 7) * (100% - 70px))' }} />
+            <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth}px))` }} />
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
@@ -5506,8 +5525,8 @@ export default function Dashboard() {
                       }`}
                       style={{
                         top: `${topPx}px`,
-                        left: `calc(70px + (${dayIdx} * ((100% - 70px) / 7)) + 2px)`,
-                        width: `calc(((100% - 70px) / 7) - 4px)`,
+                        left: `calc(${gridSizes.timeColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth}px) / 7)) + 2px)`,
+                        width: `calc(((100% - ${gridSizes.timeColumnWidth}px) / 7) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25)
                       }}
@@ -6009,7 +6028,7 @@ export default function Dashboard() {
         </div>
 
         {/* Arrow Connections SVG Overlay */}
-        {arrowConnections.length > 0 && (
+        {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none z-[60]" 
             style={{ width: '100vw', height: '100vh' }}
