@@ -365,6 +365,57 @@
 
 .animate-clap-left {
   animation: clap-left 0.4s ease-in-out infinite;
+}
+
+/* Working indicator animation - 9 circles that pulse in purple */
+@keyframes working-pulse {
+  0%, 100% {
+    background-color: #6b5b95;
+    opacity: 0.4;
+  }
+  50% {
+    background-color: #9b59b6;
+    opacity: 1;
+  }
+}
+
+.working-indicator {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 3px;
+  background: rgba(107, 91, 149, 0.3);
+  border-radius: 4px;
+  position: relative;
+}
+
+.working-indicator .circle {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #9b59b6;
+  animation: working-pulse 1.2s ease-in-out infinite;
+}
+
+.working-indicator .circle:nth-child(1) { animation-delay: 0s; }
+.working-indicator .circle:nth-child(2) { animation-delay: 0.1s; }
+.working-indicator .circle:nth-child(3) { animation-delay: 0.2s; }
+.working-indicator .circle:nth-child(4) { animation-delay: 0.3s; }
+.working-indicator .circle:nth-child(5) { animation-delay: 0.4s; }
+.working-indicator .circle:nth-child(6) { animation-delay: 0.5s; }
+.working-indicator .circle:nth-child(7) { animation-delay: 0.6s; }
+.working-indicator .circle:nth-child(8) { animation-delay: 0.7s; }
+.working-indicator .circle:nth-child(9) { animation-delay: 0.8s; }
+
+.working-indicator .days-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   transform-origin: center;
 }
 

@@ -6108,9 +6108,23 @@ export default function Dashboard() {
                     </div>
                   )}
                   {showDaysUntil && (
-                    <span className="text-[11px] text-white font-normal flex-shrink-0">
-                      {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')} ({daysUntil} {daysUntil === 1 ? 'day' : 'days'})
-                    </span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-[11px] text-white font-normal">
+                        {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')}
+                      </span>
+                      <div className="working-indicator" title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}>
+                        <div className="circle"></div>
+                        <div className="circle"></div>
+                        <div className="circle"></div>
+                        <div className="circle"></div>
+                        <div className="circle"></div>
+                        <div className="circle"></div>
+                        <div className="circle"></div>
+                        <div className="circle"></div>
+                        <div className="circle"></div>
+                        <span className="days-overlay">{daysUntil}</span>
+                      </div>
+                    </div>
                   )}
                 </div>
                 {attachments.length > 0 && (
