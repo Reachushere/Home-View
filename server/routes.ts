@@ -2044,6 +2044,48 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/media/volume - Adjust volume on Echo devices
+  app.post("/api/media/volume", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(400).json({ error: "Home Assistant not configured" });
+      }
+
+      const { direction } = req.body; // 'up' or 'down'
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Get current volume from one device and adjust it
+      const devices = [
+        "media_player.echo_lr_studio_white_am",
+        "media_player.echo_show_pug_am",
+        "media_player.echo_lr_hub_am"
+      ];
+      
+      const volumeStep = 0.1; // 10% steps
+      const service = direction === 'up' ? 'volume_up' : 'volume_down';
+      
+      console.log(`Adjusting volume ${direction} on all devices`);
+      
+      for (const device of devices) {
+        await fetch(`${haUrl}/api/services/media_player/${service}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: device
+          }),
+        });
+      }
+      
+      res.json({ success: true, direction });
+    } catch (error) {
+      console.error("Volume control error:", error);
+      res.status(500).json({ error: "Failed to adjust volume" });
+    }
+  });
+
   // POST /api/tasks/:id/calendar - Add task to Google Calendar
   app.post("/api/tasks/:id/calendar", async (req, res) => {
     try {

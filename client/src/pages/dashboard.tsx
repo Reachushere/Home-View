@@ -206,6 +206,7 @@ export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
+  const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
@@ -3354,59 +3355,125 @@ export default function Dashboard() {
             {isMuted ? <BellOff className="h-[14px] w-[14px] text-white" /> : <Bell className="h-[14px] w-[14px] text-white" />}
           </Button>
 
-          {/* CHUM FM Radio */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
-            onClick={async () => {
-              try {
-                const response = await fetch('/api/media/play-radio', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ 
-                    stationId: 'CHUM FM',
-                    entityId: 'media_player.byhome'
-                  })
-                });
-                if (response.ok) {
-                  toast({ title: "Playing CHUM FM", description: "on BYhome group" });
-                } else {
-                  toast({ title: "Failed to play radio", variant: "destructive" });
-                }
-              } catch (error) {
-                toast({ title: "Error playing radio", variant: "destructive" });
-              }
-            }}
-            data-testid="button-play-radio"
-            title="Play CHUM FM on BYhome"
-          >
-            <Radio className="h-[14px] w-[14px] text-white" />
-          </Button>
-
-          {/* Stop Radio */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
-            onClick={async () => {
-              try {
-                const response = await fetch('/api/media/stop-radio', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                });
-                if (response.ok) {
-                  toast({ title: "Radio stopped" });
-                }
-              } catch (error) {
-                toast({ title: "Error stopping radio", variant: "destructive" });
-              }
-            }}
-            data-testid="button-stop-radio"
-            title="Stop Radio"
-          >
-            <Square className="h-[12px] w-[12px] text-white fill-white" />
-          </Button>
+          {/* Radio Dialog */}
+          <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
+            <DialogTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+                data-testid="button-radio-dialog"
+                title="Radio Controls"
+              >
+                <Radio className="h-[14px] w-[14px] text-white" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[400px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Radio className="h-5 w-5" />
+                  Radio Controls
+                </DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col gap-4 py-4">
+                {/* Play/Stop Buttons */}
+                <div className="flex gap-2">
+                  <Button
+                    className="flex-1"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/media/play-radio', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ 
+                            stationId: 'CHUM FM',
+                            entityId: 'media_player.echo_lr_studio_white_am'
+                          })
+                        });
+                        if (response.ok) {
+                          toast({ title: "Playing CHUM FM" });
+                        } else {
+                          toast({ title: "Failed to play radio", variant: "destructive" });
+                        }
+                      } catch (error) {
+                        toast({ title: "Error playing radio", variant: "destructive" });
+                      }
+                    }}
+                    data-testid="button-play-chumfm"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    Play CHUM FM
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/media/stop-radio', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                        });
+                        if (response.ok) {
+                          toast({ title: "Radio stopped" });
+                        }
+                      } catch (error) {
+                        toast({ title: "Error stopping radio", variant: "destructive" });
+                      }
+                    }}
+                    data-testid="button-stop-radio"
+                  >
+                    <Square className="h-4 w-4 mr-2 fill-current" />
+                    Stop
+                  </Button>
+                </div>
+                
+                {/* Volume Controls */}
+                <div className="flex flex-col gap-2">
+                  <Label>Volume</Label>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={async () => {
+                        try {
+                          await fetch('/api/media/volume', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ direction: 'down' })
+                          });
+                        } catch (error) {
+                          toast({ title: "Error adjusting volume", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-volume-down"
+                    >
+                      <VolumeX className="h-4 w-4" />
+                    </Button>
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full bg-primary w-1/2 rounded-full" />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={async () => {
+                        try {
+                          await fetch('/api/media/volume', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ direction: 'up' })
+                          });
+                        } catch (error) {
+                          toast({ title: "Error adjusting volume", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-volume-up"
+                    >
+                      <Volume2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Sync */}
           <Button 
