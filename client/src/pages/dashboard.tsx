@@ -5344,15 +5344,33 @@ export default function Dashboard() {
                   <div className="border-l border-border/50" style={{ backgroundColor: course.bg }} />
                   {weekDays.map((day, dayIdx) => {
                     // Get prep tasks for this course and day
+                    // School week starts Saturday. Tasks span Sat-Fri, or Sun-Fri once Saturday has passed
                     const coursePrepTasks = weekPlanningTasks.filter(task => {
                       if (!task.startDate || !task.courseName?.startsWith(course.name)) return false;
-                      const startDate = new Date(task.startDate);
-                      const dueDate = new Date(task.dueDate);
-                      const dayStart = new Date(day);
-                      dayStart.setHours(0, 0, 0, 0);
-                      const dayEnd = new Date(day);
-                      dayEnd.setHours(23, 59, 59, 999);
-                      return startDate <= dayEnd && dayStart <= dueDate;
+                      
+                      const today = new Date();
+                      const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+                      
+                      // Check if Saturday of this week has passed (today is not Saturday)
+                      const saturdayPassed = todayDayOfWeek !== 6;
+                      
+                      // dayIdx 0 = Saturday, dayIdx 1 = Sunday, dayIdx 2-6 = Mon-Fri
+                      // If Saturday passed: show on Sunday-Friday (dayIdx 1-6)
+                      // Otherwise (it's Saturday): show on all days (dayIdx 0-6)
+                      const shouldShowOnThisDay = saturdayPassed 
+                        ? dayIdx >= 1 // Sun-Fri (skip Saturday)
+                        : true; // Sat-Fri (all days)
+                      
+                      if (!shouldShowOnThisDay) return false;
+                      
+                      // Check if task falls within this week
+                      const taskDueDate = new Date(task.dueDate);
+                      const taskStartDate = new Date(task.startDate);
+                      const weekStart = weekDays[0];
+                      const weekEnd = weekDays[6];
+                      
+                      // Task should appear if it overlaps with this week at all
+                      return taskStartDate <= weekEnd && taskDueDate >= weekStart;
                     });
                     
                     return (
