@@ -7878,10 +7878,12 @@ function TaskForm({
                       <SelectItem 
                         key={course.code} 
                         value={`${course.code} - ${course.name}`}
-                        className="my-0.5 rounded"
-                        style={{ backgroundColor: bgColor, color: textColor }}
+                        className="p-0 my-0.5"
                       >
-                        <div className="flex items-center gap-2">
+                        <div 
+                          className="flex items-center gap-2 w-full px-2 py-1.5 rounded"
+                          style={{ backgroundColor: bgColor, color: textColor }}
+                        >
                           <span className="font-semibold">{course.code}</span>
                           <span>-</span>
                           <span>{course.name}</span>
