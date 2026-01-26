@@ -6280,9 +6280,9 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Files Flyout Panel - Windows Explorer Style */}
+        {/* Files Flyout Panel - Glass Effect */}
         <div 
-          className={`fixed top-0 right-0 h-full w-1/2 bg-[#191919] shadow-2xl border-l border-[#3d3d3d] z-[100] transform transition-transform duration-300 ease-in-out ${isFilesFlyoutOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`fixed top-0 right-0 h-full w-[20%] bg-black/60 backdrop-blur-md shadow-2xl border-l border-white/20 z-[100] transform transition-transform duration-300 ease-in-out ${isFilesFlyoutOpen ? 'translate-x-0' : 'translate-x-full'}`}
           data-testid="files-flyout-panel"
         >
           {/* Pull Tab - sticks out from left side */}
@@ -6291,7 +6291,7 @@ export default function Dashboard() {
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
           >
-            <div className="flex items-center bg-[#191919]/80 backdrop-blur-sm border border-[#3d3d3d] border-r-0 rounded-l-lg px-1 py-6 hover:bg-[#2d2d2d]/90 transition-colors">
+            <div className="flex items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-1 py-6 hover:bg-black/70 transition-colors">
               {isFilesFlyoutOpen ? (
                 <ChevronRight className="h-5 w-5 text-yellow-500" />
               ) : (
@@ -6302,8 +6302,8 @@ export default function Dashboard() {
           </div>
           
           <div className="flex flex-col h-full text-white">
-            {/* Header - Windows Explorer style toolbar */}
-            <div className="flex items-center justify-between px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
+            {/* Header */}
+            <div className="flex items-center justify-between px-3 py-2 border-b border-white/20 bg-black/30">
               <div className="flex items-center gap-2">
                 <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
                 <span className="text-sm font-medium">Files</span>
@@ -6312,7 +6312,7 @@ export default function Dashboard() {
                 size="icon" 
                 variant="ghost" 
                 onClick={() => setIsFilesFlyoutOpen(false)}
-                className="h-7 w-7 text-gray-400 hover:text-white hover:bg-[#3d3d3d]"
+                className="h-7 w-7 text-white/70 hover:text-white hover:bg-white/20"
                 data-testid="button-close-files-flyout"
               >
                 <X className="h-4 w-4" />
@@ -6320,15 +6320,15 @@ export default function Dashboard() {
             </div>
             
             {/* Breadcrumb */}
-            <div className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 bg-[#202020] border-b border-[#3d3d3d]">
+            <div className="flex items-center gap-1 px-3 py-1.5 text-xs text-white/60 bg-black/20 border-b border-white/10">
               <span className="text-white">Week {semesterSettings ? getWeekNumber(new Date(), semesterSettings.semesterStartDate) : getWeekNumber(new Date())}</span>
               <ChevronRight className="h-3 w-3" />
-              <span className="text-gray-500">All Files</span>
+              <span className="text-white/50">All Files</span>
             </div>
             
-            {/* Files Tree - Windows Explorer Style */}
+            {/* Files Tree */}
             <div className="flex-1 overflow-y-auto py-2">
-              <p className="text-xs text-gray-500 px-3 mb-2">
+              <p className="text-xs text-white/40 px-3 mb-2">
                 Click files to open media controls. Drag files to task boxes.
               </p>
               
