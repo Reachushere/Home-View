@@ -7845,11 +7845,11 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
+    <form onSubmit={handleSubmit} className="space-y-5 text-[10px]">
       {/* Two column layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* Left Column */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
             <Label htmlFor="title">Title</Label>
             <Input
@@ -8105,8 +8105,8 @@ function TaskForm({
         </div>
 
         {/* Right Column */}
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-5">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <Label htmlFor="priority">Priority</Label>
               <Select value={formData.priority} onValueChange={(v) => setFormData(prev => ({ ...prev, priority: v }))}>
