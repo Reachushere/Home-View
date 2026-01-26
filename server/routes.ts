@@ -1974,10 +1974,21 @@ export async function registerRoutes(
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const targetEntity = entityId || "media_player.byhome";
+      
+      // List all Echo entities like the entrance announcement format
+      const allEntities = [
+        "media_player.byhome",
+        "media_player.echo_lr_studio_white_am",
+        "media_player.echo_kitchen_studio_black_am",
+        "media_player.echo_lr_hub_am",
+        "media_player.echo_show_pug_am",
+        "media_player.everywhere_2"
+      ];
+      
+      const targetEntity = entityId || allEntities;
       
       // Use media_player.play_media with "custom" type - sends text command like voice
-      console.log(`Attempting to play radio on ${targetEntity}`);
+      console.log(`Attempting to play radio on entities:`, targetEntity);
       
       // Use "custom" media type which sends command text like you would say to Alexa
       const playResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
@@ -1988,7 +1999,7 @@ export async function registerRoutes(
         },
         body: JSON.stringify({
           entity_id: targetEntity,
-          media_content_id: "play CHUM FM on TuneIn",
+          media_content_id: "play CHUM FM",
           media_content_type: "custom"
         }),
       });
@@ -1996,7 +2007,7 @@ export async function registerRoutes(
       const playResponseText = await playResponse.text();
       console.log(`media_player.play_media custom response (${playResponse.status}):`, playResponseText);
 
-      console.log(`Playing CHUM FM on ${targetEntity}`);
+      console.log(`Playing CHUM FM on entities`);
       res.json({ success: true });
     } catch (error) {
       console.error("Play radio error:", error);
