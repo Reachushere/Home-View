@@ -7942,6 +7942,8 @@ function TaskForm({
               data-testid="input-reference-link"
             />
           </div>
+        </div>
+      </div>
 
       <div>
         <Label>Attachments (optional)</Label>
