@@ -6133,7 +6133,7 @@ export default function Dashboard() {
                       </span>
                       <div 
                         className="working-indicator" 
-                        style={{ background: colorSettings.boxBackground }} 
+                        style={{ background: '#5979CC' }} 
                         title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
                       >
                         <div className="circle"></div>
@@ -6260,7 +6260,7 @@ export default function Dashboard() {
             >
               <Calendar className="h-3 w-3 text-white" />
               TODAY ({dueTodayTasks.length})
-              <div className="working-indicator ml-2" style={{ background: colorSettings.boxBackground }}>
+              <div className="working-indicator ml-2" style={{ background: '#5979CC' }}>
                 <div className="circle"></div>
                 <div className="circle"></div>
                 <div className="circle"></div>
