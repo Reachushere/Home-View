@@ -3384,6 +3384,30 @@ export default function Dashboard() {
             <Radio className="h-[14px] w-[14px] text-white" />
           </Button>
 
+          {/* Stop Radio */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            onClick={async () => {
+              try {
+                const response = await fetch('/api/media/stop-radio', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                });
+                if (response.ok) {
+                  toast({ title: "Radio stopped" });
+                }
+              } catch (error) {
+                toast({ title: "Error stopping radio", variant: "destructive" });
+              }
+            }}
+            data-testid="button-stop-radio"
+            title="Stop Radio"
+          >
+            <Square className="h-[12px] w-[12px] text-white fill-white" />
+          </Button>
+
           {/* Sync */}
           <Button 
             variant="ghost" 

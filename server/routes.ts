@@ -1975,49 +1975,72 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Try each device individually with media_player.play_media custom type
-      const devices = [
-        "media_player.echo_lr_studio_white_am",
-        "media_player.echo_show_pug_am",
-        "media_player.echo_lr_hub_am"
-      ];
+      // Use just one device - the living room studio white which worked
+      const device = "media_player.echo_lr_studio_white_am";
       
-      console.log(`Attempting to play CHUM FM via media_player.play_media on individual devices`);
+      console.log(`Playing CHUM FM on ${device}`);
       
-      // Try each device - some may support custom commands better than groups
-      for (const device of devices) {
-        try {
-          const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              entity_id: device,
-              media_content_id: "play CHUM FM on TuneIn",
-              media_content_type: "custom"
-            }),
-          });
-          
-          const responseText = await response.text();
-          console.log(`${device} response (${response.status}):`, responseText);
-          
-          // If we get a successful non-empty response, we're done
-          if (response.ok && responseText && responseText !== '[]') {
-            console.log(`Success on ${device}!`);
-            break;
-          }
-        } catch (err) {
-          console.log(`Error on ${device}:`, err);
-        }
-      }
+      const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: device,
+          media_content_id: "play CHUM FM on TuneIn",
+          media_content_type: "custom"
+        }),
+      });
+      
+      const responseText = await response.text();
+      console.log(`Response (${response.status}):`, responseText);
 
-      console.log(`Playing CHUM FM attempt complete`);
       res.json({ success: true });
     } catch (error) {
       console.error("Play radio error:", error);
       res.status(500).json({ error: "Failed to play radio" });
+    }
+  });
+
+  // POST /api/media/stop-radio - Stop radio on Echo devices
+  app.post("/api/media/stop-radio", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(400).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Stop ALL devices that might be playing
+      const devices = [
+        "media_player.echo_lr_studio_white_am",
+        "media_player.echo_show_pug_am",
+        "media_player.echo_lr_hub_am",
+        "media_player.byhome",
+        "media_player.everywhere_2"
+      ];
+      
+      console.log(`Stopping media on all devices`);
+      
+      for (const device of devices) {
+        await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: device
+          }),
+        });
+      }
+      
+      console.log(`All devices stopped`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Stop radio error:", error);
+      res.status(500).json({ error: "Failed to stop radio" });
     }
   });
 
