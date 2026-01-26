@@ -1974,7 +1974,7 @@ export async function registerRoutes(
       }
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
-      const targetEntity = entityId || "media_player.echo_king_l_am";
+      const targetEntity = entityId || "media_player.byhome";
       
       // Use notify.alexa_media service to send a voice command (same format as user's working automation)
       const notifyResponse = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
