@@ -4343,7 +4343,7 @@ export default function Dashboard() {
           
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md bg-background/80 backdrop-blur-md border border-white/20 shadow-xl" style={{ top: '55%' }}>
               <DialogHeader>
                 <DialogTitle>Profile</DialogTitle>
               </DialogHeader>
@@ -4357,7 +4357,7 @@ export default function Dashboard() {
           
           {/* School Dialog */}
           <Dialog open={isSchoolDialogOpen} onOpenChange={setIsSchoolDialogOpen}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md bg-background/80 backdrop-blur-md border border-white/20 shadow-xl" style={{ top: '55%' }}>
               <DialogHeader>
                 <DialogTitle>School Settings</DialogTitle>
               </DialogHeader>
@@ -4371,7 +4371,7 @@ export default function Dashboard() {
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto overflow-x-hidden">
+            <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto overflow-x-hidden bg-background/80 backdrop-blur-md border border-white/20 shadow-xl" style={{ top: '55%' }}>
               <DialogHeader>
                 <DialogTitle>Courses</DialogTitle>
               </DialogHeader>
@@ -4384,7 +4384,7 @@ export default function Dashboard() {
           
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent className="max-w-4xl">
+            <DialogContent className="max-w-4xl bg-background/80 backdrop-blur-md border border-white/20 shadow-xl" style={{ top: '55%' }}>
               <DialogHeader>
                 <DialogTitle>Settings</DialogTitle>
               </DialogHeader>
