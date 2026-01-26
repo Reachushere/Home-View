@@ -200,6 +200,8 @@ export default function Dashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
+  const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(false);
+  const [draggedFile, setDraggedFile] = useState<{ url: string; name: string } | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [lastCompletedTaskId, setLastCompletedTaskId] = useState<number | null>(null);
   const celebrationAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -1929,6 +1931,44 @@ export default function Dashboard() {
     },
   });
 
+  // Mutation to attach a file to an existing task
+  const attachFileToTaskMutation = useMutation({
+    mutationFn: async ({ taskId, filePath, fileName }: { taskId: number; filePath: string; fileName: string }) => {
+      // Get the current task first
+      const currentTask = tasks?.find(t => t.id === taskId);
+      const currentAttachments = currentTask?.attachments || [];
+      const newAttachment = JSON.stringify({ url: filePath, name: fileName });
+      const updatedAttachments = [...currentAttachments, newAttachment];
+      return apiRequest("PATCH", `/api/tasks/${taskId}`, {
+        attachments: updatedAttachments
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      toast({ title: "File attached to task" });
+    },
+  });
+
+  // Handle file drop on a task
+  const handleFileDropOnTask = (e: React.DragEvent, taskId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const data = e.dataTransfer.getData('application/json');
+      if (data) {
+        const fileData = JSON.parse(data);
+        attachFileToTaskMutation.mutate({ 
+          taskId, 
+          filePath: fileData.url, 
+          fileName: fileData.name 
+        });
+      }
+    } catch (err) {
+      console.error('Error handling file drop:', err);
+    }
+    setDraggedFile(null);
+  };
+
   // Drag and drop handlers
   const handleDragStart = (e: React.DragEvent, task: Task) => {
     setDraggedTask(task);
@@ -3192,9 +3232,9 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white ${isFilesFlyoutOpen ? '!bg-blue-500/50' : ''}`}
             data-testid="button-files"
-            onClick={() => window.location.href = '/files'}
+            onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
           >
             <FolderOpen className="h-[14px] w-[14px] text-white" />
           </Button>
@@ -5668,7 +5708,15 @@ export default function Dashboard() {
             const attachments = parseAttachments(task.attachments);
             const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
             return (
-              <div key={task.id} className="mb-1.5" data-box-task-id={task.id} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+              <div 
+                key={task.id} 
+                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''}`} 
+                data-box-task-id={task.id} 
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+                onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
+                onDrop={(e) => handleFileDropOnTask(e, task.id)}
+                data-testid={`droppable-task-${task.id}`}
+              >
                 <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -6108,6 +6156,85 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* Files Flyout Panel */}
+        <div 
+          className={`fixed top-0 right-0 h-full w-1/2 bg-white dark:bg-gray-900 shadow-2xl border-l border-border z-[100] transform transition-transform duration-300 ease-in-out ${isFilesFlyoutOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          data-testid="files-flyout-panel"
+        >
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border" style={{ backgroundColor: colorSettings.headerBar }}>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <FolderOpen className="h-5 w-5" />
+                Files
+              </h2>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={() => setIsFilesFlyoutOpen(false)}
+                className="text-white hover:bg-white/20"
+                data-testid="button-close-files-flyout"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            {/* Files List */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <p className="text-sm text-muted-foreground mb-4">
+                Drag files to task boxes or calendar entries to attach them.
+              </p>
+              <div className="space-y-2">
+                {weeklyFiles.map((file) => (
+                  <div
+                    key={file.id}
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData('application/json', JSON.stringify({ 
+                        url: file.objectPath, 
+                        name: file.displayName || file.originalName 
+                      }));
+                      setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
+                    }}
+                    onDragEnd={() => setDraggedFile(null)}
+                    className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-accent/50 cursor-grab active:cursor-grabbing transition-colors"
+                    data-testid={`draggable-file-${file.id}`}
+                  >
+                    <FileText className="h-5 w-5 text-muted-foreground shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate text-sm">{file.displayName || file.originalName}</p>
+                      <p className="text-xs text-muted-foreground">{file.folder || 'No folder'}</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs shrink-0">
+                      {file.contentType?.split('/')[1] || 'file'}
+                    </Badge>
+                  </div>
+                ))}
+                {weeklyFiles.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <FolderOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>No files uploaded yet</p>
+                    <p className="text-xs mt-1">Upload files from the Files page</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Footer */}
+            <div className="p-4 border-t border-border">
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => window.location.href = '/files'}
+                data-testid="button-go-to-files-page"
+              >
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Open Full Files Page
+              </Button>
+            </div>
+          </div>
+        </div>
 
       </main>
       </div>
