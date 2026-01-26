@@ -7369,8 +7369,8 @@ function CoursesForm({
       
       <div className="space-y-2">
         {courses.map((course, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <span className="text-[10px] text-muted-foreground w-4">{index + 1}.</span>
+          <div key={index} className="flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground w-3">{index + 1}.</span>
             <input
               type="color"
               value={course.color}
@@ -7389,14 +7389,14 @@ function CoursesForm({
               value={course.professor}
               onChange={(e) => updateCourse(index, 'professor', e.target.value)}
               placeholder={`Professor`}
-              className="w-40 text-xs h-8"
+              className="flex-1 text-xs h-8"
               data-testid={`input-course-professor-${index}`}
             />
           </div>
         ))}
       </div>
       
-      <Button type="submit" className="w-full bg-[#5979CC] hover:bg-[#4a68b3] text-white text-xs h-8" data-testid="button-save-courses">
+      <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white text-xs h-8" data-testid="button-save-courses">
         Save Courses
       </Button>
     </form>
