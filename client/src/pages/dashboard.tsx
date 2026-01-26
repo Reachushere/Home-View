@@ -4817,6 +4817,7 @@ export default function Dashboard() {
               </div>
               <div className="flex justify-end pt-4 border-t">
                 <Button 
+                  className="bg-teal-500 hover:bg-teal-600 text-white"
                   onClick={() => {
                     localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
                     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
