@@ -2,6 +2,8 @@ import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
+import { db } from "./db";
+import { sql } from "drizzle-orm";
 import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, type RepeatType, type RepeatIntervalUnit, type InsertTask } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
@@ -701,6 +703,42 @@ export async function registerRoutes(
   });
 
   // ============= FILE MANAGEMENT ROUTES =============
+
+  // POST /api/files/sync-names - Sync file names to include course names and module numbers
+  app.post("/api/files/sync-names", async (_req, res) => {
+    try {
+      // First, delete duplicate files (keep only the one with the highest ID for each object_path)
+      const deleteResult = await db.execute(sql`
+        DELETE FROM files 
+        WHERE id NOT IN (
+          SELECT MAX(id) FROM files GROUP BY object_path
+        )
+      `);
+      
+      // Update CPPA122 files that don't have the course name yet
+      await db.execute(sql`
+        UPDATE files SET display_name = REPLACE(display_name, 'CPPA122, ', 'CPPA122 - Local Politics, ') 
+        WHERE display_name LIKE 'CPPA122,%' AND display_name NOT LIKE 'CPPA122 - Local Politics,%'
+      `);
+      
+      // Update CFNF400 files that don't have the course name yet
+      await db.execute(sql`
+        UPDATE files SET display_name = REPLACE(display_name, 'CFNF400, ', 'CFNF400 - Human Sexuality, ') 
+        WHERE display_name LIKE 'CFNF400,%' AND display_name NOT LIKE 'CFNF400 - Human Sexuality,%'
+      `);
+      
+      // Update CASL101 files that don't have the course name yet
+      await db.execute(sql`
+        UPDATE files SET display_name = REPLACE(display_name, 'CASL101, ', 'CASL101 - Sign Language, ') 
+        WHERE display_name LIKE 'CASL101,%' AND display_name NOT LIKE 'CASL101 - Sign Language,%'
+      `);
+      
+      res.json({ success: true, message: "File names synced and duplicates removed" });
+    } catch (err) {
+      console.error("Error syncing file names:", err);
+      res.status(500).json({ error: "Failed to sync file names" });
+    }
+  });
 
   // GET /api/files - List all uploaded files
   app.get("/api/files", async (_req, res) => {

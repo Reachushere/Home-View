@@ -4977,9 +4977,12 @@ export default function Dashboard() {
                           const result = await importRes.json();
                           
                           if (result.success) {
+                            // Also sync file names and remove duplicates on production
+                            await fetch("https://home-view--bkh416.replit.app/api/files/sync-names", { method: "POST" });
+                            
                             toast({ 
                               title: "Push complete!", 
-                              description: `Pushed ${result.imported.tasks} tasks, ${result.imported.files} files.` 
+                              description: `Pushed ${result.imported.tasks} tasks, ${result.imported.files} files. Files synced.` 
                             });
                           } else {
                             toast({ title: "Push failed", description: result.error, variant: "destructive" });
