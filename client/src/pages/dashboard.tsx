@@ -3480,12 +3480,13 @@ export default function Dashboard() {
                       className="flex-1 border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
-                          await fetch('/api/media/volume', {
+                          const res = await fetch('/api/media/volume', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ direction: 'down' })
                           });
-                          toast({ title: "Volume down" });
+                          const data = await res.json();
+                          toast({ title: `Volume: ${data.newVolume}%` });
                         } catch (error) {
                           toast({ title: "Error adjusting volume", variant: "destructive" });
                         }
@@ -3500,12 +3501,13 @@ export default function Dashboard() {
                       className="flex-1 border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
-                          await fetch('/api/media/volume', {
+                          const res = await fetch('/api/media/volume', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ direction: 'up' })
                           });
-                          toast({ title: "Volume up" });
+                          const data = await res.json();
+                          toast({ title: `Volume: ${data.newVolume}%` });
                         } catch (error) {
                           toast({ title: "Error adjusting volume", variant: "destructive" });
                         }

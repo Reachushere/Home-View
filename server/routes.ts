@@ -2093,7 +2093,7 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Home Assistant not configured" });
       }
 
-      const { direction } = req.body; // 'up' or 'down'
+      const { direction, level } = req.body; // direction: 'up' or 'down', or level: 0-100
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
       const devices = [
@@ -2103,30 +2103,53 @@ export async function registerRoutes(
         "media_player.cat_wr"
       ];
       
-      // Use notify.alexa_media with type "tts" to send volume command (same as PDF volume)
-      const volumeCommand = direction === 'up' ? 'volume up' : 'volume down';
+      console.log(`Setting volume on all devices`);
       
-      console.log(`Adjusting volume ${direction} on all devices using notify.alexa_media`);
-      
-      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
+      // First get current volume from one device
+      const statesResponse = await fetch(`${haUrl}/api/states/media_player.echo_lr_studio_white_am`, {
+        method: 'GET',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          message: volumeCommand,
-          target: devices,
-          data: {
-            type: "tts"
-          }
-        }),
       });
       
-      const responseText = await response.text();
-      console.log(`Volume ${direction} response: ${response.status}`, responseText);
+      let currentVolume = 0.5; // Default 50%
+      if (statesResponse.ok) {
+        const stateData = await statesResponse.json();
+        currentVolume = stateData.attributes?.volume_level || 0.5;
+        console.log(`Current volume: ${currentVolume}`);
+      }
       
-      res.json({ success: true, direction });
+      // Calculate new volume
+      let newVolume: number;
+      if (level !== undefined) {
+        newVolume = level / 100; // Convert 0-100 to 0-1
+      } else {
+        const step = 0.1; // 10% steps
+        newVolume = direction === 'up' 
+          ? Math.min(1, currentVolume + step)
+          : Math.max(0, currentVolume - step);
+      }
+      
+      console.log(`Setting volume to ${newVolume} on all devices`);
+      
+      // Set volume on all devices
+      for (const device of devices) {
+        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: device,
+            volume_level: newVolume
+          }),
+        });
+      }
+      
+      res.json({ success: true, direction, newVolume: Math.round(newVolume * 100) });
     } catch (error) {
       console.error("Volume control error:", error);
       res.status(500).json({ error: "Failed to adjust volume" });
