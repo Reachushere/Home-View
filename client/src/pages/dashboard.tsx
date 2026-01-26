@@ -7752,6 +7752,17 @@ function TaskForm({
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  // Query files to look up display names for attachments
+  const { data: allFiles = [] } = useQuery<FileRecord[]>({
+    queryKey: ["/api/files"],
+  });
+  
+  // Helper to get display name for an attachment
+  const getAttachmentDisplayName = (attachment: string) => {
+    const file = allFiles.find(f => f.objectPath === attachment);
+    return file?.displayName || attachment.split('/').pop() || 'File';
+  };
+  
   // Date picker popover state
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [tempDate, setTempDate] = useState<Date | undefined>(() => {
@@ -8230,7 +8241,7 @@ function TaskForm({
             <div key={idx} className="flex items-center gap-2 text-sm">
               <Paperclip className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
               <a href={attachment.startsWith('/objects/') ? attachment : attachment} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate flex-1">
-                {attachment.startsWith('/objects/') ? attachment.split('/').pop() : attachment}
+                {getAttachmentDisplayName(attachment)}
               </a>
               <Button
                 type="button"
