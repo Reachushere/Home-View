@@ -7845,11 +7845,11 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3 text-[11px]">
       {/* Two column layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Left Column */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div>
             <Label htmlFor="title">Title</Label>
             <Input
@@ -7870,20 +7870,25 @@ function TaskForm({
                 <SelectTrigger className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-course">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
-                <SelectContent className="p-1">
+                <SelectContent>
                   {COURSES.map(course => {
-                    const bgClass = course.code === "CPPA122" ? "!bg-green-100" : course.code === "CFNF400" ? "!bg-pink-100" : "!bg-indigo-100";
-                    const textClass = course.code === "CPPA122" ? "!text-green-700" : course.code === "CFNF400" ? "!text-pink-700" : "!text-indigo-700";
+                    const dotColor = course.code === "CPPA122" ? "#22c55e" : course.code === "CFNF400" ? "#ec4899" : "#6366f1";
+                    const textColor = course.code === "CPPA122" ? "#15803d" : course.code === "CFNF400" ? "#be185d" : "#4338ca";
                     return (
                       <SelectItem 
                         key={course.code} 
                         value={`${course.code} - ${course.name}`}
-                        className={`${bgClass} ${textClass} my-0.5 rounded-md [&>span]:${textClass}`}
                       >
-                        <span className={`flex items-center gap-1 ${textClass}`}>
-                          <span className="font-semibold">{course.code}</span>
-                          <span>-</span>
-                          <span>{course.name}</span>
+                        <span className="flex items-center gap-2">
+                          <span 
+                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            style={{ backgroundColor: dotColor }}
+                          />
+                          <span style={{ color: textColor }}>
+                            <span className="font-semibold">{course.code}</span>
+                            {" - "}
+                            <span>{course.name}</span>
+                          </span>
                         </span>
                       </SelectItem>
                     );
@@ -8099,8 +8104,8 @@ function TaskForm({
         </div>
 
         {/* Right Column */}
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
             <div>
               <Label htmlFor="priority">Priority</Label>
               <Select value={formData.priority} onValueChange={(v) => setFormData(prev => ({ ...prev, priority: v }))}>
