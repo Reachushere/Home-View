@@ -4122,11 +4122,11 @@ export default function Dashboard() {
           
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent className="max-w-md">
-              <DialogHeader>
+            <DialogContent className="max-w-md max-h-[85vh] overflow-hidden flex flex-col">
+              <DialogHeader className="flex-shrink-0">
                 <DialogTitle>Settings</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 overflow-y-auto flex-1 pr-2">
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Background Image & Color</Label>
                   <p className="text-xs text-muted-foreground">
