@@ -7031,7 +7031,7 @@ function ProfileForm({
           <SelectTrigger className="!text-black" data-testid="select-profile-timezone">
             <SelectValue placeholder="Select time zone" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="[&_*]:!text-black">
             {timezones.map(tz => (
               <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
             ))}
@@ -7056,7 +7056,7 @@ function ProfileForm({
               <SelectTrigger className="!text-black" data-testid="select-travel-timezone">
                 <SelectValue placeholder="Select travel time zone" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="[&_*]:!text-black">
                 {timezones.map(tz => (
                   <SelectItem key={tz.value} value={tz.value}>{tz.label}</SelectItem>
                 ))}
