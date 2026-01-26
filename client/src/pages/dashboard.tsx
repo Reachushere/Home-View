@@ -492,11 +492,13 @@ export default function Dashboard() {
       if (rowResizing?.isResizing) {
         const delta = e.clientY - rowResizing.startY;
         const newHeight = Math.max(20, rowResizing.startHeight + delta);
+        console.log('Row resizing:', rowResizing.rowType, 'delta:', delta, 'newHeight:', newHeight);
         if (rowResizing.rowType === 'allDay') {
           setGridSizes(prev => ({ ...prev, allDayRowHeight: Math.min(100, newHeight) }));
         } else if (rowResizing.rowType === 'course') {
           setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(60, newHeight) }));
-        } else {
+        } else if (rowResizing.rowType === 'timeSlot') {
+          console.log('Setting timeSlotHeight to:', Math.min(100, newHeight));
           setGridSizes(prev => ({ ...prev, timeSlotHeight: Math.min(100, newHeight) }));
         }
       }
