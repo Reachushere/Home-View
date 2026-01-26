@@ -68,6 +68,7 @@ import {
   Palette,
   ExternalLink,
   Volume2,
+  VolumeX,
   CheckSquare,
   Undo2,
 } from "lucide-react";
@@ -6222,35 +6223,44 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Files Flyout Panel */}
+        {/* Files Flyout Panel - Windows Explorer Style */}
         <div 
-          className={`fixed top-0 right-0 h-full w-1/2 bg-white dark:bg-gray-900 shadow-2xl border-l border-border z-[100] transform transition-transform duration-300 ease-in-out ${isFilesFlyoutOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`fixed top-0 right-0 h-full w-1/2 bg-[#191919] shadow-2xl border-l border-[#3d3d3d] z-[100] transform transition-transform duration-300 ease-in-out ${isFilesFlyoutOpen ? 'translate-x-0' : 'translate-x-full'}`}
           data-testid="files-flyout-panel"
         >
-          <div className="flex flex-col h-full">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border" style={{ backgroundColor: colorSettings.headerBar }}>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <FolderOpen className="h-5 w-5" />
-                Files
-              </h2>
+          <div className="flex flex-col h-full text-white">
+            {/* Header - Windows Explorer style toolbar */}
+            <div className="flex items-center justify-between px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
+              <div className="flex items-center gap-2">
+                <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                <span className="text-sm font-medium">Files</span>
+              </div>
               <Button 
                 size="icon" 
                 variant="ghost" 
                 onClick={() => setIsFilesFlyoutOpen(false)}
-                className="text-white hover:bg-white/20"
+                className="h-7 w-7 text-gray-400 hover:text-white hover:bg-[#3d3d3d]"
                 data-testid="button-close-files-flyout"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </Button>
             </div>
             
-            {/* Files List */}
-            <div className="flex-1 overflow-y-auto p-4">
-              <p className="text-sm text-muted-foreground mb-4">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 bg-[#202020] border-b border-[#3d3d3d]">
+              <span className="text-white">Week {semesterSettings ? getWeekNumber(new Date(), semesterSettings.semesterStartDate) : getWeekNumber(new Date())}</span>
+              <ChevronRight className="h-3 w-3" />
+              <span className="text-gray-500">All Files</span>
+            </div>
+            
+            {/* Files Tree */}
+            <div className="flex-1 overflow-y-auto py-2">
+              <p className="text-xs text-gray-500 px-3 mb-2">
                 Drag files to task boxes or calendar entries to attach them.
               </p>
-              <div className="space-y-2">
+              
+              {/* File rows - Windows Explorer style */}
+              <div className="space-y-1 px-1">
                 {weeklyFiles.map((file) => (
                   <div
                     key={file.id}
@@ -6263,23 +6273,118 @@ export default function Dashboard() {
                       setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
                     }}
                     onDragEnd={() => setDraggedFile(null)}
-                    className="flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-accent/50 cursor-grab active:cursor-grabbing transition-colors"
+                    className="flex flex-col gap-1 p-2 bg-[#ffd251] border-2 border-black rounded-[8px] hover:brightness-105 cursor-move mx-2"
                     data-testid={`draggable-file-${file.id}`}
                   >
-                    <FileText className="h-5 w-5 text-muted-foreground shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate text-sm">{file.displayName || file.originalName}</p>
-                      <p className="text-xs text-muted-foreground">{file.folder || 'No folder'}</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <Checkbox
+                        checked={file.listened || false}
+                        onCheckedChange={async (checked) => {
+                          try {
+                            await fetch(`/api/files/${file.id}`, {
+                              method: 'PATCH',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ listened: checked === true })
+                            });
+                            queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                          } catch (err) {
+                            console.error('Failed to update listened status:', err);
+                          }
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-4 w-4 border-2 border-black data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                        data-testid={`checkbox-listened-flyout-${file.id}`}
+                      />
+                      <a 
+                        href={file.objectPath} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={`font-medium text-[10px] truncate hover:underline cursor-pointer text-black flex-1 ${file.listened ? 'line-through opacity-60' : ''}`}
+                        onClick={(e) => e.stopPropagation()}
+                        data-testid={`text-filename-flyout-${file.id}`}
+                      >
+                        {file.displayName || file.originalName}
+                      </a>
+                      <Badge variant="secondary" className="text-[8px] py-0 px-1 bg-black/20 text-black border-0">
+                        {file.contentType?.split('/')[1] || 'file'}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="text-xs shrink-0">
-                      {file.contentType?.split('/')[1] || 'file'}
-                    </Badge>
+
+                    {/* Media Controls Bar */}
+                    <div className="flex items-center w-[calc(100%+16px)] bg-black rounded-b-[6px] -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
+                      <div className="flex items-center gap-[26px]">
+                        <Play 
+                          className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              await fetch('/api/media/play', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ mediaUrl: file.objectPath, entityId: 'media_player.echo_lr_studio_white_am' })
+                              });
+                            } catch (err) {
+                              console.error('Play error:', err);
+                            }
+                          }}
+                          data-testid={`button-play-flyout-${file.id}`}
+                        />
+                        <Square 
+                          className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              await fetch('/api/media/stop', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ entityId: 'media_player.echo_lr_studio_white_am' })
+                              });
+                            } catch (err) {
+                              console.error('Stop error:', err);
+                            }
+                          }}
+                          data-testid={`button-stop-flyout-${file.id}`}
+                        />
+                        <VolumeX 
+                          className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
+                          onClick={async (e: React.MouseEvent) => {
+                            e.stopPropagation();
+                            try {
+                              await fetch('/api/media/volume', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'down', entityId: 'media_player.echo_lr_studio_white_am' })
+                              });
+                            } catch (err) {
+                              console.error('Volume error:', err);
+                            }
+                          }}
+                          data-testid={`button-vol-down-flyout-${file.id}`}
+                        />
+                        <Volume2 
+                          className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              await fetch('/api/media/volume', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'up', entityId: 'media_player.echo_lr_studio_white_am' })
+                              });
+                            } catch (err) {
+                              console.error('Volume error:', err);
+                            }
+                          }}
+                          data-testid={`button-vol-up-flyout-${file.id}`}
+                        />
+                      </div>
+                    </div>
                   </div>
                 ))}
                 {weeklyFiles.length === 0 && (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <FolderOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p>No files uploaded yet</p>
+                  <div className="text-center py-8 text-gray-500">
+                    <FolderOpen className="h-12 w-12 mx-auto mb-2 opacity-50 text-yellow-600" />
+                    <p className="text-sm">No files uploaded yet</p>
                     <p className="text-xs mt-1">Upload files from the Files page</p>
                   </div>
                 )}
@@ -6287,14 +6392,14 @@ export default function Dashboard() {
             </div>
             
             {/* Footer */}
-            <div className="p-4 border-t border-border">
+            <div className="p-3 border-t border-[#3d3d3d] bg-[#202020]">
               <Button 
                 variant="outline" 
-                className="w-full"
+                className="w-full h-8 text-xs bg-[#5979CC] hover:bg-[#6989DC] text-white border-0"
                 onClick={() => window.location.href = '/files'}
                 data-testid="button-go-to-files-page"
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
+                <ExternalLink className="h-3 w-3 mr-2" />
                 Open Full Files Page
               </Button>
             </div>
