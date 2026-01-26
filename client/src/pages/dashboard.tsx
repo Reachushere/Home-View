@@ -2323,10 +2323,6 @@ export default function Dashboard() {
       const todayTaskIds = new Set(dueTodayTasks.map(t => t.id));
       const allTasksToConnect = [...dueTodayTasks, ...dueTomorrowTasks, ...dueThisWeekTasks];
       
-      // Get the task boxes container to start arrows from below it
-      const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
-      const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom : 0;
-      
       allTasksToConnect.forEach(task => {
         // Find the task card in the bottom boxes
         const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
@@ -2345,20 +2341,20 @@ export default function Dashboard() {
           else if (courseCode === "CFNF400") color = "#ec4899";
           else if (courseCode === "CASL101") color = "#6366f1";
           
-          // Get checkbox X position for starting point
+          // Start arrow from left side of checkbox, or fall back to left of task box
           let fromX: number;
+          let fromY: number;
           if (checkboxEl) {
             const checkboxRect = checkboxEl.getBoundingClientRect();
-            fromX = checkboxRect.left + checkboxRect.width / 2;
+            fromX = checkboxRect.left;
+            fromY = checkboxRect.top + checkboxRect.height / 2;
           } else {
             const boxRect = boxTaskEl.getBoundingClientRect();
-            fromX = boxRect.left + boxRect.width / 2;
+            fromX = boxRect.left;
+            fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Start arrow from just below the task boxes container (not from individual task)
-          const fromY = containerBottom + 5;
-          
-          // Arrow points to top of calendar entry
+          // Arrow points to top of calendar entry (since boxes are now above calendar)
           let toY = calRect.top - 10;
           
           connections.push({
@@ -6648,11 +6644,12 @@ export default function Dashboard() {
                 : conn.color === "#ec4899" ? "arrowhead-pink" 
                 : conn.color === "#6366f1" ? "arrowhead-indigo"
                 : "arrowhead-black";
-              // Draw path that goes straight down from the task box to avoid crossing other boxes
-              // Use a simple curved path from task to calendar entry
-              const controlY = conn.fromY + (conn.toY - conn.fromY) * 0.3;
-              // Path: start at checkbox, curve smoothly down to calendar
-              const path = `M ${conn.fromX} ${conn.fromY} Q ${conn.fromX} ${controlY}, ${conn.toX} ${conn.toY}`;
+              // Draw path that goes left first, then curves down to calendar (boxes are above calendar)
+              // This avoids crossing other checkboxes in the task list
+              const exitX = conn.fromX - 25; // Go 25px left first to clear all checkboxes
+              const midY = (conn.fromY + conn.toY) / 2;
+              // Path: start at checkbox, go left, then curve down to calendar
+              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} Q ${exitX} ${midY}, ${conn.toX} ${conn.toY}`;
               return (
                 <g key={conn.taskId}>
                   {/* Glow/outline for visibility on dark backgrounds */}
