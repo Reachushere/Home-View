@@ -457,11 +457,13 @@ export default function Dashboard() {
   const handleRowResizeStart = (e: React.MouseEvent, rowType: 'allDay' | 'course' | 'timeSlot') => {
     e.preventDefault();
     e.stopPropagation();
+    console.log('Row resize started:', rowType);
     const startHeight = rowType === 'allDay' 
       ? gridSizes.allDayRowHeight 
       : rowType === 'course' 
         ? gridSizes.courseRowHeight 
         : gridSizes.timeSlotHeight;
+    console.log('Start height:', startHeight);
     setRowResizing({
       isResizing: true,
       rowType,
@@ -5551,8 +5553,11 @@ export default function Dashboard() {
           </Card>
           {/* Time slot row resize handle - outside Card to avoid overflow clipping */}
           <div 
-            className="h-2 cursor-row-resize hover:bg-blue-400/50 z-50 flex-shrink-0 absolute bottom-4 left-0 right-0"
-            onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
+            className="h-3 cursor-row-resize bg-red-500 hover:bg-red-700 z-[100] flex-shrink-0 absolute bottom-5 left-0 right-0"
+            onMouseDown={(e) => {
+              console.log('TIME SLOT RESIZE CLICKED');
+              handleRowResizeStart(e, 'timeSlot');
+            }}
             data-testid="resize-timeslot-row"
           />
           {/* Resize Handle */}
