@@ -6131,7 +6131,24 @@ export default function Dashboard() {
                       <span className="text-[11px] text-white font-normal">
                         {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')}
                       </span>
-                      <div className="working-indicator" style={{ backgroundColor: '#01a0af', minWidth: '32px', minHeight: '32px' }} title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}>
+                      <div 
+                        className="working-indicator" 
+                        style={{ 
+                          backgroundColor: '#01a0af', 
+                          background: '#01a0af',
+                          width: '32px', 
+                          height: '32px',
+                          minWidth: '32px', 
+                          minHeight: '32px',
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 1fr)',
+                          gap: '2px',
+                          padding: '4px',
+                          borderRadius: '4px',
+                          position: 'relative' as const
+                        }} 
+                        title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
+                      >
                         <div className="circle"></div>
                         <div className="circle"></div>
                         <div className="circle"></div>
