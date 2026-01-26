@@ -1976,30 +1976,49 @@ export async function registerRoutes(
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const targetEntity = entityId || "media_player.byhome";
       
-      // Use notify.alexa_media with type: announce (matching user's working automation)
+      // Use media_player.play_media with TUNEIN to actually play radio (not just announce)
       console.log(`Attempting to play radio on ${targetEntity}`);
       
-      const notifyResponse = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+      // Use media_player.play_media with TUNEIN media type
+      const playResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: "play CHUM FM on TuneIn",
-          data: {
-            type: "announce"
-          },
-          target: [targetEntity]
+          entity_id: targetEntity,
+          media_content_id: "CHUM FM",
+          media_content_type: "TUNEIN"
         }),
       });
       
-      const notifyResponseText = await notifyResponse.text();
-      console.log(`notify.alexa_media announce response (${notifyResponse.status}):`, notifyResponseText);
+      const playResponseText = await playResponse.text();
+      console.log(`media_player.play_media TUNEIN response (${playResponse.status}):`, playResponseText);
 
-      if (!notifyResponse.ok) {
-        console.error("notify.alexa_media failed:", notifyResponseText);
-        return res.status(500).json({ error: "Failed to play radio", details: notifyResponseText });
+      if (!playResponse.ok) {
+        // Try with station search format
+        console.log("TUNEIN failed, trying station search format...");
+        const searchResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: targetEntity,
+            media_content_id: "play CHUM FM from TuneIn",
+            media_content_type: "custom"
+          }),
+        });
+        
+        const searchResponseText = await searchResponse.text();
+        console.log(`media_player.play_media custom response (${searchResponse.status}):`, searchResponseText);
+        
+        if (!searchResponse.ok) {
+          console.error("All radio playback attempts failed");
+          return res.status(500).json({ error: "Failed to play radio", details: searchResponseText });
+        }
       }
 
       console.log(`Playing CHUM FM on ${targetEntity}`);
