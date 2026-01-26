@@ -7178,7 +7178,7 @@ function FileSelector({
 
   const availableFiles = files
     .filter(f => !excludePaths.includes(f.objectPath))
-    .sort((a, b) => a.displayName.localeCompare(b.displayName));
+    .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { numeric: true, sensitivity: 'base' }));
 
   if (availableFiles.length === 0) {
     return (
