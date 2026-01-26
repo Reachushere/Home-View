@@ -4685,49 +4685,7 @@ export default function Dashboard() {
                 ALL DAY
               </div>
               <div className="grid relative" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                {/* File tasks spanning current week (Sun-Fri, not Saturday which is next week) */}
-                {allTaskFiles.length > 0 && (
-                  <div 
-                    className="col-span-6 flex flex-col gap-0.5 p-0.5 border-l border-border/50"
-                    style={{ backgroundColor: 'rgba(147, 197, 253, 0.2)' }}
-                  >
-                    {allTaskFiles.map((file, idx) => {
-                      const isCompleted = completedFiles.has(file.url);
-                      const courseCode = file.courseName?.split(' ')[0]?.toUpperCase() || '';
-                      const colors = courseColors[courseCode as keyof typeof courseColors];
-                      // Only blink from Wednesday (day 3) onwards if enabled
-                      const today = new Date();
-                      const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, 2=Tue, 3=Wed, 4=Thu, 5=Fri, 6=Sat
-                      const shouldBlink = dayOfWeek >= 3 && blinkSettings.allDayFilesBlink; // Wednesday or later AND setting enabled
-                      return (
-                        <div
-                          key={idx}
-                          className={`flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded ${shouldBlink && !isCompleted ? 'animate-file-blink' : ''} ${
-                            isCompleted 
-                              ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                              : colors 
-                                ? `${colors.bg} text-black border ${colors.border}` 
-                                : "bg-blue-100 text-black border border-blue-300"
-                          }`}
-                          data-testid={`file-allday-${idx}`}
-                        >
-                          <Checkbox
-                            checked={isCompleted}
-                            onCheckedChange={() => toggleFileComplete(file.url)}
-                            className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                            data-testid={`checkbox-file-allday-${idx}`}
-                          />
-                          <FileText className="h-3 w-3 shrink-0" />
-                          <span className={`truncate flex-1 ${isCompleted ? "line-through" : ""}`}>{file.name}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                {/* Empty cell for Saturday (next week) in the file row */}
-                {allTaskFiles.length > 0 && (
-                  <div className="col-span-1 border-l border-border/50" style={{ backgroundColor: 'white' }} />
-                )}
+                {/* Day cells as background */}
                 {weekDays.map((day, dayIdx) => {
                   // Only show true all-day tasks (midnight due) and all-day calendar events - NO prep tasks here
                   const allDayTasks = getAllDayTasks(day);
