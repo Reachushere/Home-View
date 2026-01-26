@@ -8200,7 +8200,8 @@ function TaskForm({
               placeholder="Add notes or details..."
               rows={3}
               data-testid="input-description"
-              className="!text-black bg-white text-xs"
+              className="!text-black bg-white"
+              style={{ fontSize: '12px' }}
             />
           </div>
 
@@ -8213,7 +8214,8 @@ function TaskForm({
               onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
               placeholder="https://example.com"
               data-testid="input-reference-link"
-              className="!text-black bg-white text-xs h-8"
+              className="!text-black bg-white h-8"
+              style={{ fontSize: '12px' }}
             />
           </div>
         </div>
@@ -8290,7 +8292,8 @@ function TaskForm({
               onChange={(e) => setNewAttachment(e.target.value)}
               placeholder="Or paste URL..."
               data-testid="input-new-attachment"
-              className="!text-black bg-white text-xs h-8"
+              className="!text-black bg-white h-8"
+              style={{ fontSize: '12px' }}
             />
             <Button
               type="button"
