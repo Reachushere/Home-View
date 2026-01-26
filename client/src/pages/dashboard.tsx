@@ -2904,41 +2904,41 @@ export default function Dashboard() {
         {/* Logo, Date Range, and Week Navigation - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-10 w-10 ml-[-1px]" />
-          {/* Date display beside logo */}
-          <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-            <span className="text-[11px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
-            <span className="text-[11px] text-white/50 relative top-[1px]">—</span>
-            <span className="text-[11px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
-          </div>
-          {/* Week navigation with arrows centered, Today/Month stacked */}
+          {/* Week navigation with arrows around date */}
           <div className="flex items-center gap-1">
-            {/* Left arrow - centered vertically */}
-            <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md ml-[-2px]" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+            {/* Left arrow */}
+            <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
               <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
             </Button>
-            {/* Center content - Today/Month buttons */}
-            <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-              <Button 
-                variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
-                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-                data-testid="button-today"
-              >
-                Today
-              </Button>
-              <div className="w-[1px] h-3 bg-white/50" />
-              <Button 
-                variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
-                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-                data-testid="button-month-view"
-              >
-                {calendarView === "month" ? "Week" : "Month"}
-              </Button>
+            {/* Date display */}
+            <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+              <span className="text-[11px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
+              <span className="text-[11px] text-white/50 relative top-[1px]">—</span>
+              <span className="text-[11px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
             </div>
-            {/* Right arrow - centered vertically */}
+            {/* Right arrow */}
             <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
               <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+            </Button>
+          </div>
+          {/* Today/Month buttons */}
+          <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+            <Button 
+              variant="ghost"
+              className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
+              onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+              data-testid="button-today"
+            >
+              Today
+            </Button>
+            <div className="w-[1px] h-3 bg-white/50" />
+            <Button 
+              variant="ghost"
+              className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
+              onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+              data-testid="button-month-view"
+            >
+              {calendarView === "month" ? "Week" : "Month"}
             </Button>
           </div>
         </div>
@@ -3058,9 +3058,9 @@ export default function Dashboard() {
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-[7px] bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-[5px] bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
           <Button size="sm" className="!h-[29px] !min-h-[29px] px-[7px] bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
-          </div>
           {/* Exam button stays fixed at the end */}
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[6px] hover:opacity-80 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md flex-shrink-0" style={{ backgroundColor: '#7f1d1d', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
+          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[6px] hover:opacity-80 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ backgroundColor: '#7f1d1d', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
+          </div>
         </div>
 
         {/* Timer and Clock - Fixed Right */}
