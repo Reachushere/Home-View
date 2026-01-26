@@ -206,6 +206,22 @@
   animation: slow-blink 60s ease-in-out infinite;
 }
 
+/* File name blinking animation */
+@keyframes file-blink {
+  0%, 100% { 
+    opacity: 1;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  }
+  50% { 
+    opacity: 0.5;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 1);
+  }
+}
+
+.animate-file-blink {
+  animation: file-blink 1.2s ease-in-out infinite;
+}
+
 /* Prominent pulse for today date header - dark to light */
 @keyframes today-date-pulse {
   0%, 100% { 

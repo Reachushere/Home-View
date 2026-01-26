@@ -176,6 +176,10 @@ export default function Dashboard() {
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
+  const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('completedFiles');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
 
   const [isMuted, setIsMuted] = useState(() => {
     const saved = localStorage.getItem('alarmMuteUntil');
@@ -324,8 +328,8 @@ export default function Dashboard() {
     const ms = currentTime.getTime() % 1000;
     return `-${ms / 1000}s`;
   }, [currentTime]);
-  
-  const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
+
+    const [checkedCourses, setCheckedCourses] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('checkedCourses');
     return saved ? JSON.parse(saved) : {};
   });
@@ -590,6 +594,19 @@ export default function Dashboard() {
     setPomodoroRunning(!pomodoroRunning);
   };
 
+  const toggleFileComplete = (fileKey: string) => {
+    setCompletedFiles(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(fileKey)) {
+        newSet.delete(fileKey);
+      } else {
+        newSet.add(fileKey);
+      }
+      localStorage.setItem('completedFiles', JSON.stringify(Array.from(newSet)));
+      return newSet;
+    });
+  };
+
   const resetPomodoro = () => {
     setPomodoroRunning(false);
     if (pomodoroMode === "work") setPomodoroTime(25 * 60);
@@ -847,6 +864,33 @@ export default function Dashboard() {
     queryKey: ["/api/tasks", { weekNumber: selectedWeek }],
     queryFn: () => fetch(`/api/tasks?weekNumber=${selectedWeek}`).then(r => r.json()),
   });
+
+  // Extract all unique files from tasks for the FILES row
+  const allTaskFiles = useMemo(() => {
+    const filesMap = new Map<string, { name: string; url: string; taskId: number; courseName: string }>();
+    tasks?.forEach(task => {
+      if (task.attachments && Array.isArray(task.attachments)) {
+        task.attachments.forEach((att: any) => {
+          let fileData: { name: string; url: string };
+          if (typeof att === 'string') {
+            try {
+              const parsed = JSON.parse(att);
+              fileData = { name: parsed.name || parsed.url?.split('/').pop() || 'File', url: parsed.url || att };
+            } catch {
+              fileData = { name: att.split('/').pop() || 'File', url: att };
+            }
+          } else {
+            fileData = { name: att.name || att.url?.split('/').pop() || 'File', url: att.url || '' };
+          }
+          const key = fileData.url;
+          if (!filesMap.has(key)) {
+            filesMap.set(key, { ...fileData, taskId: task.id, courseName: task.courseName || '' });
+          }
+        });
+      }
+    });
+    return Array.from(filesMap.values());
+  }, [tasks]);
 
   // Google Calendar events query
   interface CalendarEvent {
@@ -4450,6 +4494,44 @@ export default function Dashboard() {
                   );
                 })}
             </div>
+            
+            {/* FILES Row - Spans entire week with checkboxes for each file */}
+            {allTaskFiles.length > 0 && (
+              <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0" style={{ gridTemplateColumns: '70px 1fr', minHeight: '28px' }}>
+                <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: 'black' }}>
+                  FILES
+                </div>
+                <div className="flex flex-wrap items-center gap-2 p-1 overflow-hidden" style={{ backgroundColor: 'rgba(147, 197, 253, 0.3)' }}>
+                  {allTaskFiles.map((file, idx) => {
+                    const isCompleted = completedFiles.has(file.url);
+                    const courseCode = file.courseName?.split(' ')[0]?.toUpperCase() || '';
+                    const colors = courseColors[courseCode as keyof typeof courseColors];
+                    return (
+                      <div
+                        key={idx}
+                        className={`flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded animate-file-blink ${
+                          isCompleted 
+                            ? "bg-gray-200 text-gray-400 border border-gray-300 line-through" 
+                            : colors 
+                              ? `${colors.bg} text-black border ${colors.border}` 
+                              : "bg-blue-100 text-black border border-blue-300"
+                        }`}
+                        data-testid={`file-row-${idx}`}
+                      >
+                        <Checkbox
+                          checked={isCompleted}
+                          onCheckedChange={() => toggleFileComplete(file.url)}
+                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                          data-testid={`checkbox-file-${idx}`}
+                        />
+                        <FileText className="h-3 w-3 shrink-0" />
+                        <span className="truncate max-w-[120px]">{file.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
               
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
               {[
@@ -5218,7 +5300,7 @@ export default function Dashboard() {
                       return (
                         <div key={idx} className="flex items-center gap-2">
                           <button
-                            className="flex items-center gap-1.5 text-[10px] text-white/80 hover:text-white cursor-pointer flex-1"
+                            className="flex items-center gap-1.5 text-[10px] text-white/80 hover:text-white cursor-pointer flex-1 animate-file-blink"
                             onClick={() => {
                               if (matchingFile) {
                                 setPreviewFile(matchingFile);
