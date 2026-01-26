@@ -3476,7 +3476,32 @@ export default function Dashboard() {
                 
                 {/* Volume Controls */}
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-white text-[10px]">Volume: {radioVolume}%</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-white text-[10px]">Volume: {radioVolume}%</Label>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 px-2 text-[9px] border-white/30 hover:bg-white/10 text-white"
+                      onClick={async () => {
+                        try {
+                          const res = await fetch('/api/media/volume', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ level: 0 })
+                          });
+                          const data = await res.json();
+                          if (data.newVolume !== undefined) {
+                            setRadioVolume(data.newVolume);
+                          }
+                        } catch (error) {
+                          toast({ title: "Error muting", variant: "destructive" });
+                        }
+                      }}
+                      data-testid="button-mute"
+                    >
+                      Mute
+                    </Button>
+                  </div>
                   <div className="flex items-center gap-1.5">
                     <Button
                       variant="outline"
