@@ -4920,19 +4920,21 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-[5px] relative flex gap-4" style={{ height: calendarHeight, order: 2 }}>
-          {/* Files Flyout Toggle Tab - sticks to right edge */}
-          {!isFilesFlyoutOpen && (
-            <div
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-[60] cursor-pointer"
-              onClick={() => setIsFilesFlyoutOpen(true)}
-              data-testid="files-flyout-tab"
-            >
-              <div className="flex items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-1 py-6 hover:bg-black/70 transition-colors">
+          {/* Files Flyout Toggle Tab - sticks to right edge of calendar */}
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300 ${isFilesFlyoutOpen ? 'right-[33%]' : 'right-0'}`}
+            onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
+            data-testid="files-flyout-tab"
+          >
+            <div className="flex items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-1 py-6 hover:bg-black/70 transition-colors">
+              {isFilesFlyoutOpen ? (
+                <ChevronRight className="h-5 w-5 text-yellow-500" />
+              ) : (
                 <ChevronLeft className="h-5 w-5 text-yellow-500" />
-                <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400 -ml-1" />
-              </div>
+              )}
+              <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400 -ml-1" />
             </div>
-          )}
+          </div>
           {/* Calendar wrapper - shrinks when flyout opens */}
           <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? 'w-[67%]' : 'w-full'}`}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
@@ -5692,8 +5694,8 @@ export default function Dashboard() {
               {/* Header */}
               <div className="flex items-center justify-between px-2 py-1.5 border-b border-white/20 bg-black/30">
                 <div className="flex items-center gap-1.5">
-                  <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
-                  <span className="text-xs font-medium">Files</span>
+                  <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                  <span className="text-[13px] font-medium">Files</span>
                 </div>
                 <Button 
                   size="icon" 
@@ -5708,7 +5710,7 @@ export default function Dashboard() {
               
               {/* Files Tree */}
               <div className="flex-1 overflow-y-auto py-1">
-                <p className="text-[10px] text-white/40 px-2 mb-1">
+                <p className="text-[11px] text-white/40 px-2 mb-1">
                   Click to open. Drag to tasks.
                 </p>
                 
@@ -5728,10 +5730,10 @@ export default function Dashboard() {
                           className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
                           onClick={() => toggleFlyoutFolder(week.id)}
                         >
-                          {isWeekExpanded ? <ChevronDown className="h-2.5 w-2.5 text-white/60" /> : <ChevronRight className="h-2.5 w-2.5 text-white/60" />}
-                          {isWeekExpanded ? <FolderOpen className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" />}
-                          <span className="text-[10px] text-white/90 truncate flex-1">{week.name}</span>
-                          <span className="text-[9px] text-white/40">{weekFiles.length}</span>
+                          {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
+                          {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
+                          <span className="text-[11px] text-white/90 truncate flex-1">{week.name}</span>
+                          <span className="text-[10px] text-white/40">{weekFiles.length}</span>
                         </div>
                         
                         {/* Course folders inside week */}
@@ -5751,10 +5753,10 @@ export default function Dashboard() {
                                     className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
                                     onClick={() => toggleFlyoutFolder(courseFolderId)}
                                   >
-                                    {isCourseExpanded ? <ChevronDown className="h-2.5 w-2.5 text-white/60" /> : <ChevronRight className="h-2.5 w-2.5 text-white/60" />}
-                                    {isCourseExpanded ? <FolderOpen className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" />}
-                                    <span className={`text-[10px] truncate flex-1 ${course.color}`}>{course.name}</span>
-                                    <span className="text-[9px] text-white/40">{courseFiles.length}</span>
+                                    {isCourseExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
+                                    {isCourseExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
+                                    <span className={`text-[11px] truncate flex-1 ${course.color}`}>{course.name}</span>
+                                    <span className="text-[10px] text-white/40">{courseFiles.length}</span>
                                   </div>
                                   
                                   {/* Content folders inside course */}
@@ -5774,10 +5776,10 @@ export default function Dashboard() {
                                               className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
                                               onClick={() => toggleFlyoutFolder(contentFolderId)}
                                             >
-                                              {isContentExpanded ? <ChevronDown className="h-2.5 w-2.5 text-white/60" /> : <ChevronRight className="h-2.5 w-2.5 text-white/60" />}
-                                              {isContentExpanded ? <FolderOpen className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-2.5 w-2.5 text-yellow-500 fill-yellow-400" />}
-                                              <span className="text-[10px] text-white/90 truncate flex-1">{content.name}</span>
-                                              <span className="text-[9px] text-white/40">{contentFiles.length}</span>
+                                              {isContentExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
+                                              {isContentExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
+                                              <span className="text-[11px] text-white/90 truncate flex-1">{content.name}</span>
+                                              <span className="text-[10px] text-white/40">{contentFiles.length}</span>
                                             </div>
                                             
                                             {/* Files inside content folder */}
@@ -5813,10 +5815,10 @@ export default function Dashboard() {
                                                         }
                                                       }}
                                                       onClick={(e) => e.stopPropagation()}
-                                                      className="h-2.5 w-2.5 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                                      className="h-3 w-3 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                                     />
-                                                    <FileText className="h-2.5 w-2.5 text-white/50 shrink-0" />
-                                                    <span className={`text-[9px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
+                                                    <FileText className="h-3 w-3 text-white/50 shrink-0" />
+                                                    <span className={`text-[10px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
                                                       {file.displayName || file.originalName}
                                                     </span>
                                                   </div>
