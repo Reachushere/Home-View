@@ -2165,15 +2165,18 @@ export default function Dashboard() {
       
       // weekDays[0] is Saturday, weekDays[6] is Friday
       // If Saturday passed, start from Sunday (weekDays[1])
-      const weekStartDay = saturdayPassed ? weekDays[1] : weekDays[0];
-      const weekEndDay = weekDays[6]; // Friday is always the end
+      const weekStartDay = new Date(saturdayPassed ? weekDays[1] : weekDays[0]);
+      weekStartDay.setHours(0, 0, 0, 0);
+      
+      const weekEndDay = new Date(weekDays[6]); // Friday is always the end
+      weekEndDay.setHours(23, 59, 59, 0);
       
       // Update the task's courseName, startDate to beginning and dueDate to Friday
       updateTaskFieldsMutation.mutate({
         id: draggedTask.id,
         courseName: fullCourseName,
-        startDate: format(weekStartDay, "yyyy-MM-dd'T'HH:mm:ss"),
-        dueDate: format(weekEndDay, "yyyy-MM-dd'T'23:59:59"),
+        startDate: weekStartDay.toISOString(),
+        dueDate: weekEndDay.toISOString(),
       });
     }
     
@@ -5669,7 +5672,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                                 >
-                                  <span className="font-bold">PREP:</span> {task.title}
+                                  <span className="font-bold">PREP: {task.title}</span>
                                 </span>
                               </div>
                               <div className="w-2 h-[2px] shrink-0 bg-black" />
@@ -5701,7 +5704,7 @@ export default function Dashboard() {
                                 onClick={() => setEditingTask(task)}
                                 className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                               >
-                                <span className="font-bold">PREP:</span> {task.title}
+                                <span className="font-bold">PREP: {task.title}</span>
                               </span>
                             </div>
                             <div className="w-2 h-[2px] shrink-0 bg-black" />
