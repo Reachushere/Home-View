@@ -4826,6 +4826,19 @@ export default function Dashboard() {
                 </div>
                 </div>
               </div>
+              <div className="flex justify-end pt-4 border-t">
+                <Button 
+                  onClick={() => {
+                    localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
+                    localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
+                    toast({ title: "Settings saved", description: "Your settings have been applied." });
+                    setIsSettingsDialogOpen(false);
+                  }}
+                  data-testid="button-save-settings"
+                >
+                  Save Settings
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
           
