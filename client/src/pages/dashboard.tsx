@@ -4395,11 +4395,13 @@ export default function Dashboard() {
           
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent className="max-w-md max-h-[85vh] overflow-hidden flex flex-col">
-              <DialogHeader className="flex-shrink-0">
+            <DialogContent className="max-w-4xl">
+              <DialogHeader>
                 <DialogTitle>Settings</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 overflow-y-auto flex-1 pr-2">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Left Column */}
+                <div className="space-y-4">
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Background Image & Color</Label>
                   <p className="text-xs text-muted-foreground">
@@ -4590,7 +4592,10 @@ export default function Dashboard() {
                     </div>
                   </div>
                 </div>
+                </div>
                 
+                {/* Right Column */}
+                <div className="space-y-4">
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Blinking & Spacing</Label>
@@ -4824,6 +4829,7 @@ export default function Dashboard() {
                       Pull
                     </Button>
                   </div>
+                </div>
                 </div>
               </div>
             </DialogContent>
