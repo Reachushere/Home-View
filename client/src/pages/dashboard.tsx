@@ -4377,6 +4377,11 @@ export default function Dashboard() {
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
                 
+                // Check if there are tasks for this day
+                const hasTodayTasks = isToday && allTasks.some(t => 
+                  !t.isCompleted && isSameDay(new Date(t.dueDate), day)
+                );
+                
                 // Calculate next task due (excluding prep tasks, only actual due dates)
                 const nextTaskDue = isToday ? allTasks
                   .filter(t => !t.isCompleted && !t.isMissed && new Date(t.dueDate) > new Date())
@@ -4388,9 +4393,9 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex items-center justify-center h-full ${isToday ? "animate-today-date" : ""}`}
+                    className={`border-l border-border flex items-center justify-center h-full ${isToday && hasTodayTasks ? "animate-today-date" : ""}`}
                     style={{ 
-                      backgroundColor: isToday ? undefined : "black"
+                      backgroundColor: isToday ? (hasTodayTasks ? undefined : 'rgba(93, 129, 204, 0.5)') : "black"
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
