@@ -7845,7 +7845,7 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 text-[11px]">
+    <form onSubmit={handleSubmit} className="space-y-3 text-[10px]">
       {/* Two column layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Left Column */}
@@ -7878,10 +7878,11 @@ function TaskForm({
                       <SelectItem 
                         key={course.code} 
                         value={`${course.code} - ${course.name}`}
+                        className="pl-2"
                       >
                         <span className="flex items-center gap-2">
                           <span 
-                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                             style={{ backgroundColor: dotColor }}
                           />
                           <span style={{ color: textColor }}>
