@@ -1975,11 +1975,10 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const targetEntity = entityId || "media_player.byhome";
-      const station = stationId || "CHUM FM";
+      // CHUM FM Toronto TuneIn station ID is s17526
+      const station = stationId || "s17526";
       
-      // Use media_player.play_media service for Alexa Media Player
-      // For TuneIn, the media_content_id should be the station name
-      // and media_content_type should be "TUNEIN" or "custom"
+      // Use media_player.play_media with TUNEIN media content type
       const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
         headers: {
@@ -1989,10 +1988,7 @@ export async function registerRoutes(
         body: JSON.stringify({
           entity_id: targetEntity,
           media_content_id: station,
-          media_content_type: "custom",
-          extra: {
-            timer: 0
-          }
+          media_content_type: "TUNEIN"
         }),
       });
 
@@ -2002,7 +1998,7 @@ export async function registerRoutes(
         return res.status(response.status).json({ error: "Failed to play radio", details: errorText });
       }
 
-      console.log(`Playing radio station ${station} on ${targetEntity}`);
+      console.log(`Playing TuneIn station ${station} on ${targetEntity}`);
       res.json({ success: true });
     } catch (error) {
       console.error("Play radio error:", error);
