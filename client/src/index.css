@@ -384,11 +384,14 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
   padding: 4px;
-  background: #01a0af;
+  background: #01a0af !important;
+  background-color: #01a0af !important;
   border-radius: 4px;
   position: relative;
-  min-width: 28px;
-  min-height: 28px;
+  min-width: 32px;
+  min-height: 32px;
+  width: 32px;
+  height: 32px;
 }
 
 .working-indicator .circle {
