@@ -1966,9 +1966,8 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // All Echo devices
+      // All Echo devices (excluding lr studio)
       const devices = [
-        "media_player.echo_lr_studio_white_am",
         "media_player.echo_show_pug_am",
         "media_player.echo_lr_hub_am",
         "media_player.cat_wr"
