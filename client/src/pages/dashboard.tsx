@@ -2341,17 +2341,17 @@ export default function Dashboard() {
           else if (courseCode === "CFNF400") color = "#ec4899";
           else if (courseCode === "CASL101") color = "#6366f1";
           
-          // Start arrow from left side of checkbox, or fall back to left of task box
+          // Start arrow from center of checkbox, or fall back to center of task box
           let fromX: number;
           let fromY: number;
           if (checkboxEl) {
             const checkboxRect = checkboxEl.getBoundingClientRect();
-            fromX = checkboxRect.left;
-            fromY = checkboxRect.top + checkboxRect.height / 2;
+            fromX = checkboxRect.left + checkboxRect.width / 2;
+            fromY = checkboxRect.bottom;
           } else {
             const boxRect = boxTaskEl.getBoundingClientRect();
-            fromX = boxRect.left;
-            fromY = boxRect.top + boxRect.height / 2;
+            fromX = boxRect.left + boxRect.width / 2;
+            fromY = boxRect.bottom;
           }
           
           // Arrow points to top of calendar entry (since boxes are now above calendar)
@@ -6647,9 +6647,8 @@ export default function Dashboard() {
               // Draw path that goes straight down from the task box to avoid crossing other boxes
               // Use a simple curved path from task to calendar entry
               const controlY = conn.fromY + (conn.toY - conn.fromY) * 0.3;
-              const startX = conn.fromX + 4; // Start 4px closer to checkbox
               // Path: start at checkbox, curve smoothly down to calendar
-              const path = `M ${startX} ${conn.fromY} Q ${startX} ${controlY}, ${conn.toX} ${conn.toY}`;
+              const path = `M ${conn.fromX} ${conn.fromY} Q ${conn.fromX} ${controlY}, ${conn.toX} ${conn.toY}`;
               return (
                 <g key={conn.taskId}>
                   {/* Glow/outline for visibility on dark backgrounds */}
