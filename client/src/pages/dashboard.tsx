@@ -7695,12 +7695,12 @@ function TaskForm({
                     <Label className="text-sm font-medium">Time</Label>
                     <div className="flex items-center gap-2 mt-2">
                       <Select value={tempHour} onValueChange={setTempHour}>
-                        <SelectTrigger className="w-20">
+                        <SelectTrigger className="w-20 !text-black">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
                           {Array.from({ length: 24 }, (_, i) => (
-                            <SelectItem key={i} value={i.toString().padStart(2, '0')}>
+                            <SelectItem key={i} value={i.toString().padStart(2, '0')} className="text-black">
                               {i.toString().padStart(2, '0')}
                             </SelectItem>
                           ))}
@@ -7708,12 +7708,12 @@ function TaskForm({
                       </Select>
                       <span>:</span>
                       <Select value={tempMinute} onValueChange={setTempMinute}>
-                        <SelectTrigger className="w-20">
+                        <SelectTrigger className="w-20 !text-black">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
                           {['00', '15', '30', '45'].map((min) => (
-                            <SelectItem key={min} value={min}>
+                            <SelectItem key={min} value={min} className="text-black">
                               {min}
                             </SelectItem>
                           ))}
