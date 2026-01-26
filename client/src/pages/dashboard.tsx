@@ -5692,8 +5692,8 @@ export default function Dashboard() {
               {/* Header */}
               <div className="flex items-center justify-between px-2 py-1.5 border-b border-white/20 bg-black/30">
                 <div className="flex items-center gap-1.5">
-                  <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" />
-                  <span className="text-[11px] font-medium">Files</span>
+                  <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
+                  <span className="text-xs font-medium">Files</span>
                 </div>
                 <Button 
                   size="icon" 
@@ -5708,7 +5708,7 @@ export default function Dashboard() {
               
               {/* Files Tree */}
               <div className="flex-1 overflow-y-auto py-1">
-                <p className="text-[9px] text-white/40 px-2 mb-1">
+                <p className="text-[10px] text-white/40 px-2 mb-1">
                   Click to open. Drag to tasks.
                 </p>
                 
@@ -6084,7 +6084,7 @@ export default function Dashboard() {
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('tomorrow') + 1 }} 
+            style={{ backgroundColor: colorSettings.boxBackground }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
@@ -6127,7 +6127,7 @@ export default function Dashboard() {
           {/* Due Today */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('today') + 1 }} 
+            style={{ backgroundColor: colorSettings.boxBackground }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
@@ -6170,7 +6170,7 @@ export default function Dashboard() {
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
-            style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('this-week') + 1 }} 
+            style={{ backgroundColor: colorSettings.boxBackground }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
           >
