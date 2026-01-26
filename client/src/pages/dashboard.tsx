@@ -433,10 +433,10 @@ export default function Dashboard() {
     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
   }, [blinkSettings]);
   
-  // Box order for drag and drop (this-week, today, tomorrow)
+  // Box order for drag and drop (this-week, tomorrow, today)
   const [boxOrder, setBoxOrder] = useState<string[]>(() => {
     const saved = localStorage.getItem('boxOrder');
-    return saved ? JSON.parse(saved) : ['this-week', 'today', 'tomorrow'];
+    return saved ? JSON.parse(saved) : ['this-week', 'tomorrow', 'today'];
   });
   
   // Color settings
