@@ -456,10 +456,9 @@ export default function Dashboard() {
     };
   });
   
-  // Save color settings to localStorage
-  useEffect(() => {
-    localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
-  }, [colorSettings]);
+  // Store original settings when dialog opens (for cancel functionality)
+  const [originalColorSettings, setOriginalColorSettings] = useState(colorSettings);
+  const [originalBlinkSettings, setOriginalBlinkSettings] = useState(blinkSettings);
   
   // Grid size settings for resizable calendar columns and rows
   const [gridSizes, setGridSizes] = useState<{
@@ -3320,7 +3319,11 @@ export default function Dashboard() {
                 <Palette className="h-4 w-4 mr-2" />
                 Courses
               </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-settings" onClick={() => setIsSettingsDialogOpen(true)}>
+              <DropdownMenuItem data-testid="menu-item-settings" onClick={() => {
+                  setOriginalColorSettings({...colorSettings});
+                  setOriginalBlinkSettings({...blinkSettings});
+                  setIsSettingsDialogOpen(true);
+                }}>
                 <Settings className="h-4 w-4 mr-2" />
                 Settings
               </DropdownMenuItem>
@@ -4826,7 +4829,11 @@ export default function Dashboard() {
               <div className="flex justify-end gap-2 pt-4 border-t">
                 <Button 
                   variant="outline"
-                  onClick={() => setIsSettingsDialogOpen(false)}
+                  onClick={() => {
+                    setColorSettings(originalColorSettings);
+                    setBlinkSettings(originalBlinkSettings);
+                    setIsSettingsDialogOpen(false);
+                  }}
                   data-testid="button-cancel-settings"
                 >
                   Cancel
