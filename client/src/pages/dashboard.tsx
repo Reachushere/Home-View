@@ -7186,7 +7186,7 @@ function SchoolForm({
           <div className="space-y-1">
             <Label htmlFor="numberOfWeeks" className="text-xs">Number of School Weeks</Label>
             <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
-              <SelectTrigger data-testid="select-number-of-weeks">
+              <SelectTrigger className="!text-black" data-testid="select-number-of-weeks">
                 <SelectValue placeholder="Select weeks" />
               </SelectTrigger>
               <SelectContent>
@@ -7203,13 +7203,14 @@ function SchoolForm({
               type="date"
               value={week1StartDate}
               onChange={(e) => setWeek1StartDate(e.target.value)}
+              className="!text-black"
               data-testid="input-week1-start-date"
             />
           </div>
           <div className="space-y-1">
             <Label htmlFor="firstDayOfWeek" className="text-xs">First Day of School Week</Label>
             <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
-              <SelectTrigger data-testid="select-first-day-of-week">
+              <SelectTrigger className="!text-black" data-testid="select-first-day-of-week">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
               <SelectContent>
