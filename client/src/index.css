@@ -238,19 +238,22 @@
   color: black !important;
 }
 
-/* White text blinking animation for files in task boxes */
-@keyframes file-text-blink {
+/* Light teal box with black text blinking animation for files in task boxes */
+@keyframes file-box-blink {
   0%, 100% { 
-    opacity: 0.6;
+    background-color: rgba(127, 219, 225, 0.5);
+    color: rgba(0, 0, 0, 0.6);
   }
   50% { 
-    opacity: 1;
-    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+    background-color: rgba(127, 219, 225, 1);
+    color: rgba(0, 0, 0, 1);
   }
 }
 
-.animate-file-text-blink {
-  animation: file-text-blink 1.5s ease-in-out infinite;
+.animate-file-box-blink {
+  animation: file-box-blink 1.5s ease-in-out infinite;
+  border-radius: 4px;
+  padding: 2px 6px;
 }
 
 /* Prominent pulse for today date header - dark to light */

@@ -5282,27 +5282,26 @@ export default function Dashboard() {
                   )}
                 </div>
                 {attachments.length > 0 && (
-                  <div className="ml-6 mt-0.5 space-y-0.5">
+                  <div className="mt-0.5 space-y-0.5">
                     {attachments.map((file, idx) => {
                       const matchingFile = findFileByUrl(file.url);
                       const displayName = matchingFile?.displayName || file.name || file.url.split('/').pop() || 'File';
                       return (
-                        <div key={idx} className="flex items-center gap-2">
-                          <button
-                            className="flex items-center gap-1.5 text-[10px] text-white hover:text-white cursor-pointer flex-1 animate-file-text-blink"
-                            onClick={() => {
-                              if (matchingFile) {
-                                setPreviewFile(matchingFile);
-                              } else {
-                                window.open(file.url, '_blank');
-                              }
-                            }}
-                            data-testid={`file-link-${task.id}-${idx}`}
-                          >
-                            <FileText className="h-3 w-3" />
-                            <span className="truncate">{displayName}</span>
-                          </button>
-                        </div>
+                        <button
+                          key={idx}
+                          className="flex items-center gap-1.5 text-[10px] text-black cursor-pointer w-full animate-file-box-blink"
+                          onClick={() => {
+                            if (matchingFile) {
+                              setPreviewFile(matchingFile);
+                            } else {
+                              window.open(file.url, '_blank');
+                            }
+                          }}
+                          data-testid={`file-link-${task.id}-${idx}`}
+                        >
+                          <FileText className="h-3 w-3" />
+                          <span className="truncate">{displayName}</span>
+                        </button>
                       );
                     })}
                   </div>
