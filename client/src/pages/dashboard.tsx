@@ -4348,7 +4348,7 @@ export default function Dashboard() {
                   };
                   
                   return completedTasks.map(task => (
-                    <div key={task.id} className="flex items-center gap-3 p-2 rounded-md bg-muted/50 border border-border">
+                    <div key={task.id} className="flex items-center gap-3 p-2 rounded-md border border-white/10">
                       <input
                         type="checkbox"
                         checked={true}
