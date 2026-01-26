@@ -3499,7 +3499,7 @@ export default function Dashboard() {
                       }}
                       data-testid="button-volume-down"
                     >
-                      <VolumeX className="h-3.5 w-3.5" />
+                      <span className="text-sm font-bold">−</span>
                     </Button>
                     <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
                       <div 
@@ -3528,7 +3528,7 @@ export default function Dashboard() {
                       }}
                       data-testid="button-volume-up"
                     >
-                      <Volume2 className="h-3.5 w-3.5" />
+                      <span className="text-sm font-bold">+</span>
                     </Button>
                   </div>
                 </div>
