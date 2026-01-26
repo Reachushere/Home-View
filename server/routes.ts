@@ -1977,6 +1977,7 @@ export async function registerRoutes(
       const targetEntity = entityId || "media_player.byhome";
       
       // Use notify.alexa_media service to send a voice command (same format as user's working automation)
+      console.log(`Attempting to play radio on ${targetEntity}`);
       const notifyResponse = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -1991,6 +1992,9 @@ export async function registerRoutes(
           target: [targetEntity]
         }),
       });
+      
+      const notifyResponseText = await notifyResponse.text();
+      console.log(`notify.alexa_media response (${notifyResponse.status}):`, notifyResponseText);
 
       if (!notifyResponse.ok) {
         // Fallback: Try using alexa_media_player sequence command
