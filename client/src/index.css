@@ -728,3 +728,19 @@
 .celebration-container {
   animation: bounce-in 0.6s ease-out forwards, fade-out 5s ease-in-out forwards;
 }
+
+/* Force all dropdown/select content to have black text */
+[data-radix-select-content],
+[data-radix-select-viewport],
+[data-radix-select-item],
+[data-radix-dropdown-menu-content],
+[data-radix-dropdown-menu-item] {
+  background-color: white !important;
+  color: black !important;
+}
+
+[data-radix-select-item] *,
+[data-radix-dropdown-menu-item] * {
+  color: black !important;
+}
+
