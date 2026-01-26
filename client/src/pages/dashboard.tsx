@@ -6646,7 +6646,7 @@ export default function Dashboard() {
                 : "arrowhead-black";
               // Draw path that goes left first, then curves down to calendar (boxes are above calendar)
               // This avoids crossing other checkboxes in the task list
-              const exitX = conn.fromX - 25; // Go 25px left first to clear all checkboxes
+              const exitX = conn.fromX - 21; // Go 21px left first to clear all checkboxes
               const midY = (conn.fromY + conn.toY) / 2;
               // Path: start at checkbox, go left, then curve down to calendar
               const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} Q ${exitX} ${midY}, ${conn.toX} ${conn.toY}`;
