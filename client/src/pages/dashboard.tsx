@@ -2012,27 +2012,8 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // For multi-hour tasks, find the last continuation block to get the actual bottom
-          let toY = calRect.bottom + 25;
-          const continuations = document.querySelectorAll(`[data-testid^="task-continuation-${task.id}-hour-"]`);
-          if (continuations.length > 0) {
-            let lastContinuation: Element | null = null;
-            let maxHour = -1;
-            continuations.forEach(cont => {
-              const match = cont.getAttribute('data-testid')?.match(/hour-(\d+)$/);
-              if (match) {
-                const hour = parseInt(match[1], 10);
-                if (hour > maxHour) {
-                  maxHour = hour;
-                  lastContinuation = cont;
-                }
-              }
-            });
-            if (lastContinuation) {
-              const contRect = (lastContinuation as HTMLElement).getBoundingClientRect();
-              toY = contRect.bottom + 25;
-            }
-          }
+          // Arrow points to top of calendar entry (since boxes are now above calendar)
+          let toY = calRect.top - 10;
           
           connections.push({
             taskId: task.id,
@@ -5594,11 +5575,11 @@ export default function Dashboard() {
                 : conn.color === "#ec4899" ? "arrowhead-pink" 
                 : conn.color === "#6366f1" ? "arrowhead-indigo"
                 : "arrowhead-black";
-              // Draw path that goes left first, then curves up to calendar
+              // Draw path that goes left first, then curves down to calendar (boxes are above calendar)
               // This avoids crossing other checkboxes in the task list
               const exitX = conn.fromX - 25; // Go 25px left first to clear all checkboxes
               const midY = (conn.fromY + conn.toY) / 2;
-              // Path: start at checkbox, go left, then curve up to calendar
+              // Path: start at checkbox, go left, then curve down to calendar
               const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} Q ${exitX} ${midY}, ${conn.toX} ${conn.toY}`;
               return (
                 <g key={conn.taskId}>
