@@ -6133,7 +6133,6 @@ export default function Dashboard() {
                       </span>
                       <div 
                         className="working-indicator" 
-                        style={{ background: '#5979CC' }} 
                         title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
                       >
                         <div className="circle"></div>
