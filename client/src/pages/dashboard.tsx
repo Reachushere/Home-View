@@ -7038,7 +7038,7 @@ function ProfileForm({
           </div>
         )}
       </div>
-      <Button type="submit" className="w-full bg-[#5979CC] hover:bg-[#4a68b3] text-white" data-testid="button-save-profile">
+      <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-save-profile">
         Save Profile
       </Button>
     </form>
@@ -7333,7 +7333,7 @@ function SchoolForm({
         </div>
       )}
       
-      <Button type="submit" className="w-full bg-[#5979CC] hover:bg-[#4a68b3] text-white" data-testid="button-save-school">
+      <Button type="submit" className="w-full bg-teal-500 hover:bg-teal-600 text-white" data-testid="button-save-school">
         Save School Settings
       </Button>
     </form>
