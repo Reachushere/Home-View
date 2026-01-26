@@ -457,13 +457,11 @@ export default function Dashboard() {
   const handleRowResizeStart = (e: React.MouseEvent, rowType: 'allDay' | 'course' | 'timeSlot') => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Row resize started:', rowType);
     const startHeight = rowType === 'allDay' 
       ? gridSizes.allDayRowHeight 
       : rowType === 'course' 
         ? gridSizes.courseRowHeight 
         : gridSizes.timeSlotHeight;
-    console.log('Start height:', startHeight);
     setRowResizing({
       isResizing: true,
       rowType,
@@ -492,13 +490,11 @@ export default function Dashboard() {
       if (rowResizing?.isResizing) {
         const delta = e.clientY - rowResizing.startY;
         const newHeight = Math.max(20, rowResizing.startHeight + delta);
-        console.log('Row resizing:', rowResizing.rowType, 'delta:', delta, 'newHeight:', newHeight);
         if (rowResizing.rowType === 'allDay') {
           setGridSizes(prev => ({ ...prev, allDayRowHeight: Math.min(100, newHeight) }));
         } else if (rowResizing.rowType === 'course') {
           setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(60, newHeight) }));
         } else if (rowResizing.rowType === 'timeSlot') {
-          console.log('Setting timeSlotHeight to:', Math.min(100, newHeight));
           setGridSizes(prev => ({ ...prev, timeSlotHeight: Math.min(100, newHeight) }));
         }
       }
@@ -5555,11 +5551,8 @@ export default function Dashboard() {
           </Card>
           {/* Time slot row resize handle - outside Card to avoid overflow clipping */}
           <div 
-            className="h-3 cursor-row-resize bg-red-500 hover:bg-red-700 z-[100] flex-shrink-0 absolute bottom-5 left-0 right-0"
-            onMouseDown={(e) => {
-              console.log('TIME SLOT RESIZE CLICKED');
-              handleRowResizeStart(e, 'timeSlot');
-            }}
+            className="h-2 cursor-row-resize hover:bg-blue-400/50 z-[100] flex-shrink-0 absolute bottom-5 left-0 right-0"
+            onMouseDown={(e) => handleRowResizeStart(e, 'timeSlot')}
             data-testid="resize-timeslot-row"
           />
           {/* Resize Handle */}
@@ -6282,6 +6275,7 @@ function TaskCard({
   overdueBlink = false,
   urgentBlink = false,
   blinkSyncDelay,
+  colorSettings,
 }: {
   task: Task;
   onComplete: (isCompleted: boolean) => void;
@@ -6294,6 +6288,7 @@ function TaskCard({
   overdueBlink?: boolean;
   blinkSyncDelay?: string;
   urgentBlink?: boolean;
+  colorSettings?: { headerBar: string; pomodoroButton: string; icons: string };
 }) {
   const Icon = iconMap[task.type] || ClipboardCheck;
   const isMissed = task.isMissed && !task.isCompleted;
@@ -6555,7 +6550,7 @@ function TaskCard({
       return (
         <div className="relative pt-1 h-full flex flex-col cursor-pointer pb-2" onClick={onEdit}>
           {/* Mini Media Controls for compact cards */}
-          <div className="h-5 flex items-center justify-around rounded-md px-1 text-white border-[0.1px] border-white no-blink mb-1" style={{ background: colorSettings.headerBar }}>
+          <div className="h-5 flex items-center justify-around rounded-md px-1 text-white border-[0.1px] border-white no-blink mb-1" style={{ background: colorSettings?.headerBar || '#607d9d' }}>
             <div
               className="cursor-pointer hover:opacity-70"
               onClick={(e) => { e.stopPropagation(); handlePlayTTS(); }}
