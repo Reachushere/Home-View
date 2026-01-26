@@ -4412,6 +4412,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <Label className="text-xs">Main Background Color</Label>
                     <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
                       <input
                         type="color"
                         value={colorSettings.mainBackground}
@@ -4419,7 +4420,6 @@ export default function Dashboard() {
                         className="w-8 h-8 rounded cursor-pointer border-0"
                         data-testid="color-main-background"
                       />
-                      <span className="text-xs text-muted-foreground font-mono">{colorSettings.mainBackground}</span>
                     </div>
                   </div>
                   {customBackground && (
