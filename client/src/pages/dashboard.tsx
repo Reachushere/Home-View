@@ -6081,32 +6081,32 @@ export default function Dashboard() {
           
           return (
         <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }}>
-          {/* Due Tomorrow */}
+          {/* Due This Week */}
           <section 
-            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ backgroundColor: colorSettings.boxBackground }} 
-            data-testid="section-due-tomorrow"
-            onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
+            data-testid="section-due-this-week"
+            onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
           >
             <h4 
               className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
               draggable
-              onDragStart={() => handleBoxDragStart('tomorrow')}
+              onDragStart={() => handleBoxDragStart('this-week')}
               onDragEnd={handleBoxDragEnd}
             >
               <Calendar className="h-3 w-3 text-white" />
-              TOMORROW ({dueTomorrowTasks.length})
+              THIS WEEK ({dueThisWeekTasks.length})
             </h4>
-            <div className="flex-1 p-3 flex flex-col">
+            <div className="flex-1 p-3">
               {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
-              ) : dueTomorrowTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
+                <div className="text-white/60 text-xs">Loading...</div>
+              ) : dueThisWeekTasks.length === 0 ? (
+                <div className="text-white/60 text-xs">No other tasks this week</div>
               ) : (
                 <div className="space-y-0.5">
-                  {dueTomorrowTasks.map((task, idx) => {
-                    const prevTask = idx > 0 ? dueTomorrowTasks[idx - 1] : null;
+                  {dueThisWeekTasks.map((task, idx) => {
+                    const prevTask = idx > 0 ? dueThisWeekTasks[idx - 1] : null;
                     const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
                     return (
                       <div key={task.id}>
@@ -6115,7 +6115,7 @@ export default function Dashboard() {
                             {task.courseName}
                           </div>
                         )}
-                        {renderTask(task, false)}
+                        {renderTask(task, true)}
                       </div>
                     );
                   })}
@@ -6167,32 +6167,32 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* Due This Week */}
+          {/* Due Tomorrow */}
           <section 
-            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ backgroundColor: colorSettings.boxBackground }} 
-            data-testid="section-due-this-week"
-            onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
+            data-testid="section-due-tomorrow"
+            onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
             <h4 
               className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
               style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
               draggable
-              onDragStart={() => handleBoxDragStart('this-week')}
+              onDragStart={() => handleBoxDragStart('tomorrow')}
               onDragEnd={handleBoxDragEnd}
             >
               <Calendar className="h-3 w-3 text-white" />
-              THIS WEEK ({dueThisWeekTasks.length})
+              TOMORROW ({dueTomorrowTasks.length})
             </h4>
-            <div className="flex-1 p-3">
+            <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="text-white/60 text-xs">Loading...</div>
-              ) : dueThisWeekTasks.length === 0 ? (
-                <div className="text-white/60 text-xs">No other tasks this week</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
+              ) : dueTomorrowTasks.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
               ) : (
                 <div className="space-y-0.5">
-                  {dueThisWeekTasks.map((task, idx) => {
-                    const prevTask = idx > 0 ? dueThisWeekTasks[idx - 1] : null;
+                  {dueTomorrowTasks.map((task, idx) => {
+                    const prevTask = idx > 0 ? dueTomorrowTasks[idx - 1] : null;
                     const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
                     return (
                       <div key={task.id}>
@@ -6201,7 +6201,7 @@ export default function Dashboard() {
                             {task.courseName}
                           </div>
                         )}
-                        {renderTask(task, true)}
+                        {renderTask(task, false)}
                       </div>
                     );
                   })}
