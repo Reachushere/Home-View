@@ -3477,8 +3477,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
-                      size="icon"
-                      className="border-white/30 hover:bg-white/10 text-white"
+                      className="flex-1 border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
                           await fetch('/api/media/volume', {
@@ -3486,21 +3485,19 @@ export default function Dashboard() {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ direction: 'down' })
                           });
+                          toast({ title: "Volume down" });
                         } catch (error) {
                           toast({ title: "Error adjusting volume", variant: "destructive" });
                         }
                       }}
                       data-testid="button-volume-down"
                     >
-                      <VolumeX className="h-4 w-4" />
+                      <VolumeX className="h-4 w-4 mr-2" />
+                      Down
                     </Button>
-                    <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
-                      <div className="h-full bg-blue-500 w-1/2 rounded-full" />
-                    </div>
                     <Button
                       variant="outline"
-                      size="icon"
-                      className="border-white/30 hover:bg-white/10 text-white"
+                      className="flex-1 border-white/30 hover:bg-white/10 text-white"
                       onClick={async () => {
                         try {
                           await fetch('/api/media/volume', {
@@ -3508,13 +3505,15 @@ export default function Dashboard() {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ direction: 'up' })
                           });
+                          toast({ title: "Volume up" });
                         } catch (error) {
                           toast({ title: "Error adjusting volume", variant: "destructive" });
                         }
                       }}
                       data-testid="button-volume-up"
                     >
-                      <Volume2 className="h-4 w-4" />
+                      <Volume2 className="h-4 w-4 mr-2" />
+                      Up
                     </Button>
                   </div>
                 </div>

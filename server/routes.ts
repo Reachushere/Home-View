@@ -2096,30 +2096,35 @@ export async function registerRoutes(
       const { direction } = req.body; // 'up' or 'down'
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Get current volume from one device and adjust it
       const devices = [
         "media_player.echo_lr_studio_white_am",
         "media_player.echo_show_pug_am",
-        "media_player.echo_lr_hub_am"
+        "media_player.echo_lr_hub_am",
+        "media_player.cat_wr"
       ];
       
-      const volumeStep = 0.1; // 10% steps
-      const service = direction === 'up' ? 'volume_up' : 'volume_down';
+      // Use notify.alexa_media with type "tts" to send volume command (same as PDF volume)
+      const volumeCommand = direction === 'up' ? 'volume up' : 'volume down';
       
-      console.log(`Adjusting volume ${direction} on all devices`);
+      console.log(`Adjusting volume ${direction} on all devices using notify.alexa_media`);
       
-      for (const device of devices) {
-        await fetch(`${haUrl}/api/services/media_player/${service}`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: device
-          }),
-        });
-      }
+      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: volumeCommand,
+          target: devices,
+          data: {
+            type: "tts"
+          }
+        }),
+      });
+      
+      const responseText = await response.text();
+      console.log(`Volume ${direction} response: ${response.status}`, responseText);
       
       res.json({ success: true, direction });
     } catch (error) {
