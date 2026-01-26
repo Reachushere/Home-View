@@ -8256,7 +8256,7 @@ function TaskForm({
               variant="outline"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="flex-1"
+              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40"
               data-testid="button-upload-file"
             >
               {isUploading ? (
@@ -8290,7 +8290,7 @@ function TaskForm({
               onChange={(e) => setNewAttachment(e.target.value)}
               placeholder="Or paste URL..."
               data-testid="input-new-attachment"
-              className="!text-black bg-white"
+              className="!text-black bg-white text-xs h-8"
             />
             <Button
               type="button"
