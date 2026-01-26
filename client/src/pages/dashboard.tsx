@@ -5499,7 +5499,7 @@ export default function Dashboard() {
                                     onClick={() => setEditingTask(task)}
                                     className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                                   >
-                                    <span className="font-bold">DUE:</span> {task.title}
+                                    <span className="font-bold">DUE: {task.title}</span>
                                   </span>
                                 </div>
                               </div>
@@ -5528,7 +5528,7 @@ export default function Dashboard() {
                                     onClick={() => setEditingTask(task)}
                                     className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                                   >
-                                    <span className="font-bold">PREP:</span> {task.title}
+                                    <span className="font-bold">PREP: {task.title}</span>
                                   </span>
                                 </div>
                                 <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />
@@ -5560,7 +5560,7 @@ export default function Dashboard() {
                                   onClick={() => setEditingTask(task)}
                                   className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
                                 >
-                                  <span className="font-bold">PREP:</span> {task.title}
+                                  <span className="font-bold">PREP: {task.title}</span>
                                 </span>
                               </div>
                               <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />
