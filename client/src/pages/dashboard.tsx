@@ -7028,7 +7028,7 @@ function ProfileForm({
       <div className="space-y-2">
         <Label htmlFor="timezone">Home Time Zone</Label>
         <Select value={timezone} onValueChange={setTimezone}>
-          <SelectTrigger className="!text-black" data-testid="select-profile-timezone">
+          <SelectTrigger className="!text-black" style={{ color: 'black' }} data-testid="select-profile-timezone">
             <SelectValue placeholder="Select time zone" />
           </SelectTrigger>
           <SelectContent className="bg-white">
@@ -7053,7 +7053,7 @@ function ProfileForm({
             <Label htmlFor="travelTimezone" className="text-sm">Travel Time Zone</Label>
             <p className="text-xs text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
             <Select value={travelTimezone || timezone} onValueChange={setTravelTimezone}>
-              <SelectTrigger className="!text-black" data-testid="select-travel-timezone">
+              <SelectTrigger className="!text-black" style={{ color: 'black' }} data-testid="select-travel-timezone">
                 <SelectValue placeholder="Select travel time zone" />
               </SelectTrigger>
               <SelectContent className="bg-white">
@@ -7186,7 +7186,7 @@ function SchoolForm({
           <div className="space-y-1">
             <Label htmlFor="numberOfWeeks" className="text-xs">Number of School Weeks</Label>
             <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
-              <SelectTrigger className="!text-black" data-testid="select-number-of-weeks">
+              <SelectTrigger className="!text-black" style={{ color: 'black' }} data-testid="select-number-of-weeks">
                 <SelectValue placeholder="Select weeks" />
               </SelectTrigger>
               <SelectContent className="bg-white [&_*]:!text-black">
@@ -7210,7 +7210,7 @@ function SchoolForm({
           <div className="space-y-1">
             <Label htmlFor="firstDayOfWeek" className="text-xs">First Day of School Week</Label>
             <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
-              <SelectTrigger className="!text-black" data-testid="select-first-day-of-week">
+              <SelectTrigger className="!text-black" style={{ color: 'black' }} data-testid="select-first-day-of-week">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
               <SelectContent className="bg-white [&_*]:!text-black">
@@ -7630,7 +7630,7 @@ function TaskForm({
             <div>
               <Label htmlFor="courseName">Course</Label>
               <Select value={formData.courseName} onValueChange={(v) => setFormData(prev => ({ ...prev, courseName: v }))}>
-                <SelectTrigger className="!text-black" data-testid="select-course">
+                <SelectTrigger className="!text-black" style={{ color: 'black' }} data-testid="select-course">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -7652,7 +7652,7 @@ function TaskForm({
             <div>
               <Label htmlFor="type">Type</Label>
               <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
-                <SelectTrigger className="!text-black" data-testid="select-type">
+                <SelectTrigger className="!text-black" style={{ color: 'black' }} data-testid="select-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -7695,7 +7695,7 @@ function TaskForm({
                     <Label className="text-sm font-medium">Time</Label>
                     <div className="flex items-center gap-2 mt-2">
                       <Select value={tempHour} onValueChange={setTempHour}>
-                        <SelectTrigger className="w-20 !text-black">
+                        <SelectTrigger className="w-20 !text-black" style={{ color: 'black' }}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
@@ -7708,7 +7708,7 @@ function TaskForm({
                       </Select>
                       <span>:</span>
                       <Select value={tempMinute} onValueChange={setTempMinute}>
-                        <SelectTrigger className="w-20 !text-black">
+                        <SelectTrigger className="w-20 !text-black" style={{ color: 'black' }}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-white">
