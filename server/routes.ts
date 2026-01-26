@@ -1976,8 +1976,9 @@ export async function registerRoutes(
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       const targetEntity = entityId || "media_player.byhome";
       
-      // Use notify.alexa_media service to send a voice command (same format as user's working automation)
+      // Use notify.alexa_media with type: announce (matching user's working automation)
       console.log(`Attempting to play radio on ${targetEntity}`);
+      
       const notifyResponse = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -1987,63 +1988,18 @@ export async function registerRoutes(
         body: JSON.stringify({
           message: "play CHUM FM on TuneIn",
           data: {
-            type: "tts"
+            type: "announce"
           },
           target: [targetEntity]
         }),
       });
       
       const notifyResponseText = await notifyResponse.text();
-      console.log(`notify.alexa_media response (${notifyResponse.status}):`, notifyResponseText);
+      console.log(`notify.alexa_media announce response (${notifyResponse.status}):`, notifyResponseText);
 
       if (!notifyResponse.ok) {
-        // Fallback: Try using alexa_media_player sequence command
-        const sequenceResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: targetEntity,
-            media_content_id: "CHUM FM",
-            media_content_type: "TUNEIN"
-          }),
-        });
-        
-        if (!sequenceResponse.ok) {
-          // Final fallback: Try routine service
-          const routineResponse = await fetch(`${haUrl}/api/services/alexa_media/update_last_called`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              entity_id: targetEntity
-            }),
-          });
-          
-          // Then try play_media with MUSIC type
-          const musicResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              entity_id: targetEntity,
-              media_content_id: "CHUM FM",
-              media_content_type: "MUSIC"
-            }),
-          });
-          
-          if (!musicResponse.ok) {
-            const errorText = await musicResponse.text();
-            console.error("All radio playback attempts failed:", errorText);
-            return res.status(500).json({ error: "Failed to play radio", details: errorText });
-          }
-        }
+        console.error("notify.alexa_media failed:", notifyResponseText);
+        return res.status(500).json({ error: "Failed to play radio", details: notifyResponseText });
       }
 
       console.log(`Playing CHUM FM on ${targetEntity}`);
