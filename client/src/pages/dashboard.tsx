@@ -4426,10 +4426,10 @@ export default function Dashboard() {
                 ALL DAY
               </div>
               <div className="grid relative" style={{ gridTemplateColumns: 'repeat(7, 1fr)' }}>
-                {/* File tasks spanning entire week - positioned at top */}
+                {/* File tasks spanning current week (Sun-Fri, not Saturday which is next week) */}
                 {allTaskFiles.length > 0 && (
                   <div 
-                    className="col-span-7 flex flex-col gap-0.5 p-0.5 border-l border-border/50"
+                    className="col-span-6 flex flex-col gap-0.5 p-0.5 border-l border-border/50"
                     style={{ backgroundColor: 'rgba(147, 197, 253, 0.2)' }}
                   >
                     {allTaskFiles.map((file, idx) => {
@@ -4460,6 +4460,10 @@ export default function Dashboard() {
                       );
                     })}
                   </div>
+                )}
+                {/* Empty cell for Saturday (next week) in the file row */}
+                {allTaskFiles.length > 0 && (
+                  <div className="col-span-1 border-l border-border/50" style={{ backgroundColor: 'white' }} />
                 )}
                 {weekDays.map((day, dayIdx) => {
                   // Only show true all-day tasks (midnight due) and all-day calendar events - NO prep tasks here
