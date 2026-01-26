@@ -367,14 +367,14 @@
   animation: clap-left 0.4s ease-in-out infinite;
 }
 
-/* Working indicator animation - 9 circles that pulse in purple */
+/* Working indicator animation - 9 circles that pulse in teal */
 @keyframes working-pulse {
   0%, 100% {
-    background-color: #7c5cad;
+    background-color: #018a96;
     transform: scale(0.8);
   }
   50% {
-    background-color: #a855f7;
+    background-color: #4dd9e5;
     transform: scale(1);
   }
 }
@@ -384,7 +384,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
   padding: 4px;
-  background: #6b21a8;
+  background: #01a0af;
   border-radius: 4px;
   position: relative;
   min-width: 28px;
@@ -395,7 +395,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #a855f7;
+  background-color: #4dd9e5;
   animation: working-pulse 1.2s ease-in-out infinite;
 }
 

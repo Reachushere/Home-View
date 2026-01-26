@@ -3484,7 +3484,7 @@ export default function Dashboard() {
 
       {/* Settings Panel Popup - Contains sidebar content */}
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
-        <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ top: '55%' }}>
           <DialogHeader>
             <DialogTitle className="text-white text-sm">Courses & Weeks</DialogTitle>
           </DialogHeader>
@@ -4294,6 +4294,25 @@ export default function Dashboard() {
               </div>
               </div>
             </div>
+          </div>
+          <div className="flex gap-2 pt-4 border-t border-white/20 mt-4">
+            <Button type="button" variant="outline" className="flex-1 text-white border-white/50 hover:bg-white/10" onClick={() => setIsSettingsPanelOpen(false)} data-testid="button-cancel-settings-panel">
+              Cancel
+            </Button>
+            <Button 
+              type="button" 
+              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40" 
+              onClick={() => {
+                // Save the checked courses and grades to localStorage
+                localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
+                localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
+                toast({ title: "Settings saved", description: "Your progress has been saved." });
+                setIsSettingsPanelOpen(false);
+              }}
+              data-testid="button-save-settings-panel"
+            >
+              Save
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
