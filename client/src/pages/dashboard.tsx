@@ -6260,17 +6260,6 @@ export default function Dashboard() {
             >
               <Calendar className="h-3 w-3 text-white" />
               TODAY ({dueTodayTasks.length})
-              <div className="working-indicator ml-2" style={{ background: '#5979CC' }}>
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="circle"></div>
-                <div className="circle"></div>
-              </div>
             </h4>
             <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
