@@ -6567,14 +6567,14 @@ export default function Dashboard() {
 
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
             <DialogHeader className="flex flex-row items-center justify-between gap-4">
-              <DialogTitle>Edit Task</DialogTitle>
+              <DialogTitle className="text-white">Edit Task</DialogTitle>
               {editingTask && (
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10 mr-6"
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/20 mr-6"
                   onClick={() => {
                     if (confirm("Are you sure you want to delete this task?")) {
                       deleteMutation.mutate(editingTask.id);
