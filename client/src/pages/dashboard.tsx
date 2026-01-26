@@ -5697,7 +5697,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between px-2 py-1.5 border-b border-white/20 bg-black/30">
                 <div className="flex items-center gap-1.5">
                   <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
-                  <span className="text-sm font-medium">Files</span>
+                  <span className="text-base font-medium">Files</span>
                 </div>
                 <Button 
                   size="icon" 
@@ -5712,7 +5712,7 @@ export default function Dashboard() {
               
               {/* Files Tree */}
               <div className="flex-1 overflow-y-auto py-1">
-                <p className="text-[12px] text-white/40 px-2 mb-1">
+                <p className="text-[13px] text-white/40 px-2 mb-1">
                   Click to open. Drag to tasks.
                 </p>
                 
@@ -5758,8 +5758,8 @@ export default function Dashboard() {
                           >
                             {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                             {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                            <span className={`text-[12px] truncate flex-1 ${isPastWeek ? 'line-through text-white/50' : 'text-white/90'}`}>{week.name}</span>
-                            <span className="text-[11px] text-white/40">{weekFiles.length}</span>
+                            <span className={`text-[13px] truncate flex-1 ${isPastWeek ? 'line-through text-white/50' : 'text-white/90'}`}>{week.name}</span>
+                            <span className="text-[12px] text-white/40">{weekFiles.length}</span>
                           </div>
                         
                         {/* Course folders inside week */}
@@ -5781,8 +5781,8 @@ export default function Dashboard() {
                                   >
                                     {isCourseExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                                     {isCourseExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                                    <span className={`text-[12px] truncate flex-1 ${course.color}`}>{course.name}</span>
-                                    <span className="text-[11px] text-white/40">{courseFiles.length}</span>
+                                    <span className={`text-[13px] truncate flex-1 ${course.color}`}>{course.name}</span>
+                                    <span className="text-[12px] text-white/40">{courseFiles.length}</span>
                                   </div>
                                   
                                   {/* Content folders inside course */}
@@ -5804,8 +5804,8 @@ export default function Dashboard() {
                                             >
                                               {isContentExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                                               {isContentExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                                              <span className="text-[12px] text-white/90 truncate flex-1">{content.name}</span>
-                                              <span className="text-[11px] text-white/40">{contentFiles.length}</span>
+                                              <span className="text-[13px] text-white/90 truncate flex-1">{content.name}</span>
+                                              <span className="text-[12px] text-white/40">{contentFiles.length}</span>
                                             </div>
                                             
                                             {/* Files inside content folder */}
@@ -5844,7 +5844,7 @@ export default function Dashboard() {
                                                       className="h-3 w-3 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                                     />
                                                     <FileText className="h-3 w-3 text-white/50 shrink-0" />
-                                                    <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
+                                                    <span className={`text-[12px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
                                                       {file.displayName || file.originalName}
                                                     </span>
                                                   </div>
