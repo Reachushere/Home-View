@@ -7630,7 +7630,7 @@ function TaskForm({
             <div>
               <Label htmlFor="courseName">Course</Label>
               <Select value={formData.courseName} onValueChange={(v) => setFormData(prev => ({ ...prev, courseName: v }))}>
-                <SelectTrigger data-testid="select-course">
+                <SelectTrigger className="!text-black" data-testid="select-course">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -7652,7 +7652,7 @@ function TaskForm({
             <div>
               <Label htmlFor="type">Type</Label>
               <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
-                <SelectTrigger data-testid="select-type">
+                <SelectTrigger className="!text-black" data-testid="select-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
