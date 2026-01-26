@@ -5816,15 +5816,18 @@ export default function Dashboard() {
         <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }}>
           {/* Due Today */}
           <section 
-            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('today') + 1 }} 
             data-testid="section-due-today"
-            draggable
-            onDragStart={() => handleBoxDragStart('today')}
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
-            onDragEnd={handleBoxDragEnd}
           >
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
+            <h4 
+              className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
+              draggable
+              onDragStart={() => handleBoxDragStart('today')}
+              onDragEnd={handleBoxDragEnd}
+            >
               <Calendar className="h-3 w-3 text-white" />
               TODAY ({dueTodayTasks.length})
             </h4>
@@ -5856,15 +5859,18 @@ export default function Dashboard() {
 
           {/* Due Tomorrow */}
           <section 
-            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('tomorrow') + 1 }} 
             data-testid="section-due-tomorrow"
-            draggable
-            onDragStart={() => handleBoxDragStart('tomorrow')}
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
-            onDragEnd={handleBoxDragEnd}
           >
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
+            <h4 
+              className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
+              draggable
+              onDragStart={() => handleBoxDragStart('tomorrow')}
+              onDragEnd={handleBoxDragEnd}
+            >
               <Calendar className="h-3 w-3 text-white" />
               TOMORROW ({dueTomorrowTasks.length})
             </h4>
@@ -5896,15 +5902,18 @@ export default function Dashboard() {
 
           {/* Due This Week */}
           <section 
-            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] cursor-grab ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ backgroundColor: colorSettings.boxBackground, order: boxOrder.indexOf('this-week') + 1 }} 
             data-testid="section-due-this-week"
-            draggable
-            onDragStart={() => handleBoxDragStart('this-week')}
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
-            onDragEnd={handleBoxDragEnd}
           >
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
+            <h4 
+              className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
+              draggable
+              onDragStart={() => handleBoxDragStart('this-week')}
+              onDragEnd={handleBoxDragEnd}
+            >
               <Calendar className="h-3 w-3 text-white" />
               THIS WEEK ({dueThisWeekTasks.length})
             </h4>
