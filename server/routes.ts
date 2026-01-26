@@ -1964,6 +1964,46 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/media/play-radio - Play TuneIn radio station on Alexa
+  app.post("/api/media/play-radio", async (req, res) => {
+    try {
+      const { stationId, entityId } = req.body;
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(400).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      const targetEntity = entityId || "media_player.byhome";
+      
+      // Use alexa_media integration to play TuneIn
+      const response = await fetch(`${haUrl}/api/services/media_player/play_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: targetEntity,
+          media_content_id: stationId || "CHUM FM",
+          media_content_type: "TUNEIN"
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Home Assistant play radio error:", errorText);
+        return res.status(response.status).json({ error: "Failed to play radio" });
+      }
+
+      console.log(`Playing radio station ${stationId || "CHUM FM"} on ${targetEntity}`);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Play radio error:", error);
+      res.status(500).json({ error: "Failed to play radio" });
+    }
+  });
+
   // POST /api/tasks/:id/calendar - Add task to Google Calendar
   app.post("/api/tasks/:id/calendar", async (req, res) => {
     try {

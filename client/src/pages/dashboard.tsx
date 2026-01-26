@@ -75,6 +75,7 @@ import {
   VolumeX,
   CheckSquare,
   Undo2,
+  Radio,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -3351,6 +3352,36 @@ export default function Dashboard() {
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
           >
             {isMuted ? <BellOff className="h-[14px] w-[14px] text-white" /> : <Bell className="h-[14px] w-[14px] text-white" />}
+          </Button>
+
+          {/* CHUM FM Radio */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            onClick={async () => {
+              try {
+                const response = await fetch('/api/media/play-radio', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ 
+                    stationId: 'CHUM FM',
+                    entityId: 'media_player.byhome'
+                  })
+                });
+                if (response.ok) {
+                  toast({ title: "Playing CHUM FM", description: "on BYhome group" });
+                } else {
+                  toast({ title: "Failed to play radio", variant: "destructive" });
+                }
+              } catch (error) {
+                toast({ title: "Error playing radio", variant: "destructive" });
+              }
+            }}
+            data-testid="button-play-radio"
+            title="Play CHUM FM on BYhome"
+          >
+            <Radio className="h-[14px] w-[14px] text-white" />
           </Button>
 
           {/* Sync */}
