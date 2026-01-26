@@ -7140,7 +7140,7 @@ function SchoolForm({
           {schoolLogo ? (
             <img src={schoolLogo} alt="School logo" className="h-12 w-auto object-contain rounded border" />
           ) : (
-            <div className="h-12 w-20 bg-muted rounded border flex items-center justify-center text-xs text-muted-foreground">
+            <div className="h-12 w-20 bg-muted rounded border flex items-center justify-center text-xs !text-black">
               No logo
             </div>
           )}
