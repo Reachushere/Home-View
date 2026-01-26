@@ -7189,9 +7189,9 @@ function SchoolForm({
               <SelectTrigger className="!text-black" data-testid="select-number-of-weeks">
                 <SelectValue placeholder="Select weeks" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white [&_*]:!text-black">
                 {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                  <SelectItem key={w} value={String(w)} className="text-black">{w} weeks</SelectItem>
+                  <SelectItem key={w} value={String(w)} className="!text-black">{w} weeks</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -7213,9 +7213,9 @@ function SchoolForm({
               <SelectTrigger className="!text-black" data-testid="select-first-day-of-week">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white [&_*]:!text-black">
                 {daysOfWeek.map(day => (
-                  <SelectItem key={day.value} value={day.value} className="text-black">{day.label}</SelectItem>
+                  <SelectItem key={day.value} value={day.value} className="!text-black">{day.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
