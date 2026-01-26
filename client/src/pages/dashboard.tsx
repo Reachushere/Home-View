@@ -578,10 +578,10 @@ export default function Dashboard() {
         } else if (rowResizing.rowType === 'course') {
           setGridSizes(prev => ({ ...prev, courseRowHeight: Math.min(60, newHeight) }));
         } else if (rowResizing.rowType === 'timeSlot' && rowResizing.hourIndex !== undefined) {
-          // Individual time slot row resizing
+          // Individual time slot row resizing - minimum 24px to keep time text visible
           setGridSizes(prev => {
             const newHeights = [...prev.timeSlotHeights];
-            newHeights[rowResizing.hourIndex!] = Math.min(150, newHeight);
+            newHeights[rowResizing.hourIndex!] = Math.max(24, Math.min(150, newHeight));
             return { ...prev, timeSlotHeights: newHeights };
           });
         } else if (rowResizing.rowType === 'timeSlot') {
@@ -7859,6 +7859,7 @@ function TaskForm({
               placeholder="Assignment title"
               required
               data-testid="input-title"
+              className="!text-black bg-white"
             />
           </div>
 
@@ -7994,6 +7995,7 @@ function TaskForm({
                 value={formData.eventStartTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
                 data-testid="input-start-time"
+                className="!text-black bg-white"
               />
             </div>
             <div>
@@ -8004,6 +8006,7 @@ function TaskForm({
                 value={formData.eventEndTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
                 data-testid="input-end-time"
+                className="!text-black bg-white"
               />
             </div>
             <div>
@@ -8017,6 +8020,7 @@ function TaskForm({
                 onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
                 placeholder="0"
                 data-testid="input-prepdays"
+                className="!text-black bg-white"
               />
             </div>
           </div>
@@ -8138,6 +8142,7 @@ function TaskForm({
                   value={formData.repeatInterval}
                   onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
                   data-testid="input-repeat-interval"
+                  className="!text-black bg-white"
                 />
               </div>
               <div>
@@ -8169,6 +8174,7 @@ function TaskForm({
                 value={formData.repeatEndDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
                 data-testid="input-repeat-end-date"
+                className="!text-black bg-white"
               />
             </div>
           )}
@@ -8182,6 +8188,7 @@ function TaskForm({
               placeholder="Add notes or details..."
               rows={3}
               data-testid="input-description"
+              className="!text-black bg-white"
             />
           </div>
 
@@ -8194,6 +8201,7 @@ function TaskForm({
               onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
               placeholder="https://example.com"
               data-testid="input-reference-link"
+              className="!text-black bg-white"
             />
           </div>
         </div>
@@ -8270,6 +8278,7 @@ function TaskForm({
               onChange={(e) => setNewAttachment(e.target.value)}
               placeholder="Or paste URL..."
               data-testid="input-new-attachment"
+              className="!text-black bg-white"
             />
             <Button
               type="button"
