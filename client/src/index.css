@@ -383,22 +383,16 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
-  padding: 4px;
-  background: #01a0af !important;
-  background-color: #01a0af !important;
+  padding: 3px;
   border-radius: 4px;
   position: relative;
-  min-width: 32px;
-  min-height: 32px;
-  width: 32px;
-  height: 32px;
 }
 
 .working-indicator .circle {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.7);
   animation: working-pulse 1.2s ease-in-out infinite;
 }
 

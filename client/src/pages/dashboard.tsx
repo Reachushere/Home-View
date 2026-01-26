@@ -6133,20 +6133,7 @@ export default function Dashboard() {
                       </span>
                       <div 
                         className="working-indicator" 
-                        style={{ 
-                          backgroundColor: colorSettings.boxBackground, 
-                          background: colorSettings.boxBackground,
-                          width: '32px', 
-                          height: '32px',
-                          minWidth: '32px', 
-                          minHeight: '32px',
-                          display: 'grid',
-                          gridTemplateColumns: 'repeat(3, 1fr)',
-                          gap: '2px',
-                          padding: '4px',
-                          borderRadius: '4px',
-                          position: 'relative' as const
-                        }} 
+                        style={{ background: colorSettings.boxBackground }} 
                         title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
                       >
                         <div className="circle"></div>
