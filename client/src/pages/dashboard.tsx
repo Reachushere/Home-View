@@ -6283,6 +6283,22 @@ export default function Dashboard() {
           className={`fixed top-0 right-0 h-full w-1/2 bg-[#191919] shadow-2xl border-l border-[#3d3d3d] z-[100] transform transition-transform duration-300 ease-in-out ${isFilesFlyoutOpen ? 'translate-x-0' : 'translate-x-full'}`}
           data-testid="files-flyout-panel"
         >
+          {/* Pull Tab - sticks out from left side */}
+          <div
+            className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 cursor-pointer z-[101]"
+            onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
+            data-testid="files-flyout-tab"
+          >
+            <div className="flex items-center bg-[#191919]/80 backdrop-blur-sm border border-[#3d3d3d] border-r-0 rounded-l-lg px-1 py-6 hover:bg-[#2d2d2d]/90 transition-colors">
+              {isFilesFlyoutOpen ? (
+                <ChevronRight className="h-5 w-5 text-yellow-500" />
+              ) : (
+                <ChevronLeft className="h-5 w-5 text-yellow-500" />
+              )}
+              <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400 -ml-1" />
+            </div>
+          </div>
+          
           <div className="flex flex-col h-full text-white">
             {/* Header - Windows Explorer style toolbar */}
             <div className="flex items-center justify-between px-3 py-2 border-b border-[#3d3d3d] bg-[#202020]">
