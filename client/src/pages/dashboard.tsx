@@ -3593,18 +3593,18 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 
-                {/* Volume Controls - Selected Speaker */}
+                {/* Volume Controls - All Speakers */}
                 <div className="flex flex-col gap-1.5 mt-2">
-                  <Label className="text-white text-[10px]">Volume (Selected): {radioVolume}%</Label>
+                  <Label className="text-white text-[10px]">Volume: {radioVolume}%</Label>
                   <div className="flex items-center gap-1">
                     <button
                       className="text-white hover:text-white/70 text-base px-1"
                       onClick={async () => {
                         try {
-                          const res = await fetch('/api/media/volume', {
+                          const res = await fetch('/api/media/volume-all', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ direction: 'down', entityId: selectedSpeaker })
+                            body: JSON.stringify({ direction: 'down' })
                           });
                           const data = await res.json();
                           if (data.newVolume !== undefined) {
@@ -3628,10 +3628,10 @@ export default function Dashboard() {
                       className="text-white hover:text-white/70 text-base px-1"
                       onClick={async () => {
                         try {
-                          const res = await fetch('/api/media/volume', {
+                          const res = await fetch('/api/media/volume-all', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ direction: 'up', entityId: selectedSpeaker })
+                            body: JSON.stringify({ direction: 'up' })
                           });
                           const data = await res.json();
                           if (data.newVolume !== undefined) {
@@ -3649,10 +3649,10 @@ export default function Dashboard() {
                       className="text-white/70 hover:text-white text-[9px] px-1"
                       onClick={async () => {
                         try {
-                          const res = await fetch('/api/media/volume', {
+                          const res = await fetch('/api/media/volume-all', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ level: 0, entityId: selectedSpeaker })
+                            body: JSON.stringify({ level: 0 })
                           });
                           const data = await res.json();
                           if (data.newVolume !== undefined) {
@@ -3663,80 +3663,6 @@ export default function Dashboard() {
                         }
                       }}
                       data-testid="button-mute"
-                    >
-                      mute
-                    </button>
-                  </div>
-                </div>
-                
-                {/* Volume Controls - All Speakers */}
-                <div className="flex flex-col gap-1.5 mt-1">
-                  <Label className="text-white text-[10px]">Volume (All Speakers):</Label>
-                  <div className="flex items-center gap-1">
-                    <button
-                      className="text-white hover:text-white/70 text-base px-1"
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/media/volume-all', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ direction: 'down' })
-                          });
-                          const data = await res.json();
-                          if (data.newVolume !== undefined) {
-                            setRadioVolume(data.newVolume);
-                            toast({ title: `Volume set to ${data.newVolume}% on all speakers` });
-                          }
-                        } catch (error) {
-                          toast({ title: "Error adjusting volume", variant: "destructive" });
-                        }
-                      }}
-                      data-testid="button-volume-down-all"
-                    >
-                      −
-                    </button>
-                    <span className="text-white/70 text-[9px] flex-1 text-center">All Speakers</span>
-                    <button
-                      className="text-white hover:text-white/70 text-base px-1"
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/media/volume-all', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ direction: 'up' })
-                          });
-                          const data = await res.json();
-                          if (data.newVolume !== undefined) {
-                            setRadioVolume(data.newVolume);
-                            toast({ title: `Volume set to ${data.newVolume}% on all speakers` });
-                          }
-                        } catch (error) {
-                          toast({ title: "Error adjusting volume", variant: "destructive" });
-                        }
-                      }}
-                      data-testid="button-volume-up-all"
-                    >
-                      +
-                    </button>
-                    <button
-                      className="text-white/70 hover:text-white text-[9px] px-1"
-                      onClick={async () => {
-                        try {
-                          const res = await fetch('/api/media/volume-all', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ level: 0 })
-                          });
-                          const data = await res.json();
-                          if (data.newVolume !== undefined) {
-                            setRadioVolume(data.newVolume);
-                            toast({ title: "All speakers muted" });
-                          }
-                        } catch (error) {
-                          toast({ title: "Error muting", variant: "destructive" });
-                        }
-                      }}
-                      data-testid="button-mute-all"
                     >
                       mute
                     </button>
