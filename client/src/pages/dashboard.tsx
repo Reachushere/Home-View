@@ -122,6 +122,14 @@ const FOLDER_TYPES = [
   { id: "reading", name: "Reading" },
 ];
 
+// Helper function to convert 24-hour time to 12-hour format
+const formatTimeTo12Hour = (time24: string): string => {
+  const [hours, minutes] = time24.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const hours12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+  return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+};
+
 // Speakers list for media controls
 const SPEAKERS = [
   { id: "browser_tts", name: "Bluetooth" },
@@ -6133,7 +6141,7 @@ export default function Dashboard() {
                           className="text-[7px] text-muted-foreground ml-3 px-0.5"
                           style={{ animation: 'none' }}
                         >
-                          {task.eventStartTime} - {task.eventEndTime}
+                          {formatTimeTo12Hour(task.eventStartTime)} - {formatTimeTo12Hour(task.eventEndTime)}
                         </div>
                       )}
                     </div>
