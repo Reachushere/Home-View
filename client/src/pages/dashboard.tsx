@@ -2547,12 +2547,15 @@ export default function Dashboard() {
           let toY: number;
           const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
           
+          // Green arrows offset 40px left for testing, others at normal position
+          const offset = color === "#22c55e" ? 42 : 2;
+          
           if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calCheckboxRect.left - 42; // 40px to the left for testing
+            toX = calCheckboxRect.left - offset;
             toY = calCheckboxRect.top + calCheckboxRect.height / 2;
           } else {
-            toX = calRect.left - 42; // 40px to the left for testing
+            toX = calRect.left - offset;
             toY = calRect.top + calRect.height / 2;
           }
           
