@@ -1,8 +1,9 @@
-import { useState, DragEvent, useRef, useCallback, useEffect } from "react";
+import { useState, DragEvent, useRef, useCallback, useEffect, useMemo } from "react";
 import quickActionsBg from "@assets/Washroom_1769164969510.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -273,6 +274,66 @@ export default function FilesPage() {
   const { data: deletedFoldersData = [] } = useQuery<{ id: number; folderId: string }[]>({
     queryKey: ["/api/deleted-folders"],
   });
+
+  // Fetch weeks to determine current week for sorting
+  interface Week {
+    weekNumber: number;
+    startDate: string;
+    endDate: string;
+  }
+  const { data: weeks = [] } = useQuery<Week[]>({
+    queryKey: ["/api/weeks"],
+    queryFn: () => fetch("/api/weeks").then(r => r.json()),
+  });
+
+  // Helper to get week number from week id
+  const getWeekNumberFromId = (weekId: string): number | null => {
+    if (weekId === "other") return null;
+    const match = weekId.match(/^week-(\d+)$/);
+    return match ? parseInt(match[1], 10) : null;
+  };
+
+  // Check if a week is past based on its end date
+  const isWeekPast = useCallback((weekId: string): boolean => {
+    const weekNum = getWeekNumberFromId(weekId);
+    if (weekNum === null) return false; // "other" folder is never past
+    
+    // Find the week data from API
+    const weekData = weeks.find(w => w.weekNumber === weekNum);
+    if (!weekData) return false;
+    
+    const today = new Date();
+    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endDate = parseISO(weekData.endDate);
+    const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    
+    // Week is past if today is after the week's end date
+    return todayDateOnly > endDateOnly;
+  }, [weeks]);
+
+  // Sort weeks: current and future weeks first (in order), then past weeks (in order)
+  const sortedWeeks = useMemo(() => {
+    return [...WEEKS].sort((a, b) => {
+      const aNum = getWeekNumberFromId(a.id);
+      const bNum = getWeekNumberFromId(b.id);
+      
+      // "Other" folder always at the end
+      if (a.id === "other") return 1;
+      if (b.id === "other") return -1;
+      
+      if (aNum === null || bNum === null) return 0;
+      
+      const aIsPast = isWeekPast(a.id);
+      const bIsPast = isWeekPast(b.id);
+      
+      // If one is past and one is not, the past one goes to the bottom
+      if (aIsPast && !bIsPast) return 1;
+      if (!aIsPast && bIsPast) return -1;
+      
+      // Both past or both current/future: sort by week number
+      return aNum - bNum;
+    });
+  }, [weeks, isWeekPast]);
 
   const deletedFolderIds = new Set(deletedFoldersData.map(f => f.folderId));
 
@@ -1207,18 +1268,23 @@ export default function FilesPage() {
               );
             })}
 
-            {/* Week folders */}
-            {WEEKS.map((week) => {
+            {/* Week folders - sorted with past weeks at bottom */}
+            {sortedWeeks.map((week) => {
               const weekFiles = getFilesInWeek(week.id);
               const isWeekExpanded = expandedFolders.has(week.id);
               const allFilesListened = weekFiles.length > 0 && weekFiles.every(f => f.listened);
+              const isPastWeek = isWeekPast(week.id);
+              // Past week with incomplete files should blink
+              const shouldBlink = isPastWeek && weekFiles.length > 0 && !allFilesListened;
+              // Past week with all files completed should have strikethrough
+              const shouldStrikethrough = isPastWeek && allFilesListened;
               
               return (
                 <div key={week.id}>
                   <ContextMenu>
                     <ContextMenuTrigger asChild>
                       <div
-                        className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === week.id ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === week.id ? "bg-[#0078d4]/50" : ""}`}
+                        className={`flex items-center gap-1 px-2 py-1.5 cursor-pointer hover:bg-[#2d2d2d] ${selectedFolder === week.id ? "bg-[#0078d4]/30 border-l-2 border-[#0078d4]" : ""} ${dragOverFolder === week.id ? "bg-[#0078d4]/50" : ""} ${shouldBlink ? "animate-slow-blink" : ""}`}
                         onClick={(e) => {
                           if (e.ctrlKey || e.metaKey) {
                             setSelectedFolder(week.id);
@@ -1272,7 +1338,7 @@ export default function FilesPage() {
                             data-testid={`input-rename-week-folder-${week.id}`}
                           />
                         ) : (
-                          <span className={`text-sm flex-1 ${allFilesListened ? 'line-through text-gray-500' : ''}`}>{folderDisplayNames[week.id] || week.name}</span>
+                          <span className={`text-sm flex-1 ${shouldStrikethrough ? 'line-through text-gray-500' : ''}`}>{folderDisplayNames[week.id] || week.name}</span>
                         )}
                         <span className="text-xs text-gray-500">{weekFiles.length}</span>
                       </div>
