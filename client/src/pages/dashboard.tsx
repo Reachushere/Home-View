@@ -7015,9 +7015,20 @@ export default function Dashboard() {
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
-              // Opaque path: straight lines from checkbox to container bottom, then same curve as transparent
-              // The curve matches: Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}
-              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
+              // Module column boundary - where opaque ends and transparent begins
+              const moduleColumnEnd = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+              
+              // Calculate the Y position on the curve where X = moduleColumnEnd
+              // For quadratic bezier: P(t) = (1-t)²P0 + 2(1-t)t P1 + t²P2
+              // P0 = (exitX, containerBottom), P1 = (exitX, midY), P2 = (conn.toX, conn.toY)
+              // For X: x(t) = (1-t)²*exitX + 2(1-t)t*exitX + t²*conn.toX = exitX*(1-t²) + t²*conn.toX
+              // Solving for t when x = moduleColumnEnd
+              const t = Math.sqrt((moduleColumnEnd - exitX) / (conn.toX - exitX));
+              const midY = (containerBottom + conn.toY) / 2;
+              const splitY = (1-t)*(1-t)*containerBottom + 2*(1-t)*t*midY + t*t*conn.toY;
+              
+              // Opaque path: from checkbox to the split point at module column boundary
+              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + splitY) / 2}, ${moduleColumnEnd} ${splitY}`;
               
               return (
                 <g key={`opaque-${conn.taskId}`}>
