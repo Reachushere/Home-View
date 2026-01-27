@@ -1,0 +1,30 @@
+Error: Uncaught ReferenceError: boxOrder is not defined
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx
+Line: 519, Col: 7
+ReferenceError: boxOrder is not defined
+    at Dashboard (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx:519:7)
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:19190:13)Error: Uncaught ReferenceError: boxOrder is not defined
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx
+Line: 519, Col: 7
+ReferenceError: boxOrder is not defined
+    at Dashboard (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx:519:7)
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:19190:13)Error: Uncaught ReferenceError: boxOrder is not defined
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c
+Line: 19466, Col: 13
+ReferenceError: boxOrder is not defined

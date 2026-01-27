@@ -470,11 +470,61 @@ export default function Dashboard() {
     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
   }, [blinkSettings]);
   
-  // Box order for drag and drop (this-week, tomorrow, today)
+  // Box order based on current day of week
+  // Sunday/Monday: Today=LEFT, Tomorrow=MIDDLE, This Week=RIGHT
+  // Tuesday/Wednesday: Today=MIDDLE, Tomorrow=RIGHT, This Week=LEFT
+  // Thursday/Friday/Saturday: Today=RIGHT, Tomorrow=LEFT, This Week=MIDDLE
+  const getDefaultBoxOrder = (): string[] => {
+    const dayOfWeek = new Date().getDay(); // 0=Sunday, 1=Monday, etc.
+    
+    if (dayOfWeek === 0 || dayOfWeek === 1) {
+      // Sunday & Monday: Today LEFT, Tomorrow MIDDLE, This Week RIGHT
+      return ['today', 'tomorrow', 'this-week'];
+    } else if (dayOfWeek === 2 || dayOfWeek === 3) {
+      // Tuesday & Wednesday: This Week LEFT, Today MIDDLE, Tomorrow RIGHT
+      return ['this-week', 'today', 'tomorrow'];
+    } else {
+      // Thursday, Friday, Saturday: Tomorrow LEFT, This Week MIDDLE, Today RIGHT
+      return ['tomorrow', 'this-week', 'today'];
+    }
+  };
+  
+  // Box order state - initialized from day-based default, but can be dragged
   const [boxOrder, setBoxOrder] = useState<string[]>(() => {
     const saved = localStorage.getItem('boxOrder');
-    return saved ? JSON.parse(saved) : ['this-week', 'tomorrow', 'today'];
+    const savedDate = localStorage.getItem('boxOrderDate');
+    const today = new Date().toDateString();
+    
+    // Reset to day-based default if it's a new day (midnight reset)
+    if (savedDate !== today) {
+      return getDefaultBoxOrder();
+    }
+    
+    return saved ? JSON.parse(saved) : getDefaultBoxOrder();
   });
+  
+  // Reset box order at midnight (when date changes)
+  useEffect(() => {
+    const checkMidnight = () => {
+      const savedDate = localStorage.getItem('boxOrderDate');
+      const today = new Date().toDateString();
+      
+      if (savedDate !== today) {
+        const newOrder = getDefaultBoxOrder();
+        setBoxOrder(newOrder);
+        localStorage.setItem('boxOrder', JSON.stringify(newOrder));
+        localStorage.setItem('boxOrderDate', today);
+      }
+    };
+    
+    // Check every minute for midnight
+    const interval = setInterval(checkMidnight, 60000);
+    
+    // Also save current date on mount
+    localStorage.setItem('boxOrderDate', new Date().toDateString());
+    
+    return () => clearInterval(interval);
+  }, []);
   
   // Color settings
   const [colorSettings, setColorSettings] = useState<{
