@@ -2238,6 +2238,96 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/media/volume-all - Adjust volume on ALL Echo devices
+  app.post("/api/media/volume-all", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(400).json({ error: "Home Assistant not configured" });
+      }
+
+      const { direction, level } = req.body;
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // All Echo devices
+      const devices = [
+        "media_player.cat_wr",
+        "media_player.echo_cat_left_am",
+        "media_player.echo_cat_right_am",
+        "media_player.echo_cat_washroom_middle",
+        "media_player.echo_closet_am",
+        "media_player.echo_lr_couch_r_am",
+        "media_player.echo_hallway_entrance_am",
+        "media_player.echo_king_l_am",
+        "media_player.echo_king_r_am",
+        "media_player.echo_king_tv_am",
+        "media_player.echo_kitchen_cupboards_left_am",
+        "media_player.echo_kitchen_cupboards_r_am",
+        "media_player.echo_kitchen_fridge_am",
+        "media_player.echo_kitchen_hutch_am",
+        "media_player.echo_kitchen_island_corner_am",
+        "media_player.echo_kitchen_studio_black_am",
+        "media_player.echo_lr_hub_am",
+        "media_player.echo_lr_studio_white_am",
+        "media_player.echo_lr_tv_shelf_am",
+        "media_player.echo_queen_balcony_am",
+        "media_player.echo_queen_bed_l_am",
+        "media_player.echo_queen_bed_r_am",
+        "media_player.echo_show_pug_am"
+      ];
+      
+      console.log(`Setting volume on ALL ${devices.length} devices`);
+      
+      // Get current volume from first device
+      const statesResponse = await fetch(`${haUrl}/api/states/${devices[0]}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      let currentVolume = 0.5;
+      if (statesResponse.ok) {
+        const stateData = await statesResponse.json();
+        currentVolume = stateData.attributes?.volume_level || 0.5;
+      }
+      
+      // Calculate new volume
+      let newVolume: number;
+      if (level !== undefined) {
+        newVolume = level / 100;
+      } else {
+        const step = 0.1;
+        newVolume = direction === 'up' 
+          ? Math.min(1, currentVolume + step)
+          : Math.max(0, currentVolume - step);
+      }
+      
+      console.log(`Setting volume to ${newVolume} on all devices`);
+      
+      // Set volume on all devices in parallel
+      await Promise.all(devices.map(device => 
+        fetch(`${haUrl}/api/services/media_player/volume_set`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: device,
+            volume_level: newVolume
+          }),
+        })
+      ));
+      
+      console.log(`Volume set successfully on all devices`);
+      res.json({ success: true, direction, newVolume: Math.round(newVolume * 100) });
+    } catch (error) {
+      console.error("Volume all control error:", error);
+      res.status(500).json({ error: "Failed to adjust volume on all devices" });
+    }
+  });
+
   // POST /api/tasks/:id/calendar - Add task to Google Calendar
   app.post("/api/tasks/:id/calendar", async (req, res) => {
     try {
