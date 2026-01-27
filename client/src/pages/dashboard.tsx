@@ -7481,7 +7481,7 @@ export default function Dashboard() {
               </marker>
             </defs>
             {prepArrowConnections.map((conn) => {
-              // Exit 21px to the left from checkbox, then down to prep text
+              // Exit 21px to the left from checkbox
               const exitX = conn.fromX - 21;
               
               // Get marker ID based on color
@@ -7489,8 +7489,10 @@ export default function Dashboard() {
               if (conn.color === "#22c55e") markerId = "arrowhead-prep-green";
               else if (conn.color === "#6366f1") markerId = "arrowhead-prep-indigo";
               
-              // Path: from checkbox, go left 21px, then down to prep text middle
-              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${conn.toY} L ${conn.toX} ${conn.toY}`;
+              // Path: from checkbox, go left 21px, down partway, right to above target, then down vertically
+              // This makes the arrowhead point DOWN
+              const midY = conn.toY - 30; // Stop 30px above target, then go right, then down
+              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${midY} L ${conn.toX} ${midY} L ${conn.toX} ${conn.toY}`;
               
               return (
                 <g key={`prep-arrow-${conn.taskId}`}>
