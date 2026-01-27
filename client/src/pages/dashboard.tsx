@@ -7172,19 +7172,16 @@ export default function Dashboard() {
               const defaultGreenCP2 = { x: conn.toX - 40, y: containerBottom }; // control point 2
               const defaultGreenEnd = { x: conn.toX, y: conn.toY }; // Tomorrow box checkbox
               
-              // Check for dragged positions in window state
+              // ABSOLUTE RULE: greenStart (arrowhead position) is ALWAYS at calendar - NEVER EVER at Tomorrow box
+              // This is hardcoded and cannot be overridden by any drag state or other logic
+              const greenStart = { x: conn.fromX - 15, y: conn.fromY }; // ALWAYS calendar position
+              
+              // Only control points and end can use drag state - arrowhead position is locked
               const dragState = (window as any).__greenArrowDragState || {};
-              let greenStart = dragState.start || defaultGreenStart;
               const greenCP1 = dragState.cp1 || defaultGreenCP1;
               const greenCP2 = dragState.cp2 || defaultGreenCP2;
               const greenEnd = dragState.end || defaultGreenEnd;
               const arrowRotation = dragState.rotation || 0; // degrees
-              
-              // CONDITION: Arrowhead (greenStart) must NEVER be at Tomorrow box - always force to calendar
-              // If greenStart is near Tomorrow box position (conn.toX), reset to calendar position
-              if (Math.abs(greenStart.x - conn.toX) < 100) {
-                greenStart = defaultGreenStart; // Force back to calendar position
-              }
               // Green path: starts 10px left of arrowhead tip (left side of arrow), goes 7px left, then curves
               const arrowLeftSide = { x: greenStart.x - 10, y: greenStart.y };
               const horizontalEnd = { x: greenStart.x - 17, y: greenStart.y }; // 7px left of arrow left side
