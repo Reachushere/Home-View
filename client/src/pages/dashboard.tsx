@@ -7204,139 +7204,16 @@ export default function Dashboard() {
                     markerEnd={isGreen ? undefined : `url(#${markerId})`}
                     markerStart={undefined}
                   />
-                  {/* Draggable nodes for green arrows - show and adjust control points */}
+                  {/* Green arrowhead */}
                   {isGreen && (
-                    <>
-                      {/* Control point handles - draggable */}
-                      <circle 
-                        cx={greenStart.x} cy={greenStart.y} r="8" 
-                        fill="lime" stroke="black" strokeWidth="2" 
-                        style={{ cursor: 'move', pointerEvents: 'all' }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          const startX = e.clientX, startY = e.clientY;
-                          const origX = greenStart.x, origY = greenStart.y;
-                          const onMove = (ev: MouseEvent) => {
-                            (window as any).__greenArrowDragState = {
-                              ...(window as any).__greenArrowDragState,
-                              start: { x: origX + (ev.clientX - startX), y: origY + (ev.clientY - startY) }
-                            };
-                            window.dispatchEvent(new Event('resize'));
-                          };
-                          const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-                          document.addEventListener('mousemove', onMove);
-                          document.addEventListener('mouseup', onUp);
-                        }}
+                    <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
+                      <polygon 
+                        points="0,-7 14,0 0,7" 
+                        fill="#22c55e" 
+                        fillOpacity="0.75"
+                        style={{ pointerEvents: 'none' }}
                       />
-                      <text x={greenStart.x + 10} y={greenStart.y + 4} fontSize="11" fill="lime" fontWeight="bold">START</text>
-                      
-                      <circle 
-                        cx={greenCP1.x} cy={greenCP1.y} r="8" 
-                        fill="yellow" stroke="black" strokeWidth="2" 
-                        style={{ cursor: 'move', pointerEvents: 'all' }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          const startX = e.clientX, startY = e.clientY;
-                          const origX = greenCP1.x, origY = greenCP1.y;
-                          const onMove = (ev: MouseEvent) => {
-                            (window as any).__greenArrowDragState = {
-                              ...(window as any).__greenArrowDragState,
-                              cp1: { x: origX + (ev.clientX - startX), y: origY + (ev.clientY - startY) }
-                            };
-                            window.dispatchEvent(new Event('resize'));
-                          };
-                          const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-                          document.addEventListener('mousemove', onMove);
-                          document.addEventListener('mouseup', onUp);
-                        }}
-                      />
-                      <text x={greenCP1.x + 10} y={greenCP1.y + 4} fontSize="11" fill="yellow" fontWeight="bold">CP1</text>
-                      
-                      <circle 
-                        cx={greenCP2.x} cy={greenCP2.y} r="8" 
-                        fill="orange" stroke="black" strokeWidth="2" 
-                        style={{ cursor: 'move', pointerEvents: 'all' }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          const startX = e.clientX, startY = e.clientY;
-                          const origX = greenCP2.x, origY = greenCP2.y;
-                          const onMove = (ev: MouseEvent) => {
-                            (window as any).__greenArrowDragState = {
-                              ...(window as any).__greenArrowDragState,
-                              cp2: { x: origX + (ev.clientX - startX), y: origY + (ev.clientY - startY) }
-                            };
-                            window.dispatchEvent(new Event('resize'));
-                          };
-                          const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-                          document.addEventListener('mousemove', onMove);
-                          document.addEventListener('mouseup', onUp);
-                        }}
-                      />
-                      <text x={greenCP2.x + 10} y={greenCP2.y + 4} fontSize="11" fill="orange" fontWeight="bold">CP2</text>
-                      
-                      <circle 
-                        cx={greenEnd.x} cy={greenEnd.y} r="8" 
-                        fill="red" stroke="black" strokeWidth="2" 
-                        style={{ cursor: 'move', pointerEvents: 'all' }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          const startX = e.clientX, startY = e.clientY;
-                          const origX = greenEnd.x, origY = greenEnd.y;
-                          const onMove = (ev: MouseEvent) => {
-                            (window as any).__greenArrowDragState = {
-                              ...(window as any).__greenArrowDragState,
-                              end: { x: origX + (ev.clientX - startX), y: origY + (ev.clientY - startY) }
-                            };
-                            window.dispatchEvent(new Event('resize'));
-                          };
-                          const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-                          document.addEventListener('mousemove', onMove);
-                          document.addEventListener('mouseup', onUp);
-                        }}
-                      />
-                      <text x={greenEnd.x + 10} y={greenEnd.y + 4} fontSize="11" fill="red" fontWeight="bold">END (arrow)</text>
-                      
-                      {/* Control lines showing bezier handles */}
-                      <line x1={greenStart.x} y1={greenStart.y} x2={greenCP1.x} y2={greenCP1.y} stroke="rgba(255,255,0,0.5)" strokeWidth="1" strokeDasharray="3,3" style={{ pointerEvents: 'none' }} />
-                      <line x1={greenEnd.x} y1={greenEnd.y} x2={greenCP2.x} y2={greenCP2.y} stroke="rgba(255,165,0,0.5)" strokeWidth="1" strokeDasharray="3,3" style={{ pointerEvents: 'none' }} />
-                      
-                      {/* Manual arrowhead - larger to match pink arrow visual size */}
-                      <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
-                        <polygon 
-                          points="0,-7 14,0 0,7" 
-                          fill="#22c55e" 
-                          fillOpacity="0.75"
-                          style={{ pointerEvents: 'none' }}
-                        />
-                      </g>
-                      
-                      {/* Rotation control handle - drag to rotate arrowhead */}
-                      <circle 
-                        cx={greenStart.x + 25 * Math.cos((arrowRotation - 90) * Math.PI / 180)} 
-                        cy={greenStart.y + 25 * Math.sin((arrowRotation - 90) * Math.PI / 180)} 
-                        r="6" 
-                        fill="cyan" stroke="black" strokeWidth="2" 
-                        style={{ cursor: 'grab', pointerEvents: 'all' }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          const centerX = greenStart.x, centerY = greenStart.y;
-                          const onMove = (ev: MouseEvent) => {
-                            const dx = ev.clientX - centerX;
-                            const dy = ev.clientY - centerY;
-                            const angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-                            (window as any).__greenArrowDragState = {
-                              ...(window as any).__greenArrowDragState,
-                              rotation: angle
-                            };
-                            window.dispatchEvent(new Event('resize'));
-                          };
-                          const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
-                          document.addEventListener('mousemove', onMove);
-                          document.addEventListener('mouseup', onUp);
-                        }}
-                      />
-                      <text x={greenStart.x + 30} y={greenStart.y - 15} fontSize="10" fill="cyan" fontWeight="bold">ROTATE ({Math.round(arrowRotation)}°)</text>
-                    </>
+                    </g>
                   )}
                 </g>
               );
