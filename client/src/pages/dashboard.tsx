@@ -7491,8 +7491,9 @@ export default function Dashboard() {
               
               // Path: from checkbox, go left 21px, down partway, right to above target, then down vertically
               // This makes the arrowhead point DOWN
-              const midY = conn.toY - 30; // Stop 30px above target, then go right, then down
-              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${midY} L ${conn.toX} ${midY} L ${conn.toX} ${conn.toY}`;
+              const endY = conn.toY - 10; // Arrowhead ends 10px above the text center
+              const midY = endY - 30; // Stop 30px above endpoint, then go right, then down
+              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${midY} L ${conn.toX} ${midY} L ${conn.toX} ${endY}`;
               
               return (
                 <g key={`prep-arrow-${conn.taskId}`}>
