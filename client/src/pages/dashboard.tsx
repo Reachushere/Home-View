@@ -7015,16 +7015,9 @@ export default function Dashboard() {
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
-              // The module column starts at X = timeColumnWidth
-              const moduleColumnStart = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
-              
-              // Calculate where on the curve we hit the module column boundary
-              // Curve goes from (exitX, containerBottom) to (conn.toX, conn.toY)
-              const curveProgress = Math.max(0, Math.min(1, (moduleColumnStart - exitX) / (conn.toX - exitX)));
-              const transitionY = containerBottom + (conn.toY - containerBottom) * curveProgress;
-              
-              // Opaque path: from checkbox down to container bottom, then partial curve until module column
-              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + transitionY) / 2}, ${moduleColumnStart} ${transitionY}`;
+              // Opaque path: straight lines from checkbox to container bottom, then same curve as transparent
+              // The curve matches: Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}
+              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               
               return (
                 <g key={`opaque-${conn.taskId}`}>
