@@ -7500,12 +7500,6 @@ export default function Dashboard() {
                 `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve down and towards target
                 `L ${conn.toX} ${endY}`; // Straight down to target
               
-              // First 15 dashes opaque (120px), rest transparent
-              const curveDropY = conn.fromY + 80;
-              const opaquePath = `M ${conn.fromX} ${conn.fromY} ` +
-                `L ${exitX} ${conn.fromY} ` +
-                `Q ${exitX} ${curveDropY}, ${exitX + 20} ${curveDropY}`;
-              
               return (
                 <g key={`prep-arrow-${conn.taskId}`}>
                   {/* Transparent base - full path */}
@@ -7518,13 +7512,13 @@ export default function Dashboard() {
                     strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
                   />
-                  {/* Opaque overlay - first 15 dashes */}
+                  {/* Opaque overlay - first 15 dashes (120px) using same path */}
                   <path
-                    d={opaquePath}
+                    d={path}
                     stroke={conn.color}
                     strokeWidth="2"
                     fill="none"
-                    strokeDasharray="5,3"
+                    strokeDasharray="5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,0,0,99999"
                     strokeOpacity="1"
                   />
                 </g>
