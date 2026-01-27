@@ -6206,8 +6206,13 @@ export default function Dashboard() {
                       }`}
                       style={{
                         top: `${adjustedTopPx}px`,
-                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        width: `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
+                        // For tasks with prep days, start at exact column edge (no left padding) for seamless connection
+                        left: hasPrepDays && prepDaysCount > 0
+                          ? `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)))`
+                          : `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
+                        width: hasPrepDays && prepDaysCount > 0
+                          ? `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 2px)`
+                          : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25),
                         borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
@@ -6252,21 +6257,25 @@ export default function Dashboard() {
                   // Get the darker border color from the main task colors for the prep extension border
                   const mainBorderClass = colors ? colors.border : 'border-gray-400';
                   
+                  // Prep extension is a short bar at the top (about 20px), not full height
+                  const prepBarHeight = 20;
+                  
                   return (
                     <div
                       key={`prep-ext-${task.id}`}
-                      className={`absolute ${prepBgClass} border-l border-t border-b ${mainBorderClass} rounded-l flex items-start justify-center pointer-events-none`}
+                      className={`absolute ${prepBgClass} border-l border-t ${mainBorderClass} rounded-tl flex items-center justify-center pointer-events-none`}
                       style={{
                         top: `${topPx}px`,
+                        // Start with 2px padding from column edge
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        // Width spans prep days and overlaps slightly into task (no gap)
-                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7))`,
-                        height: `${heightPx}px`,
+                        // Width spans prep days minus the 2px left padding, to meet task's left edge exactly
+                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 2px)`,
+                        height: `${prepBarHeight}px`,
                         zIndex: 35
                       }}
                       data-testid={`prep-extension-${task.id}`}
                     >
-                      <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1 pt-1">
+                      <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1">
                         Prep days
                       </span>
                     </div>
