@@ -6320,8 +6320,8 @@ export default function Dashboard() {
                         top: `${topPx - 2}px`,
                         // Start with 2px padding from column edge
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        // Width spans prep days minus the 2px left padding, to meet task's left edge exactly
-                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 2px)`,
+                        // Width spans prep days, overlapping 1px into task to ensure seamless connection
+                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 1px)`,
                         height: `${prepBarHeight}px`,
                         zIndex: 35
                       }}
