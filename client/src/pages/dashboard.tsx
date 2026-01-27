@@ -7300,10 +7300,10 @@ export default function Dashboard() {
                       <line x1={greenStart.x} y1={greenStart.y} x2={greenCP1.x} y2={greenCP1.y} stroke="rgba(255,255,0,0.5)" strokeWidth="1" strokeDasharray="3,3" style={{ pointerEvents: 'none' }} />
                       <line x1={greenEnd.x} y1={greenEnd.y} x2={greenCP2.x} y2={greenCP2.y} stroke="rgba(255,165,0,0.5)" strokeWidth="1" strokeDasharray="3,3" style={{ pointerEvents: 'none' }} />
                       
-                      {/* Manual arrowhead with rotation control - same size as pink arrow (10x7) */}
+                      {/* Manual arrowhead - larger to match pink arrow visual size */}
                       <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
                         <polygon 
-                          points="0,-3.5 10,0 0,3.5" 
+                          points="0,-7 14,0 0,7" 
                           fill="#22c55e" 
                           fillOpacity="0.75"
                           style={{ pointerEvents: 'none' }}
