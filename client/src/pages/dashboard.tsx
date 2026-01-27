@@ -7169,14 +7169,12 @@ export default function Dashboard() {
                            t*t*t*conn.toY;
               }
               
-              // Green transparent: path goes FROM Tomorrow box TO calendar task (so markerEnd is at calendar)
-              // Use existing containerBottom variable (already calculated above)
-              // Start at Tomorrow box, curve down, end at calendar task arrowhead
-              // Use state-based positions if available, otherwise defaults
-              const defaultGreenStart = { x: conn.toX - 40, y: conn.toY }; // Tomorrow box
-              const defaultGreenCP1 = { x: conn.toX - 40, y: containerBottom }; // control point 1
-              const defaultGreenCP2 = { x: conn.fromX - 40, y: containerBottom }; // control point 2
-              const defaultGreenEnd = { x: conn.fromX - 22, y: conn.fromY }; // Calendar task (arrowhead here)
+              // Green arrow: arrowhead MUST ALWAYS be at calendar task - NEVER at Tomorrow box
+              // Path starts at arrowhead (calendar), curves down and ends at Tomorrow box checkbox
+              const defaultGreenStart = { x: conn.fromX - 15, y: conn.fromY }; // Calendar task (arrowhead here, 7px right from before)
+              const defaultGreenCP1 = { x: conn.fromX - 40, y: containerBottom }; // control point 1
+              const defaultGreenCP2 = { x: conn.toX - 40, y: containerBottom }; // control point 2
+              const defaultGreenEnd = { x: conn.toX, y: conn.toY }; // Tomorrow box checkbox
               
               // Check for dragged positions in window state
               const dragState = (window as any).__greenArrowDragState || {};
@@ -7192,8 +7190,8 @@ export default function Dashboard() {
                 ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
-              // For green: calculate opaque portion at the END of the curve (last ~43 dashes, near calendar task)
-              // t=0.46 is where the opaque portion starts (last 54% of curve)
+              // For green: calculate opaque portion at END of curve (near Tomorrow box checkbox)
+              // t=0.46 is where the opaque portion starts (last 54% of curve is opaque)
               const opaqueStartT = 0.46;
               const opaqueOneMinusT = 1 - opaqueStartT;
               // Bezier point at t: B(t) = (1-t)³P0 + 3(1-t)²tP1 + 3(1-t)t²P2 + t³P3
@@ -7211,7 +7209,7 @@ export default function Dashboard() {
               const Q2 = { x: greenCP2.x + opaqueStartT*(greenEnd.x - greenCP2.x), y: greenCP2.y + opaqueStartT*(greenEnd.y - greenCP2.y) };
               const R0 = { x: Q0.x + opaqueStartT*(Q1.x - Q0.x), y: Q0.y + opaqueStartT*(Q1.y - Q0.y) };
               const R1 = { x: Q1.x + opaqueStartT*(Q2.x - Q1.x), y: Q1.y + opaqueStartT*(Q2.y - Q1.y) };
-              // New control points for second segment: opaqueStart, R0->R1 direction, Q2, greenEnd
+              // New control points for second segment [t, 1]: split point, R1, Q2, greenEnd
               const greenOpaquePath = `M ${opaqueStartX} ${opaqueStartY} C ${R1.x} ${R1.y}, ${Q2.x} ${Q2.y}, ${greenEnd.x} ${greenEnd.y}`;
               
               return (
@@ -7261,6 +7259,10 @@ export default function Dashboard() {
             style={{ width: '100vw', height: '100vh', zIndex: 55 }}
           >
             {arrowConnections.map((conn) => {
+              // Skip green arrows - they're fully rendered in Layer 1
+              const isGreen = conn.color === '#22c55e';
+              if (isGreen) return null;
+              
               const exitX = conn.fromX - 21;
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
