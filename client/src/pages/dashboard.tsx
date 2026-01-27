@@ -7169,8 +7169,9 @@ export default function Dashboard() {
                            t*t*t*conn.toY;
               }
               
+              // Green transparent: from arrowhead at task, horizontal left, then curve down to connect with opaque line endpoint
               const transparentPath = isGreen
-                ? `M ${conn.toX - 25} ${conn.toY} L ${conn.toX - 40} ${conn.toY} L ${greenEndX} ${greenEndY}`
+                ? `M ${conn.toX - 25} ${conn.toY} L ${conn.toX - 40} ${conn.toY} C ${conn.toX - 40} ${conn.toY + 30}, ${greenEndX} ${greenEndY - 30}, ${greenEndX} ${greenEndY}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
