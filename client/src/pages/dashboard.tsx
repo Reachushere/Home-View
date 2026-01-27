@@ -7199,47 +7199,47 @@ export default function Dashboard() {
                 );
               }
               
-              const tSquared = (moduleColumnStart - exitX) / denominator;
-              if (tSquared < 0 || tSquared > 1) {
-                // t is out of range - draw simple path
-                const simplePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-                return (
-                  <g key={`opaque-${conn.taskId}`}>
-                    <path
-                      d={simplePath}
-                      stroke={conn.color}
-                      strokeWidth="2"
-                      fill="none"
-                      strokeDasharray="5,3"
-                      strokeOpacity="1"
-                    />
-                  </g>
-                );
-              }
-              
-              const t = Math.sqrt(tSquared);
+              // Calculate where the cubic bezier crosses the module column boundary
+              // For cubic bezier C(exitX, midY, exitX, toY, toX, toY):
+              // x(t) = exitX + t³*(toX - exitX), so t³ = (moduleColumnStart - exitX) / (toX - exitX)
               const midY = (containerBottom + conn.toY) / 2;
-              const splitY = (1-t)*(1-t)*containerBottom + 2*(1-t)*t*midY + t*t*conn.toY;
+              const tCubed = (moduleColumnStart - exitX) / (conn.toX - exitX);
               
-              // Validate splitY is reasonable (between containerBottom and toY)
-              if (isNaN(splitY) || splitY < Math.min(containerBottom, conn.toY) - 100 || splitY > Math.max(containerBottom, conn.toY) + 100) {
-                const simplePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-                return (
-                  <g key={`opaque-${conn.taskId}`}>
-                    <path
-                      d={simplePath}
-                      stroke={conn.color}
-                      strokeWidth="2"
-                      fill="none"
-                      strokeDasharray="5,3"
-                      strokeOpacity="1"
-                    />
-                  </g>
-                );
+              let opaquePath: string;
+              if (tCubed <= 0 || tCubed > 1 || isNaN(tCubed)) {
+                // The curve doesn't cross module column in valid range - just draw line to containerBottom
+                opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
+              } else {
+                const t = Math.cbrt(tCubed);
+                // Calculate y position at t using cubic bezier formula
+                // y(t) = (1-t)³*containerBottom + 3(1-t)²t*midY + 3(1-t)t²*toY + t³*toY
+                const oneMinusT = 1 - t;
+                const splitY = oneMinusT*oneMinusT*oneMinusT*containerBottom + 
+                               3*oneMinusT*oneMinusT*t*midY + 
+                               3*oneMinusT*t*t*conn.toY + 
+                               t*t*t*conn.toY;
+                
+                // Calculate control points for the split cubic bezier (de Casteljau's algorithm)
+                // Original: P0=(exitX,containerBottom), P1=(exitX,midY), P2=(exitX,toY), P3=(toX,toY)
+                // For first segment [0,t], new control points are:
+                const P0 = { x: exitX, y: containerBottom };
+                const P1 = { x: exitX, y: midY };
+                const P2 = { x: exitX, y: conn.toY };
+                const P3 = { x: conn.toX, y: conn.toY };
+                
+                // First level interpolation
+                const Q0 = { x: P0.x + t*(P1.x - P0.x), y: P0.y + t*(P1.y - P0.y) };
+                const Q1 = { x: P1.x + t*(P2.x - P1.x), y: P1.y + t*(P2.y - P1.y) };
+                const Q2 = { x: P2.x + t*(P3.x - P2.x), y: P2.y + t*(P3.y - P2.y) };
+                
+                // Second level interpolation
+                const R0 = { x: Q0.x + t*(Q1.x - Q0.x), y: Q0.y + t*(Q1.y - Q0.y) };
+                const R1 = { x: Q1.x + t*(Q2.x - Q1.x), y: Q1.y + t*(Q2.y - Q1.y) };
+                
+                // Split point (already calculated as moduleColumnStart, splitY)
+                // New control points for first segment: P0, Q0, R0, split point
+                opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${Q0.x} ${Q0.y}, ${R0.x} ${R0.y}, ${moduleColumnStart} ${splitY}`;
               }
-              
-              // Opaque path: from checkbox to the split point at module column boundary
-              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + splitY) / 2}, ${moduleColumnStart} ${splitY}`;
               
               return (
                 <g key={`opaque-${conn.taskId}`}>
