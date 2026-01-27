@@ -5416,8 +5416,10 @@ export default function Dashboard() {
                 // Calculate position for full-week tasks
                 const todayDate = new Date();
                 const isSaturdayToday = todayDate.getDay() === 6;
-                // Get column widths
-                const saturdayColumnWidth = gridSizes.dayColumnWidths[0] || 100;
+                // Get Saturday column width (Saturday is at index 6 when not Saturday, index 6 when Saturday)
+                // When not Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - Sat at end
+                // When Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - same order
+                const saturdayColumnWidth = gridSizes.dayColumnWidths[6] || 100;
                 
                 return (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
@@ -5467,9 +5469,11 @@ export default function Dashboard() {
                         </div>
                       );
                     } else {
-                      // Two boxes: MODULE column + Sunday-Friday (skip Saturday)
+                      // Two boxes: MODULE column + Sunday-Friday (skip Saturday at end)
+                      // Grid order: [Time | MODULE | Sun | Mon | Tue | Wed | Thu | Fri | Sat]
+                      // Saturday is at the END (index 6), so Sunday-Friday box starts right after MODULE
                       const moduleLeft = gridSizes.timeColumnWidth + 2;
-                      const sundayLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + saturdayColumnWidth + 2;
+                      const sundayLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 2;
                       
                       // Calculate width to stop at Friday (exclude Saturday column)
                       // Saturday is the last column, so we need to subtract its width
