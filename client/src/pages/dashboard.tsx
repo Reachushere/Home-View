@@ -7142,10 +7142,10 @@ export default function Dashboard() {
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
-              // Transparent path curves from below the task boxes up to the calendar task checkbox
-              // Use cubic bezier to ensure arrowhead points horizontally (right)
+              // Transparent path: FULL path from task box checkbox down to calendar task checkbox
+              // Includes initial horizontal line, vertical line down, then cubic bezier curve
               const midY = (containerBottom + conn.toY) / 2;
-              const transparentPath = `M ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
+              const transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
                 <g key={`transparent-${conn.taskId}`}>
