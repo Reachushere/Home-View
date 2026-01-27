@@ -5583,11 +5583,12 @@ export default function Dashboard() {
                                   ? `border ${borderColor} rounded`
                                   : `border-l border-t border-b ${borderColor} rounded-l`;
                                 return (
-                                  <div key={dayIdx} style={{ backgroundColor: course.bg }}>
+                                  <div key={dayIdx} className="flex items-center" style={{ backgroundColor: course.bg }}>
                                     <div 
-                                      className={`flex items-center gap-1 text-[8px] px-1 py-0.5 m-0.5 ${isFriday ? '' : 'mr-0'} ${moduleBg} ${todayBorderClass} ${
+                                      className={`flex items-center gap-1 text-[8px] px-1 ml-0.5 ${isFriday ? 'mr-0.5' : ''} ${moduleBg} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
                                       }`}
+                                      style={{ height: 'calc(100% - 4px)', marginTop: '2px', marginBottom: '2px' }}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
                                       <Checkbox
@@ -5612,11 +5613,12 @@ export default function Dashboard() {
                                 ? `border-t border-b border-r ${borderColor} rounded-r`
                                 : `border-t border-b ${borderColor}`;
                               return (
-                                <div key={dayIdx} style={{ backgroundColor: course.bg }}>
+                                <div key={dayIdx} className="flex items-center" style={{ backgroundColor: course.bg }}>
                                   <div 
-                                    className={`${bgOnly} ${contBorderClass} ${
+                                    className={`w-full ${bgOnly} ${contBorderClass} ${
                                       shouldBlink ? "animate-blink" : ""
-                                    } my-0.5 ${isFriday ? 'mr-0.5' : ''} h-[calc(100%-4px)]`}
+                                    } ${isFriday ? 'mr-0.5' : ''}`}
+                                    style={{ height: 'calc(100% - 4px)', marginTop: '2px', marginBottom: '2px' }}
                                   />
                                 </div>
                               );
