@@ -7494,10 +7494,10 @@ export default function Dashboard() {
               const midY = endY - 30; // Control point for final vertical descent
               
               // Use quadratic bezier curves for smooth path
-              // Start at checkbox, curve left and down, then curve to above target, then straight down
+              // Start at checkbox, go 21px straight left, then curve down and towards target
               const path = `M ${conn.fromX} ${conn.fromY} ` +
-                `Q ${exitX} ${conn.fromY}, ${exitX} ${conn.fromY + 40} ` + // Curve left and down
-                `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve to above target
+                `L ${exitX} ${conn.fromY} ` + // Go 21px straight left
+                `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve down and towards target
                 `L ${conn.toX} ${endY}`; // Straight down to target
               
               return (
