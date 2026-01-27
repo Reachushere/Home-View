@@ -519,7 +519,7 @@ export default function Dashboard() {
       return parsed;
     }
     return {
-      timeColumnWidth: 70,
+      timeColumnWidth: 95,
       moduleColumnWidth: 70,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 44,
