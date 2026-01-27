@@ -516,6 +516,10 @@ export default function Dashboard() {
       if (!parsed.moduleColumnWidth) {
         parsed.moduleColumnWidth = 70;
       }
+      // Enforce minimum timeColumnWidth for course names to fit
+      if (!parsed.timeColumnWidth || parsed.timeColumnWidth < 115) {
+        parsed.timeColumnWidth = 115;
+      }
       return parsed;
     }
     return {
