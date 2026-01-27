@@ -824,7 +824,8 @@ export default function FilesPage() {
   };
 
   const getFilesInWeek = (weekId: string) => {
-    return files.filter(f => f.folder?.startsWith(weekId + "-"));
+    // Include files directly in the week folder OR in any subfolder
+    return files.filter(f => f.folder === weekId || f.folder?.startsWith(weekId + "-"));
   };
 
   const getFilesInCourse = (weekId: string, courseId: string) => {
