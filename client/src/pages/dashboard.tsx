@@ -2608,6 +2608,43 @@ export default function Dashboard() {
     });
   };
   
+  // Get prep extension overlays for tasks with prep days
+  const getPrepExtensionsForWeek = () => {
+    return allTasks.filter(t => {
+      if (t.isCompleted) return false;
+      if (!t.startDate) return false;
+      if (!t.eventStartTime) return false; // Only for time slot tasks
+      
+      const dueDate = new Date(t.dueDate);
+      const startDate = new Date(t.startDate);
+      const prepDays = differenceInDays(dueDate, startDate);
+      if (prepDays <= 0 || prepDays > 2) return false;
+      
+      // Check if task's due date is in current week view
+      const isInWeek = weekDays.some(day => isSameDay(day, dueDate));
+      return isInWeek;
+    }).map(t => {
+      const dueDate = new Date(t.dueDate);
+      const startDate = new Date(t.startDate!);
+      const dueDayIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
+      const prepDaysCount = Math.min(2, differenceInDays(dueDate, startDate));
+      const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
+      
+      // Calculate top position (where the prep bar should be)
+      let topPx = 0;
+      for (let h = 7; h < startHour; h++) {
+        topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+      }
+      topPx += (startMin / 60) * (gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight);
+      topPx += 2; // Small offset for visual alignment
+      
+      // Calculate the starting day index for the prep extension
+      const prepStartDayIdx = Math.max(0, dueDayIdx - prepDaysCount);
+      
+      return { task: t, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx };
+    });
+  };
+  
   // Check if a calendar event conflicts with any task
   const eventConflictsWithTask = (event: CalendarEvent) => {
     const eventStart = new Date(event.startDate);
@@ -5428,28 +5465,16 @@ export default function Dashboard() {
                 const allDayTasks = getAllDayTasks(day);
                 const allDayEvents = getAllDayCalendarEvents(day);
                 
-                // Check if there's a prep extension from a future task covering this day
-                // This determines if we need to add top padding for tasks in this cell
-                const prepExtensionOverlapping = allTasks.some(t => {
-                  if (!t.startDate || t.isCompleted) return false;
-                  const taskDueDate = startOfDay(new Date(t.dueDate));
-                  const taskStartDate = startOfDay(new Date(t.startDate));
-                  const thisDay = startOfDay(day);
-                  // Check if this day falls within the prep period (between start and due, not including due date)
-                  return thisDay >= taskStartDate && thisDay < taskDueDate;
-                });
-                
                 return (
                   <div 
                     key={dayIdx} 
-                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-visible"
+                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white',
-                      paddingTop: prepExtensionOverlapping ? '18px' : '2px'
+                      backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {/* All-day tasks including those with prep days */}
+                    {/* All-day tasks - simple rendering, no prep days here */}
                     {allDayTasks.map(task => {
                       const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                       const colors = courseColors[courseCode];
@@ -5457,27 +5482,16 @@ export default function Dashboard() {
                       const tomorrow = addDays(today, 1);
                       const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                       const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                      const hasPrepDays = !!task.startDate;
-                      
-                      // Calculate how many prep days this task has
-                      const prepDaysCount = hasPrepDays && task.startDate
-                        ? Math.max(0, Math.min(2, differenceInDays(new Date(task.dueDate), new Date(task.startDate))))
-                        : 0;
-                      
-                      // Get paler background for prep extension
-                      const bgClass = colors ? colors.bg : "bg-gray-200";
-                      const palerBg = getPalerColor(bgClass);
                       const borderClass = task.isCompleted ? "border-gray-300" : colors ? colors.border : "border-gray-400";
                       
-                      // Regular all-day tasks (no prep days rendering here - prep tasks show in time slots)
                       return (
                         <div
                           key={task.id}
-                          className="relative"
+                          className="relative w-full min-w-0"
                           data-testid={`all-day-task-${task.id}`}
                         >
                           <div
-                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border ${
+                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 ${
                               isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                             } ${
                               task.isCompleted 
@@ -5510,11 +5524,11 @@ export default function Dashboard() {
                         href={event.htmlLink}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80"
+                        className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80 w-full min-w-0"
                         data-testid={`all-day-gcal-${event.id}`}
                       >
                         <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                        <span className="truncate font-bold">{event.title}</span>
+                        <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
                       </a>
                     ))}
                   </div>
@@ -5789,7 +5803,7 @@ export default function Dashboard() {
               </div>
             
             {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-x-hidden overflow-y-scroll scrollbar-hidden relative">
+            <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll scrollbar-hidden relative" style={{ overflowX: 'clip' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -5869,6 +5883,9 @@ export default function Dashboard() {
                             const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
                             const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
                             
+                            // Calculate day column width for prep extension
+                            const dayColWidth = `calc((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px - 40px) / 7)`;
+                            
                             // Calculate height based on duration for events with start/end times
                             let taskHeight = hasPrepDays && prepDaysCount > 0 ? 36 : 40; // Slightly smaller for prep tasks
                             let topOffset = 2; // Default top offset
@@ -5936,24 +5953,6 @@ export default function Dashboard() {
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
                               >
-                                {/* Prep Days extension - extends to the left over previous day columns */}
-                                {hasPrepDays && prepDaysCount > 0 && (
-                                  <div
-                                    className={`absolute ${prepBgClass} border ${prepBorderClass} rounded-l-md flex items-center justify-center pointer-events-none`}
-                                    style={{
-                                      right: '100%',
-                                      top: 0,
-                                      height: '18px',
-                                      width: `calc(${prepDaysCount * 100}% + ${prepDaysCount * 4}px)`,
-                                      borderRight: 'none',
-                                      zIndex: 10
-                                    }}
-                                  >
-                                    <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1">
-                                      Prep days
-                                    </span>
-                                  </div>
-                                )}
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
                                 <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   <Checkbox
@@ -6093,24 +6092,6 @@ export default function Dashboard() {
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
                     >
-                      {/* Prep Days extension - extends to the left over previous day columns */}
-                      {hasPrepDays && prepDaysCount > 0 && (
-                        <div
-                          className={`absolute ${prepBgClass} border ${prepBorderClass} rounded-l-md flex items-center justify-center pointer-events-none`}
-                          style={{
-                            right: '100%',
-                            top: 0,
-                            height: '18px',
-                            width: `calc(${prepDaysCount} * ${dayColWidth})`,
-                            borderRight: 'none',
-                            zIndex: 10
-                          }}
-                        >
-                          <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1">
-                            Prep days
-                          </span>
-                        </div>
-                      )}
                       {/* Silver shimmer header with checkbox and title for due today tasks */}
                       <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                         <Checkbox
@@ -6134,6 +6115,33 @@ export default function Dashboard() {
                           {formatTimeTo12Hour(task.eventStartTime)} - {formatTimeTo12Hour(task.eventEndTime)}
                         </div>
                       )}
+                    </div>
+                  );
+                })}
+                
+                {/* Prep Extensions Overlay - rendered as separate elements spanning day columns */}
+                {getPrepExtensionsForWeek().map(({ task, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx }) => {
+                  const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                  const colors = courseColors[courseCode];
+                  const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
+                  const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
+                  
+                  return (
+                    <div
+                      key={`prep-ext-${task.id}`}
+                      className={`absolute ${prepBgClass} border ${prepBorderClass} rounded-l-md flex items-center justify-center pointer-events-none`}
+                      style={{
+                        top: `${topPx}px`,
+                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
+                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
+                        height: '18px',
+                        zIndex: 15
+                      }}
+                      data-testid={`prep-extension-${task.id}`}
+                    >
+                      <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1">
+                        Prep days
+                      </span>
                     </div>
                   );
                 })}
