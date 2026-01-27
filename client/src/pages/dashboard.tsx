@@ -6983,14 +6983,6 @@ export default function Dashboard() {
                 <g key={`transparent-${conn.taskId}`}>
                   <path
                     d={transparentPath}
-                    stroke="white"
-                    strokeWidth="4"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="0.1"
-                  />
-                  <path
-                    d={transparentPath}
                     stroke={conn.color}
                     strokeWidth="2"
                     fill="none"
@@ -7036,14 +7028,6 @@ export default function Dashboard() {
               
               return (
                 <g key={`opaque-${conn.taskId}`}>
-                  <path
-                    d={opaquePath}
-                    stroke="white"
-                    strokeWidth="4"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="1"
-                  />
                   <path
                     d={opaquePath}
                     stroke={conn.color}
