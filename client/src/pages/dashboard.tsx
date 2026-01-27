@@ -7164,7 +7164,8 @@ export default function Dashboard() {
                     fill="none"
                     strokeDasharray="5,3"
                     strokeOpacity="0.25"
-                    markerEnd={`url(#${markerId})`}
+                    markerEnd={isGreen ? undefined : `url(#${markerId})`}
+                    markerStart={isGreen ? `url(#${markerId})` : undefined}
                   />
                 </g>
               );
