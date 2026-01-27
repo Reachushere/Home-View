@@ -6234,7 +6234,7 @@ export default function Dashboard() {
                         isDueToday ? "task-blink-border" : ""
                       } ${
                         hasPrepDays && prepDaysCount > 0
-                          ? "rounded-r overflow-visible" 
+                          ? "rounded-r rounded-bl overflow-visible" 
                           : "rounded overflow-hidden"
                       } ${
                         task.isCompleted 
@@ -6256,8 +6256,7 @@ export default function Dashboard() {
                           : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${adjustedHeightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25),
-                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
-                        borderBottomLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
+                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
@@ -6290,8 +6289,7 @@ export default function Dashboard() {
                         <div 
                           className={`absolute left-0 bottom-0 w-px ${colors ? colors.border.replace('border-', 'bg-') : 'bg-gray-400'}`}
                           style={{
-                            height: `calc(100% - 20px)`,
-                            borderBottomLeftRadius: '4px'
+                            height: `calc(100% - 20px)`
                           }}
                         />
                       )}
