@@ -7189,8 +7189,7 @@ export default function Dashboard() {
                     fill="none"
                     strokeDasharray="5,3"
                     strokeOpacity="0.25"
-                    markerEnd={`url(#${markerId})`}
-                    markerStart={undefined}
+                    markerEnd={isGreen ? `url(#${markerId})` : `url(#${markerId})`}
                   />
                   {/* Debug nodes for green arrows - show control points */}
                   {isGreen && (
