@@ -7518,7 +7518,7 @@ export default function Dashboard() {
                     stroke={conn.color}
                     strokeWidth="2"
                     fill="none"
-                    strokeDasharray="5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,0,0,99999"
+                    strokeDasharray="5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,0,0,99999"
                     strokeOpacity="1"
                   />
                 </g>
