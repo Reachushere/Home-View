@@ -2735,6 +2735,7 @@ export default function Dashboard() {
   // Check if a time slot hour has any prep conflicts that require extra height
   const getTimeSlotPrepConflictHeight = (hour: number) => {
     const prepExtensions = getPrepExtensionsForWeek();
+    const multiHourTasks = getMultiHourTasksForWeek();
     
     for (const ext of prepExtensions) {
       if (ext.hour !== hour) continue;
@@ -2742,11 +2743,22 @@ export default function Dashboard() {
       // Check if any task exists in the prep extension's covered days at this hour
       for (let dayIdx = ext.prepStartDayIdx; dayIdx < ext.dueDayIdx; dayIdx++) {
         const day = weekDays[dayIdx];
-        const tasksInSlot = getTasksForHour(day, hour);
         
-        // Check if any of these tasks would conflict (not the prep task itself)
-        const hasConflict = tasksInSlot.some(t => t.id !== ext.task.id);
-        if (hasConflict) {
+        // Check regular tasks
+        const tasksInSlot = getTasksForHour(day, hour);
+        const hasRegularConflict = tasksInSlot.some(t => t.id !== ext.task.id);
+        if (hasRegularConflict) {
+          return 24; // Extra height to accommodate pushed-down task
+        }
+        
+        // Check multi-hour tasks
+        const hasMultiHourConflict = multiHourTasks.some(({ task: t, dayIdx: tDayIdx }) => {
+          if (t.id === ext.task.id) return false;
+          if (tDayIdx !== dayIdx) return false;
+          const tHour = t.eventStartTime ? parseInt(t.eventStartTime.split(':')[0]) : 0;
+          return tHour === hour;
+        });
+        if (hasMultiHourConflict) {
           return 24; // Extra height to accommodate pushed-down task
         }
       }
