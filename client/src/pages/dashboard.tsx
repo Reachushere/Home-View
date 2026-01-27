@@ -6311,10 +6311,23 @@ export default function Dashboard() {
                   // Prep extension is a short bar at the top (about 20px), not full height
                   const prepBarHeight = 20;
                   
+                  // Calculate which day index is "today" relative to the week grid
+                  // Week starts on Saturday (index 0), then Sun (1), Mon (2), etc.
+                  const today = new Date();
+                  const currentDayOfWeek = today.getDay(); // 0=Sun, 6=Sat
+                  // Convert to week grid index: Sat=0, Sun=1, Mon=2, Tue=3, Wed=4, Thu=5, Fri=6
+                  const todayGridIdx = currentDayOfWeek === 6 ? 0 : currentDayOfWeek + 1;
+                  
+                  // Check if today falls within the prep days range
+                  const isTodayInPrepRange = todayGridIdx >= prepStartDayIdx && todayGridIdx < dueDayIdx;
+                  
+                  // Calculate the position of today within the prep range (0-indexed from prep start)
+                  const todayOffsetInPrep = isTodayInPrepRange ? todayGridIdx - prepStartDayIdx : -1;
+                  
                   return (
                     <div
                       key={`prep-ext-${task.id}`}
-                      className={`absolute ${prepBgClass} border-l border-t border-b ${mainBorderClass} rounded-tl rounded-bl flex items-center justify-center pointer-events-none`}
+                      className={`absolute ${prepBgClass} border-l border-t border-b ${mainBorderClass} rounded-tl rounded-bl pointer-events-none`}
                       style={{
                         // Align exactly with task top (remove the +2 offset that was added in topPx calculation)
                         top: `${topPx - 2}px`,
@@ -6327,7 +6340,30 @@ export default function Dashboard() {
                       }}
                       data-testid={`prep-extension-${task.id}`}
                     >
-                      <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1">
+                      {/* Blinking overlay for today column portion */}
+                      {isTodayInPrepRange && (
+                        <div
+                          className="absolute inset-y-0 animate-pulse-slow"
+                          style={{
+                            left: `calc(${todayOffsetInPrep} * (100% / ${prepDaysCount}))`,
+                            width: `calc(100% / ${prepDaysCount})`,
+                            backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                            borderRadius: todayOffsetInPrep === 0 ? '4px 0 0 4px' : '0'
+                          }}
+                        />
+                      )}
+                      {/* Prep Days text - centered on today column if in range, otherwise centered overall */}
+                      <span 
+                        className="absolute text-[9px] text-gray-500 font-medium whitespace-nowrap"
+                        style={{
+                          left: isTodayInPrepRange 
+                            ? `calc(${todayOffsetInPrep} * (100% / ${prepDaysCount}) + (100% / ${prepDaysCount}) / 2)`
+                            : '50%',
+                          transform: 'translateX(-50%)',
+                          top: '50%',
+                          marginTop: '-6px'
+                        }}
+                      >
                         Prep days
                       </span>
                     </div>

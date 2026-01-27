@@ -397,6 +397,20 @@
   animation: working-pulse 1.2s ease-in-out infinite;
 }
 
+/* Slow pulse animation for prep day today column */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
 .working-indicator .circle:nth-child(1) { animation-delay: 0s; }
 .working-indicator .circle:nth-child(2) { animation-delay: 0.1s; }
 .working-indicator .circle:nth-child(3) { animation-delay: 0.2s; }
