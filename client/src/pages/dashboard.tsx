@@ -7165,16 +7165,15 @@ export default function Dashboard() {
                            t*t*t*conn.toY;
               }
               
-              // Green arrow: arrowhead MUST ALWAYS be at calendar task - NEVER at Tomorrow box
-              // Path starts at arrowhead (calendar), curves down and ends at Tomorrow box checkbox
-              const defaultGreenStart = { x: conn.fromX - 15, y: conn.fromY }; // Calendar task (arrowhead here, 7px right from before)
-              const defaultGreenCP1 = { x: conn.fromX - 40, y: containerBottom }; // control point 1
-              const defaultGreenCP2 = { x: conn.toX - 40, y: containerBottom }; // control point 2
-              const defaultGreenEnd = { x: conn.toX, y: conn.toY }; // Tomorrow box checkbox
+              // conn.fromX = Tomorrow box checkbox, conn.toX = Calendar task checkbox
+              // Green arrow: arrowhead MUST ALWAYS be at CALENDAR (conn.toX) - NEVER EVER at Tomorrow box (conn.fromX)
+              const defaultGreenCP1 = { x: conn.toX - 40, y: containerBottom }; // control point 1 near calendar
+              const defaultGreenCP2 = { x: conn.fromX - 40, y: containerBottom }; // control point 2 near tomorrow
+              const defaultGreenEnd = { x: conn.fromX, y: conn.fromY }; // Tomorrow box checkbox (line ends here)
               
-              // ABSOLUTE RULE: greenStart (arrowhead position) is ALWAYS at calendar task checkbox - NEVER EVER at Tomorrow box
-              // The arrowhead tip points directly to the calendar task checkbox
-              const greenStart = { x: conn.fromX, y: conn.fromY }; // ALWAYS at calendar task checkbox
+              // ABSOLUTE RULE: greenStart (arrowhead) is ALWAYS at CALENDAR task checkbox (conn.toX, conn.toY)
+              // NEVER EVER at Tomorrow box - this is hardcoded and cannot be changed
+              const greenStart = { x: conn.toX, y: conn.toY }; // ALWAYS at CALENDAR task checkbox
               
               // Only control points and end can use drag state - arrowhead position is locked
               const dragState = (window as any).__greenArrowDragState || {};
