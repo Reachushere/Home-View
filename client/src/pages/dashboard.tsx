@@ -314,6 +314,7 @@ export default function Dashboard() {
     toX: number;
     toY: number;
     color: string;
+    boxType: 'today' | 'tomorrow';
   }>>([]);
   const mainContentRef = useRef<HTMLElement | null>(null);
   
@@ -2687,7 +2688,8 @@ export default function Dashboard() {
             fromY,
             toX,
             toY,
-            color
+            color,
+            boxType: checkboxSelector.includes('today') ? 'today' : 'tomorrow'
           });
         }
       };
@@ -5700,7 +5702,7 @@ export default function Dashboard() {
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
                 {/* Time column resize handle - right edge */}
                 <div
-                  className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-white/10 hover:bg-white/40"
+                  className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
                   style={{ zIndex: 9999 }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
@@ -5713,7 +5715,7 @@ export default function Dashboard() {
                 <span className="text-xs font-medium tracking-wide text-white">MODULE</span>
                 {/* Module column resize handle - right edge */}
                 <div
-                  className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-white/10 hover:bg-white/40"
+                  className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
                   style={{ zIndex: 9999 }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
@@ -5756,6 +5758,18 @@ export default function Dashboard() {
                       </div>
                       <div className="text-xs font-medium tracking-wide text-white/80">{dayName}</div>
                     </div>
+                    {/* Day column resize handle - right edge */}
+                    {idx < weekDays.length - 1 && (
+                      <div
+                        className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
+                        style={{ zIndex: 9999 }}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          handleColumnResizeStart(e, idx);
+                        }}
+                        data-testid={`day-column-resize-handle-${idx}`}
+                      />
+                    )}
                   </div>
                 );
               })}
