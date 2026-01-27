@@ -6979,11 +6979,27 @@ export default function Dashboard() {
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
+              // The time column black box starts at X = 0 and ends at X = gridSizes.timeColumnWidth
+              // Transparency should start just to the left of the time column
+              const timeColumnLeftEdge = gridSizes.timeColumnWidth - 10; // Just to the left of the black time box
+              
+              // Calculate the Y position on the curve when X reaches the time column edge
+              // The curve goes from (exitX, containerBottom) to (conn.toX, conn.toY)
+              const curveStartY = containerBottom;
+              const curveEndY = conn.toY;
+              const curveStartX = exitX;
+              const curveEndX = conn.toX;
+              
+              // Find the progress (0-1) along X axis where we hit the time column edge
+              const xProgress = Math.max(0, Math.min(1, (timeColumnLeftEdge - curveStartX) / (curveEndX - curveStartX)));
+              // Estimate Y at that point (simplified linear interpolation for the transition point)
+              const transitionY = curveStartY + (curveEndY - curveStartY) * xProgress;
+              
               // Split into two paths:
-              // Path 1: Fully opaque - from task box checkbox down to container bottom
-              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-              // Path 2: 75% transparent - curve from container bottom to calendar (with arrowhead)
-              const transparentPath = `M ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
+              // Path 1: Fully opaque - from task box checkbox down to container bottom, then partial curve to time column edge
+              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + transitionY) / 2}, ${timeColumnLeftEdge} ${transitionY}`;
+              // Path 2: 75% transparent - continue curve from time column edge to calendar (with arrowhead)
+              const transparentPath = `M ${timeColumnLeftEdge} ${transitionY} Q ${(timeColumnLeftEdge + conn.toX) / 2} ${(transitionY + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               
               return (
                 <g key={conn.taskId}>
