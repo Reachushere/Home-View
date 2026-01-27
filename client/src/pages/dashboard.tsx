@@ -2542,18 +2542,42 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Always point to the calendar task checkbox (arrow pointing right, 2px away)
+          // Determine arrow target based on task type
           let toX: number;
           let toY: number;
-          const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
           
-          if (calCheckboxEl) {
-            const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calCheckboxRect.left - 2;
-            toY = calCheckboxRect.top + calCheckboxRect.height / 2;
+          // For Today box tasks, point to the prep extension middle
+          const isTodayTask = todayTaskIds.has(task.id);
+          if (isTodayTask) {
+            // Find the prep extension element for this task
+            const prepExtensionEl = document.querySelector(`[data-prep-today-task-id="${task.id}"]`);
+            if (prepExtensionEl) {
+              const prepRect = prepExtensionEl.getBoundingClientRect();
+              toX = prepRect.left + prepRect.width / 2; // Center horizontally
+              toY = prepRect.top + prepRect.height / 2; // Center vertically
+            } else {
+              // Fallback to calendar task checkbox
+              const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+              if (calCheckboxEl) {
+                const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
+                toX = calCheckboxRect.left - 2;
+                toY = calCheckboxRect.top + calCheckboxRect.height / 2;
+              } else {
+                toX = calRect.left - 2;
+                toY = calRect.top + calRect.height / 2;
+              }
+            }
           } else {
-            toX = calRect.left - 2;
-            toY = calRect.top + calRect.height / 2;
+            // For Tomorrow/This Week tasks, point to calendar task checkbox
+            const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+            if (calCheckboxEl) {
+              const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
+              toX = calCheckboxRect.left - 2;
+              toY = calCheckboxRect.top + calCheckboxRect.height / 2;
+            } else {
+              toX = calRect.left - 2;
+              toY = calRect.top + calRect.height / 2;
+            }
           }
           
           // For green arrows (Tomorrow box), keep them visible even when calendar task is above viewport
