@@ -2494,11 +2494,31 @@ export default function Dashboard() {
         const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
         // Find the checkbox within the task element
         const checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
-        // Find the corresponding task on the calendar
-        const calTaskEl = document.querySelector(`[data-cal-task-id="${task.id}"]`);
+        // Find the corresponding task on the calendar - get the first visible one
+        const calTaskEls = document.querySelectorAll(`[data-cal-task-id="${task.id}"]`);
+        let calTaskEl: Element | null = null;
+        
+        // Find the first calendar task element that's visible in the viewport
+        for (const el of calTaskEls) {
+          const rect = el.getBoundingClientRect();
+          if (rect.width > 0 && rect.height > 0 && rect.top >= 0 && rect.top < window.innerHeight) {
+            calTaskEl = el;
+            break;
+          }
+        }
+        
+        // Fallback to first element if none visible
+        if (!calTaskEl && calTaskEls.length > 0) {
+          calTaskEl = calTaskEls[0];
+        }
         
         if (boxTaskEl && calTaskEl) {
           const calRect = calTaskEl.getBoundingClientRect();
+          
+          // Skip if calendar task has invalid dimensions (not rendered properly)
+          if (calRect.width === 0 || calRect.height === 0) {
+            return;
+          }
           
           // Get course color - black for tasks without a course
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
@@ -2520,16 +2540,16 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Find the checkbox in the calendar task and point just outside the task box
+          // Find the checkbox in the calendar task and point to its left edge
           const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
           let toX: number;
           let toY: number;
           if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calRect.left - 5; // Arrowhead tip stops 5px before task box
+            toX = calCheckboxRect.left; // Point directly to checkbox left edge
             toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
           } else {
-            toX = calRect.left - 5; // Arrowhead tip stops 5px before task box
+            toX = calRect.left; // Point to task box left edge
             toY = calRect.top + calRect.height / 2;
           }
           
@@ -7118,6 +7138,8 @@ export default function Dashboard() {
               const exitX = conn.fromX - 21;
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
+              
+              // Transparent path curves from below the task boxes up to the calendar task checkbox
               const transparentPath = `M ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               
               return (
