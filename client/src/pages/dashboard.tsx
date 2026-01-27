@@ -2587,8 +2587,8 @@ export default function Dashboard() {
       setArrowConnections(connections);
     };
     
-    // Calculate after DOM updates
-    const timer = setTimeout(calculateArrows, 100);
+    // Calculate after DOM updates (give time for prep-today elements to render)
+    const timer = setTimeout(calculateArrows, 200);
     
     // Recalculate on scroll and resize
     const handleUpdate = () => setTimeout(calculateArrows, 50);
