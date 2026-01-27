@@ -6884,7 +6884,7 @@ export default function Dashboard() {
         {/* Arrow Connections SVG Overlay */}
         {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
-            className="fixed inset-0 pointer-events-none z-[5]" 
+            className="fixed inset-0 pointer-events-none z-0" 
             style={{ width: '100vw', height: '100vh' }}
           >
             <defs>
