@@ -5999,8 +5999,17 @@ export default function Dashboard() {
                             setIsAddDialogOpen(true);
                           }}
                         >
-                          {/* Half-hour dotted line */}
-                          <div className="absolute left-0 right-0 top-1/2 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" />
+                          {/* Half-hour dotted line - positioned in middle of task area (after any conflict offset) */}
+                          <div 
+                            className="absolute left-0 right-0 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" 
+                            style={{
+                              // When there's a prep conflict, tasks are pushed down 24px, so the half-hour line should be at: conflictOffset + (normalHeight / 2)
+                              // This keeps it centered within the task area
+                              top: prepConflictHeight > 0 
+                                ? `${prepConflictHeight + ((gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight) / 2)}px`
+                                : '50%'
+                            }}
+                          />
                           {/* Multi-hour tasks are now rendered at scroll container level as single elements */}
                           {hourTasks.filter(task => {
                             // Skip multi-hour tasks - they're rendered at scroll container level
