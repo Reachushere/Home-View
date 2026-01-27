@@ -6132,6 +6132,14 @@ export default function Dashboard() {
                     ? Math.max(0, Math.min(2, differenceInDays(new Date(task.dueDate), new Date(task.startDate))))
                     : 0;
                   
+                  // Check if this task is covered by a prep extension from another task
+                  const taskDay = weekDays[dayIdx];
+                  const taskHour = task.eventStartTime ? parseInt(task.eventStartTime.split(':')[0]) : 0;
+                  const isCoveredByPrep = isTaskCoveredByPrepExtension(taskDay, taskHour, task.id);
+                  
+                  // Adjust topPx if covered by prep extension - push down by 24px (height of prep bar)
+                  const adjustedTopPx = isCoveredByPrep ? topPx + 24 : topPx;
+                  
                   // Prep colors from course colors
                   const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
                   const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
@@ -6178,7 +6186,7 @@ export default function Dashboard() {
                             : "bg-gray-200 border border-gray-400"
                       }`}
                       style={{
-                        top: `${topPx}px`,
+                        top: `${adjustedTopPx}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
                         width: `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${heightPx}px`,
