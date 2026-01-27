@@ -3484,7 +3484,7 @@ export default function Dashboard() {
           })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-1.5 p-1.5 px-2 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex items-center gap-3 p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
               <SelectTrigger className="w-[100px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
@@ -3536,7 +3536,7 @@ export default function Dashboard() {
             
             {/* Speed control - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && (
-              <div className="flex items-center gap-0.5 bg-gray-800 rounded px-1.5 py-0.5">
+              <div className="flex items-center gap-1 bg-gray-800 rounded px-2 py-0.5">
                 <Gauge className="h-2.5 w-2.5 text-gray-400" />
                 <span className="text-[8px] text-gray-400 mr-0.5">Speed</span>
                 <Button
@@ -3563,9 +3563,9 @@ export default function Dashboard() {
               </div>
             )}
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               {/* Playback Controls */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Button
                   size="icon"
                   variant="outline"
@@ -3609,7 +3609,7 @@ export default function Dashboard() {
               <div className="w-px h-4 bg-white/30" />
               
               {/* Restart Controls */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Button
                   size="sm"
                   variant="outline"
@@ -3643,7 +3643,7 @@ export default function Dashboard() {
               <div className="w-px h-4 bg-white/30" />
               
               {/* Volume Controls */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Button
                   size="icon"
                   variant="outline"
