@@ -5408,8 +5408,10 @@ export default function Dashboard() {
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
               ].map((course, courseIdx) => {
                 // Get full-week tasks for this course (tasks that span from visible start to Friday)
+                // Exclude completed tasks so they are removed from view
                 const fullWeekTasks = weekPlanningTasks.filter(task => {
                   if (!task.startDate || !task.courseName?.startsWith(course.name)) return false;
+                  if (task.isCompleted) return false; // Remove completed module tasks from view
                   
                   // Use format to compare dates consistently (avoiding timezone issues)
                   const taskStartDateStr = format(new Date(task.startDate), 'yyyy-MM-dd');
