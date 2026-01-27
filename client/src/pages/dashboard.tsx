@@ -2634,22 +2634,26 @@ export default function Dashboard() {
     const calculatePrepArrows = () => {
       const connections: typeof prepArrowConnections = [];
       
-      // Helper function to add prep arrow connection
-      const addPrepConnection = (task: typeof dueTodayTasks[0], checkboxSelector: string) => {
+      // Helper function to add prep arrow connection pointing to specific day column
+      const addPrepConnection = (task: typeof dueTodayTasks[0], checkboxSelector: string, targetDate: Date) => {
         // Check if this task has a prep extension (has startDate before dueDate)
         if (!task.startDate || !task.dueDate) return;
         
-        const startDate = new Date(task.startDate);
-        const dueDate = new Date(task.dueDate);
-        if (startDate >= dueDate) return;
+        const taskStartDate = startOfDay(new Date(task.startDate));
+        const taskDueDate = startOfDay(new Date(task.dueDate));
+        if (taskStartDate >= taskDueDate) return;
+        
+        // Only draw arrow if targetDate is a prep day (not the due date)
+        const targetDateStart = startOfDay(targetDate);
+        if (isSameDay(targetDateStart, taskDueDate)) return;
         
         // Find the checkbox using the specific attribute
         const checkboxEl = document.querySelector(checkboxSelector) as HTMLElement | null;
         
-        // Find the prep text element
-        const prepTextEl = document.querySelector(`[data-prep-text-task-id="${task.id}"]`);
+        // Find the prep extension element
+        const prepExtensionEl = document.querySelector(`[data-testid="prep-extension-${task.id}"]`) as HTMLElement | null;
         
-        if (checkboxEl && prepTextEl) {
+        if (checkboxEl && prepExtensionEl) {
           // Get course color
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
           let color = "#ec4899"; // Default to pink
@@ -2657,15 +2661,22 @@ export default function Dashboard() {
           else if (courseCode === "CFNF400") color = "#ec4899";
           else if (courseCode === "CASL101") color = "#6366f1";
           
+          // Calculate which day column within the prep extension corresponds to targetDate
+          const daysDiff = Math.floor((targetDateStart.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
+          const prepDaysCount = Math.floor((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
+          
+          // Get the prep extension position and size
+          const prepRect = prepExtensionEl.getBoundingClientRect();
+          const dayColumnWidth = prepRect.width / prepDaysCount;
+          
+          // Calculate the center of the target day's column within the prep extension
+          const toX = prepRect.left + (daysDiff * dayColumnWidth) + (dayColumnWidth / 2);
+          const toY = prepRect.top + prepRect.height / 2;
+          
           // Start arrow from left side of checkbox
           const checkboxRect = checkboxEl.getBoundingClientRect();
           const fromX = checkboxRect.left;
           const fromY = checkboxRect.top + checkboxRect.height / 2;
-          
-          // Point to the middle of "Prep days" text
-          const prepTextRect = prepTextEl.getBoundingClientRect();
-          const toX = prepTextRect.left + prepTextRect.width / 2;
-          const toY = prepTextRect.top + prepTextRect.height / 2;
           
           // Skip if target is off-screen
           if (toY < 0 || toY > window.innerHeight) return;
@@ -2681,62 +2692,14 @@ export default function Dashboard() {
         }
       };
       
-      // Find tasks in Today box that have prep extensions
+      // Find tasks in Today box that have prep extensions - point to today's column
       dueTodayTasks.forEach(task => {
-        addPrepConnection(task, `input[data-today-checkbox="${task.id}"]`);
+        addPrepConnection(task, `input[data-today-checkbox="${task.id}"]`, today);
       });
       
-      // Find tasks in Tomorrow box that have prep extensions (prep tasks for tomorrow)
+      // Find tasks in Tomorrow box that have prep extensions - point to tomorrow's column
       dueTomorrowTasks.forEach(task => {
-        // Only add if this is a prep task (tomorrow is within startDate-dueDate range, not the due date)
-        if (!task.startDate || !task.dueDate) return;
-        const taskDueDate = startOfDay(new Date(task.dueDate));
-        const tomorrowStart = startOfDay(tomorrow);
-        // Only add prep arrow if tomorrow is NOT the due date (it's a prep day)
-        if (!isSameDay(taskDueDate, tomorrowStart)) {
-          // For Tomorrow box, point to the specific day column within the prep extension
-          const checkboxEl = document.querySelector(`input[data-tomorrow-checkbox="${task.id}"]`) as HTMLElement | null;
-          const prepExtensionEl = document.querySelector(`[data-testid="prep-extension-${task.id}"]`) as HTMLElement | null;
-          
-          if (checkboxEl && prepExtensionEl) {
-            // Get course color
-            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-            let color = "#ec4899"; // Default to pink
-            if (courseCode === "CPPA122") color = "#22c55e";
-            else if (courseCode === "CFNF400") color = "#ec4899";
-            else if (courseCode === "CASL101") color = "#6366f1";
-            
-            // Calculate which day column within the prep extension corresponds to tomorrow
-            const taskStartDate = startOfDay(new Date(task.startDate));
-            const daysDiff = Math.floor((tomorrowStart.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
-            const prepDaysCount = Math.floor((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
-            
-            // Get the prep extension position and size
-            const prepRect = prepExtensionEl.getBoundingClientRect();
-            const dayColumnWidth = prepRect.width / prepDaysCount;
-            
-            // Calculate the center of tomorrow's column within the prep extension
-            const toX = prepRect.left + (daysDiff * dayColumnWidth) + (dayColumnWidth / 2);
-            const toY = prepRect.top + prepRect.height / 2;
-            
-            // Start arrow from left side of checkbox
-            const checkboxRect = checkboxEl.getBoundingClientRect();
-            const fromX = checkboxRect.left;
-            const fromY = checkboxRect.top + checkboxRect.height / 2;
-            
-            // Skip if target is off-screen
-            if (toY < 0 || toY > window.innerHeight) return;
-            
-            connections.push({
-              taskId: task.id,
-              fromX,
-              fromY,
-              toX,
-              toY,
-              color
-            });
-          }
-        }
+        addPrepConnection(task, `input[data-tomorrow-checkbox="${task.id}"]`, tomorrow);
       });
       
       setPrepArrowConnections(connections);
