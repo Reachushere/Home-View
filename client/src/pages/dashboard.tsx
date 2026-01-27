@@ -5384,13 +5384,78 @@ export default function Dashboard() {
                 { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', colors: courseColors['CPPA122'] },
                 { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', colors: courseColors['CFNF400'] },
                 { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
-              ].map((course, courseIdx) => (
+              ].map((course, courseIdx) => {
+                // Get full-week tasks for this course (tasks that span from visible start to Friday)
+                const fullWeekTasks = weekPlanningTasks.filter(task => {
+                  if (!task.startDate || !task.courseName?.startsWith(course.name)) return false;
+                  
+                  const taskDueDate = startOfDay(new Date(task.dueDate));
+                  const taskStartDate = startOfDay(new Date(task.startDate));
+                  const weekEnd = startOfDay(weekDays[6]); // Friday
+                  
+                  // Determine the visible start day (Saturday or Sunday if Saturday has passed)
+                  const today = new Date();
+                  const todayDayOfWeek = today.getDay();
+                  const saturdayPassed = todayDayOfWeek !== 6;
+                  const visibleWeekStart = startOfDay(saturdayPassed ? weekDays[1] : weekDays[0]);
+                  
+                  // Check if task spans the full visible week (from visible start to Friday)
+                  const spansFullWeek = isSameDay(taskStartDate, visibleWeekStart) && isSameDay(taskDueDate, weekEnd);
+                  return spansFullWeek;
+                });
+                
+                // Calculate position for full-week tasks
+                const fullWeekLeftOffset = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+                
+                return (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
+                  {/* Full-week spanning tasks rendered at row level, positioned absolutely */}
+                  {fullWeekTasks.map((task, taskIdx) => {
+                    const today = startOfDay(new Date());
+                    const tomorrow = addDays(today, 1);
+                    const taskDueDate = startOfDay(new Date(task.dueDate));
+                    const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
+                    const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
+                    const baseStyle = task.isCompleted 
+                      ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                      : course.colors 
+                        ? `${course.colors.bg} text-black border ${course.colors.border}` 
+                        : "bg-gray-200 text-black border border-gray-400";
+                    
+                    return (
+                      <div
+                        key={`fullweek-${task.id}`}
+                        className={`absolute flex items-center gap-1 text-[8px] px-1 py-0.5 rounded ${baseStyle} ${
+                          isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                        }`}
+                        style={{
+                          left: `${fullWeekLeftOffset + 2}px`,
+                          right: '4px',
+                          top: `${2 + taskIdx * 18}px`,
+                          zIndex: 10,
+                        }}
+                        data-testid={`course-fullweek-task-${task.id}`}
+                      >
+                        <Checkbox
+                          checked={task.isCompleted || false}
+                          onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                          data-testid={`checkbox-fullweek-${task.id}`}
+                        />
+                        <span 
+                          onClick={() => setEditingTask(task)}
+                          className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                        >
+                          <span className="font-bold">{task.title}</span>
+                        </span>
+                      </div>
+                    );
+                  })}
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {course.name}
                   </div>
                   <div 
-                    className="border-l border-border/50" 
+                    className="border-l border-border/50 relative" 
                     style={{ backgroundColor: course.bg }}
                     onDragOver={(e) => {
                       e.preventDefault();
@@ -5405,10 +5470,12 @@ export default function Dashboard() {
                     }}
                   />
                   {weekDays.map((day, dayIdx) => {
-                    // Get prep tasks for this course and day
+                    // Get prep tasks for this course and day (excluding full-week tasks)
                     // School week starts Saturday. Tasks span Sat-Fri, or Sun-Fri once Saturday has passed
+                    const fullWeekTaskIds = fullWeekTasks.map(t => t.id);
                     const coursePrepTasks = weekPlanningTasks.filter(task => {
                       if (!task.startDate || !task.courseName?.startsWith(course.name)) return false;
+                      if (fullWeekTaskIds.includes(task.id)) return false; // Skip full-week tasks
                       
                       const today = new Date();
                       const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
@@ -5574,7 +5641,8 @@ export default function Dashboard() {
                     );
                   })}
                   </div>
-              ))}
+                );
+              })}
               
               {/* OTHER Row - For tasks without a course */}
               <div className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
