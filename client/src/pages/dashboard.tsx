@@ -7097,11 +7097,11 @@ export default function Dashboard() {
                 id="arrowhead-green"
                 markerWidth="10"
                 markerHeight="7"
-                refX="10"
+                refX="0"
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" fillOpacity="0.75" />
+                <polygon points="10 0, 0 3.5, 10 7" fill="#22c55e" fillOpacity="0.75" />
               </marker>
               <marker
                 id="arrowhead-pink"
