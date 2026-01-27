@@ -5578,10 +5578,14 @@ export default function Dashboard() {
                               
                               // If today is the start, show the task content
                               if (isTodayColumn) {
+                                // Today is Friday means full border with rounding on both sides
+                                const todayBorderClass = isFriday
+                                  ? `border ${borderColor} rounded`
+                                  : `border-l border-t border-b ${borderColor} rounded-l`;
                                 return (
                                   <div key={dayIdx} style={{ backgroundColor: course.bg }}>
                                     <div 
-                                      className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 ${moduleBg} ${borderClass} ${
+                                      className={`flex items-center gap-1 text-[8px] px-1 py-0.5 m-0.5 ${isFriday ? '' : 'mr-0'} ${moduleBg} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
                                       }`}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
@@ -5603,13 +5607,16 @@ export default function Dashboard() {
                                 );
                               }
                               
-                              // Continuation bar for days after today
+                              // Continuation bar for days after today - no left margin to connect with previous
+                              const contBorderClass = isFriday
+                                ? `border-t border-b border-r ${borderColor} rounded-r`
+                                : `border-t border-b ${borderColor}`;
                               return (
                                 <div key={dayIdx} style={{ backgroundColor: course.bg }}>
                                   <div 
-                                    className={`${bgOnly} ${borderClass} ${
+                                    className={`${bgOnly} ${contBorderClass} ${
                                       shouldBlink ? "animate-blink" : ""
-                                    } m-0.5 h-[calc(100%-4px)]`}
+                                    } my-0.5 ${isFriday ? 'mr-0.5' : ''} h-[calc(100%-4px)]`}
                                   />
                                 </div>
                               );
