@@ -6920,11 +6920,12 @@ export default function Dashboard() {
           © 2026
         </div>
 
-        {/* Arrow Connections SVG Overlay - positioned below calendar tasks */}
+        {/* Arrow Connections - Split into two SVG layers for proper z-indexing */}
+        {/* Layer 1: Transparent curves BEHIND calendar tasks (z-index: 10) */}
         {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 15 }}
+            style={{ width: '100vw', height: '100vh', zIndex: 10 }}
           >
             <defs>
               <marker
@@ -6968,47 +6969,18 @@ export default function Dashboard() {
                 <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="1" />
               </marker>
             </defs>
-            {arrowConnections.map((conn, connIdx) => {
+            {arrowConnections.map((conn) => {
               const markerId = conn.color === "#22c55e" ? "arrowhead-green" 
                 : conn.color === "#ec4899" ? "arrowhead-pink" 
                 : conn.color === "#6366f1" ? "arrowhead-indigo"
                 : "arrowhead-black";
-              // Draw path from task box down to calendar, with arrowhead pointing at calendar checkbox
-              const exitX = conn.fromX - 21; // 21px left of checkbox to clear all checkboxes
-              // Get the task boxes container bottom
+              const exitX = conn.fromX - 21;
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
-              
-              // Split into two paths:
-              // Path 1: Fully opaque - from task box checkbox down to container bottom
-              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-              // Path 2: 75% transparent - curve from container bottom to calendar (with arrowhead)
               const transparentPath = `M ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               
               return (
-                <g key={conn.taskId}>
-                  {/* Part 1: Opaque path - from task box down to container bottom */}
-                  {/* Glow for opaque section */}
-                  <path
-                    d={opaquePath}
-                    stroke="white"
-                    strokeWidth="4"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="0.4"
-                  />
-                  {/* Main opaque colored line */}
-                  <path
-                    d={opaquePath}
-                    stroke={conn.color}
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="0.9"
-                  />
-                  
-                  {/* Part 2: Transparent path - curve to calendar with arrowhead */}
-                  {/* Glow for transparent section */}
+                <g key={`transparent-${conn.taskId}`}>
                   <path
                     d={transparentPath}
                     stroke="white"
@@ -7017,7 +6989,6 @@ export default function Dashboard() {
                     strokeDasharray="5,3"
                     strokeOpacity="0.1"
                   />
-                  {/* Main transparent colored line with arrowhead pointing at calendar checkbox */}
                   <path
                     d={transparentPath}
                     stroke={conn.color}
@@ -7026,6 +6997,42 @@ export default function Dashboard() {
                     strokeDasharray="5,3"
                     strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
+                  />
+                </g>
+              );
+            })}
+          </svg>
+        )}
+        
+        {/* Layer 2: Opaque lines ON TOP of calendar (z-index: 25) */}
+        {blinkSettings.showArrows && arrowConnections.length > 0 && (
+          <svg 
+            className="fixed inset-0 pointer-events-none" 
+            style={{ width: '100vw', height: '100vh', zIndex: 25 }}
+          >
+            {arrowConnections.map((conn) => {
+              const exitX = conn.fromX - 21;
+              const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
+              const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
+              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
+              
+              return (
+                <g key={`opaque-${conn.taskId}`}>
+                  <path
+                    d={opaquePath}
+                    stroke="white"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeDasharray="5,3"
+                    strokeOpacity="0.4"
+                  />
+                  <path
+                    d={opaquePath}
+                    stroke={conn.color}
+                    strokeWidth="2"
+                    fill="none"
+                    strokeDasharray="5,3"
+                    strokeOpacity="0.9"
                   />
                 </g>
               );
