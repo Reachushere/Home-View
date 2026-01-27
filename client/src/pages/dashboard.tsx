@@ -7172,9 +7172,9 @@ export default function Dashboard() {
               const defaultGreenCP2 = { x: conn.toX - 40, y: containerBottom }; // control point 2
               const defaultGreenEnd = { x: conn.toX, y: conn.toY }; // Tomorrow box checkbox
               
-              // ABSOLUTE RULE: greenStart (arrowhead position) is ALWAYS at calendar - NEVER EVER at Tomorrow box
-              // This is hardcoded and cannot be overridden by any drag state or other logic
-              const greenStart = { x: conn.fromX - 15, y: conn.fromY }; // ALWAYS calendar position
+              // ABSOLUTE RULE: greenStart (arrowhead position) is ALWAYS at calendar task checkbox - NEVER EVER at Tomorrow box
+              // The arrowhead tip points directly to the calendar task checkbox
+              const greenStart = { x: conn.fromX, y: conn.fromY }; // ALWAYS at calendar task checkbox
               
               // Only control points and end can use drag state - arrowhead position is locked
               const dragState = (window as any).__greenArrowDragState || {};
