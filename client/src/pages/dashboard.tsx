@@ -7169,12 +7169,10 @@ export default function Dashboard() {
                            t*t*t*conn.toY;
               }
               
-              // Green transparent: from arrowhead at calendar task, horizontal left, then curve UP to Tomorrow box
-              // Arrowhead is at calendar task (conn.fromX), line curves up to Tomorrow box bottom
-              const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
-              const tomorrowBoxBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom : conn.toY + 100;
+              // Green transparent: from arrowhead at calendar task, curve UP to Tomorrow task box
+              // Use existing containerBottom variable (already calculated above)
               const transparentPath = isGreen
-                ? `M ${conn.fromX - 22} ${conn.fromY} L ${conn.fromX - 40} ${conn.fromY} C ${conn.fromX - 40} ${conn.fromY - 80}, ${conn.fromX - 60} ${tomorrowBoxBottom + 20}, ${conn.fromX - 60} ${tomorrowBoxBottom}`
+                ? `M ${conn.fromX - 22} ${conn.fromY} L ${conn.fromX - 40} ${conn.fromY} C ${conn.fromX - 40} ${containerBottom}, ${conn.toX - 40} ${containerBottom}, ${conn.toX - 40} ${conn.toY}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
