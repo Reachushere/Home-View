@@ -1827,6 +1827,94 @@ export default function Dashboard() {
     }
   };
 
+  // Restart from very beginning (first chunk)
+  const handleRestartFromBeginning = async () => {
+    if (previewSpeaker !== "browser_tts") {
+      // For Echo speakers - restart from beginning
+      if (previewFile) {
+        handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName);
+      }
+      return;
+    }
+    if (!previewText || !window.speechSynthesis) return;
+    
+    window.speechSynthesis.cancel();
+    setCurrentWordIndex(0);
+    setCurrentPdfPage(1);
+    
+    // Start playing from beginning
+    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
+    const utterance = new SpeechSynthesisUtterance(words.join(' '));
+    utterance.rate = browserTtsRate;
+    utterance.pitch = 1;
+    
+    const voices = window.speechSynthesis.getVoices() || [];
+    const voice = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices[0];
+    if (voice) utterance.voice = voice;
+    
+    let localWordIdx = 0;
+    utterance.onboundary = (event) => {
+      if (event.name === 'word') {
+        setCurrentWordIndex(localWordIdx);
+        localWordIdx++;
+      }
+    };
+    
+    utterance.onend = () => {
+      setIsPlaying(false);
+      isPlayingRef.current = false;
+    };
+    
+    setIsPlaying(true);
+    isPlayingRef.current = true;
+    speechUtteranceRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+    toast({ title: "Restarted from beginning" });
+  };
+  
+  // Restart current chunk (replay from current position)
+  const handleRestartCurrentChunk = async () => {
+    if (previewSpeaker !== "browser_tts") {
+      // For Echo speakers - just replay
+      toast({ title: "Replaying current section" });
+      return;
+    }
+    if (!previewText || !window.speechSynthesis) return;
+    
+    window.speechSynthesis.cancel();
+    
+    // Start playing from current word index
+    const words = previewText.split(/\s+/).filter(w => w.length > 0 && w !== '---PAGE---');
+    const remainingText = words.slice(currentWordIndex).join(' ');
+    const utterance = new SpeechSynthesisUtterance(remainingText);
+    utterance.rate = browserTtsRate;
+    utterance.pitch = 1;
+    
+    const voices = window.speechSynthesis.getVoices() || [];
+    const voice = selectedVoice ? voices.find(v => v.name === selectedVoice) : voices[0];
+    if (voice) utterance.voice = voice;
+    
+    let localWordIdx = 0;
+    const startIndex = currentWordIndex;
+    utterance.onboundary = (event) => {
+      if (event.name === 'word') {
+        setCurrentWordIndex(startIndex + localWordIdx);
+        localWordIdx++;
+      }
+    };
+    
+    utterance.onend = () => {
+      setIsPlaying(false);
+      isPlayingRef.current = false;
+    };
+    
+    setIsPlaying(true);
+    isPlayingRef.current = true;
+    speechUtteranceRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+    toast({ title: "Restarted current section" });
+  };
+
   const handleSkipBack = async () => {
     if (previewSpeaker !== "browser_tts") {
       // For Echo speakers - call seek API
@@ -3513,6 +3601,28 @@ export default function Dashboard() {
                 title="Skip forward 20 words"
               >
                 <SkipForward className="h-4 w-4" />
+              </Button>
+              <div className="w-px h-5 bg-white/30 mx-0.5" />
+              {/* Restart Controls */}
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                onClick={handleRestartFromBeginning}
+                data-testid="button-preview-restart-beginning"
+                title="Restart from beginning"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                onClick={handleRestartCurrentChunk}
+                data-testid="button-preview-restart-current"
+                title="Restart current section"
+              >
+                <RefreshCw className="h-4 w-4" />
               </Button>
               <div className="w-px h-5 bg-white/30 mx-0.5" />
               {/* Volume Controls */}
