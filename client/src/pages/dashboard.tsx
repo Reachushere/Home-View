@@ -7097,7 +7097,7 @@ export default function Dashboard() {
                 id="arrowhead-green"
                 markerWidth="10"
                 markerHeight="7"
-                refX="10"
+                refX="0"
                 refY="3.5"
                 orient="auto-start-reverse"
               >
