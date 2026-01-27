@@ -6831,7 +6831,7 @@ export default function Dashboard() {
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" fillOpacity="0.5" />
               </marker>
               <marker
                 id="arrowhead-pink"
@@ -6841,7 +6841,7 @@ export default function Dashboard() {
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" />
+                <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" fillOpacity="0.5" />
               </marker>
               <marker
                 id="arrowhead-indigo"
@@ -6851,7 +6851,7 @@ export default function Dashboard() {
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
+                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" fillOpacity="0.5" />
               </marker>
               <marker
                 id="arrowhead-black"
@@ -6861,7 +6861,7 @@ export default function Dashboard() {
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#000000" />
+                <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.5" />
               </marker>
             </defs>
             {arrowConnections.map(conn => {
@@ -6895,7 +6895,7 @@ export default function Dashboard() {
                     fill="none"
                     strokeDasharray="5,3"
                     markerEnd={`url(#${markerId})`}
-                    opacity="1"
+                    opacity="0.5"
                     className=""
                   />
                 </g>
