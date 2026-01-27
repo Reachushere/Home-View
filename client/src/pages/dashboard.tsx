@@ -2634,8 +2634,8 @@ export default function Dashboard() {
     const calculatePrepArrows = () => {
       const connections: typeof prepArrowConnections = [];
       
-      // Find tasks in Today box that have prep extensions
-      dueTodayTasks.forEach(task => {
+      // Helper function to add prep arrow connection
+      const addPrepConnection = (task: typeof dueTodayTasks[0], checkboxSelector: string) => {
         // Check if this task has a prep extension (has startDate before dueDate)
         if (!task.startDate || !task.dueDate) return;
         
@@ -2643,8 +2643,8 @@ export default function Dashboard() {
         const dueDate = new Date(task.dueDate);
         if (startDate >= dueDate) return;
         
-        // Find the Today box checkbox directly using the specific attribute
-        const checkboxEl = document.querySelector(`input[data-today-checkbox="${task.id}"]`) as HTMLElement | null;
+        // Find the checkbox using the specific attribute
+        const checkboxEl = document.querySelector(checkboxSelector) as HTMLElement | null;
         
         // Find the prep text element
         const prepTextEl = document.querySelector(`[data-prep-text-task-id="${task.id}"]`);
@@ -2678,6 +2678,23 @@ export default function Dashboard() {
             toY,
             color
           });
+        }
+      };
+      
+      // Find tasks in Today box that have prep extensions
+      dueTodayTasks.forEach(task => {
+        addPrepConnection(task, `input[data-today-checkbox="${task.id}"]`);
+      });
+      
+      // Find tasks in Tomorrow box that have prep extensions (prep tasks for tomorrow)
+      dueTomorrowTasks.forEach(task => {
+        // Only add if this is a prep task (tomorrow is within startDate-dueDate range, not the due date)
+        if (!task.startDate || !task.dueDate) return;
+        const taskDueDate = startOfDay(new Date(task.dueDate));
+        const tomorrowStart = startOfDay(tomorrow);
+        // Only add prep arrow if tomorrow is NOT the due date (it's a prep day)
+        if (!isSameDay(taskDueDate, tomorrowStart)) {
+          addPrepConnection(task, `input[data-tomorrow-checkbox="${task.id}"]`);
         }
       });
       
@@ -6886,6 +6903,7 @@ export default function Dashboard() {
                     style={{ accentColor: getCourseColor(task.courseName) }}
                     data-testid={`checkbox-task-${task.id}`}
                     {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
+                    {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
                   />
                   <button 
                     className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer"
