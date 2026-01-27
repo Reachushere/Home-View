@@ -2679,6 +2679,7 @@ export default function Dashboard() {
       const dueDayIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
       const prepDaysCount = Math.min(2, differenceInDays(dueDate, startDate));
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
+      const [endHour, endMin] = t.eventEndTime ? t.eventEndTime.split(':').map(Number) : [startHour + 1, 0];
       
       // Calculate top position (where the prep bar should be) - must match task topOffset exactly
       let topPx = 0;
@@ -2688,10 +2689,26 @@ export default function Dashboard() {
       // Match the task's topOffset calculation exactly: (startMin / 60) * 44 + 2
       topPx += (startMin / 60) * (gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight) + 2;
       
+      // Calculate height to match the task height - same logic as getMultiHourTasksForWeek
+      let heightPx = 0;
+      const startHourHeight = gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight;
+      if (endHour > startHour) {
+        // Multi-hour task height calculation
+        heightPx += ((60 - startMin) / 60) * startHourHeight;
+        for (let h = startHour + 1; h < endHour; h++) {
+          heightPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+        }
+        const endHourHeight = gridSizes.timeSlotHeights[endHour] || gridSizes.timeSlotHeight;
+        heightPx += (endMin / 60) * endHourHeight;
+      } else {
+        // Single hour task - use standard height
+        heightPx = 40;
+      }
+      
       // Calculate the starting day index for the prep extension
       const prepStartDayIdx = Math.max(0, dueDayIdx - prepDaysCount);
       
-      return { task: t, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx, hour: startHour };
+      return { task: t, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx, heightPx, hour: startHour };
     });
   };
   
@@ -6176,13 +6193,15 @@ export default function Dashboard() {
                         isDueToday ? "task-blink-border" : ""
                       } ${
                         hasPrepDays && prepDaysCount > 0
-                          ? "rounded-r rounded-bl overflow-visible" 
+                          ? "rounded-r overflow-visible" 
                           : "rounded overflow-hidden"
                       } ${
                         task.isCompleted 
                           ? "bg-gray-200 border border-gray-300" 
                           : colors 
-                            ? `${colors.bg} border ${colors.border}` 
+                            ? hasPrepDays && prepDaysCount > 0
+                              ? `${colors.bg} border-t border-r border-b ${colors.border}` 
+                              : `${colors.bg} border ${colors.border}`
                             : "bg-gray-200 border border-gray-400"
                       }`}
                       style={{
@@ -6191,7 +6210,8 @@ export default function Dashboard() {
                         width: `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25),
-                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
+                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
+                        borderBottomLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
@@ -6224,7 +6244,7 @@ export default function Dashboard() {
                 })}
                 
                 {/* Prep Extensions Overlay - rendered as separate elements spanning day columns */}
-                {getPrepExtensionsForWeek().map(({ task, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx }) => {
+                {getPrepExtensionsForWeek().map(({ task, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx, heightPx }) => {
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                   const colors = courseColors[courseCode];
                   const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
@@ -6235,18 +6255,18 @@ export default function Dashboard() {
                   return (
                     <div
                       key={`prep-ext-${task.id}`}
-                      className={`absolute ${prepBgClass} border-l border-t border-b ${mainBorderClass} rounded-l flex items-center justify-center pointer-events-none`}
+                      className={`absolute ${prepBgClass} border-l border-t border-b ${mainBorderClass} rounded-l flex items-start justify-center pointer-events-none`}
                       style={{
                         top: `${topPx}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        // Extend 8px into the task box to fully cover the left border
-                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) + 8px)`,
-                        height: '22px',
+                        // Width spans prep days and overlaps slightly into task (no gap)
+                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7))`,
+                        height: `${heightPx}px`,
                         zIndex: 35
                       }}
                       data-testid={`prep-extension-${task.id}`}
                     >
-                      <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1">
+                      <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1 pt-1">
                         Prep days
                       </span>
                     </div>
