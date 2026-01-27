@@ -2443,10 +2443,10 @@ export default function Dashboard() {
           let toY: number;
           if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calRect.left - 12; // Stop just outside the task box (12px gap)
+            toX = calRect.left - 5; // Arrowhead tip stops 5px before task box
             toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
           } else {
-            toX = calRect.left - 12; // Stop just outside the task box
+            toX = calRect.left - 5; // Arrowhead tip stops 5px before task box
             toY = calRect.top + calRect.height / 2;
           }
           
@@ -6892,7 +6892,7 @@ export default function Dashboard() {
                 id="arrowhead-green"
                 markerWidth="10"
                 markerHeight="7"
-                refX="0"
+                refX="10"
                 refY="3.5"
                 orient="auto"
               >
@@ -6902,7 +6902,7 @@ export default function Dashboard() {
                 id="arrowhead-pink"
                 markerWidth="10"
                 markerHeight="7"
-                refX="0"
+                refX="10"
                 refY="3.5"
                 orient="auto"
               >
@@ -6912,7 +6912,7 @@ export default function Dashboard() {
                 id="arrowhead-indigo"
                 markerWidth="10"
                 markerHeight="7"
-                refX="0"
+                refX="10"
                 refY="3.5"
                 orient="auto"
               >
@@ -6922,7 +6922,7 @@ export default function Dashboard() {
                 id="arrowhead-black"
                 markerWidth="10"
                 markerHeight="7"
-                refX="0"
+                refX="10"
                 refY="3.5"
                 orient="auto"
               >
