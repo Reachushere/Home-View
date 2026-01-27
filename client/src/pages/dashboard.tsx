@@ -5405,16 +5405,16 @@ export default function Dashboard() {
                 });
                 
                 // Calculate position for full-week tasks
-                // Box starts at MODULE column when Saturday, or at Sunday column when Saturday has passed
                 const today = new Date();
                 const isSaturday = today.getDay() === 6;
-                // Get Saturday column width (dayIdx 0)
+                // Get column widths
                 const saturdayColumnWidth = gridSizes.dayColumnWidths[0] || 100;
-                // If Saturday: start at MODULE column (timeColumnWidth)
-                // If not Saturday: start at Sunday column (timeColumnWidth + moduleColumnWidth + saturdayColumnWidth)
+                // If Saturday: start at MODULE column (includes MODULE + SAT + rest of week)
+                // If not Saturday: start at Sunday column (skips MODULE and SAT)
                 const fullWeekLeftOffset = isSaturday 
-                  ? gridSizes.timeColumnWidth 
-                  : gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + saturdayColumnWidth;
+                  ? gridSizes.timeColumnWidth  // Start at MODULE
+                  : gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + saturdayColumnWidth; // Start at Sunday
+                const fullWeekRightOffset = 4;
                 
                 return (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
@@ -5439,7 +5439,7 @@ export default function Dashboard() {
                         }`}
                         style={{
                           left: `${fullWeekLeftOffset + 2}px`,
-                          right: '4px',
+                          right: `${fullWeekRightOffset}px`,
                           top: `${2 + taskIdx * 18}px`,
                           zIndex: 10,
                         }}
