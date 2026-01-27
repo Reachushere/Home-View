@@ -6231,8 +6231,8 @@ export default function Dashboard() {
                       style={{
                         top: `${topPx}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) + 2px)`,
-                        height: '18px',
+                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) + 4px)`,
+                        height: '20px',
                         zIndex: 35
                       }}
                       data-testid={`prep-extension-${task.id}`}
