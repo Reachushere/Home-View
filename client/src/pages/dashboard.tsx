@@ -7144,12 +7144,14 @@ export default function Dashboard() {
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
               // Transparent path: FULL path from task box checkbox down to calendar task checkbox
-              // Includes initial horizontal line, vertical line down, then cubic bezier curve
-              const midY = (containerBottom + conn.toY) / 2;
-              const transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
-              
-              // For green arrows, add a 7px extension line from the arrowhead tip going left
               const isGreen = conn.color === "#22c55e";
+              const midY = (containerBottom + conn.toY) / 2;
+              
+              // For green arrows: go straight down through today column (exitX), then turn right to arrowhead
+              // For other arrows: use cubic bezier curve
+              const transparentPath = isGreen
+                ? `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${conn.toY} L ${conn.toX} ${conn.toY}`
+                : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
                 <g key={`transparent-${conn.taskId}`}>
@@ -7162,18 +7164,6 @@ export default function Dashboard() {
                     strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
                   />
-                  {isGreen && (
-                    <line
-                      x1={conn.toX}
-                      y1={conn.toY}
-                      x2={conn.toX - 7}
-                      y2={conn.toY}
-                      stroke={conn.color}
-                      strokeWidth="2"
-                      strokeDasharray="5,3"
-                      strokeOpacity="0.25"
-                    />
-                  )}
                 </g>
               );
             })}
