@@ -5512,22 +5512,24 @@ export default function Dashboard() {
                             </div>
                             
                             {/* Static MODULE column task - always visible */}
-                            <div 
-                              className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 ${moduleBg} border ${moduleBorder}`}
-                              data-testid={`course-module-task-static-${task.id}`}
-                            >
-                              <Checkbox
-                                checked={task.isCompleted || false}
-                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                data-testid={`checkbox-module-static-${task.id}`}
-                              />
-                              <span 
-                                onClick={() => setEditingTask(task)}
-                                className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                            <div style={{ backgroundColor: course.bg }}>
+                              <div 
+                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 ${moduleBg} border ${moduleBorder}`}
+                                data-testid={`course-module-task-static-${task.id}`}
                               >
-                                <span className="font-bold">{task.title}</span>
-                              </span>
+                                <Checkbox
+                                  checked={task.isCompleted || false}
+                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                  data-testid={`checkbox-module-static-${task.id}`}
+                                />
+                                <span 
+                                  onClick={() => setEditingTask(task)}
+                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                >
+                                  <span className="font-bold">{task.title}</span>
+                                </span>
+                              </div>
                             </div>
                             
                             {/* Sun-Fri columns (6 columns: index 0-5) - dynamic task starts from today */}
