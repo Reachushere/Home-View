@@ -5585,7 +5585,7 @@ export default function Dashboard() {
                                 return (
                                   <div key={dayIdx} className="flex items-center" style={{ backgroundColor: course.bg }}>
                                     <div 
-                                      className={`flex items-center gap-1 text-[8px] px-1 ml-0.5 ${isFriday ? 'mr-0.5' : ''} ${moduleBg} ${todayBorderClass} ${
+                                      className={`flex-1 flex items-center gap-1 text-[8px] px-1 ml-0.5 ${isFriday ? 'mr-0.5' : ''} ${moduleBg} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
                                       }`}
                                       style={{ height: 'calc(100% - 4px)', marginTop: '2px', marginBottom: '2px' }}
