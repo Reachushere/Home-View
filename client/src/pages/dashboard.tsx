@@ -3322,7 +3322,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-hidden relative" style={{ backgroundColor: colorSettings.mainBackground }}>
+      <div className="flex flex-1 overflow-hidden relative z-10" style={{ backgroundColor: colorSettings.mainBackground }}>
         {/* Constant fade overlay - disabled for solid black background */}
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -6884,7 +6884,7 @@ export default function Dashboard() {
         {/* Arrow Connections SVG Overlay */}
         {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
-            className="fixed inset-0 pointer-events-none z-0" 
+            className="fixed inset-0 pointer-events-none z-[1]" 
             style={{ width: '100vw', height: '100vh' }}
           >
             <defs>
