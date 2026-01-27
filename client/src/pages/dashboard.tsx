@@ -2494,6 +2494,10 @@ export default function Dashboard() {
         const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
         // Find the checkbox within the task element
         const checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+        
+        // First check if there's a prep-today element for this task (task has prep day today)
+        const prepTodayEl = document.querySelector(`[data-prep-today-task-id="${task.id}"]`);
+        
         // Find the corresponding task on the calendar - get the first visible one
         const calTaskEls = document.querySelectorAll(`[data-cal-task-id="${task.id}"]`);
         let calTaskEl: Element | null = null;
@@ -2512,11 +2516,14 @@ export default function Dashboard() {
           calTaskEl = calTaskEls[0];
         }
         
-        if (boxTaskEl && calTaskEl) {
-          const calRect = calTaskEl.getBoundingClientRect();
+        // Use prep-today element if available, otherwise use the calendar task
+        const targetEl = prepTodayEl || calTaskEl;
+        
+        if (boxTaskEl && targetEl) {
+          const targetRect = targetEl.getBoundingClientRect();
           
-          // Skip if calendar task has invalid dimensions (not rendered properly)
-          if (calRect.width === 0 || calRect.height === 0) {
+          // Skip if target has invalid dimensions (not rendered properly)
+          if (targetRect.width === 0 || targetRect.height === 0) {
             return;
           }
           
@@ -2540,17 +2547,24 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Find the checkbox in the calendar task and point to its left edge
-          const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+          // Point to target element (prep-today or calendar task checkbox)
           let toX: number;
           let toY: number;
-          if (calCheckboxEl) {
-            const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calCheckboxRect.left; // Point directly to checkbox left edge
-            toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
+          if (prepTodayEl) {
+            // For prep-today, point to left edge of the blinking element (not inside)
+            toX = targetRect.left;
+            toY = targetRect.top + targetRect.height / 2;
           } else {
-            toX = calRect.left; // Point to task box left edge
-            toY = calRect.top + calRect.height / 2;
+            // For calendar task, find the checkbox and point to it
+            const calCheckboxEl = targetEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+            if (calCheckboxEl) {
+              const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
+              toX = calCheckboxRect.left; // Point to checkbox left edge
+              toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
+            } else {
+              toX = targetRect.left; // Point to task box left edge
+              toY = targetRect.top + targetRect.height / 2;
+            }
           }
           
           // Skip arrows where target is off-screen or invalid
@@ -6386,6 +6400,7 @@ export default function Dashboard() {
                             width: `calc(100% / ${prepDaysCount})`,
                             borderRadius: todayOffsetInPrep === 0 ? '4px 0 0 4px' : '0'
                           }}
+                          data-prep-today-task-id={task.id}
                         />
                       )}
                       {/* Prep Days text - centered on today column if in range, otherwise centered overall */}
