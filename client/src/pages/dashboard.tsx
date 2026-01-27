@@ -5404,8 +5404,8 @@ export default function Dashboard() {
                   return spansFullWeek;
                 });
                 
-                // Calculate position for full-week tasks
-                const fullWeekLeftOffset = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+                // Calculate position for full-week tasks (starts at MODULE column, not after it)
+                const fullWeekLeftOffset = gridSizes.timeColumnWidth;
                 
                 return (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
