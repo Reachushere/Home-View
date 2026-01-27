@@ -5536,7 +5536,6 @@ export default function Dashboard() {
                   />
                   {weekDays.map((day, dayIdx) => {
                     // Get prep tasks for this course and day (excluding full-week tasks)
-                    // School week starts Saturday. Tasks span Sat-Fri, or Sun-Fri once Saturday has passed
                     const fullWeekTaskIds = fullWeekTasks.map(t => t.id);
                     const coursePrepTasks = weekPlanningTasks.filter(task => {
                       if (!task.startDate || !task.courseName?.startsWith(course.name)) return false;
@@ -5544,18 +5543,14 @@ export default function Dashboard() {
                       
                       const today = new Date();
                       const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+                      const isSaturdayNow = todayDayOfWeek === 6;
                       
-                      // Check if Saturday of this week has passed (today is not Saturday)
-                      const saturdayPassed = todayDayOfWeek !== 6;
+                      // Check actual day of week for this column, not the index
+                      const thisDayOfWeek = day.getDay(); // 0 = Sunday, 6 = Saturday
                       
-                      // dayIdx 0 = Saturday, dayIdx 1 = Sunday, dayIdx 2-6 = Mon-Fri
-                      // If Saturday passed: show on Sunday-Friday (dayIdx 1-6)
-                      // Otherwise (it's Saturday): show on all days (dayIdx 0-6)
-                      const shouldShowOnThisDay = saturdayPassed 
-                        ? dayIdx >= 1 // Sun-Fri (skip Saturday)
-                        : true; // Sat-Fri (all days)
-                      
-                      if (!shouldShowOnThisDay) return false;
+                      // If not Saturday: skip showing tasks on Saturday column (dayOfWeek === 6)
+                      // Saturday column when not Saturday is the UPCOMING Saturday, not part of current school week
+                      if (!isSaturdayNow && thisDayOfWeek === 6) return false;
                       
                       // Check if task falls within this week
                       const taskDueDate = new Date(task.dueDate);
