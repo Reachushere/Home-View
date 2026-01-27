@@ -2546,7 +2546,14 @@ export default function Dashboard() {
           let toX: number;
           let toY: number;
           const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
-          if (calCheckboxEl) {
+          
+          // TEST: For green arrows, point to below "Prep days" label
+          const prepDaysLabel = document.querySelector('span[style*="writing-mode"]');
+          if (color === "#22c55e" && prepDaysLabel) {
+            const prepRect = prepDaysLabel.getBoundingClientRect();
+            toX = prepRect.left + prepRect.width / 2; // Center below Prep
+            toY = prepRect.bottom + 20; // 20px below the label
+          } else if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
             toX = calCheckboxRect.left - 2; // 2px to the left of the checkbox
             toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
