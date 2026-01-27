@@ -7192,9 +7192,9 @@ export default function Dashboard() {
                 ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
-              // For green: calculate opaque portion at the END of the curve (last ~30 dashes, near calendar task)
-              // t=0.65 is where the opaque portion starts (last 35% of curve)
-              const opaqueStartT = 0.65;
+              // For green: calculate opaque portion at the END of the curve (last ~37 dashes, near calendar task)
+              // t=0.55 is where the opaque portion starts (last 45% of curve)
+              const opaqueStartT = 0.55;
               const opaqueOneMinusT = 1 - opaqueStartT;
               // Bezier point at t: B(t) = (1-t)³P0 + 3(1-t)²tP1 + 3(1-t)t²P2 + t³P3
               const opaqueStartX = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.x + 
