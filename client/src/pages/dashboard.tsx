@@ -3563,101 +3563,119 @@ export default function Dashboard() {
               </div>
             )}
             
-            <div className="flex items-center gap-1">
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                onClick={handleSkipBack}
-                data-testid="button-preview-rewind"
-                title="Rewind 20 words"
-              >
-                <SkipBack className="h-4 w-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
-                data-testid="button-preview-play"
-              >
-                <Play className="h-4 w-4 fill-blue-400" />
-              </Button>
-              <Button
-                size="icon"
-                variant="destructive"
-                className="h-7 w-7 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
-                onClick={handleStopMedia}
-                data-testid="button-preview-stop"
-              >
-                <Square className="h-4 w-4 fill-white" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                onClick={handleSkipForward}
-                data-testid="button-preview-forward"
-                title="Skip forward 20 words"
-              >
-                <SkipForward className="h-4 w-4" />
-              </Button>
-              <div className="w-px h-5 bg-white/30 mx-0.5" />
+            <div className="flex items-center gap-3">
+              {/* Playback Controls */}
+              <div className="flex items-center gap-2">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  onClick={handleSkipBack}
+                  data-testid="button-preview-rewind"
+                  title="Rewind 20 words"
+                >
+                  <SkipBack className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
+                  data-testid="button-preview-play"
+                >
+                  <Play className="h-4 w-4 fill-blue-400" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  className="h-7 w-7 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
+                  onClick={handleStopMedia}
+                  data-testid="button-preview-stop"
+                >
+                  <Square className="h-4 w-4 fill-white" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  onClick={handleSkipForward}
+                  data-testid="button-preview-forward"
+                  title="Skip forward 20 words"
+                >
+                  <SkipForward className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="w-px h-5 bg-white/30" />
+              
               {/* Restart Controls */}
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                onClick={handleRestartFromBeginning}
-                data-testid="button-preview-restart-beginning"
-                title="Restart from beginning"
-              >
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                onClick={handleRestartCurrentChunk}
-                data-testid="button-preview-restart-current"
-                title="Restart current section"
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-              <div className="w-px h-5 bg-white/30 mx-0.5" />
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 px-2 text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  onClick={handleRestartFromBeginning}
+                  data-testid="button-preview-restart-beginning"
+                  title="Restart from beginning"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Start
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 px-2 text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  onClick={handleRestartCurrentChunk}
+                  data-testid="button-preview-restart-current"
+                  title="Restart current section"
+                >
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Current
+                </Button>
+              </div>
+              
+              <div className="w-px h-5 bg-white/30" />
+              
               {/* Volume Controls */}
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                onClick={() => handleVolumeChange("down")}
-                data-testid="button-preview-vol-down"
-                title="Volume Down"
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <Volume2 className="h-4 w-4 text-blue-400" />
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                onClick={() => handleVolumeChange("up")}
-                data-testid="button-preview-vol-up"
-                title="Volume Up"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-              <div className="w-px h-5 bg-white/30 mx-0.5" />
-              <Checkbox
-                id="sync-highlight"
-                checked={syncHighlight}
-                onCheckedChange={(checked) => setSyncHighlight(!!checked)}
-                className="h-3 w-3 border-blue-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                data-testid="checkbox-sync-highlight"
-              />
-              <Label htmlFor="sync-highlight" className="text-white text-[9px] cursor-pointer">
-                Sync
-              </Label>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  onClick={() => handleVolumeChange("down")}
+                  data-testid="button-preview-vol-down"
+                  title="Volume Down"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <Volume2 className="h-4 w-4 text-blue-400" />
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  onClick={() => handleVolumeChange("up")}
+                  data-testid="button-preview-vol-up"
+                  title="Volume Up"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="w-px h-5 bg-white/30" />
+              
+              {/* Sync Checkbox */}
+              <div className="flex items-center gap-1">
+                <Checkbox
+                  id="sync-highlight"
+                  checked={syncHighlight}
+                  onCheckedChange={(checked) => setSyncHighlight(!!checked)}
+                  className="h-3 w-3 border-blue-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                  data-testid="checkbox-sync-highlight"
+                />
+                <Label htmlFor="sync-highlight" className="text-white text-[9px] cursor-pointer">
+                  Sync
+                </Label>
+              </div>
             </div>
             
             <Button
