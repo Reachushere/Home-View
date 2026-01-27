@@ -7495,21 +7495,39 @@ export default function Dashboard() {
               
               // Use quadratic bezier curves for smooth path
               // Start at checkbox, go 21px straight left, then curve down and towards target
-              const path = `M ${conn.fromX} ${conn.fromY} ` +
+              const fullPath = `M ${conn.fromX} ${conn.fromY} ` +
                 `L ${exitX} ${conn.fromY} ` + // Go 21px straight left
                 `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve down and towards target
                 `L ${conn.toX} ${endY}`; // Straight down to target
               
+              // Opaque portion: from checkbox to just before curve reaches target column
+              // Stop opaque at the horizontal midpoint of the curve
+              const opaqueEndX = exitX + (conn.toX - exitX) * 0.5;
+              const opaqueEndY = conn.fromY + (midY - conn.fromY) * 0.7;
+              const opaquePath = `M ${conn.fromX} ${conn.fromY} ` +
+                `L ${exitX} ${conn.fromY} ` + // Go 21px straight left
+                `Q ${exitX} ${opaqueEndY}, ${opaqueEndX} ${opaqueEndY}`; // Partial curve
+              
               return (
                 <g key={`prep-arrow-${conn.taskId}`}>
+                  {/* Layer 1: Transparent base - full path */}
                   <path
-                    d={path}
+                    d={fullPath}
                     stroke={conn.color}
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="0.75"
+                    strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
+                  />
+                  {/* Layer 2: Opaque overlay - first portion */}
+                  <path
+                    d={opaquePath}
+                    stroke={conn.color}
+                    strokeWidth="2"
+                    fill="none"
+                    strokeDasharray="5,3"
+                    strokeOpacity="1"
                   />
                 </g>
               );
