@@ -7188,35 +7188,16 @@ export default function Dashboard() {
               // Green path: starts 10px left of arrowhead tip (left side of arrow), goes 7px left, then curves
               const arrowLeftSide = { x: greenStart.x - 10, y: greenStart.y };
               const horizontalEnd = { x: greenStart.x - 17, y: greenStart.y }; // 7px left of arrow left side
-              
-              // For green: split into opaque (Tomorrow box to containerBottom) and transparent (containerBottom to calendar)
-              // Calculate where the bezier curve crosses containerBottom
-              // The curve goes from horizontalEnd to greenEnd via CP1 and CP2
-              const greenOpaquePath = isGreen
-                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} L ${horizontalEnd.x} ${containerBottom}`
-                : '';
-              const greenTransparentPath = isGreen
-                ? `M ${horizontalEnd.x} ${containerBottom} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
-                : '';
-              
               const transparentPath = isGreen
-                ? greenTransparentPath
+                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
+              
+              // For green: calculate opaque portion from start to containerBottom (stays on same curve)
+              // Use bezier math to find Y position at containerBottom
+              const greenOpaqueEndY = containerBottom;
               
               return (
                 <g key={`transparent-${conn.taskId}`}>
-                  {/* Green opaque portion - from Tomorrow box to containerBottom */}
-                  {isGreen && (
-                    <path
-                      d={greenOpaquePath}
-                      stroke={conn.color}
-                      strokeWidth="2"
-                      fill="none"
-                      strokeDasharray="5,3"
-                      strokeOpacity="1"
-                    />
-                  )}
-                  {/* Transparent portion */}
                   <path
                     d={transparentPath}
                     stroke={conn.color}
@@ -7227,6 +7208,17 @@ export default function Dashboard() {
                     markerEnd={isGreen ? undefined : `url(#${markerId})`}
                     markerStart={undefined}
                   />
+                  {/* Green opaque overlay - from arrowhead to containerBottom */}
+                  {isGreen && (
+                    <path
+                      d={`M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} L ${horizontalEnd.x} ${greenOpaqueEndY}`}
+                      stroke={conn.color}
+                      strokeWidth="2"
+                      fill="none"
+                      strokeDasharray="5,3"
+                      strokeOpacity="1"
+                    />
+                  )}
                   {/* Green arrowhead */}
                   {isGreen && (
                     <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
