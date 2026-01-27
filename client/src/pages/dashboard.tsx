@@ -2437,16 +2437,16 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Find the checkbox in the calendar task and point to its left side
+          // Find the checkbox in the calendar task and point just outside the task box
           const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
           let toX: number;
           let toY: number;
           if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calCheckboxRect.left; // Left side of calendar checkbox
-            toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Center vertically
+            toX = calRect.left - 12; // Stop just outside the task box (12px gap)
+            toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
           } else {
-            toX = calRect.left; // Fall back to left of calendar entry
+            toX = calRect.left - 12; // Stop just outside the task box
             toY = calRect.top + calRect.height / 2;
           }
           
