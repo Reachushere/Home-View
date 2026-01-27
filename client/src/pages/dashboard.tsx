@@ -5480,38 +5480,45 @@ export default function Dashboard() {
                               </div>
                             ) : (
                               <>
-                                {/* MODULE column - task box with content */}
-                                <div 
-                                  className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l m-0.5 mr-0 ${baseStyle} ${
-                                    isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                                  }`}
-                                  data-testid={`course-fullweek-task-module-${task.id}`}
-                                >
-                                  <Checkbox
-                                    checked={task.isCompleted || false}
-                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                    data-testid={`checkbox-fullweek-${task.id}`}
-                                  />
-                                  <span 
-                                    onClick={() => setEditingTask(task)}
-                                    className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                                  >
-                                    <span className="font-bold">{task.title}</span>
-                                  </span>
-                                </div>
+                                {/* MODULE column - task box with content (no right border) */}
+                                {(() => {
+                                  const moduleBg = task.isCompleted ? "bg-gray-200 text-gray-400" : course.colors ? `${course.colors.bg} text-black` : "bg-gray-200 text-black";
+                                  const moduleBorder = task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400";
+                                  return (
+                                    <div 
+                                      className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l m-0.5 mr-0 ${moduleBg} border-l border-t border-b ${moduleBorder} ${
+                                        isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                                      }`}
+                                      data-testid={`course-fullweek-task-module-${task.id}`}
+                                    >
+                                      <Checkbox
+                                        checked={task.isCompleted || false}
+                                        onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                        className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                        data-testid={`checkbox-fullweek-${task.id}`}
+                                      />
+                                      <span 
+                                        onClick={() => setEditingTask(task)}
+                                        className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                      >
+                                        <span className="font-bold">{task.title}</span>
+                                      </span>
+                                    </div>
+                                  );
+                                })()}
                                 
                                 {/* Sun-Fri columns - continuation bars (6 columns: index 0-5) */}
                                 {weekDays.slice(0, 6).map((day, dayIdx) => {
-                                  // Only apply border on the rightmost cell (Friday at index 5)
                                   const bgOnly = task.isCompleted 
                                     ? "bg-gray-200" 
                                     : course.colors 
                                       ? course.colors.bg 
                                       : "bg-gray-200";
+                                  const borderColor = task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400";
+                                  // Only Friday (index 5) gets a right border
                                   const borderClass = dayIdx === 5 
-                                    ? (task.isCompleted ? "border border-gray-300" : course.colors ? `border ${course.colors.border}` : "border border-gray-400")
-                                    : "border-y " + (task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400");
+                                    ? `border-t border-b border-r ${borderColor}`
+                                    : `border-t border-b ${borderColor}`;
                                   
                                   return (
                                     <div 
