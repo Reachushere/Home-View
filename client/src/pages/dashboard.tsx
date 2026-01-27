@@ -105,16 +105,31 @@ const typeColors: Record<string, string> = {
 };
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
-  "CAPPA122-LP": { bg: "bg-green-100 dark:bg-green-900/40", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-green-200/50", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
-  "CFNF400-HS": { bg: "bg-pink-100 dark:bg-pink-900/40", border: "border-pink-500", text: "text-pink-700 dark:text-pink-300", dot: "bg-pink-500", prepBg: "bg-pink-200/50", prepBorder: "border-pink-300", prepText: "text-pink-600 dark:text-pink-400" },
-  "CASL101-SL": { bg: "bg-indigo-100 dark:bg-indigo-900/40", border: "border-indigo-500", text: "text-indigo-700 dark:text-indigo-300", dot: "bg-indigo-500", prepBg: "bg-indigo-200/50", prepBorder: "border-indigo-300", prepText: "text-indigo-600 dark:text-indigo-400" },
+  "CPPA122": { bg: "bg-green-100 dark:bg-green-900/40", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-green-200/50", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
+  "CFNF400": { bg: "bg-pink-100 dark:bg-pink-900/40", border: "border-pink-500", text: "text-pink-700 dark:text-pink-300", dot: "bg-pink-500", prepBg: "bg-pink-200/50", prepBorder: "border-pink-300", prepText: "text-pink-600 dark:text-pink-400" },
+  "CASL101": { bg: "bg-indigo-100 dark:bg-indigo-900/40", border: "border-indigo-500", text: "text-indigo-700 dark:text-indigo-300", dot: "bg-indigo-500", prepBg: "bg-indigo-200/50", prepBorder: "border-indigo-300", prepText: "text-indigo-600 dark:text-indigo-400" },
+};
+
+// Display name mapping for course row labels
+const courseDisplayNames: Record<string, string> = {
+  "CPPA122": "CAPPA122-LP",
+  "CFNF400": "CFNF400-HS",
+  "CASL101": "CASL101-SL",
+};
+
+// Helper function to get display name for course row labels
+const getCourseRowDisplayName = (courseName: string): string => {
+  const courseCode = courseName.split(' - ')[0];
+  const displayCode = courseDisplayNames[courseCode] || courseCode;
+  const courseSuffix = courseName.split(' - ').slice(1).join(' - ');
+  return courseSuffix ? `${displayCode} - ${courseSuffix}` : displayCode;
 };
 
 // Course folder configuration for sidebar hamburger menus
 const SIDEBAR_COURSES = [
-  { id: "cappa122-lp", name: "CAPPA122-LP", color: "text-green-500", hoverBg: "hover:bg-green-500/20" },
-  { id: "cfnf400-hs", name: "CFNF400-HS", color: "text-pink-500", hoverBg: "hover:bg-pink-500/20" },
-  { id: "casl101-sl", name: "CASL101-SL", color: "text-indigo-500", hoverBg: "hover:bg-indigo-500/20" },
+  { id: "cppa122", name: "CPPA122", color: "text-green-500", hoverBg: "hover:bg-green-500/20" },
+  { id: "cfnf400", name: "CFNF400", color: "text-pink-500", hoverBg: "hover:bg-pink-500/20" },
+  { id: "casl101", name: "CASL101", color: "text-indigo-500", hoverBg: "hover:bg-indigo-500/20" },
 ];
 
 const FOLDER_TYPES = [
@@ -250,9 +265,9 @@ export default function Dashboard() {
   ];
   
   const FLYOUT_COURSES = [
-    { id: "cappa122-lp", name: "CAPPA122-LP", color: "text-green-500" },
-    { id: "cfnf400-hs", name: "CFNF400-HS", color: "text-pink-500" },
-    { id: "casl101-sl", name: "CASL101-SL", color: "text-purple-500" },
+    { id: "cppa122", name: "CPPA122", color: "text-green-500" },
+    { id: "cfnf400", name: "CFNF400", color: "text-pink-500" },
+    { id: "casl101", name: "CASL101", color: "text-purple-500" },
   ];
   
   const FLYOUT_CONTENT = [
@@ -675,9 +690,9 @@ export default function Dashboard() {
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
-      { name: 'CAPPA122-LP - Local Politics', color: '#22c55e', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
-      { name: 'CFNF400-HS - Human Sexuality', color: '#ec4899', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
-      { name: 'CASL101-SL - American Sign Language', color: '#6366f1', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+      { name: 'CPPA122 - Local Politics', color: '#22c55e', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
+      { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
+      { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
@@ -2285,9 +2300,9 @@ export default function Dashboard() {
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
-  const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CAPPA122-LP")).length, missedTasks.filter(t => t.courseName?.startsWith("CAPPA122-LP")).length) * 64;
-  const cfnf400Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CFNF400-HS")).length, missedTasks.filter(t => t.courseName?.startsWith("CFNF400-HS")).length) * 64;
-  const casl101Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CASL101-SL")).length, missedTasks.filter(t => t.courseName?.startsWith("CASL101-SL")).length) * 64;
+  const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
+  const cfnf400Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CFNF400")).length, missedTasks.filter(t => t.courseName?.startsWith("CFNF400")).length) * 64;
+  const casl101Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CASL101")).length, missedTasks.filter(t => t.courseName?.startsWith("CASL101")).length) * 64;
 
   // Weekly view - get the current selected week's days
   const selectedWeekInfo = weeks.find(w => w.weekNumber === selectedWeek);
@@ -2420,9 +2435,9 @@ export default function Dashboard() {
           // Get course color - black for tasks without a course
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
           let color = "#000000";
-          if (courseCode === "CAPPA122-LP") color = "#22c55e";
-          else if (courseCode === "CFNF400-HS") color = "#ec4899";
-          else if (courseCode === "CASL101-SL") color = "#6366f1";
+          if (courseCode === "CPPA122") color = "#22c55e";
+          else if (courseCode === "CFNF400") color = "#ec4899";
+          else if (courseCode === "CASL101") color = "#6366f1";
           
           // Start arrow from left side of checkbox, or fall back to left of task box
           let fromX: number;
@@ -2840,7 +2855,7 @@ export default function Dashboard() {
                 <div>
                   <Label className="text-xs text-muted-foreground">Course Code</Label>
                   <Input
-                    placeholder="e.g., CAPPA122-LP"
+                    placeholder="e.g., CPPA122"
                     value={newSemesterForm.course1Code}
                     onChange={(e) => setNewSemesterForm(prev => ({ ...prev, course1Code: e.target.value }))}
                     required
@@ -5639,7 +5654,7 @@ export default function Dashboard() {
                 return (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                    {course.name}
+                    {getCourseRowDisplayName(course.name)}
                   </div>
                   <div 
                     className="border-l border-border/50 relative" 
