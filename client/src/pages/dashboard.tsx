@@ -3604,7 +3604,7 @@ export default function Dashboard() {
                           const res = await fetch('/api/media/volume', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ direction: 'down' })
+                            body: JSON.stringify({ direction: 'down', entityId: selectedSpeaker })
                           });
                           const data = await res.json();
                           if (data.newVolume !== undefined) {
@@ -3631,7 +3631,7 @@ export default function Dashboard() {
                           const res = await fetch('/api/media/volume', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ direction: 'up' })
+                            body: JSON.stringify({ direction: 'up', entityId: selectedSpeaker })
                           });
                           const data = await res.json();
                           if (data.newVolume !== undefined) {
@@ -3652,7 +3652,7 @@ export default function Dashboard() {
                           const res = await fetch('/api/media/volume', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ level: 0 })
+                            body: JSON.stringify({ level: 0, entityId: selectedSpeaker })
                           });
                           const data = await res.json();
                           if (data.newVolume !== undefined) {

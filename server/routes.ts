@@ -2174,20 +2174,16 @@ export async function registerRoutes(
         return res.status(400).json({ error: "Home Assistant not configured" });
       }
 
-      const { direction, level } = req.body; // direction: 'up' or 'down', or level: 0-100
+      const { direction, level, entityId } = req.body; // direction: 'up' or 'down', or level: 0-100, entityId: specific speaker
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      const devices = [
-        "media_player.echo_lr_studio_white_am",
-        "media_player.echo_show_pug_am",
-        "media_player.echo_lr_hub_am",
-        "media_player.cat_wr"
-      ];
+      // Use the specified entityId or default to a single device
+      const targetDevice = entityId || "media_player.echo_lr_studio_white_am";
       
-      console.log(`Setting volume on all devices`);
+      console.log(`Setting volume on device: ${targetDevice}`);
       
-      // First get current volume from one device
-      const statesResponse = await fetch(`${haUrl}/api/states/media_player.echo_lr_studio_white_am`, {
+      // First get current volume from the target device
+      const statesResponse = await fetch(`${haUrl}/api/states/${targetDevice}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
@@ -2199,7 +2195,7 @@ export async function registerRoutes(
       if (statesResponse.ok) {
         const stateData = await statesResponse.json();
         currentVolume = stateData.attributes?.volume_level || 0.5;
-        console.log(`Current volume: ${currentVolume}`);
+        console.log(`Current volume on ${targetDevice}: ${currentVolume}`);
       }
       
       // Calculate new volume
@@ -2213,22 +2209,20 @@ export async function registerRoutes(
           : Math.max(0, currentVolume - step);
       }
       
-      console.log(`Setting volume to ${newVolume} on all devices`);
+      console.log(`Setting volume to ${newVolume} on ${targetDevice}`);
       
-      // Set volume on all devices
-      for (const device of devices) {
-        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            entity_id: device,
-            volume_level: newVolume
-          }),
-        });
-      }
+      // Set volume on the target device
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: targetDevice,
+          volume_level: newVolume
+        }),
+      });
       
       res.json({ success: true, direction, newVolume: Math.round(newVolume * 100) });
     } catch (error) {
