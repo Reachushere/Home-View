@@ -7173,7 +7173,7 @@ export default function Dashboard() {
               
               // ABSOLUTE RULE: greenStart (arrowhead) is ALWAYS at CALENDAR task checkbox (conn.toX, conn.toY)
               // NEVER EVER at Tomorrow box - this is hardcoded and cannot be changed
-              const greenStart = { x: conn.toX, y: conn.toY }; // ALWAYS at CALENDAR task checkbox
+              const greenStart = { x: conn.toX - 7, y: conn.toY }; // ALWAYS at CALENDAR task checkbox, 7px left
               
               // Only control points and end can use drag state - arrowhead position is locked
               const dragState = (window as any).__greenArrowDragState || {};
