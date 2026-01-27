@@ -5405,16 +5405,10 @@ export default function Dashboard() {
                 });
                 
                 // Calculate position for full-week tasks
-                const today = new Date();
-                const isSaturday = today.getDay() === 6;
+                const todayDate = new Date();
+                const isSaturdayToday = todayDate.getDay() === 6;
                 // Get column widths
                 const saturdayColumnWidth = gridSizes.dayColumnWidths[0] || 100;
-                // If Saturday: start at MODULE column (includes MODULE + SAT + rest of week)
-                // If not Saturday: start at Sunday column (skips MODULE and SAT)
-                const fullWeekLeftOffset = isSaturday 
-                  ? gridSizes.timeColumnWidth  // Start at MODULE
-                  : gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + saturdayColumnWidth; // Start at Sunday
-                const fullWeekRightOffset = 4;
                 
                 return (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
@@ -5431,34 +5425,88 @@ export default function Dashboard() {
                         ? `${course.colors.bg} text-black border ${course.colors.border}` 
                         : "bg-gray-200 text-black border border-gray-400";
                     
-                    return (
-                      <div
-                        key={`fullweek-${task.id}`}
-                        className={`absolute flex items-center gap-1 text-[8px] px-1 py-0.5 rounded ${baseStyle} ${
-                          isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                        }`}
-                        style={{
-                          left: `${fullWeekLeftOffset + 2}px`,
-                          right: `${fullWeekRightOffset}px`,
-                          top: `${2 + taskIdx * 18}px`,
-                          zIndex: 10,
-                        }}
-                        data-testid={`course-fullweek-task-${task.id}`}
-                      >
-                        <Checkbox
-                          checked={task.isCompleted || false}
-                          onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                          data-testid={`checkbox-fullweek-${task.id}`}
-                        />
-                        <span 
-                          onClick={() => setEditingTask(task)}
-                          className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                    // If Saturday: one continuous box from MODULE to Friday
+                    // If not Saturday: MODULE box + Sunday-Friday box (skip Saturday)
+                    if (isSaturdayToday) {
+                      // One continuous box from MODULE to Friday
+                      return (
+                        <div
+                          key={`fullweek-${task.id}`}
+                          className={`absolute flex items-center gap-1 text-[8px] px-1 py-0.5 rounded ${baseStyle} ${
+                            isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                          }`}
+                          style={{
+                            left: `${gridSizes.timeColumnWidth + 2}px`,
+                            right: '4px',
+                            top: `${2 + taskIdx * 18}px`,
+                            zIndex: 10,
+                          }}
+                          data-testid={`course-fullweek-task-${task.id}`}
                         >
-                          <span className="font-bold">{task.title}</span>
-                        </span>
-                      </div>
-                    );
+                          <Checkbox
+                            checked={task.isCompleted || false}
+                            onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                            className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                            data-testid={`checkbox-fullweek-${task.id}`}
+                          />
+                          <span 
+                            onClick={() => setEditingTask(task)}
+                            className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                          >
+                            <span className="font-bold">{task.title}</span>
+                          </span>
+                        </div>
+                      );
+                    } else {
+                      // Two boxes: MODULE column + Sunday-Friday (skip Saturday)
+                      const moduleLeft = gridSizes.timeColumnWidth + 2;
+                      const moduleRight = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth - 2;
+                      const sundayLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + saturdayColumnWidth + 2;
+                      
+                      return (
+                        <div key={`fullweek-${task.id}`}>
+                          {/* MODULE column box */}
+                          <div
+                            className={`absolute flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l ${baseStyle} ${
+                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                            }`}
+                            style={{
+                              left: `${moduleLeft}px`,
+                              width: `${gridSizes.moduleColumnWidth - 4}px`,
+                              top: `${2 + taskIdx * 18}px`,
+                              zIndex: 10,
+                            }}
+                            data-testid={`course-fullweek-task-module-${task.id}`}
+                          >
+                            <Checkbox
+                              checked={task.isCompleted || false}
+                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                              className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                              data-testid={`checkbox-fullweek-${task.id}`}
+                            />
+                            <span 
+                              onClick={() => setEditingTask(task)}
+                              className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                            >
+                              <span className="font-bold">{task.title}</span>
+                            </span>
+                          </div>
+                          {/* Sunday-Friday box */}
+                          <div
+                            className={`absolute text-[8px] px-1 py-0.5 rounded-r ${baseStyle} ${
+                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                            }`}
+                            style={{
+                              left: `${sundayLeft}px`,
+                              right: '4px',
+                              top: `${2 + taskIdx * 18}px`,
+                              zIndex: 10,
+                            }}
+                            data-testid={`course-fullweek-task-days-${task.id}`}
+                          />
+                        </div>
+                      );
+                    }
                   })}
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {course.name}
