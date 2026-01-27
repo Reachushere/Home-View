@@ -305,6 +305,16 @@ export default function Dashboard() {
     color: string;
     isToday: boolean;
   }>>([]);
+  
+  // NEW: Prep arrows from Today box to prep extensions
+  const [prepArrowConnections, setPrepArrowConnections] = useState<Array<{
+    taskId: number;
+    fromX: number;
+    fromY: number;
+    toX: number;
+    toY: number;
+    color: string;
+  }>>([]);
   const mainContentRef = useRef<HTMLElement | null>(null);
   
   // Celebration popup auto-dismiss and audio
@@ -2595,6 +2605,92 @@ export default function Dashboard() {
       window.removeEventListener('resize', handleUpdate);
     };
   }, [calendarView, dueTodayTasks, dueTomorrowTasks, dueThisWeekTasks]);
+
+  // NEW: Calculate prep arrows from Today box to prep extensions
+  useEffect(() => {
+    if (calendarView !== "week") {
+      setPrepArrowConnections([]);
+      return;
+    }
+    
+    const calculatePrepArrows = () => {
+      const connections: typeof prepArrowConnections = [];
+      
+      // Find tasks in Today box that have prep extensions
+      dueTodayTasks.forEach(task => {
+        // Check if this task has a prep extension (has startDate before dueDate)
+        if (!task.startDate || !task.dueDate) return;
+        
+        const startDate = new Date(task.startDate);
+        const dueDate = new Date(task.dueDate);
+        if (startDate >= dueDate) return;
+        
+        // Find the Today box task element
+        const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
+        const checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+        
+        // Find the prep text element
+        const prepTextEl = document.querySelector(`[data-prep-text-task-id="${task.id}"]`);
+        
+        if (boxTaskEl && prepTextEl) {
+          // Get course color - pink for CFNF400
+          const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+          let color = "#ec4899"; // Default to pink
+          if (courseCode === "CPPA122") color = "#22c55e";
+          else if (courseCode === "CFNF400") color = "#ec4899";
+          else if (courseCode === "CASL101") color = "#6366f1";
+          
+          // Start arrow from left side of checkbox
+          let fromX: number;
+          let fromY: number;
+          if (checkboxEl) {
+            const checkboxRect = checkboxEl.getBoundingClientRect();
+            fromX = checkboxRect.left;
+            fromY = checkboxRect.top + checkboxRect.height / 2;
+          } else {
+            const boxRect = boxTaskEl.getBoundingClientRect();
+            fromX = boxRect.left;
+            fromY = boxRect.top + boxRect.height / 2;
+          }
+          
+          // Point to the middle of "Prep days" text
+          const prepTextRect = prepTextEl.getBoundingClientRect();
+          const toX = prepTextRect.left + prepTextRect.width / 2;
+          const toY = prepTextRect.top + prepTextRect.height / 2;
+          
+          // Skip if target is off-screen
+          if (toY < 0 || toY > window.innerHeight) {
+            return;
+          }
+          
+          connections.push({
+            taskId: task.id,
+            fromX,
+            fromY,
+            toX,
+            toY,
+            color
+          });
+        }
+      });
+      
+      setPrepArrowConnections(connections);
+    };
+    
+    // Calculate after DOM updates
+    const timer = setTimeout(calculatePrepArrows, 250);
+    
+    // Recalculate on scroll and resize
+    const handleUpdate = () => setTimeout(calculatePrepArrows, 50);
+    window.addEventListener('scroll', handleUpdate, true);
+    window.addEventListener('resize', handleUpdate);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleUpdate, true);
+      window.removeEventListener('resize', handleUpdate);
+    };
+  }, [calendarView, dueTodayTasks]);
 
   // Current week dates (Week 2 = Jan 17-23, 2026)
   const currentWeekInfo = weeks.find(w => w.weekNumber === 2); // Current week is Week 2
@@ -6408,6 +6504,7 @@ export default function Dashboard() {
                           top: '50%',
                           marginTop: '-6px'
                         }}
+                        data-prep-text-task-id={task.id}
                       >
                         Prep days
                       </span>
@@ -7348,6 +7445,73 @@ export default function Dashboard() {
                     fill="none"
                     strokeDasharray="5,3"
                     strokeOpacity="1"
+                  />
+                </g>
+              );
+            })}
+          </svg>
+        )}
+
+        {/* Layer 3: Prep arrows from Today box to prep extensions (z-index: 45) */}
+        {blinkSettings.showArrows && prepArrowConnections.length > 0 && (
+          <svg 
+            className="fixed inset-0 pointer-events-none" 
+            style={{ width: '100vw', height: '100vh', zIndex: 45 }}
+          >
+            <defs>
+              <marker
+                id="arrowhead-prep-pink"
+                markerWidth="10"
+                markerHeight="7"
+                refX="10"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" fillOpacity="0.75" />
+              </marker>
+              <marker
+                id="arrowhead-prep-green"
+                markerWidth="10"
+                markerHeight="7"
+                refX="10"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" fillOpacity="0.75" />
+              </marker>
+              <marker
+                id="arrowhead-prep-indigo"
+                markerWidth="10"
+                markerHeight="7"
+                refX="10"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" fillOpacity="0.75" />
+              </marker>
+            </defs>
+            {prepArrowConnections.map((conn) => {
+              // Exit 21px to the left from checkbox, then down to prep text
+              const exitX = conn.fromX - 21;
+              
+              // Get marker ID based on color
+              let markerId = "arrowhead-prep-pink";
+              if (conn.color === "#22c55e") markerId = "arrowhead-prep-green";
+              else if (conn.color === "#6366f1") markerId = "arrowhead-prep-indigo";
+              
+              // Path: from checkbox, go left 21px, then down to prep text middle
+              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${conn.toY} L ${conn.toX} ${conn.toY}`;
+              
+              return (
+                <g key={`prep-arrow-${conn.taskId}`}>
+                  <path
+                    d={path}
+                    stroke={conn.color}
+                    strokeWidth="2"
+                    fill="none"
+                    strokeDasharray="5,3"
+                    strokeOpacity="0.75"
+                    markerEnd={`url(#${markerId})`}
                   />
                 </g>
               );
