@@ -6970,7 +6970,7 @@ export default function Dashboard() {
                     fill="none"
                     strokeDasharray="5,3"
                     markerEnd={`url(#${markerId})`}
-                    opacity="0.5"
+                    opacity="0.25"
                     className=""
                   />
                 </g>
