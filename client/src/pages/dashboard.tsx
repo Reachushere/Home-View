@@ -6979,11 +6979,14 @@ export default function Dashboard() {
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
+              // Get the right edge of the time column (where transparency should start)
+              const timeCellsRightEdge = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+              
               // Split into two paths:
-              // Path 1: Fully opaque - from task box checkbox down to container bottom
-              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-              // Path 2: 75% transparent - curve from container bottom to calendar (with arrowhead)
-              const transparentPath = `M ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
+              // Path 1: Fully opaque - from task box checkbox, down to container bottom, then right to time cells edge
+              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} L ${timeCellsRightEdge} ${containerBottom}`;
+              // Path 2: 75% transparent - curve from time cells edge to calendar (with arrowhead)
+              const transparentPath = `M ${timeCellsRightEdge} ${containerBottom} Q ${timeCellsRightEdge} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               
               return (
                 <g key={conn.taskId}>
