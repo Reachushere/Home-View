@@ -7192,6 +7192,25 @@ export default function Dashboard() {
                 ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
+              // For green: calculate opaque portion following the curve for first ~30 dashes
+              // t=0.35 gives roughly 30 dashes worth of the bezier curve
+              const opaqueT = 0.35;
+              const opaqueOneMinusT = 1 - opaqueT;
+              // Bezier point at t: B(t) = (1-t)³P0 + 3(1-t)²tP1 + 3(1-t)t²P2 + t³P3
+              const opaqueEndX = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.x + 
+                                3*opaqueOneMinusT*opaqueOneMinusT*opaqueT*greenCP1.x + 
+                                3*opaqueOneMinusT*opaqueT*opaqueT*greenCP2.x + 
+                                opaqueT*opaqueT*opaqueT*greenEnd.x;
+              const opaqueEndY = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.y + 
+                                3*opaqueOneMinusT*opaqueOneMinusT*opaqueT*greenCP1.y + 
+                                3*opaqueOneMinusT*opaqueT*opaqueT*greenCP2.y + 
+                                opaqueT*opaqueT*opaqueT*greenEnd.y;
+              // Split bezier control points using de Casteljau
+              const Q0 = { x: horizontalEnd.x + opaqueT*(greenCP1.x - horizontalEnd.x), y: horizontalEnd.y + opaqueT*(greenCP1.y - horizontalEnd.y) };
+              const Q1 = { x: greenCP1.x + opaqueT*(greenCP2.x - greenCP1.x), y: greenCP1.y + opaqueT*(greenCP2.y - greenCP1.y) };
+              const R0 = { x: Q0.x + opaqueT*(Q1.x - Q0.x), y: Q0.y + opaqueT*(Q1.y - Q0.y) };
+              const greenOpaquePath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${Q0.x} ${Q0.y}, ${R0.x} ${R0.y}, ${opaqueEndX} ${opaqueEndY}`;
+              
               return (
                 <g key={`transparent-${conn.taskId}`}>
                   <path
@@ -7204,6 +7223,17 @@ export default function Dashboard() {
                     markerEnd={isGreen ? undefined : `url(#${markerId})`}
                     markerStart={undefined}
                   />
+                  {/* Green opaque overlay - first ~30 dashes following the curve */}
+                  {isGreen && (
+                    <path
+                      d={greenOpaquePath}
+                      stroke={conn.color}
+                      strokeWidth="2"
+                      fill="none"
+                      strokeDasharray="5,3"
+                      strokeOpacity="1"
+                    />
+                  )}
                   {/* Green arrowhead */}
                   {isGreen && (
                     <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
