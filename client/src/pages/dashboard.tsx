@@ -2556,9 +2556,14 @@ export default function Dashboard() {
             toY = calRect.top + calRect.height / 2;
           }
           
-          // Skip arrows where target is off-screen or invalid
-          if (toX < 0 || toX > window.innerWidth || toY < 0 || toY > window.innerHeight) {
-            return;
+          // For green arrows (Tomorrow box), keep them visible even when calendar task is above viewport
+          // For pink/blue arrows (This Week box), skip if target is completely off-screen
+          const isGreenArrow = color === "#22c55e";
+          if (!isGreenArrow) {
+            // Skip pink/blue arrows when target is off-screen
+            if (toX < 0 || toX > window.innerWidth || toY < 0 || toY > window.innerHeight) {
+              return;
+            }
           }
           
           connections.push({
@@ -6862,7 +6867,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0" style={{ order: 1 }} data-task-boxes-container="true">
+        <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 60 }} data-task-boxes-container="true">
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
@@ -6996,7 +7001,7 @@ export default function Dashboard() {
         })()}
 
         {/* To Do Section - Random tasks */}
-        <div className="mb-3 flex-shrink-0" style={{ order: 3 }}>
+        <div className="mb-3 flex-shrink-0 relative" style={{ order: 3, zIndex: 60 }}>
           <section className="rounded-md shadow-md border-[0.1px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: colorSettings.boxBackground }} data-testid="section-todo">
             <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
               <ClipboardCheck className="h-3 w-3 text-white" />
