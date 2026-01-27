@@ -5357,8 +5357,12 @@ export default function Dashboard() {
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
                 {/* Time column resize handle */}
                 <div
-                  className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize z-50 hover:bg-white/20"
-                  onMouseDown={(e) => handleColumnResizeStart(e, -1)}
+                  className="absolute right-[-4px] top-0 bottom-0 w-3 cursor-col-resize hover:bg-white/30"
+                  style={{ zIndex: 9999 }}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    handleColumnResizeStart(e, -1);
+                  }}
                   data-testid="time-column-resize-handle"
                 />
               </div>
@@ -5366,8 +5370,12 @@ export default function Dashboard() {
                 <span className="text-xs font-medium tracking-wide text-white">MODULE</span>
                 {/* Module column resize handle */}
                 <div
-                  className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize z-50 hover:bg-white/20"
-                  onMouseDown={(e) => handleColumnResizeStart(e, -2)}
+                  className="absolute right-[-4px] top-0 bottom-0 w-3 cursor-col-resize hover:bg-white/30"
+                  style={{ zIndex: 9999 }}
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    handleColumnResizeStart(e, -2);
+                  }}
                   data-testid="module-column-resize-handle"
                 />
               </div>
