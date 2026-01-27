@@ -6265,7 +6265,8 @@ export default function Dashboard() {
                       key={`prep-ext-${task.id}`}
                       className={`absolute ${prepBgClass} border-l border-t ${mainBorderClass} rounded-tl flex items-center justify-center pointer-events-none`}
                       style={{
-                        top: `${topPx}px`,
+                        // Align exactly with task top (remove the +2 offset that was added in topPx calculation)
+                        top: `${topPx - 2}px`,
                         // Start with 2px padding from column edge
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
                         // Width spans prep days minus the 2px left padding, to meet task's left edge exactly
