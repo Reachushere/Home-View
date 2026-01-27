@@ -7169,10 +7169,15 @@ export default function Dashboard() {
                            t*t*t*conn.toY;
               }
               
-              // Green transparent: from arrowhead at calendar task, curve UP to Tomorrow task box
+              // Green transparent: path goes FROM Tomorrow box TO calendar task (so markerEnd is at calendar)
               // Use existing containerBottom variable (already calculated above)
+              // Start at Tomorrow box, curve down, end at calendar task arrowhead
+              const greenStart = { x: conn.toX - 40, y: conn.toY }; // Tomorrow box
+              const greenCP1 = { x: conn.toX - 40, y: containerBottom }; // control point 1
+              const greenCP2 = { x: conn.fromX - 40, y: containerBottom }; // control point 2
+              const greenEnd = { x: conn.fromX - 22, y: conn.fromY }; // Calendar task (arrowhead here)
               const transparentPath = isGreen
-                ? `M ${conn.fromX - 22} ${conn.fromY} L ${conn.fromX - 40} ${conn.fromY} C ${conn.fromX - 40} ${containerBottom}, ${conn.toX - 40} ${containerBottom}, ${conn.toX - 40} ${conn.toY}`
+                ? `M ${greenStart.x} ${greenStart.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
@@ -7184,9 +7189,22 @@ export default function Dashboard() {
                     fill="none"
                     strokeDasharray="5,3"
                     strokeOpacity="0.25"
-                    markerEnd={isGreen ? undefined : `url(#${markerId})`}
-                    markerStart={isGreen ? `url(#${markerId})` : undefined}
+                    markerEnd={`url(#${markerId})`}
+                    markerStart={undefined}
                   />
+                  {/* Debug nodes for green arrows - show control points */}
+                  {isGreen && (
+                    <>
+                      <circle cx={greenStart.x} cy={greenStart.y} r="6" fill="lime" stroke="black" strokeWidth="1" />
+                      <text x={greenStart.x + 8} y={greenStart.y} fontSize="10" fill="lime">START</text>
+                      <circle cx={greenCP1.x} cy={greenCP1.y} r="6" fill="yellow" stroke="black" strokeWidth="1" />
+                      <text x={greenCP1.x + 8} y={greenCP1.y} fontSize="10" fill="yellow">CP1</text>
+                      <circle cx={greenCP2.x} cy={greenCP2.y} r="6" fill="orange" stroke="black" strokeWidth="1" />
+                      <text x={greenCP2.x + 8} y={greenCP2.y} fontSize="10" fill="orange">CP2</text>
+                      <circle cx={greenEnd.x} cy={greenEnd.y} r="6" fill="red" stroke="black" strokeWidth="1" />
+                      <text x={greenEnd.x + 8} y={greenEnd.y} fontSize="10" fill="red">END</text>
+                    </>
+                  )}
                 </g>
               );
             })}
