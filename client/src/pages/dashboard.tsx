@@ -5261,7 +5261,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar flex flex-col relative z-20" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-[5px] relative flex gap-4" style={{ height: calendarHeight, order: 2 }}>
@@ -6881,11 +6881,11 @@ export default function Dashboard() {
           © 2026
         </div>
 
-        {/* Arrow Connections SVG Overlay */}
+        {/* Arrow Connections SVG Overlay - positioned below all calendar content */}
         {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
-            className="fixed inset-0 pointer-events-none z-[1]" 
-            style={{ width: '100vw', height: '100vh' }}
+            className="fixed inset-0 pointer-events-none" 
+            style={{ width: '100vw', height: '100vh', zIndex: 1 }}
           >
             <defs>
               <marker
