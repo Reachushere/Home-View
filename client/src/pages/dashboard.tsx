@@ -7171,20 +7171,67 @@ export default function Dashboard() {
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
               // Module column boundary - where opaque ends and transparent begins
-              // Stop at the START of the module column (right edge of time column)
-              // Need to account for calendar left offset (24px padding + any other offsets)
               const calendarContainer = document.querySelector('[data-calendar-grid="true"]');
               const calendarLeft = calendarContainer ? calendarContainer.getBoundingClientRect().left : 24;
               const moduleColumnStart = calendarLeft + gridSizes.timeColumnWidth;
               
-              // Calculate the Y position on the curve where X = moduleColumnStart
-              // For quadratic bezier: P(t) = (1-t)²P0 + 2(1-t)t P1 + t²P2
-              // P0 = (exitX, containerBottom), P1 = (exitX, midY), P2 = (conn.toX, conn.toY)
-              // For X: x(t) = (1-t)²*exitX + 2(1-t)t*exitX + t²*conn.toX = exitX*(1-t²) + t²*conn.toX
-              // Solving for t when x = moduleColumnStart
-              const t = Math.sqrt((moduleColumnStart - exitX) / (conn.toX - exitX));
+              // Validate that calculation will produce valid results
+              const denominator = conn.toX - exitX;
+              if (denominator <= 0 || moduleColumnStart <= exitX) {
+                // Invalid geometry - just draw a simple line from checkbox to task
+                const simplePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
+                return (
+                  <g key={`opaque-${conn.taskId}`}>
+                    <path
+                      d={simplePath}
+                      stroke={conn.color}
+                      strokeWidth="2"
+                      fill="none"
+                      strokeDasharray="5,3"
+                      strokeOpacity="1"
+                    />
+                  </g>
+                );
+              }
+              
+              const tSquared = (moduleColumnStart - exitX) / denominator;
+              if (tSquared < 0 || tSquared > 1) {
+                // t is out of range - draw simple path
+                const simplePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
+                return (
+                  <g key={`opaque-${conn.taskId}`}>
+                    <path
+                      d={simplePath}
+                      stroke={conn.color}
+                      strokeWidth="2"
+                      fill="none"
+                      strokeDasharray="5,3"
+                      strokeOpacity="1"
+                    />
+                  </g>
+                );
+              }
+              
+              const t = Math.sqrt(tSquared);
               const midY = (containerBottom + conn.toY) / 2;
               const splitY = (1-t)*(1-t)*containerBottom + 2*(1-t)*t*midY + t*t*conn.toY;
+              
+              // Validate splitY is reasonable (between containerBottom and toY)
+              if (isNaN(splitY) || splitY < Math.min(containerBottom, conn.toY) - 100 || splitY > Math.max(containerBottom, conn.toY) + 100) {
+                const simplePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
+                return (
+                  <g key={`opaque-${conn.taskId}`}>
+                    <path
+                      d={simplePath}
+                      stroke={conn.color}
+                      strokeWidth="2"
+                      fill="none"
+                      strokeDasharray="5,3"
+                      strokeOpacity="1"
+                    />
+                  </g>
+                );
+              }
               
               // Opaque path: from checkbox to the split point at module column boundary
               const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + splitY) / 2}, ${moduleColumnStart} ${splitY}`;
