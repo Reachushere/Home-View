@@ -2754,6 +2754,28 @@ export default function Dashboard() {
     return 0;
   };
   
+  // Check if a task with prep days has conflicts that require extending its height
+  // Returns the extra height needed to match the bottom of pushed-down tasks
+  const getPrepTaskHeightExtension = (taskId: number, hour: number, prepStartDayIdx: number, dueDayIdx: number) => {
+    // Check if any task exists in the prep extension's covered days at this hour
+    for (let dayIdx = prepStartDayIdx; dayIdx < dueDayIdx; dayIdx++) {
+      const day = weekDays[dayIdx];
+      
+      // Check multi-hour tasks in this day/hour
+      const multiHourTasks = getMultiHourTasksForWeek().filter(({ task: t, dayIdx: tDayIdx }) => {
+        if (t.id === taskId) return false;
+        if (tDayIdx !== dayIdx) return false;
+        const tHour = t.eventStartTime ? parseInt(t.eventStartTime.split(':')[0]) : 0;
+        return tHour === hour;
+      });
+      
+      if (multiHourTasks.length > 0) {
+        return 24; // Match the offset applied to pushed-down tasks
+      }
+    }
+    return 0;
+  };
+  
   // Check if a calendar event conflicts with any task
   const eventConflictsWithTask = (event: CalendarEvent) => {
     const eventStart = new Date(event.startDate);
@@ -6157,6 +6179,13 @@ export default function Dashboard() {
                   // Adjust topPx if covered by prep extension - push down by 24px (height of prep bar)
                   const adjustedTopPx = isCoveredByPrep ? topPx + 24 : topPx;
                   
+                  // For tasks with prep days, check if they need extra height to match pushed-down tasks
+                  const prepStartDayIdx = hasPrepDays && prepDaysCount > 0 ? Math.max(0, dayIdx - prepDaysCount) : dayIdx;
+                  const heightExtension = hasPrepDays && prepDaysCount > 0 
+                    ? getPrepTaskHeightExtension(task.id, taskHour, prepStartDayIdx, dayIdx) 
+                    : 0;
+                  const adjustedHeightPx = heightPx + heightExtension;
+                  
                   // Prep colors from course colors
                   const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
                   const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
@@ -6213,7 +6242,7 @@ export default function Dashboard() {
                         width: hasPrepDays && prepDaysCount > 0
                           ? `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 2px)`
                           : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
-                        height: `${heightPx}px`,
+                        height: `${adjustedHeightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25),
                         borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
                         borderBottomLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
