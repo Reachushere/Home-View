@@ -5279,7 +5279,7 @@ export default function Dashboard() {
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
             <DialogContent className="max-w-4xl text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px]" style={{ top: '55%' }}>
               <DialogHeader>
-                <DialogTitle className="text-white text-xs">Settings</DialogTitle>
+                <DialogTitle className="text-white text-base font-semibold">Settings</DialogTitle>
               </DialogHeader>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
