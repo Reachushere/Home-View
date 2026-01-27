@@ -6992,19 +6992,19 @@ export default function Dashboard() {
               
               return (
                 <g key={conn.taskId}>
-                  {/* Define gradient for this arrow - opaque until time column edge, then transparent */}
+                  {/* Define gradient for this arrow - transparent in time column, opaque after */}
                   <defs>
                     <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor={conn.color} stopOpacity="0.9" />
+                      <stop offset="0%" stopColor={conn.color} stopOpacity="0.25" />
+                      <stop offset={`${gradientStopPercent - 1}%`} stopColor={conn.color} stopOpacity="0.25" />
                       <stop offset={`${gradientStopPercent}%`} stopColor={conn.color} stopOpacity="0.9" />
-                      <stop offset={`${gradientStopPercent + 1}%`} stopColor={conn.color} stopOpacity="0.25" />
-                      <stop offset="100%" stopColor={conn.color} stopOpacity="0.25" />
+                      <stop offset="100%" stopColor={conn.color} stopOpacity="0.9" />
                     </linearGradient>
                     <linearGradient id={`${gradientId}-glow`} x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+                      <stop offset="0%" stopColor="white" stopOpacity="0.1" />
+                      <stop offset={`${gradientStopPercent - 1}%`} stopColor="white" stopOpacity="0.1" />
                       <stop offset={`${gradientStopPercent}%`} stopColor="white" stopOpacity="0.4" />
-                      <stop offset={`${gradientStopPercent + 1}%`} stopColor="white" stopOpacity="0.1" />
-                      <stop offset="100%" stopColor="white" stopOpacity="0.1" />
+                      <stop offset="100%" stopColor="white" stopOpacity="0.4" />
                     </linearGradient>
                   </defs>
                   {/* Glow effect */}
