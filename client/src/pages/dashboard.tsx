@@ -7192,10 +7192,6 @@ export default function Dashboard() {
                 ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
-              // For green: calculate opaque portion from start to containerBottom (stays on same curve)
-              // Use bezier math to find Y position at containerBottom
-              const greenOpaqueEndY = containerBottom;
-              
               return (
                 <g key={`transparent-${conn.taskId}`}>
                   <path
@@ -7208,17 +7204,6 @@ export default function Dashboard() {
                     markerEnd={isGreen ? undefined : `url(#${markerId})`}
                     markerStart={undefined}
                   />
-                  {/* Green opaque overlay - from arrowhead to containerBottom */}
-                  {isGreen && (
-                    <path
-                      d={`M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} L ${horizontalEnd.x} ${greenOpaqueEndY}`}
-                      stroke={conn.color}
-                      strokeWidth="2"
-                      fill="none"
-                      strokeDasharray="5,3"
-                      strokeOpacity="1"
-                    />
-                  )}
                   {/* Green arrowhead */}
                   {isGreen && (
                     <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
