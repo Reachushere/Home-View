@@ -58,6 +58,36 @@ Preferred communication style: Simple, everyday language.
   - First prep day: rounded-l corners with line extending right
   - Intermediate prep days: no rounding, lines on both sides
   - Due day: rounded-r corners with line extending from left
+
+### Arrow Specifications (PRESERVED FORMAT)
+All arrows connecting task boxes to calendar follow these exact specifications:
+
+**General Arrow Rules:**
+- All arrows exit 21px to the left from checkboxes
+- Dashed line pattern: strokeDasharray="5,3" (5px dash, 3px gap)
+- Stroke width: 2px
+
+**Pink/Indigo Arrows (This Week box → Calendar):**
+- Connect from This Week box tasks to their calendar positions
+- Two-layer rendering: transparent base (0.25 opacity) with opaque overlay for first portion
+- End at calendar task position
+
+**Green Arrows (Tomorrow box → Calendar):**
+- Connect from Tomorrow box tasks to their calendar positions
+- Two-layer rendering with opaque first ~30 dashes, transparent for rest
+- Stay visible when calendar scrolls (rendered in separate z-index layers)
+
+**Prep Arrows (Today box → Prep Extension text):**
+- Connect from Today box checkbox to "Prep days" text on prep extensions
+- Path: 21px straight left from checkbox, then curved down using quadratic bezier (`Q` command), then straight down to target
+- Full path formula: `M fromX fromY L exitX fromY Q exitX midY, toX midY L toX endY`
+- Arrowhead points DOWN, positioned 14px above the prep text center
+- Two-layer rendering:
+  - Layer 1: Transparent base (0.25 opacity) for full path with downward arrowhead
+  - Layer 2: Opaque overlay (1.0 opacity) for first 22 dashes using same path
+  - Opaque dasharray: `"5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,0,0,99999"`
+- Uses unique `data-today-checkbox` attribute on Today box checkboxes for precise targeting
+
 - **File Attachments**: Upload files directly to Replit object storage or paste URLs
 - **File Management**: Dedicated /files page for viewing, renaming, and assigning files to tasks
 - **Course Color Coding**: CPPA122 (green), CFNF400 (pink), CASL101 (indigo)
