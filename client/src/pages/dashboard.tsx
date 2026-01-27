@@ -2495,8 +2495,12 @@ export default function Dashboard() {
         // Find the checkbox within the task element
         const checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
         
-        // First check if there's a prep-today element for this task (task has prep day today)
-        const prepTodayEl = document.querySelector(`[data-prep-today-task-id="${task.id}"]`);
+        // Check if task is due today - if so, arrow should point to checkbox, not prep-today
+        const taskDueDate = task.dueDate ? new Date(task.dueDate) : null;
+        const isDueToday = taskDueDate && isSameDay(taskDueDate, new Date());
+        
+        // Only use prep-today element if task is NOT due today (it's in Today box for prep days only)
+        const prepTodayEl = !isDueToday ? document.querySelector(`[data-prep-today-task-id="${task.id}"]`) : null;
         
         // Find the corresponding task on the calendar - get the first visible one
         const calTaskEls = document.querySelectorAll(`[data-cal-task-id="${task.id}"]`);
