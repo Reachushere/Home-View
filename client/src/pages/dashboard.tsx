@@ -2680,13 +2680,13 @@ export default function Dashboard() {
       const prepDaysCount = Math.min(2, differenceInDays(dueDate, startDate));
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       
-      // Calculate top position (where the prep bar should be)
+      // Calculate top position (where the prep bar should be) - must match task topOffset exactly
       let topPx = 0;
       for (let h = 7; h < startHour; h++) {
         topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
       }
-      topPx += (startMin / 60) * (gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight);
-      topPx += 2; // Small offset for visual alignment
+      // Match the task's topOffset calculation exactly: (startMin / 60) * 44 + 2
+      topPx += (startMin / 60) * (gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight) + 2;
       
       // Calculate the starting day index for the prep extension
       const prepStartDayIdx = Math.max(0, dueDayIdx - prepDaysCount);
@@ -6231,8 +6231,9 @@ export default function Dashboard() {
                       style={{
                         top: `${topPx}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) + 4px)`,
-                        height: '20px',
+                        // Extend 8px into the task box to fully cover the left border
+                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) + 8px)`,
+                        height: '22px',
                         zIndex: 35
                       }}
                       data-testid={`prep-extension-${task.id}`}
