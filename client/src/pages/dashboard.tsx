@@ -3396,7 +3396,7 @@ export default function Dashboard() {
           })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-2 p-2 px-3 mx-6 mt-4 bg-[#c9a033] rounded-lg">
+          <div className="flex items-center gap-2 p-2 px-3 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
               <SelectTrigger className="w-[120px] h-7 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
@@ -3478,8 +3478,8 @@ export default function Dashboard() {
             <div className="flex items-center gap-1">
               <Button
                 size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-black hover:bg-black/20"
+                variant="outline"
+                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                 onClick={handleSkipBack}
                 data-testid="button-preview-rewind"
                 title="Rewind 20 words"
@@ -3488,61 +3488,61 @@ export default function Dashboard() {
               </Button>
               <Button
                 size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-black hover:bg-black/20"
+                variant="outline"
+                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                 onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
                 data-testid="button-preview-play"
               >
-                <Play className="h-4 w-4 fill-black" />
+                <Play className="h-4 w-4 fill-blue-400" />
               </Button>
               <Button
                 size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-black hover:bg-black/20"
+                variant="destructive"
+                className="h-7 w-7 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
                 onClick={handleStopMedia}
                 data-testid="button-preview-stop"
               >
-                <Square className="h-4 w-4 fill-black" />
+                <Square className="h-4 w-4 fill-white" />
               </Button>
               <Button
                 size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-black hover:bg-black/20"
+                variant="outline"
+                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                 onClick={handleSkipForward}
                 data-testid="button-preview-forward"
                 title="Skip forward 20 words"
               >
                 <SkipForward className="h-4 w-4" />
               </Button>
-              <div className="w-px h-5 bg-black/30 mx-0.5" />
+              <div className="w-px h-5 bg-white/30 mx-0.5" />
               {/* Volume Controls */}
               <Button
                 size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-black hover:bg-black/20"
+                variant="outline"
+                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                 onClick={() => handleVolumeChange("down")}
                 data-testid="button-preview-vol-down"
                 title="Volume Down"
               >
                 <Minus className="h-4 w-4" />
               </Button>
-              <Volume2 className="h-4 w-4 text-black" />
+              <Volume2 className="h-4 w-4 text-blue-400" />
               <Button
                 size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-black hover:bg-black/20"
+                variant="outline"
+                className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                 onClick={() => handleVolumeChange("up")}
                 data-testid="button-preview-vol-up"
                 title="Volume Up"
               >
                 <Plus className="h-4 w-4" />
               </Button>
-              <div className="w-px h-5 bg-black/30 mx-0.5" />
+              <div className="w-px h-5 bg-white/30 mx-0.5" />
               <Checkbox
                 id="sync-highlight"
                 checked={syncHighlight}
                 onCheckedChange={(checked) => setSyncHighlight(!!checked)}
-                className="h-3 w-3 border-gray-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                className="h-3 w-3 border-blue-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                 data-testid="checkbox-sync-highlight"
               />
               <Label htmlFor="sync-highlight" className="text-white text-[9px] cursor-pointer">
