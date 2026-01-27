@@ -2231,9 +2231,28 @@ export default function Dashboard() {
   tomorrow.setDate(tomorrow.getDate() + 1);
   
   // Due Today: all tasks due today (not prep tasks, actual due dates)
+  // Also include full-week MODULE tasks that span today (startDate <= today <= dueDate)
   const dueTodayTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
-    return t.dueDate && isSameDay(new Date(t.dueDate), today);
+    if (!t.dueDate) return false;
+    
+    // Check if task is due today
+    if (isSameDay(new Date(t.dueDate), today)) return true;
+    
+    // Check if this is a full-week MODULE task that spans today
+    // Full-week tasks have startDate and dueDate on different days (Sunday to Friday)
+    if (t.startDate) {
+      const taskStartDate = startOfDay(new Date(t.startDate));
+      const taskDueDate = startOfDay(new Date(t.dueDate));
+      const todayStart = startOfDay(today);
+      
+      // If today falls within the task's planning period, include it
+      if (taskStartDate <= todayStart && todayStart <= taskDueDate) {
+        return true;
+      }
+    }
+    
+    return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
   // Due Tomorrow: all tasks due tomorrow
@@ -5429,13 +5448,20 @@ export default function Dashboard() {
                         const taskDueDate = startOfDay(new Date(task.dueDate));
                         const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
                         const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
+                        
+                        // Get current day of week (0 = Sunday, 6 = Saturday)
+                        const currentDayOfWeek = today.getDay();
+                        // Wednesday is day 3 - start blinking from Wednesday onwards
+                        const isWednesdayOrLater = currentDayOfWeek >= 3 && currentDayOfWeek <= 5;
+                        const shouldBlink = !task.isCompleted && isWednesdayOrLater;
+                        
                         const baseStyle = task.isCompleted 
                           ? "bg-gray-200 text-gray-400 border border-gray-300" 
                           : course.colors 
                             ? `${course.colors.bg} text-black border ${course.colors.border}` 
                             : "bg-gray-200 text-black border border-gray-400";
                         
-                        // Render as a flex row: Course Label | Task spanning MODULE through Friday
+                        // Render as a flex row: Course Label | Empty past days | Task from today through Friday
                         return (
                           <div 
                             key={`fullweek-row-${task.id}`}
@@ -5450,7 +5476,7 @@ export default function Dashboard() {
                               {taskIdx === 0 ? course.name : ''}
                             </div>
                             
-                            {/* Full-week task spanning MODULE through Friday (or all days on Saturday) */}
+                            {/* Full-week task - dynamically starts from today's column */}
                             {isSaturdayToday ? (
                               // On Saturday: span MODULE + all 7 days
                               <div 
@@ -5475,52 +5501,106 @@ export default function Dashboard() {
                               </div>
                             ) : (
                               <>
-                                {/* MODULE column - task box with content (no right border) */}
-                                {(() => {
-                                  const moduleBg = task.isCompleted ? "bg-gray-200 text-gray-400" : course.colors ? `${course.colors.bg} text-black` : "bg-gray-200 text-black";
-                                  const moduleBorder = task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400";
-                                  return (
-                                    <div 
-                                      className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l m-0.5 mr-0 ${moduleBg} border-l border-t border-b ${moduleBorder} ${
-                                        isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                                      }`}
-                                      data-testid={`course-fullweek-task-module-${task.id}`}
-                                    >
-                                      <Checkbox
-                                        checked={task.isCompleted || false}
-                                        onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                        className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                        data-testid={`checkbox-fullweek-${task.id}`}
-                                      />
-                                      <span 
-                                        onClick={() => setEditingTask(task)}
-                                        className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                {/* MODULE column - empty if today is not Sunday (Sunday is day 0) */}
+                                {currentDayOfWeek === 0 ? (
+                                  // Today is Sunday - show task in MODULE column
+                                  (() => {
+                                    const moduleBg = task.isCompleted ? "bg-gray-200 text-gray-400" : course.colors ? `${course.colors.bg} text-black` : "bg-gray-200 text-black";
+                                    const moduleBorder = task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400";
+                                    return (
+                                      <div 
+                                        className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l m-0.5 mr-0 ${moduleBg} border-l border-t border-b ${moduleBorder} ${
+                                          shouldBlink ? "animate-blink" : ""
+                                        }`}
+                                        data-testid={`course-fullweek-task-module-${task.id}`}
                                       >
-                                        <span className="font-bold">{task.title}</span>
-                                      </span>
-                                    </div>
-                                  );
-                                })()}
+                                        <Checkbox
+                                          checked={task.isCompleted || false}
+                                          onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                          data-testid={`checkbox-fullweek-${task.id}`}
+                                        />
+                                        <span 
+                                          onClick={() => setEditingTask(task)}
+                                          className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                        >
+                                          <span className="font-bold">{task.title}</span>
+                                        </span>
+                                      </div>
+                                    );
+                                  })()
+                                ) : (
+                                  // Not Sunday - MODULE column is empty
+                                  <div style={{ backgroundColor: course.bg }} className="border-l border-border/50" />
+                                )}
                                 
-                                {/* Sun-Fri columns - continuation bars (6 columns: index 0-5) */}
+                                {/* Sun-Fri columns (6 columns: index 0-5) */}
                                 {weekDays.slice(0, 6).map((day, dayIdx) => {
+                                  const dayOfWeek = day.getDay(); // 0 = Sunday, 5 = Friday
+                                  const isBeforeToday = dayOfWeek < currentDayOfWeek;
+                                  const isTodayColumn = dayOfWeek === currentDayOfWeek;
+                                  const isFriday = dayOfWeek === 5;
+                                  
+                                  // If this day is before today, show empty cell
+                                  if (isBeforeToday) {
+                                    return (
+                                      <div 
+                                        key={dayIdx}
+                                        style={{ backgroundColor: course.bg }}
+                                      />
+                                    );
+                                  }
+                                  
                                   const bgOnly = task.isCompleted 
                                     ? "bg-gray-200" 
                                     : course.colors 
                                       ? course.colors.bg 
                                       : "bg-gray-200";
                                   const borderColor = task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400";
-                                  // Only Friday (index 5) gets a right border
-                                  const borderClass = dayIdx === 5 
-                                    ? `border-t border-b border-r ${borderColor}`
-                                    : `border-t border-b ${borderColor}`;
                                   
+                                  // Today's column gets left border, Friday gets right border
+                                  const borderClass = isTodayColumn && isFriday
+                                    ? `border ${borderColor} rounded`
+                                    : isTodayColumn
+                                      ? `border-l border-t border-b ${borderColor} rounded-l`
+                                      : isFriday
+                                        ? `border-t border-b border-r ${borderColor} rounded-r`
+                                        : `border-t border-b ${borderColor}`;
+                                  
+                                  // If today is the start, show the task content
+                                  if (isTodayColumn) {
+                                    const moduleBg = task.isCompleted ? "bg-gray-200 text-gray-400" : course.colors ? `${course.colors.bg} text-black` : "bg-gray-200 text-black";
+                                    return (
+                                      <div 
+                                        key={dayIdx}
+                                        className={`flex items-center gap-1 text-[8px] px-1 py-0.5 m-0.5 ${isFriday ? 'mr-0.5' : 'mr-0'} ${moduleBg} ${borderClass} ${
+                                          shouldBlink ? "animate-blink" : ""
+                                        }`}
+                                        data-testid={`course-fullweek-task-today-${task.id}`}
+                                      >
+                                        <Checkbox
+                                          checked={task.isCompleted || false}
+                                          onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                          data-testid={`checkbox-fullweek-${task.id}`}
+                                        />
+                                        <span 
+                                          onClick={() => setEditingTask(task)}
+                                          className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                        >
+                                          <span className="font-bold">{task.title}</span>
+                                        </span>
+                                      </div>
+                                    );
+                                  }
+                                  
+                                  // Continuation bar for days after today
                                   return (
                                     <div 
                                       key={dayIdx}
                                       className={`${bgOnly} ${borderClass} ${
-                                        isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                                      } ${dayIdx === 5 ? 'rounded-r mr-0.5' : ''}`}
+                                        shouldBlink ? "animate-blink" : ""
+                                      } ${isFriday ? 'mr-0.5' : ''}`}
                                       style={{ 
                                         margin: '2px 0',
                                       }}
@@ -6018,7 +6098,7 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                                 <div 
-                                  className={`text-[8px] mt-0.5 mb-3 ml-4 px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
+                                  className={`text-[9px] mt-0.5 mb-3 ml-4 px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
                                   style={{ animation: 'none' }}
                                 >
                                   {format(new Date(task.dueDate), "h:mm a")}
@@ -6138,7 +6218,7 @@ export default function Dashboard() {
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
                         <div 
-                          className="text-[7px] text-muted-foreground ml-3 px-0.5"
+                          className="text-[8px] text-muted-foreground ml-3 px-0.5"
                           style={{ animation: 'none' }}
                         >
                           {formatTimeTo12Hour(task.eventStartTime)} - {formatTimeTo12Hour(task.eventEndTime)}
