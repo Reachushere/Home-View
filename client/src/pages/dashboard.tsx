@@ -7184,6 +7184,7 @@ export default function Dashboard() {
               const greenCP1 = dragState.cp1 || defaultGreenCP1;
               const greenCP2 = dragState.cp2 || defaultGreenCP2;
               const greenEnd = dragState.end || defaultGreenEnd;
+              const arrowRotation = dragState.rotation || 0; // degrees
               const transparentPath = isGreen
                 ? `M ${greenStart.x} ${greenStart.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
@@ -7198,7 +7199,7 @@ export default function Dashboard() {
                     strokeDasharray="5,3"
                     strokeOpacity="0.25"
                     markerEnd={isGreen ? undefined : `url(#${markerId})`}
-                    markerStart={isGreen ? `url(#${markerId})` : undefined}
+                    markerStart={undefined}
                   />
                   {/* Draggable nodes for green arrows - show and adjust control points */}
                   {isGreen && (
@@ -7295,6 +7296,44 @@ export default function Dashboard() {
                       {/* Control lines showing bezier handles */}
                       <line x1={greenStart.x} y1={greenStart.y} x2={greenCP1.x} y2={greenCP1.y} stroke="rgba(255,255,0,0.5)" strokeWidth="1" strokeDasharray="3,3" style={{ pointerEvents: 'none' }} />
                       <line x1={greenEnd.x} y1={greenEnd.y} x2={greenCP2.x} y2={greenCP2.y} stroke="rgba(255,165,0,0.5)" strokeWidth="1" strokeDasharray="3,3" style={{ pointerEvents: 'none' }} />
+                      
+                      {/* Manual arrowhead with rotation control */}
+                      <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
+                        <polygon 
+                          points="-12,-6 0,0 -12,6" 
+                          fill="#22c55e" 
+                          stroke="black" 
+                          strokeWidth="1"
+                          style={{ pointerEvents: 'none' }}
+                        />
+                      </g>
+                      
+                      {/* Rotation control handle - drag to rotate arrowhead */}
+                      <circle 
+                        cx={greenStart.x + 25 * Math.cos((arrowRotation - 90) * Math.PI / 180)} 
+                        cy={greenStart.y + 25 * Math.sin((arrowRotation - 90) * Math.PI / 180)} 
+                        r="6" 
+                        fill="cyan" stroke="black" strokeWidth="2" 
+                        style={{ cursor: 'grab', pointerEvents: 'all' }}
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          const centerX = greenStart.x, centerY = greenStart.y;
+                          const onMove = (ev: MouseEvent) => {
+                            const dx = ev.clientX - centerX;
+                            const dy = ev.clientY - centerY;
+                            const angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+                            (window as any).__greenArrowDragState = {
+                              ...(window as any).__greenArrowDragState,
+                              rotation: angle
+                            };
+                            window.dispatchEvent(new Event('resize'));
+                          };
+                          const onUp = () => { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); };
+                          document.addEventListener('mousemove', onMove);
+                          document.addEventListener('mouseup', onUp);
+                        }}
+                      />
+                      <text x={greenStart.x + 30} y={greenStart.y - 15} fontSize="10" fill="cyan" fontWeight="bold">ROTATE ({Math.round(arrowRotation)}°)</text>
                     </>
                   )}
                 </g>
