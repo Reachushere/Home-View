@@ -6982,10 +6982,10 @@ export default function Dashboard() {
               // The full path from task checkbox to calendar (unchanged position)
               const fullPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               
-              // Calculate where opacity transition should happen (where module column starts)
-              const moduleColumnStart = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+              // Calculate where opacity transition should happen (in front of the time column)
+              const timeColumnStart = gridSizes.timeColumnWidth;
               // Calculate as percentage of viewport width for the gradient stop
-              const gradientStopPercent = (moduleColumnStart / window.innerWidth) * 100;
+              const gradientStopPercent = (timeColumnStart / window.innerWidth) * 100;
               
               // Unique gradient ID for this connection
               const gradientId = `arrowGradient-${conn.taskId}`;
