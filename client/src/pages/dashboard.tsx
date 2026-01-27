@@ -3613,24 +3613,30 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 px-2 text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-10 px-2 text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleRestartFromBeginning}
                   data-testid="button-preview-restart-beginning"
                   title="Restart from beginning"
                 >
                   <RotateCcw className="h-3 w-3 mr-1" />
-                  Restart Beginning
+                  <div className="flex flex-col leading-tight">
+                    <span>Restart</span>
+                    <span>Beginning</span>
+                  </div>
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 px-2 text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-10 px-2 text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleRestartCurrentChunk}
                   data-testid="button-preview-restart-current"
                   title="Restart current section"
                 >
                   <RefreshCw className="h-3 w-3 mr-1" />
-                  Current
+                  <div className="flex flex-col leading-tight">
+                    <span>Restart</span>
+                    <span>Current</span>
+                  </div>
                 </Button>
               </div>
               
