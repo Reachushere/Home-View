@@ -8109,13 +8109,41 @@ function TaskForm({
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      // For MODULE tasks, automatically set startDate to Sunday and dueDate to Friday of current week
+      let finalDueDate = new Date(data.dueDate);
+      let finalStartDate: Date | null = null;
+      
+      if (data.type === "module" && !task) {
+        // Get current date
+        const today = new Date();
+        const currentDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+        
+        // Calculate Sunday of the current week
+        const sunday = new Date(today);
+        sunday.setDate(today.getDate() - currentDayOfWeek);
+        sunday.setHours(0, 0, 0, 0);
+        
+        // Calculate Friday of the current week
+        const friday = new Date(sunday);
+        friday.setDate(sunday.getDate() + 5);
+        friday.setHours(18, 0, 0, 0); // 6 PM on Friday
+        
+        finalStartDate = sunday;
+        finalDueDate = friday;
+      } else if (data.prepDays > 0) {
+        // Calculate startDate from prepDays if set
+        const dueDate = new Date(data.dueDate);
+        finalStartDate = new Date(dueDate);
+        finalStartDate.setDate(finalStartDate.getDate() - data.prepDays);
+      }
+      
       // Build payload explicitly
       const payload: Record<string, unknown> = {
         title: data.title,
         description: data.description,
         type: data.type,
         courseName: data.courseName,
-        dueDate: new Date(data.dueDate).toISOString(),
+        dueDate: finalDueDate.toISOString(),
         eventStartTime: data.eventStartTime || null,
         eventEndTime: data.eventEndTime || null,
         reminder1: data.reminder1 || null,
@@ -8130,17 +8158,8 @@ function TaskForm({
         repeatInterval: data.repeatType === "custom" ? data.repeatInterval : null,
         repeatIntervalUnit: data.repeatType === "custom" ? data.repeatIntervalUnit : null,
         repeatEndDate: data.repeatEndDate ? new Date(data.repeatEndDate).toISOString() : null,
+        startDate: finalStartDate ? finalStartDate.toISOString() : null,
       };
-      // Calculate startDate from prepDays if set
-      if (data.prepDays > 0) {
-        const dueDate = new Date(data.dueDate);
-        const startDate = new Date(dueDate);
-        startDate.setDate(startDate.getDate() - data.prepDays);
-        payload.startDate = startDate.toISOString();
-      } else {
-        // Clear startDate if prepDays is 0
-        payload.startDate = null;
-      }
       if (task) {
         return apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
       }
