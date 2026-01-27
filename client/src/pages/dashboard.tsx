@@ -7147,11 +7147,12 @@ export default function Dashboard() {
               const isGreen = conn.color === "#22c55e";
               const midY = (containerBottom + conn.toY) / 2;
               
-              // For green arrows: go straight down through today column (exitX), then turn right to arrowhead
-              // Path ends 10px before arrowhead tip, with refX=0, so tip stays at conn.toX
+              // For green arrows: start at calendar task, curve down-left, vertical down, then horizontal right to task box
+              // Path ends 10px before arrowhead tip, with refX=0, so tip stays at conn.fromX
               // For other arrows: use cubic bezier curve
+              const greenExitX = conn.fromX - 21; // vertical line position for green arrow
               const transparentPath = isGreen
-                ? `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${conn.toY} L ${conn.toX - 10} ${conn.toY}`
+                ? `M ${conn.toX} ${conn.toY} C ${conn.toX} ${containerBottom}, ${greenExitX} ${conn.toY}, ${greenExitX} ${containerBottom} L ${greenExitX} ${conn.fromY} L ${conn.fromX - 10} ${conn.fromY}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
