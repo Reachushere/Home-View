@@ -7099,7 +7099,7 @@ export default function Dashboard() {
                 markerHeight="7"
                 refX="10"
                 refY="3.5"
-                orient="auto"
+                orient="auto-start-reverse"
               >
                 <polygon points="10 0, 0 3.5, 10 7" fill="#22c55e" fillOpacity="0.75" />
               </marker>
