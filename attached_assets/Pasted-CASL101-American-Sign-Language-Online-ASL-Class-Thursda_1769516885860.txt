@@ -1,0 +1,70 @@
+CASL101 - American Sign Language
+Online ASL Class
+Thursday Jan 29
+2
+CFNF400
+erwrwer
+Friday Jan 30
+3
+CFNF400
+erwrwer
+No tasks tomorrow
+To Do (0)
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+
+Task...
+© 2026
+Error: Uncaught ReferenceError: opaquePath is not defined
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx?t=1769516850350
+Line: 12107, Col: 26
+ReferenceError: opaquePath is not defined
+    at https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx?t=1769516850350:12107:26
+    at Array.map (<anonymous>)
+    at Dashboard (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx?t=1769516850350:12092:32)
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:11596:26)
+    at updateFunctionComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:14630:28)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:15972:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=51da775c:19818:15)Error: Uncaught ReferenceError: opaquePath is not defined
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/src/pages/dashboard.tsx?t=1769516850350
+Line: 12107, Col: 26
+ReferenceError: opaquePath is not defined
