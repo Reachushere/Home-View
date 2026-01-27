@@ -5347,7 +5347,7 @@ export default function Dashboard() {
                           />
                           <span 
                             onClick={() => setEditingTask(task)}
-                            className={`cursor-pointer hover:opacity-80 truncate flex-1 ${task.isCompleted ? "line-through" : ""}`}
+                            className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}
                           >
                             {task.title}
                           </span>
@@ -5365,7 +5365,7 @@ export default function Dashboard() {
                         data-testid={`all-day-gcal-${event.id}`}
                       >
                         <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                        <span className="truncate">{event.title}</span>
+                        <span className="truncate font-bold">{event.title}</span>
                       </a>
                     ))}
                   </div>
@@ -5396,19 +5396,6 @@ export default function Dashboard() {
                   // Check if task spans the full visible week (from Sunday to Friday)
                   const startsOnSunday = taskStartDateStr === weekStartStr;
                   const endsOnFriday = taskDueDateStr === weekFridayStr;
-                  
-                  // Debug logging
-                  if (task.id === 313) {
-                    console.log('Task 313 full-week check:', {
-                      taskStartDateStr,
-                      taskDueDateStr,
-                      weekStartStr,
-                      weekFridayStr,
-                      startsOnSunday,
-                      endsOnFriday,
-                      isFullWeek: startsOnSunday && endsOnFriday
-                    });
-                  }
                   
                   return startsOnSunday && endsOnFriday;
                 });
@@ -5799,7 +5786,7 @@ export default function Dashboard() {
                                 />
                                 <span 
                                   onClick={() => setEditingTask(task)}
-                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                  className={`cursor-pointer hover:opacity-80 truncate font-bold ${task.isCompleted ? "line-through" : ""}`}
                                 >
                                   {task.title}
                                 </span>
@@ -6015,7 +6002,7 @@ export default function Dashboard() {
                                   />
                                   <div 
                                     onClick={() => setEditingTask(task)}
-                                    className={`text-[8px] font-semibold truncate cursor-pointer flex-1 ${
+                                    className={`text-[8px] font-bold truncate cursor-pointer flex-1 ${
                                       task.isCompleted ? "text-gray-400 line-through" : "text-black"
                                     }`}
                                   >
@@ -6051,7 +6038,7 @@ export default function Dashboard() {
                             >
                               <div className="flex items-center gap-0.5">
                                 <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                                <div className="text-[8px] font-semibold truncate text-black">
+                                <div className="text-[8px] font-bold truncate text-black">
                                   {event.title}
                                 </div>
                               </div>
@@ -6136,7 +6123,7 @@ export default function Dashboard() {
                         />
                         <span 
                           onClick={() => setEditingTask(task)}
-                          className={`text-[9px] leading-tight font-medium line-clamp-2 cursor-pointer ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
+                          className={`text-[9px] leading-tight font-bold line-clamp-2 cursor-pointer ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
                         >
                           {task.title}
                         </span>
