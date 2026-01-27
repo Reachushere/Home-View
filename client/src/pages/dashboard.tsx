@@ -2555,18 +2555,18 @@ export default function Dashboard() {
           let toX: number;
           let toY: number;
           if (prepTodayEl) {
-            // For prep-today, point to left edge of the blinking element (not inside)
-            toX = targetRect.left;
+            // For prep-today, point to the CENTER of the blinking element (middle of the column)
+            toX = targetRect.left + targetRect.width / 2;
             toY = targetRect.top + targetRect.height / 2;
           } else {
-            // For calendar task, find the checkbox and point to it
+            // For calendar task, find the checkbox and point OUTSIDE it (to the left)
             const calCheckboxEl = targetEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
             if (calCheckboxEl) {
               const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-              toX = calCheckboxRect.left; // Point to checkbox left edge
+              toX = calCheckboxRect.left - 2; // Point just outside the checkbox (2px to the left)
               toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
             } else {
-              toX = targetRect.left; // Point to task box left edge
+              toX = targetRect.left - 2; // Point just outside the task box
               toY = targetRect.top + targetRect.height / 2;
             }
           }
