@@ -7192,24 +7192,27 @@ export default function Dashboard() {
                 ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
-              // For green: calculate opaque portion following the curve for first ~30 dashes
-              // t=0.35 gives roughly 30 dashes worth of the bezier curve
-              const opaqueT = 0.35;
-              const opaqueOneMinusT = 1 - opaqueT;
+              // For green: calculate opaque portion at the END of the curve (last ~30 dashes, near calendar task)
+              // t=0.65 is where the opaque portion starts (last 35% of curve)
+              const opaqueStartT = 0.65;
+              const opaqueOneMinusT = 1 - opaqueStartT;
               // Bezier point at t: B(t) = (1-t)³P0 + 3(1-t)²tP1 + 3(1-t)t²P2 + t³P3
-              const opaqueEndX = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.x + 
-                                3*opaqueOneMinusT*opaqueOneMinusT*opaqueT*greenCP1.x + 
-                                3*opaqueOneMinusT*opaqueT*opaqueT*greenCP2.x + 
-                                opaqueT*opaqueT*opaqueT*greenEnd.x;
-              const opaqueEndY = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.y + 
-                                3*opaqueOneMinusT*opaqueOneMinusT*opaqueT*greenCP1.y + 
-                                3*opaqueOneMinusT*opaqueT*opaqueT*greenCP2.y + 
-                                opaqueT*opaqueT*opaqueT*greenEnd.y;
-              // Split bezier control points using de Casteljau
-              const Q0 = { x: horizontalEnd.x + opaqueT*(greenCP1.x - horizontalEnd.x), y: horizontalEnd.y + opaqueT*(greenCP1.y - horizontalEnd.y) };
-              const Q1 = { x: greenCP1.x + opaqueT*(greenCP2.x - greenCP1.x), y: greenCP1.y + opaqueT*(greenCP2.y - greenCP1.y) };
-              const R0 = { x: Q0.x + opaqueT*(Q1.x - Q0.x), y: Q0.y + opaqueT*(Q1.y - Q0.y) };
-              const greenOpaquePath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${Q0.x} ${Q0.y}, ${R0.x} ${R0.y}, ${opaqueEndX} ${opaqueEndY}`;
+              const opaqueStartX = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.x + 
+                                3*opaqueOneMinusT*opaqueOneMinusT*opaqueStartT*greenCP1.x + 
+                                3*opaqueOneMinusT*opaqueStartT*opaqueStartT*greenCP2.x + 
+                                opaqueStartT*opaqueStartT*opaqueStartT*greenEnd.x;
+              const opaqueStartY = opaqueOneMinusT*opaqueOneMinusT*opaqueOneMinusT*horizontalEnd.y + 
+                                3*opaqueOneMinusT*opaqueOneMinusT*opaqueStartT*greenCP1.y + 
+                                3*opaqueOneMinusT*opaqueStartT*opaqueStartT*greenCP2.y + 
+                                opaqueStartT*opaqueStartT*opaqueStartT*greenEnd.y;
+              // Split bezier control points using de Casteljau for second segment [t, 1]
+              const Q0 = { x: horizontalEnd.x + opaqueStartT*(greenCP1.x - horizontalEnd.x), y: horizontalEnd.y + opaqueStartT*(greenCP1.y - horizontalEnd.y) };
+              const Q1 = { x: greenCP1.x + opaqueStartT*(greenCP2.x - greenCP1.x), y: greenCP1.y + opaqueStartT*(greenCP2.y - greenCP1.y) };
+              const Q2 = { x: greenCP2.x + opaqueStartT*(greenEnd.x - greenCP2.x), y: greenCP2.y + opaqueStartT*(greenEnd.y - greenCP2.y) };
+              const R0 = { x: Q0.x + opaqueStartT*(Q1.x - Q0.x), y: Q0.y + opaqueStartT*(Q1.y - Q0.y) };
+              const R1 = { x: Q1.x + opaqueStartT*(Q2.x - Q1.x), y: Q1.y + opaqueStartT*(Q2.y - Q1.y) };
+              // New control points for second segment: opaqueStart, R0->R1 direction, Q2, greenEnd
+              const greenOpaquePath = `M ${opaqueStartX} ${opaqueStartY} C ${R1.x} ${R1.y}, ${Q2.x} ${Q2.y}, ${greenEnd.x} ${greenEnd.y}`;
               
               return (
                 <g key={`transparent-${conn.taskId}`}>
