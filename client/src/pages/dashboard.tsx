@@ -5502,18 +5502,29 @@ export default function Dashboard() {
                                 </div>
                                 
                                 {/* Sun-Fri columns - continuation bars (6 columns: index 0-5) */}
-                                {weekDays.slice(0, 6).map((day, dayIdx) => (
-                                  <div 
-                                    key={dayIdx}
-                                    className={`${baseStyle} ${
-                                      isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                                    } ${dayIdx === 5 ? 'rounded-r mr-0.5' : ''}`}
-                                    style={{ 
-                                      margin: '2px 0',
-                                      marginLeft: dayIdx === 0 ? '0' : '0',
-                                    }}
-                                  />
-                                ))}
+                                {weekDays.slice(0, 6).map((day, dayIdx) => {
+                                  // Only apply border on the rightmost cell (Friday at index 5)
+                                  const bgOnly = task.isCompleted 
+                                    ? "bg-gray-200" 
+                                    : course.colors 
+                                      ? course.colors.bg 
+                                      : "bg-gray-200";
+                                  const borderClass = dayIdx === 5 
+                                    ? (task.isCompleted ? "border border-gray-300" : course.colors ? `border ${course.colors.border}` : "border border-gray-400")
+                                    : "border-y " + (task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400");
+                                  
+                                  return (
+                                    <div 
+                                      key={dayIdx}
+                                      className={`${bgOnly} ${borderClass} ${
+                                        isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                                      } ${dayIdx === 5 ? 'rounded-r mr-0.5' : ''}`}
+                                      style={{ 
+                                        margin: '2px 0',
+                                      }}
+                                    />
+                                  );
+                                })}
                                 
                                 {/* Saturday column - empty with course background */}
                                 <div style={{ backgroundColor: course.bg }} />
