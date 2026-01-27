@@ -561,7 +561,9 @@ export default function Dashboard() {
     e.stopPropagation();
     const startWidth = columnIndex === -1 
       ? gridSizes.timeColumnWidth 
-      : gridSizes.dayColumnWidths[columnIndex];
+      : columnIndex === -2
+        ? gridSizes.moduleColumnWidth
+        : gridSizes.dayColumnWidths[columnIndex];
     setColumnResizing({
       isResizing: true,
       columnIndex,
@@ -600,8 +602,12 @@ export default function Dashboard() {
         const delta = e.clientX - columnResizing.startX;
         if (columnResizing.columnIndex === -1) {
           // Resizing time column
-          const newWidth = Math.max(50, Math.min(150, columnResizing.startWidth + delta));
+          const newWidth = Math.max(115, Math.min(200, columnResizing.startWidth + delta));
           setGridSizes(prev => ({ ...prev, timeColumnWidth: newWidth }));
+        } else if (columnResizing.columnIndex === -2) {
+          // Resizing module column
+          const newWidth = Math.max(50, Math.min(150, columnResizing.startWidth + delta));
+          setGridSizes(prev => ({ ...prev, moduleColumnWidth: newWidth }));
         } else {
           // Resizing day column - adjust flex proportion
           const newWidths = [...gridSizes.dayColumnWidths];
@@ -5338,9 +5344,21 @@ export default function Dashboard() {
             <div data-calendar-grid="true" className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
+                {/* Time column resize handle */}
+                <div
+                  className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize z-50 hover:bg-white/20"
+                  onMouseDown={(e) => handleColumnResizeStart(e, -1)}
+                  data-testid="time-column-resize-handle"
+                />
               </div>
               <div className="flex items-center justify-center relative border-l border-border" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">MODULE</span>
+                {/* Module column resize handle */}
+                <div
+                  className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize z-50 hover:bg-white/20"
+                  onMouseDown={(e) => handleColumnResizeStart(e, -2)}
+                  data-testid="module-column-resize-handle"
+                />
               </div>
               {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
