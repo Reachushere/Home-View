@@ -3484,14 +3484,14 @@ export default function Dashboard() {
           })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-2 p-2 px-3 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex items-center gap-1.5 p-1.5 px-2 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
-              <SelectTrigger className="w-[120px] h-7 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
+              <SelectTrigger className="w-[100px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
               </SelectTrigger>
               <SelectContent className="max-h-[300px]">
                 {SPEAKERS.map(speaker => (
-                  <SelectItem key={speaker.id} value={speaker.id} className="text-xs">
+                  <SelectItem key={speaker.id} value={speaker.id} className="text-[9px]">
                     {speaker.name}
                   </SelectItem>
                 ))}
@@ -3502,12 +3502,12 @@ export default function Dashboard() {
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
               <>
                 <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                  <SelectTrigger className="w-[140px] h-7 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
+                  <SelectTrigger className="w-[110px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
                     <SelectValue placeholder="Select Voice" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
                     {availableVoices.map(voice => (
-                      <SelectItem key={voice.name} value={voice.name} className="text-xs">
+                      <SelectItem key={voice.name} value={voice.name} className="text-[9px]">
                         {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
                       </SelectItem>
                     ))}
@@ -3516,7 +3516,7 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-7 w-7 text-white hover:bg-gray-700"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
                   onClick={() => {
                     if (!window.speechSynthesis) return;
                     window.speechSynthesis.cancel();
@@ -3529,96 +3529,96 @@ export default function Dashboard() {
                   data-testid="button-preview-voice"
                   title="Preview voice"
                 >
-                  <Volume2 className="h-3 w-3" />
+                  <Volume2 className="h-2.5 w-2.5" />
                 </Button>
               </>
             )}
             
             {/* Speed control - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && (
-              <div className="flex items-center gap-1 bg-gray-800 rounded px-2 py-1">
-                <Gauge className="h-3 w-3 text-gray-400" />
-                <span className="text-[9px] text-gray-400 mr-1">Speed</span>
+              <div className="flex items-center gap-0.5 bg-gray-800 rounded px-1.5 py-0.5">
+                <Gauge className="h-2.5 w-2.5 text-gray-400" />
+                <span className="text-[8px] text-gray-400 mr-0.5">Speed</span>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  className="h-4 w-4 text-white hover:bg-gray-700"
                   onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
                   title="Slow down"
                   data-testid="button-speed-down"
                 >
-                  <MinusCircle className="h-3 w-3" />
+                  <MinusCircle className="h-2.5 w-2.5" />
                 </Button>
-                <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
+                <span className="text-[8px] text-white font-medium w-6 text-center">{Math.round(browserTtsRate * 100)}%</span>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  className="h-4 w-4 text-white hover:bg-gray-700"
                   onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
                   title="Speed up"
                   data-testid="button-speed-up"
                 >
-                  <PlusCircle className="h-3 w-3" />
+                  <PlusCircle className="h-2.5 w-2.5" />
                 </Button>
               </div>
             )}
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {/* Playback Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Button
                   size="icon"
                   variant="outline"
-                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-5 w-5 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleSkipBack}
                   data-testid="button-preview-rewind"
                   title="Rewind 20 words"
                 >
-                  <SkipBack className="h-4 w-4" />
+                  <SkipBack className="h-3 w-3" />
                 </Button>
                 <Button
                   size="icon"
                   variant="outline"
-                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-5 w-5 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
                   data-testid="button-preview-play"
                 >
-                  <Play className="h-4 w-4 fill-blue-400" />
+                  <Play className="h-3 w-3 fill-blue-400" />
                 </Button>
                 <Button
                   size="icon"
                   variant="destructive"
-                  className="h-7 w-7 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
+                  className="h-5 w-5 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
                   onClick={handleStopMedia}
                   data-testid="button-preview-stop"
                 >
-                  <Square className="h-4 w-4 fill-white" />
+                  <Square className="h-3 w-3 fill-white" />
                 </Button>
                 <Button
                   size="icon"
                   variant="outline"
-                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-5 w-5 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleSkipForward}
                   data-testid="button-preview-forward"
                   title="Skip forward 20 words"
                 >
-                  <SkipForward className="h-4 w-4" />
+                  <SkipForward className="h-3 w-3" />
                 </Button>
               </div>
               
-              <div className="w-px h-5 bg-white/30" />
+              <div className="w-px h-4 bg-white/30" />
               
               {/* Restart Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-10 px-2 text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-7 px-1.5 text-[8px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleRestartFromBeginning}
                   data-testid="button-preview-restart-beginning"
                   title="Restart from beginning"
                 >
-                  <RotateCcw className="h-3 w-3 mr-1" />
+                  <RotateCcw className="h-2.5 w-2.5 mr-0.5" />
                   <div className="flex flex-col leading-tight">
                     <span>Restart</span>
                     <span>Beginning</span>
@@ -3627,12 +3627,12 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-10 px-2 text-[10px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-7 px-1.5 text-[8px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleRestartCurrentChunk}
                   data-testid="button-preview-restart-current"
                   title="Restart current section"
                 >
-                  <RefreshCw className="h-3 w-3 mr-1" />
+                  <RefreshCw className="h-2.5 w-2.5 mr-0.5" />
                   <div className="flex flex-col leading-tight">
                     <span>Restart</span>
                     <span>Current</span>
@@ -3640,25 +3640,25 @@ export default function Dashboard() {
                 </Button>
               </div>
               
-              <div className="w-px h-5 bg-white/30" />
+              <div className="w-px h-4 bg-white/30" />
               
               {/* Volume Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Button
                   size="icon"
                   variant="outline"
-                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-5 w-5 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={() => handleVolumeChange("down")}
                   data-testid="button-preview-vol-down"
                   title="Volume Down"
                 >
-                  <Minus className="h-4 w-4" />
+                  <Minus className="h-3 w-3" />
                 </Button>
-                <Volume2 className="h-4 w-4 text-blue-400" />
+                <Volume2 className="h-3 w-3 text-blue-400" />
                 <Button
                   size="icon"
                   variant="outline"
-                  className="h-7 w-7 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-5 w-5 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={() => handleVolumeChange("up")}
                   data-testid="button-preview-vol-up"
                   title="Volume Up"
