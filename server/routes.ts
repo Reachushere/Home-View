@@ -2432,16 +2432,33 @@ export async function registerRoutes(
       const externalEvents = allEvents.filter(event => event.id && !syncedEventIds.has(event.id));
       
       // Transform to a simpler format
-      const formattedEvents = externalEvents.map(event => ({
-        id: event.id,
-        title: event.summary || 'Untitled Event',
-        description: event.description || '',
-        startDate: event.start?.dateTime || event.start?.date,
-        endDate: event.end?.dateTime || event.end?.date,
-        isAllDay: !event.start?.dateTime,
-        htmlLink: event.htmlLink,
-        source: 'google',
-      }));
+      // For all-day events, Google returns just a date (e.g., "2026-01-28")
+      // This gets parsed as midnight UTC, which shifts to previous day in some timezones
+      // We append T12:00:00 (noon) to keep the date stable across timezones
+      const formattedEvents = externalEvents.map(event => {
+        const isAllDay = !event.start?.dateTime;
+        let startDate = event.start?.dateTime || event.start?.date;
+        let endDate = event.end?.dateTime || event.end?.date;
+        
+        // Fix all-day event dates by adding noon time to prevent timezone shift
+        if (isAllDay && startDate && !startDate.includes('T')) {
+          startDate = `${startDate}T12:00:00`;
+        }
+        if (isAllDay && endDate && !endDate.includes('T')) {
+          endDate = `${endDate}T12:00:00`;
+        }
+        
+        return {
+          id: event.id,
+          title: event.summary || 'Untitled Event',
+          description: event.description || '',
+          startDate,
+          endDate,
+          isAllDay,
+          htmlLink: event.htmlLink,
+          source: 'google',
+        };
+      });
       
       // Now filter to only show events that conflict with tasks in this app
       // Get tasks for this week
