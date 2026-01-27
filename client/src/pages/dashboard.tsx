@@ -7167,8 +7167,10 @@ export default function Dashboard() {
               
               // conn.fromX = Tomorrow box checkbox, conn.toX = Calendar task checkbox
               // Green arrow: arrowhead MUST ALWAYS be at CALENDAR (conn.toX) - NEVER EVER at Tomorrow box (conn.fromX)
+              // Control points for curve - CP2 at same Y as Tomorrow checkbox for horizontal entry
+              const greenExitPoint = { x: conn.fromX - 21, y: conn.fromY }; // 21px left of Tomorrow checkbox (same as This Week)
               const defaultGreenCP1 = { x: conn.toX - 40, y: containerBottom }; // control point 1 near calendar
-              const defaultGreenCP2 = { x: conn.fromX - 40, y: containerBottom }; // control point 2 near tomorrow
+              const defaultGreenCP2 = { x: greenExitPoint.x, y: containerBottom }; // control point 2 directly above exit point
               const defaultGreenEnd = { x: conn.fromX, y: conn.fromY }; // Tomorrow box checkbox (line ends here)
               
               // ABSOLUTE RULE: greenStart (arrowhead) is ALWAYS at CALENDAR task checkbox (conn.toX, conn.toY)
@@ -7184,10 +7186,9 @@ export default function Dashboard() {
               // Green path: starts 10px left of arrowhead tip (left side of arrow), goes 7px left, then curves
               const arrowLeftSide = { x: greenStart.x - 10, y: greenStart.y };
               const horizontalEnd = { x: greenStart.x - 17, y: greenStart.y }; // 7px left of arrow left side
-              // For green: horizontal exit from Tomorrow box checkbox (21px left, like This Week box)
-              const greenExitX = greenEnd.x - 21;
+              // Green path: from arrowhead, curves down, then horizontal 21px into Tomorrow checkbox (like This Week box)
               const transparentPath = isGreen
-                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitX} ${greenEnd.y} L ${greenEnd.x} ${greenEnd.y}`
+                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               // For green: calculate opaque portion at END of curve (near Tomorrow box checkbox)
