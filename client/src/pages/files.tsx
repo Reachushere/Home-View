@@ -38,7 +38,11 @@ import {
   ChevronRight,
   ChevronDown,
   Plus,
-  FolderPlus
+  FolderPlus,
+  SkipBack,
+  SkipForward,
+  RotateCcw,
+  Minus
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { FileRecord } from "@shared/schema";
@@ -547,6 +551,36 @@ export default function FilesPage() {
     }
   };
 
+  const handleRestart = async (fileId: number, fileUrl: string, fileName: string) => {
+    const speaker = getSpeakerForFile(fileId);
+    try {
+      // First clear the session/stop
+      await fetch("/api/media/restart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mediaUrl: fileUrl, entityId: speaker }),
+      });
+      // Then start playback from beginning
+      await handlePlayFile(fileId, fileUrl, fileName);
+    } catch (error) {
+      console.error("Restart error:", error);
+      toast({ title: "Failed to restart", variant: "destructive" });
+    }
+  };
+
+  const handleSkipChunk = async (fileId: number, direction: "forward" | "backward") => {
+    const speaker = getSpeakerForFile(fileId);
+    try {
+      await fetch("/api/media/skip-chunk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ direction, entityId: speaker }),
+      });
+    } catch (error) {
+      console.error("Skip chunk error:", error);
+    }
+  };
+
   const handleRename = () => {
     if (editingFile && newName.trim()) {
       renameMutation.mutate({ id: editingFile.id, displayName: newName.trim() });
@@ -817,30 +851,53 @@ export default function FilesPage() {
           </Select>
         </div>
 
-        <div className="flex items-center w-[calc(100%+16px)] bg-black dark:bg-black rounded-b-[6px] -ml-2 -mr-2 -mb-2 px-2 py-1 mt-1">
-          <div className="flex items-center gap-[26px]">
+        <div className="flex flex-col w-[calc(100%+16px)] bg-[#c9a033] dark:bg-[#c9a033] rounded-b-[6px] -ml-2 -mr-2 -mb-2 px-3 py-2 mt-1 gap-2">
+          {/* Main playback controls - larger */}
+          <div className="flex items-center justify-center gap-4">
+            <SkipBack 
+              className="h-5 w-5 text-black cursor-pointer hover:opacity-70" 
+              onClick={(e) => { e.stopPropagation(); handleSkipChunk(file.id, "backward"); }}
+              data-testid={`button-skip-back-${file.id}`}
+            />
             <Play 
-              className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
+              className="h-6 w-6 fill-black text-black cursor-pointer hover:opacity-70" 
               onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
               data-testid={`button-play-${file.id}`}
             />
             <Square 
-              className="h-3 w-3 fill-white text-white cursor-pointer hover:opacity-70" 
+              className="h-5 w-5 fill-black text-black cursor-pointer hover:opacity-70" 
               onClick={() => handleStop(file.id)}
               data-testid={`button-stop-${file.id}`}
             />
-            <VolumeX 
-              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
+            <SkipForward 
+              className="h-5 w-5 text-black cursor-pointer hover:opacity-70" 
+              onClick={(e) => { e.stopPropagation(); handleSkipChunk(file.id, "forward"); }}
+              data-testid={`button-skip-forward-${file.id}`}
+            />
+            <RotateCcw 
+              className="h-5 w-5 text-black cursor-pointer hover:opacity-70" 
+              onClick={() => handleRestart(file.id, file.objectPath, file.displayName)}
+              data-testid={`button-restart-${file.id}`}
+            />
+          </div>
+          {/* Volume controls */}
+          <div className="flex items-center justify-center gap-3">
+            <Minus 
+              className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
               onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "down"); }}
               data-testid={`button-vol-down-${file.id}`}
             />
-            <Volume2 
-              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
+            <Volume2 className="h-4 w-4 text-black" />
+            <Plus 
+              className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
               onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "up"); }}
               data-testid={`button-vol-up-${file.id}`}
             />
+          </div>
+          {/* Action buttons */}
+          <div className="flex items-center justify-center gap-4">
             <Edit2 
-              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
+              className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
               onClick={() => {
                 setEditingFile(file);
                 setNewName(file.displayName);
@@ -848,7 +905,7 @@ export default function FilesPage() {
               data-testid={`button-rename-${file.id}`}
             />
             <Link2 
-              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
+              className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
               onClick={() => {
                 setAssigningFile(file);
                 setSelectedTaskId("");
@@ -856,7 +913,7 @@ export default function FilesPage() {
               data-testid={`button-assign-${file.id}`}
             />
             <Trash2 
-              className="h-3 w-3 text-white cursor-pointer hover:opacity-70" 
+              className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
               onClick={() => {
                 if (confirm("Are you sure you want to delete this file?")) {
                   deleteMutation.mutate(file.id);

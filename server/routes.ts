@@ -1806,7 +1806,7 @@ export async function registerRoutes(
 
       const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
       
-      // Cancel auto-continuation timer and calculate position
+      // Cancel auto-continuation timer and clear session completely
       if (currentTTSSession) {
         // Clear the auto timer
         if (currentTTSSession.autoTimer) {
@@ -1814,6 +1814,7 @@ export async function registerRoutes(
           currentTTSSession.autoTimer = null;
         }
         
+        // Calculate position before clearing
         if (currentTTSSession.isPlaying) {
           const elapsedSeconds = (Date.now() - currentTTSSession.startTime) / 1000;
           const charsRead = Math.floor(elapsedSeconds * CHARS_PER_SECOND);
@@ -1821,27 +1822,16 @@ export async function registerRoutes(
             currentTTSSession.currentPosition + charsRead,
             currentTTSSession.fullText.length
           );
-          currentTTSSession.isPlaying = false;
           console.log(`TTS stopped at position ${currentTTSSession.currentPosition} of ${currentTTSSession.fullText.length}`);
         }
+        
+        // Mark as stopped
+        currentTTSSession.isPlaying = false;
+        // Clear the session entirely to prevent further chunks
+        currentTTSSession = null;
       }
       
-      // Mute volume to silence ongoing TTS (most reliable method)
-      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          entity_id: targetEntity,
-          volume_level: 0
-        }),
-      });
-      
-      console.log("Muted speaker to stop TTS");
-      
-      // Try media_player/media_stop as well
+      // Send stop command to the media player
       await fetch(`${haUrl}/api/services/media_player/media_stop`, {
         method: 'POST',
         headers: {
@@ -1853,25 +1843,30 @@ export async function registerRoutes(
         }),
       });
       
-      // Restore volume after TTS would have finished (use longer delay)
-      // This gives the current announcement time to complete while muted
-      setTimeout(async () => {
-        await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+      console.log("Stopped media player");
+      
+      // Also try the Alexa-specific stop command
+      try {
+        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            entity_id: targetEntity,
-            volume_level: 0.5
+            message: "stop",
+            target: targetEntity,
+            data: {
+              type: "tts"
+            }
           }),
         });
-        console.log("Restored volume after mute");
-      }, 60000); // 60 seconds - long enough for any chunk to finish
+      } catch (e) {
+        // Alexa media command may not be available
+        console.log("Alexa media stop command not available");
+      }
 
-      const canResume = currentTTSSession && currentTTSSession.currentPosition < currentTTSSession.fullText.length;
-      res.json({ success: true, canResume });
+      res.json({ success: true, canResume: false });
     } catch (error) {
       console.error("Stop error:", error);
       res.status(500).json({ error: "Failed to stop media" });
@@ -1964,6 +1959,107 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Resume error:", error);
       res.status(500).json({ error: "Failed to resume" });
+    }
+  });
+
+  // POST /api/media/restart - Restart TTS from beginning
+  app.post("/api/media/restart", async (req, res) => {
+    try {
+      const { mediaUrl, entityId } = req.body;
+      const targetEntity = entityId || BATHROOM_ECHO_ENTITY;
+      
+      if (!mediaUrl) {
+        return res.status(400).json({ error: "Media URL is required" });
+      }
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Clear any existing session
+      if (currentTTSSession) {
+        if (currentTTSSession.autoTimer) {
+          clearTimeout(currentTTSSession.autoTimer);
+        }
+        currentTTSSession = null;
+      }
+      
+      // Restore volume in case it was muted
+      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: targetEntity,
+          volume_level: 0.5
+        }),
+      });
+
+      // Re-trigger play from the beginning by calling the play endpoint logic
+      // This is a simplified restart - just call the play endpoint
+      res.json({ success: true, message: "Use play endpoint to restart" });
+    } catch (error) {
+      console.error("Restart error:", error);
+      res.status(500).json({ error: "Failed to restart" });
+    }
+  });
+
+  // POST /api/media/skip-chunk - Skip to next or previous chunk in TTS
+  app.post("/api/media/skip-chunk", async (req, res) => {
+    try {
+      const { direction, entityId } = req.body; // "forward" or "backward"
+      const targetEntity = entityId || currentTTSSession?.targetEntity || BATHROOM_ECHO_ENTITY;
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      if (!currentTTSSession) {
+        return res.status(400).json({ error: "No active TTS session" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Clear the auto timer
+      if (currentTTSSession.autoTimer) {
+        clearTimeout(currentTTSSession.autoTimer);
+        currentTTSSession.autoTimer = null;
+      }
+      
+      // Calculate new position based on direction
+      if (direction === "forward") {
+        // Skip forward by one chunk
+        currentTTSSession.currentPosition = Math.min(
+          currentTTSSession.currentPosition + CHUNK_SIZE,
+          currentTTSSession.fullText.length
+        );
+      } else {
+        // Skip backward by one chunk
+        currentTTSSession.currentPosition = Math.max(
+          currentTTSSession.currentPosition - CHUNK_SIZE,
+          0
+        );
+      }
+      
+      console.log(`Skipping ${direction} to position ${currentTTSSession.currentPosition}`);
+      
+      // If we have more content, send the next chunk immediately
+      if (currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
+        currentTTSSession.isPlaying = true;
+        currentTTSSession.startTime = Date.now();
+        sendNextChunk();
+        res.json({ success: true, position: currentTTSSession.currentPosition });
+      } else {
+        currentTTSSession.isPlaying = false;
+        res.json({ success: true, message: "Reached end of document" });
+      }
+    } catch (error) {
+      console.error("Skip chunk error:", error);
+      res.status(500).json({ error: "Failed to skip chunk" });
     }
   });
 
