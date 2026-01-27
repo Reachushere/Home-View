@@ -5261,7 +5261,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar flex flex-col relative z-20" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-3 mt-[5px] relative flex gap-4" style={{ height: calendarHeight, order: 2 }}>
@@ -5285,7 +5285,7 @@ export default function Dashboard() {
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
-            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden" onClick={() => setSelectedTaskId(null)}>
+            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
@@ -6053,7 +6053,7 @@ export default function Dashboard() {
                                   left: `calc(${taskIdx * columnWidth}% + 2px)`,
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
-                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 10)
+                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 20)
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -6881,11 +6881,11 @@ export default function Dashboard() {
           © 2026
         </div>
 
-        {/* Arrow Connections SVG Overlay - positioned below all calendar content */}
+        {/* Arrow Connections SVG Overlay - positioned below calendar tasks */}
         {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 1 }}
+            style={{ width: '100vw', height: '100vh', zIndex: 15 }}
           >
             <defs>
               <marker
