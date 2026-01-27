@@ -7147,10 +7147,6 @@ export default function Dashboard() {
               const isGreen = conn.color === "#22c55e";
               const midY = (containerBottom + conn.toY) / 2;
               
-              // For green arrows: start at calendar task, curve down-left, vertical down, then horizontal right to task box
-              // Path ends 10px before arrowhead tip, with refX=0, so tip stays at conn.fromX
-              // For other arrows: use cubic bezier curve
-              const greenExitX = conn.fromX - 21; // vertical line position for green arrow
               // For green arrows: calculate where opaque line ends (at moduleColumnStart, splitY)
               const calendarContainer = document.querySelector('[data-calendar-grid="true"]');
               const calendarLeft = calendarContainer ? calendarContainer.getBoundingClientRect().left : 24;
@@ -7192,10 +7188,10 @@ export default function Dashboard() {
               // Green path: starts 10px left of arrowhead tip (left side of arrow), goes 7px left, then curves
               const arrowLeftSide = { x: greenStart.x - 10, y: greenStart.y };
               const horizontalEnd = { x: greenStart.x - 17, y: greenStart.y }; // 7px left of arrow left side
-              // For green: add horizontal exit from Tomorrow box checkbox (like This Week box), then curve
-              const greenExitPoint = { x: greenEnd.x - 21, y: greenEnd.y }; // 21px left of checkbox (same as This Week)
+              // For green: horizontal exit from Tomorrow box checkbox (21px left, like This Week box)
+              const greenExitX = greenEnd.x - 21;
               const transparentPath = isGreen
-                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`
+                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitX} ${greenEnd.y} L ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               // For green: calculate opaque portion at END of curve (near Tomorrow box checkbox)
