@@ -2641,8 +2641,50 @@ export default function Dashboard() {
       // Calculate the starting day index for the prep extension
       const prepStartDayIdx = Math.max(0, dueDayIdx - prepDaysCount);
       
-      return { task: t, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx };
+      return { task: t, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx, hour: startHour };
     });
+  };
+  
+  // Check if a task is covered by a prep extension from another task
+  const isTaskCoveredByPrepExtension = (day: Date, hour: number, taskId: number) => {
+    const prepExtensions = getPrepExtensionsForWeek();
+    const dayIdx = weekDays.findIndex(d => isSameDay(d, day));
+    
+    for (const ext of prepExtensions) {
+      // Don't check against itself
+      if (ext.task.id === taskId) continue;
+      
+      // Check if this day is within the prep extension range (not including due date)
+      if (dayIdx >= ext.prepStartDayIdx && dayIdx < ext.dueDayIdx) {
+        // Check if the hour matches
+        if (hour === ext.hour) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+  
+  // Check if a time slot hour has any prep conflicts that require extra height
+  const getTimeSlotPrepConflictHeight = (hour: number) => {
+    const prepExtensions = getPrepExtensionsForWeek();
+    
+    for (const ext of prepExtensions) {
+      if (ext.hour !== hour) continue;
+      
+      // Check if any task exists in the prep extension's covered days at this hour
+      for (let dayIdx = ext.prepStartDayIdx; dayIdx < ext.dueDayIdx; dayIdx++) {
+        const day = weekDays[dayIdx];
+        const tasksInSlot = getTasksForHour(day, hour);
+        
+        // Check if any of these tasks would conflict (not the prep task itself)
+        const hasConflict = tasksInSlot.some(t => t.id !== ext.task.id);
+        if (hasConflict) {
+          return 24; // Extra height to accommodate pushed-down task
+        }
+      }
+    }
+    return 0;
   };
   
   // Check if a calendar event conflicts with any task
@@ -5807,11 +5849,13 @@ export default function Dashboard() {
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
+                  const prepConflictHeight = getTimeSlotPrepConflictHeight(hour);
+                  const rowHeight = (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight) + prepConflictHeight;
                   return (
                   <div 
                     key={hour} 
                     className="grid border-b border-border/50 overflow-visible relative group/row"
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight}px` }}
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px` }}
                   >
                     <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
@@ -5879,16 +5923,18 @@ export default function Dashboard() {
                               ? Math.max(0, Math.min(2, differenceInDays(new Date(task.dueDate), new Date(task.startDate))))
                               : 0;
                             
-                            // Prep colors from course colors
-                            const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
-                            const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
-                            
-                            // Calculate day column width for prep extension
-                            const dayColWidth = `calc((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px - 40px) / 7)`;
+                            // Check if this task is covered by a prep extension from another task
+                            const isCoveredByPrep = isTaskCoveredByPrepExtension(day, hour, task.id);
                             
                             // Calculate height based on duration for events with start/end times
                             let taskHeight = hasPrepDays && prepDaysCount > 0 ? 36 : 40; // Slightly smaller for prep tasks
                             let topOffset = 2; // Default top offset
+                            
+                            // If covered by prep extension, push task down below it
+                            if (isCoveredByPrep) {
+                              topOffset += 20; // Push down by prep extension height
+                            }
+                            
                             if (task.eventStartTime && task.eventEndTime) {
                               const [startHour, startMin] = task.eventStartTime.split(':').map(Number);
                               const [endHour, endMin] = task.eventEndTime.split(':').map(Number);
@@ -5899,8 +5945,8 @@ export default function Dashboard() {
                               taskHeight = hasPrepDays && prepDaysCount > 0 
                                 ? Math.max(36, (durationMinutes / 60) * 44 - 8)
                                 : Math.max(40, (durationMinutes / 60) * 44 - 4);
-                              // Offset for minutes past the hour
-                              topOffset = (startMin / 60) * 44;
+                              // Offset for minutes past the hour, plus prep offset if covered
+                              topOffset = (startMin / 60) * 44 + (isCoveredByPrep ? 20 : 0);
                             }
                             
                             return (
