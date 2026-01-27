@@ -76,6 +76,7 @@ import {
   CheckSquare,
   Undo2,
   Radio,
+  Minus,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -3395,7 +3396,7 @@ export default function Dashboard() {
           })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-2 p-2 px-3 mx-6 mt-4 bg-black rounded-lg">
+          <div className="flex items-center gap-2 p-2 px-3 mx-6 mt-4 bg-[#c9a033] rounded-lg">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
               <SelectTrigger className="w-[120px] h-7 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
@@ -3478,42 +3479,65 @@ export default function Dashboard() {
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-white hover:bg-gray-700"
+                className="h-7 w-7 text-black hover:bg-black/20"
                 onClick={handleSkipBack}
                 data-testid="button-preview-rewind"
                 title="Rewind 20 words"
               >
-                <SkipBack className="h-3 w-3" />
+                <SkipBack className="h-4 w-4" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-white hover:bg-gray-700"
+                className="h-7 w-7 text-black hover:bg-black/20"
                 onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
                 data-testid="button-preview-play"
               >
-                <Play className="h-3 w-3 fill-white" />
+                <Play className="h-4 w-4 fill-black" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-white hover:bg-gray-700"
+                className="h-7 w-7 text-black hover:bg-black/20"
                 onClick={handleStopMedia}
                 data-testid="button-preview-stop"
               >
-                <Square className="h-3 w-3 fill-white" />
+                <Square className="h-4 w-4 fill-black" />
               </Button>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-7 w-7 text-white hover:bg-gray-700"
+                className="h-7 w-7 text-black hover:bg-black/20"
                 onClick={handleSkipForward}
                 data-testid="button-preview-forward"
                 title="Skip forward 20 words"
               >
-                <SkipForward className="h-3 w-3" />
+                <SkipForward className="h-4 w-4" />
               </Button>
-              <div className="w-px h-5 bg-gray-600 mx-0.5" />
+              <div className="w-px h-5 bg-black/30 mx-0.5" />
+              {/* Volume Controls */}
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-7 w-7 text-black hover:bg-black/20"
+                onClick={() => handleVolumeChange("down")}
+                data-testid="button-preview-vol-down"
+                title="Volume Down"
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Volume2 className="h-4 w-4 text-black" />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-7 w-7 text-black hover:bg-black/20"
+                onClick={() => handleVolumeChange("up")}
+                data-testid="button-preview-vol-up"
+                title="Volume Up"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <div className="w-px h-5 bg-black/30 mx-0.5" />
               <Checkbox
                 id="sync-highlight"
                 checked={syncHighlight}
