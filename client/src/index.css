@@ -206,6 +206,22 @@
   animation: slow-blink 60s ease-in-out infinite;
 }
 
+/* Week folder blinking animation - more noticeable pulse */
+@keyframes week-folder-blink {
+  0%, 100% { 
+    opacity: 1;
+    background-color: transparent;
+  }
+  50% { 
+    opacity: 0.6;
+    background-color: rgba(239, 68, 68, 0.3);
+  }
+}
+
+.animate-week-blink {
+  animation: week-folder-blink 2s ease-in-out infinite;
+}
+
 /* File name blinking animation - prominent dark green to light with white text throughout */
 @keyframes file-blink {
   0%, 100% { 
