@@ -2158,20 +2158,12 @@ export default function Dashboard() {
       const courseInfo = coursesData.courses.find((c) => c.name === courseName);
       const fullCourseName = courseInfo?.name || courseName;
       
-      // Calculate the start and end of the school week
-      const today = new Date();
-      const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
-      const isSaturday = todayDayOfWeek === 6;
-      
-      // When Saturday: weekDays = [Sat, Sun, Mon, Tue, Wed, Thu, Fri] - Friday is index 6
-      // When not Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - Friday is index 5
-      const fridayIndex = isSaturday ? 6 : 5;
-      
-      // Start from Sunday when not Saturday, otherwise Saturday
-      const weekStartDay = new Date(isSaturday ? weekDays[0] : weekDays[0]);
+      // weekDays structure is always: [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
+      // Sunday is index 0, Friday is index 5
+      const weekStartDay = new Date(weekDays[0]); // Sunday
       weekStartDay.setHours(0, 0, 0, 0);
       
-      const weekEndDay = new Date(weekDays[fridayIndex]); // Friday
+      const weekEndDay = new Date(weekDays[5]); // Friday is always index 5
       weekEndDay.setHours(23, 59, 59, 0);
       
       // Update the task's courseName, startDate to beginning and dueDate to Friday
@@ -5392,24 +5384,20 @@ export default function Dashboard() {
                 const fullWeekTasks = weekPlanningTasks.filter(task => {
                   if (!task.startDate || !task.courseName?.startsWith(course.name)) return false;
                   
-                  const taskDueDate = startOfDay(new Date(task.dueDate));
-                  const taskStartDate = startOfDay(new Date(task.startDate));
+                  // Use format to compare dates consistently (avoiding timezone issues)
+                  const taskStartDateStr = format(new Date(task.startDate), 'yyyy-MM-dd');
+                  const taskDueDateStr = format(new Date(task.dueDate), 'yyyy-MM-dd');
                   
-                  // Determine the visible start day and Friday based on current day
-                  const today = new Date();
-                  const todayDayOfWeek = today.getDay();
-                  const isSaturday = todayDayOfWeek === 6;
+                  // weekDays structure is always: [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
+                  // Sunday is index 0, Friday is index 5
+                  const weekStartStr = format(weekDays[0], 'yyyy-MM-dd');
+                  const weekFridayStr = format(weekDays[5], 'yyyy-MM-dd');
                   
-                  // When Saturday: weekDays = [Sat, Sun, Mon, Tue, Wed, Thu, Fri] - Friday is index 6
-                  // When not Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - Friday is index 5
-                  const fridayIndex = isSaturday ? 6 : 5;
-                  const weekEnd = startOfDay(weekDays[fridayIndex]); // Friday
+                  // Check if task spans the full visible week (from Sunday to Friday)
+                  const startsOnSunday = taskStartDateStr === weekStartStr;
+                  const endsOnFriday = taskDueDateStr === weekFridayStr;
                   
-                  const visibleWeekStart = startOfDay(isSaturday ? weekDays[0] : weekDays[0]); // Sunday when not Saturday
-                  
-                  // Check if task spans the full visible week (from visible start to Friday)
-                  const spansFullWeek = isSameDay(taskStartDate, visibleWeekStart) && isSameDay(taskDueDate, weekEnd);
-                  return spansFullWeek;
+                  return startsOnSunday && endsOnFriday;
                 });
                 
                 // Calculate position for full-week tasks
