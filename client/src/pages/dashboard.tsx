@@ -6532,10 +6532,19 @@ export default function Dashboard() {
           const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false) => {
             const attachments = parseAttachments(task.attachments);
             const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+            
+            // Check if this is a module task (has startDate spanning multiple days)
+            // and if it's Wednesday or later (should blink)
+            const today = new Date();
+            const currentDayOfWeek = today.getDay();
+            const isWednesdayOrLater = currentDayOfWeek >= 3 && currentDayOfWeek <= 5;
+            const isModuleTask = task.startDate && task.startDate !== task.dueDate;
+            const shouldBlinkInTodayBox = isModuleTask && isWednesdayOrLater && !task.isCompleted;
+            
             return (
               <div 
                 key={task.id} 
-                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''}`} 
+                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${shouldBlinkInTodayBox ? 'animate-blink' : ''}`} 
                 data-box-task-id={task.id} 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
@@ -6927,12 +6936,14 @@ export default function Dashboard() {
                   <defs>
                     <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
                       <stop offset="0%" stopColor={conn.color} stopOpacity="1" />
-                      <stop offset="60%" stopColor={conn.color} stopOpacity="1" />
+                      <stop offset="85%" stopColor={conn.color} stopOpacity="1" />
+                      <stop offset="86%" stopColor={conn.color} stopOpacity="0.25" />
                       <stop offset="100%" stopColor={conn.color} stopOpacity="0.25" />
                     </linearGradient>
                     <linearGradient id={glowGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="white" stopOpacity="0.5" />
-                      <stop offset="60%" stopColor="white" stopOpacity="0.5" />
+                      <stop offset="0%" stopColor="white" stopOpacity="0.6" />
+                      <stop offset="85%" stopColor="white" stopOpacity="0.6" />
+                      <stop offset="86%" stopColor="white" stopOpacity="0.15" />
                       <stop offset="100%" stopColor="white" stopOpacity="0.15" />
                     </linearGradient>
                   </defs>
