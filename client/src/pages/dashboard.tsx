@@ -6344,10 +6344,10 @@ export default function Dashboard() {
                       }}
                       data-testid={`prep-extension-${task.id}`}
                     >
-                      {/* Blinking overlay for today column portion */}
+                      {/* Blinking overlay for today column portion - uses task background color */}
                       {isTodayInPrepRange && (
                         <div
-                          className="absolute inset-y-0 animate-pulse-slow"
+                          className={`absolute inset-y-0 animate-pulse-task ${colors ? colors.bg.split(' ')[0] : 'bg-gray-100'}`}
                           style={{
                             left: `calc(${todayOffsetInPrep} * (100% / ${prepDaysCount}))`,
                             width: `calc(100% / ${prepDaysCount})`,

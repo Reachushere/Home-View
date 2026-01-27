@@ -411,6 +411,20 @@
   animation: pulse-slow 1.5s ease-in-out infinite;
 }
 
+/* Task color pulse animation - pulses opacity on the task's background color */
+@keyframes pulse-task {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-pulse-task {
+  animation: pulse-task 1.5s ease-in-out infinite;
+}
+
 .working-indicator .circle:nth-child(1) { animation-delay: 0s; }
 .working-indicator .circle:nth-child(2) { animation-delay: 0.1s; }
 .working-indicator .circle:nth-child(3) { animation-delay: 0.2s; }
