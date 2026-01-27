@@ -2551,8 +2551,8 @@ export default function Dashboard() {
           const prepDaysLabel = document.querySelector('span[style*="writing-mode"]');
           if (color === "#22c55e" && prepDaysLabel) {
             const prepRect = prepDaysLabel.getBoundingClientRect();
-            toX = prepRect.left + prepRect.width / 2; // Center below Prep
-            toY = prepRect.bottom + 20; // 20px below the label
+            toX = prepRect.left; // Left edge of Prep
+            toY = prepRect.bottom + 5; // Just below the label
           } else if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
             toX = calCheckboxRect.left - 2; // 2px to the left of the checkbox
