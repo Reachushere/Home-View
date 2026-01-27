@@ -6273,6 +6273,16 @@ export default function Dashboard() {
                           {formatTimeTo12Hour(task.eventStartTime)} - {formatTimeTo12Hour(task.eventEndTime)}
                         </div>
                       )}
+                      {/* Left border segment for tasks with prep days - from below prep bar to bottom */}
+                      {hasPrepDays && prepDaysCount > 0 && (
+                        <div 
+                          className={`absolute left-0 bottom-0 w-px ${colors ? colors.border.replace('border-', 'bg-') : 'bg-gray-400'}`}
+                          style={{
+                            height: `calc(100% - 20px)`,
+                            borderBottomLeftRadius: '4px'
+                          }}
+                        />
+                      )}
                     </div>
                   );
                 })}
@@ -6292,7 +6302,7 @@ export default function Dashboard() {
                   return (
                     <div
                       key={`prep-ext-${task.id}`}
-                      className={`absolute ${prepBgClass} border-l border-t border-b ${mainBorderClass} rounded-tl flex items-center justify-center pointer-events-none`}
+                      className={`absolute ${prepBgClass} border-l border-t border-b ${mainBorderClass} rounded-tl rounded-bl flex items-center justify-center pointer-events-none`}
                       style={{
                         // Align exactly with task top (remove the +2 offset that was added in topPx calculation)
                         top: `${topPx - 2}px`,
