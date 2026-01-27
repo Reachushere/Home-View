@@ -2542,20 +2542,17 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Always point to the calendar task checkbox (arrow pointing right)
+          // Always point to the calendar task checkbox (arrow pointing right, 2px away)
           let toX: number;
           let toY: number;
           const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
           
-          // Green arrows offset 40px left for testing, others at normal position
-          const offset = color === "#22c55e" ? 42 : 2;
-          
           if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calCheckboxRect.left - offset;
+            toX = calCheckboxRect.left - 2;
             toY = calCheckboxRect.top + calCheckboxRect.height / 2;
           } else {
-            toX = calRect.left - offset;
+            toX = calRect.left - 2;
             toY = calRect.top + calRect.height / 2;
           }
           
@@ -7100,11 +7097,11 @@ export default function Dashboard() {
                 id="arrowhead-green"
                 markerWidth="10"
                 markerHeight="7"
-                refX="0"
+                refX="10"
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="10 0, 0 3.5, 10 7" fill="#22c55e" fillOpacity="0.75" />
+                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" fillOpacity="0.75" />
               </marker>
               <marker
                 id="arrowhead-pink"
