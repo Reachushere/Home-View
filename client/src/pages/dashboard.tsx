@@ -6098,7 +6098,7 @@ export default function Dashboard() {
                                   </div>
                                 </div>
                                 <div 
-                                  className={`text-[9px] font-medium mt-0.5 mb-3 ml-4 px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
+                                  className={`text-[9px] font-semibold mt-0.5 mb-3 ml-4 px-0.5 ${task.isCompleted ? "text-gray-400" : "text-muted-foreground"}`}
                                   style={{ animation: 'none' }}
                                 >
                                   {format(new Date(task.dueDate), "h:mm a")}
@@ -6218,7 +6218,7 @@ export default function Dashboard() {
                       </div>
                       {task.eventStartTime && task.eventEndTime && (
                         <div 
-                          className="text-[8px] font-medium text-muted-foreground ml-3 px-0.5"
+                          className="text-[8px] font-semibold text-muted-foreground ml-3 px-0.5"
                           style={{ animation: 'none' }}
                         >
                           {formatTimeTo12Hour(task.eventStartTime)} - {formatTimeTo12Hour(task.eventEndTime)}
