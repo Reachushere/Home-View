@@ -7143,7 +7143,9 @@ export default function Dashboard() {
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
               // Transparent path curves from below the task boxes up to the calendar task checkbox
-              const transparentPath = `M ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
+              // Use cubic bezier to ensure arrowhead points horizontally (right)
+              const midY = (containerBottom + conn.toY) / 2;
+              const transparentPath = `M ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
                 <g key={`transparent-${conn.taskId}`}>
