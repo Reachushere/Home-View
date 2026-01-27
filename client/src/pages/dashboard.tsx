@@ -6935,18 +6935,18 @@ export default function Dashboard() {
               const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               return (
                 <g key={conn.taskId}>
-                  {/* Gradient definitions for this arrow */}
+                  {/* Gradient definitions for this arrow - opaque until calendar box, then 75% transparent */}
                   <defs>
                     <linearGradient id={gradientId} x1="0%" y1="0%" x2="0%" y2="100%">
                       <stop offset="0%" stopColor={conn.color} stopOpacity="1" />
-                      <stop offset="85%" stopColor={conn.color} stopOpacity="1" />
-                      <stop offset="86%" stopColor={conn.color} stopOpacity="0.25" />
+                      <stop offset="94%" stopColor={conn.color} stopOpacity="1" />
+                      <stop offset="95%" stopColor={conn.color} stopOpacity="0.25" />
                       <stop offset="100%" stopColor={conn.color} stopOpacity="0.25" />
                     </linearGradient>
                     <linearGradient id={glowGradientId} x1="0%" y1="0%" x2="0%" y2="100%">
                       <stop offset="0%" stopColor="white" stopOpacity="0.6" />
-                      <stop offset="85%" stopColor="white" stopOpacity="0.6" />
-                      <stop offset="86%" stopColor="white" stopOpacity="0.15" />
+                      <stop offset="94%" stopColor="white" stopOpacity="0.6" />
+                      <stop offset="95%" stopColor="white" stopOpacity="0.15" />
                       <stop offset="100%" stopColor="white" stopOpacity="0.15" />
                     </linearGradient>
                   </defs>
