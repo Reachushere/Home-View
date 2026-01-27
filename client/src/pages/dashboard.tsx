@@ -7024,7 +7024,7 @@ export default function Dashboard() {
                     strokeWidth="4"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="0.4"
+                    strokeOpacity="1"
                   />
                   <path
                     d={opaquePath}
@@ -7032,7 +7032,7 @@ export default function Dashboard() {
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="0.9"
+                    strokeOpacity="1"
                   />
                 </g>
               );
