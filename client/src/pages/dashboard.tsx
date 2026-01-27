@@ -7151,8 +7151,13 @@ export default function Dashboard() {
               // Path ends 10px before arrowhead tip, with refX=0, so tip stays at conn.fromX
               // For other arrows: use cubic bezier curve
               const greenExitX = conn.fromX - 21; // vertical line position for green arrow
+              // Calculate module column boundary for green arrow connection
+              const calendarContainer = document.querySelector('[data-calendar-grid="true"]');
+              const calendarLeft = calendarContainer ? calendarContainer.getBoundingClientRect().left : 24;
+              const moduleColumnStart = calendarLeft + gridSizes.timeColumnWidth;
+              
               const transparentPath = isGreen
-                ? `M ${conn.toX - 25} ${conn.toY} L ${conn.toX - 40} ${conn.toY} L ${conn.fromX + 24} ${conn.fromY}`
+                ? `M ${conn.toX - 25} ${conn.toY} L ${conn.toX - 40} ${conn.toY} L ${moduleColumnStart} ${conn.toY}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
