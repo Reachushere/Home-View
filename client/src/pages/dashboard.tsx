@@ -3619,7 +3619,7 @@ export default function Dashboard() {
                   title="Restart from beginning"
                 >
                   <RotateCcw className="h-3 w-3 mr-1" />
-                  Start
+                  Restart Beginning
                 </Button>
                 <Button
                   size="sm"
