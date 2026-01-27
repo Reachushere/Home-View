@@ -2542,23 +2542,17 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Always point to the calendar task checkbox (arrow pointing right, 2px away from checkbox)
+          // Always point to the calendar task checkbox (arrow pointing right)
           let toX: number;
           let toY: number;
           const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
           
-          // TEST: For green arrows, point to below "Prep days" label
-          const prepDaysLabel = document.querySelector('span[style*="writing-mode"]');
-          if (color === "#22c55e" && prepDaysLabel) {
-            const prepRect = prepDaysLabel.getBoundingClientRect();
-            toX = prepRect.left - 40; // 40px left of Prep
-            toY = prepRect.bottom + 5; // Just below the label
-          } else if (calCheckboxEl) {
+          if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calCheckboxRect.left - 2; // 2px to the left of the checkbox
-            toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
+            toX = calCheckboxRect.left - 42; // 40px to the left for testing
+            toY = calCheckboxRect.top + calCheckboxRect.height / 2;
           } else {
-            toX = calRect.left - 2; // 2px to the left of the task box
+            toX = calRect.left - 42; // 40px to the left for testing
             toY = calRect.top + calRect.height / 2;
           }
           
