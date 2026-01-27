@@ -5579,40 +5579,39 @@ export default function Dashboard() {
                               // If today is the start, show the task content
                               if (isTodayColumn) {
                                 return (
-                                  <div 
-                                    key={dayIdx}
-                                    className={`flex items-center gap-1 text-[8px] px-1 py-0.5 m-0.5 ${isFriday ? 'mr-0.5' : 'mr-0'} ${moduleBg} ${borderClass} ${
-                                      shouldBlink ? "animate-blink" : ""
-                                    }`}
-                                    data-testid={`course-fullweek-task-today-${task.id}`}
-                                  >
-                                    <Checkbox
-                                      checked={task.isCompleted || false}
-                                      onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                      className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                      data-testid={`checkbox-fullweek-${task.id}`}
-                                    />
-                                    <span 
-                                      onClick={() => setEditingTask(task)}
-                                      className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                  <div key={dayIdx} style={{ backgroundColor: course.bg }}>
+                                    <div 
+                                      className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 ${moduleBg} ${borderClass} ${
+                                        shouldBlink ? "animate-blink" : ""
+                                      }`}
+                                      data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
-                                      <span className="font-bold">{task.title}</span>
-                                    </span>
+                                      <Checkbox
+                                        checked={task.isCompleted || false}
+                                        onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                        className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                        data-testid={`checkbox-fullweek-${task.id}`}
+                                      />
+                                      <span 
+                                        onClick={() => setEditingTask(task)}
+                                        className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                      >
+                                        <span className="font-bold">{task.title}</span>
+                                      </span>
+                                    </div>
                                   </div>
                                 );
                               }
                               
                               // Continuation bar for days after today
                               return (
-                                <div 
-                                  key={dayIdx}
-                                  className={`${bgOnly} ${borderClass} ${
-                                    shouldBlink ? "animate-blink" : ""
-                                  } ${isFriday ? 'mr-0.5' : ''}`}
-                                  style={{ 
-                                    margin: '2px 0',
-                                  }}
-                                />
+                                <div key={dayIdx} style={{ backgroundColor: course.bg }}>
+                                  <div 
+                                    className={`${bgOnly} ${borderClass} ${
+                                      shouldBlink ? "animate-blink" : ""
+                                    } m-0.5 h-[calc(100%-4px)]`}
+                                  />
+                                </div>
                               );
                             })}
                             
