@@ -7208,7 +7208,7 @@ export default function Dashboard() {
                   {isGreen && (
                     <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
                       <polygon 
-                        points="0,-7 14,0 0,7" 
+                        points="-6,-7 14,0 -6,7" 
                         fill="#22c55e" 
                         fillOpacity="0.75"
                         style={{ pointerEvents: 'none' }}
