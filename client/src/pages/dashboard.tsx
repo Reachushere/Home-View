@@ -6033,16 +6033,10 @@ export default function Dashboard() {
                                     : "rounded overflow-hidden"
                                 } ${
                                   task.isCompleted 
-                                    ? hasPrepDays && prepDaysCount > 0
-                                      ? "bg-gray-200 border-r border-t border-b border-gray-300"
-                                      : "bg-gray-200 border border-gray-300" 
+                                    ? "bg-gray-200 border border-gray-300" 
                                     : colors 
-                                      ? hasPrepDays && prepDaysCount > 0
-                                        ? `${colors.bg} border-r border-t border-b ${colors.border}`
-                                        : `${colors.bg} border ${colors.border}` 
-                                      : hasPrepDays && prepDaysCount > 0
-                                        ? "bg-gray-200 border-r border-t border-b border-gray-400"
-                                        : "bg-gray-200 border border-gray-400"
+                                      ? `${colors.bg} border ${colors.border}` 
+                                      : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -6050,8 +6044,7 @@ export default function Dashboard() {
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 20),
-                                  borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
-                                  borderBottomLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
+                                  borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -6179,16 +6172,10 @@ export default function Dashboard() {
                           : "rounded overflow-hidden"
                       } ${
                         task.isCompleted 
-                          ? hasPrepDays && prepDaysCount > 0
-                            ? "bg-gray-200 border-r border-t border-b border-gray-300"
-                            : "bg-gray-200 border border-gray-300" 
+                          ? "bg-gray-200 border border-gray-300" 
                           : colors 
-                            ? hasPrepDays && prepDaysCount > 0
-                              ? `${colors.bg} border-r border-t border-b ${colors.border}`
-                              : `${colors.bg} border ${colors.border}` 
-                            : hasPrepDays && prepDaysCount > 0
-                              ? "bg-gray-200 border-r border-t border-b border-gray-400"
-                              : "bg-gray-200 border border-gray-400"
+                            ? `${colors.bg} border ${colors.border}` 
+                            : "bg-gray-200 border border-gray-400"
                       }`}
                       style={{
                         top: `${topPx}px`,
@@ -6196,8 +6183,7 @@ export default function Dashboard() {
                         width: `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${heightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25),
-                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
-                        borderBottomLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
+                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
@@ -6234,7 +6220,6 @@ export default function Dashboard() {
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                   const colors = courseColors[courseCode];
                   const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
-                  const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
                   
                   // Get the darker border color from the main task colors for the prep extension border
                   const mainBorderClass = colors ? colors.border : 'border-gray-400';
@@ -6246,7 +6231,7 @@ export default function Dashboard() {
                       style={{
                         top: `${topPx}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 2px)`,
+                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) + 1px)`,
                         height: '18px',
                         zIndex: 30
                       }}
