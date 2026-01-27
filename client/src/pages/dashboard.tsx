@@ -7178,16 +7178,24 @@ export default function Dashboard() {
               
               // Check for dragged positions in window state
               const dragState = (window as any).__greenArrowDragState || {};
-              const greenStart = dragState.start || defaultGreenStart;
+              let greenStart = dragState.start || defaultGreenStart;
               const greenCP1 = dragState.cp1 || defaultGreenCP1;
               const greenCP2 = dragState.cp2 || defaultGreenCP2;
               const greenEnd = dragState.end || defaultGreenEnd;
               const arrowRotation = dragState.rotation || 0; // degrees
+              
+              // CONDITION: Arrowhead (greenStart) must NEVER be at Tomorrow box - always force to calendar
+              // If greenStart is near Tomorrow box position (conn.toX), reset to calendar position
+              if (Math.abs(greenStart.x - conn.toX) < 100) {
+                greenStart = defaultGreenStart; // Force back to calendar position
+              }
               // Green path: starts 10px left of arrowhead tip (left side of arrow), goes 7px left, then curves
               const arrowLeftSide = { x: greenStart.x - 10, y: greenStart.y };
               const horizontalEnd = { x: greenStart.x - 17, y: greenStart.y }; // 7px left of arrow left side
+              // For green: add horizontal exit from Tomorrow box checkbox (like This Week box), then curve
+              const greenExitPoint = { x: greenEnd.x - 21, y: greenEnd.y }; // 21px left of checkbox (same as This Week)
               const transparentPath = isGreen
-                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
+                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               // For green: calculate opaque portion at END of curve (near Tomorrow box checkbox)
