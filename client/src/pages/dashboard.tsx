@@ -3466,7 +3466,7 @@ export default function Dashboard() {
 
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
-        <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0 overflow-hidden border-[0.1px] border-white bg-gradient-to-br from-gray-800 via-gray-900 to-black">
+        <DialogContent className="max-w-6xl max-h-[90vh] flex flex-col p-0 overflow-hidden border-[0.1px] border-white/30 bg-gray-800/95 backdrop-blur-sm">
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
             const folderParts = previewFile?.folder?.split('-') || [];
@@ -3484,7 +3484,7 @@ export default function Dashboard() {
           })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-2 p-2 px-3 mx-6 mt-4 bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex items-center gap-2 p-2 px-3 mx-6 mt-4 bg-gray-800/95 backdrop-blur-sm border border-white/30 rounded-lg">
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
               <SelectTrigger className="w-[120px] h-7 text-xs bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
@@ -3996,7 +3996,7 @@ export default function Dashboard() {
                 <Radio className="h-[14px] w-[14px] text-white" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
+            <DialogContent className="max-w-[260px] text-[10px] bg-gray-800/95 backdrop-blur-sm border border-white/30 text-white [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-white text-xs">
                   <Radio className="h-4 w-4" />
