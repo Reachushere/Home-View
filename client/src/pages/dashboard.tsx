@@ -7577,6 +7577,32 @@ export default function Dashboard() {
                 `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve down and towards target
                 `L ${conn.toX} ${endY}`; // Straight down to target
               
+              // Find the date cell header row bottom to determine where opaque ends
+              const dateCellRow = document.querySelector('[data-calendar-grid="true"]');
+              let dateCellBottom = conn.fromY + 150; // Default fallback
+              if (dateCellRow) {
+                const gridRect = dateCellRow.getBoundingClientRect();
+                // Date cells are at the top of the calendar grid, estimate bottom at ~60px from grid top
+                dateCellBottom = gridRect.top + 60;
+              }
+              
+              // Calculate approximate path length to date cell bottom
+              // Path: 21px left + curve down to midY + straight to endY
+              // The opaque portion should end at dateCellBottom
+              const straightLeftLength = 21;
+              const verticalToCellBottom = Math.max(0, dateCellBottom - conn.fromY);
+              const opaquePathLength = straightLeftLength + verticalToCellBottom;
+              
+              // Each dash cycle is 8px (5px dash + 3px gap), calculate number of dashes
+              const numOpaqueDashes = Math.floor(opaquePathLength / 8);
+              
+              // Build dynamic dasharray for opaque portion
+              let opaqueDasharray = "";
+              for (let i = 0; i < numOpaqueDashes; i++) {
+                opaqueDasharray += "5,3,";
+              }
+              opaqueDasharray += "5,0,0,99999"; // End with final dash then huge gap
+              
               return (
                 <g key={`prep-arrow-${conn.taskId}`}>
                   {/* Transparent base - full path */}
@@ -7589,13 +7615,13 @@ export default function Dashboard() {
                     strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
                   />
-                  {/* Opaque overlay - first 15 dashes (120px) using same path */}
+                  {/* Opaque overlay - ends at date cell bottom */}
                   <path
                     d={path}
                     stroke={conn.color}
                     strokeWidth="2"
                     fill="none"
-                    strokeDasharray="5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,0,0,99999"
+                    strokeDasharray={opaqueDasharray}
                     strokeOpacity="1"
                   />
                 </g>
