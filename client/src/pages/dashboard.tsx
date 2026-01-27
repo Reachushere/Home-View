@@ -2161,14 +2161,17 @@ export default function Dashboard() {
       // Calculate the start and end of the school week
       const today = new Date();
       const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
-      const saturdayPassed = todayDayOfWeek !== 6;
+      const isSaturday = todayDayOfWeek === 6;
       
-      // weekDays[0] is Saturday, weekDays[6] is Friday
-      // If Saturday passed, start from Sunday (weekDays[1])
-      const weekStartDay = new Date(saturdayPassed ? weekDays[1] : weekDays[0]);
+      // When Saturday: weekDays = [Sat, Sun, Mon, Tue, Wed, Thu, Fri] - Friday is index 6
+      // When not Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - Friday is index 5
+      const fridayIndex = isSaturday ? 6 : 5;
+      
+      // Start from Sunday when not Saturday, otherwise Saturday
+      const weekStartDay = new Date(isSaturday ? weekDays[0] : weekDays[0]);
       weekStartDay.setHours(0, 0, 0, 0);
       
-      const weekEndDay = new Date(weekDays[6]); // Friday is always the end
+      const weekEndDay = new Date(weekDays[fridayIndex]); // Friday
       weekEndDay.setHours(23, 59, 59, 0);
       
       // Update the task's courseName, startDate to beginning and dueDate to Friday
@@ -5391,13 +5394,18 @@ export default function Dashboard() {
                   
                   const taskDueDate = startOfDay(new Date(task.dueDate));
                   const taskStartDate = startOfDay(new Date(task.startDate));
-                  const weekEnd = startOfDay(weekDays[6]); // Friday
                   
-                  // Determine the visible start day (Saturday or Sunday if Saturday has passed)
+                  // Determine the visible start day and Friday based on current day
                   const today = new Date();
                   const todayDayOfWeek = today.getDay();
-                  const saturdayPassed = todayDayOfWeek !== 6;
-                  const visibleWeekStart = startOfDay(saturdayPassed ? weekDays[1] : weekDays[0]);
+                  const isSaturday = todayDayOfWeek === 6;
+                  
+                  // When Saturday: weekDays = [Sat, Sun, Mon, Tue, Wed, Thu, Fri] - Friday is index 6
+                  // When not Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - Friday is index 5
+                  const fridayIndex = isSaturday ? 6 : 5;
+                  const weekEnd = startOfDay(weekDays[fridayIndex]); // Friday
+                  
+                  const visibleWeekStart = startOfDay(isSaturday ? weekDays[0] : weekDays[0]); // Sunday when not Saturday
                   
                   // Check if task spans the full visible week (from visible start to Friday)
                   const spansFullWeek = isSameDay(taskStartDate, visibleWeekStart) && isSameDay(taskDueDate, weekEnd);
