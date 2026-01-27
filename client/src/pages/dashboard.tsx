@@ -6946,7 +6946,7 @@ export default function Dashboard() {
                     strokeWidth="4"
                     fill="none"
                     strokeDasharray="5,3"
-                    opacity="0.5"
+                    strokeOpacity="0.5"
                   />
                   {/* Main opaque colored line */}
                   <path
@@ -6955,7 +6955,7 @@ export default function Dashboard() {
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="5,3"
-                    opacity="1"
+                    strokeOpacity="1"
                   />
                   
                   {/* Part 2: Transparent path - curve to calendar box */}
@@ -6966,7 +6966,7 @@ export default function Dashboard() {
                     strokeWidth="4"
                     fill="none"
                     strokeDasharray="5,3"
-                    opacity="0.1"
+                    strokeOpacity="0.1"
                   />
                   {/* Main transparent colored line - 75% transparent (0.25 opacity) */}
                   <path
@@ -6975,7 +6975,7 @@ export default function Dashboard() {
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="5,3"
-                    opacity="0.25"
+                    strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
                   />
                 </g>
