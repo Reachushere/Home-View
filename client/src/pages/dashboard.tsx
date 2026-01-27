@@ -7049,11 +7049,11 @@ export default function Dashboard() {
         </div>
 
         {/* Arrow Connections - Split into two SVG layers for proper z-indexing */}
-        {/* Layer 1: Transparent curves BEHIND calendar tasks (z-index: 10) */}
+        {/* Layer 1: Transparent curves ABOVE prep boxes (z-index: 40) */}
         {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 10 }}
+            style={{ width: '100vw', height: '100vh', zIndex: 40 }}
           >
             <defs>
               <marker
