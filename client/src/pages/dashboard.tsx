@@ -5421,109 +5421,113 @@ export default function Dashboard() {
                 // When Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - same order
                 const saturdayColumnWidth = gridSizes.dayColumnWidths[6] || 100;
                 
+// Check if this course has any full-week tasks
+                const hasFullWeekTasks = fullWeekTasks.length > 0;
+                
+                // If there are full-week tasks, render them using grid column spanning
+                if (hasFullWeekTasks) {
+                  return (
+                    <div key={course.name} className="border-b border-border/50 w-full flex-shrink-0">
+                      {fullWeekTasks.map((task, taskIdx) => {
+                        const today = startOfDay(new Date());
+                        const tomorrow = addDays(today, 1);
+                        const taskDueDate = startOfDay(new Date(task.dueDate));
+                        const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
+                        const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
+                        const baseStyle = task.isCompleted 
+                          ? "bg-gray-200 text-gray-400 border border-gray-300" 
+                          : course.colors 
+                            ? `${course.colors.bg} text-black border ${course.colors.border}` 
+                            : "bg-gray-200 text-black border border-gray-400";
+                        
+                        // Render as a flex row: Course Label | Task spanning MODULE through Friday
+                        return (
+                          <div 
+                            key={`fullweek-row-${task.id}`}
+                            className="grid w-full"
+                            style={{ 
+                              gridTemplateColumns: getGridTemplateColumns(),
+                              minHeight: `${gridSizes.courseRowHeight}px`
+                            }}
+                          >
+                            {/* Course name column */}
+                            <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
+                              {taskIdx === 0 ? course.name : ''}
+                            </div>
+                            
+                            {/* Full-week task spanning MODULE through Friday (or all days on Saturday) */}
+                            {isSaturdayToday ? (
+                              // On Saturday: span MODULE + all 7 days
+                              <div 
+                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 ${baseStyle} ${
+                                  isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                                }`}
+                                style={{ gridColumn: '2 / -1' }}
+                                data-testid={`course-fullweek-task-${task.id}`}
+                              >
+                                <Checkbox
+                                  checked={task.isCompleted || false}
+                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                  data-testid={`checkbox-fullweek-${task.id}`}
+                                />
+                                <span 
+                                  onClick={() => setEditingTask(task)}
+                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                >
+                                  <span className="font-bold">{task.title}</span>
+                                </span>
+                              </div>
+                            ) : (
+                              <>
+                                {/* MODULE column - task box with content */}
+                                <div 
+                                  className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l m-0.5 mr-0 ${baseStyle} ${
+                                    isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                                  }`}
+                                  data-testid={`course-fullweek-task-module-${task.id}`}
+                                >
+                                  <Checkbox
+                                    checked={task.isCompleted || false}
+                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                    data-testid={`checkbox-fullweek-${task.id}`}
+                                  />
+                                  <span 
+                                    onClick={() => setEditingTask(task)}
+                                    className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
+                                  >
+                                    <span className="font-bold">{task.title}</span>
+                                  </span>
+                                </div>
+                                
+                                {/* Sun-Fri columns - continuation bars (6 columns: index 0-5) */}
+                                {weekDays.slice(0, 6).map((day, dayIdx) => (
+                                  <div 
+                                    key={dayIdx}
+                                    className={`${baseStyle} ${
+                                      isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                                    } ${dayIdx === 5 ? 'rounded-r mr-0.5' : ''}`}
+                                    style={{ 
+                                      margin: '2px 0',
+                                      marginLeft: dayIdx === 0 ? '0' : '0',
+                                    }}
+                                  />
+                                ))}
+                                
+                                {/* Saturday column - empty with course background */}
+                                <div style={{ backgroundColor: course.bg }} />
+                              </>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                }
+                
                 return (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
-                  {/* Full-week spanning tasks rendered at row level, positioned absolutely */}
-                  {fullWeekTasks.map((task, taskIdx) => {
-                    const today = startOfDay(new Date());
-                    const tomorrow = addDays(today, 1);
-                    const taskDueDate = startOfDay(new Date(task.dueDate));
-                    const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
-                    const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
-                    const baseStyle = task.isCompleted 
-                      ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                      : course.colors 
-                        ? `${course.colors.bg} text-black border ${course.colors.border}` 
-                        : "bg-gray-200 text-black border border-gray-400";
-                    
-                    // If Saturday: one continuous box from MODULE to Friday
-                    // If not Saturday: MODULE box + Sunday-Friday box (skip Saturday)
-                    if (isSaturdayToday) {
-                      // One continuous box from MODULE to Friday
-                      return (
-                        <div
-                          key={`fullweek-${task.id}`}
-                          className={`absolute flex items-center gap-1 text-[8px] px-1 py-0.5 rounded ${baseStyle} ${
-                            isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                          }`}
-                          style={{
-                            left: `${gridSizes.timeColumnWidth + 2}px`,
-                            right: '4px',
-                            top: `${2 + taskIdx * 18}px`,
-                            zIndex: 10,
-                          }}
-                          data-testid={`course-fullweek-task-${task.id}`}
-                        >
-                          <Checkbox
-                            checked={task.isCompleted || false}
-                            onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                            className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                            data-testid={`checkbox-fullweek-${task.id}`}
-                          />
-                          <span 
-                            onClick={() => setEditingTask(task)}
-                            className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                          >
-                            <span className="font-bold">{task.title}</span>
-                          </span>
-                        </div>
-                      );
-                    } else {
-                      // Two boxes: MODULE column + Sunday-Friday (skip Saturday at end)
-                      // Grid order: [Time | MODULE | Sun | Mon | Tue | Wed | Thu | Fri | Sat]
-                      // Saturday is at the END (index 6), so Sunday-Friday box starts right after MODULE
-                      const moduleLeft = gridSizes.timeColumnWidth + 2;
-                      const sundayLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 2;
-                      
-                      // Calculate width to stop at Friday (exclude Saturday column)
-                      // Saturday is the last column, so we need to subtract its width
-                      const saturdayWidth = gridSizes.dayColumnWidths[6] || saturdayColumnWidth;
-                      
-                      return (
-                        <div key={`fullweek-${task.id}`}>
-                          {/* MODULE column box */}
-                          <div
-                            className={`absolute flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l ${baseStyle} ${
-                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                            }`}
-                            style={{
-                              left: `${moduleLeft}px`,
-                              width: `${gridSizes.moduleColumnWidth - 4}px`,
-                              top: `${2 + taskIdx * 18}px`,
-                              zIndex: 10,
-                            }}
-                            data-testid={`course-fullweek-task-module-${task.id}`}
-                          >
-                            <Checkbox
-                              checked={task.isCompleted || false}
-                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                              className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                              data-testid={`checkbox-fullweek-${task.id}`}
-                            />
-                            <span 
-                              onClick={() => setEditingTask(task)}
-                              className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                            >
-                              <span className="font-bold">{task.title}</span>
-                            </span>
-                          </div>
-                          {/* Sunday-Friday box (stops before Saturday column) */}
-                          <div
-                            className={`absolute text-[8px] px-1 py-0.5 rounded-r ${baseStyle} ${
-                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                            }`}
-                            style={{
-                              left: `${sundayLeft}px`,
-                              right: `${saturdayWidth + 4}px`,
-                              top: `${2 + taskIdx * 18}px`,
-                              zIndex: 10,
-                            }}
-                            data-testid={`course-fullweek-task-days-${task.id}`}
-                          />
-                        </div>
-                      );
-                    }
-                  })}
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {course.name}
                   </div>
