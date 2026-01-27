@@ -5397,6 +5397,19 @@ export default function Dashboard() {
                   const startsOnSunday = taskStartDateStr === weekStartStr;
                   const endsOnFriday = taskDueDateStr === weekFridayStr;
                   
+                  // Debug logging
+                  if (task.id === 313) {
+                    console.log('Task 313 full-week check:', {
+                      taskStartDateStr,
+                      taskDueDateStr,
+                      weekStartStr,
+                      weekFridayStr,
+                      startsOnSunday,
+                      endsOnFriday,
+                      isFullWeek: startsOnSunday && endsOnFriday
+                    });
+                  }
+                  
                   return startsOnSunday && endsOnFriday;
                 });
                 
@@ -5456,8 +5469,11 @@ export default function Dashboard() {
                     } else {
                       // Two boxes: MODULE column + Sunday-Friday (skip Saturday)
                       const moduleLeft = gridSizes.timeColumnWidth + 2;
-                      const moduleRight = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth - 2;
                       const sundayLeft = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + saturdayColumnWidth + 2;
+                      
+                      // Calculate width to stop at Friday (exclude Saturday column)
+                      // Saturday is the last column, so we need to subtract its width
+                      const saturdayWidth = gridSizes.dayColumnWidths[6] || saturdayColumnWidth;
                       
                       return (
                         <div key={`fullweek-${task.id}`}>
@@ -5487,14 +5503,14 @@ export default function Dashboard() {
                               <span className="font-bold">{task.title}</span>
                             </span>
                           </div>
-                          {/* Sunday-Friday box */}
+                          {/* Sunday-Friday box (stops before Saturday column) */}
                           <div
                             className={`absolute text-[8px] px-1 py-0.5 rounded-r ${baseStyle} ${
                               isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                             }`}
                             style={{
                               left: `${sundayLeft}px`,
-                              right: '4px',
+                              right: `${saturdayWidth + 4}px`,
                               top: `${2 + taskIdx * 18}px`,
                               zIndex: 10,
                             }}
