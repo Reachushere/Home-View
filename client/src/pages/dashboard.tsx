@@ -5316,7 +5316,7 @@ export default function Dashboard() {
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
-            <div className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
+            <div data-calendar-grid="true" className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
               </div>
@@ -7017,7 +7017,10 @@ export default function Dashboard() {
               
               // Module column boundary - where opaque ends and transparent begins
               // Stop at the START of the module column (right edge of time column)
-              const moduleColumnStart = gridSizes.timeColumnWidth;
+              // Need to account for calendar left offset (24px padding + any other offsets)
+              const calendarContainer = document.querySelector('[data-calendar-grid="true"]');
+              const calendarLeft = calendarContainer ? calendarContainer.getBoundingClientRect().left : 24;
+              const moduleColumnStart = calendarLeft + gridSizes.timeColumnWidth;
               
               // Calculate the Y position on the curve where X = moduleColumnStart
               // For quadratic bezier: P(t) = (1-t)²P0 + 2(1-t)t P1 + t²P2
