@@ -2625,15 +2625,14 @@ export default function Dashboard() {
         const dueDate = new Date(task.dueDate);
         if (startDate >= dueDate) return;
         
-        // Find the Today box task element
-        const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
-        const checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+        // Find the Today box checkbox directly using the specific attribute
+        const checkboxEl = document.querySelector(`input[data-today-checkbox="${task.id}"]`) as HTMLElement | null;
         
         // Find the prep text element
         const prepTextEl = document.querySelector(`[data-prep-text-task-id="${task.id}"]`);
         
-        if (boxTaskEl && prepTextEl) {
-          // Get course color - pink for CFNF400
+        if (checkboxEl && prepTextEl) {
+          // Get course color
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
           let color = "#ec4899"; // Default to pink
           if (courseCode === "CPPA122") color = "#22c55e";
@@ -2641,17 +2640,9 @@ export default function Dashboard() {
           else if (courseCode === "CASL101") color = "#6366f1";
           
           // Start arrow from left side of checkbox
-          let fromX: number;
-          let fromY: number;
-          if (checkboxEl) {
-            const checkboxRect = checkboxEl.getBoundingClientRect();
-            fromX = checkboxRect.left;
-            fromY = checkboxRect.top + checkboxRect.height / 2;
-          } else {
-            const boxRect = boxTaskEl.getBoundingClientRect();
-            fromX = boxRect.left;
-            fromY = boxRect.top + boxRect.height / 2;
-          }
+          const checkboxRect = checkboxEl.getBoundingClientRect();
+          const fromX = checkboxRect.left;
+          const fromY = checkboxRect.top + checkboxRect.height / 2;
           
           // Point to the middle of "Prep days" text
           const prepTextRect = prepTextEl.getBoundingClientRect();
@@ -2659,9 +2650,7 @@ export default function Dashboard() {
           const toY = prepTextRect.top + prepTextRect.height / 2;
           
           // Skip if target is off-screen
-          if (toY < 0 || toY > window.innerHeight) {
-            return;
-          }
+          if (toY < 0 || toY > window.innerHeight) return;
           
           connections.push({
             taskId: task.id,
@@ -6845,7 +6834,7 @@ export default function Dashboard() {
           };
           
           // Render a single task row
-          const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false) => {
+          const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false, boxType: 'today' | 'tomorrow' | 'thisweek' = 'today') => {
             const attachments = parseAttachments(task.attachments);
             const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
             
@@ -6878,6 +6867,7 @@ export default function Dashboard() {
                     className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer flex-shrink-0"
                     style={{ accentColor: getCourseColor(task.courseName) }}
                     data-testid={`checkbox-task-${task.id}`}
+                    {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
                   />
                   <button 
                     className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer"
@@ -6956,7 +6946,7 @@ export default function Dashboard() {
                     {courseName}
                   </div>
                   <div className="space-y-0.5">
-                    {courseTasks.map(task => renderTask(task, showDaysUntil))}
+                    {courseTasks.map(task => renderTask(task, showDaysUntil, 'thisweek'))}
                   </div>
                 </div>
               );
@@ -6964,7 +6954,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 60 }} data-task-boxes-container="true">
+        <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35 }} data-task-boxes-container="true">
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md border-[0.1px] border-white overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
@@ -6999,7 +6989,7 @@ export default function Dashboard() {
                             {task.courseName}
                           </div>
                         )}
-                        {renderTask(task, true)}
+                        {renderTask(task, true, 'thisweek')}
                       </div>
                     );
                   })}
@@ -7042,7 +7032,7 @@ export default function Dashboard() {
                             {task.courseName}
                           </div>
                         )}
-                        {renderTask(task, false)}
+                        {renderTask(task, false, 'today')}
                       </div>
                     );
                   })}
@@ -7085,7 +7075,7 @@ export default function Dashboard() {
                             {task.courseName}
                           </div>
                         )}
-                        {renderTask(task, false)}
+                        {renderTask(task, false, 'tomorrow')}
                       </div>
                     );
                   })}
