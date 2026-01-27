@@ -2481,7 +2481,15 @@ export default function Dashboard() {
       const todayTaskIds = new Set(dueTodayTasks.map(t => t.id));
       const allTasksToConnect = [...dueTodayTasks, ...dueTomorrowTasks, ...dueThisWeekTasks];
       
-      allTasksToConnect.forEach(task => {
+      // Deduplicate by task ID to prevent duplicate arrows
+      const seenIds = new Set<number>();
+      const uniqueTasks = allTasksToConnect.filter(task => {
+        if (seenIds.has(task.id)) return false;
+        seenIds.add(task.id);
+        return true;
+      });
+      
+      uniqueTasks.forEach(task => {
         // Find the task card in the bottom boxes
         const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
         // Find the checkbox within the task element
@@ -2518,11 +2526,16 @@ export default function Dashboard() {
           let toY: number;
           if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calRect.left - 15; // Arrowhead tip stops 15px before task box
+            toX = calRect.left - 5; // Arrowhead tip stops 5px before task box
             toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
           } else {
-            toX = calRect.left - 15; // Arrowhead tip stops 15px before task box
+            toX = calRect.left - 5; // Arrowhead tip stops 5px before task box
             toY = calRect.top + calRect.height / 2;
+          }
+          
+          // Skip arrows where target is off-screen or invalid
+          if (toX < 0 || toX > window.innerWidth || toY < 0 || toY > window.innerHeight) {
+            return;
           }
           
           connections.push({
