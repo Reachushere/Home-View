@@ -3695,7 +3695,12 @@ export default function Dashboard() {
                     >
                       −
                     </button>
-                    <span className="text-white/70 text-[9px] flex-1 text-center">All Speakers</span>
+                    <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-green-500 rounded-full transition-all duration-200" 
+                        style={{ width: `${radioVolume}%` }}
+                      />
+                    </div>
                     <button
                       className="text-white hover:text-white/70 text-base px-1"
                       onClick={async () => {
