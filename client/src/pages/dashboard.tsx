@@ -7097,7 +7097,7 @@ export default function Dashboard() {
                 id="arrowhead-green"
                 markerWidth="10"
                 markerHeight="7"
-                refX="-7"
+                refX="0"
                 refY="3.5"
                 orient="auto-start-reverse"
               >
@@ -7148,6 +7148,9 @@ export default function Dashboard() {
               const midY = (containerBottom + conn.toY) / 2;
               const transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
+              // For green arrows, add a 7px extension line from the arrowhead tip going left
+              const isGreen = conn.color === "#22c55e";
+              
               return (
                 <g key={`transparent-${conn.taskId}`}>
                   <path
@@ -7159,6 +7162,18 @@ export default function Dashboard() {
                     strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
                   />
+                  {isGreen && (
+                    <line
+                      x1={conn.toX}
+                      y1={conn.toY}
+                      x2={conn.toX - 7}
+                      y2={conn.toY}
+                      stroke={conn.color}
+                      strokeWidth="2"
+                      strokeDasharray="5,3"
+                      strokeOpacity="0.25"
+                    />
+                  )}
                 </g>
               );
             })}
