@@ -2673,16 +2673,27 @@ export default function Dashboard() {
     });
   };
   
-  // Get all-day tasks (tasks without specific time - only midnight) - exclude tasks with planning periods
+  // Get all-day tasks (tasks without specific time - only midnight) - now includes tasks with prep days on their due date
   const getAllDayTasks = (day: Date) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
-      if (t.startDate) return false; // Tasks with planning periods have their own rows
       if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
       const dueDate = new Date(t.dueDate);
-      // Only show in ALL DAY if it's exactly midnight (hour 0, minute 0)
-      return isSameDay(dueDate, day) && dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
+      // Show on due date if it's midnight OR if the task has prep days (startDate set)
+      const isMidnight = dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
+      const hasPrepDays = !!t.startDate;
+      return isSameDay(dueDate, day) && (isMidnight || hasPrepDays);
     });
+  };
+  
+  // Get paler version of a color for prep days extension
+  const getPalerColor = (colorClass: string) => {
+    // Convert bg-green-200 style classes to paler versions
+    if (colorClass.includes('green')) return 'bg-green-100';
+    if (colorClass.includes('pink')) return 'bg-pink-100';
+    if (colorClass.includes('indigo')) return 'bg-indigo-100';
+    if (colorClass.includes('gray')) return 'bg-gray-100';
+    return 'bg-gray-100';
   };
 
   // Get tasks with planning periods on a specific day (startDate <= day < dueDate)
@@ -5407,20 +5418,32 @@ export default function Dashboard() {
               <div className="border-l border-border/50" style={{ backgroundColor: 'rgba(156, 163, 175, 0.15)' }} />
               {/* Day cells */}
               {weekDays.map((day, dayIdx) => {
-                // Only show true all-day tasks (midnight due) and all-day calendar events - NO prep tasks here
+                // Only show true all-day tasks (midnight due) and all-day calendar events
                 const allDayTasks = getAllDayTasks(day);
                 const allDayEvents = getAllDayCalendarEvents(day);
+                
+                // Check if there's a prep extension from a future task covering this day
+                // This determines if we need to add top padding for tasks in this cell
+                const prepExtensionOverlapping = allTasks.some(t => {
+                  if (!t.startDate || t.isCompleted) return false;
+                  const taskDueDate = startOfDay(new Date(t.dueDate));
+                  const taskStartDate = startOfDay(new Date(t.startDate));
+                  const thisDay = startOfDay(day);
+                  // Check if this day falls within the prep period (between start and due, not including due date)
+                  return thisDay >= taskStartDate && thisDay < taskDueDate;
+                });
                 
                 return (
                   <div 
                     key={dayIdx} 
-                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden"
+                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-visible"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white'
+                      backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'white',
+                      paddingTop: prepExtensionOverlapping ? '18px' : '2px'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {/* Regular all-day tasks only - prep tasks moved to course rows */}
+                    {/* All-day tasks including those with prep days */}
                     {allDayTasks.map(task => {
                       const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                       const colors = courseColors[courseCode];
@@ -5428,32 +5451,68 @@ export default function Dashboard() {
                       const tomorrow = addDays(today, 1);
                       const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                       const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                      const hasPrepDays = !!task.startDate;
+                      
+                      // Calculate how many prep days this task has
+                      const prepDaysCount = hasPrepDays && task.startDate
+                        ? Math.max(0, Math.min(2, differenceInDays(new Date(task.dueDate), new Date(task.startDate))))
+                        : 0;
+                      
+                      // Get paler background for prep extension
+                      const bgClass = colors ? colors.bg : "bg-gray-200";
+                      const palerBg = getPalerColor(bgClass);
+                      const borderClass = task.isCompleted ? "border-gray-300" : colors ? colors.border : "border-gray-400";
+                      
                       return (
                         <div
                           key={task.id}
-                          className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate ${
-                            isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                          } ${
-                            task.isCompleted 
-                              ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                              : colors 
-                                ? `${colors.bg} text-black border ${colors.border}` 
-                                : "bg-gray-200 text-black border border-gray-400"
-                          }`}
+                          className="relative"
                           data-testid={`all-day-task-${task.id}`}
                         >
-                          <Checkbox
-                            checked={task.isCompleted || false}
-                            onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                            className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                            data-testid={`checkbox-allday-${task.id}`}
-                          />
-                          <span 
-                            onClick={() => setEditingTask(task)}
-                            className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}
+                          {/* Prep Days extension - extends to the left */}
+                          {hasPrepDays && prepDaysCount > 0 && !task.isCompleted && (
+                            <div
+                              className={`absolute top-0 bottom-0 ${palerBg} border-t border-b border-l ${borderClass} rounded-l flex items-center justify-center z-10`}
+                              style={{
+                                right: '100%',
+                                width: `calc(${prepDaysCount} * 100% + ${prepDaysCount * 2}px)`,
+                                marginRight: '-1px'
+                              }}
+                            >
+                              <span className="text-[7px] text-gray-500 font-medium italic whitespace-nowrap px-1">
+                                Prep Days
+                              </span>
+                            </div>
+                          )}
+                          {/* Main task box */}
+                          <div
+                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${
+                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                            } ${
+                              hasPrepDays && prepDaysCount > 0 && !task.isCompleted
+                                ? `rounded-r border-t border-b border-r ${borderClass}`
+                                : "rounded border"
+                            } ${
+                              task.isCompleted 
+                                ? "bg-gray-200 text-gray-400 border-gray-300" 
+                                : colors 
+                                  ? `${colors.bg} text-black ${borderClass}` 
+                                  : "bg-gray-200 text-black border-gray-400"
+                            }`}
                           >
-                            {task.title}
-                          </span>
+                            <Checkbox
+                              checked={task.isCompleted || false}
+                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                              className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                              data-testid={`checkbox-allday-${task.id}`}
+                            />
+                            <span 
+                              onClick={() => setEditingTask(task)}
+                              className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}
+                            >
+                              {task.title}
+                            </span>
+                          </div>
                         </div>
                       );
                     })}
