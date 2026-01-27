@@ -2212,7 +2212,7 @@ export async function registerRoutes(
       console.log(`Setting volume to ${newVolume} on ${targetDevice}`);
       
       // Set volume on the target device
-      await fetch(`${haUrl}/api/services/media_player/volume_set`, {
+      const volumeResponse = await fetch(`${haUrl}/api/services/media_player/volume_set`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
@@ -2224,6 +2224,13 @@ export async function registerRoutes(
         }),
       });
       
+      if (!volumeResponse.ok) {
+        const errorText = await volumeResponse.text();
+        console.error(`Home Assistant volume_set failed: ${volumeResponse.status} - ${errorText}`);
+        return res.status(500).json({ error: `Failed to set volume: ${volumeResponse.status}` });
+      }
+      
+      console.log(`Volume set successfully on ${targetDevice}`);
       res.json({ success: true, direction, newVolume: Math.round(newVolume * 100) });
     } catch (error) {
       console.error("Volume control error:", error);
