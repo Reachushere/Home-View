@@ -6979,52 +6979,49 @@ export default function Dashboard() {
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
-              // Split into two paths:
-              // Path 1: Fully opaque - from task box checkbox down to container bottom
-              const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-              // Path 2: 75% transparent - curve from container bottom to calendar (with arrowhead)
-              const transparentPath = `M ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
+              // The full path from task checkbox to calendar (unchanged position)
+              const fullPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
+              
+              // Calculate where opacity transition should happen (right edge of time column)
+              const timeColumnRightEdge = gridSizes.timeColumnWidth;
+              // Calculate as percentage of viewport width for the gradient stop
+              const gradientStopPercent = (timeColumnRightEdge / window.innerWidth) * 100;
+              
+              // Unique gradient ID for this connection
+              const gradientId = `arrowGradient-${conn.taskId}`;
               
               return (
                 <g key={conn.taskId}>
-                  {/* Part 1: Opaque path - from task box down to container bottom */}
-                  {/* Glow for opaque section */}
+                  {/* Define gradient for this arrow - opaque until time column edge, then transparent */}
+                  <defs>
+                    <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor={conn.color} stopOpacity="0.9" />
+                      <stop offset={`${gradientStopPercent}%`} stopColor={conn.color} stopOpacity="0.9" />
+                      <stop offset={`${gradientStopPercent + 1}%`} stopColor={conn.color} stopOpacity="0.25" />
+                      <stop offset="100%" stopColor={conn.color} stopOpacity="0.25" />
+                    </linearGradient>
+                    <linearGradient id={`${gradientId}-glow`} x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="white" stopOpacity="0.4" />
+                      <stop offset={`${gradientStopPercent}%`} stopColor="white" stopOpacity="0.4" />
+                      <stop offset={`${gradientStopPercent + 1}%`} stopColor="white" stopOpacity="0.1" />
+                      <stop offset="100%" stopColor="white" stopOpacity="0.1" />
+                    </linearGradient>
+                  </defs>
+                  {/* Glow effect */}
                   <path
-                    d={opaquePath}
-                    stroke="white"
+                    d={fullPath}
+                    stroke={`url(#${gradientId}-glow)`}
                     strokeWidth="4"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="0.4"
                   />
-                  {/* Main opaque colored line */}
+                  {/* Main colored line with gradient opacity */}
                   <path
-                    d={opaquePath}
-                    stroke={conn.color}
+                    d={fullPath}
+                    stroke={`url(#${gradientId})`}
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="0.9"
-                  />
-                  
-                  {/* Part 2: Transparent path - curve to calendar with arrowhead */}
-                  {/* Glow for transparent section */}
-                  <path
-                    d={transparentPath}
-                    stroke="white"
-                    strokeWidth="4"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="0.1"
-                  />
-                  {/* Main transparent colored line with arrowhead pointing at calendar checkbox */}
-                  <path
-                    d={transparentPath}
-                    stroke={conn.color}
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="5,3"
-                    strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
                   />
                 </g>
