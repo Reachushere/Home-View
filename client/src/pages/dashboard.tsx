@@ -2341,9 +2341,27 @@ export default function Dashboard() {
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
   // Due Tomorrow: all tasks due tomorrow
+  // Also include tasks where tomorrow falls within the prep period (startDate <= tomorrow <= dueDate)
   const dueTomorrowTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
-    return t.dueDate && isSameDay(new Date(t.dueDate), tomorrow);
+    if (!t.dueDate) return false;
+    
+    // Check if task is due tomorrow
+    if (isSameDay(new Date(t.dueDate), tomorrow)) return true;
+    
+    // Check if tomorrow falls within the task's planning/prep period
+    if (t.startDate) {
+      const taskStartDate = startOfDay(new Date(t.startDate));
+      const taskDueDate = startOfDay(new Date(t.dueDate));
+      const tomorrowStart = startOfDay(tomorrow);
+      
+      // If tomorrow falls within the task's planning period, include it as prep task
+      if (taskStartDate <= tomorrowStart && tomorrowStart < taskDueDate) {
+        return true;
+      }
+    }
+    
+    return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
   // Due This Week: tasks due on remaining school week days (not today, not tomorrow)
