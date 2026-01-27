@@ -2694,7 +2694,48 @@ export default function Dashboard() {
         const tomorrowStart = startOfDay(tomorrow);
         // Only add prep arrow if tomorrow is NOT the due date (it's a prep day)
         if (!isSameDay(taskDueDate, tomorrowStart)) {
-          addPrepConnection(task, `input[data-tomorrow-checkbox="${task.id}"]`);
+          // For Tomorrow box, point to the specific day column within the prep extension
+          const checkboxEl = document.querySelector(`input[data-tomorrow-checkbox="${task.id}"]`) as HTMLElement | null;
+          const prepExtensionEl = document.querySelector(`[data-testid="prep-extension-${task.id}"]`) as HTMLElement | null;
+          
+          if (checkboxEl && prepExtensionEl) {
+            // Get course color
+            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+            let color = "#ec4899"; // Default to pink
+            if (courseCode === "CPPA122") color = "#22c55e";
+            else if (courseCode === "CFNF400") color = "#ec4899";
+            else if (courseCode === "CASL101") color = "#6366f1";
+            
+            // Calculate which day column within the prep extension corresponds to tomorrow
+            const taskStartDate = startOfDay(new Date(task.startDate));
+            const daysDiff = Math.floor((tomorrowStart.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
+            const prepDaysCount = Math.floor((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
+            
+            // Get the prep extension position and size
+            const prepRect = prepExtensionEl.getBoundingClientRect();
+            const dayColumnWidth = prepRect.width / prepDaysCount;
+            
+            // Calculate the center of tomorrow's column within the prep extension
+            const toX = prepRect.left + (daysDiff * dayColumnWidth) + (dayColumnWidth / 2);
+            const toY = prepRect.top + prepRect.height / 2;
+            
+            // Start arrow from left side of checkbox
+            const checkboxRect = checkboxEl.getBoundingClientRect();
+            const fromX = checkboxRect.left;
+            const fromY = checkboxRect.top + checkboxRect.height / 2;
+            
+            // Skip if target is off-screen
+            if (toY < 0 || toY > window.innerHeight) return;
+            
+            connections.push({
+              taskId: task.id,
+              fromX,
+              fromY,
+              toX,
+              toY,
+              color
+            });
+          }
         }
       });
       
