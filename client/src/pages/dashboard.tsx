@@ -7004,11 +7004,11 @@ export default function Dashboard() {
           </svg>
         )}
         
-        {/* Layer 2: Opaque lines ON TOP of calendar (z-index: 25) */}
+        {/* Layer 2: Opaque lines ON TOP of calendar (z-index: 40) */}
         {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 25 }}
+            style={{ width: '100vw', height: '100vh', zIndex: 40 }}
           >
             {arrowConnections.map((conn) => {
               const exitX = conn.fromX - 21;
