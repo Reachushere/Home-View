@@ -461,6 +461,7 @@ export default function Dashboard() {
     allDayFilesBlinkSpeed: number;
     taskBoxFilesBlinkSpeed: number;
     buttonSpacing: number;
+    mediaControlSpacing: number;
     showArrows: boolean;
   }>(() => {
     const saved = localStorage.getItem('blinkSettings');
@@ -473,6 +474,7 @@ export default function Dashboard() {
       allDayFilesBlinkSpeed: parsed.allDayFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       taskBoxFilesBlinkSpeed: parsed.taskBoxFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       buttonSpacing: parsed.buttonSpacing ?? 0,
+      mediaControlSpacing: parsed.mediaControlSpacing ?? 16,
       showArrows: parsed.showArrows ?? true
     };
   });
@@ -3484,7 +3486,7 @@ export default function Dashboard() {
           })()}
           
           {/* Media Controls Bar */}
-          <div className="flex items-center gap-3 p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex items-center p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
               <SelectTrigger className="w-[100px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
@@ -5608,6 +5610,26 @@ export default function Dashboard() {
                       />
                       <p className="text-xs text-muted-foreground">
                         Space between hamburger and exam buttons
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-1 pt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Media Controls Spacing</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.mediaControlSpacing}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="4"
+                        max="40"
+                        step="2"
+                        value={blinkSettings.mediaControlSpacing}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, mediaControlSpacing: Number(e.target.value) }))}
+                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-media-control-spacing"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Space between PDF media control buttons
                       </p>
                     </div>
                   </div>
