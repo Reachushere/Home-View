@@ -7185,8 +7185,11 @@ export default function Dashboard() {
               const greenCP2 = dragState.cp2 || defaultGreenCP2;
               const greenEnd = dragState.end || defaultGreenEnd;
               const arrowRotation = dragState.rotation || 0; // degrees
+              // Green path: starts 10px left of arrowhead tip (left side of arrow), goes 7px left, then curves
+              const arrowLeftSide = { x: greenStart.x - 10, y: greenStart.y };
+              const horizontalEnd = { x: greenStart.x - 17, y: greenStart.y }; // 7px left of arrow left side
               const transparentPath = isGreen
-                ? `M ${greenStart.x} ${greenStart.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
+                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenEnd.x} ${greenEnd.y}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
@@ -7297,13 +7300,12 @@ export default function Dashboard() {
                       <line x1={greenStart.x} y1={greenStart.y} x2={greenCP1.x} y2={greenCP1.y} stroke="rgba(255,255,0,0.5)" strokeWidth="1" strokeDasharray="3,3" style={{ pointerEvents: 'none' }} />
                       <line x1={greenEnd.x} y1={greenEnd.y} x2={greenCP2.x} y2={greenCP2.y} stroke="rgba(255,165,0,0.5)" strokeWidth="1" strokeDasharray="3,3" style={{ pointerEvents: 'none' }} />
                       
-                      {/* Manual arrowhead with rotation control */}
+                      {/* Manual arrowhead with rotation control - same size as other arrows (10x7) */}
                       <g transform={`translate(${greenStart.x}, ${greenStart.y}) rotate(${arrowRotation})`}>
                         <polygon 
-                          points="-12,-6 0,0 -12,6" 
+                          points="-10,-3.5 0,0 -10,3.5" 
                           fill="#22c55e" 
-                          stroke="black" 
-                          strokeWidth="1"
+                          fillOpacity="0.75"
                           style={{ pointerEvents: 'none' }}
                         />
                       </g>
