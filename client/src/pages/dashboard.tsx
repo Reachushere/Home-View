@@ -2518,10 +2518,11 @@ export default function Dashboard() {
     return isWithinInterval(dayStart, { start: weekStart, end: weekEnd });
   };
   
-  // Get tasks for a specific hour on a day (tasks with prep days show in time slot on due date)
+  // Get tasks for a specific hour on a day (tasks with prep days now show in All Day row instead)
   const getTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
+      if (t.startDate) return false; // Tasks with prep days show in All Day row
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
@@ -2538,6 +2539,7 @@ export default function Dashboard() {
   const getContinuingTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
+      if (t.startDate) return false; // Tasks with prep days show in All Day row
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
@@ -2559,6 +2561,7 @@ export default function Dashboard() {
   const getMultiHourTasksForWeek = () => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
+      if (t.startDate) return false; // Tasks with prep days show in All Day row
       if (!t.eventStartTime || !t.eventEndTime) return false;
       
       const dueDate = new Date(t.dueDate);
@@ -2673,16 +2676,22 @@ export default function Dashboard() {
     });
   };
   
-  // Get all-day tasks (tasks without specific time - only midnight) - now includes tasks with prep days on their due date
+  // Get all-day tasks - now includes tasks with prep days on their due date (even if they have a time)
   const getAllDayTasks = (day: Date) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
-      if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
       const dueDate = new Date(t.dueDate);
-      // Show on due date if it's midnight OR if the task has prep days (startDate set)
-      const isMidnight = dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
       const hasPrepDays = !!t.startDate;
-      return isSameDay(dueDate, day) && (isMidnight || hasPrepDays);
+      
+      // Tasks with prep days always show in All Day row on their due date
+      if (hasPrepDays && isSameDay(dueDate, day)) {
+        return true;
+      }
+      
+      // Regular all-day tasks (no time set, midnight)
+      if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
+      const isMidnight = dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
+      return isSameDay(dueDate, day) && isMidnight;
     });
   };
   
@@ -5761,33 +5770,7 @@ export default function Dashboard() {
                     }}
                   />
                   {weekDays.map((day, dayIdx) => {
-                    // Get prep tasks for this course and day (excluding full-week tasks)
-                    const fullWeekTaskIds = fullWeekTasks.map(t => t.id);
-                    const coursePrepTasks = weekPlanningTasks.filter(task => {
-                      if (!task.startDate || !task.courseName?.startsWith(course.name)) return false;
-                      if (fullWeekTaskIds.includes(task.id)) return false; // Skip full-week tasks
-                      
-                      const today = new Date();
-                      const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
-                      const isSaturdayNow = todayDayOfWeek === 6;
-                      
-                      // Check actual day of week for this column, not the index
-                      const thisDayOfWeek = day.getDay(); // 0 = Sunday, 6 = Saturday
-                      
-                      // If not Saturday: skip showing tasks on Saturday column (dayOfWeek === 6)
-                      // Saturday column when not Saturday is the UPCOMING Saturday, not part of current school week
-                      if (!isSaturdayNow && thisDayOfWeek === 6) return false;
-                      
-                      // Check if task falls within this week
-                      const taskDueDate = new Date(task.dueDate);
-                      const taskStartDate = new Date(task.startDate);
-                      const weekStart = weekDays[0];
-                      const weekEnd = weekDays[6];
-                      
-                      // Task should appear if it overlaps with this week at all
-                      return taskStartDate <= weekEnd && taskDueDate >= weekStart;
-                    });
-                    
+                    // Course row day cells - prep tasks now appear in All Day row with extensions
                     return (
                       <div 
                         key={dayIdx} 
@@ -5807,123 +5790,7 @@ export default function Dashboard() {
                           e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : course.bg;
                           handleCourseRowDrop(e, course.name, day);
                         }}
-                      >
-                        {coursePrepTasks.map(task => {
-                          const taskDueDate = startOfDay(new Date(task.dueDate));
-                          const dayStart = startOfDay(day);
-                          const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
-                          const isFirstPrepDay = taskStartDate && isSameDay(taskStartDate, dayStart);
-                          const isDueDay = isSameDay(taskDueDate, dayStart);
-                          const dayBeforeDue = addDays(taskDueDate, -1);
-                          const isLastPrepDay = taskStartDate && !isDueDay && isSameDay(dayStart, dayBeforeDue);
-                          const today = startOfDay(new Date());
-                          const tomorrow = addDays(today, 1);
-                          
-                          // Skip prep days that have already passed (but show due days)
-                          if (!isDueDay && isBefore(dayStart, today)) {
-                            return null;
-                          }
-                          
-                          // Due day
-                          if (isDueDay) {
-                            const isDueToday = !task.isCompleted && isSameDay(taskDueDate, today);
-                            const isDueTomorrow = !task.isCompleted && isSameDay(taskDueDate, tomorrow);
-                            const hasPrepDays = taskStartDate && !isSameDay(taskStartDate, taskDueDate);
-                            const hasVisiblePrepDays = hasPrepDays && !isBefore(dayBeforeDue, today);
-                            const baseStyle = task.isCompleted 
-                              ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                              : course.colors 
-                                ? `${course.colors.bg} text-black border ${course.colors.border}` 
-                                : "bg-gray-200 text-black border border-gray-400";
-                            return (
-                              <div key={`due-${task.id}`} className="flex items-center w-full">
-                                {hasVisiblePrepDays && <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />}
-                                <div
-                                  className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle} ${
-                                    isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                                  }`}
-                                  style={{ borderRadius: hasVisiblePrepDays ? '0 4px 4px 0' : '4px' }}
-                                  data-testid={`course-due-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                                >
-                                  <Checkbox
-                                    checked={task.isCompleted || false}
-                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                    data-testid={`checkbox-course-due-${task.id}`}
-                                  />
-                                  <span 
-                                    onClick={() => setEditingTask(task)}
-                                    className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                                  >
-                                    <span className="font-bold">DUE: {task.title}</span>
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          }
-                          
-                          // First prep day
-                          if (isFirstPrepDay) {
-                            const baseStyle = task.isCompleted 
-                              ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                              : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400`;
-                            return (
-                              <div key={`prep-${task.id}`} className="flex items-center w-full">
-                                <div
-                                  className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                                  style={{ borderRadius: '4px 0 0 4px' }}
-                                  data-testid={`course-prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                                >
-                                  <Checkbox
-                                    checked={task.isCompleted || false}
-                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                    data-testid={`checkbox-course-prep-${task.id}`}
-                                  />
-                                  <span 
-                                    onClick={() => setEditingTask(task)}
-                                    className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                                  >
-                                    <span className="font-bold">PREP: {task.title}</span>
-                                  </span>
-                                </div>
-                                <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />
-                              </div>
-                            );
-                          }
-                          
-                          // Intermediate prep days
-                          const baseStyle = task.isCompleted 
-                            ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400`;
-                          const previousDay = addDays(dayStart, -1);
-                          const hasPreviousVisibleDay = !isBefore(previousDay, today);
-                          return (
-                            <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                              {hasPreviousVisibleDay && <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />}
-                              <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                                style={{ borderRadius: hasPreviousVisibleDay ? 0 : '4px 0 0 4px' }}
-                                data-testid={`course-prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                              >
-                                <Checkbox
-                                  checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                  data-testid={`checkbox-course-prep-mid-${task.id}`}
-                                />
-                                <span 
-                                  onClick={() => setEditingTask(task)}
-                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                                >
-                                  <span className="font-bold">PREP: {task.title}</span>
-                                </span>
-                              </div>
-                              <div className={`w-2 h-[2px] shrink-0 ${course.colors ? "bg-white" : "bg-black"}`} />
-                            </div>
-                          );
-                        })}
-                      </div>
+                      />
                     );
                   })}
                   </div>
@@ -5937,18 +5804,7 @@ export default function Dashboard() {
                 </div>
                 <div className="border-l border-border/50" style={{ backgroundColor: 'rgba(156, 163, 175, 0.25)' }} />
                 {weekDays.map((day, dayIdx) => {
-                  // Get prep tasks without a course
-                  const otherPrepTasks = weekPlanningTasks.filter(task => {
-                    if (!task.startDate || (task.courseName && task.courseName.trim() !== '')) return false;
-                    const startDate = new Date(task.startDate);
-                    const dueDate = new Date(task.dueDate);
-                    const dayStart = new Date(day);
-                    dayStart.setHours(0, 0, 0, 0);
-                    const dayEnd = new Date(day);
-                    dayEnd.setHours(23, 59, 59, 999);
-                    return startDate <= dayEnd && dayStart <= dueDate;
-                  });
-                  
+                  // OTHER row day cells - prep tasks now appear in All Day row with extensions
                   return (
                     <div 
                       key={dayIdx} 
@@ -5957,115 +5813,7 @@ export default function Dashboard() {
                         backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'rgba(156, 163, 175, 0.25)'
                       }}
                       data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
-                    >
-                      {otherPrepTasks.map(task => {
-                        const taskDueDate = startOfDay(new Date(task.dueDate));
-                        const dayStart = startOfDay(day);
-                        const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
-                        const isFirstPrepDay = taskStartDate && isSameDay(taskStartDate, dayStart);
-                        const isDueDay = isSameDay(taskDueDate, dayStart);
-                        const dayBeforeDue = addDays(taskDueDate, -1);
-                        const isLastPrepDay = taskStartDate && !isDueDay && isSameDay(dayStart, dayBeforeDue);
-                        const today = startOfDay(new Date());
-                        
-                        // Skip prep days that have already passed (but show due days)
-                        if (!isDueDay && isBefore(dayStart, today)) {
-                          return null;
-                        }
-                        
-                        // Due day - show actual task box with rounded-r
-                        if (isDueDay) {
-                          const hasPreviousVisibleDay = taskStartDate && !isBefore(addDays(taskDueDate, -1), today);
-                          const taskStyle = task.isCompleted 
-                            ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : "bg-gray-300 text-black border border-gray-500";
-                          return (
-                            <div key={`due-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                              {hasPreviousVisibleDay && <div className="w-2 h-[2px] shrink-0 bg-black" />}
-                              <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${taskStyle}`}
-                                style={{ borderRadius: hasPreviousVisibleDay ? '0 4px 4px 0' : '4px' }}
-                                data-testid={`other-prep-due-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                              >
-                                <Checkbox
-                                  checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                  data-testid={`checkbox-other-prep-due-${task.id}`}
-                                />
-                                <span 
-                                  onClick={() => setEditingTask(task)}
-                                  className={`cursor-pointer hover:opacity-80 truncate font-bold ${task.isCompleted ? "line-through" : ""}`}
-                                >
-                                  {task.title}
-                                </span>
-                              </div>
-                            </div>
-                          );
-                        }
-                        
-                        // First prep day - rounded-l with line extending right
-                        if (isFirstPrepDay) {
-                          const baseStyle = task.isCompleted 
-                            ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                            : "bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400";
-                          return (
-                            <div key={`prep-start-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                              <div
-                                className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                                style={{ borderRadius: '4px 0 0 4px' }}
-                                data-testid={`other-prep-task-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                              >
-                                <Checkbox
-                                  checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                  data-testid={`checkbox-other-prep-${task.id}`}
-                                />
-                                <span 
-                                  onClick={() => setEditingTask(task)}
-                                  className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                                >
-                                  <span className="font-bold">PREP: {task.title}</span>
-                                </span>
-                              </div>
-                              <div className="w-2 h-[2px] shrink-0 bg-black" />
-                            </div>
-                          );
-                        }
-                        
-                        // Intermediate prep days
-                        const baseStyle = task.isCompleted 
-                          ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                          : `bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 text-black border border-gray-400`;
-                        const previousDay = addDays(dayStart, -1);
-                        const hasPreviousVisibleDay = !isBefore(previousDay, today);
-                        return (
-                          <div key={`prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`} className="flex items-center w-full">
-                            {hasPreviousVisibleDay && <div className="w-2 h-[2px] shrink-0 bg-black" />}
-                            <div
-                              className={`flex-1 flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${baseStyle}`}
-                              style={{ borderRadius: hasPreviousVisibleDay ? 0 : '4px 0 0 4px' }}
-                              data-testid={`other-prep-mid-${task.id}-${format(day, "yyyy-MM-dd")}`}
-                            >
-                              <Checkbox
-                                checked={task.isCompleted || false}
-                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                data-testid={`checkbox-other-prep-mid-${task.id}`}
-                              />
-                              <span 
-                                onClick={() => setEditingTask(task)}
-                                className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                              >
-                                <span className="font-bold">PREP: {task.title}</span>
-                              </span>
-                            </div>
-                            <div className="w-2 h-[2px] shrink-0 bg-black" />
-                          </div>
-                        );
-                      })}
-                    </div>
+                    />
                   );
                 })}
               </div>
