@@ -5364,9 +5364,9 @@ export default function Dashboard() {
             <div data-calendar-grid="true" className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
-                {/* Time column resize handle */}
+                {/* Time column resize handle - right edge */}
                 <div
-                  className="absolute right-[-4px] top-0 bottom-0 w-3 cursor-col-resize hover:bg-white/30"
+                  className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-white/10 hover:bg-white/40"
                   style={{ zIndex: 9999 }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
@@ -5377,9 +5377,9 @@ export default function Dashboard() {
               </div>
               <div className="flex items-center justify-center relative border-l border-border" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">MODULE</span>
-                {/* Module column resize handle */}
+                {/* Module column resize handle - right edge */}
                 <div
-                  className="absolute right-[-4px] top-0 bottom-0 w-3 cursor-col-resize hover:bg-white/30"
+                  className="absolute right-0 top-0 bottom-0 w-2 cursor-col-resize bg-white/10 hover:bg-white/40"
                   style={{ zIndex: 9999 }}
                   onMouseDown={(e) => {
                     e.stopPropagation();
@@ -5480,35 +5480,85 @@ export default function Dashboard() {
                       const palerBg = getPalerColor(bgClass);
                       const borderClass = task.isCompleted ? "border-gray-300" : colors ? colors.border : "border-gray-400";
                       
+                      // Tasks with prep days get special rendering matching the design
+                      if (hasPrepDays && prepDaysCount > 0 && !task.isCompleted) {
+                        // Get the paler prep color based on course
+                        const prepBgColor = colors 
+                          ? (colors.bg.includes('green') ? 'bg-green-100' : 
+                             colors.bg.includes('pink') ? 'bg-pink-100' : 
+                             colors.bg.includes('indigo') ? 'bg-indigo-100' : 'bg-cyan-100')
+                          : 'bg-cyan-100';
+                        const mainBgColor = colors 
+                          ? (colors.bg.includes('green') ? 'bg-green-400' : 
+                             colors.bg.includes('pink') ? 'bg-pink-400' : 
+                             colors.bg.includes('indigo') ? 'bg-indigo-400' : 'bg-blue-400')
+                          : 'bg-blue-400';
+                        
+                        return (
+                          <div
+                            key={task.id}
+                            className="relative flex items-stretch"
+                            style={{ minHeight: '32px' }}
+                            data-testid={`all-day-task-${task.id}`}
+                          >
+                            {/* Prep Days extension - extends to the left */}
+                            <div
+                              className={`absolute ${prepBgColor} border border-gray-400 rounded-l-md flex items-center justify-center`}
+                              style={{
+                                right: '100%',
+                                top: 0,
+                                height: '16px',
+                                width: `calc(${prepDaysCount} * 100% + ${prepDaysCount * 4}px)`,
+                                borderRight: 'none',
+                                marginRight: '0px'
+                              }}
+                            >
+                              <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-2">
+                                Prep days
+                              </span>
+                            </div>
+                            {/* Main task box - taller, with checkbox at top */}
+                            <div
+                              className={`flex flex-col ${mainBgColor} border border-gray-500 rounded-md ${
+                                isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                              }`}
+                              style={{
+                                borderTopLeftRadius: '0',
+                                minWidth: '100%',
+                                minHeight: '32px'
+                              }}
+                            >
+                              {/* Checkbox row at top */}
+                              <div className="flex items-center px-1 pt-0.5">
+                                <Checkbox
+                                  checked={task.isCompleted || false}
+                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                  className="h-4 w-4 shrink-0 bg-white border-gray-600 data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                  data-testid={`checkbox-allday-${task.id}`}
+                                />
+                              </div>
+                              {/* Task title */}
+                              <div 
+                                onClick={() => setEditingTask(task)}
+                                className="text-[9px] font-bold text-black px-1 pb-0.5 cursor-pointer hover:opacity-80 truncate"
+                              >
+                                {task.title}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+                      
+                      // Regular all-day tasks without prep days
                       return (
                         <div
                           key={task.id}
                           className="relative"
                           data-testid={`all-day-task-${task.id}`}
                         >
-                          {/* Prep Days extension - extends to the left */}
-                          {hasPrepDays && prepDaysCount > 0 && !task.isCompleted && (
-                            <div
-                              className={`absolute top-0 bottom-0 ${palerBg} border-t border-b border-l ${borderClass} rounded-l flex items-center justify-center z-10`}
-                              style={{
-                                right: '100%',
-                                width: `calc(${prepDaysCount} * 100% + ${prepDaysCount * 2}px)`,
-                                marginRight: '-1px'
-                              }}
-                            >
-                              <span className="text-[7px] text-gray-500 font-medium italic whitespace-nowrap px-1">
-                                Prep Days
-                              </span>
-                            </div>
-                          )}
-                          {/* Main task box */}
                           <div
-                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate ${
+                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border ${
                               isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                            } ${
-                              hasPrepDays && prepDaysCount > 0 && !task.isCompleted
-                                ? `rounded-r border-t border-b border-r ${borderClass}`
-                                : "rounded border"
                             } ${
                               task.isCompleted 
                                 ? "bg-gray-200 text-gray-400 border-gray-300" 
