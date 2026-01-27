@@ -1895,9 +1895,9 @@ export default function FilesPage() {
             {sortedFiles(getCurrentFolderFiles()).map((file) => (
               <div 
                 key={file.id}
-                className="mb-3 p-2 bg-[#2d2d2d]/90 rounded-md relative z-10 border border-black/50"
+                className="mb-3 p-2 bg-[#c9a033] rounded-md relative z-10 border border-black/50"
               >
-                <div className="text-[10px] truncate mb-2 text-gray-300">{file.displayName}</div>
+                <div className="text-[10px] truncate mb-2 text-black font-medium">{file.displayName}</div>
                 <div className="flex items-center gap-2 mb-2">
                   <Select 
                     value={getSpeakerForFile(file.id)} 
@@ -1915,43 +1915,47 @@ export default function FilesPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex items-center justify-evenly">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                {/* Playback controls */}
+                <div className="flex items-center justify-center gap-3 mb-2">
+                  <SkipBack 
+                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
+                    onClick={(e) => { e.stopPropagation(); handleSkipChunk(file.id, "backward"); }}
+                    data-testid={`button-skip-back-panel-${file.id}`}
+                  />
+                  <Play 
+                    className="h-5 w-5 fill-black text-black cursor-pointer hover:opacity-70" 
                     onClick={() => handlePlayFile(file.id, file.objectPath, file.displayName)}
-                    data-testid={`button-play-${file.id}`}
-                  >
-                    <Play className="h-3 w-3 fill-white" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    data-testid={`button-play-panel-${file.id}`}
+                  />
+                  <Square 
+                    className="h-4 w-4 fill-black text-black cursor-pointer hover:opacity-70" 
                     onClick={() => handleStop(file.id)}
-                    data-testid={`button-stop-${file.id}`}
-                  >
-                    <Square className="h-3 w-3 fill-white" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    data-testid={`button-stop-panel-${file.id}`}
+                  />
+                  <SkipForward 
+                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
+                    onClick={(e) => { e.stopPropagation(); handleSkipChunk(file.id, "forward"); }}
+                    data-testid={`button-skip-forward-panel-${file.id}`}
+                  />
+                  <RotateCcw 
+                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
+                    onClick={() => handleRestart(file.id, file.objectPath, file.displayName)}
+                    data-testid={`button-restart-panel-${file.id}`}
+                  />
+                </div>
+                {/* Volume controls with plus/minus */}
+                <div className="flex items-center justify-center gap-3">
+                  <Minus 
+                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
                     onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "down"); }}
-                    data-testid={`button-vol-down-${file.id}`}
-                  >
-                    <VolumeX className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 hover:bg-[#4d4d4d]"
+                    data-testid={`button-vol-down-panel-${file.id}`}
+                  />
+                  <Volume2 className="h-4 w-4 text-black" />
+                  <Plus 
+                    className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
                     onClick={(e) => { e.stopPropagation(); handleVolume(file.id, "up"); }}
-                    data-testid={`button-vol-up-${file.id}`}
-                  >
-                    <Volume2 className="h-3 w-3" />
-                  </Button>
+                    data-testid={`button-vol-up-panel-${file.id}`}
+                  />
                 </div>
               </div>
             ))}
