@@ -6882,41 +6882,41 @@ export default function Dashboard() {
                 id="arrowhead-green"
                 markerWidth="10"
                 markerHeight="7"
-                refX="9"
+                refX="1"
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" fillOpacity="1" />
+                <polygon points="10 0, 0 3.5, 10 7" fill="#22c55e" fillOpacity="1" />
               </marker>
               <marker
                 id="arrowhead-pink"
                 markerWidth="10"
                 markerHeight="7"
-                refX="9"
+                refX="1"
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" fillOpacity="1" />
+                <polygon points="10 0, 0 3.5, 10 7" fill="#ec4899" fillOpacity="1" />
               </marker>
               <marker
                 id="arrowhead-indigo"
                 markerWidth="10"
                 markerHeight="7"
-                refX="9"
+                refX="1"
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" fillOpacity="1" />
+                <polygon points="10 0, 0 3.5, 10 7" fill="#6366f1" fillOpacity="1" />
               </marker>
               <marker
                 id="arrowhead-black"
                 markerWidth="10"
                 markerHeight="7"
-                refX="9"
+                refX="1"
                 refY="3.5"
                 orient="auto"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="1" />
+                <polygon points="10 0, 0 3.5, 10 7" fill="#000000" fillOpacity="1" />
               </marker>
             </defs>
             {arrowConnections.map((conn, connIdx) => {
@@ -6924,21 +6924,21 @@ export default function Dashboard() {
                 : conn.color === "#ec4899" ? "arrowhead-pink" 
                 : conn.color === "#6366f1" ? "arrowhead-indigo"
                 : "arrowhead-black";
-              // Draw path that goes left first, then straight down to bottom of task boxes, then curves to calendar
-              const exitX = conn.fromX - 21; // Go 21px left first to clear all checkboxes
+              // Draw path from task box down to calendar, with arrowhead pointing at calendar checkbox
+              const exitX = conn.fromX - 21; // 21px left of checkbox to clear all checkboxes
               // Get the task boxes container bottom
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
               // Split into two paths:
-              // Path 1: Fully opaque - from checkbox to just before calendar box (straight lines)
+              // Path 1: Fully opaque - from task box checkbox down to container bottom
               const opaquePath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom}`;
-              // Path 2: 75% transparent - curve from container bottom to calendar target
+              // Path 2: 75% transparent - curve from container bottom to calendar (with arrowhead)
               const transparentPath = `M ${exitX} ${containerBottom} Q ${exitX} ${(containerBottom + conn.toY) / 2}, ${conn.toX} ${conn.toY}`;
               
               return (
                 <g key={conn.taskId}>
-                  {/* Part 1: Opaque path - from checkbox down to container bottom */}
+                  {/* Part 1: Opaque path - from task box down to container bottom */}
                   {/* Glow for opaque section */}
                   <path
                     d={opaquePath}
@@ -6958,7 +6958,7 @@ export default function Dashboard() {
                     strokeOpacity="1"
                   />
                   
-                  {/* Part 2: Transparent path - curve to calendar box */}
+                  {/* Part 2: Transparent path - curve to calendar with arrowhead */}
                   {/* Glow for transparent section */}
                   <path
                     d={transparentPath}
@@ -6968,7 +6968,7 @@ export default function Dashboard() {
                     strokeDasharray="5,3"
                     strokeOpacity="0.1"
                   />
-                  {/* Main transparent colored line - 75% transparent (0.25 opacity) */}
+                  {/* Main transparent colored line with arrowhead pointing at calendar checkbox */}
                   <path
                     d={transparentPath}
                     stroke={conn.color}
