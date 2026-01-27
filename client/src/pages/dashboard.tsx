@@ -6638,6 +6638,11 @@ export default function Dashboard() {
                       const weekFiles = getFilesInFlyoutWeek(week.id);
                       const isWeekExpanded = flyoutExpandedFolders.has(week.id);
                       const hasFiles = weekFiles.length > 0;
+                      const allFilesCompleted = hasFiles && weekFiles.every(f => f.listened);
+                      // Past week with incomplete files should blink
+                      const shouldBlink = isPastWeek && hasFiles && !allFilesCompleted;
+                      // Past week with all files completed should have strikethrough
+                      const shouldStrikethrough = isPastWeek && allFilesCompleted;
                       
                       if (!hasFiles) return null;
                       
@@ -6645,12 +6650,12 @@ export default function Dashboard() {
                         <div key={week.id}>
                           {/* Week folder row */}
                           <div 
-                            className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                            className={`flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer ${shouldBlink ? 'animate-slow-blink' : ''}`}
                             onClick={() => toggleFlyoutFolder(week.id)}
                           >
                             {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                             {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                            <span className={`text-[13px] truncate flex-1 ${isPastWeek ? 'line-through text-white/50' : 'text-white/90'}`}>{week.name}</span>
+                            <span className={`text-[13px] truncate flex-1 ${shouldStrikethrough ? 'line-through text-white/50' : 'text-white/90'}`}>{week.name}</span>
                             <span className="text-[12px] text-white/40">{weekFiles.length}</span>
                           </div>
                         
