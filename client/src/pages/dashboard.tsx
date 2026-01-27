@@ -7489,11 +7489,16 @@ export default function Dashboard() {
               if (conn.color === "#22c55e") markerId = "arrowhead-prep-green";
               else if (conn.color === "#6366f1") markerId = "arrowhead-prep-indigo";
               
-              // Path: from checkbox, go left 21px, down partway, right to above target, then down vertically
-              // This makes the arrowhead point DOWN
-              const endY = conn.toY - 12; // Arrowhead ends 12px above the text center
-              const midY = endY - 30; // Stop 30px above endpoint, then go right, then down
-              const path = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${midY} L ${conn.toX} ${midY} L ${conn.toX} ${endY}`;
+              // Path: curved from checkbox to prep text, ending vertically pointing DOWN
+              const endY = conn.toY - 14; // Arrowhead ends 14px above the text center
+              const midY = endY - 30; // Control point for final vertical descent
+              
+              // Use quadratic bezier curves for smooth path
+              // Start at checkbox, curve left and down, then curve to above target, then straight down
+              const path = `M ${conn.fromX} ${conn.fromY} ` +
+                `Q ${exitX} ${conn.fromY}, ${exitX} ${conn.fromY + 40} ` + // Curve left and down
+                `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve to above target
+                `L ${conn.toX} ${endY}`; // Straight down to target
               
               return (
                 <g key={`prep-arrow-${conn.taskId}`}>
