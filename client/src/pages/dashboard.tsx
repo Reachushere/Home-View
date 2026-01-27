@@ -3468,7 +3468,7 @@ export default function Dashboard() {
 
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
-        <DialogContent className="max-w-6xl max-h-[95vh] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+        <DialogContent className="max-w-6xl max-h-[98vh] h-[95vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
             const folderParts = previewFile?.folder?.split('-') || [];
