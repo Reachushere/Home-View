@@ -6318,15 +6318,12 @@ export default function Dashboard() {
                   // Prep extension is a short bar at the top (about 20px), not full height
                   const prepBarHeight = 20;
                   
-                  // Calculate which day index is "today" relative to the week grid
-                  // Week starts on Saturday (index 0), then Sun (1), Mon (2), etc.
+                  // Find today's index in the weekDays array (not day-of-week)
                   const today = new Date();
-                  const currentDayOfWeek = today.getDay(); // 0=Sun, 6=Sat
-                  // Convert to week grid index: Sat=0, Sun=1, Mon=2, Tue=3, Wed=4, Thu=5, Fri=6
-                  const todayGridIdx = currentDayOfWeek === 6 ? 0 : currentDayOfWeek + 1;
+                  const todayGridIdx = weekDays.findIndex(day => isSameDay(day, today));
                   
-                  // Check if today falls within the prep days range
-                  const isTodayInPrepRange = todayGridIdx >= prepStartDayIdx && todayGridIdx < dueDayIdx;
+                  // Check if today falls within the prep days range (prepStartDayIdx to dueDayIdx-1)
+                  const isTodayInPrepRange = todayGridIdx >= 0 && todayGridIdx >= prepStartDayIdx && todayGridIdx < dueDayIdx;
                   
                   // Calculate the position of today within the prep range (0-indexed from prep start)
                   const todayOffsetInPrep = isTodayInPrepRange ? todayGridIdx - prepStartDayIdx : -1;
