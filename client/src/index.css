@@ -219,7 +219,7 @@
 }
 
 .animate-week-blink {
-  animation: week-folder-blink 2s ease-in-out infinite;
+  animation: week-folder-blink 3s ease-in-out infinite;
 }
 
 /* File name blinking animation - prominent dark green to light with white text throughout */
