@@ -2542,42 +2542,18 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Determine arrow target based on task type
+          // Always point to the calendar task checkbox (arrow pointing right, 2px away)
           let toX: number;
           let toY: number;
+          const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
           
-          // For Today box tasks, point to the prep extension middle
-          const isTodayTask = todayTaskIds.has(task.id);
-          if (isTodayTask) {
-            // Find the prep extension element for this task
-            const prepExtensionEl = document.querySelector(`[data-prep-today-task-id="${task.id}"]`);
-            if (prepExtensionEl) {
-              const prepRect = prepExtensionEl.getBoundingClientRect();
-              toX = prepRect.left + prepRect.width / 2; // Center horizontally
-              toY = prepRect.top + prepRect.height / 2; // Center vertically
-            } else {
-              // Fallback to calendar task checkbox
-              const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
-              if (calCheckboxEl) {
-                const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-                toX = calCheckboxRect.left - 2;
-                toY = calCheckboxRect.top + calCheckboxRect.height / 2;
-              } else {
-                toX = calRect.left - 2;
-                toY = calRect.top + calRect.height / 2;
-              }
-            }
+          if (calCheckboxEl) {
+            const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
+            toX = calCheckboxRect.left - 2;
+            toY = calCheckboxRect.top + calCheckboxRect.height / 2;
           } else {
-            // For Tomorrow/This Week tasks, point to calendar task checkbox
-            const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
-            if (calCheckboxEl) {
-              const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-              toX = calCheckboxRect.left - 2;
-              toY = calCheckboxRect.top + calCheckboxRect.height / 2;
-            } else {
-              toX = calRect.left - 2;
-              toY = calRect.top + calRect.height / 2;
-            }
+            toX = calRect.left - 2;
+            toY = calRect.top + calRect.height / 2;
           }
           
           // For green arrows (Tomorrow box), keep them visible even when calendar task is above viewport
@@ -7164,40 +7140,11 @@ export default function Dashboard() {
               </marker>
             </defs>
             {arrowConnections.map((conn) => {
-              // Today box tasks always use pink arrows pointing DOWN to prep extension
-              const isTodayTask = conn.isToday;
               const markerId = conn.color === "#22c55e" ? "arrowhead-green" 
                 : conn.color === "#ec4899" ? "arrowhead-pink" 
                 : conn.color === "#6366f1" ? "arrowhead-indigo"
                 : "arrowhead-black";
               const exitX = conn.fromX - 21;
-              
-              // For Today box tasks: pink line going left 21px, then down to prep box
-              if (isTodayTask) {
-                // Path: horizontal 21px left from checkbox, then down to prep box (just above it)
-                const todayExitX = conn.fromX - 21;
-                const arrowheadY = conn.toY - 5; // 5px above the prep box center
-                const todayPath = `M ${conn.fromX} ${conn.fromY} L ${todayExitX} ${conn.fromY} L ${todayExitX} ${arrowheadY}`;
-                
-                return (
-                  <g key={`today-arrow-${conn.taskId}`}>
-                    <path
-                      d={todayPath}
-                      stroke="#ec4899"
-                      strokeWidth="2"
-                      fill="none"
-                      strokeDasharray="5,3"
-                      strokeOpacity="0.75"
-                    />
-                    {/* Arrowhead pointing down to prep box */}
-                    <polygon 
-                      points={`${todayExitX - 5} ${arrowheadY}, ${todayExitX + 5} ${arrowheadY}, ${todayExitX} ${arrowheadY + 10}`}
-                      fill="#ec4899" 
-                      fillOpacity="0.75"
-                    />
-                  </g>
-                );
-              }
               const taskBoxesContainer = document.querySelector('[data-task-boxes-container="true"]');
               const containerBottom = taskBoxesContainer ? taskBoxesContainer.getBoundingClientRect().bottom + 5 : conn.fromY + 50;
               
