@@ -2437,14 +2437,24 @@ export default function Dashboard() {
             fromY = boxRect.top + boxRect.height / 2;
           }
           
-          // Arrow points to top of calendar entry (since boxes are now above calendar)
-          let toY = calRect.top - 10;
+          // Find the checkbox in the calendar task and point to its left side
+          const calCheckboxEl = calTaskEl.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+          let toX: number;
+          let toY: number;
+          if (calCheckboxEl) {
+            const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
+            toX = calCheckboxRect.left; // Left side of calendar checkbox
+            toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Center vertically
+          } else {
+            toX = calRect.left; // Fall back to left of calendar entry
+            toY = calRect.top + calRect.height / 2;
+          }
           
           connections.push({
             taskId: task.id,
             fromX,
             fromY,
-            toX: calRect.left + calRect.width / 2,
+            toX,
             toY,
             color,
             isToday: todayTaskIds.has(task.id)
