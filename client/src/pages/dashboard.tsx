@@ -7002,7 +7002,7 @@ export default function Dashboard() {
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="0.15"
+                    strokeOpacity="0.25"
                     markerEnd={`url(#${markerId})`}
                   />
                 </g>
