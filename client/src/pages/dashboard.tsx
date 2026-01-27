@@ -5404,8 +5404,17 @@ export default function Dashboard() {
                   return spansFullWeek;
                 });
                 
-                // Calculate position for full-week tasks (starts at MODULE column, not after it)
-                const fullWeekLeftOffset = gridSizes.timeColumnWidth;
+                // Calculate position for full-week tasks
+                // Box starts at MODULE column when Saturday, or at Sunday column when Saturday has passed
+                const today = new Date();
+                const isSaturday = today.getDay() === 6;
+                // Get Saturday column width (dayIdx 0)
+                const saturdayColumnWidth = gridSizes.dayColumnWidths[0] || 100;
+                // If Saturday: start at MODULE column (timeColumnWidth)
+                // If not Saturday: start at Sunday column (timeColumnWidth + moduleColumnWidth + saturdayColumnWidth)
+                const fullWeekLeftOffset = isSaturday 
+                  ? gridSizes.timeColumnWidth 
+                  : gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + saturdayColumnWidth;
                 
                 return (
                 <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
