@@ -2518,11 +2518,10 @@ export default function Dashboard() {
     return isWithinInterval(dayStart, { start: weekStart, end: weekEnd });
   };
   
-  // Get tasks for a specific hour on a day (tasks with prep days now show in All Day row instead)
+  // Get tasks for a specific hour on a day
   const getTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
-      if (t.startDate) return false; // Tasks with prep days show in All Day row
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
@@ -2539,7 +2538,6 @@ export default function Dashboard() {
   const getContinuingTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
-      if (t.startDate) return false; // Tasks with prep days show in All Day row
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
@@ -2561,7 +2559,6 @@ export default function Dashboard() {
   const getMultiHourTasksForWeek = () => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
-      if (t.startDate) return false; // Tasks with prep days show in All Day row
       if (!t.eventStartTime || !t.eventEndTime) return false;
       
       const dueDate = new Date(t.dueDate);
@@ -2676,20 +2673,12 @@ export default function Dashboard() {
     });
   };
   
-  // Get all-day tasks - now includes tasks with prep days on their due date (even if they have a time)
+  // Get all-day tasks (tasks without specific time - only midnight)
   const getAllDayTasks = (day: Date) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
-      const dueDate = new Date(t.dueDate);
-      const hasPrepDays = !!t.startDate;
-      
-      // Tasks with prep days always show in All Day row on their due date
-      if (hasPrepDays && isSameDay(dueDate, day)) {
-        return true;
-      }
-      
-      // Regular all-day tasks (no time set, midnight)
       if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
+      const dueDate = new Date(t.dueDate);
       const isMidnight = dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
       return isSameDay(dueDate, day) && isMidnight;
     });
@@ -5480,76 +5469,7 @@ export default function Dashboard() {
                       const palerBg = getPalerColor(bgClass);
                       const borderClass = task.isCompleted ? "border-gray-300" : colors ? colors.border : "border-gray-400";
                       
-                      // Tasks with prep days get special rendering matching the design
-                      if (hasPrepDays && prepDaysCount > 0 && !task.isCompleted) {
-                        // Get the paler prep color based on course
-                        const prepBgColor = colors 
-                          ? (colors.bg.includes('green') ? 'bg-green-100' : 
-                             colors.bg.includes('pink') ? 'bg-pink-100' : 
-                             colors.bg.includes('indigo') ? 'bg-indigo-100' : 'bg-cyan-100')
-                          : 'bg-cyan-100';
-                        const mainBgColor = colors 
-                          ? (colors.bg.includes('green') ? 'bg-green-400' : 
-                             colors.bg.includes('pink') ? 'bg-pink-400' : 
-                             colors.bg.includes('indigo') ? 'bg-indigo-400' : 'bg-blue-400')
-                          : 'bg-blue-400';
-                        
-                        return (
-                          <div
-                            key={task.id}
-                            className="relative flex items-stretch"
-                            style={{ minHeight: '32px' }}
-                            data-testid={`all-day-task-${task.id}`}
-                          >
-                            {/* Prep Days extension - extends to the left */}
-                            <div
-                              className={`absolute ${prepBgColor} border border-gray-400 rounded-l-md flex items-center justify-center`}
-                              style={{
-                                right: '100%',
-                                top: 0,
-                                height: '16px',
-                                width: `calc(${prepDaysCount} * 100% + ${prepDaysCount * 4}px)`,
-                                borderRight: 'none',
-                                marginRight: '0px'
-                              }}
-                            >
-                              <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-2">
-                                Prep days
-                              </span>
-                            </div>
-                            {/* Main task box - taller, with checkbox at top */}
-                            <div
-                              className={`flex flex-col ${mainBgColor} border border-gray-500 rounded-md ${
-                                isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                              }`}
-                              style={{
-                                borderTopLeftRadius: '0',
-                                minWidth: '100%',
-                                minHeight: '32px'
-                              }}
-                            >
-                              {/* Checkbox row at top */}
-                              <div className="flex items-center px-1 pt-0.5">
-                                <Checkbox
-                                  checked={task.isCompleted || false}
-                                  onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                  className="h-4 w-4 shrink-0 bg-white border-gray-600 data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                  data-testid={`checkbox-allday-${task.id}`}
-                                />
-                              </div>
-                              {/* Task title */}
-                              <div 
-                                onClick={() => setEditingTask(task)}
-                                className="text-[9px] font-bold text-black px-1 pb-0.5 cursor-pointer hover:opacity-80 truncate"
-                              >
-                                {task.title}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      }
-                      
-                      // Regular all-day tasks without prep days
+                      // Regular all-day tasks (no prep days rendering here - prep tasks show in time slots)
                       return (
                         <div
                           key={task.id}
@@ -5939,8 +5859,18 @@ export default function Dashboard() {
                             const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                             const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                             
+                            // Check for prep days
+                            const hasPrepDays = !!task.startDate && !task.isCompleted;
+                            const prepDaysCount = hasPrepDays && task.startDate
+                              ? Math.max(0, Math.min(2, differenceInDays(new Date(task.dueDate), new Date(task.startDate))))
+                              : 0;
+                            
+                            // Prep colors from course colors
+                            const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
+                            const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
+                            
                             // Calculate height based on duration for events with start/end times
-                            let taskHeight = 40; // Default height for single hour
+                            let taskHeight = hasPrepDays && prepDaysCount > 0 ? 36 : 40; // Slightly smaller for prep tasks
                             let topOffset = 2; // Default top offset
                             if (task.eventStartTime && task.eventEndTime) {
                               const [startHour, startMin] = task.eventStartTime.split(':').map(Number);
@@ -5949,7 +5879,9 @@ export default function Dashboard() {
                               const endMinutes = endHour * 60 + endMin;
                               const durationMinutes = endMinutes - startMinutes;
                               // Single hour tasks only now
-                              taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
+                              taskHeight = hasPrepDays && prepDaysCount > 0 
+                                ? Math.max(36, (durationMinutes / 60) * 44 - 8)
+                                : Math.max(40, (durationMinutes / 60) * 44 - 4);
                               // Offset for minutes past the hour
                               topOffset = (startMin / 60) * 44;
                             }
@@ -5976,12 +5908,16 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute rounded overflow-hidden hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
                                   isDueToday ? "task-blink-border" : ""
+                                } ${
+                                  hasPrepDays && prepDaysCount > 0
+                                    ? "rounded-r rounded-bl overflow-visible" 
+                                    : "rounded overflow-hidden"
                                 } ${
                                   task.isCompleted 
                                     ? "bg-gray-200 border border-gray-300" 
@@ -5994,11 +5930,30 @@ export default function Dashboard() {
                                   left: `calc(${taskIdx * columnWidth}% + 2px)`,
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
-                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 20)
+                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 20),
+                                  borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
                               >
+                                {/* Prep Days extension - extends to the left over previous day columns */}
+                                {hasPrepDays && prepDaysCount > 0 && (
+                                  <div
+                                    className={`absolute ${prepBgClass} border ${prepBorderClass} rounded-l-md flex items-center justify-center pointer-events-none`}
+                                    style={{
+                                      right: '100%',
+                                      top: 0,
+                                      height: '18px',
+                                      width: `calc(${prepDaysCount * 100}% + ${prepDaysCount * 4}px)`,
+                                      borderRight: 'none',
+                                      zIndex: 10
+                                    }}
+                                  >
+                                    <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1">
+                                      Prep days
+                                    </span>
+                                  </div>
+                                )}
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
                                 <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   <Checkbox
@@ -6076,6 +6031,19 @@ export default function Dashboard() {
                   const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                   const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                   
+                  // Check for prep days
+                  const hasPrepDays = !!task.startDate && !task.isCompleted;
+                  const prepDaysCount = hasPrepDays && task.startDate
+                    ? Math.max(0, Math.min(2, differenceInDays(new Date(task.dueDate), new Date(task.startDate))))
+                    : 0;
+                  
+                  // Prep colors from course colors
+                  const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
+                  const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
+                  
+                  // Calculate day column width for prep extension
+                  const dayColWidth = `calc((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)`;
+                  
                   return (
                     <div
                       key={`multi-${task.id}`}
@@ -6097,12 +6065,16 @@ export default function Dashboard() {
                           setSelectedTaskId(null);
                         }
                       }}
-                      className={`absolute rounded overflow-hidden hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                      className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                         draggedTask?.id === task.id ? "opacity-50" : ""
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                       } ${
                         isDueToday ? "task-blink-border" : ""
+                      } ${
+                        hasPrepDays && prepDaysCount > 0
+                          ? "rounded-r rounded-bl overflow-visible" 
+                          : "rounded overflow-hidden"
                       } ${
                         task.isCompleted 
                           ? "bg-gray-200 border border-gray-300" 
@@ -6115,11 +6087,30 @@ export default function Dashboard() {
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
                         width: `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${heightPx}px`,
-                        zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25)
+                        zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25),
+                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
                     >
+                      {/* Prep Days extension - extends to the left over previous day columns */}
+                      {hasPrepDays && prepDaysCount > 0 && (
+                        <div
+                          className={`absolute ${prepBgClass} border ${prepBorderClass} rounded-l-md flex items-center justify-center pointer-events-none`}
+                          style={{
+                            right: '100%',
+                            top: 0,
+                            height: '18px',
+                            width: `calc(${prepDaysCount} * ${dayColWidth})`,
+                            borderRight: 'none',
+                            zIndex: 10
+                          }}
+                        >
+                          <span className="text-[9px] text-gray-500 font-medium whitespace-nowrap px-1">
+                            Prep days
+                          </span>
+                        </div>
+                      )}
                       {/* Silver shimmer header with checkbox and title for due today tasks */}
                       <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                         <Checkbox
