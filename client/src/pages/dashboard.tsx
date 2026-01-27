@@ -3478,11 +3478,37 @@ export default function Dashboard() {
                     <SelectTrigger data-testid="select-speaker" className="h-8 text-[10px] bg-black/50 border-white/30 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-white/20">
-                      <SelectItem value="media_player.echo_lr_studio_white_am">LR Studio (White)</SelectItem>
-                      <SelectItem value="media_player.echo_show_pug_am">Echo Show (Pug)</SelectItem>
-                      <SelectItem value="media_player.echo_lr_hub_am">LR Hub</SelectItem>
-                      <SelectItem value="media_player.cat_wr">Cat WR</SelectItem>
+                    <SelectContent className="bg-gray-900 border-white/20 max-h-[300px]">
+                      <SelectItem value="media_player.byhome">Apartment</SelectItem>
+                      <SelectItem value="media_player.cat_wash">Cat Wash</SelectItem>
+                      <SelectItem value="media_player.cat_wr">Cat Washroom Speakers</SelectItem>
+                      <SelectItem value="media_player.echo_cat_left_am">Cat Washroom Left</SelectItem>
+                      <SelectItem value="media_player.echo_cat_right_am">Cat Washroom Right</SelectItem>
+                      <SelectItem value="media_player.echo_cat_washroom_middle">Cat Washroom Middle</SelectItem>
+                      <SelectItem value="media_player.echo_closet_am">Closet</SelectItem>
+                      <SelectItem value="media_player.echo_lr_couch_r_am">Hallway Corner</SelectItem>
+                      <SelectItem value="media_player.echo_hallway_entrance_am">Hallway Entrance</SelectItem>
+                      <SelectItem value="media_player.echo_king_l_am">King Left</SelectItem>
+                      <SelectItem value="media_player.echo_king_r_am">King Right</SelectItem>
+                      <SelectItem value="media_player.echo_king_tv_am">King TV</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_cupboards_left_am">Kitchen Cupboards Left</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_cupboards_r_am">Kitchen Cupboards Right</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_fridge_am">Kitchen Fridge</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_hutch_am">Kitchen Hutch</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_island_corner_am">Kitchen Island Corner</SelectItem>
+                      <SelectItem value="media_player.echo_kitchen_studio_black_am">Kitchen Studio Black</SelectItem>
+                      <SelectItem value="media_player.echo_lr_couch_l_am">Living Room Couch Left</SelectItem>
+                      <SelectItem value="media_player.echo_lr_hub_am">Living Room Hub</SelectItem>
+                      <SelectItem value="media_player.echo_lr_studio_white_am">Living Room Studio White</SelectItem>
+                      <SelectItem value="media_player.echo_lr_tv_shelf_am">Living Room TV Shelf</SelectItem>
+                      <SelectItem value="media_player.echo_queen_balcony_am">Queen Balcony</SelectItem>
+                      <SelectItem value="media_player.echo_queen_bed_l_am">Queen Bed Left</SelectItem>
+                      <SelectItem value="media_player.echo_queen_bed_r_am">Queen Bed Right</SelectItem>
+                      <SelectItem value="media_player.echo_show_pug_am">Echo Show Pug</SelectItem>
+                      <SelectItem value="media_player.everywhere_2">Everywhere</SelectItem>
+                      <SelectItem value="media_player.hallway">Hallway</SelectItem>
+                      <SelectItem value="media_player.king_bedroom">King Bedroom</SelectItem>
+                      <SelectItem value="media_player.queen_bedroom">Queen Bedroom</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
