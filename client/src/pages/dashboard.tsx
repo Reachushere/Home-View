@@ -5455,42 +5455,37 @@ export default function Dashboard() {
                         const isWednesdayOrLater = currentDayOfWeek >= 3 && currentDayOfWeek <= 5;
                         const shouldBlink = !task.isCompleted && isWednesdayOrLater;
                         
-                        const baseStyle = task.isCompleted 
-                          ? "bg-gray-200 text-gray-400 border border-gray-300" 
-                          : course.colors 
-                            ? `${course.colors.bg} text-black border ${course.colors.border}` 
-                            : "bg-gray-200 text-black border border-gray-400";
+                        const moduleBg = task.isCompleted ? "bg-gray-200 text-gray-400" : course.colors ? `${course.colors.bg} text-black` : "bg-gray-200 text-black";
+                        const moduleBorder = task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400";
                         
-                        // Render as a flex row: Course Label | Empty past days | Task from today through Friday
+                        // Render TWO rows for each MODULE task:
+                        // Row 1: Static task in MODULE column only
+                        // Row 2: Dynamic task starting from today's column to Friday
                         return (
-                          <div 
-                            key={`fullweek-row-${task.id}`}
-                            className="grid w-full"
-                            style={{ 
-                              gridTemplateColumns: getGridTemplateColumns(),
-                              minHeight: `${gridSizes.courseRowHeight}px`
-                            }}
-                          >
-                            {/* Course name column */}
-                            <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
-                              {taskIdx === 0 ? course.name : ''}
-                            </div>
-                            
-                            {/* Full-week task - dynamically starts from today's column */}
-                            {isSaturdayToday ? (
-                              // On Saturday: span MODULE + all 7 days
+                          <div key={`fullweek-container-${task.id}`}>
+                            {/* Row 1: Static MODULE column task */}
+                            <div 
+                              className="grid w-full"
+                              style={{ 
+                                gridTemplateColumns: getGridTemplateColumns(),
+                                minHeight: `${gridSizes.courseRowHeight}px`
+                              }}
+                            >
+                              {/* Course name column */}
+                              <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
+                                {taskIdx === 0 ? course.name : ''}
+                              </div>
+                              
+                              {/* Static MODULE column task */}
                               <div 
-                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 ${baseStyle} ${
-                                  isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                                }`}
-                                style={{ gridColumn: '2 / -1' }}
-                                data-testid={`course-fullweek-task-${task.id}`}
+                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 ${moduleBg} border ${moduleBorder}`}
+                                data-testid={`course-module-task-static-${task.id}`}
                               >
                                 <Checkbox
                                   checked={task.isCompleted || false}
                                   onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
                                   className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                  data-testid={`checkbox-fullweek-${task.id}`}
+                                  data-testid={`checkbox-module-static-${task.id}`}
                                 />
                                 <span 
                                   onClick={() => setEditingTask(task)}
@@ -5499,40 +5494,31 @@ export default function Dashboard() {
                                   <span className="font-bold">{task.title}</span>
                                 </span>
                               </div>
-                            ) : (
-                              <>
-                                {/* MODULE column - empty if today is not Sunday (Sunday is day 0) */}
-                                {currentDayOfWeek === 0 ? (
-                                  // Today is Sunday - show task in MODULE column
-                                  (() => {
-                                    const moduleBg = task.isCompleted ? "bg-gray-200 text-gray-400" : course.colors ? `${course.colors.bg} text-black` : "bg-gray-200 text-black";
-                                    const moduleBorder = task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400";
-                                    return (
-                                      <div 
-                                        className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded-l m-0.5 mr-0 ${moduleBg} border-l border-t border-b ${moduleBorder} ${
-                                          shouldBlink ? "animate-blink" : ""
-                                        }`}
-                                        data-testid={`course-fullweek-task-module-${task.id}`}
-                                      >
-                                        <Checkbox
-                                          checked={task.isCompleted || false}
-                                          onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                          data-testid={`checkbox-fullweek-${task.id}`}
-                                        />
-                                        <span 
-                                          onClick={() => setEditingTask(task)}
-                                          className={`cursor-pointer hover:opacity-80 truncate ${task.isCompleted ? "line-through" : ""}`}
-                                        >
-                                          <span className="font-bold">{task.title}</span>
-                                        </span>
-                                      </div>
-                                    );
-                                  })()
-                                ) : (
-                                  // Not Sunday - MODULE column is empty
-                                  <div style={{ backgroundColor: course.bg }} className="border-l border-border/50" />
-                                )}
+                              
+                              {/* Empty day columns for static row */}
+                              {weekDays.slice(0, 6).map((_, dayIdx) => (
+                                <div key={dayIdx} style={{ backgroundColor: course.bg }} />
+                              ))}
+                              
+                              {/* Saturday column - empty */}
+                              <div style={{ backgroundColor: course.bg }} />
+                            </div>
+                            
+                            {/* Row 2: Dynamic task starting from today's column */}
+                            {!isSaturdayToday && currentDayOfWeek > 0 && (
+                              <div 
+                                className="grid w-full"
+                                style={{ 
+                                  gridTemplateColumns: getGridTemplateColumns(),
+                                  minHeight: `${gridSizes.courseRowHeight}px`
+                                }}
+                              >
+                                {/* Course name column - empty for second row */}
+                                <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white" style={{ backgroundColor: colorSettings.headerBar }}>
+                                </div>
+                                
+                                {/* MODULE column - empty for dynamic row */}
+                                <div style={{ backgroundColor: course.bg }} className="border-l border-border/50" />
                                 
                                 {/* Sun-Fri columns (6 columns: index 0-5) */}
                                 {weekDays.slice(0, 6).map((day, dayIdx) => {
@@ -5569,7 +5555,6 @@ export default function Dashboard() {
                                   
                                   // If today is the start, show the task content
                                   if (isTodayColumn) {
-                                    const moduleBg = task.isCompleted ? "bg-gray-200 text-gray-400" : course.colors ? `${course.colors.bg} text-black` : "bg-gray-200 text-black";
                                     return (
                                       <div 
                                         key={dayIdx}
@@ -5610,7 +5595,7 @@ export default function Dashboard() {
                                 
                                 {/* Saturday column - empty with course background */}
                                 <div style={{ backgroundColor: course.bg }} />
-                              </>
+                              </div>
                             )}
                           </div>
                         );
