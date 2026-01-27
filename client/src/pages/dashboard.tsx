@@ -6552,6 +6552,9 @@ export default function Dashboard() {
                 data-testid={`droppable-task-${task.id}`}
               >
                 <div className="flex items-center gap-2">
+                  {shouldBlinkInTodayBox && (
+                    <Bell className="h-3.5 w-3.5 text-red-500 animate-blink flex-shrink-0" />
+                  )}
                   <input
                     type="checkbox"
                     checked={task.isCompleted ?? false}
