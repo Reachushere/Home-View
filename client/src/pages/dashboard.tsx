@@ -105,9 +105,9 @@ const typeColors: Record<string, string> = {
 };
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
-  "CPPA122": { bg: "bg-green-100 dark:bg-green-900/40", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-green-50 dark:bg-green-900/20", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
-  "CFNF400": { bg: "bg-pink-100 dark:bg-pink-900/40", border: "border-pink-500", text: "text-pink-700 dark:text-pink-300", dot: "bg-pink-500", prepBg: "bg-pink-50 dark:bg-pink-900/20", prepBorder: "border-pink-300", prepText: "text-pink-600 dark:text-pink-400" },
-  "CASL101": { bg: "bg-indigo-100 dark:bg-indigo-900/40", border: "border-indigo-500", text: "text-indigo-700 dark:text-indigo-300", dot: "bg-indigo-500", prepBg: "bg-indigo-50 dark:bg-indigo-900/20", prepBorder: "border-indigo-300", prepText: "text-indigo-600 dark:text-indigo-400" },
+  "CPPA122": { bg: "bg-green-100 dark:bg-green-900/40", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-emerald-50 dark:bg-emerald-900/20", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
+  "CFNF400": { bg: "bg-pink-100 dark:bg-pink-900/40", border: "border-pink-500", text: "text-pink-700 dark:text-pink-300", dot: "bg-pink-500", prepBg: "bg-rose-50 dark:bg-rose-900/20", prepBorder: "border-pink-300", prepText: "text-pink-600 dark:text-pink-400" },
+  "CASL101": { bg: "bg-indigo-100 dark:bg-indigo-900/40", border: "border-indigo-500", text: "text-indigo-700 dark:text-indigo-300", dot: "bg-indigo-500", prepBg: "bg-violet-50 dark:bg-violet-900/20", prepBorder: "border-indigo-300", prepText: "text-indigo-600 dark:text-indigo-400" },
 };
 
 // Display name mapping for course row labels
@@ -6351,7 +6351,6 @@ export default function Dashboard() {
                           style={{
                             left: `calc(${todayOffsetInPrep} * (100% / ${prepDaysCount}))`,
                             width: `calc(100% / ${prepDaysCount})`,
-                            backgroundColor: 'rgba(255, 255, 255, 0.4)',
                             borderRadius: todayOffsetInPrep === 0 ? '4px 0 0 4px' : '0'
                           }}
                         />
