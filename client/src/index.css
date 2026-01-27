@@ -414,7 +414,7 @@
 /* Task color pulse animation - pulses opacity on the task's background color */
 @keyframes pulse-task {
   0%, 100% {
-    opacity: 0.3;
+    opacity: 0;
   }
   50% {
     opacity: 1;
@@ -422,7 +422,7 @@
 }
 
 .animate-pulse-task {
-  animation: pulse-task 1.5s ease-in-out infinite;
+  animation: pulse-task 1s ease-in-out infinite;
 }
 
 .working-indicator .circle:nth-child(1) { animation-delay: 0s; }
