@@ -7152,7 +7152,7 @@ export default function Dashboard() {
               // For other arrows: use cubic bezier curve
               const greenExitX = conn.fromX - 21; // vertical line position for green arrow
               const transparentPath = isGreen
-                ? `M ${conn.toX - 25} ${conn.toY} L ${conn.toX - 40} ${conn.toY} L ${conn.toX - 40} ${containerBottom} L ${conn.fromX + 24} ${containerBottom} L ${conn.fromX - 18} ${conn.fromY}`
+                ? `M ${conn.toX - 25} ${conn.toY} L ${conn.toX - 40} ${conn.toY} L ${conn.fromX + 24} ${conn.fromY} L ${conn.fromX - 18} ${conn.fromY}`
                 : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               
               return (
