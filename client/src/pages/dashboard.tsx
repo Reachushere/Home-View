@@ -2443,10 +2443,10 @@ export default function Dashboard() {
           let toY: number;
           if (calCheckboxEl) {
             const calCheckboxRect = calCheckboxEl.getBoundingClientRect();
-            toX = calRect.left - 5; // Arrowhead tip stops 5px before task box
+            toX = calRect.left - 15; // Arrowhead tip stops 15px before task box
             toY = calCheckboxRect.top + calCheckboxRect.height / 2; // Aligned with checkbox center
           } else {
-            toX = calRect.left - 5; // Arrowhead tip stops 5px before task box
+            toX = calRect.left - 15; // Arrowhead tip stops 15px before task box
             toY = calRect.top + calRect.height / 2;
           }
           
@@ -6976,7 +6976,7 @@ export default function Dashboard() {
                     strokeWidth="4"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="0.1"
+                    strokeOpacity="0.15"
                   />
                   {/* Main transparent colored line with arrowhead pointing at calendar checkbox */}
                   <path
@@ -6985,7 +6985,7 @@ export default function Dashboard() {
                     strokeWidth="2"
                     fill="none"
                     strokeDasharray="5,3"
-                    strokeOpacity="0.25"
+                    strokeOpacity="0.35"
                     markerEnd={`url(#${markerId})`}
                   />
                 </g>
