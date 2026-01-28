@@ -5928,9 +5928,10 @@ export default function Dashboard() {
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
             
+            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Green column between Tuesday and Wednesday - Start Discussion Post */}
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[5] pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[15] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
@@ -5949,7 +5950,7 @@ export default function Dashboard() {
             
             {/* Green column between Thursday and Friday - Discussion Post Due */}
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[5] pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[15] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
@@ -5965,7 +5966,6 @@ export default function Dashboard() {
                 Discussion Post Due
               </span>
             </div>
-            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
