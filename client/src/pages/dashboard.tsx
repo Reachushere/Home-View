@@ -7016,7 +7016,7 @@ export default function Dashboard() {
                         {/* Week folder row */}
                         <div 
                           className={`flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer ${shouldBlink ? 'animate-week-blink' : ''}`}
-                          style={{ marginLeft: '-10px', paddingLeft: '10px' }}
+                          style={{ marginLeft: '-20px', paddingLeft: '20px' }}
                           onClick={() => toggleFlyoutFolder(week.id)}
                         >
                           {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
