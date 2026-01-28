@@ -7108,7 +7108,7 @@ export default function Dashboard() {
                   if (cppaFiles.length === 0) return null;
                   
                   return (
-                    <div className="mt-4 pt-3 border-t border-white/20">
+                    <div className="mt-1 pt-1 border-t border-white/20">
                       <div className="px-2 mb-1">
                         <span className="text-[9px] text-white/50 uppercase tracking-wide">Week {selectedWeek} CPPA122</span>
                       </div>
