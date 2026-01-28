@@ -6422,8 +6422,8 @@ export default function Dashboard() {
                               .replace(/\.pdf$/i, '')
                               .trim();
                             // Remove any leading dots, spaces, dashes, underscores repeatedly
-                            while (cleanName.match(/^[.\s\-_:]/)) {
-                              cleanName = cleanName.replace(/^[.\s\-_:]+/, '');
+                            while (cleanName.match(/^[.\s\-_:•·]/)) {
+                              cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
                             }
                             return (
                               <span
@@ -7139,8 +7139,8 @@ export default function Dashboard() {
                                 .replace(/\.pdf$/i, '')
                                 .trim();
                               // Remove any leading dots, spaces, dashes, underscores repeatedly
-                              while (cleanName.match(/^[.\s\-_:]/)) {
-                                cleanName = cleanName.replace(/^[.\s\-_:]+/, '');
+                              while (cleanName.match(/^[.\s\-_:•·]/)) {
+                                cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
                               }
                               return (
                                 <div
