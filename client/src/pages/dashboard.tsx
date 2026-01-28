@@ -5931,7 +5931,7 @@ export default function Dashboard() {
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Green column between Tuesday and Wednesday - Start Discussion Post */}
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[45] pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[5] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
@@ -5950,7 +5950,7 @@ export default function Dashboard() {
             
             {/* Green column between Thursday and Friday - Discussion Post Due */}
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[45] pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[5] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
@@ -7626,14 +7626,8 @@ export default function Dashboard() {
               let transparentPath: string;
               if (isGreen) {
                 transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
-              } else if (conn.isTomorrow) {
-                // Tomorrow arrow: curve to directly above target, then drop straight down
-                // Path: horizontal left 21px -> down -> curve to above target -> straight down
-                const dropHeight = 35; // How far above the target to stop curving and start dropping
-                const aboveTarget = conn.toY - dropHeight;
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTarget) / 2}, ${conn.toX} ${aboveTarget - 20}, ${conn.toX} ${aboveTarget} L ${conn.toX} ${conn.toY}`;
               } else {
-                // Today/This Week arrows: normal curved path
+                // Today/This Week/Tomorrow arrows: all use same curved path from left side
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               }
               
@@ -7660,7 +7654,7 @@ export default function Dashboard() {
               const greenOpaquePath = `M ${opaqueStartX} ${opaqueStartY} C ${R1.x} ${R1.y}, ${Q2.x} ${Q2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
               
               // For Tomorrow arrows, use the downward arrowhead
-              const tomorrowMarkerId = conn.isTomorrow ? "arrowhead-black-down" : markerId;
+              // All arrows use regular side-pointing arrowhead
               
               return (
                 <g key={`transparent-${conn.taskId}`}>
@@ -7671,7 +7665,7 @@ export default function Dashboard() {
                     fill="none"
                     strokeDasharray="5,3"
                     strokeOpacity="0.25"
-                    markerEnd={isGreen ? undefined : `url(#${tomorrowMarkerId})`}
+                    markerEnd={isGreen ? undefined : `url(#${markerId})`}
                     markerStart={undefined}
                   />
                   {/* Green opaque overlay - first ~30 dashes following the curve */}
