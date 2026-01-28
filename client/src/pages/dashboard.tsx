@@ -5930,14 +5930,14 @@ export default function Dashboard() {
             
             {/* Green column between Tuesday and Wednesday - Start Discussion Post */}
             <div 
-              className="absolute top-0 bottom-0 w-[8px] z-40 pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[14px] z-40 pointer-events-none flex items-center justify-center"
               style={{ 
-                left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (4 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
+                left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7px)`,
                 backgroundColor: '#22c55e'
               }}
             >
               <span 
-                className="text-white text-[6px] font-bold whitespace-nowrap"
+                className="text-white text-[7px] font-bold whitespace-nowrap"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed',
@@ -5950,14 +5950,14 @@ export default function Dashboard() {
             
             {/* Green column between Thursday and Friday - Discussion Post Due */}
             <div 
-              className="absolute top-0 bottom-0 w-[8px] z-40 pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[14px] z-40 pointer-events-none flex items-center justify-center"
               style={{ 
-                left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 4px)`,
+                left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7px)`,
                 backgroundColor: '#22c55e'
               }}
             >
               <span 
-                className="text-white text-[6px] font-bold whitespace-nowrap"
+                className="text-white text-[7px] font-bold whitespace-nowrap"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed',
