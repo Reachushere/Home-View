@@ -6830,7 +6830,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar */}
-          <div className={`absolute right-0 top-0 bottom-0 transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-24px', width: isFilesFlyoutOpen ? 'calc(20% - 68px)' : '0' }}>
+          <div className={`fixed right-0 top-[72px] bottom-[12px] transition-all duration-300 ease-in-out overflow-hidden z-50 ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isFilesFlyoutOpen ? 'calc(20% - 68px)' : '0' }}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
               {/* Top header with arrows and date - matches day header height (52px) */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '52px' }}>
