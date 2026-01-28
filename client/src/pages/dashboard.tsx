@@ -5954,14 +5954,14 @@ export default function Dashboard() {
           </div>
           {/* Calendar wrapper - shrinks when flyout opens */}
           <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? 'w-[67%]' : 'w-full'}`}>
-          <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white' }}>
+          <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
             
             {/* Green column between Tuesday and Wednesday - Start Discussion Post */}
             {!startDiscussionComplete && (
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[45] flex flex-col items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[5] flex flex-col items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
@@ -5993,7 +5993,7 @@ export default function Dashboard() {
             {/* Green column between Thursday and Friday - Discussion Post Due */}
             {!discussionDueComplete && (
             <div 
-              className={`absolute top-0 bottom-0 w-[15px] z-[45] flex flex-col items-center justify-center ${isFriday ? 'animate-pulse' : ''}`}
+              className={`absolute top-0 bottom-0 w-[15px] z-[5] flex flex-col items-center justify-center ${isFriday ? 'animate-pulse' : ''}`}
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7',
