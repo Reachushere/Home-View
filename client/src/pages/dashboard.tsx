@@ -6897,9 +6897,18 @@ export default function Dashboard() {
           
           {/* Inline Files Flyout - appears next to calendar */}
           <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'w-[33%] opacity-100' : 'w-0 opacity-0'}`}>
-            <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white">
+            <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative">
+              {/* Course row color strips - matching calendar positions */}
+              {/* Day header ~48px + All Day row 44px = 92px offset */}
+              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: `${48 + gridSizes.allDayRowHeight}px` }}>
+                <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(134, 239, 172, 0.25)' }} /> {/* CPPA122 green */}
+                <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(249, 168, 212, 0.25)' }} /> {/* CFNF400 pink */}
+                <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(165, 180, 252, 0.25)' }} /> {/* CASL101 indigo */}
+                <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(156, 163, 175, 0.20)' }} /> {/* OTHER gray */}
+              </div>
+              
               {/* Top close button */}
-              <div className="flex items-center justify-end px-2 py-1 bg-black/30">
+              <div className="flex items-center justify-end px-2 py-1 bg-black/30 relative z-10">
                 <Button 
                   size="icon" 
                   variant="ghost" 
@@ -6912,7 +6921,7 @@ export default function Dashboard() {
               </div>
               
               {/* Course Files from current week - TOP section */}
-              <div className="px-2 py-1">
+              <div className="px-2 py-1 relative z-10">
                 {(() => {
                   const courses = [
                     { id: 'cppa122', name: 'CPPA122 - Local Politics', color: 'text-green-400', pattern: /^CPPA\s*122[-_\s.]*/i },
