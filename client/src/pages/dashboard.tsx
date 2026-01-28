@@ -5939,7 +5939,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto overflow-x-visible main-scrollbar flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 175 : calendarHeight, order: 2 }}>
+        <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 167 : calendarHeight, order: 2 }}>
           {/* Files Flyout Toggle Tab - sticks to right edge of calendar */}
           <div
             className={`absolute top-1/2 -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300 ${isFilesFlyoutOpen ? 'right-[33%]' : 'right-0'}`}
@@ -7179,7 +7179,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 175 : calendarHeight, order: 2 }}>
+        <div className="mb-[12px] transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 167 : calendarHeight, order: 2 }}>
           <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm">
             <CardContent className="p-0 h-full overflow-auto">
               {/* Month Header */}
