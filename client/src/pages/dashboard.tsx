@@ -6323,9 +6323,9 @@ export default function Dashboard() {
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
-                      // CPPA122: show all on one line
+                      // CPPA122: show all on one line, centered
                       if (code === 'CPPA122') {
-                        return <span>CPPA122 Local Politics</span>;
+                        return <span className="text-center">CPPA122 Local Politics</span>;
                       }
                       // CFNF400: show CFNF, then Human, then Sexuality on separate lines
                       if (code === 'CFNF400') {
