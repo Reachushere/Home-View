@@ -6416,11 +6416,11 @@ export default function Dashboard() {
                             // Clean up file name - remove course code, module, and Local Politics
                             const fullName = file.displayName || file.originalName;
                             const cleanName = fullName
-                              .replace(/^CPPA\s*122[-_\s]*/i, '')
-                              .replace(/Module\s*\d*[-_:\s]*/gi, '')
-                              .replace(/Local\s*Politics[-_:\s]*/gi, '')
+                              .replace(/^CPPA\s*122[-_\s.]*/i, '')
+                              .replace(/Module\s*\d*[-_:\s.]*/gi, '')
+                              .replace(/Local\s*Politics[-_:\s.]*/gi, '')
                               .replace(/\.pdf$/i, '')
-                              .replace(/^[.\s-]+/, '')
+                              .replace(/^[.\s\-_:]+/g, '')
                               .trim();
                             return (
                               <span
@@ -7116,11 +7116,11 @@ export default function Dashboard() {
                         {cppaFiles.map(file => {
                           const fullName = file.displayName || file.originalName;
                           const cleanName = fullName
-                            .replace(/^CPPA\s*122[-_\s]*/i, '')
-                            .replace(/Module\s*\d*[-_:\s]*/gi, '')
-                            .replace(/Local\s*Politics[-_:\s]*/gi, '')
+                            .replace(/^CPPA\s*122[-_\s.]*/i, '')
+                            .replace(/Module\s*\d*[-_:\s.]*/gi, '')
+                            .replace(/Local\s*Politics[-_:\s.]*/gi, '')
                             .replace(/\.pdf$/i, '')
-                            .replace(/^[.\s-]+/, '')
+                            .replace(/^[.\s\-_:]+/g, '')
                             .trim();
                           return (
                             <div
