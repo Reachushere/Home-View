@@ -7085,11 +7085,11 @@ export default function Dashboard() {
                   return (
                     <div className="mt-1 pt-1 border-t border-white/20">
                       {allCourseFiles.map(course => (
-                        <div key={course.id} className="mb-1">
-                          <div className="px-2 pb-0 leading-none">
+                        <div key={course.id} className="mb-2">
+                          <div className="px-2 pb-1 leading-none">
                             <span className={`text-[9px] uppercase tracking-wide ${course.color}`}>Week {selectedWeek} {course.name}</span>
                           </div>
-                          <div className="-mt-1">
+                          <div>
                             {course.files.map(file => {
                               const fullName = file.displayName || file.originalName;
                               let cleanName = fullName
