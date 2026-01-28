@@ -7368,7 +7368,8 @@ export default function Dashboard() {
                 {(() => {
                   const courseRows = [
                     { id: 'cppa122', name: 'CPPA122', fullName: 'Local Politics', bgColor: 'rgba(134, 239, 172, 0.35)', textColor: 'text-green-700', pattern: /^CPPA\s*122[-_\s.]*/i },
-                    { id: 'cfnf400', name: 'CFNF400', fullName: 'CFNF400 Human Sexuality', bgColor: 'rgba(249, 168, 212, 0.45)', textColor: 'text-pink-700', pattern: /^CFNF\s*400[-_\s.]*/i }
+                    { id: 'cfnf400', name: 'CFNF400', fullName: 'CFNF400 Human Sexuality', bgColor: 'rgba(249, 168, 212, 0.45)', textColor: 'text-pink-700', pattern: /^CFNF\s*400[-_\s.]*/i },
+                    { id: 'casl101', name: 'CASL101', fullName: 'Sign Language', bgColor: 'rgba(165, 180, 252, 0.45)', textColor: 'text-indigo-700', pattern: /^CASL\s*101[-_\s.]*/i, hideFiles: true }
                   ];
                   
                   return courseRows.map(course => {
@@ -7402,59 +7403,63 @@ export default function Dashboard() {
                             onClick={() => courseFiles[0] && setPreviewFile(courseFiles[0])}
                           />
                         )}
-                        <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-                          {courseFiles.map((file, fileIndex) => {
-                            const fullName = file.displayName || file.originalName;
-                            let cleanName = fullName
-                              .replace(course.pattern, '')
-                              .replace(/Module\s*\d*[-_:\s.]*/gi, '')
-                              .replace(/Local\s*Politics[-_:\s.]*/gi, '')
-                              .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
-                              .replace(/Sign\s*Language[-_:\s.]*/gi, '')
-                              .replace(/\.pdf$/i, '')
-                              .trim();
-                            while (cleanName.match(/^[.\s\-_:•·]/)) {
-                              cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
-                            }
-                            return (
-                              <div
-                                key={file.id}
-                                className="flex items-center gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
-                                title={fullName}
-                                style={{ marginLeft: '-12px' }}
-                              >
-                                <span 
-                                  onClick={() => setPreviewFile(file)}
-                                  className={`text-[11px] cursor-pointer hover:underline whitespace-nowrap ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                        {!(course as any).hideFiles && (
+                          <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                            {courseFiles.map((file, fileIndex) => {
+                              const fullName = file.displayName || file.originalName;
+                              let cleanName = fullName
+                                .replace(course.pattern, '')
+                                .replace(/Module\s*\d*[-_:\s.]*/gi, '')
+                                .replace(/Local\s*Politics[-_:\s.]*/gi, '')
+                                .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
+                                .replace(/Sign\s*Language[-_:\s.]*/gi, '')
+                                .replace(/\.pdf$/i, '')
+                                .trim();
+                              while (cleanName.match(/^[.\s\-_:•·]/)) {
+                                cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
+                              }
+                              return (
+                                <div
+                                  key={file.id}
+                                  className="flex items-center gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
+                                  title={fullName}
+                                  style={{ marginLeft: '-12px' }}
                                 >
-                                  {cleanName || fullName}
-                                </span>
-                              </div>
-                            );
-                          })}
-                        </div>
+                                  <span 
+                                    onClick={() => setPreviewFile(file)}
+                                    className={`text-[11px] cursor-pointer hover:underline whitespace-nowrap ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                  >
+                                    {cleanName || fullName}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                         {/* Checkbox column at right side */}
-                        <div className="absolute right-3 top-0 bottom-0 flex flex-col justify-center gap-0.5">
-                          {courseFiles.map((file) => (
-                            <Checkbox
-                              key={file.id}
-                              checked={file.listened || false}
-                              onCheckedChange={async (checked) => {
-                                try {
-                                  await fetch(`/api/files/${file.id}`, {
-                                    method: 'PATCH',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ listened: !!checked })
-                                  });
-                                  queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                                } catch (error) {
-                                  console.error('Failed to update file listened status:', error);
-                                }
-                              }}
-                              className="h-3.5 w-3.5 shrink-0 border border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                            />
-                          ))}
-                        </div>
+                        {!(course as any).hideFiles && (
+                          <div className="absolute right-3 top-0 bottom-0 flex flex-col justify-center gap-0.5">
+                            {courseFiles.map((file) => (
+                              <Checkbox
+                                key={file.id}
+                                checked={file.listened || false}
+                                onCheckedChange={async (checked) => {
+                                  try {
+                                    await fetch(`/api/files/${file.id}`, {
+                                      method: 'PATCH',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ listened: !!checked })
+                                    });
+                                    queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                  } catch (error) {
+                                    console.error('Failed to update file listened status:', error);
+                                  }
+                                }}
+                                className="h-3.5 w-3.5 shrink-0 border border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     );
                   });
