@@ -236,6 +236,7 @@ export default function Dashboard() {
   const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
   const [isFiles2FlyoutOpen, setIsFiles2FlyoutOpen] = useState(true);
+  const [readingsPopupCourse, setReadingsPopupCourse] = useState<string | null>(null);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
   const [flyoutWidth, setFlyoutWidth] = useState(183); // Default flyout width for files (half width)
   const [flyout2Width, setFlyout2Width] = useState(183); // Default flyout width for files2 (half width)
@@ -7396,12 +7397,22 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        <FolderOpen 
-                          className={`h-5 w-5 shrink-0 ml-1 cursor-pointer hover:opacity-70 ${course.id === 'cppa122' ? 'text-green-600 fill-green-200' : course.id === 'cfnf400' ? 'text-pink-600 fill-pink-200' : 'text-indigo-600 fill-indigo-200'}`} 
-                          strokeWidth={1}
-                          onClick={() => courseFiles[0] && setPreviewFile(courseFiles[0])}
-                        />
-                        <span className="text-[9px] text-black font-medium flex flex-col leading-tight">
+                        <div className="relative shrink-0 ml-1">
+                          <FolderOpen 
+                            className={`h-5 w-5 ${courseFiles.length === 0 ? 'text-gray-400 fill-gray-200 opacity-50' : course.id === 'cppa122' ? 'text-green-600 fill-green-200' : course.id === 'cfnf400' ? 'text-pink-600 fill-pink-200' : 'text-indigo-600 fill-indigo-200'} ${courseFiles.length > 0 ? 'cursor-pointer hover:opacity-70' : ''}`} 
+                            strokeWidth={1}
+                            onClick={() => courseFiles.length > 0 && setReadingsPopupCourse(course.id)}
+                          />
+                          {courseFiles.length === 0 && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                              <div className="w-6 h-[2px] bg-gray-500 rotate-[-45deg]" />
+                            </div>
+                          )}
+                        </div>
+                        <span 
+                          className={`text-[9px] font-medium flex flex-col leading-tight ${courseFiles.length === 0 ? 'text-gray-400' : 'text-black cursor-pointer hover:underline'}`}
+                          onClick={() => courseFiles.length > 0 && setReadingsPopupCourse(course.id)}
+                        >
                           <span>{course.name} {course.id === 'cppa122' ? 'Local Politics' : course.id === 'cfnf400' ? 'Human Sexuality' : 'Sign Language'}</span>
                           <span>Readings</span>
                         </span>
