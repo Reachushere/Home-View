@@ -6897,7 +6897,7 @@ export default function Dashboard() {
                         className="flex items-center gap-2 px-2 overflow-hidden"
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                       >
-                        <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '0px', gridTemplateRows: 'repeat(3, auto)', gridAutoFlow: 'column' } : undefined}>
+                        <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '0px', marginLeft: '10px', gridTemplateRows: 'repeat(3, auto)', gridAutoFlow: 'column' } : undefined}>
                           {courseFiles.map(file => {
                             const fullName = file.displayName || file.originalName;
                             let cleanName = fullName
