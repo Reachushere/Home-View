@@ -6310,10 +6310,13 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Weeks Flyout Toggle Tab */}
+          {/* Weeks Flyout Toggle Tab - positioned to align with bottom flyout */}
           <div
-            className={`absolute top-[calc(50%+40px)] -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300`}
-            style={{ right: (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' }}
+            className={`absolute z-[60] cursor-pointer transition-all duration-300`}
+            style={{ 
+              right: (isWeeksFlyoutOpen ? Math.max(flyoutWidth, flyout2Width) : 0) + 3 + 'px',
+              top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 20}px`
+            }}
             onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
             data-testid="weeks-flyout-tab"
           >
@@ -7561,8 +7564,8 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Weeks Flyout - separate panel for week folders */}
-          <div className={`absolute right-0 top-0 bottom-0 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0' }}>
+          {/* Weeks Flyout - separate panel for week folders, starts below the two flyouts above */}
+          <div className={`absolute right-0 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width)}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, bottom: 0 }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -7570,11 +7573,14 @@ export default function Dashboard() {
                 e.preventDefault();
                 setIsResizingWeeksFlyout(true);
                 const startX = e.clientX;
-                const startWidth = weeksFlyoutWidth;
+                const startWidth = Math.max(flyoutWidth, flyout2Width);
                 
                 const handleMouseMove = (moveEvent: MouseEvent) => {
                   const delta = startX - moveEvent.clientX;
                   const newWidth = Math.max(150, Math.min(400, startWidth + delta));
+                  // Sync all flyout widths together
+                  setFlyoutWidth(newWidth);
+                  setFlyout2Width(newWidth);
                   setWeeksFlyoutWidth(newWidth);
                 };
                 
