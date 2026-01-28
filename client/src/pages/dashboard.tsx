@@ -6030,7 +6030,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+            <div className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
               <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
@@ -6109,6 +6109,12 @@ export default function Dashboard() {
                   </div>
                 );
               })}
+              {/* ALL DAY row resize handle */}
+              <div
+                className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/alldayrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
+                onMouseDown={(e) => handleRowResizeStart(e, 'allDay')}
+                data-testid="allday-row-resize-handle"
+              />
               </div>
             
                           
@@ -6310,7 +6316,7 @@ export default function Dashboard() {
                 }
                 
                 return (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43]" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${course.name.startsWith('CPPA') ? gridSizes.courseRowHeight * 2 : gridSizes.courseRowHeight}px` }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${course.name.startsWith('CPPA') ? gridSizes.courseRowHeight * 2 : gridSizes.courseRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {getCourseRowDisplayName(course.name)}
                   </div>
@@ -6338,6 +6344,12 @@ export default function Dashboard() {
                       />
                     );
                   })}
+                  {/* Course row resize handle */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/courserow:opacity-100 hover:bg-blue-400/50 transition-opacity"
+                    onMouseDown={(e) => handleRowResizeStart(e, 'course')}
+                    data-testid={`course-row-resize-handle-${course.name}`}
+                  />
                   </div>
                 );
               })}
