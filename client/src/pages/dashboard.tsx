@@ -6971,7 +6971,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Week Folders */}
-                <div className="py-1" style={{ maxHeight: '380px', overflowY: 'auto', scrollbarWidth: 'none', marginTop: '-15px', paddingLeft: '8px' }}>
+                <div className="py-1" style={{ maxHeight: '380px', overflowY: 'auto', scrollbarWidth: 'none', marginTop: '-15px', paddingLeft: '0px' }}>
                 
                 {/* Folder Tree Structure - Two independent columns */}
                 {(() => {
@@ -7016,7 +7016,7 @@ export default function Dashboard() {
                         {/* Week folder row */}
                         <div 
                           className={`flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer ${shouldBlink ? 'animate-week-blink' : ''}`}
-                          style={{ marginLeft: '0px', paddingLeft: '0px' }}
+                          style={{ marginLeft: '-2px', paddingLeft: '2px' }}
                           onClick={() => toggleFlyoutFolder(week.id)}
                         >
                           {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
