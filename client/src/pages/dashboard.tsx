@@ -305,6 +305,7 @@ export default function Dashboard() {
     toY: number;
     color: string;
     isToday: boolean;
+    isTomorrow: boolean;
   }>>([]);
   
   // NEW: Prep arrows from Today box to prep extensions
@@ -2634,22 +2635,33 @@ export default function Dashboard() {
           checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]') || null;
         }
         
-        // Find the corresponding task on the calendar - get the first visible one
-        const calTaskEls = document.querySelectorAll(`[data-cal-task-id="${task.id}"]`);
+        // Determine which date to target based on boxType
+        let targetDateStr: string;
+        if (boxType === 'today') {
+          targetDateStr = format(today, 'yyyy-MM-dd');
+        } else if (boxType === 'tomorrow') {
+          targetDateStr = format(tomorrow, 'yyyy-MM-dd');
+        } else {
+          // For this week, use the task's due date
+          targetDateStr = format(new Date(task.dueDate), 'yyyy-MM-dd');
+        }
+        
+        // Find the corresponding task on the calendar that matches the target date
+        const calTaskEls = Array.from(document.querySelectorAll(`[data-cal-task-id="${task.id}"]`));
         let calTaskEl: Element | null = null;
         
-        // Find the first calendar task element that's visible in the viewport
+        // Find the calendar task element that matches the target date
         for (const el of calTaskEls) {
-          const rect = el.getBoundingClientRect();
-          if (rect.width > 0 && rect.height > 0 && rect.top >= 0 && rect.top < window.innerHeight) {
+          const calDate = el.getAttribute('data-cal-date');
+          if (calDate === targetDateStr) {
             calTaskEl = el;
             break;
           }
         }
         
-        // Fallback to first element if none visible
-        if (!calTaskEl && calTaskEls.length > 0) {
-          calTaskEl = calTaskEls[0];
+        // Skip if no matching calendar task found for this date
+        if (!calTaskEl) {
+          return;
         }
         
         // Always target the calendar task checkbox
@@ -2659,6 +2671,17 @@ export default function Dashboard() {
           // Skip if calendar task has invalid dimensions (not rendered properly)
           if (calRect.width === 0 || calRect.height === 0) {
             return;
+          }
+          
+          // Skip if calendar task is scrolled behind course rows (above the visible scroll area)
+          // Find the course rows container to get its bottom position
+          const courseRowsContainer = document.querySelector('[data-testid="course-rows-container"]');
+          if (courseRowsContainer) {
+            const courseRowsRect = courseRowsContainer.getBoundingClientRect();
+            // If the bottom of the calendar task is above the bottom of course rows, it's hidden
+            if (calRect.bottom < courseRowsRect.bottom) {
+              return;
+            }
           }
           
           // Get course color - black for tasks without a course
@@ -2712,7 +2735,8 @@ export default function Dashboard() {
             toX,
             toY,
             color,
-            isToday: boxType === 'today'
+            isToday: boxType === 'today',
+            isTomorrow: boxType === 'tomorrow'
           });
         }
       });
@@ -2791,6 +2815,15 @@ export default function Dashboard() {
           
           // Skip if target is off-screen
           if (toY < 0 || toY > window.innerHeight) return;
+          
+          // Skip if prep extension is scrolled behind course rows
+          const courseRowsContainer = document.querySelector('[data-testid="course-rows-container"]');
+          if (courseRowsContainer) {
+            const courseRowsRect = courseRowsContainer.getBoundingClientRect();
+            if (prepRect.bottom < courseRowsRect.bottom) {
+              return;
+            }
+          }
           
           connections.push({
             taskId: task.id,
@@ -6059,6 +6092,7 @@ export default function Dashboard() {
             
                           
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
+              <div data-testid="course-rows-container">
               {[
                 { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', colors: courseColors['CPPA122'] },
                 { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', colors: courseColors['CFNF400'] },
@@ -6301,6 +6335,7 @@ export default function Dashboard() {
                   </div>
                 );
               })}
+              </div>
               
               {/* OTHER Row - For tasks without a course */}
               <div className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
@@ -6486,6 +6521,7 @@ export default function Dashboard() {
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
+                                data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
                                 <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
@@ -6647,6 +6683,7 @@ export default function Dashboard() {
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
+                      data-cal-date={format(taskDay, 'yyyy-MM-dd')}
                     >
                       {/* Silver shimmer header with checkbox and title for due today tasks */}
                       <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
