@@ -9405,39 +9405,103 @@ function TaskForm({
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label htmlFor="eventStartTime" className="text-[11px] text-white">Start</Label>
-              <Input
-                id="eventStartTime"
-                type="text"
-                placeholder="HH:MM"
-                value={formData.eventStartTime}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (/^[0-9:]*$/.test(val) && val.length <= 5) {
-                    setFormData(prev => ({ ...prev, eventStartTime: val }));
-                  }
-                }}
-                data-testid="input-start-time"
-                className="bg-white h-8"
-                style={{ color: 'black', fontSize: '11px' }}
-              />
+              <div className="flex gap-1">
+                <Input
+                  id="eventStartTime"
+                  type="text"
+                  placeholder="HH:MM"
+                  value={formData.eventStartTime ? (() => {
+                    const [h, m] = formData.eventStartTime.split(':');
+                    const hour = parseInt(h);
+                    const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                    return `${hour12}:${m}`;
+                  })() : ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (/^[0-9:]*$/.test(val) && val.length <= 5) {
+                      const isPM = formData.eventStartTime ? parseInt(formData.eventStartTime.split(':')[0]) >= 12 : false;
+                      const [h, m] = val.split(':');
+                      if (h && m) {
+                        let hour24 = parseInt(h);
+                        if (isPM && hour24 < 12) hour24 += 12;
+                        if (!isPM && hour24 === 12) hour24 = 0;
+                        setFormData(prev => ({ ...prev, eventStartTime: `${hour24.toString().padStart(2, '0')}:${m}` }));
+                      } else {
+                        setFormData(prev => ({ ...prev, eventStartTime: val }));
+                      }
+                    }
+                  }}
+                  data-testid="input-start-time"
+                  className="bg-white h-8 flex-1"
+                  style={{ color: 'black', fontSize: '11px' }}
+                />
+                <select
+                  value={formData.eventStartTime ? (parseInt(formData.eventStartTime.split(':')[0]) >= 12 ? 'PM' : 'AM') : 'AM'}
+                  onChange={(e) => {
+                    if (!formData.eventStartTime) return;
+                    const [h, m] = formData.eventStartTime.split(':');
+                    let hour = parseInt(h);
+                    if (e.target.value === 'PM' && hour < 12) hour += 12;
+                    if (e.target.value === 'AM' && hour >= 12) hour -= 12;
+                    setFormData(prev => ({ ...prev, eventStartTime: `${hour.toString().padStart(2, '0')}:${m}` }));
+                  }}
+                  className="h-8 rounded-md border border-input bg-white px-1"
+                  style={{ color: 'black', fontSize: '11px' }}
+                >
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
             </div>
             <div>
               <Label htmlFor="eventEndTime" className="text-[11px] text-white">End</Label>
-              <Input
-                id="eventEndTime"
-                type="text"
-                placeholder="HH:MM"
-                value={formData.eventEndTime}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (/^[0-9:]*$/.test(val) && val.length <= 5) {
-                    setFormData(prev => ({ ...prev, eventEndTime: val }));
-                  }
-                }}
-                data-testid="input-end-time"
-                className="bg-white h-8"
-                style={{ color: 'black', fontSize: '11px' }}
-              />
+              <div className="flex gap-1">
+                <Input
+                  id="eventEndTime"
+                  type="text"
+                  placeholder="HH:MM"
+                  value={formData.eventEndTime ? (() => {
+                    const [h, m] = formData.eventEndTime.split(':');
+                    const hour = parseInt(h);
+                    const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+                    return `${hour12}:${m}`;
+                  })() : ''}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (/^[0-9:]*$/.test(val) && val.length <= 5) {
+                      const isPM = formData.eventEndTime ? parseInt(formData.eventEndTime.split(':')[0]) >= 12 : false;
+                      const [h, m] = val.split(':');
+                      if (h && m) {
+                        let hour24 = parseInt(h);
+                        if (isPM && hour24 < 12) hour24 += 12;
+                        if (!isPM && hour24 === 12) hour24 = 0;
+                        setFormData(prev => ({ ...prev, eventEndTime: `${hour24.toString().padStart(2, '0')}:${m}` }));
+                      } else {
+                        setFormData(prev => ({ ...prev, eventEndTime: val }));
+                      }
+                    }
+                  }}
+                  data-testid="input-end-time"
+                  className="bg-white h-8 flex-1"
+                  style={{ color: 'black', fontSize: '11px' }}
+                />
+                <select
+                  value={formData.eventEndTime ? (parseInt(formData.eventEndTime.split(':')[0]) >= 12 ? 'PM' : 'AM') : 'AM'}
+                  onChange={(e) => {
+                    if (!formData.eventEndTime) return;
+                    const [h, m] = formData.eventEndTime.split(':');
+                    let hour = parseInt(h);
+                    if (e.target.value === 'PM' && hour < 12) hour += 12;
+                    if (e.target.value === 'AM' && hour >= 12) hour -= 12;
+                    setFormData(prev => ({ ...prev, eventEndTime: `${hour.toString().padStart(2, '0')}:${m}` }));
+                  }}
+                  className="h-8 rounded-md border border-input bg-white px-1"
+                  style={{ color: 'black', fontSize: '11px' }}
+                >
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
+              </div>
             </div>
             <div>
               <Label htmlFor="prepDays" className="text-[11px] text-white">Prep Days</Label>
