@@ -6928,10 +6928,17 @@ export default function Dashboard() {
                     });
                     const currentWeekNum = currentWeekData?.weekNumber || selectedWeek;
                     
-                    // Sort weeks by week number for two-column layout
+                    // Sort weeks: current/future first, then past weeks at the end
                     const sortedWeeks = [...FLYOUT_WEEKS].sort((a, b) => {
                       const aNum = parseInt(a.id.replace('week-', ''));
                       const bNum = parseInt(b.id.replace('week-', ''));
+                      const aIsPast = aNum < currentWeekNum;
+                      const bIsPast = bNum < currentWeekNum;
+                      
+                      // If one is past and one is not, put past at the end
+                      if (aIsPast && !bIsPast) return 1;
+                      if (!aIsPast && bIsPast) return -1;
+                      // Otherwise sort by week number
                       return aNum - bNum;
                     });
                     
