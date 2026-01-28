@@ -7102,58 +7102,74 @@ export default function Dashboard() {
                 })()}
                 </div>
                 
-                {/* CPPA122 Files from current week - bottom section */}
+                {/* Course Files from current week - bottom section */}
                 {(() => {
-                  const cppaFiles = allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-cppa122`));
-                  if (cppaFiles.length === 0) return null;
+                  const courses = [
+                    { id: 'cppa122', name: 'CPPA122', color: 'text-green-400', pattern: /^CPPA\s*122[-_\s.]*/i },
+                    { id: 'cfnf400', name: 'CFNF400', color: 'text-pink-400', pattern: /^CFNF\s*400[-_\s.]*/i },
+                    { id: 'casl101', name: 'CASL101', color: 'text-purple-400', pattern: /^CASL\s*101[-_\s.]*/i }
+                  ];
+                  
+                  const allCourseFiles = courses.map(course => ({
+                    ...course,
+                    files: allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`))
+                  })).filter(c => c.files.length > 0);
+                  
+                  if (allCourseFiles.length === 0) return null;
                   
                   return (
                     <div className="mt-1 pt-1 border-t border-white/20">
-                      <div className="px-2 mb-1">
-                        <span className="text-[9px] text-white/50 uppercase tracking-wide">Week {selectedWeek} CPPA122</span>
-                      </div>
-                      <div className="space-y-0">
-                        {cppaFiles.map(file => {
-                          const fullName = file.displayName || file.originalName;
-                          const cleanName = fullName
-                            .replace(/^CPPA\s*122[-_\s.]*/i, '')
-                            .replace(/Module\s*\d*[-_:\s.]*/gi, '')
-                            .replace(/Local\s*Politics[-_:\s.]*/gi, '')
-                            .replace(/\.pdf$/i, '')
-                            .replace(/^[.\s\-_:]+/g, '')
-                            .trim();
-                          return (
-                            <div
-                              key={file.id}
-                              className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
-                              title={fullName}
-                            >
-                              <Checkbox
-                                checked={file.listened || false}
-                                onCheckedChange={async (checked) => {
-                                  try {
-                                    await fetch(`/api/files/${file.id}`, {
-                                      method: 'PATCH',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({ listened: !!checked })
-                                    });
-                                    queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                                  } catch (error) {
-                                    console.error('Failed to update file listened status:', error);
-                                  }
-                                }}
-                                className="h-2.5 w-2.5 shrink-0 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                              />
-                              <span 
-                                onClick={() => setPreviewFile(file)}
-                                className={`text-[10px] truncate flex-1 cursor-pointer hover:underline ${file.listened ? 'text-white/40 line-through' : 'text-white/80'}`}
-                              >
-                                {cleanName || fullName}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
+                      {allCourseFiles.map(course => (
+                        <div key={course.id} className="mb-2">
+                          <div className="px-2 mb-0.5">
+                            <span className={`text-[9px] uppercase tracking-wide ${course.color}`}>Week {selectedWeek} {course.name}</span>
+                          </div>
+                          <div className="space-y-0">
+                            {course.files.map(file => {
+                              const fullName = file.displayName || file.originalName;
+                              const cleanName = fullName
+                                .replace(course.pattern, '')
+                                .replace(/Module\s*\d*[-_:\s.]*/gi, '')
+                                .replace(/Local\s*Politics[-_:\s.]*/gi, '')
+                                .replace(/Human\s*Services[-_:\s.]*/gi, '')
+                                .replace(/Sign\s*Language[-_:\s.]*/gi, '')
+                                .replace(/\.pdf$/i, '')
+                                .replace(/^[.\s\-_:]+/g, '')
+                                .trim();
+                              return (
+                                <div
+                                  key={file.id}
+                                  className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                                  title={fullName}
+                                >
+                                  <Checkbox
+                                    checked={file.listened || false}
+                                    onCheckedChange={async (checked) => {
+                                      try {
+                                        await fetch(`/api/files/${file.id}`, {
+                                          method: 'PATCH',
+                                          headers: { 'Content-Type': 'application/json' },
+                                          body: JSON.stringify({ listened: !!checked })
+                                        });
+                                        queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                      } catch (error) {
+                                        console.error('Failed to update file listened status:', error);
+                                      }
+                                    }}
+                                    className="h-2.5 w-2.5 shrink-0 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                                  />
+                                  <span 
+                                    onClick={() => setPreviewFile(file)}
+                                    className={`text-[10px] truncate flex-1 cursor-pointer hover:underline ${file.listened ? 'text-white/40 line-through' : 'text-white/80'}`}
+                                  >
+                                    {cleanName || fullName}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   );
                 })()}
