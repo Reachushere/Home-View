@@ -5937,7 +5937,7 @@ export default function Dashboard() {
               }}
             >
               <span 
-                className="text-gray-600 text-[12px] font-bold whitespace-nowrap tracking-[0.15em]"
+                className="text-gray-400 text-[12px] font-bold whitespace-nowrap tracking-[0.15em]"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed'
@@ -5956,7 +5956,7 @@ export default function Dashboard() {
               }}
             >
               <span 
-                className="text-gray-600 text-[12px] font-bold whitespace-nowrap tracking-[0.15em]"
+                className="text-gray-400 text-[12px] font-bold whitespace-nowrap tracking-[0.15em]"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed'
