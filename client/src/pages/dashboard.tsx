@@ -7091,11 +7091,11 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar, ends at bottom of CASL101 row */}
-          <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3.5 * gridSizes.courseRowHeight}px` }}>
+          <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
-              style={{ height: `${41 + gridSizes.allDayRowHeight + 3.5 * gridSizes.courseRowHeight}px` }}
+              style={{ height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}
               onMouseDown={(e) => {
                 e.preventDefault();
                 setIsResizingFlyout(true);
@@ -7119,7 +7119,7 @@ export default function Dashboard() {
               }}
               data-testid="flyout-resize-handle"
             />
-            <div className="bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg" style={{ height: `${41 + gridSizes.allDayRowHeight + 3.5 * gridSizes.courseRowHeight}px` }}>
+            <div className="bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg" style={{ height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
               {/* Top header with arrows and date - matches day header height (41px) */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
                 <div className="flex items-center gap-1.5" style={{ marginLeft: '-20px' }}>
@@ -7195,19 +7195,19 @@ export default function Dashboard() {
                       <div 
                         key={course.id} 
                         className="flex items-center gap-2 px-2 overflow-hidden relative"
-                        style={{ height: `${course.id === 'cppa122' ? gridSizes.courseRowHeight * 2 : course.id === 'casl101' ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
+                        style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
                         {/* 3D Vertical Separator - thin line with shadow */}
                         <div 
                           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1px]"
                           style={{ 
-                            height: course.id === 'cppa122' ? '70%' : course.id === 'casl101' ? '60%' : '65%',
+                            height: '65%',
                             backgroundColor: course.id === 'cppa122' ? 'rgba(22, 101, 52, 0.4)' : course.id === 'cfnf400' ? 'rgba(157, 23, 77, 0.35)' : 'rgba(67, 56, 202, 0.4)',
                             boxShadow: '1px 0 1px rgba(0,0,0,0.15)'
                           }}
                         />
-                        <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '-10px', gridTemplateColumns: '1fr' } : { gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                        <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
                             let cleanName = fullName
