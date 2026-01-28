@@ -6412,16 +6412,25 @@ export default function Dashboard() {
                         {allFiles
                           .filter(f => f.folder?.startsWith(`week-${selectedWeek}-cppa122`))
                           .slice(0, 5)
-                          .map(file => (
-                            <span
-                              key={file.id}
-                              onClick={() => setPreviewFile(file)}
-                              className="text-[7px] leading-tight truncate cursor-pointer hover:underline text-gray-700"
-                              title={file.displayName || file.originalName}
-                            >
-                              {file.displayName || file.originalName}
-                            </span>
-                          ))}
+                          .map(file => {
+                            // Clean up file name - remove course code and module number
+                            const fullName = file.displayName || file.originalName;
+                            const cleanName = fullName
+                              .replace(/^CPPA\s*122[-_\s]*/i, '')
+                              .replace(/^Module\s*\d+[-_:\s]*/i, '')
+                              .replace(/\.pdf$/i, '')
+                              .trim();
+                            return (
+                              <span
+                                key={file.id}
+                                onClick={() => setPreviewFile(file)}
+                                className="text-[7px] leading-tight truncate cursor-pointer hover:underline text-gray-700"
+                                title={fullName}
+                              >
+                                {cleanName || fullName}
+                              </span>
+                            );
+                          })}
                       </div>
                     )}
                   </div>
