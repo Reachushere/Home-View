@@ -5931,7 +5931,7 @@ export default function Dashboard() {
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Green column between Tuesday and Wednesday - Start Discussion Post */}
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[35] pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[45] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
@@ -5950,7 +5950,7 @@ export default function Dashboard() {
             
             {/* Green column between Thursday and Friday - Discussion Post Due */}
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[35] pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[45] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
@@ -7627,8 +7627,11 @@ export default function Dashboard() {
               if (isGreen) {
                 transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
               } else if (conn.isTomorrow) {
-                // Tomorrow arrow: same curved path as Today arrows
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
+                // Tomorrow arrow: curve to directly above target, then drop straight down
+                // Path: horizontal left 21px -> down -> curve to above target -> straight down
+                const dropHeight = 35; // How far above the target to stop curving and start dropping
+                const aboveTarget = conn.toY - dropHeight;
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTarget) / 2}, ${conn.toX} ${aboveTarget - 20}, ${conn.toX} ${aboveTarget} L ${conn.toX} ${conn.toY}`;
               } else {
                 // Today/This Week arrows: normal curved path
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
