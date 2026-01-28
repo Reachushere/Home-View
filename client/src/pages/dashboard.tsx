@@ -5938,7 +5938,7 @@ export default function Dashboard() {
               }}
             >
               <span 
-                className="text-gray-400 text-[12px] font-bold whitespace-nowrap tracking-[0.15em]"
+                className="text-gray-400 text-[10px] font-bold whitespace-nowrap tracking-[0.15em]"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed'
@@ -5957,7 +5957,7 @@ export default function Dashboard() {
               }}
             >
               <span 
-                className="text-gray-400 text-[12px] font-bold whitespace-nowrap tracking-[0.15em]"
+                className="text-gray-400 text-[10px] font-bold whitespace-nowrap tracking-[0.15em]"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed'
@@ -7552,8 +7552,8 @@ export default function Dashboard() {
                 id="arrowhead-black"
                 markerWidth="10"
                 markerHeight="7"
-                refX="10"
-                refY="3.5"
+                refX="14"
+                refY="-2.5"
                 orient="auto"
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.75" />
