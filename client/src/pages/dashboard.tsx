@@ -7582,12 +7582,12 @@ export default function Dashboard() {
 
         {/* To Do Bottom Flyout */}
         <div 
-          className="fixed bottom-0 left-0 right-0 z-[100] transition-transform duration-300 ease-in-out"
-          style={{ transform: isTodoFlyoutOpen ? 'translateY(0)' : 'translateY(calc(100% - 28px))' }}
+          className="fixed left-0 right-0 z-[100] transition-all duration-300 ease-in-out"
+          style={{ bottom: isTodoFlyoutOpen ? '0' : '-190px' }}
         >
-          {/* Tab to toggle flyout */}
+          {/* Tab at top of flyout - always visible */}
           <div 
-            className="absolute left-1/2 -translate-x-1/2 -top-0 cursor-pointer"
+            className="flex justify-center cursor-pointer"
             onClick={() => setIsTodoFlyoutOpen(!isTodoFlyoutOpen)}
           >
             <div 
