@@ -7589,10 +7589,8 @@ export default function Dashboard() {
               if (isGreen) {
                 transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
               } else if (conn.isTomorrow) {
-                // Tomorrow arrow: exit left, go down, curve to above target, then straight down
-                // Mirror of Today arrow but approaching from above with downward arrowhead
-                const aboveTargetY = conn.toY - 25; // Position 25px above the target checkbox
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${conn.toX} ${aboveTargetY}, ${conn.toX} ${aboveTargetY} L ${conn.toX} ${conn.toY}`;
+                // Tomorrow arrow: same as Today but ends with vertical drop and downward arrowhead
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY - 20}, ${conn.toX} ${conn.toY - 20} L ${conn.toX} ${conn.toY}`;
               } else {
                 // Today/This Week arrows: normal curved path
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
