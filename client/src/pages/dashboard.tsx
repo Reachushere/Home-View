@@ -606,10 +606,9 @@ export default function Dashboard() {
     const defaultHeights = Array(24).fill(36); // Default 36px for each hour
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Ensure timeSlotHeights exists for backwards compatibility
-      if (!parsed.timeSlotHeights) {
-        parsed.timeSlotHeights = defaultHeights;
-      }
+      // Always reset timeSlotHeights to default uniform heights
+      parsed.timeSlotHeights = defaultHeights;
+      parsed.timeSlotHeight = 36;
       // Ensure moduleColumnWidth exists for backwards compatibility
       if (!parsed.moduleColumnWidth) {
         parsed.moduleColumnWidth = 70;
