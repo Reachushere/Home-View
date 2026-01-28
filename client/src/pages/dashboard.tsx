@@ -6833,29 +6833,29 @@ export default function Dashboard() {
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative">
               {/* Top header with arrows and date - matches day header height (52px) */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '52px' }}>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-6 w-6 hover:bg-white/20 rounded-md" 
+                    className="h-8 w-8 hover:bg-white/20 rounded-md" 
                     onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
                     data-testid="button-flyout-prev-week"
                   >
-                    <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+                    <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
                   </Button>
-                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap">
-                    <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
-                    <span className="text-[11px] text-white/50">—</span>
-                    <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-3 py-1 backdrop-blur-sm whitespace-nowrap">
+                    <span className="text-sm font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                    <span className="text-sm text-white/50">—</span>
+                    <span className="text-sm font-medium text-white">{format(weekEndDate, "MMM d")}</span>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-6 w-6 hover:bg-white/20 rounded-md" 
+                    className="h-8 w-8 hover:bg-white/20 rounded-md" 
                     onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
                     data-testid="button-flyout-next-week"
                   >
-                    <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+                    <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
                   </Button>
                 </div>
                 <Button 
