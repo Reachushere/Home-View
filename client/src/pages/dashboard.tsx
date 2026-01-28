@@ -6904,21 +6904,25 @@ export default function Dashboard() {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-5 w-5 hover:bg-white/20 rounded" 
+                    className="h-6 w-6 hover:bg-white/20 rounded-md" 
                     onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
                     data-testid="button-flyout-prev-week"
                   >
-                    <ChevronLeft className="h-3 w-3 text-white" strokeWidth={2.5} />
+                    <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
                   </Button>
-                  <span className="text-[10px] text-white/70 whitespace-nowrap">{format(weekStartDate, "MMM d")}-{format(weekEndDate, "d")}</span>
+                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap">
+                    <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                    <span className="text-[11px] text-white/50">—</span>
+                    <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+                  </div>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-5 w-5 hover:bg-white/20 rounded" 
+                    className="h-6 w-6 hover:bg-white/20 rounded-md" 
                     onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
                     data-testid="button-flyout-next-week"
                   >
-                    <ChevronRight className="h-3 w-3 text-white" strokeWidth={2.5} />
+                    <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
                   </Button>
                 </div>
                 <Button 
