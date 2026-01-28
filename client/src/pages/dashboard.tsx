@@ -6323,12 +6323,29 @@ export default function Dashboard() {
                     {(() => {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
+                      // CPPA122: show all on one line
+                      if (code === 'CPPA122') {
+                        return <span>CPPA122 Local Politics</span>;
+                      }
+                      // CFNF400: show CFNF, then Human, then Sexuality on separate lines
+                      if (code === 'CFNF400') {
+                        return (
+                          <>
+                            <span>CFNF</span>
+                            <span>Human</span>
+                            <span>Sexuality</span>
+                          </>
+                        );
+                      }
+                      // CASL101: show just the code
+                      if (code === 'CASL101') {
+                        return <span>CASL101</span>;
+                      }
+                      // Default: code on first line, then each word
                       const words = fullName.split(' ');
-                      // For CFNF400, show just "CFNF" instead of full code
-                      const displayCode = code === 'CFNF400' ? 'CFNF' : code;
                       return (
                         <>
-                          <span>{displayCode}</span>
+                          <span>{code}</span>
                           {words.map((word, i) => <span key={i}>{word}</span>)}
                         </>
                       );
