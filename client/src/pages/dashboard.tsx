@@ -6961,7 +6961,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Week Folders */}
-                <div className="py-1" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                <div className="py-1" style={{ maxHeight: '300px', overflowY: 'auto', scrollbarWidth: 'none' }}>
                 
                 {/* Folder Tree Structure - Two independent columns */}
                 {(() => {
