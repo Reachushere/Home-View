@@ -7194,10 +7194,19 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={course.id} 
-                        className="flex items-center gap-2 px-2 overflow-hidden"
+                        className="flex items-center gap-2 px-2 overflow-hidden relative"
                         style={{ height: `${course.id === 'cppa122' ? gridSizes.courseRowHeight * 2 : course.id === 'casl101' ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
+                        {/* 3D Vertical Separator */}
+                        <div 
+                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[3px] rounded-full"
+                          style={{ 
+                            height: course.id === 'cppa122' ? '70%' : course.id === 'casl101' ? '60%' : '65%',
+                            background: 'linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(255,255,255,0.4) 50%, rgba(0,0,0,0.15) 100%)',
+                            boxShadow: '0 0 2px rgba(0,0,0,0.2)'
+                          }}
+                        />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '-10px', gridTemplateColumns: '1fr' } : { gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
