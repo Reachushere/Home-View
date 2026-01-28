@@ -7241,7 +7241,7 @@ export default function Dashboard() {
                                 key={file.id}
                                 className="flex items-center gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
                                 title={fullName}
-                                style={{ marginLeft: '-15px' }}
+                                style={{ marginLeft: '-12px' }}
                               >
                                 <span 
                                   onClick={() => setPreviewFile(file)}
@@ -7254,7 +7254,7 @@ export default function Dashboard() {
                           })}
                         </div>
                         {/* Checkbox column at right side */}
-                        <div className="absolute right-1 top-0 bottom-0 flex flex-col justify-center gap-0.5">
+                        <div className="absolute right-2 top-0 bottom-0 flex flex-col justify-center gap-0.5">
                           {courseFiles.map((file) => (
                             <Checkbox
                               key={file.id}
@@ -7271,7 +7271,7 @@ export default function Dashboard() {
                                   console.error('Failed to update file listened status:', error);
                                 }
                               }}
-                              className="h-4 w-4 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                              className="h-3.5 w-3.5 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                             />
                           ))}
                         </div>
@@ -7412,7 +7412,7 @@ export default function Dashboard() {
                                 key={file.id}
                                 className="flex items-center gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
                                 title={fullName}
-                                style={{ marginLeft: '-15px' }}
+                                style={{ marginLeft: '-12px' }}
                               >
                                 <span 
                                   onClick={() => setPreviewFile(file)}
@@ -7425,7 +7425,7 @@ export default function Dashboard() {
                           })}
                         </div>
                         {/* Checkbox column at right side */}
-                        <div className="absolute right-1 top-0 bottom-0 flex flex-col justify-center gap-0.5">
+                        <div className="absolute right-2 top-0 bottom-0 flex flex-col justify-center gap-0.5">
                           {courseFiles.map((file) => (
                             <Checkbox
                               key={file.id}
@@ -7442,7 +7442,7 @@ export default function Dashboard() {
                                   console.error('Failed to update file listened status:', error);
                                 }
                               }}
-                              className="h-4 w-4 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                              className="h-3.5 w-3.5 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                             />
                           ))}
                         </div>
