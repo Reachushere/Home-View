@@ -6324,9 +6324,11 @@ export default function Dashboard() {
                       const code = course.name.split(' - ')[0];
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
                       const words = fullName.split(' ');
+                      // For CFNF400, show just "CFNF" instead of full code
+                      const displayCode = code === 'CFNF400' ? 'CFNF' : code;
                       return (
                         <>
-                          <span>{code}</span>
+                          <span>{displayCode}</span>
                           {words.map((word, i) => <span key={i}>{word}</span>)}
                         </>
                       );
