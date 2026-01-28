@@ -6209,7 +6209,7 @@ export default function Dashboard() {
             data-testid="files-flyout-tab"
           >
             <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-3 hover:bg-black/70 transition-colors">
-              <Paperclip className="h-4 w-4 text-yellow-500 mb-1" />
+              <Paperclip className="h-4 w-4 text-yellow-500 mb-1 rotate-45" />
               {isFilesFlyoutOpen ? (
                 <ChevronRight className="h-4 w-4 text-yellow-500" />
               ) : (
