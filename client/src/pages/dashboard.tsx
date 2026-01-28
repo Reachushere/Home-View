@@ -6025,7 +6025,7 @@ export default function Dashboard() {
             
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
-            <div data-calendar-grid="true" className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
+            <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
                 {/* Time column resize handle - right edge */}
@@ -6104,7 +6104,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div className="grid border-b border-border/50 z-30 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+            <div className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
               <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
@@ -7569,11 +7569,11 @@ export default function Dashboard() {
         </div>
 
         {/* Arrow Connections - Split into two SVG layers for proper z-indexing */}
-        {/* Layer 1: Transparent curves ABOVE prep boxes (z-index: 40) */}
+        {/* Layer 1: Transparent curves ABOVE prep boxes (z-index: 46, above green columns at z-42) */}
         {blinkSettings.showArrows && arrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 40 }}
+            style={{ width: '100vw', height: '100vh', zIndex: 46 }}
           >
             <defs>
               <marker
@@ -7858,11 +7858,11 @@ export default function Dashboard() {
           </svg>
         )}
 
-        {/* Layer 3: Prep arrows from Today box to prep extensions (z-index: 45) */}
+        {/* Layer 3: Prep arrows from Today box to prep extensions (z-index: 47, above green columns at z-42) */}
         {blinkSettings.showArrows && prepArrowConnections.length > 0 && (
           <svg 
             className="fixed inset-0 pointer-events-none" 
-            style={{ width: '100vw', height: '100vh', zIndex: 45 }}
+            style={{ width: '100vw', height: '100vh', zIndex: 47 }}
           >
             <defs>
               <marker
