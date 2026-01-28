@@ -7128,7 +7128,7 @@ export default function Dashboard() {
                   };
                   
                   return (
-                    <div style={{ marginTop: '13px' }}>
+                    <div style={{ marginTop: '18px' }}>
                       {/* Single column - full width for file names */}
                       {sortedWeeks.map(week => renderWeekFolder(week))}
                     </div>
