@@ -7112,7 +7112,7 @@ export default function Dashboard() {
                               return (
                                 <div
                                   key={file.id}
-                                  className="flex items-center gap-1 pl-4 pr-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                                  className="flex items-center gap-1 pl-6 pr-2 py-0.5 hover:bg-white/10 cursor-pointer"
                                   title={fullName}
                                 >
                                   <Checkbox
