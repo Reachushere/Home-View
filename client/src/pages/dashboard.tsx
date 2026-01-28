@@ -237,8 +237,8 @@ export default function Dashboard() {
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
   const [isFiles2FlyoutOpen, setIsFiles2FlyoutOpen] = useState(true);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
-  const [flyoutWidth, setFlyoutWidth] = useState(365); // Default flyout width for files
-  const [flyout2Width, setFlyout2Width] = useState(365); // Default flyout width for files2
+  const [flyoutWidth, setFlyoutWidth] = useState(183); // Default flyout width for files (half width)
+  const [flyout2Width, setFlyout2Width] = useState(183); // Default flyout width for files2 (half width)
   const [weeksFlyoutWidth, setWeeksFlyoutWidth] = useState(220); // Default flyout width for week folders
   const [isResizingFlyout, setIsResizingFlyout] = useState(false);
   const [isResizingFlyout2, setIsResizingFlyout2] = useState(false);
@@ -7226,17 +7226,6 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        {/* 3D Vertical Separator - hairline with shadow */}
-                        <div 
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                          style={{ 
-                            width: '1px',
-                            height: '65%',
-                            background: 'transparent',
-                            borderLeft: course.id === 'cppa122' ? '0.5px solid rgba(22, 101, 52, 0.35)' : course.id === 'cfnf400' ? '0.5px solid rgba(157, 23, 77, 0.3)' : '0.5px solid rgba(67, 56, 202, 0.35)',
-                            boxShadow: '0.5px 0 0 rgba(0,0,0,0.08)'
-                          }}
-                        />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
@@ -7400,17 +7389,6 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        {/* 3D Vertical Separator - hairline with shadow */}
-                        <div 
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
-                          style={{ 
-                            width: '1px',
-                            height: '65%',
-                            background: 'transparent',
-                            borderLeft: course.id === 'cppa122' ? '0.5px solid rgba(22, 101, 52, 0.35)' : course.id === 'cfnf400' ? '0.5px solid rgba(157, 23, 77, 0.3)' : '0.5px solid rgba(67, 56, 202, 0.35)',
-                            boxShadow: '0.5px 0 0 rgba(0,0,0,0.08)'
-                          }}
-                        />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
