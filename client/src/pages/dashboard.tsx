@@ -3869,26 +3869,28 @@ export default function Dashboard() {
               
               <div className="w-px h-6 bg-white/30" />
               
-              {/* Volume Controls */}
+              {/* Speed Controls (for Browser TTS) */}
               <div className="flex items-center gap-2">
                 <Button
+                  type="button"
                   size="icon"
                   variant="outline"
                   className="h-8 w-8 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={() => handleVolumeChange("down")}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleVolumeChange("down"); }}
                   data-testid="button-preview-vol-down"
-                  title="Volume Down"
+                  title="Slower"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
                 <Volume2 className="h-4 w-4 text-blue-400" />
                 <Button
+                  type="button"
                   size="icon"
                   variant="outline"
                   className="h-8 w-8 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={() => handleVolumeChange("up")}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleVolumeChange("up"); }}
                   data-testid="button-preview-vol-up"
-                  title="Volume Up"
+                  title="Faster"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
