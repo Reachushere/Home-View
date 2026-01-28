@@ -6275,7 +6275,7 @@ export default function Dashboard() {
             style={{ 
               top: `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight}px`,
               transform: 'translateY(-50%)',
-              right: (isFilesFlyoutOpen ? flyoutWidth : 0) + 3 + 'px' 
+              right: (isFilesFlyoutOpen ? (isFiles2FlyoutOpen && lastOpenedFlyout === 'files1' ? flyoutWidth - 30 : flyoutWidth) : 0) + 3 + 'px' 
             }}
             onClick={() => {
               if (!isFilesFlyoutOpen) setLastOpenedFlyout('files1');
@@ -6299,7 +6299,7 @@ export default function Dashboard() {
             style={{ 
               top: `${41 + gridSizes.allDayRowHeight + 2 * gridSizes.courseRowHeight}px`,
               transform: 'translateY(-50%)',
-              right: (isFiles2FlyoutOpen ? flyout2Width : 0) + 3 + 'px' 
+              right: (isFiles2FlyoutOpen ? (isFilesFlyoutOpen && lastOpenedFlyout === 'files2' ? flyout2Width - 30 : flyout2Width) : 0) + 3 + 'px' 
             }}
             onClick={() => {
               if (!isFiles2FlyoutOpen) setLastOpenedFlyout('files2');
@@ -7200,7 +7200,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar, ends at bottom of CASL101 row */}
-          <div className={`absolute top-0 right-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'} ${isFilesFlyoutOpen && isFiles2FlyoutOpen && lastOpenedFlyout === 'files2' ? 'brightness-75 blur-[1px]' : ''}`} style={{ marginRight: '-1px', width: isFilesFlyoutOpen ? `${isFiles2FlyoutOpen && lastOpenedFlyout === 'files1' ? flyoutWidth - 30 : flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, zIndex: lastOpenedFlyout === 'files1' ? 55 : 50 }}>
+          <div className={`absolute top-0 right-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'} ${isFilesFlyoutOpen && isFiles2FlyoutOpen && lastOpenedFlyout === 'files2' ? 'brightness-50 blur-[3px] opacity-60' : ''}`} style={{ marginRight: '-1px', width: isFilesFlyoutOpen ? `${isFiles2FlyoutOpen && lastOpenedFlyout === 'files1' ? flyoutWidth - 30 : flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, zIndex: lastOpenedFlyout === 'files1' ? 55 : 50 }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -7379,7 +7379,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files2 Flyout - duplicate, appears between first files flyout and weeks flyout */}
-          <div className={`absolute top-0 right-0 ${isResizingFlyout2 ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFiles2FlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'} ${isFilesFlyoutOpen && isFiles2FlyoutOpen && lastOpenedFlyout === 'files1' ? 'brightness-75 blur-[1px]' : ''}`} style={{ marginRight: '-1px', width: isFiles2FlyoutOpen ? `${isFilesFlyoutOpen && lastOpenedFlyout === 'files2' ? flyout2Width - 30 : flyout2Width}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, zIndex: lastOpenedFlyout === 'files2' ? 55 : 50 }}>
+          <div className={`absolute top-0 right-0 ${isResizingFlyout2 ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFiles2FlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'} ${isFilesFlyoutOpen && isFiles2FlyoutOpen && lastOpenedFlyout === 'files1' ? 'brightness-50 blur-[3px] opacity-60' : ''}`} style={{ marginRight: '-1px', width: isFiles2FlyoutOpen ? `${isFilesFlyoutOpen && lastOpenedFlyout === 'files2' ? flyout2Width - 30 : flyout2Width}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, zIndex: lastOpenedFlyout === 'files2' ? 55 : 50 }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
