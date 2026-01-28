@@ -603,7 +603,7 @@ export default function Dashboard() {
     timeSlotHeights: number[]; // Individual heights for each hour (0-23)
   }>(() => {
     const saved = localStorage.getItem('gridSizes');
-    const defaultHeights = Array(24).fill(44); // Default 44px for each hour
+    const defaultHeights = Array(24).fill(36); // Default 36px for each hour
     if (saved) {
       const parsed = JSON.parse(saved);
       // Ensure timeSlotHeights exists for backwards compatibility
@@ -626,7 +626,7 @@ export default function Dashboard() {
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 44,
       courseRowHeight: 24,
-      timeSlotHeight: 44,
+      timeSlotHeight: 36,
       timeSlotHeights: defaultHeights
     };
   });
