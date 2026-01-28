@@ -6408,7 +6408,7 @@ export default function Dashboard() {
                   >
                     {/* Show files from this course's week folder */}
                     {course.name === 'CPPA122' && (
-                      <div className="flex flex-col gap-0 p-0.5 overflow-hidden" style={{ marginTop: '-2px' }}>
+                      <div className="flex flex-col gap-0 p-0.5" style={{ marginTop: '-2px' }}>
                         {allFiles
                           .filter(f => f.folder?.startsWith(`week-${selectedWeek}-cppa122`))
                           .slice(0, 5)
