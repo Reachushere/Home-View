@@ -6834,7 +6834,7 @@ export default function Dashboard() {
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
               {/* Top header with arrows and date - matches day header height (52px) */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '52px' }}>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5" style={{ marginLeft: '-10px' }}>
                   <Button 
                     variant="ghost" 
                     size="icon" 
