@@ -7058,7 +7058,7 @@ export default function Dashboard() {
                                             >
                                               {isContentExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                                               {isContentExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                                              <span className="text-[13px] text-white/90 truncate flex-1">{content.name}</span>
+                                              <span className="text-[11px] text-white/90 truncate flex-1">{content.name}</span>
                                               <span className="text-[12px] text-white/40">{contentFiles.length}</span>
                                             </div>
                                             
