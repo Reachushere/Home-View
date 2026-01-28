@@ -7094,7 +7094,8 @@ export default function Dashboard() {
           <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3.5 * gridSizes.courseRowHeight}px` }}>
             {/* Resize Handle */}
             <div
-              className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
+              className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
+              style={{ height: `${41 + gridSizes.allDayRowHeight + 3.5 * gridSizes.courseRowHeight}px` }}
               onMouseDown={(e) => {
                 e.preventDefault();
                 setIsResizingFlyout(true);
@@ -7118,7 +7119,7 @@ export default function Dashboard() {
               }}
               data-testid="flyout-resize-handle"
             />
-            <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
+            <div className="bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg" style={{ height: `${41 + gridSizes.allDayRowHeight + 3.5 * gridSizes.courseRowHeight}px` }}>
               {/* Top header with arrows and date - matches day header height (41px) */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
                 <div className="flex items-center gap-1.5" style={{ marginLeft: '-20px' }}>
