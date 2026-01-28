@@ -5933,7 +5933,7 @@ export default function Dashboard() {
               className="absolute top-0 bottom-0 w-[15px] z-[5] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
-                backgroundColor: '#86efac'
+                backgroundColor: '#dcfce7'
               }}
             >
               <span 
@@ -5952,7 +5952,7 @@ export default function Dashboard() {
               className="absolute top-0 bottom-0 w-[15px] z-[5] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
-                backgroundColor: '#86efac'
+                backgroundColor: '#dcfce7'
               }}
             >
               <span 
