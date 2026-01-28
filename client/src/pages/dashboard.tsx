@@ -6208,12 +6208,12 @@ export default function Dashboard() {
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
           >
-            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-3 hover:bg-black/70 transition-colors" style={{ boxShadow: '0 4px 8px rgba(0,0,0,0.4)' }}>
-              <Paperclip className="h-4 w-4 text-yellow-500 mb-1 -rotate-45" />
+            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-2 hover:bg-black/70 transition-colors" style={{ boxShadow: '0 6px 12px rgba(0,0,0,0.6)' }}>
+              <Paperclip className="h-3.5 w-3.5 text-yellow-500 mb-0.5 -rotate-45" />
               {isFilesFlyoutOpen ? (
-                <ChevronRight className="h-4 w-4 text-yellow-500" />
+                <ChevronRight className="h-3.5 w-3.5 text-yellow-500" />
               ) : (
-                <ChevronLeft className="h-4 w-4 text-yellow-500" />
+                <ChevronLeft className="h-3.5 w-3.5 text-yellow-500" />
               )}
             </div>
           </div>
@@ -6229,12 +6229,12 @@ export default function Dashboard() {
             onClick={() => setIsFiles2FlyoutOpen(!isFiles2FlyoutOpen)}
             data-testid="files2-flyout-tab"
           >
-            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-3 hover:bg-black/70 transition-colors">
-              <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400 mb-1" />
+            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-2 hover:bg-black/70 transition-colors">
+              <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400 mb-0.5" />
               {isFiles2FlyoutOpen ? (
-                <ChevronRight className="h-4 w-4 text-yellow-500" />
+                <ChevronRight className="h-3.5 w-3.5 text-yellow-500" />
               ) : (
-                <ChevronLeft className="h-4 w-4 text-yellow-500" />
+                <ChevronLeft className="h-3.5 w-3.5 text-yellow-500" />
               )}
             </div>
           </div>
