@@ -7627,9 +7627,10 @@ export default function Dashboard() {
               if (isGreen) {
                 transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
               } else if (conn.isTomorrow) {
-                // Tomorrow arrows: go far left (to module column area) to avoid crossing through task
-                const farLeftX = Math.min(exitX, conn.toX - 150); // Go 150px left of target to clear task width
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} L ${farLeftX} ${containerBottom} L ${farLeftX} ${conn.toY} L ${conn.toX} ${conn.toY}`;
+                // Tomorrow arrows: come from above and point DOWN to checkbox (mirror of Today arrow)
+                // Path: left from Tomorrow box -> down -> curve to directly above target -> straight down
+                const aboveTargetY = conn.toY - 40; // Position above the task
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTargetY) / 2}, ${conn.toX} ${aboveTargetY - 30}, ${conn.toX} ${aboveTargetY} L ${conn.toX} ${conn.toY}`;
               } else {
                 // Today/This Week arrows: normal curved path from left side
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
@@ -7657,8 +7658,7 @@ export default function Dashboard() {
               // New control points for second segment [t, 1]: split point, R1, Q2, greenExitPoint, then horizontal to checkbox
               const greenOpaquePath = `M ${opaqueStartX} ${opaqueStartY} C ${R1.x} ${R1.y}, ${Q2.x} ${Q2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
               
-              // For Tomorrow arrows, use the downward arrowhead
-              // All arrows use regular side-pointing arrowhead
+              // Arrow marker
               
               return (
                 <g key={`transparent-${conn.taskId}`}>
