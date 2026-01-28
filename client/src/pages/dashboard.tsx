@@ -6933,7 +6933,6 @@ export default function Dashboard() {
                         className="flex items-center gap-2 px-2 overflow-hidden"
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                       >
-                        <span className={`text-[8px] font-semibold ${course.textColor} whitespace-nowrap`}>{course.name}</span>
                         <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-0 overflow-hidden">
                           {courseFiles.map(file => {
                             const fullName = file.displayName || file.originalName;
