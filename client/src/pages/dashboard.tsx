@@ -6899,7 +6899,7 @@ export default function Dashboard() {
               <div className="flex items-center justify-between px-2 py-1 border-b border-white/20 bg-black/30">
                 <div className="flex items-center gap-1.5">
                   <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
-                  <span className="text-sm font-medium">Files</span>
+                  <span className="text-[11px] font-medium">Files</span>
                   <span className="text-[10px] text-white/40 ml-1">Click to open. Drag to tasks.</span>
                 </div>
                 <Button 
