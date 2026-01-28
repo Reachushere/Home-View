@@ -5943,7 +5943,7 @@ export default function Dashboard() {
           {/* Files Flyout Toggle Tab - sticks to right edge of calendar */}
           <div
             className={`absolute top-[calc(50%+18px)] -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300 ${isFilesFlyoutOpen ? '' : ''}`}
-            style={{ right: isFilesFlyoutOpen ? 'calc(20% - 92px)' : '0px' }}
+            style={{ right: isFilesFlyoutOpen ? 'calc(20% - 77px)' : '0px' }}
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
           >
@@ -5957,7 +5957,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Calendar wrapper - shrinks when flyout opens */}
-          <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? '' : 'w-full'}`} style={isFilesFlyoutOpen ? { width: 'calc(80% + 64px)' } : undefined}>
+          <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? '' : 'w-full'}`} style={isFilesFlyoutOpen ? { width: 'calc(80% + 49px)' } : undefined}>
           <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
