@@ -9270,7 +9270,7 @@ function TaskForm({
         {/* Left Column */}
         <div className="space-y-6">
           <div>
-            <Label htmlFor="title" className="text-xs">Title</Label>
+            <Label htmlFor="title" className="text-[10px]">Title</Label>
             <Input
               id="title"
               value={formData.title}
@@ -9278,16 +9278,15 @@ function TaskForm({
               placeholder="Assignment title"
               required
               data-testid="input-title"
-              className="!text-black bg-white h-8"
-              style={{ fontSize: '12px' }}
+              className="!text-black bg-white h-7 text-[10px]"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="courseName" className="text-xs">Course</Label>
+              <Label htmlFor="courseName" className="text-[10px]">Course</Label>
               <Select value={formData.courseName} onValueChange={(v) => setFormData(prev => ({ ...prev, courseName: v }))}>
-                <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }} data-testid="select-course">
+                <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }} data-testid="select-course">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -9319,9 +9318,9 @@ function TaskForm({
             </div>
 
             <div>
-              <Label htmlFor="type" className="text-xs">Type</Label>
+              <Label htmlFor="type" className="text-[10px]">Type</Label>
               <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
-                <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }} data-testid="select-type">
+                <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }} data-testid="select-type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -9336,12 +9335,12 @@ function TaskForm({
           </div>
 
           <div>
-            <Label htmlFor="dueDate" className="text-xs">Due Date</Label>
+            <Label htmlFor="dueDate" className="text-[10px]">Due Date</Label>
             <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal text-xs h-8"
+                  className="w-full justify-start text-left font-normal text-[10px] h-7"
                   data-testid="input-duedate"
                 >
                   <CalendarDays className="mr-2 h-4 w-4" />
@@ -9420,29 +9419,29 @@ function TaskForm({
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label htmlFor="eventStartTime" className="text-xs">Start</Label>
-              <Input
+              <Label htmlFor="eventStartTime" className="text-[10px]">Start</Label>
+              <input
                 id="eventStartTime"
                 type="time"
                 value={formData.eventStartTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
                 data-testid="input-start-time"
-                className="!text-black bg-white text-xs h-8"
+                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] text-black ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
             <div>
-              <Label htmlFor="eventEndTime" className="text-xs">End</Label>
-              <Input
+              <Label htmlFor="eventEndTime" className="text-[10px]">End</Label>
+              <input
                 id="eventEndTime"
                 type="time"
                 value={formData.eventEndTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
                 data-testid="input-end-time"
-                className="!text-black bg-white text-xs h-8"
+                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] text-black ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
             <div>
-              <Label htmlFor="prepDays" className="text-xs">Prep Days</Label>
+              <Label htmlFor="prepDays" className="text-[10px]">Prep Days</Label>
               <Input
                 id="prepDays"
                 type="number"
@@ -9452,13 +9451,13 @@ function TaskForm({
                 onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
                 placeholder="0"
                 data-testid="input-prepdays"
-                className="!text-black bg-white text-xs h-8"
+                className="!text-black bg-white text-[10px] h-7"
               />
             </div>
           </div>
 
           <div>
-            <Label className="text-xs">Reminders</Label>
+            <Label className="text-[10px]">Reminders</Label>
             <div className="grid grid-cols-4 gap-2">
               <Select 
                 value={String(formData.reminder1)} 
