@@ -235,8 +235,11 @@ export default function Dashboard() {
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
-  const [flyoutWidth, setFlyoutWidth] = useState(365); // Default flyout width in pixels
+  const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(true);
+  const [flyoutWidth, setFlyoutWidth] = useState(365); // Default flyout width for files
+  const [weeksFlyoutWidth, setWeeksFlyoutWidth] = useState(220); // Default flyout width for week folders
   const [isResizingFlyout, setIsResizingFlyout] = useState(false);
+  const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
@@ -6193,8 +6196,8 @@ export default function Dashboard() {
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           {/* Files Flyout Toggle Tab - sticks to right edge of calendar */}
           <div
-            className={`absolute top-[calc(50%-8px)] -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300 ${isFilesFlyoutOpen ? '' : ''}`}
-            style={{ right: isFilesFlyoutOpen ? `${flyoutWidth + 3}px` : '0px' }}
+            className={`absolute top-[calc(50%-40px)] -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300`}
+            style={{ right: (isFilesFlyoutOpen ? flyoutWidth : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' }}
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
           >
@@ -6207,8 +6210,25 @@ export default function Dashboard() {
               )}
             </div>
           </div>
-          {/* Calendar wrapper - shrinks when flyout opens */}
-          <div className={`${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen ? '' : 'w-full'}`} style={isFilesFlyoutOpen ? { width: `calc(100% - ${flyoutWidth + 17}px)` } : undefined}>
+          
+          {/* Weeks Flyout Toggle Tab */}
+          <div
+            className={`absolute top-[calc(50%+40px)] -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300`}
+            style={{ right: (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' }}
+            onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
+            data-testid="weeks-flyout-tab"
+          >
+            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-3 hover:bg-black/70 transition-colors">
+              <Folder className="h-4 w-4 text-blue-400 fill-blue-300 mb-1" />
+              {isWeeksFlyoutOpen ? (
+                <ChevronRight className="h-4 w-4 text-blue-400" />
+              ) : (
+                <ChevronLeft className="h-4 w-4 text-blue-400" />
+              )}
+            </div>
+          </div>
+          {/* Calendar wrapper - shrinks when flyouts open */}
+          <div className={`${isResizingFlyout || isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen || isWeeksFlyoutOpen ? '' : 'w-full'}`} style={(isFilesFlyoutOpen || isWeeksFlyoutOpen) ? { width: `calc(100% - ${(isFilesFlyoutOpen ? flyoutWidth : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 17}px)` } : undefined}>
           <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
@@ -7071,7 +7091,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar */}
-          <div className={`absolute right-0 top-0 bottom-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0' }}>
+          <div className={`absolute top-0 bottom-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -7229,18 +7249,57 @@ export default function Dashboard() {
                 })()}
               </div>
               
-              {/* Files Header and Week Folders - BOTTOM section */}
-              <div className="absolute left-0 right-0 border-t border-white/20" style={{ top: 'calc(100% - 420px)' }}>
-                <div style={{ height: '20px' }} />
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-black/30">
+            </div>
+          </div>
+          
+          {/* Weeks Flyout - separate panel for week folders */}
+          <div className={`absolute right-0 top-0 bottom-0 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0' }}>
+            {/* Resize Handle */}
+            <div
+              className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setIsResizingWeeksFlyout(true);
+                const startX = e.clientX;
+                const startWidth = weeksFlyoutWidth;
+                
+                const handleMouseMove = (moveEvent: MouseEvent) => {
+                  const delta = startX - moveEvent.clientX;
+                  const newWidth = Math.max(150, Math.min(400, startWidth + delta));
+                  setWeeksFlyoutWidth(newWidth);
+                };
+                
+                const handleMouseUp = () => {
+                  setIsResizingWeeksFlyout(false);
+                  document.removeEventListener('mousemove', handleMouseMove);
+                  document.removeEventListener('mouseup', handleMouseUp);
+                };
+                
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+              }}
+              data-testid="weeks-flyout-resize-handle"
+            />
+            <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
+              {/* Header */}
+              <div className="flex items-center justify-between px-3 py-2 bg-black/30 border-b border-white/20" style={{ height: '41px' }}>
+                <div className="flex items-center gap-1.5">
+                  <Folder className="h-3.5 w-3.5 text-blue-400 fill-blue-300" />
                   <span className="text-sm font-medium">All Files</span>
-                  <span className="text-[10px] text-white/40 ml-1">Click to open. Drag to tasks.</span>
                 </div>
-                
-                {/* Week Folders */}
-                <div className="py-1" style={{ maxHeight: '380px', overflowY: 'auto', scrollbarWidth: 'none', marginTop: '-15px', paddingLeft: '8px' }}>
-                
-                {/* Folder Tree Structure - Two independent columns */}
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  onClick={() => setIsWeeksFlyoutOpen(false)}
+                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20"
+                  data-testid="button-close-weeks-flyout"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+              
+              {/* Week Folders */}
+              <div className="flex-1 overflow-y-auto py-2 px-2" style={{ scrollbarWidth: 'none' }}>
                 {(() => {
                   // Get current week number based on today's date
                   const today = new Date();
@@ -7256,11 +7315,10 @@ export default function Dashboard() {
                     const aNum = parseInt(a.id.replace('week-', ''));
                     const bNum = parseInt(b.id.replace('week-', ''));
                     
-                    // Define order: 3-9 first, then 10-13, then 1-2
                     const getOrder = (num: number) => {
-                      if (num >= 3 && num <= 9) return num; // 3-9 stay as is
-                      if (num >= 10 && num <= 13) return num; // 10-13 after 9
-                      return num + 13; // 1-2 become 14-15 (after 13)
+                      if (num >= 3 && num <= 9) return num;
+                      if (num >= 10 && num <= 13) return num;
+                      return num + 13;
                     };
                     
                     return getOrder(aNum) - getOrder(bNum);
@@ -7282,19 +7340,18 @@ export default function Dashboard() {
                       <div key={week.id}>
                         {/* Week folder row */}
                         <div 
-                          className={`flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer ${shouldBlink ? 'animate-week-blink' : ''}`}
-                          style={{ marginLeft: '0px', paddingLeft: '0px' }}
+                          className={`flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded ${shouldBlink ? 'animate-week-blink' : ''}`}
                           onClick={() => toggleFlyoutFolder(week.id)}
                         >
                           {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                           {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                          <span className={`text-[11px] truncate ${shouldStrikethrough ? 'line-through text-white/50' : 'text-white/90'}`} style={{ minWidth: '55px' }}>{week.name}</span>
-                          <span className="text-[12px] text-white/40 ml-auto" style={{ marginRight: '7px' }}>{weekFiles.length}</span>
+                          <span className={`text-[11px] truncate ${shouldStrikethrough ? 'line-through text-white/50' : 'text-white/90'}`}>{week.name}</span>
+                          <span className="text-[10px] text-white/40 ml-auto">{weekFiles.length}</span>
                         </div>
                         
                         {/* Course folders inside week */}
                         {isWeekExpanded && (
-                          <div className="ml-0">
+                          <div className="ml-3">
                             {FLYOUT_COURSES.map((course) => {
                               const courseFiles = getFilesInFlyoutCourse(week.id, course.id);
                               const courseFolderId = `${week.id}-${course.id}`;
@@ -7304,15 +7361,14 @@ export default function Dashboard() {
                               
                               return (
                                 <div key={courseFolderId}>
-                                  {/* Course folder row */}
                                   <div
-                                    className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                                    className="flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded"
                                     onClick={() => toggleFlyoutFolder(courseFolderId)}
                                   >
                                     {isCourseExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                                     {isCourseExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
                                     <span className={`text-[11px] truncate flex-1 ${course.color}`}>{course.name}</span>
-                                    <span className="text-[12px] text-white/40">{courseFiles.length}</span>
+                                    <span className="text-[10px] text-white/40">{courseFiles.length}</span>
                                   </div>
                                   
                                   {/* Content folders inside course */}
@@ -7327,15 +7383,14 @@ export default function Dashboard() {
                                         
                                         return (
                                           <div key={contentFolderId}>
-                                            {/* Content folder row */}
                                             <div
-                                              className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                                              className="flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded"
                                               onClick={() => toggleFlyoutFolder(contentFolderId)}
                                             >
                                               {isContentExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                                               {isContentExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
                                               <span className="text-[11px] text-white/90 truncate flex-1">{content.name}</span>
-                                              <span className="text-[12px] text-white/40">{contentFiles.length}</span>
+                                              <span className="text-[10px] text-white/40">{contentFiles.length}</span>
                                             </div>
                                             
                                             {/* Files inside content folder */}
@@ -7353,7 +7408,7 @@ export default function Dashboard() {
                                                       setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
                                                     }}
                                                     onDragEnd={() => setDraggedFile(null)}
-                                                    className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                                                    className="flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded"
                                                     onClick={() => setPreviewFile(file)}
                                                   >
                                                     <Checkbox
@@ -7374,7 +7429,7 @@ export default function Dashboard() {
                                                       className="h-3 w-3 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                                     />
                                                     <FileText className="h-3 w-3 text-white/50 shrink-0" />
-                                                    <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
+                                                    <span className={`text-[10px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
                                                       {file.displayName || file.originalName}
                                                     </span>
                                                   </div>
@@ -7395,16 +7450,11 @@ export default function Dashboard() {
                     );
                   };
                   
-                  return (
-                    <div style={{ marginTop: '18px' }}>
-                      {/* Single column - full width for file names */}
-                      {sortedWeeks.map(week => renderWeekFolder(week))}
-                    </div>
-                  );
+                  return sortedWeeks.map(week => renderWeekFolder(week));
                 })()}
-                </div>
               </div>
-              {/* Copyright Symbol - at bottom of flyout */}
+              
+              {/* Copyright */}
               <div className="absolute bottom-[1px] right-2 text-white/60 text-[10px] font-medium z-50">
                 © 2026
               </div>
