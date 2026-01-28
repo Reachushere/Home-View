@@ -6844,10 +6844,10 @@ export default function Dashboard() {
                   >
                     <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
                   </Button>
-                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-3 py-1 backdrop-blur-sm whitespace-nowrap">
-                    <span className="text-sm font-medium text-white">{format(weekStartDate, "MMM d")}</span>
-                    <span className="text-sm text-white/50">—</span>
-                    <span className="text-sm font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm whitespace-nowrap">
+                    <span className="text-xs font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                    <span className="text-xs text-white/50">—</span>
+                    <span className="text-xs font-medium text-white">{format(weekEndDate, "MMM d")}</span>
                   </div>
                   <Button 
                     variant="ghost" 
