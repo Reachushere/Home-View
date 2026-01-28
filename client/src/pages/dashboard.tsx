@@ -235,7 +235,7 @@ export default function Dashboard() {
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
-  const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(true);
+  const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
   const [flyoutWidth, setFlyoutWidth] = useState(365); // Default flyout width for files
   const [weeksFlyoutWidth, setWeeksFlyoutWidth] = useState(220); // Default flyout width for week folders
   const [isResizingFlyout, setIsResizingFlyout] = useState(false);
@@ -7281,21 +7281,48 @@ export default function Dashboard() {
               data-testid="weeks-flyout-resize-handle"
             />
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
-              {/* Header */}
-              <div className="flex items-center justify-between px-3 py-2 bg-black/30 border-b border-white/20" style={{ height: '41px' }}>
-                <div className="flex items-center gap-1.5">
-                  <Folder className="h-3.5 w-3.5 text-blue-400 fill-blue-300" />
-                  <span className="text-sm font-medium">All Files</span>
+              {/* Header with arrows and date */}
+              <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
+                <div className="flex items-center gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-7 w-7 hover:bg-white/20 rounded-md" 
+                    onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+                    data-testid="button-weeks-flyout-prev-week"
+                  >
+                    <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+                  </Button>
+                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-1.5 py-0.5 backdrop-blur-sm whitespace-nowrap">
+                    <span className="text-[10px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                    <span className="text-[10px] text-white/50">—</span>
+                    <span className="text-[10px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-7 w-7 hover:bg-white/20 rounded-md" 
+                    onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+                    data-testid="button-weeks-flyout-next-week"
+                  >
+                    <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+                  </Button>
                 </div>
                 <Button 
                   size="icon" 
                   variant="ghost" 
                   onClick={() => setIsWeeksFlyoutOpen(false)}
-                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20"
+                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20 absolute right-1"
                   data-testid="button-close-weeks-flyout"
                 >
                   <X className="h-3 w-3" />
                 </Button>
+              </div>
+              
+              {/* All Files Header */}
+              <div className="flex items-center gap-1.5 pl-2 pr-2 py-1 bg-black/30 border-b border-white/20">
+                <Folder className="h-3 w-3 text-blue-400 fill-blue-300" />
+                <span className="text-xs font-medium">All Files</span>
               </div>
               
               {/* Week Folders */}
