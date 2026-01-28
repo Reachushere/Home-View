@@ -6089,7 +6089,7 @@ export default function Dashboard() {
                       <div className="text-2xl font-bold text-white">
                         {dayNum}
                       </div>
-                      <div className="text-xs font-medium tracking-wide text-white/80">{dayName}</div>
+                      <div className="text-[10px] font-medium tracking-wide text-white/80">{dayName}</div>
                     </div>
                     {/* Day column resize handle - right edge */}
                     {idx < weekDays.length - 1 && (
