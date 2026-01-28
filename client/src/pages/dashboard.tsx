@@ -6959,7 +6959,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Week Folders */}
-                <div className="overflow-y-auto py-1" style={{ maxHeight: '200px' }}>
+                <div className="overflow-y-auto py-1" style={{ maxHeight: '300px' }}>
                 
                 {/* Folder Tree Structure - Full hierarchy */}
                 <div className="grid grid-cols-2 gap-x-6 grid-flow-col" style={{ gridTemplateRows: 'repeat(7, auto)', marginTop: '10px' }}>
