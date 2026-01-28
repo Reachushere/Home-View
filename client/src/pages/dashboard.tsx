@@ -7123,8 +7123,8 @@ export default function Dashboard() {
                   return (
                     <div className="mt-1 pt-1 border-t border-white/20">
                       {allCourseFiles.map(course => (
-                        <div key={course.id} className="mb-2">
-                          <div className="px-2 mb-0.5">
+                        <div key={course.id} className="mb-1">
+                          <div className="px-2">
                             <span className={`text-[9px] uppercase tracking-wide ${course.color}`}>Week {selectedWeek} {course.name}</span>
                           </div>
                           <div className="space-y-0">
