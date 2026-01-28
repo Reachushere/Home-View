@@ -6971,7 +6971,7 @@ export default function Dashboard() {
                                 />
                                 <span 
                                   onClick={() => setPreviewFile(file)}
-                                  className={`text-[8px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                  className={`text-[10px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
                                 >
                                   {cleanName || fullName}
                                 </span>
