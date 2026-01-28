@@ -5933,11 +5933,11 @@ export default function Dashboard() {
               className="absolute top-0 bottom-0 w-[15px] z-40 pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
-                backgroundColor: '#22c55e'
+                backgroundColor: '#86efac'
               }}
             >
               <span 
-                className="text-white text-[12px] font-bold whitespace-nowrap"
+                className="text-black text-[12px] font-bold whitespace-nowrap"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed'
@@ -5952,11 +5952,11 @@ export default function Dashboard() {
               className="absolute top-0 bottom-0 w-[15px] z-40 pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
-                backgroundColor: '#22c55e'
+                backgroundColor: '#86efac'
               }}
             >
               <span 
-                className="text-white text-[12px] font-bold whitespace-nowrap"
+                className="text-black text-[12px] font-bold whitespace-nowrap"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed'
