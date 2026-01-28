@@ -7589,8 +7589,9 @@ export default function Dashboard() {
               if (isGreen) {
                 transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
               } else if (conn.isTomorrow) {
-                // Tomorrow arrow: same path as Today, arrowhead handles direction
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
+                // Tomorrow arrow: curve to above target, then drop straight down
+                const dropHeight = 25;
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${conn.toX} ${conn.toY - dropHeight - 30}, ${conn.toX} ${conn.toY - dropHeight} L ${conn.toX} ${conn.toY}`;
               } else {
                 // Today/This Week arrows: normal curved path
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
