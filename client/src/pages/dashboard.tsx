@@ -6898,15 +6898,6 @@ export default function Dashboard() {
           {/* Inline Files Flyout - appears next to calendar */}
           <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'w-[33%] opacity-100' : 'w-0 opacity-0'}`}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative">
-              {/* Course row color strips - matching calendar positions */}
-              {/* Day header ~48px + All Day row 44px + 4px = 96px offset */}
-              <div className="absolute left-0 right-0 pointer-events-none bg-white" style={{ top: `${52 + gridSizes.allDayRowHeight}px` }}>
-                <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(134, 239, 172, 0.35)' }} /> {/* CPPA122 green */}
-                <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(249, 168, 212, 0.45)' }} /> {/* CFNF400 pink */}
-                <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(165, 180, 252, 0.45)' }} /> {/* CASL101 indigo */}
-                <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(156, 163, 175, 0.30)' }} /> {/* OTHER gray */}
-              </div>
-              
               {/* Top close button */}
               <div className="flex items-center justify-end px-2 py-1 bg-black/30 relative z-10">
                 <Button 
@@ -6920,79 +6911,78 @@ export default function Dashboard() {
                 </Button>
               </div>
               
-              {/* Course Files from current week - TOP section */}
-              <div className="px-2 py-1 relative z-10">
+              {/* Course rows with files - positioned to match calendar */}
+              {/* Day header ~48px + All Day row 44px + 4px = 96px offset */}
+              <div className="absolute left-0 right-0 bg-white" style={{ top: `${52 + gridSizes.allDayRowHeight}px` }}>
                 {(() => {
-                  const courses = [
-                    { id: 'cppa122', name: 'CPPA122 - Local Politics', color: 'text-green-400', pattern: /^CPPA\s*122[-_\s.]*/i },
-                    { id: 'cfnf400', name: 'CFNF400 - Human Sexuality', color: 'text-pink-400', pattern: /^CFNF\s*400[-_\s.]*/i },
-                    { id: 'casl101', name: 'CASL101 - Sign Language', color: 'text-purple-400', pattern: /^CASL\s*101[-_\s.]*/i }
+                  const courseRows = [
+                    { id: 'cppa122', name: 'CPPA122', fullName: 'Local Politics', bgColor: 'rgba(134, 239, 172, 0.35)', textColor: 'text-green-700', pattern: /^CPPA\s*122[-_\s.]*/i },
+                    { id: 'cfnf400', name: 'CFNF400', fullName: 'Human Sexuality', bgColor: 'rgba(249, 168, 212, 0.45)', textColor: 'text-pink-700', pattern: /^CFNF\s*400[-_\s.]*/i },
+                    { id: 'casl101', name: 'CASL101', fullName: 'Sign Language', bgColor: 'rgba(165, 180, 252, 0.45)', textColor: 'text-indigo-700', pattern: /^CASL\s*101[-_\s.]*/i },
+                    { id: 'other', name: 'OTHER', fullName: '', bgColor: 'rgba(156, 163, 175, 0.30)', textColor: 'text-gray-700', pattern: /.*/ }
                   ];
                   
-                  const allCourseFiles = courses.map(course => ({
-                    ...course,
-                    files: allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`))
-                  })).filter(c => c.files.length > 0);
-                  
-                  if (allCourseFiles.length === 0) return <div className="text-[10px] text-white/40 text-center py-2">No files for this week</div>;
-                  
-                  return (
-                    <div>
-                      {allCourseFiles.map(course => (
-                        <div key={course.id} className="mb-2">
-                          <div className="pb-1 leading-none">
-                            <span className={`text-[9px] uppercase tracking-wide ${course.color}`}>{course.name}</span>
-                          </div>
-                          <div>
-                            {course.files.map(file => {
-                              const fullName = file.displayName || file.originalName;
-                              let cleanName = fullName
-                                .replace(course.pattern, '')
-                                .replace(/Module\s*\d*[-_:\s.]*/gi, '')
-                                .replace(/Local\s*Politics[-_:\s.]*/gi, '')
-                                .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
-                                .replace(/Sign\s*Language[-_:\s.]*/gi, '')
-                                .replace(/\.pdf$/i, '')
-                                .trim();
-                              while (cleanName.match(/^[.\s\-_:•·]/)) {
-                                cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
-                              }
-                              return (
-                                <div
-                                  key={file.id}
-                                  className="flex items-center gap-1 pl-4 pr-2 py-0.5 hover:bg-white/10 cursor-pointer"
-                                  title={fullName}
+                  return courseRows.map(course => {
+                    const courseFiles = course.id === 'other' 
+                      ? [] // No files for OTHER row
+                      : allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`));
+                    
+                    return (
+                      <div 
+                        key={course.id} 
+                        className="flex items-center gap-2 px-2 overflow-hidden"
+                        style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
+                      >
+                        <span className={`text-[10px] font-semibold ${course.textColor} whitespace-nowrap`}>{course.name}</span>
+                        <div className="flex-1 flex items-center gap-2 overflow-x-auto">
+                          {courseFiles.map(file => {
+                            const fullName = file.displayName || file.originalName;
+                            let cleanName = fullName
+                              .replace(course.pattern, '')
+                              .replace(/Module\s*\d*[-_:\s.]*/gi, '')
+                              .replace(/Local\s*Politics[-_:\s.]*/gi, '')
+                              .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
+                              .replace(/Sign\s*Language[-_:\s.]*/gi, '')
+                              .replace(/\.pdf$/i, '')
+                              .trim();
+                            while (cleanName.match(/^[.\s\-_:•·]/)) {
+                              cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
+                            }
+                            return (
+                              <div
+                                key={file.id}
+                                className="flex items-center gap-1 hover:bg-black/10 rounded px-1 cursor-pointer shrink-0"
+                                title={fullName}
+                              >
+                                <Checkbox
+                                  checked={file.listened || false}
+                                  onCheckedChange={async (checked) => {
+                                    try {
+                                      await fetch(`/api/files/${file.id}`, {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ listened: !!checked })
+                                      });
+                                      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                    } catch (error) {
+                                      console.error('Failed to update file listened status:', error);
+                                    }
+                                  }}
+                                  className="h-2.5 w-2.5 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                />
+                                <span 
+                                  onClick={() => setPreviewFile(file)}
+                                  className={`text-[10px] cursor-pointer hover:underline ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
                                 >
-                                  <Checkbox
-                                    checked={file.listened || false}
-                                    onCheckedChange={async (checked) => {
-                                      try {
-                                        await fetch(`/api/files/${file.id}`, {
-                                          method: 'PATCH',
-                                          headers: { 'Content-Type': 'application/json' },
-                                          body: JSON.stringify({ listened: !!checked })
-                                        });
-                                        queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                                      } catch (error) {
-                                        console.error('Failed to update file listened status:', error);
-                                      }
-                                    }}
-                                    className="h-2.5 w-2.5 shrink-0 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                                  />
-                                  <span 
-                                    onClick={() => setPreviewFile(file)}
-                                    className={`text-[10px] flex-1 cursor-pointer hover:underline ${file.listened ? 'text-white/40 line-through' : 'text-white/80'}`}
-                                  >
-                                    {cleanName || fullName}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
+                                  {cleanName || fullName}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
-                      ))}
-                    </div>
-                  );
+                      </div>
+                    );
+                  });
                 })()}
               </div>
               
