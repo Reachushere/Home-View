@@ -7221,7 +7221,11 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        <Paperclip className={`h-5 w-5 shrink-0 -rotate-45 ml-1 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1} />
+                        <Paperclip 
+                          className={`h-5 w-5 shrink-0 -rotate-45 ml-1 cursor-pointer hover:opacity-70 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} 
+                          strokeWidth={1}
+                          onClick={() => courseFiles[0] && setPreviewFile(courseFiles[0])}
+                        />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
@@ -7392,7 +7396,11 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        <Paperclip className={`h-5 w-5 shrink-0 -rotate-45 ml-1 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1} />
+                        <Paperclip 
+                          className={`h-5 w-5 shrink-0 -rotate-45 ml-1 cursor-pointer hover:opacity-70 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} 
+                          strokeWidth={1}
+                          onClick={() => courseFiles[0] && setPreviewFile(courseFiles[0])}
+                        />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
