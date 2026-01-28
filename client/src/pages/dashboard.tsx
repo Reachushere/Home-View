@@ -9463,7 +9463,7 @@ function TaskForm({
                 value={String(formData.reminder1)} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, reminder1: parseInt(v) }))}
               >
-                <SelectTrigger data-testid="select-reminder1" className="text-xs !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-reminder1" className="text-[10px] !text-black [&_*]:!text-black bg-white h-7" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -9478,7 +9478,7 @@ function TaskForm({
                 value={String(formData.reminder2)} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, reminder2: parseInt(v) }))}
               >
-                <SelectTrigger data-testid="select-reminder2" className="text-xs !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-reminder2" className="text-[10px] !text-black [&_*]:!text-black bg-white h-7" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -9493,7 +9493,7 @@ function TaskForm({
                 value={String(formData.reminder3)} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, reminder3: parseInt(v) }))}
               >
-                <SelectTrigger data-testid="select-reminder3" className="text-xs !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-reminder3" className="text-[10px] !text-black [&_*]:!text-black bg-white h-7" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -9508,7 +9508,7 @@ function TaskForm({
                 value={String(formData.reminder4)} 
                 onValueChange={(v) => setFormData(prev => ({ ...prev, reminder4: parseInt(v) }))}
               >
-                <SelectTrigger data-testid="select-reminder4" className="text-xs !text-black [&_*]:!text-black bg-white h-8" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-reminder4" className="text-[10px] !text-black [&_*]:!text-black bg-white h-7" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -9527,9 +9527,9 @@ function TaskForm({
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="priority" className="text-xs">Priority</Label>
+              <Label htmlFor="priority" className="text-[10px]">Priority</Label>
               <Select value={formData.priority} onValueChange={(v) => setFormData(prev => ({ ...prev, priority: v }))}>
-                <SelectTrigger data-testid="select-priority" className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-priority" className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -9540,7 +9540,7 @@ function TaskForm({
               </Select>
             </div>
             <div>
-              <Label className="text-xs">Repeat</Label>
+              <Label className="text-[10px]">Repeat</Label>
               <Select 
                 value={formData.repeatType} 
                 onValueChange={(v) => setFormData(prev => ({ 
@@ -9548,7 +9548,7 @@ function TaskForm({
                   repeatType: v as typeof REPEAT_TYPES[number]
                 }))}
               >
-                <SelectTrigger data-testid="select-repeat-type" className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }}>
+                <SelectTrigger data-testid="select-repeat-type" className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }}>
                   <SelectValue placeholder="No repeat" />
                 </SelectTrigger>
                 <SelectContent>
@@ -9565,7 +9565,7 @@ function TaskForm({
           {formData.repeatType === "custom" && (
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label className="text-xs text-muted-foreground">Every</Label>
+                <Label className="text-[10px]">Every</Label>
                 <Input
                   type="number"
                   min="1"
@@ -9573,11 +9573,11 @@ function TaskForm({
                   value={formData.repeatInterval}
                   onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
                   data-testid="input-repeat-interval"
-                  className="!text-black bg-white text-xs h-8"
+                  className="!text-black bg-white text-[10px] h-7"
                 />
               </div>
               <div>
-                <Label className="text-xs text-muted-foreground">Unit</Label>
+                <Label className="text-[10px]">Unit</Label>
                 <Select 
                   value={formData.repeatIntervalUnit} 
                   onValueChange={(v) => setFormData(prev => ({ 
@@ -9585,7 +9585,7 @@ function TaskForm({
                     repeatIntervalUnit: v as typeof REPEAT_INTERVAL_UNITS[number]
                   }))}
                 >
-                  <SelectTrigger data-testid="select-repeat-unit" className="!text-black [&_*]:!text-black bg-white text-xs h-8" style={{ color: 'black' }}>
+                  <SelectTrigger data-testid="select-repeat-unit" className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -9599,19 +9599,19 @@ function TaskForm({
 
           {formData.repeatType !== "none" && (
             <div>
-              <Label className="text-xs text-muted-foreground">End Repeat (optional)</Label>
-              <Input
+              <Label className="text-[10px]">End Repeat (optional)</Label>
+              <input
                 type="date"
                 value={formData.repeatEndDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
                 data-testid="input-repeat-end-date"
-                className="!text-black bg-white text-xs h-8"
+                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] text-black ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
           )}
 
           <div>
-            <Label htmlFor="description" className="text-xs">Description</Label>
+            <Label htmlFor="description" className="text-[10px]">Description</Label>
             <Textarea
               id="description"
               value={formData.description}
@@ -9619,13 +9619,12 @@ function TaskForm({
               placeholder="Add notes or details..."
               rows={3}
               data-testid="input-description"
-              className="!text-black bg-white"
-              style={{ fontSize: '12px' }}
+              className="!text-black bg-white text-[10px]"
             />
           </div>
 
           <div>
-            <Label htmlFor="referenceLink" className="text-xs">Reference Link</Label>
+            <Label htmlFor="referenceLink" className="text-[10px]">Reference Link</Label>
             <Input
               id="referenceLink"
               type="url"
@@ -9633,18 +9632,17 @@ function TaskForm({
               onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
               placeholder="https://example.com"
               data-testid="input-reference-link"
-              className="!text-black bg-white h-8"
-              style={{ fontSize: '12px' }}
+              className="!text-black bg-white h-7 text-[10px]"
             />
           </div>
         </div>
       </div>
 
       <div>
-        <Label className="text-xs">Attachments (optional)</Label>
+        <Label className="text-[10px]">Attachments (optional)</Label>
         <div className="space-y-2">
           {formData.attachments.map((attachment, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-sm">
+            <div key={idx} className="flex items-center gap-2 text-[10px]">
               <Paperclip className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
               <a href={attachment.startsWith('/objects/') ? attachment : attachment} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate flex-1">
                 {getAttachmentDisplayName(attachment)}
@@ -9676,8 +9674,7 @@ function TaskForm({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8"
-              style={{ fontSize: '12px' }}
+              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-7 text-[10px]"
               data-testid="button-upload-file"
             >
               {isUploading ? (
@@ -9711,14 +9708,12 @@ function TaskForm({
               onChange={(e) => setNewAttachment(e.target.value)}
               placeholder="Or paste URL..."
               data-testid="input-new-attachment"
-              className="!text-black bg-white h-8"
-              style={{ fontSize: '12px' }}
+              className="!text-black bg-white h-7 text-[10px]"
             />
             <Button
               type="button"
               variant="outline"
-              className="h-8"
-              style={{ fontSize: '12px' }}
+              className="h-7 text-[10px]"
               onClick={() => {
                 if (newAttachment.trim()) {
                   setFormData(prev => ({
