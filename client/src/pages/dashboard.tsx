@@ -7175,6 +7175,7 @@ export default function Dashboard() {
                         key={course.id} 
                         className="flex items-center gap-2 px-2 overflow-hidden"
                         style={{ height: `${course.id === 'cppa122' ? gridSizes.courseRowHeight * 2 : course.id === 'casl101' ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
+                        title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '-10px', gridTemplateColumns: '1fr' } : { gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
