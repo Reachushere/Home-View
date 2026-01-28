@@ -3971,7 +3971,7 @@ export default function Dashboard() {
         background: 'black',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '0.1px solid white',
-        height: '52px'
+        height: '46px'
       }}>
         {/* Logo, Date Range, and Week Navigation - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
@@ -5964,7 +5964,7 @@ export default function Dashboard() {
             
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
-            <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
+            <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[46px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 <span className="text-xs font-medium tracking-wide text-white">Week {selectedWeek}</span>
                 {/* Time column resize handle - right edge */}
@@ -6801,8 +6801,8 @@ export default function Dashboard() {
           {/* Inline Files Flyout - appears next to calendar */}
           <div className={`absolute right-0 top-0 bottom-0 transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', width: isFilesFlyoutOpen ? 'calc(20% - 74px)' : '0' }}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
-              {/* Top header with arrows and date - matches day header height (52px) */}
-              <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '52px' }}>
+              {/* Top header with arrows and date - matches day header height (46px) */}
+              <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '46px' }}>
                 <div className="flex items-center gap-1.5" style={{ marginLeft: '-20px' }}>
                   <Button 
                     variant="ghost" 
