@@ -9405,40 +9405,40 @@ function TaskForm({
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label htmlFor="eventStartTime" className="text-[11px] text-white">Start</Label>
-              <input
+              <Input
                 id="eventStartTime"
                 type="time"
                 value={formData.eventStartTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
                 data-testid="input-start-time"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="bg-white h-8"
                 style={{ color: 'black', fontSize: '11px' }}
               />
             </div>
             <div>
               <Label htmlFor="eventEndTime" className="text-[11px] text-white">End</Label>
-              <input
+              <Input
                 id="eventEndTime"
                 type="time"
                 value={formData.eventEndTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
                 data-testid="input-end-time"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="bg-white h-8"
                 style={{ color: 'black', fontSize: '11px' }}
               />
             </div>
             <div>
               <Label htmlFor="prepDays" className="text-[11px] text-white">Prep Days</Label>
-              <input
+              <Input
                 id="prepDays"
                 type="number"
-                min="0"
-                max="30"
+                min={0}
+                max={30}
                 value={formData.prepDays}
                 onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
                 placeholder="0"
                 data-testid="input-prepdays"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="bg-white h-8"
                 style={{ color: 'black', fontSize: '11px' }}
               />
             </div>
