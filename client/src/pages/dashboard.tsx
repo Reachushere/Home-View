@@ -235,7 +235,7 @@ export default function Dashboard() {
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
-  const [flyoutWidth, setFlyoutWidth] = useState(340); // Default flyout width in pixels
+  const [flyoutWidth, setFlyoutWidth] = useState(365); // Default flyout width in pixels
   const [isResizingFlyout, setIsResizingFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
