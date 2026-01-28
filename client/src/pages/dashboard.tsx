@@ -7604,7 +7604,7 @@ export default function Dashboard() {
           
           {/* Flyout content */}
           <section 
-            className="shadow-lg border-t border-white/30 h-[190px] overflow-hidden flex flex-col" 
+            className="shadow-lg border-t border-white/30 h-[190px] overflow-hidden flex flex-col rounded-t-md" 
             style={{ background: colorSettings.boxBackground }} 
             data-testid="section-todo"
           >
