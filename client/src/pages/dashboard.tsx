@@ -3320,7 +3320,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex h-screen flex-col overflow-y-hidden overflow-x-visible">
       {/* Dynamic CSS for blink speed */}
       <style>{`
         .animate-file-box-blink-fast {
