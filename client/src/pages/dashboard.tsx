@@ -7239,7 +7239,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={file.id}
-                                className="flex items-center justify-between gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
+                                className="flex items-center gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer relative"
                                 title={fullName}
                                 style={{ marginLeft: '-25px' }}
                               >
@@ -7263,7 +7263,7 @@ export default function Dashboard() {
                                       console.error('Failed to update file listened status:', error);
                                     }
                                   }}
-                                  className="h-4 w-4 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                  className="h-4 w-4 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 absolute right-0"
                                 />
                               </div>
                             );
@@ -7404,7 +7404,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={file.id}
-                                className="flex items-center justify-between gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
+                                className="flex items-center gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer relative"
                                 title={fullName}
                                 style={{ marginLeft: '-25px' }}
                               >
@@ -7428,7 +7428,7 @@ export default function Dashboard() {
                                       console.error('Failed to update file listened status:', error);
                                     }
                                   }}
-                                  className="h-4 w-4 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                  className="h-4 w-4 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600 absolute right-0"
                                 />
                               </div>
                             );
