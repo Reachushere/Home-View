@@ -6925,10 +6925,11 @@ export default function Dashboard() {
           <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'w-[33%] opacity-100' : 'w-0 opacity-0'}`}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white">
               {/* Header */}
-              <div className="flex items-center justify-between px-2 py-1.5 border-b border-white/20 bg-black/30">
+              <div className="flex items-center justify-between px-2 py-1 border-b border-white/20 bg-black/30">
                 <div className="flex items-center gap-1.5">
-                  <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
-                  <span className="text-base font-medium">Files</span>
+                  <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
+                  <span className="text-sm font-medium">Files</span>
+                  <span className="text-[10px] text-white/40 ml-1">Click to open. Drag to tasks.</span>
                 </div>
                 <Button 
                   size="icon" 
@@ -6943,9 +6944,6 @@ export default function Dashboard() {
               
               {/* Files Tree */}
               <div className="flex-1 overflow-y-auto py-1">
-                <p className="text-[13px] text-white/40 px-2 mb-1">
-                  Click to open. Drag to tasks.
-                </p>
                 
                 {/* Folder Tree Structure - Full hierarchy */}
                 <div className="space-y-0">
