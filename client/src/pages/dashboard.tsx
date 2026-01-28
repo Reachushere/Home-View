@@ -7100,7 +7100,7 @@ export default function Dashboard() {
                                                       className="h-3 w-3 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                                     />
                                                     <FileText className="h-3 w-3 text-white/50 shrink-0" />
-                                                    <span className={`text-[12px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
+                                                    <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
                                                       {file.displayName || file.originalName}
                                                     </span>
                                                   </div>
