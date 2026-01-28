@@ -7186,10 +7186,10 @@ export default function Dashboard() {
                 </Button>
               </div>
               
-              {/* Week Files Header */}
+              {/* Week Module Header */}
               <div className="flex items-center gap-1.5 pl-[14px] pr-2 py-1 bg-black/30 border-b border-white/20">
                 <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
-                <span className="text-sm font-medium">Week {selectedWeek} Files</span>
+                <span className="text-sm font-medium">Week {selectedWeek} Module</span>
               </div>
               
               {/* Course rows with files - positioned to match calendar */}
@@ -7349,10 +7349,10 @@ export default function Dashboard() {
                 </Button>
               </div>
               
-              {/* Week Files Header */}
+              {/* Week Reading Header */}
               <div className="flex items-center gap-1.5 pl-[14px] pr-2 py-1 bg-black/30 border-b border-white/20">
                 <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
-                <span className="text-sm font-medium">Week {selectedWeek} Files</span>
+                <span className="text-sm font-medium">Week {selectedWeek} Reading</span>
               </div>
               
               {/* Course rows with files - positioned to match calendar */}
