@@ -453,6 +453,19 @@ export default function Dashboard() {
     return localStorage.getItem('customBackground');
   });
   
+  // Discussion post checkbox states (persisted per week in localStorage)
+  const [startDiscussionComplete, setStartDiscussionComplete] = useState<boolean>(() => {
+    const saved = localStorage.getItem(`discussionStart_week${selectedWeek}`);
+    return saved === 'true';
+  });
+  const [discussionDueComplete, setDiscussionDueComplete] = useState<boolean>(() => {
+    const saved = localStorage.getItem(`discussionDue_week${selectedWeek}`);
+    return saved === 'true';
+  });
+  
+  // Check if today is Friday (day 5) for blinking the Discussion Due column
+  const isFriday = new Date().getDay() === 5;
+  
   // Blinking and spacing settings
   const [blinkSettings, setBlinkSettings] = useState<{
     todayColumnBlink: boolean;
@@ -484,6 +497,23 @@ export default function Dashboard() {
   useEffect(() => {
     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
   }, [blinkSettings]);
+  
+  // Save and reload discussion post checkboxes when week changes
+  useEffect(() => {
+    localStorage.setItem(`discussionStart_week${selectedWeek}`, String(startDiscussionComplete));
+  }, [startDiscussionComplete, selectedWeek]);
+  
+  useEffect(() => {
+    localStorage.setItem(`discussionDue_week${selectedWeek}`, String(discussionDueComplete));
+  }, [discussionDueComplete, selectedWeek]);
+  
+  // Reset discussion checkboxes when week changes
+  useEffect(() => {
+    const savedStart = localStorage.getItem(`discussionStart_week${selectedWeek}`);
+    const savedDue = localStorage.getItem(`discussionDue_week${selectedWeek}`);
+    setStartDiscussionComplete(savedStart === 'true');
+    setDiscussionDueComplete(savedDue === 'true');
+  }, [selectedWeek]);
   
   // Box order based on current day of week
   // Sunday/Monday: Today=LEFT, Tomorrow=MIDDLE, This Week=RIGHT
@@ -5928,15 +5958,26 @@ export default function Dashboard() {
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
             
-            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Green column between Tuesday and Wednesday - Start Discussion Post */}
+            {!startDiscussionComplete && (
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[5] pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[5] flex flex-col items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
               }}
             >
+              <input
+                type="checkbox"
+                checked={startDiscussionComplete}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setStartDiscussionComplete(true);
+                }}
+                className="w-3 h-3 mb-2 cursor-pointer pointer-events-auto accent-green-500"
+                data-testid="checkbox-start-discussion"
+                onClick={(e) => e.stopPropagation()}
+              />
               <span 
                 className="text-gray-400 text-[10px] font-bold whitespace-nowrap tracking-[0.15em]"
                 style={{ 
@@ -5947,15 +5988,29 @@ export default function Dashboard() {
                 Start Discussion Post
               </span>
             </div>
+            )}
             
             {/* Green column between Thursday and Friday - Discussion Post Due */}
+            {!discussionDueComplete && (
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[5] pointer-events-none flex items-center justify-center"
+              className={`absolute top-0 bottom-0 w-[15px] z-[5] flex flex-col items-center justify-center ${isFriday ? 'animate-pulse' : ''}`}
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
-                backgroundColor: '#dcfce7'
+                backgroundColor: '#dcfce7',
+                animation: isFriday ? 'pulse 1s ease-in-out infinite' : undefined
               }}
             >
+              <input
+                type="checkbox"
+                checked={discussionDueComplete}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setDiscussionDueComplete(true);
+                }}
+                className="w-3 h-3 mb-2 cursor-pointer pointer-events-auto accent-green-500"
+                data-testid="checkbox-discussion-due"
+                onClick={(e) => e.stopPropagation()}
+              />
               <span 
                 className="text-gray-400 text-[10px] font-bold whitespace-nowrap tracking-[0.15em]"
                 style={{ 
@@ -5966,6 +6021,9 @@ export default function Dashboard() {
                 Discussion Post Due
               </span>
             </div>
+            )}
+            
+            <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-40 h-[52px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
