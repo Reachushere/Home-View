@@ -6612,7 +6612,7 @@ export default function Dashboard() {
                                   left: `calc(${taskIdx * columnWidth}% + 2px)`,
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
-                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 20),
+                                  zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
                                 }}
                                 data-testid={`time-task-${task.id}`}
@@ -6774,7 +6774,7 @@ export default function Dashboard() {
                           ? `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 2px)`
                           : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${adjustedHeightPx}px`,
-                        zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 40 : 25),
+                        zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                         borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
