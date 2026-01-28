@@ -235,7 +235,7 @@ export default function Dashboard() {
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
-  const [flyoutWidth, setFlyoutWidth] = useState(280); // Default flyout width in pixels
+  const [flyoutWidth, setFlyoutWidth] = useState(320); // Default flyout width in pixels
   const [isResizingFlyout, setIsResizingFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
@@ -5959,7 +5959,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Calendar wrapper - shrinks when flyout opens */}
-          <div className={`${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen ? '' : 'w-full'}`} style={isFilesFlyoutOpen ? { width: `calc(100% - ${flyoutWidth + 52}px)` } : undefined}>
+          <div className={`${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen ? '' : 'w-full'}`} style={isFilesFlyoutOpen ? { width: `calc(100% - ${flyoutWidth + 72}px)` } : undefined}>
           <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
