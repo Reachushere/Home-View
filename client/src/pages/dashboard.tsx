@@ -7137,7 +7137,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* Copyright Symbol - at bottom of flyout */}
-              <div className="absolute bottom-[12px] right-2 text-white/60 text-[10px] font-medium z-50" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}>
+              <div className="absolute bottom-[12px] right-2 text-white/60 text-[10px] font-medium z-50">
                 © 2026
               </div>
             </div>
