@@ -7239,9 +7239,15 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={file.id}
-                                className="flex items-center gap-0.5 hover:bg-black/10 rounded px-0.5 cursor-pointer truncate"
+                                className="flex items-center justify-between gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
                                 title={fullName}
                               >
+                                <span 
+                                  onClick={() => setPreviewFile(file)}
+                                  className={`text-[9px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                >
+                                  {cleanName || fullName}
+                                </span>
                                 <Checkbox
                                   checked={file.listened || false}
                                   onCheckedChange={async (checked) => {
@@ -7256,14 +7262,8 @@ export default function Dashboard() {
                                       console.error('Failed to update file listened status:', error);
                                     }
                                   }}
-                                  className="h-2 w-2 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                  className="h-4 w-4 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                 />
-                                <span 
-                                  onClick={() => setPreviewFile(file)}
-                                  className={`text-[9px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
-                                >
-                                  {cleanName || fullName}
-                                </span>
                               </div>
                             );
                           })}
@@ -7403,9 +7403,15 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={file.id}
-                                className="flex items-center gap-0.5 hover:bg-black/10 rounded px-0.5 cursor-pointer truncate"
+                                className="flex items-center justify-between gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
                                 title={fullName}
                               >
+                                <span 
+                                  onClick={() => setPreviewFile(file)}
+                                  className={`text-[9px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                >
+                                  {cleanName || fullName}
+                                </span>
                                 <Checkbox
                                   checked={file.listened || false}
                                   onCheckedChange={async (checked) => {
@@ -7420,14 +7426,8 @@ export default function Dashboard() {
                                       console.error('Failed to update file listened status:', error);
                                     }
                                   }}
-                                  className="h-2 w-2 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                  className="h-4 w-4 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                 />
-                                <span 
-                                  onClick={() => setPreviewFile(file)}
-                                  className={`text-[9px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
-                                >
-                                  {cleanName || fullName}
-                                </span>
                               </div>
                             );
                           })}
