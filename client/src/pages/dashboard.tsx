@@ -6960,7 +6960,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Week Folders */}
-                <div className="overflow-y-auto py-1" style={{ maxHeight: '300px' }}>
+                <div className="py-1">
                 
                 {/* Folder Tree Structure - Two independent columns */}
                 {(() => {
@@ -7122,13 +7122,13 @@ export default function Dashboard() {
                   };
                   
                   return (
-                    <div className="flex gap-x-4" style={{ marginTop: '10px' }}>
-                      {/* Left column - independent */}
-                      <div className="flex-1">
+                    <div className="flex gap-x-4 items-start" style={{ marginTop: '10px' }}>
+                      {/* Left column - independent, scrolls on its own */}
+                      <div className="flex-1 overflow-y-auto" style={{ maxHeight: '280px' }}>
                         {leftColumnWeeks.map(week => renderWeekFolder(week, false))}
                       </div>
-                      {/* Right column - independent, fades when left is expanded */}
-                      <div className={`flex-1 transition-opacity duration-300 ${isLeftColumnExpanded ? 'opacity-30' : 'opacity-100'}`}>
+                      {/* Right column - independent, fades when left is expanded, scrolls on its own */}
+                      <div className={`flex-1 overflow-y-auto transition-opacity duration-300 ${isLeftColumnExpanded ? 'opacity-30' : 'opacity-100'}`} style={{ maxHeight: '280px' }}>
                         {rightColumnWeeks.map(week => renderWeekFolder(week, true))}
                       </div>
                     </div>
