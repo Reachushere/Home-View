@@ -6429,7 +6429,7 @@ export default function Dashboard() {
                               <span
                                 key={file.id}
                                 onClick={() => setPreviewFile(file)}
-                                className="text-[7px] leading-tight truncate cursor-pointer hover:underline text-gray-700"
+                                className="text-[7px] leading-tight cursor-pointer hover:underline text-gray-700"
                                 title={fullName}
                               >
                                 {cleanName || fullName}
@@ -7166,7 +7166,7 @@ export default function Dashboard() {
                                   />
                                   <span 
                                     onClick={() => setPreviewFile(file)}
-                                    className={`text-[10px] truncate flex-1 cursor-pointer hover:underline ${file.listened ? 'text-white/40 line-through' : 'text-white/80'}`}
+                                    className={`text-[10px] flex-1 cursor-pointer hover:underline ${file.listened ? 'text-white/40 line-through' : 'text-white/80'}`}
                                   >
                                     {cleanName || fullName}
                                   </span>
