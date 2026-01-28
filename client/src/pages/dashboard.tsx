@@ -6898,7 +6898,7 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                       >
                         <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '0px', gridTemplateRows: 'repeat(3, auto)', gridAutoFlow: 'column' } : undefined}>
-                          {courseFiles.map(file => {
+                          {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
                             let cleanName = fullName
                               .replace(course.pattern, '')
@@ -6911,10 +6911,12 @@ export default function Dashboard() {
                             while (cleanName.match(/^[.\s\-_:•·]/)) {
                               cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
                             }
+                            const isRightColumn = course.id === 'cppa122' && fileIndex >= 3;
                             return (
                               <div
                                 key={file.id}
                                 className="flex items-center gap-0.5 hover:bg-black/10 rounded px-0.5 cursor-pointer truncate"
+                                style={isRightColumn ? { marginLeft: '15px' } : undefined}
                                 title={fullName}
                               >
                                 <Checkbox
