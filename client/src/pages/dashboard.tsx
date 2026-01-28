@@ -7241,10 +7241,11 @@ export default function Dashboard() {
                                 key={file.id}
                                 className="flex items-center justify-between gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
                                 title={fullName}
+                                style={{ marginLeft: '-25px' }}
                               >
                                 <span 
                                   onClick={() => setPreviewFile(file)}
-                                  className={`text-[9px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                  className={`text-[9px] cursor-pointer hover:underline whitespace-nowrap ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
                                 >
                                   {cleanName || fullName}
                                 </span>
@@ -7405,10 +7406,11 @@ export default function Dashboard() {
                                 key={file.id}
                                 className="flex items-center justify-between gap-1 hover:bg-black/10 rounded px-0.5 cursor-pointer"
                                 title={fullName}
+                                style={{ marginLeft: '-25px' }}
                               >
                                 <span 
                                   onClick={() => setPreviewFile(file)}
-                                  className={`text-[9px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                  className={`text-[9px] cursor-pointer hover:underline whitespace-nowrap ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
                                 >
                                   {cleanName || fullName}
                                 </span>
