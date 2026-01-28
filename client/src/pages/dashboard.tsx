@@ -610,10 +610,8 @@ export default function Dashboard() {
       parsed.timeSlotHeights = defaultHeights;
       parsed.timeSlotHeight = 36;
       parsed.courseRowHeight = 48;
-      // Ensure moduleColumnWidth exists for backwards compatibility
-      if (!parsed.moduleColumnWidth) {
-        parsed.moduleColumnWidth = 70;
-      }
+      // Set moduleColumnWidth to 0 (column removed)
+      parsed.moduleColumnWidth = 0;
       // Enforce minimum timeColumnWidth for course names to fit
       if (!parsed.timeColumnWidth || parsed.timeColumnWidth < 105) {
         parsed.timeColumnWidth = 105;
@@ -622,7 +620,7 @@ export default function Dashboard() {
     }
     return {
       timeColumnWidth: 105,
-      moduleColumnWidth: 70,
+      moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 44,
       courseRowHeight: 48,
@@ -758,7 +756,11 @@ export default function Dashboard() {
   // Generate grid template columns based on sizes
   const getGridTemplateColumns = () => {
     const dayColumns = gridSizes.dayColumnWidths.map(w => `${w}fr`).join(' ');
-    return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${dayColumns}`;
+    // Only include module column if width > 0
+    if (gridSizes.moduleColumnWidth > 0) {
+      return `${gridSizes.timeColumnWidth}px ${gridSizes.moduleColumnWidth}px ${dayColumns}`;
+    }
+    return `${gridSizes.timeColumnWidth}px ${dayColumns}`;
   };
   
   const [draggedBox, setDraggedBox] = useState<string | null>(null);
