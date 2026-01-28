@@ -7026,7 +7026,7 @@ export default function Dashboard() {
                         
                         {/* Course folders inside week */}
                         {isWeekExpanded && (
-                          <div className="ml-3">
+                          <div className="ml-0">
                             {FLYOUT_COURSES.map((course) => {
                               const courseFiles = getFilesInFlyoutCourse(week.id, course.id);
                               const courseFolderId = `${week.id}-${course.id}`;
