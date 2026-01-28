@@ -7126,11 +7126,30 @@ export default function Dashboard() {
                             <div
                               key={file.id}
                               className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
-                              onClick={() => setPreviewFile(file)}
                               title={fullName}
                             >
-                              <FileText className="h-2.5 w-2.5 text-green-400" />
-                              <span className="text-[10px] text-white/80 truncate flex-1">{cleanName || fullName}</span>
+                              <Checkbox
+                                checked={file.listened || false}
+                                onCheckedChange={async (checked) => {
+                                  try {
+                                    await fetch(`/api/files/${file.id}`, {
+                                      method: 'PATCH',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({ listened: !!checked })
+                                    });
+                                    queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                  } catch (error) {
+                                    console.error('Failed to update file listened status:', error);
+                                  }
+                                }}
+                                className="h-2.5 w-2.5 shrink-0 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                              />
+                              <span 
+                                onClick={() => setPreviewFile(file)}
+                                className={`text-[10px] truncate flex-1 cursor-pointer hover:underline ${file.listened ? 'text-white/40 line-through' : 'text-white/80'}`}
+                              >
+                                {cleanName || fullName}
+                              </span>
                             </div>
                           );
                         })}
