@@ -6303,6 +6303,10 @@ export default function Dashboard() {
                   <stop offset="0%" stopColor="#C8E0F4" stopOpacity="1" />
                   <stop offset="100%" stopColor="#9AB9D8" stopOpacity="1" />
                 </linearGradient>
+                <linearGradient id="honeycombGradientTop" x1="100%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#2C2C2C" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#8494B0" stopOpacity="1" />
+                </linearGradient>
                 <linearGradient id="honeycombGradientMiddle" x1="100%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#557083" stopOpacity="1" />
                   <stop offset="100%" stopColor="#8D9DB3" stopOpacity="1" />
@@ -6328,7 +6332,7 @@ export default function Dashboard() {
                   <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
                     <polygon 
                       points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                      fill="url(#honeycombGradient)" filter="url(#honeycombShadow)"
+                      fill="url(#honeycombGradientTop)" filter="url(#honeycombShadow)"
                       className="stroke-green-500/50"
                       strokeWidth="1"
                     />
@@ -6346,7 +6350,7 @@ export default function Dashboard() {
                   <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
                     <polygon 
                       points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                      fill="url(#honeycombGradient)" filter="url(#honeycombShadow)"
+                      fill="url(#honeycombGradientTop)" filter="url(#honeycombShadow)"
                       className="stroke-green-500/50"
                       strokeWidth="1"
                     />
@@ -6363,7 +6367,7 @@ export default function Dashboard() {
                 <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
                   <polygon 
                     points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                    fill="url(#honeycombGradient)" filter="url(#honeycombShadow)"
+                    fill="url(#honeycombGradientTop)" filter="url(#honeycombShadow)"
                     className="stroke-green-500/50"
                     strokeWidth="1"
                   />
