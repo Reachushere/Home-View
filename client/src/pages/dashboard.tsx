@@ -6199,7 +6199,7 @@ export default function Dashboard() {
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           {/* Files Flyout Toggle Tab - positioned between green (CPPA122) and pink (CFNF400) rows */}
           <div
-            className={`absolute z-[60] cursor-pointer transition-all duration-300`}
+            className={`absolute z-[65] cursor-pointer transition-all duration-300`}
             style={{ 
               top: `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight}px`,
               transform: 'translateY(-50%)',
