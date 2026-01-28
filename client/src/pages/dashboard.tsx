@@ -7090,7 +7090,7 @@ export default function Dashboard() {
                   if (allCourseFiles.length === 0) return null;
                   
                   return (
-                    <div className="mt-2 pt-5 border-t border-white/20">
+                    <div className="mt-5 pt-5 border-t border-white/20">
                       {allCourseFiles.map(course => (
                         <div key={course.id} className="mb-2">
                           <div className="px-2 pb-1 leading-none">
