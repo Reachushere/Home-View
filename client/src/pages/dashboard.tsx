@@ -6942,9 +6942,11 @@ export default function Dashboard() {
                       return aNum - bNum;
                     });
                     
-                    return sortedWeeks.map((week) => {
+                    return sortedWeeks.map((week, index) => {
                       const weekNum = parseInt(week.id.replace('week-', ''));
                       const isPastWeek = weekNum < currentWeekNum;
+                      // Items with index >= 7 are in the right column (since we have 7 rows)
+                      const isRightColumn = index >= 7;
                       const weekFiles = getFilesInFlyoutWeek(week.id);
                       const isWeekExpanded = flyoutExpandedFolders.has(week.id);
                       const hasFiles = weekFiles.length > 0;
@@ -6957,7 +6959,7 @@ export default function Dashboard() {
                       if (!hasFiles) return null;
                       
                       return (
-                        <div key={week.id}>
+                        <div key={week.id} style={isRightColumn ? { paddingLeft: '20px' } : undefined}>
                           {/* Week folder row */}
                           <div 
                             className={`flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer ${shouldBlink ? 'animate-week-blink' : ''}`}
