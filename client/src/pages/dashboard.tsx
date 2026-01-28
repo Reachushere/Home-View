@@ -9264,13 +9264,13 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 text-[10px]">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {/* Two column layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left Column */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div>
-            <Label htmlFor="title" className="text-[10px]">Title</Label>
+            <Label htmlFor="title" className="text-[11px] text-white">Title</Label>
             <Input
               id="title"
               value={formData.title}
@@ -9278,69 +9278,56 @@ function TaskForm({
               placeholder="Assignment title"
               required
               data-testid="input-title"
-              className="!text-black bg-white h-7 text-[10px]"
+              className="bg-white h-8"
+              style={{ color: 'black', fontSize: '11px' }}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label htmlFor="courseName" className="text-[10px]">Course</Label>
-              <Select value={formData.courseName} onValueChange={(v) => setFormData(prev => ({ ...prev, courseName: v }))}>
-                <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }} data-testid="select-course">
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent>
-                  {COURSES.map(course => {
-                    const dotColor = course.code === "CPPA122" ? "#22c55e" : course.code === "CFNF400" ? "#ec4899" : "#6366f1";
-                    const textColor = course.code === "CPPA122" ? "#15803d" : course.code === "CFNF400" ? "#be185d" : "#4338ca";
-                    return (
-                      <SelectItem 
-                        key={course.code} 
-                        value={`${course.code} - ${course.name}`}
-                        className="pl-2"
-                      >
-                        <span className="flex items-center gap-2">
-                          <span 
-                            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                            style={{ backgroundColor: dotColor }}
-                          />
-                          <span style={{ color: textColor }}>
-                            <span className="font-semibold">{course.code}</span>
-                            {" - "}
-                            <span>{course.name}</span>
-                          </span>
-                        </span>
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="courseName" className="text-[11px] text-white">Course</Label>
+              <select
+                value={formData.courseName}
+                onChange={(e) => setFormData(prev => ({ ...prev, courseName: e.target.value }))}
+                data-testid="select-course"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
+              >
+                <option value="">Select course</option>
+                {COURSES.map(course => (
+                  <option key={course.code} value={`${course.code} - ${course.name}`}>
+                    {course.code} - {course.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
-              <Label htmlFor="type" className="text-[10px]">Type</Label>
-              <Select value={formData.type} onValueChange={(v) => setFormData(prev => ({ ...prev, type: v }))}>
-                <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }} data-testid="select-type">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {TASK_TYPES.map(type => (
-                    <SelectItem key={type} value={type}>
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="type" className="text-[11px] text-white">Type</Label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
+                data-testid="select-type"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
+              >
+                {TASK_TYPES.map(type => (
+                  <option key={type} value={type}>
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
           <div>
-            <Label htmlFor="dueDate" className="text-[10px]">Due Date</Label>
+            <Label htmlFor="dueDate" className="text-[11px] text-white">Due Date</Label>
             <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal text-[10px] h-7"
+                  className="w-full justify-start text-left font-normal h-8 bg-white"
+                  style={{ color: 'black', fontSize: '11px' }}
                   data-testid="input-duedate"
                 >
                   <CalendarDays className="mr-2 h-4 w-4" />
@@ -9362,31 +9349,29 @@ function TaskForm({
                   <div className="border-t pt-3 mt-3">
                     <Label className="text-sm font-medium">Time</Label>
                     <div className="flex items-center gap-2 mt-2">
-                      <Select value={tempHour} onValueChange={setTempHour}>
-                        <SelectTrigger className="w-20 !text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          {Array.from({ length: 24 }, (_, i) => (
-                            <SelectItem key={i} value={i.toString().padStart(2, '0')} className="text-black">
-                              {i.toString().padStart(2, '0')}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <select
+                        value={tempHour}
+                        onChange={(e) => setTempHour(e.target.value)}
+                        className="w-16 h-8 rounded-md border border-input bg-white px-2"
+                        style={{ color: 'black', fontSize: '11px' }}
+                      >
+                        {Array.from({ length: 24 }, (_, i) => (
+                          <option key={i} value={i.toString().padStart(2, '0')}>
+                            {i.toString().padStart(2, '0')}
+                          </option>
+                        ))}
+                      </select>
                       <span>:</span>
-                      <Select value={tempMinute} onValueChange={setTempMinute}>
-                        <SelectTrigger className="w-20 !text-black [&_*]:!text-black bg-white" style={{ color: 'black' }}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          {['00', '15', '30', '45'].map((min) => (
-                            <SelectItem key={min} value={min} className="text-black">
-                              {min}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <select
+                        value={tempMinute}
+                        onChange={(e) => setTempMinute(e.target.value)}
+                        className="w-16 h-8 rounded-md border border-input bg-white px-2"
+                        style={{ color: 'black', fontSize: '11px' }}
+                      >
+                        {['00', '15', '30', '45'].map((min) => (
+                          <option key={min} value={min}>{min}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
@@ -9419,32 +9404,32 @@ function TaskForm({
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label htmlFor="eventStartTime" className="text-[10px]">Start</Label>
+              <Label htmlFor="eventStartTime" className="text-[11px] text-white">Start</Label>
               <input
                 id="eventStartTime"
                 type="time"
                 value={formData.eventStartTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
                 data-testid="input-start-time"
-                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ color: 'black' }}
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               />
             </div>
             <div>
-              <Label htmlFor="eventEndTime" className="text-[10px]">End</Label>
+              <Label htmlFor="eventEndTime" className="text-[11px] text-white">End</Label>
               <input
                 id="eventEndTime"
                 type="time"
                 value={formData.eventEndTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
                 data-testid="input-end-time"
-                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                style={{ color: 'black' }}
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               />
             </div>
             <div>
-              <Label htmlFor="prepDays" className="text-[10px]">Prep Days</Label>
-              <Input
+              <Label htmlFor="prepDays" className="text-[11px] text-white">Prep Days</Label>
+              <input
                 id="prepDays"
                 type="number"
                 min="0"
@@ -9453,13 +9438,14 @@ function TaskForm({
                 onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
                 placeholder="0"
                 data-testid="input-prepdays"
-                className="!text-black bg-white text-[10px] h-7"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               />
             </div>
           </div>
 
           <div>
-            <Label className="text-[10px]">Reminders</Label>
+            <Label className="text-[11px] text-white">Reminders</Label>
             <div className="grid grid-cols-4 gap-2">
               <Select 
                 value={String(formData.reminder1)} 
