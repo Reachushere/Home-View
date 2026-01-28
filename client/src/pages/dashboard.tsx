@@ -6898,9 +6898,8 @@ export default function Dashboard() {
           {/* Inline Files Flyout - appears next to calendar */}
           <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'w-[33%] opacity-100' : 'w-0 opacity-0'}`}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative">
-              {/* Top header with arrows and date */}
-              <div className="flex items-center justify-between px-2 py-1 bg-black/30 relative z-10">
-                <div className="w-5" /> {/* Spacer for balance */}
+              {/* Top header with arrows and date - matches day header height (52px) */}
+              <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '52px' }}>
                 <div className="flex items-center gap-1">
                   <Button 
                     variant="ghost" 
@@ -6926,7 +6925,7 @@ export default function Dashboard() {
                   size="icon" 
                   variant="ghost" 
                   onClick={() => setIsFilesFlyoutOpen(false)}
-                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20"
+                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20 absolute right-2"
                   data-testid="button-close-inline-files"
                 >
                   <X className="h-3 w-3" />
