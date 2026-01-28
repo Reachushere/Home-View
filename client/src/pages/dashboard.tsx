@@ -7737,14 +7737,25 @@ export default function Dashboard() {
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" fillOpacity="0.75" />
               </marker>
+              <marker
+                id="arrowhead-prep-black"
+                markerWidth="10"
+                markerHeight="7"
+                refX="10"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.75" />
+              </marker>
             </defs>
             {prepArrowConnections.map((conn) => {
               // Exit 21px to the left from checkbox
               const exitX = conn.fromX - 21;
               
               // Get marker ID based on color
-              let markerId = "arrowhead-prep-pink";
+              let markerId = "arrowhead-prep-black"; // Default to black
               if (conn.color === "#22c55e") markerId = "arrowhead-prep-green";
+              else if (conn.color === "#ec4899") markerId = "arrowhead-prep-pink";
               else if (conn.color === "#6366f1") markerId = "arrowhead-prep-indigo";
               
               // Path: curved from checkbox to prep text, ending vertically pointing DOWN
