@@ -7198,14 +7198,15 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        {/* 3D Vertical Separator - thin line with shadow */}
+                        {/* 3D Vertical Separator - hairline with shadow */}
                         <div 
                           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                           style={{ 
-                            width: '0.5px',
+                            width: '1px',
                             height: '65%',
-                            backgroundColor: course.id === 'cppa122' ? 'rgba(22, 101, 52, 0.5)' : course.id === 'cfnf400' ? 'rgba(157, 23, 77, 0.45)' : 'rgba(67, 56, 202, 0.5)',
-                            boxShadow: '0.5px 0 0.5px rgba(0,0,0,0.12)'
+                            background: 'transparent',
+                            borderLeft: course.id === 'cppa122' ? '0.5px solid rgba(22, 101, 52, 0.35)' : course.id === 'cfnf400' ? '0.5px solid rgba(157, 23, 77, 0.3)' : '0.5px solid rgba(67, 56, 202, 0.35)',
+                            boxShadow: '0.5px 0 0 rgba(0,0,0,0.08)'
                           }}
                         />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
