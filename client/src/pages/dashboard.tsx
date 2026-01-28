@@ -6420,6 +6420,7 @@ export default function Dashboard() {
                               .replace(/Module\s*\d*[-_:\s]*/gi, '')
                               .replace(/Local\s*Politics[-_:\s]*/gi, '')
                               .replace(/\.pdf$/i, '')
+                              .replace(/^[.\s-]+/, '')
                               .trim();
                             return (
                               <span
@@ -7119,6 +7120,7 @@ export default function Dashboard() {
                             .replace(/Module\s*\d*[-_:\s]*/gi, '')
                             .replace(/Local\s*Politics[-_:\s]*/gi, '')
                             .replace(/\.pdf$/i, '')
+                            .replace(/^[.\s-]+/, '')
                             .trim();
                           return (
                             <div
