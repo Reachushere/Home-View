@@ -9447,190 +9447,169 @@ function TaskForm({
           <div>
             <Label className="text-[11px] text-white">Reminders</Label>
             <div className="grid grid-cols-4 gap-2">
-              <Select 
-                value={String(formData.reminder1)} 
-                onValueChange={(v) => setFormData(prev => ({ ...prev, reminder1: parseInt(v) }))}
+              <select
+                value={String(formData.reminder1)}
+                onChange={(e) => setFormData(prev => ({ ...prev, reminder1: parseInt(e.target.value) }))}
+                data-testid="select-reminder1"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-1 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               >
-                <SelectTrigger data-testid="select-reminder1" className="text-[10px] !text-black [&_*]:!text-black bg-white h-7" style={{ color: 'black' }}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {REMINDER_OPTIONS.map(opt => (
-                    <SelectItem key={opt.value} value={String(opt.value)}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select 
-                value={String(formData.reminder2)} 
-                onValueChange={(v) => setFormData(prev => ({ ...prev, reminder2: parseInt(v) }))}
+                {REMINDER_OPTIONS.map(opt => (
+                  <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
+                ))}
+              </select>
+              <select
+                value={String(formData.reminder2)}
+                onChange={(e) => setFormData(prev => ({ ...prev, reminder2: parseInt(e.target.value) }))}
+                data-testid="select-reminder2"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-1 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               >
-                <SelectTrigger data-testid="select-reminder2" className="text-[10px] !text-black [&_*]:!text-black bg-white h-7" style={{ color: 'black' }}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {REMINDER_OPTIONS.map(opt => (
-                    <SelectItem key={opt.value} value={String(opt.value)}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select 
-                value={String(formData.reminder3)} 
-                onValueChange={(v) => setFormData(prev => ({ ...prev, reminder3: parseInt(v) }))}
+                {REMINDER_OPTIONS.map(opt => (
+                  <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
+                ))}
+              </select>
+              <select
+                value={String(formData.reminder3)}
+                onChange={(e) => setFormData(prev => ({ ...prev, reminder3: parseInt(e.target.value) }))}
+                data-testid="select-reminder3"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-1 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               >
-                <SelectTrigger data-testid="select-reminder3" className="text-[10px] !text-black [&_*]:!text-black bg-white h-7" style={{ color: 'black' }}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {REMINDER_OPTIONS.map(opt => (
-                    <SelectItem key={opt.value} value={String(opt.value)}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select 
-                value={String(formData.reminder4)} 
-                onValueChange={(v) => setFormData(prev => ({ ...prev, reminder4: parseInt(v) }))}
+                {REMINDER_OPTIONS.map(opt => (
+                  <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
+                ))}
+              </select>
+              <select
+                value={String(formData.reminder4)}
+                onChange={(e) => setFormData(prev => ({ ...prev, reminder4: parseInt(e.target.value) }))}
+                data-testid="select-reminder4"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-1 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               >
-                <SelectTrigger data-testid="select-reminder4" className="text-[10px] !text-black [&_*]:!text-black bg-white h-7" style={{ color: 'black' }}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {REMINDER_OPTIONS.map(opt => (
-                    <SelectItem key={opt.value} value={String(opt.value)}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                {REMINDER_OPTIONS.map(opt => (
+                  <option key={opt.value} value={String(opt.value)}>{opt.label}</option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
 
         {/* Right Column */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="priority" className="text-[10px]">Priority</Label>
-              <Select value={formData.priority} onValueChange={(v) => setFormData(prev => ({ ...prev, priority: v }))}>
-                <SelectTrigger data-testid="select-priority" className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="priority" className="text-[11px] text-white">Priority</Label>
+              <select
+                value={formData.priority}
+                onChange={(e) => setFormData(prev => ({ ...prev, priority: e.target.value }))}
+                data-testid="select-priority"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
             </div>
             <div>
-              <Label className="text-[10px]">Repeat</Label>
-              <Select 
-                value={formData.repeatType} 
-                onValueChange={(v) => setFormData(prev => ({ 
-                  ...prev, 
-                  repeatType: v as typeof REPEAT_TYPES[number]
-                }))}
+              <Label className="text-[11px] text-white">Repeat</Label>
+              <select
+                value={formData.repeatType}
+                onChange={(e) => setFormData(prev => ({ ...prev, repeatType: e.target.value as typeof REPEAT_TYPES[number] }))}
+                data-testid="select-repeat-type"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               >
-                <SelectTrigger data-testid="select-repeat-type" className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }}>
-                  <SelectValue placeholder="No repeat" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No repeat</SelectItem>
-                  <SelectItem value="daily">Daily</SelectItem>
-                  <SelectItem value="weekly">Weekly</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="custom">Custom...</SelectItem>
-                </SelectContent>
-              </Select>
+                <option value="none">No repeat</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="custom">Custom...</option>
+              </select>
             </div>
           </div>
 
           {formData.repeatType === "custom" && (
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label className="text-[10px]">Every</Label>
-                <Input
+                <Label className="text-[11px] text-white">Every</Label>
+                <input
                   type="number"
                   min="1"
                   max="52"
                   value={formData.repeatInterval}
                   onChange={(e) => setFormData(prev => ({ ...prev, repeatInterval: parseInt(e.target.value) || 1 }))}
                   data-testid="input-repeat-interval"
-                  className="!text-black bg-white text-[10px] h-7"
+                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  style={{ color: 'black', fontSize: '11px' }}
                 />
               </div>
               <div>
-                <Label className="text-[10px]">Unit</Label>
-                <Select 
-                  value={formData.repeatIntervalUnit} 
-                  onValueChange={(v) => setFormData(prev => ({ 
-                    ...prev, 
-                    repeatIntervalUnit: v as typeof REPEAT_INTERVAL_UNITS[number]
-                  }))}
+                <Label className="text-[11px] text-white">Unit</Label>
+                <select
+                  value={formData.repeatIntervalUnit}
+                  onChange={(e) => setFormData(prev => ({ ...prev, repeatIntervalUnit: e.target.value as typeof REPEAT_INTERVAL_UNITS[number] }))}
+                  data-testid="select-repeat-unit"
+                  className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  style={{ color: 'black', fontSize: '11px' }}
                 >
-                  <SelectTrigger data-testid="select-repeat-unit" className="!text-black [&_*]:!text-black bg-white text-[10px] h-7" style={{ color: 'black' }}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="days">Days</SelectItem>
-                    <SelectItem value="weeks">Weeks</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <option value="days">Days</option>
+                  <option value="weeks">Weeks</option>
+                </select>
               </div>
             </div>
           )}
 
           {formData.repeatType !== "none" && (
             <div>
-              <Label className="text-[10px]">End Repeat (optional)</Label>
+              <Label className="text-[11px] text-white">End Repeat (optional)</Label>
               <input
                 type="date"
                 value={formData.repeatEndDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, repeatEndDate: e.target.value }))}
                 data-testid="input-repeat-end-date"
-                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] text-black ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                style={{ color: 'black', fontSize: '11px' }}
               />
             </div>
           )}
 
           <div>
-            <Label htmlFor="description" className="text-[10px]">Description</Label>
-            <Textarea
+            <Label htmlFor="description" className="text-[11px] text-white">Description</Label>
+            <textarea
               id="description"
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Add notes or details..."
               rows={3}
               data-testid="input-description"
-              className="!text-black bg-white text-[10px]"
+              className="flex w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none"
+              style={{ color: 'black', fontSize: '11px' }}
             />
           </div>
 
           <div>
-            <Label htmlFor="referenceLink" className="text-[10px]">Reference Link</Label>
-            <Input
+            <Label htmlFor="referenceLink" className="text-[11px] text-white">Reference Link</Label>
+            <input
               id="referenceLink"
               type="url"
               value={formData.referenceLink}
               onChange={(e) => setFormData(prev => ({ ...prev, referenceLink: e.target.value }))}
               placeholder="https://example.com"
               data-testid="input-reference-link"
-              className="!text-black bg-white h-7 text-[10px]"
+              className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              style={{ color: 'black', fontSize: '11px' }}
             />
           </div>
         </div>
       </div>
 
       <div>
-        <Label className="text-[10px]">Attachments (optional)</Label>
+        <Label className="text-[11px] text-white">Attachments (optional)</Label>
         <div className="space-y-2">
           {formData.attachments.map((attachment, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-[10px]">
+            <div key={idx} className="flex items-center gap-2" style={{ fontSize: '11px' }}>
               <Paperclip className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
               <a href={attachment.startsWith('/objects/') ? attachment : attachment} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate flex-1">
                 {getAttachmentDisplayName(attachment)}
@@ -9662,7 +9641,8 @@ function TaskForm({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-7 text-[10px]"
+              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8"
+              style={{ fontSize: '11px' }}
               data-testid="button-upload-file"
             >
               {isUploading ? (
@@ -9691,17 +9671,19 @@ function TaskForm({
           </div>
           
           <div className="flex gap-2 mt-4">
-            <Input
+            <input
               value={newAttachment}
               onChange={(e) => setNewAttachment(e.target.value)}
               placeholder="Or paste URL..."
               data-testid="input-new-attachment"
-              className="!text-black bg-white h-7 text-[10px]"
+              className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              style={{ color: 'black', fontSize: '11px' }}
             />
             <Button
               type="button"
               variant="outline"
-              className="h-7 text-[10px]"
+              className="h-8"
+              style={{ fontSize: '11px' }}
               onClick={() => {
                 if (newAttachment.trim()) {
                   setFormData(prev => ({
@@ -9720,7 +9702,7 @@ function TaskForm({
       </div>
 
       <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={createMutation.isPending} className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8" style={{ fontSize: '12px' }} data-testid="button-submit-task">
+        <Button type="submit" disabled={createMutation.isPending} className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8" style={{ fontSize: '11px' }} data-testid="button-submit-task">
           {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
         </Button>
       </div>
