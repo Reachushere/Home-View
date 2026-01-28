@@ -5937,11 +5937,10 @@ export default function Dashboard() {
               }}
             >
               <span 
-                className="text-white text-[7px] font-bold whitespace-nowrap"
+                className="text-white text-[10px] font-bold whitespace-nowrap"
                 style={{ 
                   writingMode: 'vertical-rl',
-                  textOrientation: 'mixed',
-                  transform: 'rotate(180deg)'
+                  textOrientation: 'mixed'
                 }}
               >
                 Start Discussion Post
@@ -5957,11 +5956,10 @@ export default function Dashboard() {
               }}
             >
               <span 
-                className="text-white text-[7px] font-bold whitespace-nowrap"
+                className="text-white text-[10px] font-bold whitespace-nowrap"
                 style={{ 
                   writingMode: 'vertical-rl',
-                  textOrientation: 'mixed',
-                  transform: 'rotate(180deg)'
+                  textOrientation: 'mixed'
                 }}
               >
                 Discussion Post Due
