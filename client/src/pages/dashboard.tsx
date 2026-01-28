@@ -7070,9 +7070,9 @@ export default function Dashboard() {
                 {/* Course Files from current week - bottom section */}
                 {(() => {
                   const courses = [
-                    { id: 'cppa122', name: 'CPPA122', color: 'text-green-400', pattern: /^CPPA\s*122[-_\s.]*/i },
-                    { id: 'cfnf400', name: 'CFNF400', color: 'text-pink-400', pattern: /^CFNF\s*400[-_\s.]*/i },
-                    { id: 'casl101', name: 'CASL101', color: 'text-purple-400', pattern: /^CASL\s*101[-_\s.]*/i }
+                    { id: 'cppa122', name: 'CPPA122 - Local Politics', color: 'text-green-400', pattern: /^CPPA\s*122[-_\s.]*/i },
+                    { id: 'cfnf400', name: 'CFNF400 - Human Services', color: 'text-pink-400', pattern: /^CFNF\s*400[-_\s.]*/i },
+                    { id: 'casl101', name: 'CASL101 - Sign Language', color: 'text-purple-400', pattern: /^CASL\s*101[-_\s.]*/i }
                   ];
                   
                   const allCourseFiles = courses.map(course => ({
