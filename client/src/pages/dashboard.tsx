@@ -622,7 +622,7 @@ export default function Dashboard() {
       timeColumnWidth: 105,
       moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
-      allDayRowHeight: 44,
+      allDayRowHeight: 36,
       courseRowHeight: 48,
       timeSlotHeight: 36,
       timeSlotHeights: defaultHeights
