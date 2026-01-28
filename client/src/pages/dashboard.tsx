@@ -6952,7 +6952,7 @@ export default function Dashboard() {
               </div>
               
               {/* Files Header and Week Folders - BOTTOM section */}
-              <div className="mt-auto border-t border-white/20" style={{ marginBottom: '150px' }}>
+              <div className="absolute left-0 right-0 border-t border-white/20" style={{ bottom: '150px' }}>
                 <div style={{ height: '40px' }} />
                 <div className="flex items-center gap-1.5 px-2 py-1 bg-black/30">
                   <span className="text-sm font-medium">All Files</span>
