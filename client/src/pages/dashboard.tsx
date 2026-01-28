@@ -6413,11 +6413,12 @@ export default function Dashboard() {
                           .filter(f => f.folder?.startsWith(`week-${selectedWeek}-cppa122`))
                           .slice(0, 5)
                           .map(file => {
-                            // Clean up file name - remove course code and module number
+                            // Clean up file name - remove course code, module, and Local Politics
                             const fullName = file.displayName || file.originalName;
                             const cleanName = fullName
                               .replace(/^CPPA\s*122[-_\s]*/i, '')
-                              .replace(/^Module\s*\d+[-_:\s]*/i, '')
+                              .replace(/Module\s*\d*[-_:\s]*/gi, '')
+                              .replace(/Local\s*Politics[-_:\s]*/gi, '')
                               .replace(/\.pdf$/i, '')
                               .trim();
                             return (
