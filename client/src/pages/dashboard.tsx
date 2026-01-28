@@ -7553,7 +7553,7 @@ export default function Dashboard() {
                 markerWidth="10"
                 markerHeight="7"
                 refX="10"
-                refY="5.5"
+                refY="3.5"
                 orient="auto"
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.75" />
@@ -7629,9 +7629,9 @@ export default function Dashboard() {
               } else if (conn.isTomorrow) {
                 // Tomorrow arrows: come from above and point DOWN to checkbox (mirror of Today arrow)
                 // Path: left from Tomorrow box -> down -> curve to directly above target -> straight down
-                // End path 7px before target so line ends at arrowhead tip (refX=17, polygon tip at 10, offset=7)
+                // End path 9px before target so line ends at arrowhead tip and arrowhead is 2px higher
                 const aboveTargetY = conn.toY - 40; // Position above the task
-                const lineEndY = conn.toY - 7; // Stop at arrowhead tip
+                const lineEndY = conn.toY - 9; // Stop at arrowhead tip, 2px higher than before
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTargetY) / 2}, ${conn.toX} ${aboveTargetY - 30}, ${conn.toX} ${aboveTargetY} L ${conn.toX} ${lineEndY}`;
               } else {
                 // Today/This Week arrows: normal curved path from left side
