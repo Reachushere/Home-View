@@ -6866,14 +6866,13 @@ export default function Dashboard() {
               </div>
               
               {/* Course rows with files - positioned to match calendar */}
-              {/* Day header ~48px + All Day row 44px + 4px = 96px offset */}
-              <div className="absolute left-0 right-[-1px] bg-white" style={{ top: `${52 + gridSizes.allDayRowHeight}px` }}>
+              {/* Day header 41px + All Day row height = offset to course rows */}
+              <div className="absolute left-0 right-[-1px] bg-white" style={{ top: `${41 + gridSizes.allDayRowHeight}px` }}>
                 {(() => {
                   const courseRows = [
                     { id: 'cppa122', name: 'CPPA122', fullName: 'Local Politics', bgColor: 'rgba(134, 239, 172, 0.35)', textColor: 'text-green-700', pattern: /^CPPA\s*122[-_\s.]*/i },
                     { id: 'cfnf400', name: 'CFNF400', fullName: 'Human Sexuality', bgColor: 'rgba(249, 168, 212, 0.45)', textColor: 'text-pink-700', pattern: /^CFNF\s*400[-_\s.]*/i },
-                    { id: 'casl101', name: 'CASL101', fullName: 'Sign Language', bgColor: 'rgba(165, 180, 252, 0.45)', textColor: 'text-indigo-700', pattern: /^CASL\s*101[-_\s.]*/i },
-                    { id: 'other', name: 'OTHER', fullName: '', bgColor: 'rgba(156, 163, 175, 0.30)', textColor: 'text-gray-700', pattern: /.*/ }
+                    { id: 'casl101', name: 'CASL101', fullName: 'Sign Language', bgColor: 'rgba(165, 180, 252, 0.45)', textColor: 'text-indigo-700', pattern: /^CASL\s*101[-_\s.]*/i }
                   ];
                   
                   return courseRows.map(course => {
@@ -6897,7 +6896,7 @@ export default function Dashboard() {
                       <div 
                         key={course.id} 
                         className="flex items-center gap-2 px-2 overflow-hidden"
-                        style={{ height: `${course.id === 'cppa122' ? gridSizes.courseRowHeight * 2 : course.id === 'other' ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
+                        style={{ height: `${course.id === 'cppa122' ? gridSizes.courseRowHeight * 2 : course.id === 'casl101' ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                       >
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '-10px', gridTemplateColumns: '1fr' } : { gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
