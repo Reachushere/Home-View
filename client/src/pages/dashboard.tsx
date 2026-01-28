@@ -7090,8 +7090,8 @@ export default function Dashboard() {
           </Card>
           </div>
           
-          {/* Inline Files Flyout - appears next to calendar */}
-          <div className={`absolute top-0 bottom-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0' }}>
+          {/* Inline Files Flyout - appears next to calendar, ends at bottom of CASL101 row */}
+          <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3.5 * gridSizes.courseRowHeight}px` }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
