@@ -6934,7 +6934,7 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                       >
                         <span className={`text-[10px] font-semibold ${course.textColor} whitespace-nowrap`}>{course.name}</span>
-                        <div className="flex-1 flex items-center gap-2 overflow-x-auto">
+                        <div className="flex-1 flex items-center gap-2 overflow-hidden">
                           {courseFiles.map(file => {
                             const fullName = file.displayName || file.originalName;
                             let cleanName = fullName
