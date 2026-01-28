@@ -6256,7 +6256,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Calendar wrapper - shrinks when flyouts open (uses max of overlapping flyouts) */}
-          <div className={`${isResizingFlyout || isResizingFlyout2 || isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen ? '' : 'w-full'}`} style={(isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen) ? { width: `calc(100% - ${Math.max(isFilesFlyoutOpen ? flyoutWidth : 0, isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 17}px)` } : undefined}>
+          <div className={`${isResizingFlyout || isResizingFlyout2 || isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen ? '' : 'w-full'}`} style={{ width: `calc(100% - ${Math.max(isFilesFlyoutOpen ? flyoutWidth : 0, isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 37}px)` }}>
           <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
