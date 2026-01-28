@@ -7552,8 +7552,8 @@ export default function Dashboard() {
                 id="arrowhead-black"
                 markerWidth="10"
                 markerHeight="7"
-                refX="14"
-                refY="-2.5"
+                refX="6"
+                refY="9.5"
                 orient="auto"
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.75" />
