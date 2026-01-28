@@ -7396,14 +7396,7 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        {course.id === 'cppa122' && (
-                          <Paperclip 
-                            className="h-5 w-5 shrink-0 -rotate-45 ml-1 cursor-pointer hover:opacity-70 text-green-600" 
-                            strokeWidth={1}
-                            onClick={() => courseFiles[0] && setPreviewFile(courseFiles[0])}
-                          />
-                        )}
-                        {!(course as any).hideFiles && (
+                                                {!(course as any).hideFiles && (
                           <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                             {courseFiles.map((file, fileIndex) => {
                               const fullName = file.displayName || file.originalName;
