@@ -6898,8 +6898,30 @@ export default function Dashboard() {
           {/* Inline Files Flyout - appears next to calendar */}
           <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'w-[33%] opacity-100' : 'w-0 opacity-0'}`}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative">
-              {/* Top close button */}
-              <div className="flex items-center justify-end px-2 py-1 bg-black/30 relative z-10">
+              {/* Top header with arrows and date */}
+              <div className="flex items-center justify-between px-2 py-1 bg-black/30 relative z-10">
+                <div className="w-5" /> {/* Spacer for balance */}
+                <div className="flex items-center gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-5 w-5 hover:bg-white/20 rounded" 
+                    onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+                    data-testid="button-flyout-prev-week"
+                  >
+                    <ChevronLeft className="h-3 w-3 text-white" strokeWidth={2.5} />
+                  </Button>
+                  <span className="text-[10px] text-white/70 whitespace-nowrap">{format(weekStartDate, "MMM d")}-{format(weekEndDate, "d")}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-5 w-5 hover:bg-white/20 rounded" 
+                    onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+                    data-testid="button-flyout-next-week"
+                  >
+                    <ChevronRight className="h-3 w-3 text-white" strokeWidth={2.5} />
+                  </Button>
+                </div>
                 <Button 
                   size="icon" 
                   variant="ghost" 
@@ -6987,33 +7009,10 @@ export default function Dashboard() {
               
               {/* Files Header and Week Folders - BOTTOM section */}
               <div className="mt-auto border-t border-white/20">
-                <div className="flex items-center justify-between px-2 py-1 bg-black/30">
-                  <div className="flex items-center gap-1.5">
-                    <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
-                    <span className="text-sm font-medium">Files</span>
-                    <span className="text-[10px] text-white/40 ml-1">Click to open. Drag to tasks.</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-5 w-5 hover:bg-white/20 rounded" 
-                      onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
-                      data-testid="button-flyout-prev-week"
-                    >
-                      <ChevronLeft className="h-3 w-3 text-white" strokeWidth={2.5} />
-                    </Button>
-                    <span className="text-[10px] text-white/70 whitespace-nowrap">{format(weekStartDate, "MMM d")}-{format(weekEndDate, "d")}</span>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-5 w-5 hover:bg-white/20 rounded" 
-                      onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
-                      data-testid="button-flyout-next-week"
-                    >
-                      <ChevronRight className="h-3 w-3 text-white" strokeWidth={2.5} />
-                    </Button>
-                  </div>
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-black/30">
+                  <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
+                  <span className="text-sm font-medium">Files</span>
+                  <span className="text-[10px] text-white/40 ml-1">Click to open. Drag to tasks.</span>
                 </div>
                 
                 {/* Week Folders */}
