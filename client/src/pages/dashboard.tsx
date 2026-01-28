@@ -6203,7 +6203,7 @@ export default function Dashboard() {
             style={{ 
               top: `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight}px`,
               transform: 'translateY(-50%)',
-              right: (isFilesFlyoutOpen ? flyoutWidth : 0) + (isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' 
+              right: (isFilesFlyoutOpen ? flyoutWidth : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' 
             }}
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
@@ -6255,8 +6255,8 @@ export default function Dashboard() {
               )}
             </div>
           </div>
-          {/* Calendar wrapper - shrinks when flyouts open */}
-          <div className={`${isResizingFlyout || isResizingFlyout2 || isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen ? '' : 'w-full'}`} style={(isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen) ? { width: `calc(100% - ${(isFilesFlyoutOpen ? flyoutWidth : 0) + (isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 17}px)` } : undefined}>
+          {/* Calendar wrapper - shrinks when flyouts open (uses max of overlapping flyouts) */}
+          <div className={`${isResizingFlyout || isResizingFlyout2 || isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen ? '' : 'w-full'}`} style={(isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen) ? { width: `calc(100% - ${Math.max(isFilesFlyoutOpen ? flyoutWidth : 0, isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 17}px)` } : undefined}>
           <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
@@ -7119,7 +7119,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar, ends at bottom of CASL101 row */}
-          <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: (isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 'px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
+          <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 'px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
