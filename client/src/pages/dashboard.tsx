@@ -6110,7 +6110,7 @@ export default function Dashboard() {
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             <div className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
-              <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
+              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
               <div className="border-l border-border/50" style={{ backgroundColor: 'rgba(156, 163, 175, 0.15)' }} />
