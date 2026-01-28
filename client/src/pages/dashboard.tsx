@@ -5943,7 +5943,7 @@ export default function Dashboard() {
           {/* Files Flyout Toggle Tab - sticks to right edge of calendar */}
           <div
             className={`absolute top-[calc(50%+18px)] -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300 ${isFilesFlyoutOpen ? '' : ''}`}
-            style={{ right: isFilesFlyoutOpen ? 'calc(20% - 62px)' : '0px' }}
+            style={{ right: isFilesFlyoutOpen ? 'calc(20% - 77px)' : '0px' }}
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
           >
@@ -5957,7 +5957,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Calendar wrapper - shrinks when flyout opens */}
-          <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? '' : 'w-full'}`} style={isFilesFlyoutOpen ? { width: 'calc(80% + 49px)' } : undefined}>
+          <div className={`transition-all duration-300 ease-in-out ${isFilesFlyoutOpen ? '' : 'w-full'}`} style={isFilesFlyoutOpen ? { width: 'calc(80% + 64px)' } : undefined}>
           <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
@@ -6830,7 +6830,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar */}
-          <div className={`absolute right-0 top-0 bottom-0 transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', width: isFilesFlyoutOpen ? 'calc(20% - 59px)' : '0' }}>
+          <div className={`absolute right-0 top-0 bottom-0 transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', width: isFilesFlyoutOpen ? 'calc(20% - 74px)' : '0' }}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
               {/* Top header with arrows and date - matches day header height (52px) */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '52px' }}>
