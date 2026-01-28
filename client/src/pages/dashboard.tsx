@@ -614,12 +614,12 @@ export default function Dashboard() {
       parsed.courseRowHeight = 48;
       // Set moduleColumnWidth to 0 (column removed)
       parsed.moduleColumnWidth = 0;
-      // Force timeColumnWidth to 69
-      parsed.timeColumnWidth = 69;
+      // Force timeColumnWidth to 63
+      parsed.timeColumnWidth = 63;
       return parsed;
     }
     return {
-      timeColumnWidth: 69,
+      timeColumnWidth: 63,
       moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 36,
