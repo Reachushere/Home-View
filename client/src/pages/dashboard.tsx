@@ -3547,7 +3547,7 @@ export default function Dashboard() {
 
       {/* Readings Popup Dialog */}
       <Dialog open={!!readingsPopupCourse} onOpenChange={(open) => !open && setReadingsPopupCourse(null)}>
-        <DialogContent className="max-w-[320px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
+        <DialogContent className="max-w-[420px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base text-white">
               <FolderOpen 
