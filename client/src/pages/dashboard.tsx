@@ -609,6 +609,7 @@ export default function Dashboard() {
       // Always reset timeSlotHeights to default uniform heights
       parsed.timeSlotHeights = defaultHeights;
       parsed.timeSlotHeight = 36;
+      parsed.courseRowHeight = 48;
       // Ensure moduleColumnWidth exists for backwards compatibility
       if (!parsed.moduleColumnWidth) {
         parsed.moduleColumnWidth = 70;
