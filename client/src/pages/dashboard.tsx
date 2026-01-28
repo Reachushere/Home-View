@@ -6890,7 +6890,17 @@ export default function Dashboard() {
                   return courseRows.map(course => {
                     const courseFiles = course.id === 'other' 
                       ? [] // No files for OTHER row
-                      : allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`));
+                      : allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`))
+                          .sort((a, b) => {
+                            // Put "Introduction" at the end for CPPA122
+                            const aName = (a.displayName || a.originalName).toLowerCase();
+                            const bName = (b.displayName || b.originalName).toLowerCase();
+                            const aIsIntro = aName.includes('introduction');
+                            const bIsIntro = bName.includes('introduction');
+                            if (aIsIntro && !bIsIntro) return 1;
+                            if (!aIsIntro && bIsIntro) return -1;
+                            return 0;
+                          });
                     
                     return (
                       <div 
