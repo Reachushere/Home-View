@@ -7111,7 +7111,7 @@ export default function Dashboard() {
                   return (
                     <div className="mt-4 pt-3 border-t border-white/20">
                       <div className="px-2 mb-1">
-                        <span className="text-[11px] text-white/50 uppercase tracking-wide">Week {selectedWeek} CPPA122</span>
+                        <span className="text-[9px] text-white/50 uppercase tracking-wide">Week {selectedWeek} CPPA122</span>
                       </div>
                       <div className="space-y-0">
                         {cppaFiles.map(file => {
