@@ -7221,7 +7221,7 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        <Paperclip className={`h-7 w-7 shrink-0 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1.5} />
+                        <Paperclip className={`h-7 w-7 shrink-0 -rotate-45 ml-5 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1.5} />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
@@ -7385,7 +7385,7 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        <Paperclip className={`h-7 w-7 shrink-0 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1.5} />
+                        <Paperclip className={`h-7 w-7 shrink-0 -rotate-45 ml-5 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1.5} />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
