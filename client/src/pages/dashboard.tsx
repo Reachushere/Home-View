@@ -613,13 +613,13 @@ export default function Dashboard() {
       // Set moduleColumnWidth to 0 (column removed)
       parsed.moduleColumnWidth = 0;
       // Enforce minimum timeColumnWidth for course names to fit
-      if (!parsed.timeColumnWidth || parsed.timeColumnWidth < 85) {
-        parsed.timeColumnWidth = 85;
+      if (!parsed.timeColumnWidth || parsed.timeColumnWidth < 75) {
+        parsed.timeColumnWidth = 75;
       }
       return parsed;
     }
     return {
-      timeColumnWidth: 85,
+      timeColumnWidth: 75,
       moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 36,
