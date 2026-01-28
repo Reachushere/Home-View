@@ -202,7 +202,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(typeof window !== 'undefined' ? window.innerHeight - 290 : 560);
+  const [calendarHeight, setCalendarHeight] = useState(600);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -322,17 +322,7 @@ export default function Dashboard() {
   }>>([]);
   const mainContentRef = useRef<HTMLElement | null>(null);
   
-  // Update calendar height on window resize
-  useEffect(() => {
-    const handleResize = () => {
-      setCalendarHeight(window.innerHeight - 290);
-    };
-    window.addEventListener('resize', handleResize);
-    // Set initial height
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-  
+    
   // Celebration popup auto-dismiss and audio
   useEffect(() => {
     if (showCelebration) {
