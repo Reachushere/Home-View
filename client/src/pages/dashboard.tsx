@@ -7552,7 +7552,7 @@ export default function Dashboard() {
                 id="arrowhead-black"
                 markerWidth="10"
                 markerHeight="7"
-                refX="16"
+                refX="17"
                 refY="6.5"
                 orient="auto"
               >
