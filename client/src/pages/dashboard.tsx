@@ -7221,7 +7221,7 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        <Paperclip className={`h-5 w-5 shrink-0 -rotate-45 ml-1 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1.5} />
+                        <Paperclip className={`h-5 w-5 shrink-0 -rotate-45 ml-1 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1} />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
@@ -7254,7 +7254,7 @@ export default function Dashboard() {
                           })}
                         </div>
                         {/* Checkbox column at right side */}
-                        <div className="absolute right-2 top-0 bottom-0 flex flex-col justify-center gap-0.5">
+                        <div className="absolute right-3 top-0 bottom-0 flex flex-col justify-center gap-0.5">
                           {courseFiles.map((file) => (
                             <Checkbox
                               key={file.id}
@@ -7271,7 +7271,7 @@ export default function Dashboard() {
                                   console.error('Failed to update file listened status:', error);
                                 }
                               }}
-                              className="h-3.5 w-3.5 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                              className="h-3.5 w-3.5 shrink-0 border border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                             />
                           ))}
                         </div>
@@ -7392,7 +7392,7 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        <Paperclip className={`h-5 w-5 shrink-0 -rotate-45 ml-1 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1.5} />
+                        <Paperclip className={`h-5 w-5 shrink-0 -rotate-45 ml-1 ${course.id === 'cppa122' ? 'text-green-600' : course.id === 'cfnf400' ? 'text-pink-600' : 'text-indigo-600'}`} strokeWidth={1} />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
@@ -7425,7 +7425,7 @@ export default function Dashboard() {
                           })}
                         </div>
                         {/* Checkbox column at right side */}
-                        <div className="absolute right-2 top-0 bottom-0 flex flex-col justify-center gap-0.5">
+                        <div className="absolute right-3 top-0 bottom-0 flex flex-col justify-center gap-0.5">
                           {courseFiles.map((file) => (
                             <Checkbox
                               key={file.id}
@@ -7442,7 +7442,7 @@ export default function Dashboard() {
                                   console.error('Failed to update file listened status:', error);
                                 }
                               }}
-                              className="h-3.5 w-3.5 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                              className="h-3.5 w-3.5 shrink-0 border border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                             />
                           ))}
                         </div>
