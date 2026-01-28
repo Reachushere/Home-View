@@ -6209,11 +6209,11 @@ export default function Dashboard() {
             data-testid="files-flyout-tab"
           >
             <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-2 hover:bg-black/70 transition-colors" style={{ boxShadow: '0 6px 12px rgba(0,0,0,0.6)' }}>
-              <Paperclip className="h-3.5 w-3.5 text-yellow-500 mb-0.5 -rotate-45" />
+              <Paperclip className="h-3.5 w-3.5 text-white mb-0.5 -rotate-45" />
               {isFilesFlyoutOpen ? (
-                <ChevronRight className="h-3.5 w-3.5 text-yellow-500" />
+                <ChevronRight className="h-3.5 w-3.5 text-white" />
               ) : (
-                <ChevronLeft className="h-3.5 w-3.5 text-yellow-500" />
+                <ChevronLeft className="h-3.5 w-3.5 text-white" />
               )}
             </div>
           </div>
@@ -6232,9 +6232,9 @@ export default function Dashboard() {
             <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-2 hover:bg-black/70 transition-colors">
               <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400 mb-0.5" />
               {isFiles2FlyoutOpen ? (
-                <ChevronRight className="h-3.5 w-3.5 text-yellow-500" />
+                <ChevronRight className="h-3.5 w-3.5 text-white" />
               ) : (
-                <ChevronLeft className="h-3.5 w-3.5 text-yellow-500" />
+                <ChevronLeft className="h-3.5 w-3.5 text-white" />
               )}
             </div>
           </div>
