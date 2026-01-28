@@ -7401,8 +7401,9 @@ export default function Dashboard() {
                           strokeWidth={1}
                           onClick={() => courseFiles[0] && setPreviewFile(courseFiles[0])}
                         />
-                        <span className="text-[9px] text-black font-medium whitespace-nowrap">
-                          {course.name} {course.id === 'cppa122' ? 'Local Politics' : course.id === 'cfnf400' ? 'Human Sexuality' : 'Sign Language'} Readings
+                        <span className="text-[9px] text-black font-medium flex flex-col leading-tight">
+                          <span>{course.name} {course.id === 'cppa122' ? 'Local Politics' : course.id === 'cfnf400' ? 'Human Sexuality' : 'Sign Language'}</span>
+                          <span>Readings</span>
                         </span>
                         {!(course as any).hideFiles && (
                           <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
