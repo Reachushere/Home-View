@@ -7276,7 +7276,7 @@ export default function Dashboard() {
                   return courseRows.map(course => {
                     let courseFiles = course.id === 'other' 
                       ? [] // No files for OTHER row
-                      : allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`));
+                      : allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${course.id}`) && f.folder?.includes('module'));
                     
                     // For CPPA122 in Module flyout, only show Introduction file
                     if (course.id === 'cppa122') {
