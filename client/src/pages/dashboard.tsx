@@ -7119,7 +7119,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar, ends at bottom of CASL101 row */}
-          <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 'px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
+          <div className={`absolute top-0 z-[55] ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 'px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -7282,7 +7282,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files2 Flyout - duplicate, appears between first files flyout and weeks flyout */}
-          <div className={`absolute top-0 ${isResizingFlyout2 ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFiles2FlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 'px', width: isFiles2FlyoutOpen ? `${flyout2Width}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
+          <div className={`absolute top-0 z-[50] ${isResizingFlyout2 ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFiles2FlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 'px', width: isFiles2FlyoutOpen ? `${flyout2Width}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
