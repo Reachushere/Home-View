@@ -7629,10 +7629,11 @@ export default function Dashboard() {
               } else if (conn.isTomorrow) {
                 // Tomorrow arrows: come from above and point DOWN to checkbox (mirror of Today arrow)
                 // Path: left from Tomorrow box -> down -> curve to directly above target -> straight down
-                // End path 9px before target so line ends at arrowhead tip and arrowhead is 2px higher
+                // Offset: 2px right, 2px up from original position
                 const aboveTargetY = conn.toY - 40; // Position above the task
-                const lineEndY = conn.toY - 9; // Stop at arrowhead tip, 2px higher than before
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTargetY) / 2}, ${conn.toX} ${aboveTargetY - 30}, ${conn.toX} ${aboveTargetY} L ${conn.toX} ${lineEndY}`;
+                const lineEndY = conn.toY - 11; // Stop at arrowhead tip, 4px higher total (2px from before + 2px more)
+                const targetX = conn.toX + 2; // Move 2px to the right
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTargetY) / 2}, ${targetX} ${aboveTargetY - 30}, ${targetX} ${aboveTargetY} L ${targetX} ${lineEndY}`;
               } else {
                 // Today/This Week arrows: normal curved path from left side
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
