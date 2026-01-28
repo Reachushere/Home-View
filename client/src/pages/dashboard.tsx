@@ -7200,11 +7200,12 @@ export default function Dashboard() {
                       >
                         {/* 3D Vertical Separator - thin line with shadow */}
                         <div 
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1px]"
+                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                           style={{ 
+                            width: '0.5px',
                             height: '65%',
-                            backgroundColor: course.id === 'cppa122' ? 'rgba(22, 101, 52, 0.4)' : course.id === 'cfnf400' ? 'rgba(157, 23, 77, 0.35)' : 'rgba(67, 56, 202, 0.4)',
-                            boxShadow: '1px 0 1px rgba(0,0,0,0.15)'
+                            backgroundColor: course.id === 'cppa122' ? 'rgba(22, 101, 52, 0.5)' : course.id === 'cfnf400' ? 'rgba(157, 23, 77, 0.45)' : 'rgba(67, 56, 202, 0.5)',
+                            boxShadow: '0.5px 0 0.5px rgba(0,0,0,0.12)'
                           }}
                         />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
