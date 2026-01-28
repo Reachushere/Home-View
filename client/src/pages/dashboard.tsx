@@ -7520,6 +7520,16 @@ export default function Dashboard() {
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.75" />
               </marker>
+              <marker
+                id="arrowhead-black-down"
+                markerWidth="10"
+                markerHeight="7"
+                refX="3.5"
+                refY="10"
+                orient="auto"
+              >
+                <polygon points="0 0, 3.5 10, 7 0" fill="#000000" fillOpacity="0.75" />
+              </marker>
             </defs>
             {arrowConnections.map((conn) => {
               const markerId = conn.color === "#22c55e" ? "arrowhead-green" 
@@ -7574,9 +7584,18 @@ export default function Dashboard() {
               const arrowLeftSide = { x: greenStart.x - 10, y: greenStart.y };
               const horizontalEnd = { x: greenStart.x - 17, y: greenStart.y }; // 7px left of arrow left side
               // Green path: from arrowhead, curves down, then horizontal 21px into Tomorrow checkbox (like This Week box)
-              const transparentPath = isGreen
-                ? `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`
-                : `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
+              // Tomorrow arrows: approach from above with downward arrowhead (mirror of Today arrows)
+              let transparentPath: string;
+              if (isGreen) {
+                transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
+              } else if (conn.isTomorrow) {
+                // Tomorrow arrow: exit left, go down, curve right then down to target (approach from above)
+                const aboveTargetY = conn.toY - 30; // Position above the target
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} Q ${exitX} ${aboveTargetY}, ${conn.toX} ${aboveTargetY} L ${conn.toX} ${conn.toY}`;
+              } else {
+                // Today/This Week arrows: normal curved path
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
+              }
               
               // For green: calculate opaque portion at END of curve (near Tomorrow box checkbox)
               // t=0.46 is where the opaque portion starts (last 54% of curve is opaque)
@@ -7600,6 +7619,9 @@ export default function Dashboard() {
               // New control points for second segment [t, 1]: split point, R1, Q2, greenExitPoint, then horizontal to checkbox
               const greenOpaquePath = `M ${opaqueStartX} ${opaqueStartY} C ${R1.x} ${R1.y}, ${Q2.x} ${Q2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
               
+              // For Tomorrow arrows, use the downward arrowhead
+              const tomorrowMarkerId = conn.isTomorrow ? "arrowhead-black-down" : markerId;
+              
               return (
                 <g key={`transparent-${conn.taskId}`}>
                   <path
@@ -7609,7 +7631,7 @@ export default function Dashboard() {
                     fill="none"
                     strokeDasharray="5,3"
                     strokeOpacity="0.25"
-                    markerEnd={isGreen ? undefined : `url(#${markerId})`}
+                    markerEnd={isGreen ? undefined : `url(#${tomorrowMarkerId})`}
                     markerStart={undefined}
                   />
                   {/* Green opaque overlay - first ~30 dashes following the curve */}
