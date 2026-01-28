@@ -6917,7 +6917,7 @@ export default function Dashboard() {
               <div className="flex-1 overflow-y-auto py-1">
                 
                 {/* Folder Tree Structure - Full hierarchy */}
-                <div className="space-y-0">
+                <div className="grid grid-cols-2 gap-x-1">
                   {(() => {
                     // Get current week number based on today's date
                     const today = new Date();
@@ -6928,16 +6928,11 @@ export default function Dashboard() {
                     });
                     const currentWeekNum = currentWeekData?.weekNumber || selectedWeek;
                     
-                    // Sort weeks: current and future first, then past weeks at bottom
+                    // Sort weeks by week number for two-column layout
                     const sortedWeeks = [...FLYOUT_WEEKS].sort((a, b) => {
                       const aNum = parseInt(a.id.replace('week-', ''));
                       const bNum = parseInt(b.id.replace('week-', ''));
-                      const aIsPast = aNum < currentWeekNum;
-                      const bIsPast = bNum < currentWeekNum;
-                      
-                      if (aIsPast && !bIsPast) return 1; // a goes after b
-                      if (!aIsPast && bIsPast) return -1; // a goes before b
-                      return aNum - bNum; // normal order within groups
+                      return aNum - bNum;
                     });
                     
                     return sortedWeeks.map((week) => {
