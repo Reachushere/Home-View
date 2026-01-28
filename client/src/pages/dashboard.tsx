@@ -241,7 +241,7 @@ export default function Dashboard() {
   const [readingsPopupCourse, setReadingsPopupCourse] = useState<string | null>(null);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
   // Honeycomb navigation state
-  const [modulesHoneycombOpen, setModulesHoneycombOpen] = useState(false);
+  const [modulesHoneycombOpen, setModulesHoneycombOpen] = useState<string | null>(null);
   const [readingsHoneycombOpen, setReadingsHoneycombOpen] = useState(false);
   const [moduleMediaControlCourse, setModuleMediaControlCourse] = useState<string | null>(null);
   const [flyoutWidth, setFlyoutWidth] = useState(183); // Default flyout width for files (half width)
@@ -6307,58 +6307,181 @@ export default function Dashboard() {
               </defs>
             </svg>
             
-            {/* CPPA122 - Green Row Honeycomb */}
+            {/* CPPA122 - Green Row - Modules Honeycomb */}
             <div 
-              className="flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105"
+              className="flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
-              onClick={() => setModuleMediaControlCourse('cppa122')}
-              data-testid="honeycomb-cppa122"
             >
-              <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
-                <polygon 
-                  points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                  fill="url(#honeycombGradient)"
-                  className="stroke-green-500/50"
-                  strokeWidth="1"
-                />
-                <text x="20" y="26" textAnchor="middle" className="fill-green-400 text-[7px] font-medium">CPPA</text>
-              </svg>
+              {/* Expanded honeycombs - Readings */}
+              <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cppa122' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
+                <div 
+                  className="cursor-pointer transition-all duration-200 hover:scale-110"
+                  onClick={() => setReadingsPopupCourse('cppa122')}
+                  data-testid="honeycomb-readings-cppa122"
+                >
+                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
+                    <polygon 
+                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                      fill="url(#honeycombGradient)"
+                      className="stroke-green-500/50"
+                      strokeWidth="1"
+                    />
+                    <FolderOpen x="14" y="17" className="h-3 w-3 text-green-400" />
+                  </svg>
+                </div>
+              </div>
+              {/* Expanded honeycombs - Modules */}
+              <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cppa122' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
+                <div 
+                  className="cursor-pointer transition-all duration-200 hover:scale-110"
+                  onClick={() => setModuleMediaControlCourse('cppa122')}
+                  data-testid="honeycomb-modules-cppa122"
+                >
+                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
+                    <polygon 
+                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                      fill="url(#honeycombGradient)"
+                      className="stroke-green-500/50"
+                      strokeWidth="1"
+                    />
+                    <Paperclip x="14" y="17" className="h-3 w-3 text-green-400 -rotate-45" />
+                  </svg>
+                </div>
+              </div>
+              {/* Main honeycomb */}
+              <div 
+                className={`cursor-pointer transition-all duration-200 hover:scale-105 ${modulesHoneycombOpen === 'cppa122' ? 'scale-95' : ''}`}
+                onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'cppa122' ? null : 'cppa122')}
+                data-testid="honeycomb-cppa122"
+              >
+                <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
+                  <polygon 
+                    points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                    fill="url(#honeycombGradient)"
+                    className="stroke-green-500/50"
+                    strokeWidth="1"
+                  />
+                  <text x="20" y="26" textAnchor="middle" className="fill-green-400 text-[7px] font-medium">CPPA</text>
+                </svg>
+              </div>
             </div>
             
-            {/* CFNF400 - Pink Row Honeycomb */}
+            {/* CFNF400 - Pink Row - Modules Honeycomb */}
             <div 
-              className="flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105"
+              className="flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
-              onClick={() => setModuleMediaControlCourse('cfnf400')}
-              data-testid="honeycomb-cfnf400"
             >
-              <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
-                <polygon 
-                  points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                  fill="url(#honeycombGradient)"
-                  className="stroke-pink-500/50"
-                  strokeWidth="1"
-                />
-                <text x="20" y="26" textAnchor="middle" className="fill-pink-400 text-[7px] font-medium">CFNF</text>
-              </svg>
+              {/* Expanded honeycombs - Readings */}
+              <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
+                <div 
+                  className="cursor-pointer transition-all duration-200 hover:scale-110"
+                  onClick={() => setReadingsPopupCourse('cfnf400')}
+                  data-testid="honeycomb-readings-cfnf400"
+                >
+                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
+                    <polygon 
+                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                      fill="url(#honeycombGradient)"
+                      className="stroke-pink-500/50"
+                      strokeWidth="1"
+                    />
+                    <FolderOpen x="14" y="17" className="h-3 w-3 text-pink-400" />
+                  </svg>
+                </div>
+              </div>
+              {/* Expanded honeycombs - Modules */}
+              <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
+                <div 
+                  className="cursor-pointer transition-all duration-200 hover:scale-110"
+                  onClick={() => setModuleMediaControlCourse('cfnf400')}
+                  data-testid="honeycomb-modules-cfnf400"
+                >
+                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
+                    <polygon 
+                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                      fill="url(#honeycombGradient)"
+                      className="stroke-pink-500/50"
+                      strokeWidth="1"
+                    />
+                    <Paperclip x="14" y="17" className="h-3 w-3 text-pink-400 -rotate-45" />
+                  </svg>
+                </div>
+              </div>
+              {/* Main honeycomb */}
+              <div 
+                className={`cursor-pointer transition-all duration-200 hover:scale-105 ${modulesHoneycombOpen === 'cfnf400' ? 'scale-95' : ''}`}
+                onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'cfnf400' ? null : 'cfnf400')}
+                data-testid="honeycomb-cfnf400"
+              >
+                <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
+                  <polygon 
+                    points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                    fill="url(#honeycombGradient)"
+                    className="stroke-pink-500/50"
+                    strokeWidth="1"
+                  />
+                  <text x="20" y="26" textAnchor="middle" className="fill-pink-400 text-[7px] font-medium">CFNF</text>
+                </svg>
+              </div>
             </div>
             
-            {/* CASL101 - Indigo/Blue Row Honeycomb */}
+            {/* CASL101 - Indigo/Blue Row - Modules Honeycomb */}
             <div 
-              className="flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105"
+              className="flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
-              onClick={() => setModuleMediaControlCourse('casl101')}
-              data-testid="honeycomb-casl101"
             >
-              <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
-                <polygon 
-                  points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                  fill="url(#honeycombGradient)"
-                  className="stroke-indigo-500/50"
-                  strokeWidth="1"
-                />
-                <text x="20" y="26" textAnchor="middle" className="fill-indigo-400 text-[7px] font-medium">CASL</text>
-              </svg>
+              {/* Expanded honeycombs - Readings */}
+              <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'casl101' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
+                <div 
+                  className="cursor-pointer transition-all duration-200 hover:scale-110"
+                  onClick={() => setReadingsPopupCourse('casl101')}
+                  data-testid="honeycomb-readings-casl101"
+                >
+                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
+                    <polygon 
+                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                      fill="url(#honeycombGradient)"
+                      className="stroke-indigo-500/50"
+                      strokeWidth="1"
+                    />
+                    <FolderOpen x="14" y="17" className="h-3 w-3 text-indigo-400" />
+                  </svg>
+                </div>
+              </div>
+              {/* Expanded honeycombs - Modules */}
+              <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'casl101' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
+                <div 
+                  className="cursor-pointer transition-all duration-200 hover:scale-110"
+                  onClick={() => setModuleMediaControlCourse('casl101')}
+                  data-testid="honeycomb-modules-casl101"
+                >
+                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
+                    <polygon 
+                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                      fill="url(#honeycombGradient)"
+                      className="stroke-indigo-500/50"
+                      strokeWidth="1"
+                    />
+                    <Paperclip x="14" y="17" className="h-3 w-3 text-indigo-400 -rotate-45" />
+                  </svg>
+                </div>
+              </div>
+              {/* Main honeycomb */}
+              <div 
+                className={`cursor-pointer transition-all duration-200 hover:scale-105 ${modulesHoneycombOpen === 'casl101' ? 'scale-95' : ''}`}
+                onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'casl101' ? null : 'casl101')}
+                data-testid="honeycomb-casl101"
+              >
+                <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
+                  <polygon 
+                    points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                    fill="url(#honeycombGradient)"
+                    className="stroke-indigo-500/50"
+                    strokeWidth="1"
+                  />
+                  <text x="20" y="26" textAnchor="middle" className="fill-indigo-400 text-[7px] font-medium">CASL</text>
+                </svg>
+              </div>
             </div>
           </div>
           
@@ -6393,8 +6516,8 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
-          {/* Calendar wrapper */}
-          <div className="w-full">
+          {/* Calendar wrapper - leaves space for honeycombs on right */}
+          <div style={{ width: 'calc(100% - 50px)' }}>
           <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
