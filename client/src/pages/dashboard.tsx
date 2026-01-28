@@ -6954,7 +6954,7 @@ export default function Dashboard() {
               
               {/* Files Header and Week Folders - BOTTOM section */}
               <div className="absolute left-0 right-0 border-t border-white/20" style={{ top: 'calc(100% - 383px)' }}>
-                <div style={{ height: '40px' }} />
+                <div style={{ height: '25px' }} />
                 <div className="flex items-center gap-1.5 px-2 py-1 bg-black/30">
                   <span className="text-sm font-medium">All Files</span>
                   <span className="text-[10px] text-white/40 ml-1">Click to open. Drag to tasks.</span>
