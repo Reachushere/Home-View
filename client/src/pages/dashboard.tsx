@@ -7584,7 +7584,7 @@ export default function Dashboard() {
         {/* To Do Bottom Flyout */}
         <div 
           className="fixed left-[12px] right-[12px] z-[100] transition-all duration-300 ease-in-out"
-          style={{ bottom: isTodoFlyoutOpen ? '0' : '-170px' }}
+          style={{ bottom: isTodoFlyoutOpen ? '0' : '-162px' }}
         >
           {/* Tab at top of flyout - always visible */}
           <div 
@@ -7604,7 +7604,7 @@ export default function Dashboard() {
           
           {/* Flyout content */}
           <section 
-            className="shadow-lg border-t border-white/30 h-[170px] overflow-hidden flex flex-col rounded-t-md" 
+            className="shadow-lg border-t border-white/30 h-[162px] overflow-hidden flex flex-col rounded-t-md" 
             style={{ background: colorSettings.boxBackground }} 
             data-testid="section-todo"
           >
