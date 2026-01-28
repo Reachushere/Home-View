@@ -6936,9 +6936,15 @@ export default function Dashboard() {
                 </Button>
               </div>
               
+              {/* Week Files Header */}
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-black/30 border-b border-white/20">
+                <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
+                <span className="text-sm font-medium">Week {selectedWeek} Files</span>
+              </div>
+              
               {/* Course rows with files - positioned to match calendar */}
               {/* Day header ~48px + All Day row 44px + 4px = 96px offset */}
-              <div className="absolute left-0 right-0 bg-white" style={{ top: `${52 + gridSizes.allDayRowHeight}px` }}>
+              <div className="absolute left-0 right-0 bg-white" style={{ top: `${52 + gridSizes.allDayRowHeight + 28}px` }}>
                 {(() => {
                   const courseRows = [
                     { id: 'cppa122', name: 'CPPA122', fullName: 'Local Politics', bgColor: 'rgba(134, 239, 172, 0.35)', textColor: 'text-green-700', pattern: /^CPPA\s*122[-_\s.]*/i },
