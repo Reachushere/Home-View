@@ -2599,21 +2599,40 @@ export default function Dashboard() {
     const calculateArrows = () => {
       const connections: typeof arrowConnections = [];
       const todayTaskIds = new Set(dueTodayTasks.map(t => t.id));
-      const allTasksToConnect = [...dueTodayTasks, ...dueTomorrowTasks, ...dueThisWeekTasks];
+      const tomorrowTaskIds = new Set(dueTomorrowTasks.map(t => t.id));
       
-      // Deduplicate by task ID to prevent duplicate arrows
-      const seenIds = new Set<number>();
-      const uniqueTasks = allTasksToConnect.filter(task => {
-        if (seenIds.has(task.id)) return false;
-        seenIds.add(task.id);
+      // Create task entries with their source box type
+      const tasksWithBox: Array<{task: typeof dueTodayTasks[0], boxType: 'today' | 'tomorrow' | 'thisweek'}> = [
+        ...dueTodayTasks.map(t => ({ task: t, boxType: 'today' as const })),
+        ...dueTomorrowTasks.map(t => ({ task: t, boxType: 'tomorrow' as const })),
+        ...dueThisWeekTasks.map(t => ({ task: t, boxType: 'thisweek' as const }))
+      ];
+      
+      // Deduplicate by task ID + boxType combination to allow one arrow per box
+      const seenKeys = new Set<string>();
+      const uniqueTasksWithBox = tasksWithBox.filter(({ task, boxType }) => {
+        const key = `${task.id}-${boxType}`;
+        if (seenKeys.has(key)) return false;
+        seenKeys.add(key);
         return true;
       });
       
-      uniqueTasks.forEach(task => {
-        // Find the task card in the bottom boxes
-        const boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
-        // Find the checkbox within the task element
-        const checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]');
+      uniqueTasksWithBox.forEach(({ task, boxType }) => {
+        // Find the task card in the specific box using the checkbox attribute
+        let checkboxEl: Element | null = null;
+        let boxTaskEl: Element | null = null;
+        
+        if (boxType === 'today') {
+          checkboxEl = document.querySelector(`input[data-today-checkbox="${task.id}"]`);
+          boxTaskEl = checkboxEl?.closest(`[data-box-task-id="${task.id}"]`) || null;
+        } else if (boxType === 'tomorrow') {
+          checkboxEl = document.querySelector(`input[data-tomorrow-checkbox="${task.id}"]`);
+          boxTaskEl = checkboxEl?.closest(`[data-box-task-id="${task.id}"]`) || null;
+        } else {
+          // For this week, use the generic selector
+          boxTaskEl = document.querySelector(`[data-box-task-id="${task.id}"]`);
+          checkboxEl = boxTaskEl?.querySelector('[role="checkbox"], input[type="checkbox"], button[data-state]') || null;
+        }
         
         // Find the corresponding task on the calendar - get the first visible one
         const calTaskEls = document.querySelectorAll(`[data-cal-task-id="${task.id}"]`);
@@ -2693,7 +2712,7 @@ export default function Dashboard() {
             toX,
             toY,
             color,
-            isToday: todayTaskIds.has(task.id)
+            isToday: boxType === 'today'
           });
         }
       });
@@ -2746,9 +2765,9 @@ export default function Dashboard() {
         const prepExtensionEl = document.querySelector(`[data-testid="prep-extension-${task.id}"]`) as HTMLElement | null;
         
         if (checkboxEl && prepExtensionEl) {
-          // Get course color
+          // Get course color - black for tasks without a course
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-          let color = "#ec4899"; // Default to pink
+          let color = "#000000"; // Default to black when no course
           if (courseCode === "CPPA122") color = "#22c55e";
           else if (courseCode === "CFNF400") color = "#ec4899";
           else if (courseCode === "CASL101") color = "#6366f1";
