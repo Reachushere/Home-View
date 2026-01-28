@@ -7367,7 +7367,9 @@ export default function Dashboard() {
               <div className="absolute left-0 right-[-1px] bg-white" style={{ top: `${41 + gridSizes.allDayRowHeight}px` }}>
                 {(() => {
                   const courseRows = [
-                    { id: 'cppa122', name: 'CPPA122', fullName: 'Local Politics', bgColor: 'rgba(134, 239, 172, 0.35)', textColor: 'text-green-700', pattern: /^CPPA\s*122[-_\s.]*/i }
+                    { id: 'cppa122', name: 'CPPA122', fullName: 'Local Politics', bgColor: 'rgba(134, 239, 172, 0.35)', textColor: 'text-green-700', pattern: /^CPPA\s*122[-_\s.]*/i },
+                    { id: 'cfnf400', name: 'CFNF400', fullName: 'CFNF400 Human Sexuality', bgColor: 'rgba(249, 168, 212, 0.45)', textColor: 'text-pink-700', pattern: /^CFNF\s*400[-_\s.]*/i },
+                    { id: 'casl101', name: 'CASL101', fullName: 'Sign Language', bgColor: 'rgba(165, 180, 252, 0.45)', textColor: 'text-indigo-700', pattern: /^CASL\s*101[-_\s.]*/i }
                   ];
                   
                   return courseRows.map(course => {
