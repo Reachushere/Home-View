@@ -202,7 +202,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(690);
+  const [calendarHeight, setCalendarHeight] = useState(730);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -6964,7 +6964,7 @@ export default function Dashboard() {
               
               {/* Files Header and Week Folders - BOTTOM section */}
               <div className="absolute left-0 right-0 border-t border-white/20" style={{ top: 'calc(100% - 380px)' }}>
-                <div style={{ height: '40px' }} />
+                <div style={{ height: '20px' }} />
                 <div className="flex items-center gap-1.5 px-2 py-1 bg-black/30">
                   <span className="text-sm font-medium">All Files</span>
                   <span className="text-[10px] text-white/40 ml-1">Click to open. Drag to tasks.</span>
