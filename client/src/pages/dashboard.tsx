@@ -1817,9 +1817,14 @@ export default function Dashboard() {
 
   // Play from a specific chunk index
   const playFromChunk = async (chunkIndex: number) => {
-    if (previewSpeaker !== "browser_tts" || !window.speechSynthesis) {
-      toast({ title: "Chunk playback only available with Browser TTS", variant: "destructive" });
+    if (!window.speechSynthesis) {
+      toast({ title: "Browser TTS not available on this device", variant: "destructive" });
       return;
+    }
+    
+    // Auto-switch to browser TTS for chunk playback
+    if (previewSpeaker !== "browser_tts") {
+      setPreviewSpeaker("browser_tts");
     }
     
     // Make sure we have chunks
