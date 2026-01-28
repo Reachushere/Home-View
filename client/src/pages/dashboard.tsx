@@ -7621,7 +7621,7 @@ export default function Dashboard() {
 
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
+          <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white">
             <DialogHeader className="flex flex-row items-center justify-between gap-4">
               <DialogTitle className="text-white">Edit Task</DialogTitle>
               {editingTask && (
@@ -9426,7 +9426,8 @@ function TaskForm({
                 value={formData.eventStartTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
                 data-testid="input-start-time"
-                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] text-black ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                style={{ color: 'black' }}
               />
             </div>
             <div>
@@ -9437,7 +9438,8 @@ function TaskForm({
                 value={formData.eventEndTime}
                 onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
                 data-testid="input-end-time"
-                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] text-black ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-7 w-full rounded-md border border-input bg-white px-2 py-1 text-[10px] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                style={{ color: 'black' }}
               />
             </div>
             <div>
