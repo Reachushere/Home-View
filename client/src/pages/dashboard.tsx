@@ -3615,12 +3615,12 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 px-1.5 text-[8px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-9 px-2 text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleRestartFromBeginning}
                   data-testid="button-preview-restart-beginning"
                   title="Restart from beginning"
                 >
-                  <RotateCcw className="h-2.5 w-2.5 mr-0.5" />
+                  <RotateCcw className="h-3 w-3 mr-1" />
                   <div className="flex flex-col leading-tight">
                     <span>Restart</span>
                     <span>Beginning</span>
@@ -3629,12 +3629,12 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 px-1.5 text-[8px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-9 px-2 text-[9px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleRestartCurrentChunk}
                   data-testid="button-preview-restart-current"
                   title="Restart current section"
                 >
-                  <RefreshCw className="h-2.5 w-2.5 mr-0.5" />
+                  <RefreshCw className="h-3 w-3 mr-1" />
                   <div className="flex flex-col leading-tight">
                     <span>Restart</span>
                     <span>Current</span>
