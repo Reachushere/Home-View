@@ -6316,7 +6316,7 @@ export default function Dashboard() {
                 }
                 
                 return (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${course.name.startsWith('CPPA') ? gridSizes.courseRowHeight * 2 : gridSizes.courseRowHeight}px` }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${course.name.startsWith('CPPA') ? gridSizes.courseRowHeight * 2 : course.name.startsWith('CASL') ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {getCourseRowDisplayName(course.name)}
                   </div>
