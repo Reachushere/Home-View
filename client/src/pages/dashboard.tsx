@@ -7589,8 +7589,9 @@ export default function Dashboard() {
               if (isGreen) {
                 transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
               } else if (conn.isTomorrow) {
-                // Tomorrow arrow: same as Today but ends with vertical drop and downward arrowhead
-                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY - 20}, ${conn.toX} ${conn.toY - 20} L ${conn.toX} ${conn.toY}`;
+                // Tomorrow arrow: exit left, go down, curve to directly above target, then straight down
+                const aboveY = conn.toY - 30;
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${containerBottom + 50}, ${conn.toX} ${aboveY - 50}, ${conn.toX} ${aboveY} L ${conn.toX} ${conn.toY}`;
               } else {
                 // Today/This Week arrows: normal curved path
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
