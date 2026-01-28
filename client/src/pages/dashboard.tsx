@@ -6957,7 +6957,7 @@ export default function Dashboard() {
                       if (!hasFiles) return null;
                       
                       return (
-                        <div key={week.id} className={weekNum === 9 ? 'mb-3' : ''}>
+                        <div key={week.id}>
                           {/* Week folder row */}
                           <div 
                             className={`flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer ${shouldBlink ? 'animate-week-blink' : ''}`}
@@ -7090,7 +7090,7 @@ export default function Dashboard() {
                   if (allCourseFiles.length === 0) return null;
                   
                   return (
-                    <div className="mt-6 pt-3 border-t border-white/20">
+                    <div className="mt-2 pt-5 border-t border-white/20">
                       {allCourseFiles.map(course => (
                         <div key={course.id} className="mb-2">
                           <div className="px-2 pb-1 leading-none">
