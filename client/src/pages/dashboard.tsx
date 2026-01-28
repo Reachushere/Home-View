@@ -6973,27 +6973,22 @@ export default function Dashboard() {
                   });
                   const currentWeekNum = currentWeekData?.weekNumber || selectedWeek;
                   
-                  // Sort weeks: current/future first, then past weeks at the end
+                  // Sort weeks: 3-9 first, then 10-13, 1, 2 at the bottom
                   const sortedWeeks = [...FLYOUT_WEEKS].sort((a, b) => {
                     const aNum = parseInt(a.id.replace('week-', ''));
                     const bNum = parseInt(b.id.replace('week-', ''));
-                    const aIsPast = aNum < currentWeekNum;
-                    const bIsPast = bNum < currentWeekNum;
                     
-                    // If one is past and one is not, put past at the end
-                    if (aIsPast && !bIsPast) return 1;
-                    if (!aIsPast && bIsPast) return -1;
-                    // Otherwise sort by week number
-                    return aNum - bNum;
+                    // Define order: 3-9 first, then 10-13, then 1-2
+                    const getOrder = (num: number) => {
+                      if (num >= 3 && num <= 9) return num; // 3-9 stay as is
+                      if (num >= 10 && num <= 13) return num; // 10-13 after 9
+                      return num + 13; // 1-2 become 14-15 (after 13)
+                    };
+                    
+                    return getOrder(aNum) - getOrder(bNum);
                   });
                   
-                  const leftColumnWeeks = sortedWeeks.slice(0, 7);
-                  const rightColumnWeeks = sortedWeeks.slice(7);
-                  
-                  // Check if any left column folder is expanded
-                  const isLeftColumnExpanded = leftColumnWeeks.some(week => flyoutExpandedFolders.has(week.id));
-                  
-                  const renderWeekFolder = (week: typeof sortedWeeks[0], isRightColumn: boolean) => {
+                  const renderWeekFolder = (week: typeof sortedWeeks[0]) => {
                     const weekNum = parseInt(week.id.replace('week-', ''));
                     const isPastWeek = weekNum < currentWeekNum;
                     const weekFiles = getFilesInFlyoutWeek(week.id);
@@ -7006,7 +7001,7 @@ export default function Dashboard() {
                     if (!hasFiles) return null;
                     
                     return (
-                      <div key={week.id} style={isRightColumn ? { marginLeft: '-12px' } : undefined}>
+                      <div key={week.id}>
                         {/* Week folder row */}
                         <div 
                           className={`flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer ${shouldBlink ? 'animate-week-blink' : ''}`}
@@ -7015,7 +7010,7 @@ export default function Dashboard() {
                           {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                           {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
                           <span className={`text-[11px] truncate ${shouldStrikethrough ? 'line-through text-white/50' : 'text-white/90'}`} style={{ minWidth: '55px' }}>{week.name}</span>
-                          <span className="text-[12px] text-white/40 ml-auto" style={{ marginRight: '13px' }}>{weekFiles.length}</span>
+                          <span className="text-[12px] text-white/40 ml-auto" style={{ marginRight: '8px' }}>{weekFiles.length}</span>
                         </div>
                         
                         {/* Course folders inside week */}
@@ -7122,15 +7117,9 @@ export default function Dashboard() {
                   };
                   
                   return (
-                    <div className="flex gap-x-4 items-start" style={{ marginTop: '10px' }}>
-                      {/* Left column - independent, scrolls on its own */}
-                      <div className="flex-1 overflow-y-auto" style={{ maxHeight: '280px' }}>
-                        {leftColumnWeeks.map(week => renderWeekFolder(week, false))}
-                      </div>
-                      {/* Right column - independent, fades when left is expanded, scrolls on its own */}
-                      <div className={`flex-1 overflow-y-auto transition-opacity duration-300 ${isLeftColumnExpanded ? 'opacity-30' : 'opacity-100'}`} style={{ maxHeight: '280px' }}>
-                        {rightColumnWeeks.map(week => renderWeekFolder(week, true))}
-                      </div>
+                    <div style={{ marginTop: '10px' }}>
+                      {/* Single column - full width for file names */}
+                      {sortedWeeks.map(week => renderWeekFolder(week))}
                     </div>
                   );
                 })()}
