@@ -3579,15 +3579,30 @@ export default function Dashboard() {
                 return (
                   <div
                     key={file.id}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer"
-                    onClick={() => {
-                      setPreviewFile(file);
-                      setReadingsPopupCourse(null);
-                    }}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10"
                     data-testid={`reading-file-${file.id}`}
                   >
+                    <Checkbox
+                      checked={file.listened || false}
+                      onCheckedChange={async (checked) => {
+                        try {
+                          await apiRequest("PATCH", `/api/files/${file.id}`, { listened: checked });
+                          queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+                        } catch (error) {
+                          console.error("Failed to update file listened status:", error);
+                        }
+                      }}
+                      className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                      data-testid={`checkbox-reading-${file.id}`}
+                    />
                     <FileText className="h-3.5 w-3.5 text-red-400 shrink-0" />
-                    <span className={`text-[11px] ${file.listened ? 'text-white/40 line-through' : 'text-white'}`}>
+                    <span 
+                      className={`text-[11px] cursor-pointer hover:underline ${file.listened ? 'text-white/40 line-through' : 'text-white'}`}
+                      onClick={() => {
+                        setPreviewFile(file);
+                        setReadingsPopupCourse(null);
+                      }}
+                    >
                       {cleanName || fullName}
                     </span>
                   </div>
