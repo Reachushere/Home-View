@@ -6472,7 +6472,7 @@ export default function Dashboard() {
                     className="grid border-b border-border/50 overflow-visible relative group/row"
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px` }}
                   >
-                    <div className="text-xs font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
+                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     <div className="border-l border-border/50" style={{ backgroundColor: isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : 'rgba(156, 163, 175, 0.15)' }} />
