@@ -7626,8 +7626,12 @@ export default function Dashboard() {
               let transparentPath: string;
               if (isGreen) {
                 transparentPath = `M ${arrowLeftSide.x} ${arrowLeftSide.y} L ${horizontalEnd.x} ${horizontalEnd.y} C ${greenCP1.x} ${greenCP1.y}, ${greenCP2.x} ${greenCP2.y}, ${greenExitPoint.x} ${greenExitPoint.y} L ${greenEnd.x} ${greenEnd.y}`;
+              } else if (conn.isTomorrow) {
+                // Tomorrow arrows: go further left to avoid crossing through task
+                const farLeftX = Math.min(exitX, conn.toX - 80); // Go at least 80px left of target
+                transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} L ${farLeftX} ${containerBottom} C ${farLeftX} ${midY}, ${farLeftX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               } else {
-                // Today/This Week/Tomorrow arrows: all use same curved path from left side
+                // Today/This Week arrows: normal curved path from left side
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${midY}, ${exitX} ${conn.toY}, ${conn.toX} ${conn.toY}`;
               }
               
