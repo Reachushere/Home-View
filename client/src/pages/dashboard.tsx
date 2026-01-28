@@ -6933,8 +6933,8 @@ export default function Dashboard() {
                         className="flex items-center gap-2 px-2 overflow-hidden"
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                       >
-                        <span className={`text-[10px] font-semibold ${course.textColor} whitespace-nowrap`}>{course.name}</span>
-                        <div className="flex-1 flex items-center gap-2 overflow-hidden">
+                        <span className={`text-[8px] font-semibold ${course.textColor} whitespace-nowrap`}>{course.name}</span>
+                        <div className="flex-1 grid grid-cols-2 gap-x-2 gap-y-0 overflow-hidden">
                           {courseFiles.map(file => {
                             const fullName = file.displayName || file.originalName;
                             let cleanName = fullName
@@ -6951,7 +6951,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={file.id}
-                                className="flex items-center gap-1 hover:bg-black/10 rounded px-1 cursor-pointer shrink-0"
+                                className="flex items-center gap-0.5 hover:bg-black/10 rounded px-0.5 cursor-pointer truncate"
                                 title={fullName}
                               >
                                 <Checkbox
@@ -6968,11 +6968,11 @@ export default function Dashboard() {
                                       console.error('Failed to update file listened status:', error);
                                     }
                                   }}
-                                  className="h-2.5 w-2.5 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                  className="h-2 w-2 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                 />
                                 <span 
                                   onClick={() => setPreviewFile(file)}
-                                  className={`text-[10px] cursor-pointer hover:underline ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                  className={`text-[8px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
                                 >
                                   {cleanName || fullName}
                                 </span>
