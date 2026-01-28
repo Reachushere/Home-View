@@ -7396,9 +7396,9 @@ export default function Dashboard() {
                         style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        {course.id !== 'casl101' && (
+                        {course.id === 'cppa122' && (
                           <Paperclip 
-                            className={`h-5 w-5 shrink-0 -rotate-45 ml-1 cursor-pointer hover:opacity-70 ${course.id === 'cppa122' ? 'text-green-600' : 'text-pink-600'}`} 
+                            className="h-5 w-5 shrink-0 -rotate-45 ml-1 cursor-pointer hover:opacity-70 text-green-600" 
                             strokeWidth={1}
                             onClick={() => courseFiles[0] && setPreviewFile(courseFiles[0])}
                           />
