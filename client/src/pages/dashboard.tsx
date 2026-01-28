@@ -3547,17 +3547,17 @@ export default function Dashboard() {
 
       {/* Readings Popup Dialog */}
       <Dialog open={!!readingsPopupCourse} onOpenChange={(open) => !open && setReadingsPopupCourse(null)}>
-        <DialogContent className="max-w-[320px] p-4">
+        <DialogContent className="max-w-[320px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-base">
+            <DialogTitle className="flex items-center gap-2 text-base text-white">
               <FolderOpen 
-                className={`h-4 w-4 ${readingsPopupCourse === 'cppa122' ? 'text-green-600 fill-green-200' : readingsPopupCourse === 'cfnf400' ? 'text-pink-600 fill-pink-200' : 'text-indigo-600 fill-indigo-200'}`} 
+                className={`h-4 w-4 ${readingsPopupCourse === 'cppa122' ? 'text-green-400 fill-green-200/50' : readingsPopupCourse === 'cfnf400' ? 'text-pink-400 fill-pink-200/50' : 'text-indigo-400 fill-indigo-200/50'}`} 
                 strokeWidth={1.5}
               />
               {readingsPopupCourse === 'cppa122' ? 'CPPA122 Local Politics' : readingsPopupCourse === 'cfnf400' ? 'CFNF400 Human Sexuality' : 'CASL101 Sign Language'}
             </DialogTitle>
           </DialogHeader>
-          <div className="text-xs text-gray-500 mb-2">Week {selectedWeek} Readings</div>
+          <div className="text-xs text-white/60 mb-2">Week {selectedWeek} Readings</div>
           <div className="flex flex-col gap-1 max-h-[250px] overflow-y-auto">
             {allFiles
               .filter(f => f.folder?.includes(`week-${selectedWeek}-${readingsPopupCourse}`) && f.folder?.includes('reading'))
@@ -3579,22 +3579,22 @@ export default function Dashboard() {
                 return (
                   <div
                     key={file.id}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-100 cursor-pointer"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer"
                     onClick={() => {
                       setPreviewFile(file);
                       setReadingsPopupCourse(null);
                     }}
                     data-testid={`reading-file-${file.id}`}
                   >
-                    <FileText className="h-3.5 w-3.5 text-red-500 shrink-0" />
-                    <span className={`text-[11px] ${file.listened ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                    <FileText className="h-3.5 w-3.5 text-red-400 shrink-0" />
+                    <span className={`text-[11px] ${file.listened ? 'text-white/40 line-through' : 'text-white'}`}>
                       {cleanName || fullName}
                     </span>
                   </div>
                 );
               })}
             {allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${readingsPopupCourse}`) && f.folder?.includes('reading')).length === 0 && (
-              <div className="text-xs text-gray-400 text-center py-4">No reading files for this week</div>
+              <div className="text-xs text-white/40 text-center py-4">No reading files for this week</div>
             )}
           </div>
         </DialogContent>
