@@ -7198,13 +7198,13 @@ export default function Dashboard() {
                         style={{ height: `${course.id === 'cppa122' ? gridSizes.courseRowHeight * 2 : course.id === 'casl101' ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                         title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
                       >
-                        {/* 3D Vertical Separator */}
+                        {/* 3D Vertical Separator - thin line with shadow */}
                         <div 
-                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[3px] rounded-full"
+                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1px]"
                           style={{ 
                             height: course.id === 'cppa122' ? '70%' : course.id === 'casl101' ? '60%' : '65%',
-                            background: 'linear-gradient(90deg, rgba(0,0,0,0.15) 0%, rgba(255,255,255,0.4) 50%, rgba(0,0,0,0.15) 100%)',
-                            boxShadow: '0 0 2px rgba(0,0,0,0.2)'
+                            backgroundColor: course.id === 'cppa122' ? 'rgba(22, 101, 52, 0.4)' : course.id === 'cfnf400' ? 'rgba(157, 23, 77, 0.35)' : 'rgba(67, 56, 202, 0.4)',
+                            boxShadow: '1px 0 1px rgba(0,0,0,0.15)'
                           }}
                         />
                         <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '-10px', gridTemplateColumns: '1fr' } : { gridTemplateColumns: 'repeat(2, 1fr)' }}>
