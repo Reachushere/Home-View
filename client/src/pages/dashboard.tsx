@@ -7071,7 +7071,7 @@ export default function Dashboard() {
                 {(() => {
                   const courses = [
                     { id: 'cppa122', name: 'CPPA122 - Local Politics', color: 'text-green-400', pattern: /^CPPA\s*122[-_\s.]*/i },
-                    { id: 'cfnf400', name: 'CFNF400 - Human Services', color: 'text-pink-400', pattern: /^CFNF\s*400[-_\s.]*/i },
+                    { id: 'cfnf400', name: 'CFNF400 - Human Sexuality', color: 'text-pink-400', pattern: /^CFNF\s*400[-_\s.]*/i },
                     { id: 'casl101', name: 'CASL101 - Sign Language', color: 'text-purple-400', pattern: /^CASL\s*101[-_\s.]*/i }
                   ];
                   
@@ -7096,7 +7096,7 @@ export default function Dashboard() {
                                 .replace(course.pattern, '')
                                 .replace(/Module\s*\d*[-_:\s.]*/gi, '')
                                 .replace(/Local\s*Politics[-_:\s.]*/gi, '')
-                                .replace(/Human\s*Services[-_:\s.]*/gi, '')
+                                .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
                                 .replace(/Sign\s*Language[-_:\s.]*/gi, '')
                                 .replace(/\.pdf$/i, '')
                                 .trim();
