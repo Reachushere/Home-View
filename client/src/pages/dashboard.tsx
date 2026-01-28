@@ -7601,16 +7601,13 @@ export default function Dashboard() {
             className="flex justify-center cursor-pointer"
             onClick={() => setIsTodoFlyoutOpen(!isTodoFlyoutOpen)}
           >
-            <div 
-              className="flex items-center gap-2 px-4 py-1 rounded-t-md border border-b-0 border-white/30"
-              style={{ background: colorSettings.headerBar }}
-            >
-              <ClipboardCheck className="h-3 w-3 text-white" />
-              <span className="text-xs text-white font-medium">To Do ({todoItems.filter(item => item.trim() !== "").length})</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-t-md bg-black/60 backdrop-blur-md border border-b-0 border-white/20 hover:bg-black/70 transition-colors">
+              <ClipboardCheck className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
+              <span className="text-xs text-white/90 font-medium">To Do ({todoItems.filter(item => item.trim() !== "").length})</span>
               {isTodoFlyoutOpen ? (
-                <ChevronDown className="h-3 w-3 text-white" />
+                <ChevronDown className="h-3.5 w-3.5 text-yellow-500" />
               ) : (
-                <ChevronUp className="h-3 w-3 text-white" />
+                <ChevronUp className="h-3.5 w-3.5 text-yellow-500" />
               )}
             </div>
           </div>
