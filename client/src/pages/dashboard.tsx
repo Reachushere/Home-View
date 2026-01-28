@@ -6415,13 +6415,16 @@ export default function Dashboard() {
                           .map(file => {
                             // Clean up file name - remove course code, module, and Local Politics
                             const fullName = file.displayName || file.originalName;
-                            const cleanName = fullName
+                            let cleanName = fullName
                               .replace(/^CPPA\s*122[-_\s.]*/i, '')
                               .replace(/Module\s*\d*[-_:\s.]*/gi, '')
                               .replace(/Local\s*Politics[-_:\s.]*/gi, '')
                               .replace(/\.pdf$/i, '')
-                              .replace(/^[.\s\-_:]+/g, '')
                               .trim();
+                            // Remove any leading dots, spaces, dashes, underscores repeatedly
+                            while (cleanName.match(/^[.\s\-_:]/)) {
+                              cleanName = cleanName.replace(/^[.\s\-_:]+/, '');
+                            }
                             return (
                               <span
                                 key={file.id}
@@ -7127,15 +7130,18 @@ export default function Dashboard() {
                           <div className="space-y-0">
                             {course.files.map(file => {
                               const fullName = file.displayName || file.originalName;
-                              const cleanName = fullName
+                              let cleanName = fullName
                                 .replace(course.pattern, '')
                                 .replace(/Module\s*\d*[-_:\s.]*/gi, '')
                                 .replace(/Local\s*Politics[-_:\s.]*/gi, '')
                                 .replace(/Human\s*Services[-_:\s.]*/gi, '')
                                 .replace(/Sign\s*Language[-_:\s.]*/gi, '')
                                 .replace(/\.pdf$/i, '')
-                                .replace(/^[.\s\-_:]+/g, '')
                                 .trim();
+                              // Remove any leading dots, spaces, dashes, underscores repeatedly
+                              while (cleanName.match(/^[.\s\-_:]/)) {
+                                cleanName = cleanName.replace(/^[.\s\-_:]+/, '');
+                              }
                               return (
                                 <div
                                   key={file.id}
