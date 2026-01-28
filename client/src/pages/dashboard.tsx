@@ -7552,7 +7552,7 @@ export default function Dashboard() {
                 id="arrowhead-black"
                 markerWidth="10"
                 markerHeight="7"
-                refX="27"
+                refX="10"
                 refY="6.5"
                 orient="auto"
               >
@@ -7629,9 +7629,9 @@ export default function Dashboard() {
               } else if (conn.isTomorrow) {
                 // Tomorrow arrows: come from above and point DOWN to checkbox (mirror of Today arrow)
                 // Path: left from Tomorrow box -> down -> curve to directly above target -> straight down
-                // Shorten line by 10px so dotted line stops at arrowhead (compensated by refX=27)
+                // End path 7px before target so line ends at arrowhead tip (refX=17, polygon tip at 10, offset=7)
                 const aboveTargetY = conn.toY - 40; // Position above the task
-                const lineEndY = conn.toY - 10; // Stop 10px early so line ends at arrowhead
+                const lineEndY = conn.toY - 7; // Stop at arrowhead tip
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTargetY) / 2}, ${conn.toX} ${aboveTargetY - 30}, ${conn.toX} ${aboveTargetY} L ${conn.toX} ${lineEndY}`;
               } else {
                 // Today/This Week arrows: normal curved path from left side
