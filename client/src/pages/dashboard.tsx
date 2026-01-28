@@ -6899,8 +6899,8 @@ export default function Dashboard() {
           <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'w-[33%] opacity-100' : 'w-0 opacity-0'}`}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative">
               {/* Course row color strips - matching calendar positions */}
-              {/* Day header ~48px + All Day row 44px = 92px offset */}
-              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: `${48 + gridSizes.allDayRowHeight}px` }}>
+              {/* Day header ~48px + All Day row 44px + 2px = 94px offset */}
+              <div className="absolute left-0 right-0 pointer-events-none" style={{ top: `${50 + gridSizes.allDayRowHeight}px` }}>
                 <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(134, 239, 172, 0.25)' }} /> {/* CPPA122 green */}
                 <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(249, 168, 212, 0.25)' }} /> {/* CFNF400 pink */}
                 <div style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: 'rgba(165, 180, 252, 0.25)' }} /> {/* CASL101 indigo */}
