@@ -9407,9 +9407,15 @@ function TaskForm({
               <Label htmlFor="eventStartTime" className="text-[11px] text-white">Start</Label>
               <Input
                 id="eventStartTime"
-                type="time"
+                type="text"
+                placeholder="HH:MM"
                 value={formData.eventStartTime}
-                onChange={(e) => setFormData(prev => ({ ...prev, eventStartTime: e.target.value }))}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (/^[0-9:]*$/.test(val) && val.length <= 5) {
+                    setFormData(prev => ({ ...prev, eventStartTime: val }));
+                  }
+                }}
                 data-testid="input-start-time"
                 className="bg-white h-8"
                 style={{ color: 'black', fontSize: '11px' }}
@@ -9419,9 +9425,15 @@ function TaskForm({
               <Label htmlFor="eventEndTime" className="text-[11px] text-white">End</Label>
               <Input
                 id="eventEndTime"
-                type="time"
+                type="text"
+                placeholder="HH:MM"
                 value={formData.eventEndTime}
-                onChange={(e) => setFormData(prev => ({ ...prev, eventEndTime: e.target.value }))}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (/^[0-9:]*$/.test(val) && val.length <= 5) {
+                    setFormData(prev => ({ ...prev, eventEndTime: val }));
+                  }
+                }}
                 data-testid="input-end-time"
                 className="bg-white h-8"
                 style={{ color: 'black', fontSize: '11px' }}
