@@ -7035,7 +7035,7 @@ export default function Dashboard() {
                                   >
                                     {isCourseExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                                     {isCourseExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                                    <span className={`text-[13px] truncate flex-1 ${course.color}`}>{course.name}</span>
+                                    <span className={`text-[11px] truncate flex-1 ${course.color}`}>{course.name}</span>
                                     <span className="text-[12px] text-white/40">{courseFiles.length}</span>
                                   </div>
                                   
