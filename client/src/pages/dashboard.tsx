@@ -3545,6 +3545,61 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Readings Popup Dialog */}
+      <Dialog open={!!readingsPopupCourse} onOpenChange={(open) => !open && setReadingsPopupCourse(null)}>
+        <DialogContent className="max-w-[320px] p-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <FolderOpen 
+                className={`h-4 w-4 ${readingsPopupCourse === 'cppa122' ? 'text-green-600 fill-green-200' : readingsPopupCourse === 'cfnf400' ? 'text-pink-600 fill-pink-200' : 'text-indigo-600 fill-indigo-200'}`} 
+                strokeWidth={1.5}
+              />
+              {readingsPopupCourse === 'cppa122' ? 'CPPA122 Local Politics' : readingsPopupCourse === 'cfnf400' ? 'CFNF400 Human Sexuality' : 'CASL101 Sign Language'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-xs text-gray-500 mb-2">Week {selectedWeek} Readings</div>
+          <div className="flex flex-col gap-1 max-h-[250px] overflow-y-auto">
+            {allFiles
+              .filter(f => f.folder?.includes(`week-${selectedWeek}-${readingsPopupCourse}`) && f.folder?.includes('reading'))
+              .map(file => {
+                const fullName = file.displayName || file.originalName;
+                let cleanName = fullName
+                  .replace(/^CPPA\s*122[-_\s.]*/i, '')
+                  .replace(/^CFNF\s*400[-_\s.]*/i, '')
+                  .replace(/^CASL\s*101[-_\s.]*/i, '')
+                  .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
+                  .replace(/Local\s*Politics[-_:\s.]*/gi, '')
+                  .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
+                  .replace(/Sign\s*Language[-_:\s.]*/gi, '')
+                  .replace(/\.pdf$/i, '')
+                  .trim();
+                while (cleanName.match(/^[.\s\-_:•·]/)) {
+                  cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
+                }
+                return (
+                  <div
+                    key={file.id}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      setPreviewFile(file);
+                      setReadingsPopupCourse(null);
+                    }}
+                    data-testid={`reading-file-${file.id}`}
+                  >
+                    <FileText className="h-3.5 w-3.5 text-red-500 shrink-0" />
+                    <span className={`text-[11px] ${file.listened ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                      {cleanName || fullName}
+                    </span>
+                  </div>
+                );
+              })}
+            {allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${readingsPopupCourse}`) && f.folder?.includes('reading')).length === 0 && (
+              <div className="text-xs text-gray-400 text-center py-4">No reading files for this week</div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* New Semester Setup Dialog */}
       <Dialog open={isNewSemesterDialogOpen} onOpenChange={setIsNewSemesterDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
@@ -7376,7 +7431,7 @@ export default function Dashboard() {
                   return courseRows.map(course => {
                     let courseFiles = course.id === 'other' 
                       ? [] // No files for OTHER row
-                      : allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`));
+                      : allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${course.id}`) && f.folder?.includes('reading'));
                     
                     // For CPPA122, reorder so Introduction appears at the bottom of left column (position 2)
                     if (course.id === 'cppa122' && courseFiles.length > 0) {
@@ -7481,75 +7536,6 @@ export default function Dashboard() {
               
             </div>
           </div>
-          
-          {/* Readings Popup Dialog */}
-          {readingsPopupCourse && (
-            <div 
-              className="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center"
-              onClick={() => setReadingsPopupCourse(null)}
-            >
-              <div 
-                className="bg-white rounded-lg shadow-2xl border border-gray-300 p-3 min-w-[250px] max-w-[320px]"
-                onClick={(e) => e.stopPropagation()}
-              >
-              <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-200">
-                <div className="flex items-center gap-2">
-                  <FolderOpen 
-                    className={`h-4 w-4 ${readingsPopupCourse === 'cppa122' ? 'text-green-600 fill-green-200' : readingsPopupCourse === 'cfnf400' ? 'text-pink-600 fill-pink-200' : 'text-indigo-600 fill-indigo-200'}`} 
-                    strokeWidth={1.5}
-                  />
-                  <span className="text-sm font-semibold text-gray-800">
-                    {readingsPopupCourse === 'cppa122' ? 'CPPA122 Local Politics' : readingsPopupCourse === 'cfnf400' ? 'CFNF400 Human Sexuality' : 'CASL101 Sign Language'}
-                  </span>
-                </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-                  onClick={() => setReadingsPopupCourse(null)}
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-              <div className="text-xs text-gray-500 mb-2">Week {selectedWeek} Readings</div>
-              <div className="flex flex-col gap-1 max-h-[200px] overflow-y-auto">
-                {allFiles
-                  .filter(f => f.folder?.startsWith(`week-${selectedWeek}-${readingsPopupCourse}`))
-                  .map(file => {
-                    const fullName = file.displayName || file.originalName;
-                    let cleanName = fullName
-                      .replace(/^CPPA\s*122[-_\s.]*/i, '')
-                      .replace(/^CFNF\s*400[-_\s.]*/i, '')
-                      .replace(/^CASL\s*101[-_\s.]*/i, '')
-                      .replace(/Module\s*\d*[-_:\s.]*/gi, '')
-                      .replace(/Local\s*Politics[-_:\s.]*/gi, '')
-                      .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
-                      .replace(/Sign\s*Language[-_:\s.]*/gi, '')
-                      .replace(/\.pdf$/i, '')
-                      .trim();
-                    while (cleanName.match(/^[.\s\-_:•·]/)) {
-                      cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
-                    }
-                    return (
-                      <div
-                        key={file.id}
-                        className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          setPreviewFile(file);
-                          setReadingsPopupCourse(null);
-                        }}
-                      >
-                        <FileText className="h-3.5 w-3.5 text-red-500 shrink-0" />
-                        <span className={`text-[11px] ${file.listened ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
-                          {cleanName || fullName}
-                        </span>
-                      </div>
-                    );
-                  })}
-              </div>
-              </div>
-            </div>
-          )}
           
           {/* Weeks Flyout - separate panel for week folders */}
           <div className={`absolute right-0 top-0 bottom-0 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0' }}>
