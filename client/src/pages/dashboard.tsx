@@ -5961,8 +5961,9 @@ export default function Dashboard() {
             {/* Green column between Tuesday and Wednesday - Start Discussion Post */}
             {!startDiscussionComplete && (
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-[42] flex flex-col items-center justify-center"
+              className="absolute bottom-0 w-[15px] z-[42] flex flex-col items-center justify-center"
               style={{ 
+                top: '52px',
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7'
               }}
@@ -5993,8 +5994,9 @@ export default function Dashboard() {
             {/* Green column between Thursday and Friday - Discussion Post Due */}
             {!discussionDueComplete && (
             <div 
-              className={`absolute top-0 bottom-0 w-[15px] z-[42] flex flex-col items-center justify-center ${isFriday ? 'animate-pulse' : ''}`}
+              className={`absolute bottom-0 w-[15px] z-[42] flex flex-col items-center justify-center ${isFriday ? 'animate-pulse' : ''}`}
               style={{ 
+                top: '52px',
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#dcfce7',
                 animation: isFriday ? 'pulse 1s ease-in-out infinite' : undefined
