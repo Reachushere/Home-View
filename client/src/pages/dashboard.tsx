@@ -5930,14 +5930,14 @@ export default function Dashboard() {
             
             {/* Green column between Tuesday and Wednesday - Start Discussion Post */}
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-10 pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[25] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (3 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#86efac'
               }}
             >
               <span 
-                className="text-gray-600 text-[12px] font-bold whitespace-nowrap"
+                className="text-gray-600 text-[12px] font-bold whitespace-nowrap tracking-[0.15em]"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed'
@@ -5949,14 +5949,14 @@ export default function Dashboard() {
             
             {/* Green column between Thursday and Friday - Discussion Post Due */}
             <div 
-              className="absolute top-0 bottom-0 w-[15px] z-10 pointer-events-none flex items-center justify-center"
+              className="absolute top-0 bottom-0 w-[15px] z-[25] pointer-events-none flex items-center justify-center"
               style={{ 
                 left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (5 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) - 7.5px)`,
                 backgroundColor: '#86efac'
               }}
             >
               <span 
-                className="text-gray-600 text-[12px] font-bold whitespace-nowrap"
+                className="text-gray-600 text-[12px] font-bold whitespace-nowrap tracking-[0.15em]"
                 style={{ 
                   writingMode: 'vertical-rl',
                   textOrientation: 'mixed'
