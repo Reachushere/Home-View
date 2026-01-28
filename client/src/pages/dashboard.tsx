@@ -7245,7 +7245,7 @@ export default function Dashboard() {
                               >
                                 <span 
                                   onClick={() => setPreviewFile(file)}
-                                  className={`text-[9px] cursor-pointer hover:underline whitespace-nowrap ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                  className={`text-[11px] cursor-pointer hover:underline whitespace-nowrap ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
                                 >
                                   {cleanName || fullName}
                                 </span>
@@ -7416,7 +7416,7 @@ export default function Dashboard() {
                               >
                                 <span 
                                   onClick={() => setPreviewFile(file)}
-                                  className={`text-[9px] cursor-pointer hover:underline whitespace-nowrap ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                  className={`text-[11px] cursor-pointer hover:underline whitespace-nowrap ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
                                 >
                                   {cleanName || fullName}
                                 </span>
