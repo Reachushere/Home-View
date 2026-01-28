@@ -5942,7 +5942,7 @@ export default function Dashboard() {
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           {/* Files Flyout Toggle Tab - sticks to right edge of calendar */}
           <div
-            className={`absolute top-1/2 -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300 ${isFilesFlyoutOpen ? 'right-[20%]' : 'right-0'}`}
+            className={`absolute top-1/2 -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300 ${isFilesFlyoutOpen ? 'right-[calc(20%+25px)]' : 'right-0'}`}
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
           >
