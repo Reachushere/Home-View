@@ -7129,8 +7129,8 @@ export default function Dashboard() {
                               onClick={() => setPreviewFile(file)}
                               title={fullName}
                             >
-                              <FileText className="h-3 w-3 text-green-400" />
-                              <span className="text-[12px] text-white/80 truncate flex-1">{cleanName || fullName}</span>
+                              <FileText className="h-2.5 w-2.5 text-green-400" />
+                              <span className="text-[10px] text-white/80 truncate flex-1">{cleanName || fullName}</span>
                             </div>
                           );
                         })}
