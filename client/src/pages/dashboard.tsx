@@ -7003,7 +7003,7 @@ export default function Dashboard() {
                       if (!hasFiles) return null;
                       
                       return (
-                        <div key={week.id} style={isRightColumn ? { marginLeft: '5px' } : undefined}>
+                        <div key={week.id} style={isRightColumn ? { marginLeft: '-20px' } : undefined}>
                           {/* Week folder row */}
                           <div 
                             className={`flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer ${shouldBlink ? 'animate-week-blink' : ''}`}
