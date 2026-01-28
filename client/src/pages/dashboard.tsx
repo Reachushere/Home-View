@@ -7359,7 +7359,7 @@ export default function Dashboard() {
               {/* Week Reading Header */}
               <div className="flex items-center justify-center gap-1 px-2 py-0.5 bg-black/30 border-b border-white/20">
                 <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" />
-                <span className="text-[11px] font-medium">Week {selectedWeek} Reading</span>
+                <span className="text-[11px] font-medium">Week {selectedWeek} Readings</span>
               </div>
               
               {/* Course rows with files - positioned to match calendar */}
