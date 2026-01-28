@@ -7274,9 +7274,18 @@ export default function Dashboard() {
                   ];
                   
                   return courseRows.map(course => {
-                    let courseFiles = course.id === 'other' 
-                      ? [] // No files for OTHER row
-                      : allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${course.id}`) && f.folder?.includes('module'));
+                    let courseFiles: typeof allFiles = [];
+                    if (course.id === 'other') {
+                      courseFiles = []; // No files for OTHER row
+                    } else if (course.id === 'casl101') {
+                      // CASL101 uses "other" folder and we want unit files
+                      courseFiles = allFiles.filter(f => 
+                        f.folder?.includes(`week-${selectedWeek}-${course.id}`) && 
+                        (f.displayName || f.originalName).toLowerCase().includes('unit')
+                      );
+                    } else {
+                      courseFiles = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${course.id}`) && f.folder?.includes('module'));
+                    }
                     
                     // For CPPA122 in Module flyout, only show Introduction file
                     if (course.id === 'cppa122') {
