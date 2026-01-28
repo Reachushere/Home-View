@@ -6963,7 +6963,7 @@ export default function Dashboard() {
                 <div className="overflow-y-auto py-1" style={{ maxHeight: '300px' }}>
                 
                 {/* Folder Tree Structure - Full hierarchy */}
-                <div className="grid grid-cols-2 gap-x-6 grid-flow-col" style={{ gridTemplateRows: 'repeat(7, auto)', marginTop: '10px' }}>
+                <div className="grid grid-cols-2 gap-x-6 grid-flow-col" style={{ gridTemplateRows: 'repeat(7, auto)', marginTop: '10px', alignItems: 'start' }}>
                   {(() => {
                     // Get current week number based on today's date
                     const today = new Date();
