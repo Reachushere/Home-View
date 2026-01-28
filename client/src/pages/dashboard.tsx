@@ -3776,9 +3776,9 @@ export default function Dashboard() {
               </div>
             )}
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
               {/* Playback Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
                 <Button
                   size="icon"
                   variant="outline"
@@ -3836,7 +3836,7 @@ export default function Dashboard() {
               <div className="w-px h-6 bg-white/30" />
               
               {/* Restart Controls */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
                 <Button
                   size="sm"
                   variant="outline"
@@ -3870,7 +3870,7 @@ export default function Dashboard() {
               <div className="w-px h-6 bg-white/30" />
               
               {/* Speed Controls (for Browser TTS) */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
                 <Button
                   type="button"
                   size="icon"
