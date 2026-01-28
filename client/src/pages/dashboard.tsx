@@ -7207,16 +7207,11 @@ export default function Dashboard() {
                       ? [] // No files for OTHER row
                       : allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`));
                     
-                    // For CPPA122, reorder so Introduction appears at the bottom of left column (position 2)
-                    if (course.id === 'cppa122' && courseFiles.length > 0) {
-                      const introIndex = courseFiles.findIndex(f => 
+                    // For CPPA122 in Module flyout, only show Introduction file
+                    if (course.id === 'cppa122') {
+                      courseFiles = courseFiles.filter(f => 
                         (f.displayName || f.originalName).toLowerCase().includes('introduction')
                       );
-                      if (introIndex !== -1 && introIndex !== 2) {
-                        const introFile = courseFiles.splice(introIndex, 1)[0];
-                        // Insert at position 2 (bottom of left column in 3-row grid with column flow)
-                        courseFiles.splice(2, 0, introFile);
-                      }
                     }
                     
                     return (
