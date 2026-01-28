@@ -612,10 +612,8 @@ export default function Dashboard() {
       parsed.courseRowHeight = 48;
       // Set moduleColumnWidth to 0 (column removed)
       parsed.moduleColumnWidth = 0;
-      // Enforce minimum timeColumnWidth for course names to fit
-      if (!parsed.timeColumnWidth || parsed.timeColumnWidth < 75) {
-        parsed.timeColumnWidth = 75;
-      }
+      // Force timeColumnWidth to 75
+      parsed.timeColumnWidth = 75;
       return parsed;
     }
     return {
