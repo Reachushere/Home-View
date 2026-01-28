@@ -6036,7 +6036,6 @@ export default function Dashboard() {
               <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
-              <div className="border-l border-border/50" style={{ backgroundColor: 'rgba(156, 163, 175, 0.15)' }} />
               {/* Day cells */}
               {weekDays.map((day, dayIdx) => {
                 // Only show true all-day tasks (midnight due) and all-day calendar events
@@ -6317,21 +6316,6 @@ export default function Dashboard() {
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                     {getCourseRowDisplayName(course.name)}
                   </div>
-                  <div 
-                    className="border-l border-border/50 relative overflow-hidden" 
-                    style={{ backgroundColor: course.bg }}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.style.backgroundColor = 'rgba(93, 129, 204, 0.5)';
-                    }}
-                    onDragLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = course.bg;
-                    }}
-                    onDrop={(e) => {
-                      e.currentTarget.style.backgroundColor = course.bg;
-                      handleCourseRowDrop(e, course.name, weekDays[0]);
-                    }}
-                  />
                   {weekDays.map((day, dayIdx) => {
                     // Course row day cells - prep tasks now appear in All Day row with extensions
                     return (
@@ -6366,7 +6350,6 @@ export default function Dashboard() {
                 <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                   OTHER
                 </div>
-                <div className="border-l border-border/50" style={{ backgroundColor: 'rgba(156, 163, 175, 0.25)' }} />
                 {weekDays.map((day, dayIdx) => {
                   // OTHER row day cells - prep tasks now appear in All Day row with extensions
                   return (
@@ -6398,7 +6381,6 @@ export default function Dashboard() {
                     <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
-                    <div className="border-l border-border/50" style={{ backgroundColor: isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : 'rgba(156, 163, 175, 0.15)' }} />
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
