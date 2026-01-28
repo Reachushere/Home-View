@@ -6360,7 +6360,7 @@ export default function Dashboard() {
                     className="stroke-green-500/50"
                     strokeWidth="1"
                   />
-                  <text x="20" y="26" textAnchor="middle" className="fill-green-400 text-[7px] font-medium">CPPA</text>
+                  <text x="20" y="26" textAnchor="middle" fill="#496D85" className="text-[7px] font-medium">CPPA</text>
                 </svg>
               </div>
             </div>
@@ -6419,7 +6419,7 @@ export default function Dashboard() {
                     className="stroke-pink-500/50"
                     strokeWidth="1"
                   />
-                  <text x="20" y="26" textAnchor="middle" className="fill-pink-400 text-[7px] font-medium">CFNF</text>
+                  <text x="20" y="26" textAnchor="middle" fill="#496D85" className="text-[7px] font-medium">CFNF</text>
                 </svg>
               </div>
             </div>
@@ -6478,7 +6478,7 @@ export default function Dashboard() {
                     className="stroke-indigo-500/50"
                     strokeWidth="1"
                   />
-                  <text x="20" y="26" textAnchor="middle" className="fill-indigo-400 text-[7px] font-medium">CASL</text>
+                  <text x="20" y="26" textAnchor="middle" fill="#496D85" className="text-[7px] font-medium">CASL</text>
                 </svg>
               </div>
             </div>
