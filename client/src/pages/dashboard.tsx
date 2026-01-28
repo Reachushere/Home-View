@@ -234,6 +234,7 @@ export default function Dashboard() {
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
+  const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
   const toggleFlyoutFolder = (folderId: string) => {
@@ -7578,13 +7579,36 @@ export default function Dashboard() {
           );
         })()}
 
-        {/* To Do Section - Random tasks */}
-        <div className="mb-3 flex-shrink-0 relative" style={{ order: 3, zIndex: 60 }}>
-          <section className="rounded-md shadow-md border-[0.1px] border-white h-[190px] overflow-hidden flex flex-col" style={{ background: colorSettings.boxBackground }} data-testid="section-todo">
-            <h4 className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white " style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}>
+        {/* To Do Bottom Flyout */}
+        <div 
+          className="fixed bottom-0 left-0 right-0 z-[100] transition-transform duration-300 ease-in-out"
+          style={{ transform: isTodoFlyoutOpen ? 'translateY(0)' : 'translateY(calc(100% - 28px))' }}
+        >
+          {/* Tab to toggle flyout */}
+          <div 
+            className="absolute left-1/2 -translate-x-1/2 -top-0 cursor-pointer"
+            onClick={() => setIsTodoFlyoutOpen(!isTodoFlyoutOpen)}
+          >
+            <div 
+              className="flex items-center gap-2 px-4 py-1 rounded-t-md border border-b-0 border-white/30"
+              style={{ background: colorSettings.headerBar }}
+            >
               <ClipboardCheck className="h-3 w-3 text-white" />
-              To Do ({todoItems.filter(item => item.trim() !== "").length})
-            </h4>
+              <span className="text-xs text-white font-medium">To Do ({todoItems.filter(item => item.trim() !== "").length})</span>
+              {isTodoFlyoutOpen ? (
+                <ChevronDown className="h-3 w-3 text-white" />
+              ) : (
+                <ChevronUp className="h-3 w-3 text-white" />
+              )}
+            </div>
+          </div>
+          
+          {/* Flyout content */}
+          <section 
+            className="shadow-lg border-t border-white/30 h-[190px] overflow-hidden flex flex-col" 
+            style={{ background: colorSettings.boxBackground }} 
+            data-testid="section-todo"
+          >
             <div className="grid grid-cols-4 gap-4 flex-1 p-3">
               {[0, 1, 2, 3].map(col => (
                 <div key={col} className="flex flex-col gap-1.5 overflow-hidden">
