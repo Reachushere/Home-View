@@ -6274,53 +6274,6 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
-          {/* Files Flyout Toggle Tab - positioned between green (CPPA122) and pink (CFNF400) rows */}
-          <div
-            className={`absolute z-[65] cursor-pointer transition-all duration-300`}
-            style={{ 
-              top: `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight}px`,
-              transform: 'translateY(-50%)',
-              right: (isFilesFlyoutOpen ? (isFiles2FlyoutOpen && lastOpenedFlyout === 'files1' ? flyoutWidth - 30 : flyoutWidth) : 0) + 3 + 'px' 
-            }}
-            onClick={() => {
-              if (!isFilesFlyoutOpen) setLastOpenedFlyout('files1');
-              setIsFilesFlyoutOpen(!isFilesFlyoutOpen);
-            }}
-            data-testid="files-flyout-tab"
-          >
-            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-2 hover:bg-black/70 transition-colors" style={{ boxShadow: '0 6px 12px rgba(0,0,0,0.6)' }}>
-              <Paperclip className="h-3.5 w-3.5 text-white mb-0.5 -rotate-45" />
-              {isFilesFlyoutOpen ? (
-                <ChevronRight className="h-3.5 w-3.5 text-white" />
-              ) : (
-                <ChevronLeft className="h-3.5 w-3.5 text-white" />
-              )}
-            </div>
-          </div>
-          
-          {/* Files2 Flyout Toggle Tab - positioned between pink (CFNF400) and blue (CASL101) rows */}
-          <div
-            className={`absolute z-[60] cursor-pointer transition-all duration-300`}
-            style={{ 
-              top: `${41 + gridSizes.allDayRowHeight + 2 * gridSizes.courseRowHeight}px`,
-              transform: 'translateY(-50%)',
-              right: (isFiles2FlyoutOpen ? (isFilesFlyoutOpen && lastOpenedFlyout === 'files2' ? flyout2Width - 30 : flyout2Width) : 0) + 3 + 'px' 
-            }}
-            onClick={() => {
-              if (!isFiles2FlyoutOpen) setLastOpenedFlyout('files2');
-              setIsFiles2FlyoutOpen(!isFiles2FlyoutOpen);
-            }}
-            data-testid="files2-flyout-tab"
-          >
-            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-2 hover:bg-black/70 transition-colors">
-              <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400 mb-0.5" />
-              {isFiles2FlyoutOpen ? (
-                <ChevronRight className="h-3.5 w-3.5 text-white" />
-              ) : (
-                <ChevronLeft className="h-3.5 w-3.5 text-white" />
-              )}
-            </div>
-          </div>
           
           {/* Weeks Flyout Toggle Tab - positioned to align with bottom flyout */}
           <div
