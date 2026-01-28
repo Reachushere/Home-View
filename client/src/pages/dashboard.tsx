@@ -6299,10 +6299,9 @@ export default function Dashboard() {
           <div className="absolute right-0 z-[100]" style={{ top: `${41 + gridSizes.allDayRowHeight}px` }}>
             <svg width="0" height="0">
               <defs>
-                <linearGradient id="honeycombGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#c8d8e4" stopOpacity="1" />
-                  <stop offset="40%" stopColor="#9ab4c8" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#6a8ca8" stopOpacity="1" />
+                <linearGradient id="honeycombGradient" x1="100%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#C8E0F4" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#9AB9D8" stopOpacity="1" />
                 </linearGradient>
               </defs>
             </svg>
