@@ -6910,7 +6910,7 @@ export default function Dashboard() {
                         className="flex items-center gap-2 px-2 overflow-hidden"
                         style={{ height: `${course.id === 'cppa122' ? gridSizes.courseRowHeight * 2 : course.id === 'other' ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
                       >
-                        <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '-17px', gridTemplateColumns: '1fr' } : { gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                        <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={course.id === 'cppa122' ? { marginTop: '-13px', gridTemplateColumns: '1fr' } : { gridTemplateColumns: 'repeat(2, 1fr)' }}>
                           {courseFiles.map((file, fileIndex) => {
                             const fullName = file.displayName || file.originalName;
                             let cleanName = fullName
