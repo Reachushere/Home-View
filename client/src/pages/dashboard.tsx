@@ -6915,7 +6915,6 @@ export default function Dashboard() {
                               <div
                                 key={file.id}
                                 className="flex items-center gap-0.5 hover:bg-black/10 rounded px-0.5 cursor-pointer truncate"
-                                style={course.id === 'cppa122' ? { marginLeft: '10px' } : undefined}
                                 title={fullName}
                               >
                                 <Checkbox
