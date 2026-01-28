@@ -7631,8 +7631,8 @@ export default function Dashboard() {
                 // Path: left from Tomorrow box -> down -> curve to directly above target -> straight down
                 // Offset: 2px right, 2px up from original position
                 const aboveTargetY = conn.toY - 40; // Position above the task
-                const lineEndY = conn.toY - 12; // Stop at arrowhead tip, 5px higher total
-                const targetX = conn.toX + 5; // Move 5px to the right
+                const lineEndY = conn.toY - 13; // Stop at arrowhead tip, 6px higher total
+                const targetX = conn.toX + 6; // Move 6px to the right
                 transparentPath = `M ${conn.fromX} ${conn.fromY} L ${exitX} ${conn.fromY} L ${exitX} ${containerBottom} C ${exitX} ${(containerBottom + aboveTargetY) / 2}, ${targetX} ${aboveTargetY - 30}, ${targetX} ${aboveTargetY} L ${targetX} ${lineEndY}`;
               } else {
                 // Today/This Week arrows: normal curved path from left side
