@@ -6406,39 +6406,6 @@ export default function Dashboard() {
                       handleCourseRowDrop(e, course.name, weekDays[0]);
                     }}
                   >
-                    {/* Show files from this course's week folder */}
-                    {course.name === 'CPPA122' && (
-                      <div className="flex flex-col gap-0 p-0.5" style={{ marginTop: '-2px' }}>
-                        {allFiles
-                          .filter(f => f.folder?.startsWith(`week-${selectedWeek}-cppa122`))
-                          .slice(0, 5)
-                          .map(file => {
-                            // Clean up file name - remove course code, module, and Local Politics
-                            const fullName = file.displayName || file.originalName;
-                            let cleanName = fullName
-                              .replace(/^CPPA\s*122[-_\s.]*/i, '')
-                              .replace(/Module\s*\d*[-_:\s.]*/gi, '')
-                              .replace(/Local\s*Politics[-_:\s.]*/gi, '')
-                              .replace(/\.pdf$/i, '')
-                              .trim();
-                            // Remove any leading dots, spaces, dashes, underscores repeatedly
-                            while (cleanName.match(/^[.\s\-_:•·]/)) {
-                              cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
-                            }
-                            return (
-                              <span
-                                key={file.id}
-                                onClick={() => setPreviewFile(file)}
-                                className="text-[7px] leading-tight cursor-pointer hover:underline text-gray-700"
-                                title={fullName}
-                              >
-                                {cleanName || fullName}
-                              </span>
-                            );
-                          })}
-                      </div>
-                    )}
-                  </div>
                   {weekDays.map((day, dayIdx) => {
                     // Course row day cells - prep tasks now appear in All Day row with extensions
                     return (
