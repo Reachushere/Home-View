@@ -613,13 +613,13 @@ export default function Dashboard() {
       // Set moduleColumnWidth to 0 (column removed)
       parsed.moduleColumnWidth = 0;
       // Enforce minimum timeColumnWidth for course names to fit
-      if (!parsed.timeColumnWidth || parsed.timeColumnWidth < 105) {
-        parsed.timeColumnWidth = 105;
+      if (!parsed.timeColumnWidth || parsed.timeColumnWidth < 95) {
+        parsed.timeColumnWidth = 95;
       }
       return parsed;
     }
     return {
-      timeColumnWidth: 105,
+      timeColumnWidth: 95,
       moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 36,
@@ -5980,20 +5980,7 @@ export default function Dashboard() {
                   data-testid="time-column-resize-handle"
                 />
               </div>
-              <div className="flex items-center justify-center relative border-l border-border" style={{ backgroundColor: colorSettings.headerBar }}>
-                <span className="text-xs font-medium tracking-wide text-white">MODULE</span>
-                {/* Module column resize handle - right edge */}
-                <div
-                  className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
-                  style={{ zIndex: 9999 }}
-                  onMouseDown={(e) => {
-                    e.stopPropagation();
-                    handleColumnResizeStart(e, -2);
-                  }}
-                  data-testid="module-column-resize-handle"
-                />
-              </div>
-              {weekDays.map((day, idx) => {
+                            {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
                 const isFriday = day.getDay() === 5;
                 const dayName = format(day, "EEE").toUpperCase();
