@@ -6900,7 +6900,27 @@ export default function Dashboard() {
                 <div className="flex items-center gap-1.5">
                   <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
                   <span className="text-[11px] font-medium">Files</span>
-                  <span className="text-[10px] text-white/40 ml-1">Click to open. Drag to tasks.</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-5 w-5 hover:bg-white/20 rounded" 
+                    onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+                    data-testid="button-flyout-prev-week"
+                  >
+                    <ChevronLeft className="h-3 w-3 text-white" strokeWidth={2.5} />
+                  </Button>
+                  <span className="text-[10px] text-white/70 whitespace-nowrap">{format(weekStartDate, "MMM d")}-{format(weekEndDate, "d")}</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-5 w-5 hover:bg-white/20 rounded" 
+                    onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+                    data-testid="button-flyout-next-week"
+                  >
+                    <ChevronRight className="h-3 w-3 text-white" strokeWidth={2.5} />
+                  </Button>
                 </div>
                 <Button 
                   size="icon" 
