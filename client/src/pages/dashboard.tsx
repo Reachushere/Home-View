@@ -6392,7 +6392,7 @@ export default function Dashboard() {
                     {getCourseRowDisplayName(course.name)}
                   </div>
                   <div 
-                    className="border-l border-border/50 relative" 
+                    className="border-l border-border/50 relative overflow-hidden" 
                     style={{ backgroundColor: course.bg }}
                     onDragOver={(e) => {
                       e.preventDefault();
@@ -6405,7 +6405,26 @@ export default function Dashboard() {
                       e.currentTarget.style.backgroundColor = course.bg;
                       handleCourseRowDrop(e, course.name, weekDays[0]);
                     }}
-                  />
+                  >
+                    {/* Show files from this course's week folder */}
+                    {course.name === 'CPPA122' && (
+                      <div className="flex flex-col gap-0.5 p-0.5 overflow-hidden">
+                        {allFiles
+                          .filter(f => f.folder?.startsWith(`week-${selectedWeek}-cppa122`))
+                          .slice(0, 5)
+                          .map(file => (
+                            <span
+                              key={file.id}
+                              onClick={() => setPreviewFile(file)}
+                              className="text-[7px] leading-tight truncate cursor-pointer hover:underline text-gray-700"
+                              title={file.displayName || file.originalName}
+                            >
+                              {file.displayName || file.originalName}
+                            </span>
+                          ))}
+                      </div>
+                    )}
+                  </div>
                   {weekDays.map((day, dayIdx) => {
                     // Course row day cells - prep tasks now appear in All Day row with extensions
                     return (
