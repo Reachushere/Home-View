@@ -6355,27 +6355,7 @@ export default function Dashboard() {
               })}
               </div>
               
-              {/* OTHER Row - For tasks without a course */}
-              <div className="grid border-b border-border/50 w-full flex-shrink-0 relative" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight / 2}px` }}>
-                <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                  OTHER
-                </div>
-                {weekDays.map((day, dayIdx) => {
-                  // OTHER row day cells - prep tasks now appear in All Day row with extensions
-                  return (
-                    <div 
-                      key={dayIdx} 
-                      className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
-                      style={{ 
-                        backgroundColor: isSameDay(day, new Date()) ? 'rgba(93, 129, 204, 0.35)' : 'rgba(156, 163, 175, 0.25)'
-                      }}
-                      data-testid={`other-row-${format(day, "yyyy-MM-dd")}`}
-                    />
-                  );
-                })}
-              </div>
-            
-            {/* Time Slots - Scrollable area */}
+                          {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll scrollbar-hidden relative" style={{ overflowX: 'clip' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
