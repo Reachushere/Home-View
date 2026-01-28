@@ -235,10 +235,13 @@ export default function Dashboard() {
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
+  const [isFiles2FlyoutOpen, setIsFiles2FlyoutOpen] = useState(true);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
   const [flyoutWidth, setFlyoutWidth] = useState(365); // Default flyout width for files
+  const [flyout2Width, setFlyout2Width] = useState(365); // Default flyout width for files2
   const [weeksFlyoutWidth, setWeeksFlyoutWidth] = useState(220); // Default flyout width for week folders
   const [isResizingFlyout, setIsResizingFlyout] = useState(false);
+  const [isResizingFlyout2, setIsResizingFlyout2] = useState(false);
   const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
@@ -6200,7 +6203,7 @@ export default function Dashboard() {
             style={{ 
               top: `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight}px`,
               transform: 'translateY(-50%)',
-              right: (isFilesFlyoutOpen ? flyoutWidth : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' 
+              right: (isFilesFlyoutOpen ? flyoutWidth : 0) + (isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' 
             }}
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
@@ -6208,6 +6211,27 @@ export default function Dashboard() {
             <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-3 hover:bg-black/70 transition-colors">
               <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400 mb-1" />
               {isFilesFlyoutOpen ? (
+                <ChevronRight className="h-4 w-4 text-yellow-500" />
+              ) : (
+                <ChevronLeft className="h-4 w-4 text-yellow-500" />
+              )}
+            </div>
+          </div>
+          
+          {/* Files2 Flyout Toggle Tab - positioned between pink (CFNF400) and blue (CASL101) rows */}
+          <div
+            className={`absolute z-[60] cursor-pointer transition-all duration-300`}
+            style={{ 
+              top: `${41 + gridSizes.allDayRowHeight + 2 * gridSizes.courseRowHeight}px`,
+              transform: 'translateY(-50%)',
+              right: (isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' 
+            }}
+            onClick={() => setIsFiles2FlyoutOpen(!isFiles2FlyoutOpen)}
+            data-testid="files2-flyout-tab"
+          >
+            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-3 hover:bg-black/70 transition-colors">
+              <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400 mb-1" />
+              {isFiles2FlyoutOpen ? (
                 <ChevronRight className="h-4 w-4 text-yellow-500" />
               ) : (
                 <ChevronLeft className="h-4 w-4 text-yellow-500" />
@@ -6232,7 +6256,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Calendar wrapper - shrinks when flyouts open */}
-          <div className={`${isResizingFlyout || isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen || isWeeksFlyoutOpen ? '' : 'w-full'}`} style={(isFilesFlyoutOpen || isWeeksFlyoutOpen) ? { width: `calc(100% - ${(isFilesFlyoutOpen ? flyoutWidth : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 17}px)` } : undefined}>
+          <div className={`${isResizingFlyout || isResizingFlyout2 || isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} ${isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen ? '' : 'w-full'}`} style={(isFilesFlyoutOpen || isFiles2FlyoutOpen || isWeeksFlyoutOpen) ? { width: `calc(100% - ${(isFilesFlyoutOpen ? flyoutWidth : 0) + (isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 17}px)` } : undefined}>
           <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
@@ -7095,7 +7119,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar, ends at bottom of CASL101 row */}
-          <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: isWeeksFlyoutOpen ? `${weeksFlyoutWidth}px` : '0px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
+          <div className={`absolute top-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: (isFiles2FlyoutOpen ? flyout2Width : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 'px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -7157,6 +7181,180 @@ export default function Dashboard() {
                   onClick={() => setIsFilesFlyoutOpen(false)}
                   className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20 absolute right-2"
                   data-testid="button-close-inline-files"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+              
+              {/* Week Files Header */}
+              <div className="flex items-center gap-1.5 pl-[14px] pr-2 py-1 bg-black/30 border-b border-white/20">
+                <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
+                <span className="text-sm font-medium">Week {selectedWeek} Files</span>
+              </div>
+              
+              {/* Course rows with files - positioned to match calendar */}
+              {/* Day header 41px + All Day row height = offset to course rows */}
+              <div className="absolute left-0 right-[-1px] bg-white" style={{ top: `${41 + gridSizes.allDayRowHeight}px` }}>
+                {(() => {
+                  const courseRows = [
+                    { id: 'cppa122', name: 'CPPA122', fullName: 'Local Politics', bgColor: 'rgba(134, 239, 172, 0.35)', textColor: 'text-green-700', pattern: /^CPPA\s*122[-_\s.]*/i },
+                    { id: 'cfnf400', name: 'CFNF400', fullName: 'CFNF400 Human Sexuality', bgColor: 'rgba(249, 168, 212, 0.45)', textColor: 'text-pink-700', pattern: /^CFNF\s*400[-_\s.]*/i },
+                    { id: 'casl101', name: 'CASL101', fullName: 'Sign Language', bgColor: 'rgba(165, 180, 252, 0.45)', textColor: 'text-indigo-700', pattern: /^CASL\s*101[-_\s.]*/i }
+                  ];
+                  
+                  return courseRows.map(course => {
+                    let courseFiles = course.id === 'other' 
+                      ? [] // No files for OTHER row
+                      : allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-${course.id}`));
+                    
+                    // For CPPA122, reorder so Introduction appears at the bottom of left column (position 2)
+                    if (course.id === 'cppa122' && courseFiles.length > 0) {
+                      const introIndex = courseFiles.findIndex(f => 
+                        (f.displayName || f.originalName).toLowerCase().includes('introduction')
+                      );
+                      if (introIndex !== -1 && introIndex !== 2) {
+                        const introFile = courseFiles.splice(introIndex, 1)[0];
+                        // Insert at position 2 (bottom of left column in 3-row grid with column flow)
+                        courseFiles.splice(2, 0, introFile);
+                      }
+                    }
+                    
+                    return (
+                      <div 
+                        key={course.id} 
+                        className="flex items-center gap-2 px-2 overflow-hidden relative"
+                        style={{ height: `${gridSizes.courseRowHeight}px`, backgroundColor: course.bgColor }}
+                        title={`${course.name}: ${courseFiles.length} files for week ${selectedWeek}`}
+                      >
+                        {/* 3D Vertical Separator - hairline with shadow */}
+                        <div 
+                          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                          style={{ 
+                            width: '1px',
+                            height: '65%',
+                            background: 'transparent',
+                            borderLeft: course.id === 'cppa122' ? '0.5px solid rgba(22, 101, 52, 0.35)' : course.id === 'cfnf400' ? '0.5px solid rgba(157, 23, 77, 0.3)' : '0.5px solid rgba(67, 56, 202, 0.35)',
+                            boxShadow: '0.5px 0 0 rgba(0,0,0,0.08)'
+                          }}
+                        />
+                        <div className="flex-1 grid gap-x-2 gap-y-0 overflow-hidden" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                          {courseFiles.map((file, fileIndex) => {
+                            const fullName = file.displayName || file.originalName;
+                            let cleanName = fullName
+                              .replace(course.pattern, '')
+                              .replace(/Module\s*\d*[-_:\s.]*/gi, '')
+                              .replace(/Local\s*Politics[-_:\s.]*/gi, '')
+                              .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
+                              .replace(/Sign\s*Language[-_:\s.]*/gi, '')
+                              .replace(/\.pdf$/i, '')
+                              .trim();
+                            while (cleanName.match(/^[.\s\-_:•·]/)) {
+                              cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
+                            }
+                            return (
+                              <div
+                                key={file.id}
+                                className="flex items-center gap-0.5 hover:bg-black/10 rounded px-0.5 cursor-pointer truncate"
+                                title={fullName}
+                              >
+                                <Checkbox
+                                  checked={file.listened || false}
+                                  onCheckedChange={async (checked) => {
+                                    try {
+                                      await fetch(`/api/files/${file.id}`, {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ listened: !!checked })
+                                      });
+                                      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                    } catch (error) {
+                                      console.error('Failed to update file listened status:', error);
+                                    }
+                                  }}
+                                  className="h-2 w-2 shrink-0 border-gray-500 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                />
+                                <span 
+                                  onClick={() => setPreviewFile(file)}
+                                  className={`text-[9px] cursor-pointer hover:underline truncate ${file.listened ? 'text-gray-400 line-through' : course.textColor}`}
+                                >
+                                  {cleanName || fullName}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+              
+            </div>
+          </div>
+          
+          {/* Inline Files2 Flyout - duplicate, appears between first files flyout and weeks flyout */}
+          <div className={`absolute top-0 ${isResizingFlyout2 ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFiles2FlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', right: (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 'px', width: isFiles2FlyoutOpen ? `${flyout2Width}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
+            {/* Resize Handle */}
+            <div
+              className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
+              style={{ height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                setIsResizingFlyout2(true);
+                const startX = e.clientX;
+                const startWidth = flyout2Width;
+                
+                const handleMouseMove = (moveEvent: MouseEvent) => {
+                  const delta = startX - moveEvent.clientX;
+                  const newWidth = Math.max(150, Math.min(600, startWidth + delta));
+                  setFlyout2Width(newWidth);
+                };
+                
+                const handleMouseUp = () => {
+                  setIsResizingFlyout2(false);
+                  document.removeEventListener('mousemove', handleMouseMove);
+                  document.removeEventListener('mouseup', handleMouseUp);
+                };
+                
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+              }}
+              data-testid="flyout2-resize-handle"
+            />
+            <div className="bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg" style={{ height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
+              {/* Top header with arrows and date - matches day header height (41px) */}
+              <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
+                <div className="flex items-center gap-1.5" style={{ marginLeft: '-20px' }}>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 hover:bg-white/20 rounded-md" 
+                    onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+                    data-testid="button-flyout2-prev-week"
+                  >
+                    <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
+                  </Button>
+                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm whitespace-nowrap">
+                    <span className="text-xs font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                    <span className="text-xs text-white/50">—</span>
+                    <span className="text-xs font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 hover:bg-white/20 rounded-md" 
+                    onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+                    data-testid="button-flyout2-next-week"
+                  >
+                    <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
+                  </Button>
+                </div>
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  onClick={() => setIsFiles2FlyoutOpen(false)}
+                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20 absolute right-2"
+                  data-testid="button-close-inline-files2"
                 >
                   <X className="h-3 w-3" />
                 </Button>
