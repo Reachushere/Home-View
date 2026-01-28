@@ -6587,7 +6587,7 @@ export default function Dashboard() {
                 }
                 
                 return (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${course.name.startsWith('CPPA') ? gridSizes.courseRowHeight * 2 : course.name.startsWith('CASL') ? gridSizes.courseRowHeight / 2 : gridSizes.courseRowHeight}px` }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ backgroundColor: colorSettings.headerBar }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
@@ -6596,11 +6596,11 @@ export default function Dashboard() {
                       if (code === 'CPPA122') {
                         return <span className="text-center">CPPA122 Local Politics</span>;
                       }
-                      // CFNF400: show CFNF, then Human, then Sexuality on separate lines
+                      // CFNF400: show CFNF400, then Human, then Sexuality on separate lines
                       if (code === 'CFNF400') {
                         return (
                           <>
-                            <span>CFNF</span>
+                            <span>CFNF400</span>
                             <span>Human</span>
                             <span>Sexuality</span>
                           </>
