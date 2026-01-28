@@ -77,6 +77,13 @@ All arrows connecting task boxes to calendar follow these exact specifications:
 - Two-layer rendering with opaque first ~30 dashes, transparent for rest
 - Stay visible when calendar scrolls (rendered in separate z-index layers)
 
+**Tomorrow Arrows (Tomorrow box → Calendar task checkbox):**
+- Approach from ABOVE the target and point DOWN (mirror of prep arrows)
+- Path: exit 21px left from Tomorrow box → down to container bottom → curve to above target → straight down
+- Final position offset: targetX = conn.toX + 6 (6px right), lineEndY = conn.toY - 13 (13px up)
+- Arrowhead marker: refX="10", refY="3.5" with polygon "0 0, 10 3.5, 0 7"
+- Line ends at arrowhead tip (no overlap)
+
 **Prep Arrows (Today box → Prep Extension text):**
 - Connect from Today box checkbox to "Prep days" text on prep extensions
 - Path: 21px straight left from checkbox, then curved down using quadratic bezier (`Q` command), then straight down to target
