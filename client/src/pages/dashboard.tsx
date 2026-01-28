@@ -7485,13 +7485,13 @@ export default function Dashboard() {
           {/* Readings Popup Dialog */}
           {readingsPopupCourse && (
             <div 
-              className="absolute bg-white rounded-lg shadow-2xl border border-gray-300 z-[100] p-3 min-w-[200px] max-w-[280px]"
-              style={{ 
-                right: `${flyout2Width + 10}px`,
-                top: '50%',
-                transform: 'translateY(-50%)'
-              }}
+              className="fixed inset-0 bg-black/50 z-[200] flex items-center justify-center"
+              onClick={() => setReadingsPopupCourse(null)}
             >
+              <div 
+                className="bg-white rounded-lg shadow-2xl border border-gray-300 p-3 min-w-[250px] max-w-[320px]"
+                onClick={(e) => e.stopPropagation()}
+              >
               <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-200">
                 <div className="flex items-center gap-2">
                   <FolderOpen 
@@ -7546,6 +7546,7 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
+              </div>
               </div>
             </div>
           )}
