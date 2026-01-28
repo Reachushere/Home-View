@@ -6944,7 +6944,7 @@ export default function Dashboard() {
               
               {/* Course rows with files - positioned to match calendar */}
               {/* Day header ~48px + All Day row 44px + 4px = 96px offset */}
-              <div className="absolute left-0 right-0 bg-white" style={{ top: `${52 + gridSizes.allDayRowHeight + 28}px` }}>
+              <div className="absolute left-0 right-0 bg-white" style={{ top: `${52 + gridSizes.allDayRowHeight}px` }}>
                 {(() => {
                   const courseRows = [
                     { id: 'cppa122', name: 'CPPA122', fullName: 'Local Politics', bgColor: 'rgba(134, 239, 172, 0.35)', textColor: 'text-green-700', pattern: /^CPPA\s*122[-_\s.]*/i },
