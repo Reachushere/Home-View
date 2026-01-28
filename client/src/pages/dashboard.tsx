@@ -7154,25 +7154,25 @@ export default function Dashboard() {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 hover:bg-white/20 rounded-md" 
+                    className="h-5 w-5 hover:bg-white/20 rounded" 
                     onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
                     data-testid="button-flyout-prev-week"
                   >
-                    <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
+                    <ChevronLeft className="h-3 w-3 text-white" strokeWidth={2.5} />
                   </Button>
-                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm whitespace-nowrap">
-                    <span className="text-xs font-medium text-white">{format(weekStartDate, "MMM d")}</span>
-                    <span className="text-xs text-white/50">—</span>
-                    <span className="text-xs font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+                  <div className="flex items-center gap-0.5 bg-white/10 rounded px-1 py-0.5 backdrop-blur-sm whitespace-nowrap">
+                    <span className="text-[10px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                    <span className="text-[10px] text-white/50">—</span>
+                    <span className="text-[10px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 hover:bg-white/20 rounded-md" 
+                    className="h-5 w-5 hover:bg-white/20 rounded" 
                     onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
                     data-testid="button-flyout-next-week"
                   >
-                    <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
+                    <ChevronRight className="h-3 w-3 text-white" strokeWidth={2.5} />
                   </Button>
                 </div>
                 <Button 
@@ -7187,7 +7187,7 @@ export default function Dashboard() {
               </div>
               
               {/* Week Module Header */}
-              <div className="flex items-center gap-1.5 pl-[14px] pr-2 py-1 bg-black/30 border-b border-white/20">
+              <div className="flex items-center justify-center gap-1.5 px-2 py-1 bg-black/30 border-b border-white/20">
                 <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
                 <span className="text-sm font-medium">Week {selectedWeek} Module</span>
               </div>
@@ -7317,25 +7317,25 @@ export default function Dashboard() {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 hover:bg-white/20 rounded-md" 
+                    className="h-5 w-5 hover:bg-white/20 rounded" 
                     onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
                     data-testid="button-flyout2-prev-week"
                   >
-                    <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
+                    <ChevronLeft className="h-3 w-3 text-white" strokeWidth={2.5} />
                   </Button>
-                  <div className="flex items-center gap-1 bg-white/10 rounded-md px-2 py-1 backdrop-blur-sm whitespace-nowrap">
-                    <span className="text-xs font-medium text-white">{format(weekStartDate, "MMM d")}</span>
-                    <span className="text-xs text-white/50">—</span>
-                    <span className="text-xs font-medium text-white">{format(weekEndDate, "MMM d")}</span>
+                  <div className="flex items-center gap-0.5 bg-white/10 rounded px-1 py-0.5 backdrop-blur-sm whitespace-nowrap">
+                    <span className="text-[10px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
+                    <span className="text-[10px] text-white/50">—</span>
+                    <span className="text-[10px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
                   </div>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 hover:bg-white/20 rounded-md" 
+                    className="h-5 w-5 hover:bg-white/20 rounded" 
                     onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
                     data-testid="button-flyout2-next-week"
                   >
-                    <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
+                    <ChevronRight className="h-3 w-3 text-white" strokeWidth={2.5} />
                   </Button>
                 </div>
                 <Button 
@@ -7350,7 +7350,7 @@ export default function Dashboard() {
               </div>
               
               {/* Week Reading Header */}
-              <div className="flex items-center gap-1.5 pl-[14px] pr-2 py-1 bg-black/30 border-b border-white/20">
+              <div className="flex items-center justify-center gap-1.5 px-2 py-1 bg-black/30 border-b border-white/20">
                 <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />
                 <span className="text-sm font-medium">Week {selectedWeek} Reading</span>
               </div>
