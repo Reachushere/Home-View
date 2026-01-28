@@ -1815,6 +1815,62 @@ export default function Dashboard() {
     window.speechSynthesis.speak(utterance);
   };
 
+  // Play from a specific chunk index
+  const playFromChunk = async (chunkIndex: number) => {
+    if (previewSpeaker !== "browser_tts" || !window.speechSynthesis) {
+      toast({ title: "Chunk playback only available with Browser TTS", variant: "destructive" });
+      return;
+    }
+    
+    // Make sure we have chunks
+    if (ttsChunksRef.current.length === 0) {
+      // Need to split the text first
+      if (!previewText) {
+        toast({ title: "No text content available", variant: "destructive" });
+        return;
+      }
+      const cleanTextForTts = previewText.replace(/---PAGE---/g, '');
+      const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
+      ttsChunksRef.current = chunks;
+      setTtsChunks(chunks);
+      setTotalChunks(chunks.length);
+    }
+    
+    const chunks = ttsChunksRef.current;
+    if (chunkIndex >= chunks.length) {
+      toast({ title: "Invalid chunk index", variant: "destructive" });
+      return;
+    }
+    
+    // Cancel any current speech
+    window.speechSynthesis.cancel();
+    shouldContinueRef.current = false;
+    await new Promise(r => setTimeout(r, 100));
+    
+    // Wait for voices
+    const voices = await waitForVoices();
+    if (voices.length === 0) {
+      toast({ title: "No TTS voices found", variant: "destructive" });
+      return;
+    }
+    
+    // Calculate word offset for highlighting
+    let wordOffset = 0;
+    for (let i = 0; i < chunkIndex; i++) {
+      wordOffset += chunks[i].split(/\s+/).length;
+    }
+    
+    // Start playing from this chunk
+    setCurrentChunkIndex(chunkIndex);
+    currentChunkIndexRef.current = chunkIndex;
+    shouldContinueRef.current = true;
+    setIsPlaying(true);
+    isPlayingRef.current = true;
+    
+    toast({ title: `Playing from section ${chunkIndex + 1} of ${chunks.length}` });
+    speakChunk(chunkIndex, chunks, voices, wordOffset);
+  };
+
   const handlePlayFile = async (fileUrl: string, fileName: string, resumeFromProgress: boolean = false) => {
     try {
       // Check if using browser TTS only
@@ -4039,44 +4095,85 @@ export default function Dashboard() {
               ) : previewText ? (
                 <div className="text-sm leading-relaxed">
                   {(() => {
-                    // Remove the page markers and split by paragraphs
+                    // Split text into chunks for display with colored backgrounds
                     const cleanText = previewText.replace(/---PAGE---/g, '');
-                    const paragraphs = cleanText.split(/\n\n+/);
+                    const chunks = splitTextIntoChunks(cleanText, 2000);
+                    
+                    // Chunk background colors (alternating)
+                    const chunkColors = [
+                      'bg-blue-50 dark:bg-blue-950/40',
+                      'bg-green-50 dark:bg-green-950/40',
+                      'bg-purple-50 dark:bg-purple-950/40',
+                      'bg-orange-50 dark:bg-orange-950/40',
+                      'bg-pink-50 dark:bg-pink-950/40',
+                      'bg-cyan-50 dark:bg-cyan-950/40',
+                    ];
                     
                     // Track global word index for highlighting
                     let globalWordIndex = 0;
                     
-                    return paragraphs.map((paragraph, pIdx) => {
-                      // Split paragraph into lines (for bullets, headers)
-                      const lines = paragraph.split(/\n/);
+                    return chunks.map((chunk, chunkIdx) => {
+                      const chunkColor = chunkColors[chunkIdx % chunkColors.length];
+                      const isCurrentChunk = isPlaying && chunkIdx === currentChunkIndex;
+                      const chunkStartWordIdx = globalWordIndex;
+                      
+                      // Split chunk into paragraphs
+                      const paragraphs = chunk.split(/\n\n+/);
                       
                       return (
-                        <div key={pIdx} className="mb-3">
-                          {lines.map((line, lIdx) => {
-                            const words = line.split(/\s+/).filter(w => w.length > 0);
-                            const lineStartIdx = globalWordIndex;
-                            globalWordIndex += words.length;
-                            
-                            // Detect if line starts with bullet
-                            const isBullet = /^[•\-\*►▶→]/.test(line.trim());
-                            // Detect if line looks like a header (short, no ending punctuation)
-                            const isHeader = words.length <= 8 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0;
+                        <div 
+                          key={chunkIdx}
+                          className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-3 mb-2 cursor-pointer hover:opacity-80 transition-opacity relative`}
+                          onClick={() => playFromChunk(chunkIdx)}
+                          title={`Click to play from Section ${chunkIdx + 1}`}
+                        >
+                          {/* Chunk header */}
+                          <div className="flex items-center justify-between mb-2 pb-1 border-b border-gray-300 dark:border-gray-600">
+                            <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-400">
+                              Section {chunkIdx + 1} of {chunks.length}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-5 px-2 text-[9px] text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900"
+                              onClick={(e) => { e.stopPropagation(); playFromChunk(chunkIdx); }}
+                            >
+                              <Play className="h-3 w-3 mr-1" />
+                              Play
+                            </Button>
+                          </div>
+                          
+                          {paragraphs.map((paragraph, pIdx) => {
+                            const lines = paragraph.split(/\n/);
                             
                             return (
-                              <div 
-                                key={`${pIdx}-${lIdx}`} 
-                                className={`${isBullet ? 'pl-4' : ''} ${isHeader && !isBullet ? 'font-semibold text-base mt-2' : ''}`}
-                              >
-                                {words.map((word, wIdx) => {
-                                  const wordGlobalIdx = lineStartIdx + wIdx;
-                                  const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
+                              <div key={pIdx} className="mb-2">
+                                {lines.map((line, lIdx) => {
+                                  const words = line.split(/\s+/).filter(w => w.length > 0);
+                                  const lineStartIdx = globalWordIndex;
+                                  globalWordIndex += words.length;
+                                  
+                                  const isBullet = /^[•\-\*►▶→]/.test(line.trim());
+                                  const isHeader = words.length <= 8 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0;
+                                  
                                   return (
-                                    <span
-                                      key={wordGlobalIdx}
-                                      className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
+                                    <div 
+                                      key={`${pIdx}-${lIdx}`} 
+                                      className={`${isBullet ? 'pl-4' : ''} ${isHeader && !isBullet ? 'font-semibold text-base mt-2' : ''}`}
                                     >
-                                      {word}{' '}
-                                    </span>
+                                      {words.map((word, wIdx) => {
+                                        const wordGlobalIdx = lineStartIdx + wIdx;
+                                        const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
+                                        return (
+                                          <span
+                                            key={wordGlobalIdx}
+                                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
+                                          >
+                                            {word}{' '}
+                                          </span>
+                                        );
+                                      })}
+                                    </div>
                                   );
                                 })}
                               </div>
