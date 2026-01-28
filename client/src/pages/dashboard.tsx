@@ -236,6 +236,7 @@ export default function Dashboard() {
   const [radioVolume, setRadioVolume] = useState(50);
   const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
   const [isFiles2FlyoutOpen, setIsFiles2FlyoutOpen] = useState(true);
+  const [lastOpenedFlyout, setLastOpenedFlyout] = useState<'files1' | 'files2'>('files1'); // Track which flyout was opened last
   const [readingsPopupCourse, setReadingsPopupCourse] = useState<string | null>(null);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
   const [flyoutWidth, setFlyoutWidth] = useState(183); // Default flyout width for files (half width)
@@ -6276,7 +6277,10 @@ export default function Dashboard() {
               transform: 'translateY(-50%)',
               right: (isFilesFlyoutOpen ? flyoutWidth : 0) + 3 + 'px' 
             }}
-            onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
+            onClick={() => {
+              if (!isFilesFlyoutOpen) setLastOpenedFlyout('files1');
+              setIsFilesFlyoutOpen(!isFilesFlyoutOpen);
+            }}
             data-testid="files-flyout-tab"
           >
             <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-2 hover:bg-black/70 transition-colors" style={{ boxShadow: '0 6px 12px rgba(0,0,0,0.6)' }}>
@@ -6297,7 +6301,10 @@ export default function Dashboard() {
               transform: 'translateY(-50%)',
               right: (isFiles2FlyoutOpen ? flyout2Width : 0) + 3 + 'px' 
             }}
-            onClick={() => setIsFiles2FlyoutOpen(!isFiles2FlyoutOpen)}
+            onClick={() => {
+              if (!isFiles2FlyoutOpen) setLastOpenedFlyout('files2');
+              setIsFiles2FlyoutOpen(!isFiles2FlyoutOpen);
+            }}
             data-testid="files2-flyout-tab"
           >
             <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-2 hover:bg-black/70 transition-colors">
@@ -7193,7 +7200,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar, ends at bottom of CASL101 row */}
-          <div className={`absolute top-0 right-0 z-[55] ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', width: isFilesFlyoutOpen ? `${flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
+          <div className={`absolute top-0 right-0 ${isResizingFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'} ${isFilesFlyoutOpen && isFiles2FlyoutOpen && lastOpenedFlyout === 'files2' ? 'brightness-75 blur-[1px]' : ''}`} style={{ marginRight: '-1px', width: isFilesFlyoutOpen ? `${isFiles2FlyoutOpen && lastOpenedFlyout === 'files1' ? flyoutWidth - 30 : flyoutWidth}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, zIndex: lastOpenedFlyout === 'files1' ? 55 : 50 }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -7372,7 +7379,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files2 Flyout - duplicate, appears between first files flyout and weeks flyout */}
-          <div className={`absolute top-0 right-0 z-[50] ${isResizingFlyout2 ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFiles2FlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-1px', width: isFiles2FlyoutOpen ? `${flyout2Width}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px` }}>
+          <div className={`absolute top-0 right-0 ${isResizingFlyout2 ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isFiles2FlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'} ${isFilesFlyoutOpen && isFiles2FlyoutOpen && lastOpenedFlyout === 'files1' ? 'brightness-75 blur-[1px]' : ''}`} style={{ marginRight: '-1px', width: isFiles2FlyoutOpen ? `${isFilesFlyoutOpen && lastOpenedFlyout === 'files2' ? flyout2Width - 30 : flyout2Width}px` : '0', height: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, zIndex: lastOpenedFlyout === 'files2' ? 55 : 50 }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
