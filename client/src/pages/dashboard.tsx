@@ -7102,6 +7102,42 @@ export default function Dashboard() {
                   });
                 })()}
                 </div>
+                
+                {/* CPPA122 Files from current week - bottom section */}
+                {(() => {
+                  const cppaFiles = allFiles.filter(f => f.folder?.startsWith(`week-${selectedWeek}-cppa122`));
+                  if (cppaFiles.length === 0) return null;
+                  
+                  return (
+                    <div className="mt-4 pt-3 border-t border-white/20">
+                      <div className="px-2 mb-1">
+                        <span className="text-[11px] text-white/50 uppercase tracking-wide">Week {selectedWeek} CPPA122</span>
+                      </div>
+                      <div className="space-y-0">
+                        {cppaFiles.map(file => {
+                          const fullName = file.displayName || file.originalName;
+                          const cleanName = fullName
+                            .replace(/^CPPA\s*122[-_\s]*/i, '')
+                            .replace(/Module\s*\d*[-_:\s]*/gi, '')
+                            .replace(/Local\s*Politics[-_:\s]*/gi, '')
+                            .replace(/\.pdf$/i, '')
+                            .trim();
+                          return (
+                            <div
+                              key={file.id}
+                              className="flex items-center gap-1 px-2 py-0.5 hover:bg-white/10 cursor-pointer"
+                              onClick={() => setPreviewFile(file)}
+                              title={fullName}
+                            >
+                              <FileText className="h-3 w-3 text-green-400" />
+                              <span className="text-[12px] text-white/80 truncate flex-1">{cleanName || fullName}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
