@@ -6295,185 +6295,70 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Honeycomb Navigation System - Right edge of page */}
-          <div className="fixed right-4 z-[100] flex flex-col items-end" style={{ top: `${41 + gridSizes.allDayRowHeight + 60}px` }}>
-            {/* Date Range Arrows */}
-            <div className="flex items-center gap-1 mb-3 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg px-2 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-6 w-6 hover:bg-white/20 rounded-md" 
-                onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
-                data-testid="honeycomb-prev-week"
-              >
-                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
-              <div className="flex items-center gap-1 bg-white/10 rounded-md px-1.5 py-0.5 backdrop-blur-sm whitespace-nowrap">
-                <span className="text-[10px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
-                <span className="text-[10px] text-white/50">—</span>
-                <span className="text-[10px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
-              </div>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-6 w-6 hover:bg-white/20 rounded-md" 
-                onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
-                data-testid="honeycomb-next-week"
-              >
-                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
+          {/* Honeycomb Navigation System - Right edge aligned with course rows */}
+          <div className="absolute right-0 z-[100]" style={{ top: `${41 + gridSizes.allDayRowHeight}px` }}>
+            <svg width="0" height="0">
+              <defs>
+                <linearGradient id="honeycombGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="rgb(31, 41, 55)" stopOpacity="0.95" />
+                  <stop offset="50%" stopColor="rgb(0, 0, 0)" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="rgb(17, 24, 39)" stopOpacity="0.95" />
+                </linearGradient>
+              </defs>
+            </svg>
+            
+            {/* CPPA122 - Green Row Honeycomb */}
+            <div 
+              className="flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105"
+              style={{ height: `${gridSizes.courseRowHeight}px` }}
+              onClick={() => setModuleMediaControlCourse('cppa122')}
+              data-testid="honeycomb-cppa122"
+            >
+              <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
+                <polygon 
+                  points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                  fill="url(#honeycombGradient)"
+                  className="stroke-green-500/50"
+                  strokeWidth="1"
+                />
+                <text x="20" y="26" textAnchor="middle" className="fill-green-400 text-[7px] font-medium">CPPA</text>
+              </svg>
             </div>
             
-            {/* Modules Honeycomb Row */}
-            <div className="flex items-center gap-2 mb-2">
-              {/* Course honeycombs - pop out when modules honeycomb is open */}
-              <div className={`flex items-center gap-2 transition-all duration-300 ${modulesHoneycombOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8 pointer-events-none'}`}>
-                {/* CPPA122 - Green */}
-                <div 
-                  className="cursor-pointer transition-all duration-200 hover:scale-110"
-                  onClick={() => setModuleMediaControlCourse('cppa122')}
-                  data-testid="honeycomb-modules-cppa122"
-                >
-                  <svg width="52" height="60" viewBox="0 0 52 60" className="drop-shadow-lg">
-                    <polygon 
-                      points="26,0 52,15 52,45 26,60 0,45 0,15" 
-                      className="fill-[#2d4a4a] stroke-green-500/50 hover:fill-[#3d5a5a]"
-                      strokeWidth="1"
-                    />
-                    <text x="26" y="35" textAnchor="middle" className="fill-green-400 text-[8px] font-medium">CPPA</text>
-                  </svg>
-                </div>
-                {/* CFNF400 - Pink */}
-                <div 
-                  className="cursor-pointer transition-all duration-200 hover:scale-110"
-                  onClick={() => setModuleMediaControlCourse('cfnf400')}
-                  data-testid="honeycomb-modules-cfnf400"
-                >
-                  <svg width="52" height="60" viewBox="0 0 52 60" className="drop-shadow-lg">
-                    <polygon 
-                      points="26,0 52,15 52,45 26,60 0,45 0,15" 
-                      className="fill-[#2d4a4a] stroke-pink-500/50 hover:fill-[#3d5a5a]"
-                      strokeWidth="1"
-                    />
-                    <text x="26" y="35" textAnchor="middle" className="fill-pink-400 text-[8px] font-medium">CFNF</text>
-                  </svg>
-                </div>
-                {/* CASL101 - Indigo */}
-                <div 
-                  className="cursor-pointer transition-all duration-200 hover:scale-110"
-                  onClick={() => setModuleMediaControlCourse('casl101')}
-                  data-testid="honeycomb-modules-casl101"
-                >
-                  <svg width="52" height="60" viewBox="0 0 52 60" className="drop-shadow-lg">
-                    <polygon 
-                      points="26,0 52,15 52,45 26,60 0,45 0,15" 
-                      className="fill-[#2d4a4a] stroke-indigo-500/50 hover:fill-[#3d5a5a]"
-                      strokeWidth="1"
-                    />
-                    <text x="26" y="35" textAnchor="middle" className="fill-indigo-400 text-[8px] font-medium">CASL</text>
-                  </svg>
-                </div>
-              </div>
-              
-              {/* Main Modules Honeycomb */}
-              <div 
-                className={`cursor-pointer transition-all duration-200 hover:scale-105 ${modulesHoneycombOpen ? 'scale-95' : ''}`}
-                onClick={() => {
-                  setModulesHoneycombOpen(!modulesHoneycombOpen);
-                  if (readingsHoneycombOpen) setReadingsHoneycombOpen(false);
-                }}
-                data-testid="honeycomb-modules-main"
-              >
-                <svg width="60" height="70" viewBox="0 0 60 70" className="drop-shadow-xl">
-                  <defs>
-                    <linearGradient id="honeycombGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="rgb(31, 41, 55)" stopOpacity="0.95" />
-                      <stop offset="50%" stopColor="rgb(0, 0, 0)" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="rgb(17, 24, 39)" stopOpacity="0.95" />
-                    </linearGradient>
-                  </defs>
-                  <polygon 
-                    points="30,0 60,17.5 60,52.5 30,70 0,52.5 0,17.5" 
-                    fill="url(#honeycombGradient)"
-                    className="stroke-white/20"
-                    strokeWidth="1"
-                  />
-                  <text x="30" y="32" textAnchor="middle" className="fill-white text-[7px] font-medium">Modules</text>
-                  <Paperclip x="22" y="36" className="h-3 w-3 text-white -rotate-45" style={{ transform: 'translate(22px, 36px) rotate(-45deg)' }} />
-                </svg>
-              </div>
+            {/* CFNF400 - Pink Row Honeycomb */}
+            <div 
+              className="flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105"
+              style={{ height: `${gridSizes.courseRowHeight}px` }}
+              onClick={() => setModuleMediaControlCourse('cfnf400')}
+              data-testid="honeycomb-cfnf400"
+            >
+              <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
+                <polygon 
+                  points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                  fill="url(#honeycombGradient)"
+                  className="stroke-pink-500/50"
+                  strokeWidth="1"
+                />
+                <text x="20" y="26" textAnchor="middle" className="fill-pink-400 text-[7px] font-medium">CFNF</text>
+              </svg>
             </div>
             
-            {/* Readings Honeycomb Row */}
-            <div className="flex items-center gap-2">
-              {/* Course honeycombs - pop out when readings honeycomb is open */}
-              <div className={`flex items-center gap-2 transition-all duration-300 ${readingsHoneycombOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8 pointer-events-none'}`}>
-                {/* CPPA122 - Green */}
-                <div 
-                  className="cursor-pointer transition-all duration-200 hover:scale-110"
-                  onClick={() => setReadingsPopupCourse('cppa122')}
-                  data-testid="honeycomb-readings-cppa122"
-                >
-                  <svg width="52" height="60" viewBox="0 0 52 60" className="drop-shadow-lg">
-                    <polygon 
-                      points="26,0 52,15 52,45 26,60 0,45 0,15" 
-                      className="fill-[#2d4a4a] stroke-green-500/50 hover:fill-[#3d5a5a]"
-                      strokeWidth="1"
-                    />
-                    <text x="26" y="35" textAnchor="middle" className="fill-green-400 text-[8px] font-medium">CPPA</text>
-                  </svg>
-                </div>
-                {/* CFNF400 - Pink */}
-                <div 
-                  className="cursor-pointer transition-all duration-200 hover:scale-110"
-                  onClick={() => setReadingsPopupCourse('cfnf400')}
-                  data-testid="honeycomb-readings-cfnf400"
-                >
-                  <svg width="52" height="60" viewBox="0 0 52 60" className="drop-shadow-lg">
-                    <polygon 
-                      points="26,0 52,15 52,45 26,60 0,45 0,15" 
-                      className="fill-[#2d4a4a] stroke-pink-500/50 hover:fill-[#3d5a5a]"
-                      strokeWidth="1"
-                    />
-                    <text x="26" y="35" textAnchor="middle" className="fill-pink-400 text-[8px] font-medium">CFNF</text>
-                  </svg>
-                </div>
-                {/* CASL101 - Indigo */}
-                <div 
-                  className="cursor-pointer transition-all duration-200 hover:scale-110"
-                  onClick={() => setReadingsPopupCourse('casl101')}
-                  data-testid="honeycomb-readings-casl101"
-                >
-                  <svg width="52" height="60" viewBox="0 0 52 60" className="drop-shadow-lg">
-                    <polygon 
-                      points="26,0 52,15 52,45 26,60 0,45 0,15" 
-                      className="fill-[#2d4a4a] stroke-indigo-500/50 hover:fill-[#3d5a5a]"
-                      strokeWidth="1"
-                    />
-                    <text x="26" y="35" textAnchor="middle" className="fill-indigo-400 text-[8px] font-medium">CASL</text>
-                  </svg>
-                </div>
-              </div>
-              
-              {/* Main Readings Honeycomb */}
-              <div 
-                className={`cursor-pointer transition-all duration-200 hover:scale-105 ${readingsHoneycombOpen ? 'scale-95' : ''}`}
-                onClick={() => {
-                  setReadingsHoneycombOpen(!readingsHoneycombOpen);
-                  if (modulesHoneycombOpen) setModulesHoneycombOpen(false);
-                }}
-                data-testid="honeycomb-readings-main"
-              >
-                <svg width="60" height="70" viewBox="0 0 60 70" className="drop-shadow-xl">
-                  <polygon 
-                    points="30,0 60,17.5 60,52.5 30,70 0,52.5 0,17.5" 
-                    fill="url(#honeycombGradient)"
-                    className="stroke-white/20"
-                    strokeWidth="1"
-                  />
-                  <text x="30" y="32" textAnchor="middle" className="fill-white text-[7px] font-medium">Readings</text>
-                </svg>
-              </div>
+            {/* CASL101 - Indigo/Blue Row Honeycomb */}
+            <div 
+              className="flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-105"
+              style={{ height: `${gridSizes.courseRowHeight}px` }}
+              onClick={() => setModuleMediaControlCourse('casl101')}
+              data-testid="honeycomb-casl101"
+            >
+              <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
+                <polygon 
+                  points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
+                  fill="url(#honeycombGradient)"
+                  className="stroke-indigo-500/50"
+                  strokeWidth="1"
+                />
+                <text x="20" y="26" textAnchor="middle" className="fill-indigo-400 text-[7px] font-medium">CASL</text>
+              </svg>
             </div>
           </div>
           
