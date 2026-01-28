@@ -5235,7 +5235,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Main Content - Full width, positioned below unified header */}
-      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-y-hidden overflow-x-clip relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '0px', marginTop: '60px' }}>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
@@ -5936,7 +5936,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-10px', paddingRight: '4px', scrollbarWidth: 'none' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-clip flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '0px', paddingRight: '4px', scrollbarWidth: 'none' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
@@ -6830,7 +6830,7 @@ export default function Dashboard() {
           </div>
           
           {/* Inline Files Flyout - appears next to calendar */}
-          <div className={`absolute right-0 top-0 bottom-0 transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ marginRight: '-24px', width: isFilesFlyoutOpen ? 'calc(20% - 68px)' : '0' }}>
+          <div className={`fixed top-[65px] bottom-[14px] transition-all duration-300 ease-in-out overflow-hidden ${isFilesFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ right: '0px', width: isFilesFlyoutOpen ? 'calc(20% - 44px)' : '0' }}>
             <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
               {/* Top header with arrows and date - matches day header height (52px) */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '52px' }}>
