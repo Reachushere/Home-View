@@ -6194,10 +6194,14 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
-          {/* Files Flyout Toggle Tab - sticks to right edge of calendar */}
+          {/* Files Flyout Toggle Tab - positioned between green (CPPA122) and pink (CFNF400) rows */}
           <div
-            className={`absolute top-[calc(50%-40px)] -translate-y-1/2 z-[60] cursor-pointer transition-all duration-300`}
-            style={{ right: (isFilesFlyoutOpen ? flyoutWidth : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' }}
+            className={`absolute z-[60] cursor-pointer transition-all duration-300`}
+            style={{ 
+              top: `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight}px`,
+              transform: 'translateY(-50%)',
+              right: (isFilesFlyoutOpen ? flyoutWidth : 0) + (isWeeksFlyoutOpen ? weeksFlyoutWidth : 0) + 3 + 'px' 
+            }}
             onClick={() => setIsFilesFlyoutOpen(!isFilesFlyoutOpen)}
             data-testid="files-flyout-tab"
           >
