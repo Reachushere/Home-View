@@ -1421,6 +1421,34 @@ export default function Dashboard() {
   const [selectedVoice, setSelectedVoice] = useState<string>(""); // Voice name
   const [playStartTime, setPlayStartTime] = useState<number | null>(null);
   
+  // Chunked TTS state for reliable playback
+  const [ttsChunks, setTtsChunks] = useState<string[]>([]);
+  const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
+  const [totalChunks, setTotalChunks] = useState(0);
+  const ttsChunksRef = useRef<string[]>([]);
+  const currentChunkIndexRef = useRef(0);
+  const shouldContinueRef = useRef(false);
+  
+  // Save/load TTS progress for each file
+  const getTtsProgress = (fileId: number): { chunkIndex: number; wordIndex: number } | null => {
+    try {
+      const saved = localStorage.getItem(`tts-progress-${fileId}`);
+      return saved ? JSON.parse(saved) : null;
+    } catch { return null; }
+  };
+  
+  const saveTtsProgress = (fileId: number, chunkIndex: number, wordIndex: number) => {
+    try {
+      localStorage.setItem(`tts-progress-${fileId}`, JSON.stringify({ chunkIndex, wordIndex }));
+    } catch {}
+  };
+  
+  const clearTtsProgress = (fileId: number) => {
+    try {
+      localStorage.removeItem(`tts-progress-${fileId}`);
+    } catch {}
+  };
+  
   // Load available TTS voices
   useEffect(() => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -1674,7 +1702,120 @@ export default function Dashboard() {
     });
   };
   
-  const handlePlayFile = async (fileUrl: string, fileName: string) => {
+  // Split text into chunks at sentence boundaries for reliable TTS
+  const splitTextIntoChunks = (text: string, maxChunkSize: number = 2000): string[] => {
+    const chunks: string[] = [];
+    let remaining = text;
+    
+    while (remaining.length > 0) {
+      if (remaining.length <= maxChunkSize) {
+        chunks.push(remaining);
+        break;
+      }
+      
+      // Find a good break point (end of sentence)
+      let breakPoint = remaining.lastIndexOf('. ', maxChunkSize);
+      if (breakPoint === -1 || breakPoint < maxChunkSize / 2) {
+        breakPoint = remaining.lastIndexOf('? ', maxChunkSize);
+      }
+      if (breakPoint === -1 || breakPoint < maxChunkSize / 2) {
+        breakPoint = remaining.lastIndexOf('! ', maxChunkSize);
+      }
+      if (breakPoint === -1 || breakPoint < maxChunkSize / 2) {
+        breakPoint = remaining.lastIndexOf('\n', maxChunkSize);
+      }
+      if (breakPoint === -1 || breakPoint < maxChunkSize / 2) {
+        breakPoint = remaining.lastIndexOf(' ', maxChunkSize);
+      }
+      if (breakPoint === -1) {
+        breakPoint = maxChunkSize;
+      }
+      
+      chunks.push(remaining.substring(0, breakPoint + 1).trim());
+      remaining = remaining.substring(breakPoint + 1).trim();
+    }
+    
+    return chunks.filter(c => c.length > 0);
+  };
+
+  // Speak a single chunk and continue to next
+  const speakChunk = async (chunkIndex: number, chunks: string[], voices: SpeechSynthesisVoice[], wordOffset: number = 0) => {
+    if (chunkIndex >= chunks.length || !shouldContinueRef.current) {
+      // Finished all chunks
+      setIsPlaying(false);
+      isPlayingRef.current = false;
+      if (previewFile) {
+        clearTtsProgress(previewFile.id);
+        toast({ title: "Finished reading file" });
+      }
+      return;
+    }
+    
+    const chunk = chunks[chunkIndex];
+    const utterance = new SpeechSynthesisUtterance(chunk);
+    utterance.rate = browserTtsRate;
+    utterance.pitch = 1;
+    
+    // Use selected voice
+    const voice = selectedVoice 
+      ? voices.find(v => v.name === selectedVoice)
+      : voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) 
+        || voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural'))
+        || voices.find(v => v.lang.startsWith('en'))
+        || voices[0];
+    if (voice) {
+      utterance.voice = voice;
+    }
+    
+    // Track word position for highlighting
+    let localWordIndex = 0;
+    const chunkWordCount = chunk.split(/\s+/).length;
+    
+    utterance.onboundary = (event) => {
+      if (event.name === 'word') {
+        setCurrentWordIndex(wordOffset + localWordIndex);
+        localWordIndex++;
+        // Save progress periodically
+        if (previewFile && localWordIndex % 10 === 0) {
+          saveTtsProgress(previewFile.id, chunkIndex, localWordIndex);
+        }
+      }
+    };
+    
+    utterance.onstart = () => {
+      console.log(`Chunk ${chunkIndex + 1}/${chunks.length} started`);
+      setCurrentChunkIndex(chunkIndex);
+      currentChunkIndexRef.current = chunkIndex;
+    };
+    
+    utterance.onend = () => {
+      console.log(`Chunk ${chunkIndex + 1}/${chunks.length} ended`);
+      if (shouldContinueRef.current) {
+        // Small delay before next chunk to prevent Chrome issues
+        setTimeout(() => {
+          speakChunk(chunkIndex + 1, chunks, voices, wordOffset + chunkWordCount);
+        }, 100);
+      }
+    };
+    
+    utterance.onerror = (event) => {
+      console.error("Speech error:", event.error);
+      // On interrupted, don't show error - user stopped it
+      if (event.error !== 'interrupted') {
+        toast({ title: `Speech paused at chunk ${chunkIndex + 1}. Tap play to resume.`, variant: "default" });
+        if (previewFile) {
+          saveTtsProgress(previewFile.id, chunkIndex, localWordIndex);
+        }
+      }
+      setIsPlaying(false);
+      isPlayingRef.current = false;
+    };
+    
+    speechUtteranceRef.current = utterance;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const handlePlayFile = async (fileUrl: string, fileName: string, resumeFromProgress: boolean = false) => {
     try {
       // Check if using browser TTS only
       if (previewSpeaker === "browser_tts") {
@@ -1689,75 +1830,51 @@ export default function Dashboard() {
         
         // Cancel any existing speech
         window.speechSynthesis.cancel();
+        shouldContinueRef.current = false;
+        await new Promise(r => setTimeout(r, 100));
         
-        // Wait for voices to load (important for Chrome on Android/Fire tablets)
+        // Wait for voices to load
         const voices = await waitForVoices();
-        console.log("Available voices:", voices.length, voices.map(v => v.name).slice(0, 5));
+        console.log("Available voices:", voices.length);
         
         if (voices.length === 0) {
           toast({ title: "No TTS voices found. Make sure Chrome has TTS enabled.", variant: "destructive" });
           return;
         }
         
-        // Remove page markers from text for TTS (they're only for page sync)
+        // Remove page markers and split into chunks
         const cleanTextForTts = previewText.replace(/---PAGE---/g, '');
+        const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
         
-        // For long text, Chrome can fail - limit to 5000 chars at a time
-        const textToSpeak = cleanTextForTts.length > 5000 ? cleanTextForTts.substring(0, 5000) : cleanTextForTts;
+        ttsChunksRef.current = chunks;
+        setTtsChunks(chunks);
+        setTotalChunks(chunks.length);
         
-        const utterance = new SpeechSynthesisUtterance(textToSpeak);
-        utterance.rate = browserTtsRate;
-        utterance.pitch = 1;
-        
-        // Use selected voice or find a good default
-        const voice = selectedVoice 
-          ? voices.find(v => v.name === selectedVoice)
-          : voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) 
-            || voices.find(v => v.name.includes('Microsoft') && v.name.includes('Natural'))
-            || voices.find(v => v.lang.startsWith('en'))
-            || voices[0];
-        if (voice) {
-          utterance.voice = voice;
-          console.log("Using voice:", voice.name);
+        // Check for saved progress
+        let startChunk = 0;
+        let startWordOffset = 0;
+        if (resumeFromProgress && previewFile) {
+          const progress = getTtsProgress(previewFile.id);
+          if (progress) {
+            startChunk = progress.chunkIndex;
+            // Calculate word offset from previous chunks
+            for (let i = 0; i < startChunk; i++) {
+              startWordOffset += chunks[i].split(/\s+/).length;
+            }
+            toast({ title: `Resuming from chunk ${startChunk + 1} of ${chunks.length}` });
+          }
         }
         
-        // Track word position for highlighting
-        let wordIndex = 0;
-        utterance.onboundary = (event) => {
-          if (event.name === 'word') {
-            setCurrentWordIndex(wordIndex);
-            wordIndex++;
-          }
-        };
-        
-        utterance.onstart = () => {
-          console.log("Speech started");
-        };
-        
-        utterance.onend = () => {
-          console.log("Speech ended");
-          setIsPlaying(false);
-          isPlayingRef.current = false;
-          setCurrentWordIndex(0);
-        };
-        
-        utterance.onerror = (event) => {
-          console.error("Speech error:", event.error);
-          toast({ title: `Speech error: ${event.error}`, variant: "destructive" });
-          setIsPlaying(false);
-          isPlayingRef.current = false;
-        };
-        
-        speechUtteranceRef.current = utterance;
-        
-        // Chrome bug workaround: need small delay after cancel
-        await new Promise(r => setTimeout(r, 100));
-        
-        window.speechSynthesis.speak(utterance);
-        
+        setCurrentChunkIndex(startChunk);
+        currentChunkIndexRef.current = startChunk;
+        shouldContinueRef.current = true;
         setIsPlaying(true);
         isPlayingRef.current = true;
-        toast({ title: `Reading aloud: ${fileName}` });
+        
+        toast({ title: `Reading: ${fileName} (${chunks.length} sections)` });
+        
+        // Start speaking from the appropriate chunk
+        speakChunk(startChunk, chunks, voices, startWordOffset);
         return;
       }
       
@@ -1785,10 +1902,17 @@ export default function Dashboard() {
     try {
       // Stop browser TTS if active
       if (previewSpeaker === "browser_tts" && window.speechSynthesis) {
+        shouldContinueRef.current = false; // Stop chunk chain
         window.speechSynthesis.cancel();
+        
+        // Save progress so user can resume later
+        if (previewFile && currentChunkIndexRef.current > 0) {
+          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex);
+          toast({ title: `Paused at section ${currentChunkIndexRef.current + 1} of ${totalChunks}. Progress saved.` });
+        }
+        
         setIsPlaying(false);
         isPlayingRef.current = false;
-        setCurrentWordIndex(0);
         return;
       }
       
@@ -3669,11 +3793,25 @@ export default function Dashboard() {
                   size="icon"
                   variant="outline"
                   className="h-5 w-5 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName)}
+                  onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, false)}
                   data-testid="button-preview-play"
+                  title="Play from start"
                 >
                   <Play className="h-3 w-3 fill-blue-400" />
                 </Button>
+                {/* Resume button - shows when there's saved progress */}
+                {previewFile && getTtsProgress(previewFile.id) && !isPlaying && (
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="h-5 w-5 border-green-500 text-green-400 hover:text-green-300 hover:border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] transition-all duration-200"
+                    onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
+                    data-testid="button-preview-resume"
+                    title={`Resume from section ${(getTtsProgress(previewFile.id)?.chunkIndex || 0) + 1}`}
+                  >
+                    <RotateCcw className="h-3 w-3" />
+                  </Button>
+                )}
                 <Button
                   size="icon"
                   variant="destructive"
@@ -3771,6 +3909,13 @@ export default function Dashboard() {
                   Sync
                 </Label>
               </div>
+              
+              {/* Chunk progress indicator */}
+              {isPlaying && totalChunks > 1 && (
+                <div className="flex items-center gap-1 text-[9px] text-green-400">
+                  <span>Section {currentChunkIndex + 1}/{totalChunks}</span>
+                </div>
+              )}
             </div>
             
             <Button
