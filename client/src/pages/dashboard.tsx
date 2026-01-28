@@ -7136,6 +7136,10 @@ export default function Dashboard() {
                 })()}
                 </div>
               </div>
+              {/* Copyright Symbol - at bottom of flyout */}
+              <div className="absolute bottom-2 right-1 text-white/60 text-[10px] font-medium" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
+                © 2026
+              </div>
             </div>
           </div>
         </div>
@@ -7647,10 +7651,6 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
 
-        {/* Copyright Symbol */}
-        <div className="fixed right-0 bottom-2 text-white text-xs font-medium" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)', textShadow: '1px 1px 2px rgba(0,0,0,0.5)' }}>
-          © 2026
-        </div>
 
         {/* Arrow Connections - Split into two SVG layers for proper z-indexing */}
         {/* Layer 1: Transparent curves ABOVE prep boxes (z-index: 46, above green columns at z-42) */}
