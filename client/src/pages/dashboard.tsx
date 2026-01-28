@@ -233,7 +233,7 @@ export default function Dashboard() {
   const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
   const [radioVolume, setRadioVolume] = useState(50);
-  const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(false);
+  const [isFilesFlyoutOpen, setIsFilesFlyoutOpen] = useState(true);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
   const toggleFlyoutFolder = (folderId: string) => {
