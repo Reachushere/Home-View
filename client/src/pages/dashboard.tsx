@@ -6300,9 +6300,9 @@ export default function Dashboard() {
             <svg width="0" height="0">
               <defs>
                 <linearGradient id="honeycombGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#5d7a8c" stopOpacity="0.95" />
-                  <stop offset="50%" stopColor="#4a6572" stopOpacity="0.95" />
-                  <stop offset="100%" stopColor="#3d5a6a" stopOpacity="0.95" />
+                  <stop offset="0%" stopColor="#7eb8c9" stopOpacity="0.95" />
+                  <stop offset="50%" stopColor="#5a9fb5" stopOpacity="0.95" />
+                  <stop offset="100%" stopColor="#4a8fa5" stopOpacity="0.95" />
                 </linearGradient>
               </defs>
             </svg>
