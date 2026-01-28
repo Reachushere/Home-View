@@ -7087,7 +7087,7 @@ export default function Dashboard() {
                       {allCourseFiles.map(course => (
                         <div key={course.id} className="mb-2">
                           <div className="px-2 pb-1 leading-none">
-                            <span className={`text-[9px] uppercase tracking-wide ${course.color}`}>Week {selectedWeek} {course.name}</span>
+                            <span className={`text-[9px] uppercase tracking-wide ${course.color}`}>{course.name}</span>
                           </div>
                           <div>
                             {course.files.map(file => {
