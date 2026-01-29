@@ -6595,7 +6595,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
                 </div>
               </div>
             </div>
@@ -6639,7 +6639,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
                 </div>
               </div>
             </div>
@@ -6683,7 +6683,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
                 </div>
               </div>
             </div>
