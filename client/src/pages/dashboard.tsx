@@ -5604,59 +5604,60 @@ export default function Dashboard() {
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
         <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-        {/* Spring out honeycombs - grow to course row size */}
-        {/* Top honeycomb - CPPA122 */}
-        <div 
-          className={`absolute transition-all duration-500 ease-out cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-          style={{ 
-            width: gridSizes.courseRowHeight * 0.9,
-            height: gridSizes.courseRowHeight * 0.9,
-            top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px`,
-            right: '11px',
-            transformOrigin: 'center center',
-            transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)'
-          }}
-          onClick={(e) => { e.stopPropagation(); setModuleMediaControlCourse('cppa122'); setModulesHoneycombOpen(null); }}
-        >
-          <div className="relative w-full h-full hover:scale-110 transition-transform">
-            <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          </div>
+      </div>
+      
+      {/* Spring out course honeycombs for modules - positioned independently */}
+      {/* Top honeycomb - CPPA122 */}
+      <div 
+        className={`absolute transition-all duration-500 ease-out cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ 
+          width: gridSizes.courseRowHeight * 0.9,
+          height: gridSizes.courseRowHeight * 0.9,
+          top: `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px`,
+          right: '25px',
+          transformOrigin: 'center center',
+          transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)'
+        }}
+        onClick={() => { setModuleMediaControlCourse('cppa122'); setModulesHoneycombOpen(null); }}
+      >
+        <div className="relative w-full h-full hover:scale-110 transition-transform">
+          <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
         </div>
-        {/* Middle honeycomb - CFNF400 */}
-        <div 
-          className={`absolute transition-all duration-500 ease-out cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-          style={{ 
-            width: gridSizes.courseRowHeight * 0.9,
-            height: gridSizes.courseRowHeight * 0.9,
-            top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px`,
-            right: '11px',
-            transformOrigin: 'center center',
-            transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
-            transitionDelay: '50ms'
-          }}
-          onClick={(e) => { e.stopPropagation(); setModuleMediaControlCourse('cfnf400'); setModulesHoneycombOpen(null); }}
-        >
-          <div className="relative w-full h-full hover:scale-110 transition-transform">
-            <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          </div>
+      </div>
+      {/* Middle honeycomb - CFNF400 */}
+      <div 
+        className={`absolute transition-all duration-500 ease-out cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ 
+          width: gridSizes.courseRowHeight * 0.9,
+          height: gridSizes.courseRowHeight * 0.9,
+          top: `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px`,
+          right: '25px',
+          transformOrigin: 'center center',
+          transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
+          transitionDelay: '50ms'
+        }}
+        onClick={() => { setModuleMediaControlCourse('cfnf400'); setModulesHoneycombOpen(null); }}
+      >
+        <div className="relative w-full h-full hover:scale-110 transition-transform">
+          <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
         </div>
-        {/* Bottom honeycomb - CASL101 */}
-        <div 
-          className={`absolute transition-all duration-500 ease-out cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-          style={{ 
-            width: gridSizes.courseRowHeight * 0.9,
-            height: gridSizes.courseRowHeight * 0.9,
-            top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px`,
-            right: '11px',
-            transformOrigin: 'center center',
-            transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
-            transitionDelay: '100ms'
-          }}
-          onClick={(e) => { e.stopPropagation(); setModuleMediaControlCourse('casl101'); setModulesHoneycombOpen(null); }}
-        >
-          <div className="relative w-full h-full hover:scale-110 transition-transform">
-            <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          </div>
+      </div>
+      {/* Bottom honeycomb - CASL101 */}
+      <div 
+        className={`absolute transition-all duration-500 ease-out cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ 
+          width: gridSizes.courseRowHeight * 0.9,
+          height: gridSizes.courseRowHeight * 0.9,
+          top: `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px`,
+          right: '25px',
+          transformOrigin: 'center center',
+          transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
+          transitionDelay: '100ms'
+        }}
+        onClick={() => { setModuleMediaControlCourse('casl101'); setModulesHoneycombOpen(null); }}
+      >
+        <div className="relative w-full h-full hover:scale-110 transition-transform">
+          <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
         </div>
       </div>
       
