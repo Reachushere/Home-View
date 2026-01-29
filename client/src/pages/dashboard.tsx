@@ -4689,12 +4689,12 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[58px] !w-[58px] !min-h-[58px] !min-w-[58px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            className="!h-[55px] !w-[55px] !min-h-[55px] !min-w-[55px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
             style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '262px', marginTop: '6px' }}
             data-testid="button-completed-tasks"
             onClick={() => setIsCompletedTasksOpen(true)}
           >
-            <CheckSquare className="h-[28px] w-[28px] text-white" />
+            <CheckSquare className="h-[32px] w-[32px] text-white" />
           </Button>
 
           {/* Quick Add Button */}
@@ -6710,7 +6710,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? '#D4CAC0' : 'white'
+                      backgroundColor: isSameDay(day, new Date()) ? '#E0D8D0' : 'white'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -7021,7 +7021,7 @@ export default function Dashboard() {
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
                         style={{ 
-                          backgroundColor: isSameDay(day, new Date()) ? '#D4CAC0' : course.bg
+                          backgroundColor: isSameDay(day, new Date()) ? '#E0D8D0' : course.bg
                         }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -7029,10 +7029,10 @@ export default function Dashboard() {
                           e.currentTarget.style.backgroundColor = '#8B8070';
                         }}
                         onDragLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#D4CAC0' : course.bg;
+                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#E0D8D0' : course.bg;
                         }}
                         onDrop={(e) => {
-                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#D4CAC0' : course.bg;
+                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#E0D8D0' : course.bg;
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       />
@@ -7077,7 +7077,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            backgroundColor: isToday ? '#D4CAC0' : isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : undefined,
+                            backgroundColor: isToday ? '#E0D8D0' : isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
@@ -7771,7 +7771,7 @@ export default function Dashboard() {
                         key={idx}
                         className={`min-h-[80px] p-1 border-r border-b border-border last:border-r-0 ${
                           isCurrentMonth ? "bg-card" : "bg-muted/30"
-                        } ${isToday ? "bg-[#D4CAC0]" : ""}`}
+                        } ${isToday ? "bg-[#E0D8D0]" : ""}`}
                         onClick={() => {
                           // Find which week this day belongs to
                           const weekInfo = weeks.find(w => {
