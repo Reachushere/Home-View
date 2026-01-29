@@ -6496,7 +6496,7 @@ export default function Dashboard() {
           </div>
           
           {/* Honeycomb Navigation System - Right edge aligned with course rows, on top of tall pill */}
-          <div className="absolute z-[100]" style={{ top: `${41 + gridSizes.allDayRowHeight}px`, right: '22px' }}>
+          <div className="absolute z-[100]" style={{ top: `${41 + gridSizes.allDayRowHeight}px`, right: '5px' }}>
                         
             {/* CPPA122 - Green Row - Modules Honeycomb */}
             <div 
@@ -6550,7 +6550,7 @@ export default function Dashboard() {
               {/* Middle decorative honeycomb with spring animation - Files */}
               <div 
                 className="absolute cursor-pointer"
-                style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, top: '-105px', right: '-58px' }}
+                style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, top: '-105px', right: '0px' }}
                 onMouseEnter={() => setDecorativeHoneycombHover('middle')}
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
                 onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
