@@ -5,7 +5,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
-import dashboardBg from "@assets/BG6_1769719616881.png";
+import dashboardBg from "@assets/BG7_1769722497146.png";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
 import crowdCheer from "@assets/crowd-cheer.mp3";
