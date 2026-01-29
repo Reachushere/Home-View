@@ -15,7 +15,7 @@ import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import tallPill from "@assets/Tall_1769697999710.png";
-import boxBg from "@assets/Box_new.png";
+import boxBg from "@assets/Box_1769702530255.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -4370,7 +4370,7 @@ export default function Dashboard() {
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
               </Button>
               {/* Date display */}
-              <div className="flex items-center justify-between gap-2 bg-white/10 rounded-md px-3 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px' }}>
+              <div className="flex items-center justify-between gap-2 whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px' }}>
                 <span className="text-[12px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
                 <span className="text-[12px] text-white/50 relative top-[1px]">—</span>
                 <span className="text-[12px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
