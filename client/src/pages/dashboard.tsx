@@ -3532,7 +3532,7 @@ export default function Dashboard() {
       className="flex h-screen flex-col overflow-y-hidden overflow-x-visible"
       style={{ 
         backgroundImage: customBackground ? `url(${customBackground})` : `url(${dashboardBg})`,
-        backgroundSize: 'cover',
+        backgroundSize: '100% 100%',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}
