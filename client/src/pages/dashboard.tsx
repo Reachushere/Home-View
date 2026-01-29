@@ -261,7 +261,7 @@ export default function Dashboard() {
   const [moduleMediaControlCourse, setModuleMediaControlCourse] = useState<string | null>(null);
   const [flyoutWidth, setFlyoutWidth] = useState(183); // Default flyout width for files (half width)
   const [flyout2Width, setFlyout2Width] = useState(183); // Default flyout width for files2 (half width)
-  const [weeksFlyoutWidth, setWeeksFlyoutWidth] = useState(220); // Default flyout width for week folders
+  const [weeksFlyoutWidth, setWeeksFlyoutWidth] = useState(295); // Default flyout width for week folders
   const [isResizingFlyout, setIsResizingFlyout] = useState(false);
   const [isResizingFlyout2, setIsResizingFlyout2] = useState(false);
   const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
