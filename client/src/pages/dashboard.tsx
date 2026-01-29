@@ -217,7 +217,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(694);
+  const [calendarHeight, setCalendarHeight] = useState(674);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -4327,7 +4327,7 @@ export default function Dashboard() {
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px]" style={{ marginLeft: '-11px', marginTop: '2px' }} />
           {/* Week navigation with arrows around date, Today/Month stacked above */}
-          <div className="flex flex-col items-start gap-0.5" style={{ marginLeft: '38px' }}>
+          <div className="flex flex-col items-start gap-0.5" style={{ marginLeft: '28px' }}>
             {/* Today/Month buttons - centered above date range */}
             <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '2px' }}>
               <Button 
@@ -5586,7 +5586,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-1px' }}>
-        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '632px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '622px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
@@ -5611,7 +5611,7 @@ export default function Dashboard() {
             width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
             height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
             top: decorativeHoneycombHover === 'right' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-            right: decorativeHoneycombHover === 'right' ? '1px' : '50%',
+            right: decorativeHoneycombHover === 'right' ? '11px' : '50%',
             transformOrigin: 'center center'
           }}
         >
@@ -5626,7 +5626,7 @@ export default function Dashboard() {
             width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
             height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
             top: decorativeHoneycombHover === 'right' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-            right: decorativeHoneycombHover === 'right' ? '1px' : '50%',
+            right: decorativeHoneycombHover === 'right' ? '11px' : '50%',
             transformOrigin: 'center center',
             transitionDelay: '50ms'
           }}
@@ -5642,7 +5642,7 @@ export default function Dashboard() {
             width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
             height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
             top: decorativeHoneycombHover === 'right' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
-            right: decorativeHoneycombHover === 'right' ? '1px' : '50%',
+            right: decorativeHoneycombHover === 'right' ? '11px' : '50%',
             transformOrigin: 'center center',
             transitionDelay: '100ms'
           }}
