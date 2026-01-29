@@ -4454,7 +4454,7 @@ export default function Dashboard() {
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
               >
-                <Radio className="h-[38px] w-[38px] text-white" />
+                <Radio className="h-[42px] w-[42px] text-white" />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
@@ -5610,7 +5610,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
-      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '12px', paddingRight: '14px', marginTop: '60px' }}>
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
