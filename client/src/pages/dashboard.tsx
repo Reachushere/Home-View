@@ -4298,7 +4298,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-y-hidden overflow-x-visible relative z-10" style={{ backgroundColor: customBackground ? 'transparent' : colorSettings.mainBackground }}>
+      <div className="flex flex-1 overflow-hidden relative z-10" style={{ backgroundColor: customBackground ? 'transparent' : colorSettings.mainBackground }}>
         {/* Constant fade overlay - disabled for solid black background */}
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -5579,7 +5579,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Main Content - Full width, positioned below unified header */}
-      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-y-hidden overflow-x-visible relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
@@ -6280,10 +6280,10 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-hidden overflow-x-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '-1px', marginRight: '6px', paddingRight: '4px' }}>
+        <div className="flex-1 overflow-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-1px', marginRight: '6px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
+        <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           
           
           {/* Blank honeycombs above the date - Interactive with spring animation */}
