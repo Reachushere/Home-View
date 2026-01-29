@@ -215,7 +215,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(659);
+  const [calendarHeight, setCalendarHeight] = useState(654);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -3547,7 +3547,7 @@ export default function Dashboard() {
 
   return (
     <div 
-      className="flex h-screen flex-col overflow-visible"
+      className="flex h-screen flex-col overflow-hidden"
       style={{ 
         backgroundImage: customBackground ? `url(${customBackground})` : `url(${dashboardBg})`,
         backgroundSize: '100% 100%',
