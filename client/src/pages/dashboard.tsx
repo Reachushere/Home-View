@@ -4344,7 +4344,7 @@ export default function Dashboard() {
           {/* Week navigation with arrows around date, Today/Month stacked above */}
           <div className="flex flex-col items-start gap-0.5" style={{ marginLeft: '34px' }}>
             {/* Today/Month buttons - centered above date range */}
-            <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '2px' }}>
+            <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '4px' }}>
               <Button 
                 variant="ghost"
                 className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
