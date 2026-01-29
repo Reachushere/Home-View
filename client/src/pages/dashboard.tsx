@@ -5589,6 +5589,11 @@ export default function Dashboard() {
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '8px' }}>
         <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '650px', objectFit: 'fill', marginLeft: '-70px' }} />
       </div>
+      
+      {/* Tall Pill Panel - Right side of calendar */}
+      <div className="absolute z-40 pointer-events-none" style={{ top: '70px', right: '24px', width: '55px', height: 'calc(100vh - 90px)' }}>
+        <img src={tallPill} alt="" className="h-full w-full object-fill" style={{ opacity: 0.95 }} />
+      </div>
 
       {/* Main Content - Full width, positioned below unified header */}
       <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
@@ -6296,10 +6301,6 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
-          {/* Tall Pill Panel - Right side of calendar */}
-          <div className="absolute right-[-70px] top-0 bottom-0 z-50 pointer-events-none" style={{ width: '60px' }}>
-            <img src={tallPill} alt="" className="h-full w-full object-fill" style={{ opacity: 0.95 }} />
-          </div>
           
           
           {/* Blank honeycombs above the date - Interactive with spring animation */}
