@@ -8,6 +8,9 @@ import campusBg from "@assets/TMU_1769151150961.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
 import crowdCheer from "@assets/crowd-cheer.mp3";
+import honey1 from "@assets/Honey1_1769645222081.png";
+import honey2 from "@assets/Honey2_1769645222081.png";
+import honey3 from "@assets/Honey3_1769645222082.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6297,26 +6300,7 @@ export default function Dashboard() {
           
           {/* Honeycomb Navigation System - Right edge aligned with course rows */}
           <div className="absolute right-0 z-[100]" style={{ top: `${41 + gridSizes.allDayRowHeight}px` }}>
-            <svg width="0" height="0">
-              <defs>
-                <linearGradient id="honeycombGradient" x1="100%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#c9def9" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#9db8d6" stopOpacity="1" />
-                </linearGradient>
-                <linearGradient id="honeycombGradientTop" x1="100%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#546e83" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#8695b2" stopOpacity="1" />
-                </linearGradient>
-                <linearGradient id="honeycombGradientMiddle" x1="100%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#557082" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#8797b1" stopOpacity="1" />
-                </linearGradient>
-                <filter id="honeycombShadow" x="-20%" y="-20%" width="150%" height="150%">
-                  <feDropShadow dx="2" dy="2" stdDeviation="1" floodColor="#0A1B22" floodOpacity="0.6" />
-                </filter>
-              </defs>
-            </svg>
-            
+                        
             {/* CPPA122 - Green Row - Modules Honeycomb */}
             <div 
               className="flex items-center justify-end gap-1"
@@ -6329,15 +6313,10 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('cppa122')}
                   data-testid="honeycomb-readings-cppa122"
                 >
-                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
-                    <polygon 
-                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                      fill="url(#honeycombGradientTop)" filter="url(#honeycombShadow)"
-                      className="stroke-green-500/50"
-                      strokeWidth="1"
-                    />
-                    <FolderOpen x="14" y="17" className="h-3 w-3 text-green-400" />
-                  </svg>
+                  <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                    <img src={honey3} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-green-400" />
+                  </div>
                 </div>
               </div>
               {/* Expanded honeycombs - Modules */}
@@ -6347,15 +6326,10 @@ export default function Dashboard() {
                   onClick={() => setModuleMediaControlCourse('cppa122')}
                   data-testid="honeycomb-modules-cppa122"
                 >
-                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
-                    <polygon 
-                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                      fill="url(#honeycombGradientTop)" filter="url(#honeycombShadow)"
-                      className="stroke-green-500/50"
-                      strokeWidth="1"
-                    />
-                    <Paperclip x="14" y="17" className="h-3 w-3 text-green-400 -rotate-45" />
-                  </svg>
+                  <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                    <img src={honey3} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <Paperclip className="absolute inset-0 m-auto h-3 w-3 text-green-400 -rotate-45" />
+                  </div>
                 </div>
               </div>
               {/* Main honeycomb */}
@@ -6364,15 +6338,10 @@ export default function Dashboard() {
                 onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'cppa122' ? null : 'cppa122')}
                 data-testid="honeycomb-cppa122"
               >
-                <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
-                  <polygon 
-                    points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                    fill="url(#honeycombGradientTop)" filter="url(#honeycombShadow)"
-                    className="stroke-green-500/50"
-                    strokeWidth="1"
-                  />
-                  <text x="20" y="26" textAnchor="middle" fill="#496D85" className="text-[7px] font-medium">CPPA</text>
-                </svg>
+                <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
+                  <img src={honey3} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>CPPA</span>
+                </div>
               </div>
             </div>
             
@@ -6388,15 +6357,10 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('cfnf400')}
                   data-testid="honeycomb-readings-cfnf400"
                 >
-                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
-                    <polygon 
-                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                      fill="url(#honeycombGradientMiddle)" filter="url(#honeycombShadow)"
-                      className="stroke-pink-500/50"
-                      strokeWidth="1"
-                    />
-                    <FolderOpen x="14" y="17" className="h-3 w-3 text-pink-400" />
-                  </svg>
+                  <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                    <img src={honey2} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-pink-400" />
+                  </div>
                 </div>
               </div>
               {/* Expanded honeycombs - Modules */}
@@ -6406,15 +6370,10 @@ export default function Dashboard() {
                   onClick={() => setModuleMediaControlCourse('cfnf400')}
                   data-testid="honeycomb-modules-cfnf400"
                 >
-                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
-                    <polygon 
-                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                      fill="url(#honeycombGradientMiddle)" filter="url(#honeycombShadow)"
-                      className="stroke-pink-500/50"
-                      strokeWidth="1"
-                    />
-                    <Paperclip x="14" y="17" className="h-3 w-3 text-pink-400 -rotate-45" />
-                  </svg>
+                  <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                    <img src={honey2} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <Paperclip className="absolute inset-0 m-auto h-3 w-3 text-pink-400 -rotate-45" />
+                  </div>
                 </div>
               </div>
               {/* Main honeycomb */}
@@ -6423,15 +6382,10 @@ export default function Dashboard() {
                 onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'cfnf400' ? null : 'cfnf400')}
                 data-testid="honeycomb-cfnf400"
               >
-                <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
-                  <polygon 
-                    points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                    fill="url(#honeycombGradientMiddle)" filter="url(#honeycombShadow)"
-                    className="stroke-pink-500/50"
-                    strokeWidth="1"
-                  />
-                  <text x="20" y="26" textAnchor="middle" fill="#496D85" className="text-[7px] font-medium">CFNF</text>
-                </svg>
+                <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
+                  <img src={honey2} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>CFNF</span>
+                </div>
               </div>
             </div>
             
@@ -6447,15 +6401,10 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('casl101')}
                   data-testid="honeycomb-readings-casl101"
                 >
-                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
-                    <polygon 
-                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                      fill="url(#honeycombGradient)" filter="url(#honeycombShadow)"
-                      className="stroke-indigo-500/50"
-                      strokeWidth="1"
-                    />
-                    <FolderOpen x="14" y="17" className="h-3 w-3 text-indigo-400" />
-                  </svg>
+                  <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                    <img src={honey1} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-indigo-400" />
+                  </div>
                 </div>
               </div>
               {/* Expanded honeycombs - Modules */}
@@ -6465,15 +6414,10 @@ export default function Dashboard() {
                   onClick={() => setModuleMediaControlCourse('casl101')}
                   data-testid="honeycomb-modules-casl101"
                 >
-                  <svg width={gridSizes.courseRowHeight * 0.75} height={gridSizes.courseRowHeight * 0.75} viewBox="0 0 40 46" className="drop-shadow-lg">
-                    <polygon 
-                      points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                      fill="url(#honeycombGradient)" filter="url(#honeycombShadow)"
-                      className="stroke-indigo-500/50"
-                      strokeWidth="1"
-                    />
-                    <Paperclip x="14" y="17" className="h-3 w-3 text-indigo-400 -rotate-45" />
-                  </svg>
+                  <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                    <img src={honey1} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <Paperclip className="absolute inset-0 m-auto h-3 w-3 text-indigo-400 -rotate-45" />
+                  </div>
                 </div>
               </div>
               {/* Main honeycomb */}
@@ -6482,15 +6426,10 @@ export default function Dashboard() {
                 onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'casl101' ? null : 'casl101')}
                 data-testid="honeycomb-casl101"
               >
-                <svg width={gridSizes.courseRowHeight * 0.9} height={gridSizes.courseRowHeight * 0.9} viewBox="0 0 40 46" className="drop-shadow-lg">
-                  <polygon 
-                    points="20,0 40,11.5 40,34.5 20,46 0,34.5 0,11.5" 
-                    fill="url(#honeycombGradient)" filter="url(#honeycombShadow)"
-                    className="stroke-indigo-500/50"
-                    strokeWidth="1"
-                  />
-                  <text x="20" y="26" textAnchor="middle" fill="#496D85" className="text-[7px] font-medium">CASL</text>
-                </svg>
+                <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
+                  <img src={honey1} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>CASL</span>
+                </div>
               </div>
             </div>
           </div>
