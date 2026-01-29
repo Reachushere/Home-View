@@ -5731,7 +5731,8 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '0ms'
         }}
-        onClick={() => { 
+        onClick={(e) => { 
+          e.stopPropagation();
           const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('module'));
           if (moduleFile) setPreviewFile(moduleFile);
           setModulesHoneycombOpen(null); 
@@ -5739,9 +5740,9 @@ export default function Dashboard() {
         data-testid="honeycomb-cppa122"
         data-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-          <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
+        <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+          <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
         </div>
       </div>
       
@@ -5754,7 +5755,8 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '50ms'
         }}
-        onClick={() => { 
+        onClick={(e) => { 
+          e.stopPropagation();
           const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('module'));
           if (moduleFile) setPreviewFile(moduleFile);
           setModulesHoneycombOpen(null); 
@@ -5762,9 +5764,9 @@ export default function Dashboard() {
         data-testid="honeycomb-cfnf400"
         data-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-          <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
+        <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+          <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
         </div>
       </div>
       
@@ -5777,7 +5779,8 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '100ms'
         }}
-        onClick={() => { 
+        onClick={(e) => { 
+          e.stopPropagation();
           const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('module'));
           if (moduleFile) setPreviewFile(moduleFile);
           setModulesHoneycombOpen(null); 
@@ -5785,9 +5788,9 @@ export default function Dashboard() {
         data-testid="honeycomb-casl101"
         data-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-          <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
+        <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+          <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
         </div>
       </div>
       
@@ -5812,7 +5815,8 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '0ms'
         }}
-        onClick={() => { 
+        onClick={(e) => { 
+          e.stopPropagation();
           const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('reading'));
           if (readingFile) setPreviewFile(readingFile);
           setModulesHoneycombOpen(null); 
@@ -5820,9 +5824,9 @@ export default function Dashboard() {
         data-testid="honeycomb-readings-cppa122"
         data-readings-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-          <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
+        <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+          <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
       </div>
       
@@ -5835,7 +5839,8 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '50ms'
         }}
-        onClick={() => { 
+        onClick={(e) => { 
+          e.stopPropagation();
           const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('reading'));
           if (readingFile) setPreviewFile(readingFile);
           setModulesHoneycombOpen(null); 
@@ -5843,9 +5848,9 @@ export default function Dashboard() {
         data-testid="honeycomb-readings-cfnf400"
         data-readings-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-          <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
+        <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+          <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
       </div>
       
@@ -5858,7 +5863,8 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '100ms'
         }}
-        onClick={() => { 
+        onClick={(e) => { 
+          e.stopPropagation();
           const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('reading'));
           if (readingFile) setPreviewFile(readingFile);
           setModulesHoneycombOpen(null); 
@@ -5866,9 +5872,9 @@ export default function Dashboard() {
         data-testid="honeycomb-readings-casl101"
         data-readings-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-          <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-          <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
+        <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+          <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
       </div>
       
