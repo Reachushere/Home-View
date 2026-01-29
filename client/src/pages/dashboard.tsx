@@ -6474,7 +6474,7 @@ export default function Dashboard() {
               {/* Middle decorative honeycomb with spring animation - Files */}
               <div 
                 className="absolute cursor-pointer"
-                style={{ width: gridSizes.courseRowHeight * 0.95, height: gridSizes.courseRowHeight * 0.95, top: '-113px', right: '19px' }}
+                style={{ width: gridSizes.courseRowHeight * 0.95, height: gridSizes.courseRowHeight * 0.95, top: '-113px', right: '21px' }}
                 onMouseEnter={() => setDecorativeHoneycombHover('middle')}
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
