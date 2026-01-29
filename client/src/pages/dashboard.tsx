@@ -4346,7 +4346,7 @@ export default function Dashboard() {
           {/* Week navigation with arrows around date, Today/Month stacked above */}
           <div className="flex flex-col items-start gap-0.5" style={{ marginLeft: '38px' }}>
             {/* Today/Month buttons - centered above date range */}
-            <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '7px' }}>
+            <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '4px' }}>
               <Button 
                 variant="ghost"
                 className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
@@ -4372,7 +4372,7 @@ export default function Dashboard() {
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
               </Button>
               {/* Date display */}
-              <div className="flex items-center justify-between gap-2 whitespace-nowrap relative" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px', top: '-8px' }}>
+              <div className="flex items-center justify-between gap-2 whitespace-nowrap relative" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px', top: '-1px' }}>
                 <span className="text-[12px] font-medium text-white">{format(weekStartDate, "MMM d")}</span>
                 <span className="text-[12px] text-white/50">—</span>
                 <span className="text-[12px] font-medium text-white">{format(weekEndDate, "MMM d")}</span>
