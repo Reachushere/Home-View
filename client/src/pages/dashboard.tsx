@@ -5607,7 +5607,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '70px', right: '14px', width: '55px', height: '540px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '115px', right: '14px', width: '55px', height: '540px' }}>
         <img src={tallPill} alt="" className="h-full w-auto object-contain" style={{ opacity: 0.95 }} />
       </div>
       
@@ -7128,12 +7128,18 @@ export default function Dashboard() {
                   </div>
                   {weekDays.map((day, dayIdx) => {
                     // Course row day cells - prep tasks now appear in All Day row with extensions
+                    const isDayToday = isSameDay(day, new Date());
+                    // Make today column 50% transparent by reducing opacity in the rgba
+                    const todayBg = course.bg.replace(/[\d.]+\)$/, (match) => {
+                      const opacity = parseFloat(match);
+                      return `${opacity * 0.5})`;
+                    });
                     return (
                       <div 
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
                         style={{ 
-                          backgroundColor: course.bg
+                          backgroundColor: isDayToday ? todayBg : course.bg
                         }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -7141,10 +7147,10 @@ export default function Dashboard() {
                           e.currentTarget.style.backgroundColor = '#8B8070';
                         }}
                         onDragLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = course.bg;
+                          e.currentTarget.style.backgroundColor = isDayToday ? todayBg : course.bg;
                         }}
                         onDrop={(e) => {
-                          e.currentTarget.style.backgroundColor = course.bg;
+                          e.currentTarget.style.backgroundColor = isDayToday ? todayBg : course.bg;
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       />
