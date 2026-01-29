@@ -6280,7 +6280,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '-11px', marginRight: '-24px', paddingRight: '4px', scrollbarWidth: 'none' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '-1px', marginRight: '16px', paddingRight: '4px', scrollbarWidth: 'none' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
