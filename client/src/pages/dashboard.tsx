@@ -7638,7 +7638,7 @@ export default function Dashboard() {
                         >
                           {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                           {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                          <span className={`text-[11px] truncate ${shouldStrikethrough ? 'text-white/50' : 'text-white/90'}`}>{week.name}</span>
+                          <span className={`text-[12px] truncate ${shouldStrikethrough ? 'text-white/50' : 'text-white/90'}`}>{week.name}</span>
                           <span className="text-[10px] text-white/40 ml-auto">{weekFiles.length}</span>
                         </div>
                         
