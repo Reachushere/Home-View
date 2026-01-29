@@ -6471,6 +6471,8 @@ export default function Dashboard() {
                 style={{ width: gridSizes.courseRowHeight * 0.95, height: gridSizes.courseRowHeight * 0.95, top: '-113px', right: '21px' }}
                 onMouseEnter={() => setDecorativeHoneycombHover('middle')}
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
+                onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
+                data-testid="honeycomb-files"
               >
                 <img src={honey2} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                 <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>Files</span>
@@ -7571,11 +7573,6 @@ export default function Dashboard() {
                 </Button>
               </div>
               
-              {/* All Files Header */}
-              <div className="flex items-center gap-1.5 pl-2 pr-2 py-1 bg-black/30 border-b border-white/20">
-                <Folder className="h-3 w-3 text-blue-400 fill-blue-300" />
-                <span className="text-xs font-medium">All Files</span>
-              </div>
               
               {/* Week Folders */}
               <div className="flex-1 overflow-y-auto py-2 px-2" style={{ scrollbarWidth: 'none' }}>
@@ -7619,7 +7616,7 @@ export default function Dashboard() {
                       <div key={week.id}>
                         {/* Week folder row */}
                         <div 
-                          className={`flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded ${shouldBlink ? 'animate-week-blink' : ''}`}
+                          className={`flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded border-0 ${shouldBlink ? 'animate-week-blink' : ''}`}
                           onClick={() => toggleFlyoutFolder(week.id)}
                         >
                           {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
