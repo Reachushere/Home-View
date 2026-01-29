@@ -5724,7 +5724,11 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '0ms'
         }}
-        onClick={() => { setReadingsPopupCourse('cppa122'); setModulesHoneycombOpen(null); }}
+        onClick={() => { 
+          const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('reading'));
+          if (readingFile) setPreviewFile(readingFile);
+          setModulesHoneycombOpen(null); 
+        }}
         data-testid="honeycomb-readings-cppa122"
         data-readings-course-button
       >
@@ -5743,7 +5747,11 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '50ms'
         }}
-        onClick={() => { setReadingsPopupCourse('cfnf400'); setModulesHoneycombOpen(null); }}
+        onClick={() => { 
+          const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('reading'));
+          if (readingFile) setPreviewFile(readingFile);
+          setModulesHoneycombOpen(null); 
+        }}
         data-testid="honeycomb-readings-cfnf400"
         data-readings-course-button
       >
@@ -5762,7 +5770,11 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '100ms'
         }}
-        onClick={() => { setReadingsPopupCourse('casl101'); setModulesHoneycombOpen(null); }}
+        onClick={() => { 
+          const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('reading'));
+          if (readingFile) setPreviewFile(readingFile);
+          setModulesHoneycombOpen(null); 
+        }}
         data-testid="honeycomb-readings-casl101"
         data-readings-course-button
       >
