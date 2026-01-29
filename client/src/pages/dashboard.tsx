@@ -6457,54 +6457,6 @@ export default function Dashboard() {
               >
                 <img src={honey2} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                 <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>Files</span>
-                {/* Spring out honeycombs - grow to course row size */}
-                {/* Top honeycomb - Readings */}
-                <div 
-                  className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-                  style={{ 
-                    width: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                    height: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                    top: decorativeHoneycombHover === 'middle' ? `${118 + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                    right: decorativeHoneycombHover === 'middle' ? '-18px' : '50%',
-                    transformOrigin: 'center center'
-                  }}
-                >
-                  <div className="relative w-full h-full">
-                    <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  </div>
-                </div>
-                {/* Middle honeycomb - Files */}
-                <div 
-                  className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-                  style={{ 
-                    width: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                    height: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                    top: decorativeHoneycombHover === 'middle' ? `${118 + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                    right: decorativeHoneycombHover === 'middle' ? '-18px' : '50%',
-                    transformOrigin: 'center center',
-                    transitionDelay: '50ms'
-                  }}
-                >
-                  <div className="relative w-full h-full">
-                    <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  </div>
-                </div>
-                {/* Bottom honeycomb - Modules */}
-                <div 
-                  className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-                  style={{ 
-                    width: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                    height: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                    top: decorativeHoneycombHover === 'middle' ? `${118 + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                    right: decorativeHoneycombHover === 'middle' ? '-18px' : '50%',
-                    transformOrigin: 'center center',
-                    transitionDelay: '100ms'
-                  }}
-                >
-                  <div className="relative w-full h-full">
-                    <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  </div>
-                </div>
               </div>
               {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
