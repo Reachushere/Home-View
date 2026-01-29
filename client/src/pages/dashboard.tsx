@@ -4718,7 +4718,7 @@ export default function Dashboard() {
         </div>
 
         {/* Timer and Clock - Fixed Right */}
-        <div className="absolute right-0 flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '8px' }}>
+        <div className="absolute right-0 flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '6px' }}>
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2 rounded-full px-3 h-[32px] overflow-hidden" style={{ position: 'relative', left: '-4px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-xs font-bold px-1.5 py-0.5 rounded ${
@@ -5600,8 +5600,8 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle */}
-      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '8px' }}>
-        <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '650px', objectFit: 'fill', marginLeft: '-70px' }} />
+      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '6px' }}>
+        <img src={ovalBanner} alt="" className="h-[55px]" style={{ opacity: 0.95, width: '650px', objectFit: 'fill', marginLeft: '-72px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
