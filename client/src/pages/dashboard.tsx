@@ -4676,14 +4676,14 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[38px] !w-[38px] !min-h-[38px] !min-w-[38px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+            className={`!h-[37px] !w-[37px] !min-h-[37px] !min-w-[37px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
             style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
             title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
           >
-            <Undo2 className="h-[27px] w-[27px] text-white" />
+            <Undo2 className="h-[26px] w-[26px] text-white" />
           </Button>
 
           {/* Completed Tasks Checkbox */}
