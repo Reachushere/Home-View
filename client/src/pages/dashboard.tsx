@@ -253,6 +253,8 @@ export default function Dashboard() {
   const [isFiles2FlyoutOpen, setIsFiles2FlyoutOpen] = useState(true);
   const [lastOpenedFlyout, setLastOpenedFlyout] = useState<'files1' | 'files2'>('files1'); // Track which flyout was opened last
   const [readingsPopupCourse, setReadingsPopupCourse] = useState<string | null>(null);
+  const [isWeekReadingsOpen, setIsWeekReadingsOpen] = useState(false);
+  const [weekReadingSelectedFile, setWeekReadingSelectedFile] = useState<any | null>(null);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
   // Honeycomb navigation state
   const [modulesHoneycombOpen, setModulesHoneycombOpen] = useState<string | null>(null);
@@ -5598,24 +5600,23 @@ export default function Dashboard() {
       <div 
         className="absolute cursor-pointer z-50 pointer-events-auto"
         style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '331px', right: '15px' }}
-        onMouseEnter={() => setDecorativeHoneycombHover('right')}
-        onMouseLeave={() => setDecorativeHoneycombHover(null)}
+        onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
         <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         {/* Spring out honeycombs - grow to course row size */}
         {/* Top honeycomb - CPPA122 */}
         <div 
-          className={`absolute transition-all duration-500 ease-out cursor-pointer ${decorativeHoneycombHover === 'right' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+          className={`absolute transition-all duration-500 ease-out cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
           style={{ 
             width: gridSizes.courseRowHeight * 0.9,
             height: gridSizes.courseRowHeight * 0.9,
             top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px`,
             right: '11px',
             transformOrigin: 'center center',
-            transform: decorativeHoneycombHover === 'right' ? 'scale(1)' : 'scale(0.3)'
+            transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)'
           }}
-          onClick={() => setModuleMediaControlCourse('cppa122')}
+          onClick={(e) => { e.stopPropagation(); setModuleMediaControlCourse('cppa122'); setModulesHoneycombOpen(null); }}
         >
           <div className="relative w-full h-full hover:scale-110 transition-transform">
             <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
@@ -5623,17 +5624,17 @@ export default function Dashboard() {
         </div>
         {/* Middle honeycomb - CFNF400 */}
         <div 
-          className={`absolute transition-all duration-500 ease-out cursor-pointer ${decorativeHoneycombHover === 'right' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+          className={`absolute transition-all duration-500 ease-out cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
           style={{ 
             width: gridSizes.courseRowHeight * 0.9,
             height: gridSizes.courseRowHeight * 0.9,
             top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px`,
             right: '11px',
             transformOrigin: 'center center',
-            transform: decorativeHoneycombHover === 'right' ? 'scale(1)' : 'scale(0.3)',
+            transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
             transitionDelay: '50ms'
           }}
-          onClick={() => setModuleMediaControlCourse('cfnf400')}
+          onClick={(e) => { e.stopPropagation(); setModuleMediaControlCourse('cfnf400'); setModulesHoneycombOpen(null); }}
         >
           <div className="relative w-full h-full hover:scale-110 transition-transform">
             <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
@@ -5641,17 +5642,17 @@ export default function Dashboard() {
         </div>
         {/* Bottom honeycomb - CASL101 */}
         <div 
-          className={`absolute transition-all duration-500 ease-out cursor-pointer ${decorativeHoneycombHover === 'right' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+          className={`absolute transition-all duration-500 ease-out cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
           style={{ 
             width: gridSizes.courseRowHeight * 0.9,
             height: gridSizes.courseRowHeight * 0.9,
             top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px`,
             right: '11px',
             transformOrigin: 'center center',
-            transform: decorativeHoneycombHover === 'right' ? 'scale(1)' : 'scale(0.3)',
+            transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
             transitionDelay: '100ms'
           }}
-          onClick={() => setModuleMediaControlCourse('casl101')}
+          onClick={(e) => { e.stopPropagation(); setModuleMediaControlCourse('casl101'); setModulesHoneycombOpen(null); }}
         >
           <div className="relative w-full h-full hover:scale-110 transition-transform">
             <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
