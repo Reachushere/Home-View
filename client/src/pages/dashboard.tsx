@@ -6432,76 +6432,61 @@ export default function Dashboard() {
         <div className="mb-[12px] mt-[6px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           
           
-          {/* Honeycomb Navigation System - Right edge aligned with course rows, controlled by modules button */}
-          <div className={`absolute z-[100] transition-all duration-300 ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} style={{ top: `${41 + gridSizes.allDayRowHeight}px`, right: '67px' }}>
-                        
-            {/* CPPA122 - Green Row - Course Honeycomb */}
-            <div 
-              className="flex items-center justify-end gap-1"
-              style={{ height: `${gridSizes.courseRowHeight}px` }}
-            >
-              {/* Main honeycomb - CPPA */}
-              <div 
-                className={`cursor-pointer transition-all duration-500 ease-out hover:scale-110`}
-                style={{ 
-                  transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
-                  transitionDelay: '0ms'
-                }}
-                onClick={() => { setModuleMediaControlCourse('cppa122'); setModulesHoneycombOpen(null); }}
-                data-testid="honeycomb-cppa122"
-                data-course-button
-              >
-                <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
-                  <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
-                </div>
-              </div>
+          {/* Course Honeycomb Buttons - Spring from modules button to course row positions */}
+          {/* CPPA122 - Green Row */}
+          <div 
+            className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            style={{ 
+              top: modulesHoneycombOpen === 'modules' ? `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '331px',
+              right: modulesHoneycombOpen === 'modules' ? '67px' : '15px',
+              transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
+              transitionDelay: '0ms'
+            }}
+            onClick={() => { setModuleMediaControlCourse('cppa122'); setModulesHoneycombOpen(null); }}
+            data-testid="honeycomb-cppa122"
+            data-course-button
+          >
+            <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+              <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
             </div>
-            
-            {/* CFNF400 - Pink Row - Course Honeycomb */}
-            <div 
-              className="relative flex items-center justify-end gap-1"
-              style={{ height: `${gridSizes.courseRowHeight}px` }}
-            >
-              {/* Main honeycomb - CFNF */}
-              <div 
-                className={`cursor-pointer transition-all duration-500 ease-out hover:scale-110`}
-                style={{ 
-                  transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
-                  transitionDelay: '50ms'
-                }}
-                onClick={() => { setModuleMediaControlCourse('cfnf400'); setModulesHoneycombOpen(null); }}
-                data-testid="honeycomb-cfnf400"
-                data-course-button
-              >
-                <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
-                  <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
-                </div>
-              </div>
+          </div>
+          
+          {/* CFNF400 - Pink Row */}
+          <div 
+            className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            style={{ 
+              top: modulesHoneycombOpen === 'modules' ? `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '331px',
+              right: modulesHoneycombOpen === 'modules' ? '67px' : '15px',
+              transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
+              transitionDelay: '50ms'
+            }}
+            onClick={() => { setModuleMediaControlCourse('cfnf400'); setModulesHoneycombOpen(null); }}
+            data-testid="honeycomb-cfnf400"
+            data-course-button
+          >
+            <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+              <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
             </div>
-            
-            {/* CASL101 - Indigo/Blue Row - Course Honeycomb */}
-            <div 
-              className="flex items-center justify-end gap-1"
-              style={{ height: `${gridSizes.courseRowHeight}px` }}
-            >
-              {/* Main honeycomb - CASL */}
-              <div 
-                className={`cursor-pointer transition-all duration-500 ease-out hover:scale-110`}
-                style={{ 
-                  transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
-                  transitionDelay: '100ms'
-                }}
-                onClick={() => { setModuleMediaControlCourse('casl101'); setModulesHoneycombOpen(null); }}
-                data-testid="honeycomb-casl101"
-                data-course-button
-              >
-                <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
-                  <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
-                </div>
-              </div>
+          </div>
+          
+          {/* CASL101 - Indigo/Blue Row */}
+          <div 
+            className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            style={{ 
+              top: modulesHoneycombOpen === 'modules' ? `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '331px',
+              right: modulesHoneycombOpen === 'modules' ? '67px' : '15px',
+              transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
+              transitionDelay: '100ms'
+            }}
+            onClick={() => { setModuleMediaControlCourse('casl101'); setModulesHoneycombOpen(null); }}
+            data-testid="honeycomb-casl101"
+            data-course-button
+          >
+            <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+              <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
             </div>
           </div>
           
