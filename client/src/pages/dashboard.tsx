@@ -5718,7 +5718,7 @@ export default function Dashboard() {
       <div 
         className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
-          top: modulesHoneycombOpen === 'readings' ? `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '381px',
+          top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '381px',
           right: modulesHoneycombOpen === 'readings' ? '97px' : '15px',
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '0ms'
@@ -5737,7 +5737,7 @@ export default function Dashboard() {
       <div 
         className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
-          top: modulesHoneycombOpen === 'readings' ? `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '381px',
+          top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '381px',
           right: modulesHoneycombOpen === 'readings' ? '97px' : '15px',
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '50ms'
@@ -5756,7 +5756,7 @@ export default function Dashboard() {
       <div 
         className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
-          top: modulesHoneycombOpen === 'readings' ? `${41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '381px',
+          top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '381px',
           right: modulesHoneycombOpen === 'readings' ? '97px' : '15px',
           transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
           transitionDelay: '100ms'
