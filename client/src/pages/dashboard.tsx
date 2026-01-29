@@ -5671,7 +5671,7 @@ export default function Dashboard() {
       {/* Readings Button - Below modules button on tall pill */}
       <div 
         className="absolute cursor-pointer z-50 pointer-events-auto"
-        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '383px', right: '15px' }}
+        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '381px', right: '15px' }}
         onMouseEnter={() => setDecorativeHoneycombHover('left')}
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
       >
