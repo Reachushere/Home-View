@@ -4741,7 +4741,7 @@ export default function Dashboard() {
           </div>
           
           {/* Clock */}
-          <div className="flex items-center gap-1.5 rounded-full px-3 h-[32px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
+          <div className="flex items-center gap-1.5 rounded-full px-3 h-[32px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '4px' }} data-testid="digital-clock">
             <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
@@ -8047,7 +8047,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 mt-[3px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 28px)', marginLeft: '-13px' }} data-task-boxes-container="true">
+        <div className="flex gap-4 mb-3 mt-[3px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 30px)', marginLeft: '-13px' }} data-task-boxes-container="true">
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
