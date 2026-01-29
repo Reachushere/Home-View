@@ -4309,7 +4309,7 @@ export default function Dashboard() {
         background: 'black',
         boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
         border: '0.1px solid white',
-        height: '41px'
+        height: '48px'
       }}>
         {/* Logo, Date Range, and Week Navigation - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
@@ -6284,7 +6284,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>Readings</span>
+              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold" style={{ color: '#3a5a70' }}>Readings</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6302,7 +6302,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('cppa122')}
                 >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#496D85', strokeWidth: 2.5 }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                 </div>
               </div>
               {/* Middle honeycomb - Readings CFNF400 */}
@@ -6322,7 +6322,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('cfnf400')}
                 >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#496D85', strokeWidth: 2.5 }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                 </div>
               </div>
               {/* Bottom honeycomb - Readings CASL101 */}
@@ -6342,7 +6342,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('casl101')}
                 >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#496D85', strokeWidth: 2.5 }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                 </div>
               </div>
             </div>
@@ -6354,7 +6354,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>Modules</span>
+              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold" style={{ color: '#3a5a70' }}>Modules</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6423,7 +6423,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={honey1} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#496D85', strokeWidth: 2.5 }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                   </div>
                 </div>
               </div>
@@ -6448,7 +6448,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={honey1} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>CPPA</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold" style={{ color: '#3a5a70' }}>CPPA</span>
                 </div>
               </div>
             </div>
@@ -6468,7 +6468,7 @@ export default function Dashboard() {
                 data-testid="honeycomb-files"
               >
                 <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>Files</span>
+                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold" style={{ color: '#3a5a70' }}>Files</span>
               </div>
               {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
@@ -6479,7 +6479,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={honey2} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#496D85', strokeWidth: 2.5 }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                   </div>
                 </div>
               </div>
@@ -6504,7 +6504,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={honey2} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>CFNF</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold" style={{ color: '#3a5a70' }}>CFNF</span>
                 </div>
               </div>
             </div>
@@ -6523,7 +6523,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={honey1} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#496D85', strokeWidth: 2.5 }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                   </div>
                 </div>
               </div>
@@ -6548,7 +6548,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={honey1} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>CASL</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold" style={{ color: '#3a5a70' }}>CASL</span>
                 </div>
               </div>
             </div>
