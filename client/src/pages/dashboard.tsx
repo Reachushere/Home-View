@@ -6414,7 +6414,7 @@ export default function Dashboard() {
             {/* Left decorative honeycomb - Readings with extended hover zone */}
             <div 
               className="relative"
-              style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, transform: 'translateX(8px) translateY(8px)' }}
+              style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, transform: 'translateX(8px) translateY(8px)' }}
               onMouseEnter={() => setDecorativeHoneycombHover('left')}
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
@@ -6551,7 +6551,7 @@ export default function Dashboard() {
               {/* Middle decorative honeycomb with spring animation - Files */}
               <div 
                 className="absolute cursor-pointer"
-                style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, top: '-105px', right: '0px' }}
+                style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '-105px', right: '0px' }}
                 onMouseEnter={() => setDecorativeHoneycombHover('middle')}
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
                 onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
