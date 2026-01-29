@@ -4325,7 +4325,7 @@ export default function Dashboard() {
       }}>
         {/* Logo, Date Range, and Week Navigation - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
-          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] ml-[-11px]" />
+          <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] ml-[-13px]" />
           {/* Week navigation with arrows around date, Today/Month stacked above */}
           <div className="flex items-center gap-1">
             {/* Left arrow */}
@@ -4690,11 +4690,11 @@ export default function Dashboard() {
             size="icon"
             variant="ghost"
             className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '282px', marginTop: '9px' }}
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '302px', marginTop: '9px' }}
             data-testid="button-completed-tasks"
             onClick={() => setIsCompletedTasksOpen(true)}
           >
-            <CheckSquare className="h-[34px] w-[34px] text-white" />
+            <CheckSquare className="h-[38px] w-[38px] text-white" />
           </Button>
 
           {/* Quick Add Button */}
