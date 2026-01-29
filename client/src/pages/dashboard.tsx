@@ -3529,7 +3529,7 @@ export default function Dashboard() {
 
   return (
     <div 
-      className="flex h-screen flex-col overflow-y-hidden overflow-x-visible"
+      className="flex h-screen flex-col overflow-hidden"
       style={{ 
         backgroundImage: customBackground ? `url(${customBackground})` : `url(${dashboardBg})`,
         backgroundSize: '100% 100%',
