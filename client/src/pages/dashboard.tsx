@@ -6357,11 +6357,11 @@ export default function Dashboard() {
             
             {/* CFNF400 - Pink Row - Modules Honeycomb */}
             <div 
-              className="flex items-center justify-end gap-1"
+              className="relative flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
             >
               {/* Blank honeycomb */}
-              <div style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75, marginTop: '-30px', marginRight: '-30px' }}>
+              <div className="absolute" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75, top: '-30px', right: '30px' }}>
                 <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               </div>
               {/* Expanded honeycombs - Readings */}
