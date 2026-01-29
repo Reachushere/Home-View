@@ -6273,25 +6273,6 @@ export default function Dashboard() {
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           
-          {/* Weeks Flyout Toggle Tab - positioned to align with bottom flyout */}
-          <div
-            className={`absolute z-[60] cursor-pointer transition-all duration-300`}
-            style={{ 
-              right: (isWeeksFlyoutOpen ? Math.max(flyoutWidth, flyout2Width) : 0) + 3 + 'px',
-              top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 20}px`
-            }}
-            onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
-            data-testid="weeks-flyout-tab"
-          >
-            <div className="flex flex-col items-center bg-black/60 backdrop-blur-md border border-white/20 border-r-0 rounded-l-lg px-0.5 py-3 hover:bg-black/70 transition-colors">
-              <Folder className="h-4 w-4 text-blue-400 fill-blue-300 mb-1" />
-              {isWeeksFlyoutOpen ? (
-                <ChevronRight className="h-4 w-4 text-blue-400" />
-              ) : (
-                <ChevronLeft className="h-4 w-4 text-blue-400" />
-              )}
-            </div>
-          </div>
           
           {/* Blank honeycombs above the date - Interactive with spring animation */}
           <div className="absolute z-[100] flex items-center justify-end gap-1" style={{ top: '-36px', right: '-1px', height: `${41 + gridSizes.allDayRowHeight}px` }}>
