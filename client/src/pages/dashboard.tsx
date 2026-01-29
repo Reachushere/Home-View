@@ -6299,7 +6299,7 @@ export default function Dashboard() {
           </div>
           
           {/* Blank honeycombs above the date */}
-          <div className="absolute right-0 z-[100] flex items-center justify-end gap-1" style={{ top: '-30px', height: `${41 + gridSizes.allDayRowHeight}px` }}>
+          <div className="absolute right-0 z-[100] flex items-center justify-end gap-1" style={{ top: '-40px', height: `${41 + gridSizes.allDayRowHeight}px` }}>
             <div style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
               <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             </div>
