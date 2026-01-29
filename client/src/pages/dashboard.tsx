@@ -5589,7 +5589,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '8px' }}>
-        <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '650px', objectFit: 'fill', marginLeft: '-68px' }} />
+        <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '650px', objectFit: 'fill', marginLeft: '-70px' }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
