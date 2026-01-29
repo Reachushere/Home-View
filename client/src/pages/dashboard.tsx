@@ -6300,7 +6300,7 @@ export default function Dashboard() {
           </div>
           
           {/* Blank honeycombs above the date - Interactive with spring animation */}
-          <div className="absolute right-0 z-[100] flex items-center justify-end gap-1" style={{ top: '-40px', height: `${41 + gridSizes.allDayRowHeight}px` }}>
+          <div className="absolute right-0 z-[100] flex items-center justify-end gap-1" style={{ top: '-37px', height: `${41 + gridSizes.allDayRowHeight}px` }}>
             {/* Left decorative honeycomb - Readings */}
             <div 
               className="relative cursor-pointer"
@@ -6474,7 +6474,7 @@ export default function Dashboard() {
               {/* Middle decorative honeycomb with spring animation - Files */}
               <div 
                 className="absolute cursor-pointer"
-                style={{ width: gridSizes.courseRowHeight * 0.95, height: gridSizes.courseRowHeight * 0.95, top: '-118px', right: '18px' }}
+                style={{ width: gridSizes.courseRowHeight * 0.95, height: gridSizes.courseRowHeight * 0.95, top: '-115px', right: '18px' }}
                 onMouseEnter={() => setDecorativeHoneycombHover('middle')}
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
