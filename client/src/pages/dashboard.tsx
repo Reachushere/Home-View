@@ -5577,7 +5577,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle */}
-      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '30px' }}>
+      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '15px' }}>
         <img src={widePill} alt="" className="h-[66px] w-auto" style={{ opacity: 0.95 }} />
       </div>
 
