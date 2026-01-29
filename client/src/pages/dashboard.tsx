@@ -4376,7 +4376,7 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden" style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }} data-testid="button-hamburger-menu">
+              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden" style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
                 <Menu className="h-[38px] w-[38px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
@@ -4409,7 +4409,7 @@ export default function Dashboard() {
             size="icon"
             variant="ghost"
             className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
@@ -4422,7 +4422,7 @@ export default function Dashboard() {
             size="icon"
             onClick={toggleMute}
             className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
-            style={isMuted ? { marginTop: '9px' } : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
+            style={isMuted ? { marginTop: '7px' } : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
           >
@@ -4436,7 +4436,7 @@ export default function Dashboard() {
                 variant="ghost" 
                 size="icon" 
                 className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-                style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
+                style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
               >
@@ -4660,7 +4660,7 @@ export default function Dashboard() {
             variant="ghost" 
             size="icon" 
             className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
@@ -4691,7 +4691,7 @@ export default function Dashboard() {
             size="icon"
             variant="ghost"
             className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-completed-tasks"
             onClick={() => setIsCompletedTasksOpen(true)}
           >
@@ -4699,7 +4699,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full overflow-hidden !bg-transparent" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '6px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full overflow-hidden !bg-transparent" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
           </div>
         </div>
 
@@ -5586,7 +5586,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle */}
-      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '10px' }}>
+      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '8px' }}>
         <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '650px', objectFit: 'fill', marginLeft: '-68px' }} />
       </div>
 
