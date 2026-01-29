@@ -12,7 +12,7 @@ import crowdCheer from "@assets/crowd-cheer.mp3";
 import honey1 from "@assets/Honey1_1769645399917.png";
 import honey2 from "@assets/Honey2_1769645399918.png";
 import honey3 from "@assets/Honey3_1769645399918.png";
-import widePill from "@assets/Wide10_1769693389843.png";
+import ovalBanner from "@assets/Oval_1769693937834.jpg";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5578,7 +5578,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '10px' }}>
-        <img src={widePill} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '660px', objectFit: 'fill' }} />
+        <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '660px', objectFit: 'fill' }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
