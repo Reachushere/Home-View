@@ -4317,11 +4317,8 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Unified Header Bar */}
-      <div className="absolute z-20 left-0 right-0 top-0 flex items-center rounded-md mx-3 mt-2 overflow-hidden" style={{ 
-        background: 'black',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)',
-        border: '0.1px solid white',
+      {/* Top Controls - Positioned directly on background */}
+      <div className="absolute z-20 left-0 right-0 top-0 flex items-center mx-3 mt-2" style={{ 
         height: '48px'
       }}>
         {/* Logo, Date Range, and Week Navigation - Fixed Left */}
@@ -5582,9 +5579,9 @@ export default function Dashboard() {
       {/* Main Content - Full width, positioned below unified header */}
       <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
         
-        {/* Wide Pill Banner - Top middle underneath menu bar */}
-        <div className="flex justify-center" style={{ marginTop: '-8px', marginBottom: '4px' }}>
-          <img src={widePill} alt="" className="h-[22px] w-auto" style={{ opacity: 0.95 }} />
+        {/* Wide Pill Banner - Top middle */}
+        <div className="absolute left-0 right-0 flex justify-center z-10" style={{ top: '30px' }}>
+          <img src={widePill} alt="" className="h-[66px] w-auto" style={{ opacity: 0.95 }} />
         </div>
         
         {/* Completed Tasks Popup */}
