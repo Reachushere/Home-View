@@ -14,7 +14,7 @@ import honey2 from "@assets/Honey2_1769645399918.png";
 import honey3 from "@assets/Honey3_1769645399918.png";
 import ovalBanner from "@assets/Oval_1769694161559.png";
 import buttonBg from "@assets/Button_1769694441816.png";
-import taskButtonBg from "@assets/Task_1769694688855.png";
+import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -4698,7 +4698,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[10px] hover:opacity-80 text-white text-[10px] border-0 font-medium rounded-full overflow-hidden" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className="!h-[29px] !min-h-[29px] px-[10px] hover:opacity-80 text-white text-[10px] border-0 font-medium rounded-full overflow-hidden !bg-transparent" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
           </div>
         </div>
 
