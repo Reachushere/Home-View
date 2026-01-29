@@ -4692,14 +4692,14 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[37px] !w-[37px] !min-h-[37px] !min-w-[37px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+            className={`!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
             style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
             title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
           >
-            <Undo2 className="h-[26px] w-[26px] text-white" />
+            <Undo2 className="h-[28px] w-[28px] text-white" />
           </Button>
 
           {/* Completed Tasks Checkbox */}
@@ -5603,11 +5603,11 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '4px' }}>
-        <img src={ovalBanner} alt="" className="h-[60px]" style={{ opacity: 0.95, width: '645px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <img src={ovalBanner} alt="" className="h-[60px]" style={{ opacity: 0.95, width: '580px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '70px', right: '14px', width: '55px', height: 'calc(100vh - 90px)' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '70px', right: '14px', width: '55px', height: '540px' }}>
         <img src={tallPill} alt="" className="h-full w-auto object-contain" style={{ opacity: 0.95 }} />
       </div>
       
