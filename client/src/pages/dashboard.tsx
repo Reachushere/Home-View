@@ -9,9 +9,7 @@ import dashboardBg from "@assets/BG_1769691992519.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
 import crowdCheer from "@assets/crowd-cheer.mp3";
-import honey1 from "@assets/Honey1_1769645399917.png";
-import honey2 from "@assets/Honey2_1769645399918.png";
-import honey3 from "@assets/Honey3_1769645399918.png";
+import hexIcon from "@assets/Hex_1769698287206.png";
 import ovalBanner from "@assets/Oval_1769694161559.png";
 import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
@@ -6315,7 +6313,7 @@ export default function Dashboard() {
             >
               {/* Main honeycomb */}
               <div className="relative cursor-pointer w-full h-full">
-                <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                 <BookOpenCheck className="absolute inset-0 m-auto h-5 w-5" style={{ color: '#3a5a70', strokeWidth: 2 }} />
               </div>
               {/* Invisible bridge to spring-out honeycombs */}
@@ -6344,7 +6342,7 @@ export default function Dashboard() {
                   className="relative w-full h-full cursor-pointer"
                   onClick={() => setReadingsPopupCourse('cppa122')}
                 >
-                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                   <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                 </div>
               </div>
@@ -6364,7 +6362,7 @@ export default function Dashboard() {
                   className="relative w-full h-full cursor-pointer"
                   onClick={() => setReadingsPopupCourse('cfnf400')}
                 >
-                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                   <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                 </div>
               </div>
@@ -6384,7 +6382,7 @@ export default function Dashboard() {
                   className="relative w-full h-full cursor-pointer"
                   onClick={() => setReadingsPopupCourse('casl101')}
                 >
-                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                   <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                 </div>
               </div>
@@ -6396,7 +6394,7 @@ export default function Dashboard() {
               onMouseEnter={() => setDecorativeHoneycombHover('right')}
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
-              <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               <Library className="absolute inset-0 m-auto h-5 w-5" style={{ color: '#3a5a70', strokeWidth: 2 }} />
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
@@ -6411,7 +6409,7 @@ export default function Dashboard() {
                 }}
               >
                 <div className="relative w-full h-full">
-                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                 </div>
               </div>
               {/* Middle honeycomb - Files */}
@@ -6427,7 +6425,7 @@ export default function Dashboard() {
                 }}
               >
                 <div className="relative w-full h-full">
-                  <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                 </div>
               </div>
               {/* Bottom honeycomb - Modules */}
@@ -6443,7 +6441,7 @@ export default function Dashboard() {
                 }}
               >
                 <div className="relative w-full h-full">
-                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                 </div>
               </div>
             </div>
@@ -6465,7 +6463,7 @@ export default function Dashboard() {
                   data-testid="honeycomb-readings-cppa122"
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
-                    <img src={honey1} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <img src={hexIcon} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                     <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                   </div>
                 </div>
@@ -6478,7 +6476,7 @@ export default function Dashboard() {
                   data-testid="honeycomb-modules-cppa122"
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
-                    <img src={honey1} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <img src={hexIcon} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                     <Paperclip className="absolute inset-0 m-auto h-3 w-3 text-green-400 -rotate-45" />
                   </div>
                 </div>
@@ -6490,7 +6488,7 @@ export default function Dashboard() {
                 data-testid="honeycomb-cppa122"
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
-                  <img src={honey1} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                   <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
                 </div>
               </div>
@@ -6510,7 +6508,7 @@ export default function Dashboard() {
                 onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
                 data-testid="honeycomb-files"
               >
-                <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                 <Folder className="absolute inset-0 m-auto h-5 w-5" style={{ color: '#3a5a70', strokeWidth: 2 }} />
               </div>
               {/* Expanded honeycombs - Readings */}
@@ -6521,7 +6519,7 @@ export default function Dashboard() {
                   data-testid="honeycomb-readings-cfnf400"
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
-                    <img src={honey2} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <img src={hexIcon} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                     <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                   </div>
                 </div>
@@ -6534,7 +6532,7 @@ export default function Dashboard() {
                   data-testid="honeycomb-modules-cfnf400"
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
-                    <img src={honey2} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <img src={hexIcon} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                     <Paperclip className="absolute inset-0 m-auto h-3 w-3 text-pink-400 -rotate-45" />
                   </div>
                 </div>
@@ -6546,7 +6544,7 @@ export default function Dashboard() {
                 data-testid="honeycomb-cfnf400"
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
-                  <img src={honey2} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                   <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
                 </div>
               </div>
@@ -6565,7 +6563,7 @@ export default function Dashboard() {
                   data-testid="honeycomb-readings-casl101"
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
-                    <img src={honey1} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <img src={hexIcon} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                     <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
                   </div>
                 </div>
@@ -6578,7 +6576,7 @@ export default function Dashboard() {
                   data-testid="honeycomb-modules-casl101"
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
-                    <img src={honey1} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <img src={hexIcon} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                     <Paperclip className="absolute inset-0 m-auto h-3 w-3 text-indigo-400 -rotate-45" />
                   </div>
                 </div>
@@ -6590,7 +6588,7 @@ export default function Dashboard() {
                 data-testid="honeycomb-casl101"
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
-                  <img src={honey1} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                   <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
                 </div>
               </div>
