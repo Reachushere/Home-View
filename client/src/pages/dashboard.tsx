@@ -4366,7 +4366,7 @@ export default function Dashboard() {
               </Button>
             </div>
             {/* Date display with arrows */}
-            <div className="flex items-center gap-1" style={{ marginTop: '-9px' }}>
+            <div className="flex items-center gap-1" style={{ marginTop: '-17px' }}>
               {/* Left arrow */}
               <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
