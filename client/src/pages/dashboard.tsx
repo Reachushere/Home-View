@@ -6350,6 +6350,7 @@ export default function Dashboard() {
                 }}
               >
                 <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Modules</span>
               </div>
             </div>
             {/* Right decorative honeycomb */}
@@ -6401,6 +6402,7 @@ export default function Dashboard() {
                 }}
               >
                 <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Modules</span>
               </div>
             </div>
           </div>
@@ -6506,6 +6508,7 @@ export default function Dashboard() {
                   }}
                 >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Modules</span>
                 </div>
               </div>
               {/* Expanded honeycombs - Readings */}
