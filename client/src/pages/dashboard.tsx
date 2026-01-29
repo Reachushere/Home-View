@@ -8137,7 +8137,7 @@ export default function Dashboard() {
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: '-12px' }} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1 }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
