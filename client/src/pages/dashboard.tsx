@@ -8093,8 +8093,8 @@ export default function Dashboard() {
 
           {/* Due Today */}
           <section 
-            className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] relative ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1, left: '12px' }} 
+            className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1, transform: 'translateX(12px)' }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
@@ -8136,8 +8136,8 @@ export default function Dashboard() {
 
           {/* Due Tomorrow */}
           <section 
-            className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] relative ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, left: '-12px' }} 
+            className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, transform: 'translateX(-12px)' }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
