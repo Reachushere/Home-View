@@ -4741,7 +4741,7 @@ export default function Dashboard() {
           </div>
           
           {/* Clock */}
-          <div className="flex items-center gap-1.5 rounded-full px-3 h-[32px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '4px' }} data-testid="digital-clock">
+          <div className="flex items-center gap-1.5 rounded-full px-3 h-[32px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '6px' }} data-testid="digital-clock">
             <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
