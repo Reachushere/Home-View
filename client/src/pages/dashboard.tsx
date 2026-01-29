@@ -480,7 +480,20 @@ export default function Dashboard() {
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   const [customBackground, setCustomBackground] = useState<string | null>(() => {
-    return localStorage.getItem('customBackground');
+    try {
+      const saved = localStorage.getItem('customBackground');
+      // Validate it's actually a valid data URL
+      if (saved && saved.startsWith('data:image/')) {
+        return saved;
+      }
+      // Clear invalid entry
+      if (saved) {
+        localStorage.removeItem('customBackground');
+      }
+      return null;
+    } catch {
+      return null;
+    }
   });
   
   // Discussion post checkbox states (persisted per week in localStorage)
