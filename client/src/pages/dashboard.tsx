@@ -4334,7 +4334,7 @@ export default function Dashboard() {
               <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
             </Button>
             {/* Stacked: Today/Month above date */}
-            <div className="flex flex-col items-center gap-0.5">
+            <div className="flex flex-col items-center gap-0.5" style={{ marginLeft: '25px' }}>
               {/* Today/Month buttons */}
               <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginTop: '2px' }}>
                 <Button 
