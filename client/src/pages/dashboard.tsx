@@ -4336,19 +4336,19 @@ export default function Dashboard() {
             {/* Stacked: Today/Month above date */}
             <div className="flex flex-col items-center gap-0.5">
               {/* Today/Month buttons */}
-              <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+              <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginTop: '2px' }}>
                 <Button 
                   variant="ghost"
-                  className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
+                  className="!h-5 !min-h-0 px-1.5 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
                   onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
                   data-testid="button-today"
                 >
                   Today
                 </Button>
-                <div className="w-[1px] h-3 bg-white/50" />
+                <div className="w-[1px] h-3.5 bg-white/50" />
                 <Button 
                   variant="ghost"
-                  className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
+                  className="!h-5 !min-h-0 px-1.5 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
                   onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
                   data-testid="button-month-view"
                 >
@@ -4356,7 +4356,7 @@ export default function Dashboard() {
                 </Button>
               </div>
               {/* Date display */}
-              <div className="flex items-center justify-between gap-3 bg-white/10 rounded-md px-4 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '160px' }}>
+              <div className="flex items-center justify-between gap-3 bg-white/10 rounded-md px-4 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '160px', marginTop: '5px' }}>
                 <span className="text-[14px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
                 <span className="text-[14px] text-white/50 relative top-[1px]">—</span>
                 <span className="text-[14px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
@@ -5587,7 +5587,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '10px' }}>
-        <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '652px', objectFit: 'fill', marginLeft: '-68px' }} />
+        <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '650px', objectFit: 'fill', marginLeft: '-68px' }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
