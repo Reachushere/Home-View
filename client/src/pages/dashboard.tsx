@@ -1507,9 +1507,14 @@ export default function Dashboard() {
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
       if (voices.length > 0) {
-        // Filter to English voices and sort by name
-        const englishVoices = voices.filter(v => v.lang.startsWith('en')).sort((a, b) => a.name.localeCompare(b.name));
-        setAvailableVoices(englishVoices.length > 0 ? englishVoices : voices);
+        // Filter to English voices only, exclude French and other languages
+        const englishVoices = voices.filter(v => 
+          v.lang.startsWith('en') && 
+          !v.name.toLowerCase().includes('french') && 
+          !v.name.toLowerCase().includes('français') &&
+          !v.lang.startsWith('fr')
+        ).sort((a, b) => a.name.localeCompare(b.name));
+        setAvailableVoices(englishVoices);
         // Set default voice - prefer Guy
         if (!selectedVoice) {
           const defaultVoice = englishVoices.find(v => v.name.includes('Guy'))
@@ -3889,6 +3894,38 @@ export default function Dashboard() {
           
           {/* Media Controls Bar */}
           <div className="flex items-center p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
+            {/* File Selector - shows for reading files */}
+            {(() => {
+              const folderParts = previewFile?.folder?.split('-') || [];
+              const weekNum = folderParts[1];
+              const courseCode = folderParts[2];
+              const isReading = previewFile?.folder?.includes('reading');
+              const relatedFiles = isReading ? allFiles.filter(f => 
+                f.folder?.includes(`week-${weekNum}-${courseCode}`) && f.folder?.includes('reading')
+              ) : [];
+              
+              if (relatedFiles.length > 1) {
+                return (
+                  <Select value={previewFile?.id?.toString() || ''} onValueChange={(val) => {
+                    const file = relatedFiles.find(f => f.id.toString() === val);
+                    if (file) setPreviewFile(file);
+                  }}>
+                    <SelectTrigger className="w-[140px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-reading-file">
+                      <SelectValue placeholder="Select File" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {relatedFiles.map(file => (
+                        <SelectItem key={file.id} value={file.id.toString()} className="text-[9px]">
+                          {(file.displayName || file.originalName).replace(/\.pdf$/i, '').slice(0, 25)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                );
+              }
+              return null;
+            })()}
+            
             <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
               <SelectTrigger className="w-[100px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                 <SelectValue placeholder="Select Speaker" />
@@ -7422,7 +7459,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - separate panel for week folders, starts below the two flyouts above */}
-          <div className={`absolute z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width) + 170}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 15}px`, bottom: '49px', right: '44px' }}>
+          <div className={`absolute z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width) * 1.1 + 170}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 15}px`, bottom: '35px', right: '44px' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
