@@ -4243,7 +4243,7 @@ export default function Dashboard() {
                 data-testid="checkbox-mark-completed"
               />
               <Label htmlFor="mark-completed" className="text-white text-[9px] cursor-pointer whitespace-nowrap">
-                Done
+                Complete
               </Label>
             </div>
           </div>
