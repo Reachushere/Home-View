@@ -5733,12 +5733,9 @@ export default function Dashboard() {
         }}
         onClick={(e) => { 
           e.stopPropagation();
-          e.preventDefault();
           const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('module'));
-          if (moduleFile) {
-            setPreviewFile(moduleFile);
-          }
-          setTimeout(() => setModulesHoneycombOpen(null), 50);
+          if (moduleFile) setPreviewFile(moduleFile);
+          setModulesHoneycombOpen(null); 
         }}
         data-testid="honeycomb-cppa122"
         data-course-button
@@ -5760,12 +5757,9 @@ export default function Dashboard() {
         }}
         onClick={(e) => { 
           e.stopPropagation();
-          e.preventDefault();
           const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('module'));
-          if (moduleFile) {
-            setPreviewFile(moduleFile);
-          }
-          setTimeout(() => setModulesHoneycombOpen(null), 50);
+          if (moduleFile) setPreviewFile(moduleFile);
+          setModulesHoneycombOpen(null); 
         }}
         data-testid="honeycomb-cfnf400"
         data-course-button
@@ -5787,12 +5781,9 @@ export default function Dashboard() {
         }}
         onClick={(e) => { 
           e.stopPropagation();
-          e.preventDefault();
           const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('module'));
-          if (moduleFile) {
-            setPreviewFile(moduleFile);
-          }
-          setTimeout(() => setModulesHoneycombOpen(null), 50);
+          if (moduleFile) setPreviewFile(moduleFile);
+          setModulesHoneycombOpen(null); 
         }}
         data-testid="honeycomb-casl101"
         data-course-button
