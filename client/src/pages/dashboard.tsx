@@ -4347,7 +4347,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '4px' }}>
               <Button 
                 variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
+                className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
                 onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
                 data-testid="button-today"
               >
@@ -4356,7 +4356,7 @@ export default function Dashboard() {
               <div className="w-[1px] h-3 bg-white/50" />
               <Button 
                 variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
+                className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
                 onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
                 data-testid="button-month-view"
               >
@@ -4724,7 +4724,7 @@ export default function Dashboard() {
             <div className={`text-xs font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-            }`} style={pomodoroMode === "work" ? { backgroundColor: '#7f1d1d' } : undefined} data-testid="pomodoro-timer">
+            }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
             <div className="flex items-center gap-1">
