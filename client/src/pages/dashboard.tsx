@@ -4693,7 +4693,7 @@ export default function Dashboard() {
             variant="ghost" 
             size="icon" 
             className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
-            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
+            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '6px' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
@@ -5603,11 +5603,11 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '4px' }}>
-        <img src={ovalBanner} alt="" className="h-[62px]" style={{ opacity: 0.95, width: '604px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <img src={ovalBanner} alt="" className="h-[63px]" style={{ opacity: 0.95, width: '613px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '115px', right: '14px', width: '55px', height: '540px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '160px', right: '14px', width: '55px', height: '540px' }}>
         <img src={tallPill} alt="" className="h-full w-auto object-contain" style={{ opacity: 0.95 }} />
       </div>
       
