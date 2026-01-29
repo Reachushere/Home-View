@@ -3547,7 +3547,7 @@ export default function Dashboard() {
 
   return (
     <div 
-      className="flex h-screen flex-col overflow-hidden"
+      className="flex h-screen flex-col overflow-visible"
       style={{ 
         backgroundImage: customBackground ? `url(${customBackground})` : `url(${dashboardBg})`,
         backgroundSize: '100% 100%',
@@ -4316,7 +4316,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-hidden relative z-10" style={{ backgroundColor: customBackground ? 'transparent' : colorSettings.mainBackground }}>
+      <div className="flex flex-1 overflow-visible relative z-10" style={{ backgroundColor: customBackground ? 'transparent' : colorSettings.mainBackground }}>
         {/* Constant fade overlay - disabled for solid black background */}
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -6344,7 +6344,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '0px', marginRight: '6px', paddingRight: '4px' }}>
+        <div className="flex-1 overflow-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '0px', marginRight: '6px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
@@ -8057,7 +8057,7 @@ export default function Dashboard() {
           >
             <h4 
               className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
               draggable
               onDragStart={() => handleBoxDragStart('this-week')}
               onDragEnd={handleBoxDragEnd}
@@ -8100,7 +8100,7 @@ export default function Dashboard() {
           >
             <h4 
               className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
               draggable
               onDragStart={() => handleBoxDragStart('today')}
               onDragEnd={handleBoxDragEnd}
@@ -8143,7 +8143,7 @@ export default function Dashboard() {
           >
             <h4 
               className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", background: colorSettings.headerBar }}
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
               draggable
               onDragStart={() => handleBoxDragStart('tomorrow')}
               onDragEnd={handleBoxDragEnd}
