@@ -8070,7 +8070,7 @@ export default function Dashboard() {
                       return (
                         <button
                           key={idx}
-                          className={`flex items-center gap-1.5 text-[10px] text-black cursor-pointer w-full pl-6 ${blinkSettings.taskBoxFilesBlink ? 'animate-file-box-blink-fast' : 'bg-[rgba(127,219,225,0.8)]'}`}
+                          className={`flex items-center gap-1.5 text-[10px] text-white cursor-pointer w-full pl-6 ${blinkSettings.taskBoxFilesBlink ? 'animate-file-box-blink-fast' : 'bg-[rgba(127,219,225,0.8)]'}`}
                           onClick={() => {
                             if (matchingFile) {
                               setPreviewFile(matchingFile);
@@ -8143,7 +8143,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-black font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
                             {task.courseName}
                           </div>
                         )}
@@ -8186,7 +8186,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-black font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
                             {task.courseName}
                           </div>
                         )}
@@ -8229,7 +8229,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-black font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
                             {task.courseName}
                           </div>
                         )}
