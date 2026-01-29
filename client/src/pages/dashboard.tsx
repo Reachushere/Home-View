@@ -3607,7 +3607,7 @@ export default function Dashboard() {
                     />
                     <FileText className="h-3.5 w-3.5 text-red-400 shrink-0" />
                     <span 
-                      className={`text-[11px] cursor-pointer hover:underline ${file.listened ? 'text-white/40 line-through' : 'text-white'}`}
+                      className={`text-[11px] cursor-pointer hover:underline ${file.listened ? 'text-white/40' : 'text-white'}`}
                       onClick={() => {
                         setPreviewFile(file);
                         setReadingsPopupCourse(null);
@@ -4679,14 +4679,8 @@ export default function Dashboard() {
             <CheckSquare className="h-[14px] w-[14px] text-white" />
           </Button>
 
-          {/* Quick Add Buttons */}
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[8px] bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-class" onClick={() => { setNewTaskType("class"); setIsAddDialogOpen(true); }}>+ Class</Button>
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[7px] bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-module" onClick={() => { setNewTaskType("module"); setIsAddDialogOpen(true); }}>+ Module</Button>
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[7px] bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-reading" onClick={() => { setNewTaskType("reading"); setIsAddDialogOpen(true); }}>+ Reading</Button>
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[5px] bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-discussion" onClick={() => { setNewTaskType("discussion"); setIsAddDialogOpen(true); }}>+ Discussion</Button>
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[7px] bg-white/10 hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-assignment" onClick={() => { setNewTaskType("essay"); setIsAddDialogOpen(true); }}>+ Assignment</Button>
-          {/* Exam button stays fixed at the end */}
-          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[6px] hover:opacity-80 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ backgroundColor: '#7f1d1d', fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-exam" onClick={() => { setNewTaskType("exam"); setIsAddDialogOpen(true); }}>+ Exam</Button>
+          {/* Quick Add Button */}
+          <Button size="sm" className="!h-[29px] !min-h-[29px] px-[10px] bg-white/15 backdrop-blur-sm hover:bg-white/20 text-white text-[10px] border-[0.1px] border-white font-medium rounded-md" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
           </div>
         </div>
 
@@ -7630,7 +7624,7 @@ export default function Dashboard() {
                         >
                           {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
                           {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                          <span className={`text-[11px] truncate ${shouldStrikethrough ? 'line-through text-white/50' : 'text-white/90'}`}>{week.name}</span>
+                          <span className={`text-[11px] truncate ${shouldStrikethrough ? 'text-white/50' : 'text-white/90'}`}>{week.name}</span>
                           <span className="text-[10px] text-white/40 ml-auto">{weekFiles.length}</span>
                         </div>
                         
@@ -7714,7 +7708,7 @@ export default function Dashboard() {
                                                       className="h-3 w-3 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                                     />
                                                     <FileText className="h-3 w-3 text-white/50 shrink-0" />
-                                                    <span className={`text-[10px] truncate flex-1 hover:underline ${file.listened ? 'line-through text-white/40' : 'text-white/80'}`}>
+                                                    <span className={`text-[10px] truncate flex-1 hover:underline ${file.listened ? 'text-white/40' : 'text-white/80'}`}>
                                                       {file.displayName || file.originalName}
                                                     </span>
                                                   </div>
