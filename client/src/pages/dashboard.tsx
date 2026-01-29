@@ -16,6 +16,7 @@ import ovalBanner from "@assets/Oval_1769694161559.png";
 import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
+import tallPill from "@assets/Tall_1769697999710.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -6297,6 +6298,10 @@ export default function Dashboard() {
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
+          {/* Tall Pill Panel - Right side of calendar */}
+          <div className="absolute right-[-70px] top-0 bottom-0 z-50 pointer-events-none" style={{ width: '60px' }}>
+            <img src={tallPill} alt="" className="h-full w-full object-fill" style={{ opacity: 0.95 }} />
+          </div>
           
           
           {/* Blank honeycombs above the date - Interactive with spring animation */}
