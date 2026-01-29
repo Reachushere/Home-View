@@ -6318,7 +6318,7 @@ export default function Dashboard() {
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-50px' : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
                   transformOrigin: 'center center'
                 }}
               >
@@ -6333,7 +6333,7 @@ export default function Dashboard() {
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-50px' : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
                   transformOrigin: 'center center',
                   transitionDelay: '50ms'
                 }}
@@ -6349,7 +6349,7 @@ export default function Dashboard() {
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-50px' : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
                   transformOrigin: 'center center',
                   transitionDelay: '100ms'
                 }}
