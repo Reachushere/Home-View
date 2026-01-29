@@ -5619,7 +5619,7 @@ export default function Dashboard() {
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <Library className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
+        <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '20px', width: '20px' }} />
         {/* Spring out honeycombs - grow to course row size */}
         {/* Top honeycomb */}
         <div 
@@ -5678,7 +5678,7 @@ export default function Dashboard() {
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <BookOpenCheck className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
+        <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '20px', width: '20px' }} />
         {/* Spring out honeycombs for course readings */}
         {/* CPPA122 */}
         <div 
@@ -5751,7 +5751,7 @@ export default function Dashboard() {
         data-testid="honeycomb-files-main"
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <Folder className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
+        <Folder className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '20px', width: '20px' }} />
         {/* Spring out honeycombs for course readings */}
         {/* CPPA122 */}
         <div 
@@ -5822,7 +5822,7 @@ export default function Dashboard() {
         data-testid="honeycomb-todo-main"
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <ListChecks className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
+        <ListChecks className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '20px', width: '20px' }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
