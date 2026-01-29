@@ -8258,7 +8258,7 @@ export default function Dashboard() {
                         <input type="checkbox" className="checkbox-black" />
                         <input 
                           type="text" 
-                          className="flex-1 text-xs px-1.5 py-0.5 border border-white/30 rounded bg-black/50 text-white placeholder:text-white/50" 
+                          className="flex-1 text-xs px-1.5 py-0.5 border border-gray-300 rounded bg-white text-black placeholder:text-gray-400" 
                           placeholder="Task..." 
                           value={todoItems[idx]} 
                           onChange={(e) => {
