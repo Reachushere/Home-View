@@ -12,6 +12,7 @@ import crowdCheer from "@assets/crowd-cheer.mp3";
 import honey1 from "@assets/Honey1_1769645399917.png";
 import honey2 from "@assets/Honey2_1769645399918.png";
 import honey3 from "@assets/Honey3_1769645399918.png";
+import widePill from "@assets/Wide10_1769693389843.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5580,6 +5581,11 @@ export default function Dashboard() {
 
       {/* Main Content - Full width, positioned below unified header */}
       <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
+        
+        {/* Wide Pill Banner - Top middle underneath menu bar */}
+        <div className="flex justify-center" style={{ marginTop: '-8px', marginBottom: '4px' }}>
+          <img src={widePill} alt="" className="h-[22px] w-auto" style={{ opacity: 0.95 }} />
+        </div>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
