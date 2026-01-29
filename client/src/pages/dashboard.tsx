@@ -4301,7 +4301,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-visible relative z-10" style={{ backgroundColor: colorSettings.mainBackground }}>
+      <div className="flex flex-1 overflow-visible relative z-10" style={{ backgroundColor: 'transparent' }}>
         {/* Constant fade overlay - disabled for solid black background */}
         <div 
           className="absolute inset-0 pointer-events-none"
