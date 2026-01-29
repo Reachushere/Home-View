@@ -6284,7 +6284,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Readings</span>
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Readings</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6354,7 +6354,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Modules</span>
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Modules</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6461,7 +6461,7 @@ export default function Dashboard() {
               {/* Middle decorative honeycomb with spring animation - Files */}
               <div 
                 className="absolute cursor-pointer"
-                style={{ width: gridSizes.courseRowHeight * 1.15, height: gridSizes.courseRowHeight * 1.15, top: '-103px', right: '-69px' }}
+                style={{ width: gridSizes.courseRowHeight * 1.15, height: gridSizes.courseRowHeight * 1.15, top: '-103px', right: '-75px' }}
                 onMouseEnter={() => setDecorativeHoneycombHover('middle')}
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
                 onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
