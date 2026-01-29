@@ -6314,7 +6314,7 @@ export default function Dashboard() {
                   data-testid="honeycomb-readings-cppa122"
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
-                    <img src={honey3} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <img src={honey1} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                     <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-green-400" />
                   </div>
                 </div>
@@ -6327,7 +6327,7 @@ export default function Dashboard() {
                   data-testid="honeycomb-modules-cppa122"
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
-                    <img src={honey3} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <img src={honey1} alt="Modules" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                     <Paperclip className="absolute inset-0 m-auto h-3 w-3 text-green-400 -rotate-45" />
                   </div>
                 </div>
@@ -6339,7 +6339,7 @@ export default function Dashboard() {
                 data-testid="honeycomb-cppa122"
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
-                  <img src={honey3} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <img src={honey1} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                   <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>CPPA</span>
                 </div>
               </div>
