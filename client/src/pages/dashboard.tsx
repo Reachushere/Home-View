@@ -5712,7 +5712,7 @@ export default function Dashboard() {
       
       {/* Modules Button - On top of tall pill */}
       <div 
-        className="absolute cursor-pointer z-50 pointer-events-auto"
+        className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
         style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '331px', right: '15px' }}
         onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
         data-modules-button
@@ -5796,7 +5796,7 @@ export default function Dashboard() {
       
       {/* Readings Button - Below modules button on tall pill */}
       <div 
-        className="absolute cursor-pointer z-50 pointer-events-auto"
+        className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
         style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '381px', right: '15px' }}
         onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
         data-readings-button
