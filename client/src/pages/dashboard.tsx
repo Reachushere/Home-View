@@ -4718,7 +4718,7 @@ export default function Dashboard() {
         </div>
 
         {/* Timer and Clock - Fixed Right */}
-        <div className="absolute right-0 flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '11px' }}>
+        <div className="absolute right-0 flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '8px' }}>
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-2 rounded-full px-3 h-[32px] overflow-hidden" style={{ position: 'relative', left: '-4px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-xs font-bold px-1.5 py-0.5 rounded ${
@@ -4741,7 +4741,7 @@ export default function Dashboard() {
           </div>
           
           {/* Clock */}
-          <div className="flex items-center gap-1.5 rounded-full px-3 h-[32px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '33px' }} data-testid="digital-clock">
+          <div className="flex items-center gap-1.5 rounded-full px-3 h-[32px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
             <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
