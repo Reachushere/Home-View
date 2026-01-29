@@ -4428,7 +4428,7 @@ export default function Dashboard() {
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
-            <GraduationCap className="h-[38px] w-[38px] text-white" />
+            <GraduationCap className="h-[44px] w-[44px] text-white" />
           </Button>
 
           {/* Bell */}
@@ -4455,7 +4455,7 @@ export default function Dashboard() {
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
               >
-                <Radio className="h-[38px] w-[38px] text-white" />
+                <Radio className="h-[44px] w-[44px] text-white" />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
@@ -8123,9 +8123,9 @@ export default function Dashboard() {
               <Calendar className="h-3 w-3 text-white" />
               THIS WEEK ({dueThisWeekTasks.length})
             </h4>
-            <div className="flex-1 p-3">
+            <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="text-white/60 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueThisWeekTasks.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No other tasks this week</div>
               ) : (
