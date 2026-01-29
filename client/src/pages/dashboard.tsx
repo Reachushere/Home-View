@@ -7021,7 +7021,7 @@ export default function Dashboard() {
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
                         style={{ 
-                          backgroundColor: isSameDay(day, new Date()) ? '#EAE4DE' : course.bg
+                          backgroundColor: course.bg
                         }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -7029,10 +7029,10 @@ export default function Dashboard() {
                           e.currentTarget.style.backgroundColor = '#8B8070';
                         }}
                         onDragLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#EAE4DE' : course.bg;
+                          e.currentTarget.style.backgroundColor = course.bg;
                         }}
                         onDrop={(e) => {
-                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#EAE4DE' : course.bg;
+                          e.currentTarget.style.backgroundColor = course.bg;
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       />
