@@ -15,6 +15,7 @@ import honey3 from "@assets/Honey3_1769645399918.png";
 import ovalBanner from "@assets/Oval_1769694161559.png";
 import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
+import clockBg from "@assets/Clock_BG_1769697834310.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -4706,7 +4707,7 @@ export default function Dashboard() {
         {/* Timer and Clock - Fixed Right */}
         <div className="absolute right-0 flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '11px' }}>
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2 bg-white/20 rounded-md px-2 h-[30px]" style={{ position: 'relative', left: '-4px' }}>
+          <div className="flex items-center gap-2 rounded-full px-3 h-[32px] overflow-hidden" style={{ position: 'relative', left: '-4px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-xs font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
@@ -4727,7 +4728,7 @@ export default function Dashboard() {
           </div>
           
           {/* Clock */}
-          <div className="flex items-center gap-1.5 bg-white/20 rounded-md px-2 h-[30px]" data-testid="digital-clock">
+          <div className="flex items-center gap-1.5 rounded-full px-3 h-[32px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
             <span className="text-xs text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
