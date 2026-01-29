@@ -4443,7 +4443,7 @@ export default function Dashboard() {
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px]" style={{ marginLeft: '-11px', marginTop: '2px' }} />
           {/* Week navigation with arrows around date, Today/Month stacked above */}
-          <div className="flex flex-col items-start gap-0.5" style={{ marginLeft: '28px' }}>
+          <div className="flex flex-col items-start gap-0.5" style={{ marginLeft: '23px' }}>
             {/* Today/Month buttons - centered above date range */}
             <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '2px' }}>
               <Button 
