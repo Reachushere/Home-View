@@ -6284,7 +6284,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>READING</span>
+              <span className="absolute inset-0 flex items-center justify-center text-[8px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>READING</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6354,7 +6354,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>MODULES</span>
+              <span className="absolute inset-0 flex items-center justify-center text-[8px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>MODULES</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6468,7 +6468,7 @@ export default function Dashboard() {
                 data-testid="honeycomb-files"
               >
                 <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>FILES</span>
+                <span className="absolute inset-0 flex items-center justify-center text-[8px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>FILES</span>
               </div>
               {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
