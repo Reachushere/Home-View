@@ -15,7 +15,7 @@ import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import tallPill from "@assets/Tall_1769697999710.png";
-const boxBg = "/BoxBackground.png?v=7";
+const boxBg = "/BoxBackground.png?v=8";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -8047,7 +8047,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 mt-[3px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, marginLeft: '-11px', marginRight: '-10px' }} data-task-boxes-container="true">
+        <div className="flex gap-4 mb-3 mt-[3px] items-stretch flex-shrink-0 relative overflow-visible" style={{ order: 1, zIndex: 35 }} data-task-boxes-container="true">
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
