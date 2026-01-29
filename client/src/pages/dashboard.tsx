@@ -4356,10 +4356,10 @@ export default function Dashboard() {
                 </Button>
               </div>
               {/* Date display */}
-              <div className="flex items-center justify-between gap-3 bg-white/10 rounded-md px-4 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '160px', marginTop: '5px' }}>
-                <span className="text-[14px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
-                <span className="text-[14px] text-white/50 relative top-[1px]">—</span>
-                <span className="text-[14px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
+              <div className="flex items-center justify-between gap-2 bg-white/10 rounded-md px-3 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px', marginTop: '5px' }}>
+                <span className="text-[12px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
+                <span className="text-[12px] text-white/50 relative top-[1px]">—</span>
+                <span className="text-[12px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
               </div>
             </div>
             {/* Right arrow */}
