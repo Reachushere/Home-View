@@ -6407,7 +6407,7 @@ export default function Dashboard() {
           </div>
           
           {/* Honeycomb Navigation System - Right edge aligned with course rows */}
-          <div className="absolute right-0 z-[100]" style={{ top: `${41 + gridSizes.allDayRowHeight}px` }}>
+          <div className="absolute z-[100]" style={{ top: `${41 + gridSizes.allDayRowHeight}px`, right: '80px' }}>
                         
             {/* CPPA122 - Green Row - Modules Honeycomb */}
             <div 
