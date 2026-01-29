@@ -4698,7 +4698,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full overflow-hidden !bg-transparent" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '50px', marginTop: '4px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full overflow-hidden !bg-transparent" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '150px', marginTop: '6px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
           </div>
         </div>
 
@@ -6667,7 +6667,7 @@ export default function Dashboard() {
                     key={idx} 
                     className={`border-l border-border flex items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ 
-                      backgroundColor: isToday ? (hasTodayTasks && blinkSettings.todayColumnBlink ? undefined : '#42382E') : "black"
+                      backgroundColor: isToday ? (hasTodayTasks && blinkSettings.todayColumnBlink ? undefined : '#3B302C') : "black"
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -6710,7 +6710,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? '#897B70' : 'white'
+                      backgroundColor: isSameDay(day, new Date()) ? '#B0A390' : 'white'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -7021,7 +7021,7 @@ export default function Dashboard() {
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
                         style={{ 
-                          backgroundColor: isSameDay(day, new Date()) ? '#897B70' : course.bg
+                          backgroundColor: isSameDay(day, new Date()) ? '#B0A390' : course.bg
                         }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -7029,10 +7029,10 @@ export default function Dashboard() {
                           e.currentTarget.style.backgroundColor = '#8B8070';
                         }}
                         onDragLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#897B70' : course.bg;
+                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#B0A390' : course.bg;
                         }}
                         onDrop={(e) => {
-                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#897B70' : course.bg;
+                          e.currentTarget.style.backgroundColor = isSameDay(day, new Date()) ? '#B0A390' : course.bg;
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       />
@@ -7077,7 +7077,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            backgroundColor: isToday ? '#897B70' : isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : undefined,
+                            backgroundColor: isToday ? '#B0A390' : isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
@@ -7771,7 +7771,7 @@ export default function Dashboard() {
                         key={idx}
                         className={`min-h-[80px] p-1 border-r border-b border-border last:border-r-0 ${
                           isCurrentMonth ? "bg-card" : "bg-muted/30"
-                        } ${isToday ? "bg-[#897B70]" : ""}`}
+                        } ${isToday ? "bg-[#B0A390]" : ""}`}
                         onClick={() => {
                           // Find which week this day belongs to
                           const weekInfo = weeks.find(w => {
