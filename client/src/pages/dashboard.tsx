@@ -546,6 +546,23 @@ export default function Dashboard() {
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
   
+  // Close modules honeycomb when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // Check if click is on modules button or course buttons
+      if (modulesHoneycombOpen === 'modules') {
+        const isModulesButton = target.closest('[data-modules-button]');
+        const isCourseButton = target.closest('[data-course-button]');
+        if (!isModulesButton && !isCourseButton) {
+          setModulesHoneycombOpen(null);
+        }
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [modulesHoneycombOpen]);
+  
   // Box order based on current day of week
   // Sunday/Monday: Today=LEFT, Tomorrow=MIDDLE, This Week=RIGHT
   // Tuesday/Wednesday: Today=MIDDLE, Tomorrow=RIGHT, This Week=LEFT
@@ -5601,6 +5618,7 @@ export default function Dashboard() {
         className="absolute cursor-pointer z-50 pointer-events-auto"
         style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '331px', right: '15px' }}
         onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
+        data-modules-button
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
         <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
@@ -5619,6 +5637,7 @@ export default function Dashboard() {
           transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)'
         }}
         onClick={() => { setModuleMediaControlCourse('cppa122'); setModulesHoneycombOpen(null); }}
+        data-course-button
       >
         <div className="relative w-full h-full hover:scale-110 transition-transform">
           <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
@@ -5637,6 +5656,7 @@ export default function Dashboard() {
           transitionDelay: '50ms'
         }}
         onClick={() => { setModuleMediaControlCourse('cfnf400'); setModulesHoneycombOpen(null); }}
+        data-course-button
       >
         <div className="relative w-full h-full hover:scale-110 transition-transform">
           <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
@@ -5655,6 +5675,7 @@ export default function Dashboard() {
           transitionDelay: '100ms'
         }}
         onClick={() => { setModuleMediaControlCourse('casl101'); setModulesHoneycombOpen(null); }}
+        data-course-button
       >
         <div className="relative w-full h-full hover:scale-110 transition-transform">
           <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
