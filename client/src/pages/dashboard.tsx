@@ -6455,7 +6455,7 @@ export default function Dashboard() {
                 onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
                 data-testid="honeycomb-files"
               >
-                <img src={honey2} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
                 <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#496D85' }}>Files</span>
               </div>
               {/* Expanded honeycombs - Readings */}
