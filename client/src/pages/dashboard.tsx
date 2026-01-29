@@ -6361,7 +6361,7 @@ export default function Dashboard() {
               style={{ height: `${gridSizes.courseRowHeight}px` }}
             >
               {/* Blank honeycomb */}
-              <div className="absolute" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75, top: '-60px', right: '30px' }}>
+              <div className="absolute" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75, top: '-90px', right: '30px' }}>
                 <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               </div>
               {/* Expanded honeycombs - Readings */}
