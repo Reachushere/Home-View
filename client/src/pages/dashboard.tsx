@@ -5607,7 +5607,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '160px', right: '14px', width: '55px', height: '540px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '180px', right: '14px', width: '55px', height: '540px' }}>
         <img src={tallPill} alt="" className="h-full w-auto object-contain" style={{ opacity: 0.95 }} />
       </div>
       
