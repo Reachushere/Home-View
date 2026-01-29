@@ -7437,7 +7437,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - separate panel for week folders, starts below the two flyouts above */}
-          <div className={`absolute right-0 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width)}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, bottom: 0 }}>
+          <div className={`absolute right-0 z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width)}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, bottom: 0 }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -7467,7 +7467,7 @@ export default function Dashboard() {
               }}
               data-testid="weeks-flyout-resize-handle"
             />
-            <div className="h-full bg-black/60 backdrop-blur-md border-l border-white/20 flex flex-col text-white relative rounded-l-lg">
+            <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border-l border-white/20 flex flex-col text-white relative rounded-l-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
               {/* Header with arrows and date */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
                 <div className="flex items-center gap-1">
