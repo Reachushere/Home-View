@@ -5603,7 +5603,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '4px' }}>
-        <img src={ovalBanner} alt="" className="h-[61px]" style={{ opacity: 0.95, width: '592px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <img src={ovalBanner} alt="" className="h-[62px]" style={{ opacity: 0.95, width: '604px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
@@ -8112,7 +8112,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 mt-[3px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 30px)', marginLeft: '-13px' }} data-task-boxes-container="true">
+        <div className="flex gap-4 mb-3 mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 30px)', marginLeft: '-13px' }} data-task-boxes-container="true">
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
