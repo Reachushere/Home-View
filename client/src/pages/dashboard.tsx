@@ -5601,7 +5601,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '6px' }}>
-        <img src={ovalBanner} alt="" className="h-[60px]" style={{ opacity: 0.95, width: '650px', objectFit: 'contain', marginLeft: '-72px' }} />
+        <img src={ovalBanner} alt="" className="h-[63px]" style={{ opacity: 0.95, width: '683px', objectFit: 'contain', marginLeft: '-72px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
