@@ -283,10 +283,10 @@
 /* Prominent pulse for today date header - dark to light */
 @keyframes today-date-pulse {
   0%, 100% { 
-    background-color: #1a365d;
+    background-color: #3B302C;
   }
   50% { 
-    background-color: #4a7ab8;
+    background-color: #5a4d47;
   }
 }
 
