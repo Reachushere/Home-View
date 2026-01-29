@@ -4325,7 +4325,7 @@ export default function Dashboard() {
         height: '48px'
       }}>
         {/* Logo, Date Range, and Week Navigation - Fixed Left */}
-        <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
+        <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0" style={{ width: '280px' }}>
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px]" style={{ marginLeft: '-11px', marginTop: '2px' }} />
           {/* Week navigation with arrows around date, Today/Month stacked above */}
           <div className="flex items-center gap-1">
