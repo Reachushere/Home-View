@@ -3935,53 +3935,61 @@ export default function Dashboard() {
             );
           })()}
           
-          {/* Media Controls Bar */}
-          <div className="flex items-center p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
+          {/* Top Menu Bar - File Selector and Speaker */}
+          <div className="flex items-center justify-between p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
             {/* File Selector - shows for reading files */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
               const weekNum = folderParts[1];
               const courseCode = folderParts[2];
               const isReading = previewFile?.folder?.includes('reading');
-              const relatedFiles = isReading ? allFiles.filter(f => 
-                f.folder?.includes(`week-${weekNum}-${courseCode}`) && f.folder?.includes('reading')
+              const isModule = previewFile?.folder?.includes('module');
+              const relatedFiles = (isReading || isModule) ? allFiles.filter(f => 
+                f.folder?.includes(`week-${weekNum}-${courseCode}`) && 
+                (isReading ? f.folder?.includes('reading') : f.folder?.includes('module'))
               ) : [];
               
-              if (relatedFiles.length > 1) {
-                return (
+              return (
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] text-white/60">File:</span>
                   <Select value={previewFile?.id?.toString() || ''} onValueChange={(val) => {
                     const file = relatedFiles.find(f => f.id.toString() === val);
                     if (file) setPreviewFile(file);
                   }}>
-                    <SelectTrigger className="w-[140px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-reading-file">
+                    <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-reading-file">
                       <SelectValue placeholder="Select File" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
                       {relatedFiles.map(file => (
-                        <SelectItem key={file.id} value={file.id.toString()} className="text-[9px]">
-                          {(file.displayName || file.originalName).replace(/\.pdf$/i, '').slice(0, 25)}
+                        <SelectItem key={file.id} value={file.id.toString()} className="text-[10px]">
+                          {(file.displayName || file.originalName).replace(/\.pdf$/i, '').slice(0, 35)}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                );
-              }
-              return null;
+                </div>
+              );
             })()}
             
-            <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
-              <SelectTrigger className="w-[100px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
-                <SelectValue placeholder="Select Speaker" />
-              </SelectTrigger>
-              <SelectContent className="max-h-[300px]">
-                {SPEAKERS.map(speaker => (
-                  <SelectItem key={speaker.id} value={speaker.id} className="text-[9px]">
-                    {speaker.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-white/60">Speaker:</span>
+              <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
+                <SelectTrigger className="w-[140px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
+                  <SelectValue placeholder="Select Speaker" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {SPEAKERS.map(speaker => (
+                    <SelectItem key={speaker.id} value={speaker.id} className="text-[10px]">
+                      {speaker.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          {/* Bottom Media Controls Bar */}
+          <div className="flex items-center p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
             {/* Voice selector - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
               <>
