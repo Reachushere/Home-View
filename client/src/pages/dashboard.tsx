@@ -16,6 +16,7 @@ import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import tallPill from "@assets/Tall_1769697999710.png";
 import boxBg from "@assets/Box9_1769708968004.png";
+import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -4391,7 +4392,7 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden" style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
+              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden" style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
                 <Menu className="h-[38px] w-[38px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
@@ -4428,7 +4429,7 @@ export default function Dashboard() {
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
-            <GraduationCap className="h-[38px] w-[38px] min-h-[38px] min-w-[38px] text-white" style={{ strokeWidth: 1.5 }} />
+            <GraduationCap className="h-[28px] w-[28px] text-white" />
           </Button>
 
           {/* Bell */}
@@ -4455,7 +4456,7 @@ export default function Dashboard() {
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
               >
-                <Radio className="h-[38px] w-[38px] min-h-[38px] min-w-[38px] text-white" style={{ strokeWidth: 1.5 }} />
+                <Radio className="h-[28px] w-[28px] text-white" />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
