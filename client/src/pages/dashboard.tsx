@@ -7437,7 +7437,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - separate panel for week folders, starts below the two flyouts above */}
-          <div className={`absolute right-0 z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width)}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight}px`, bottom: 0 }}>
+          <div className={`absolute right-0 z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width) + 30}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 30}px`, bottom: '30px' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
