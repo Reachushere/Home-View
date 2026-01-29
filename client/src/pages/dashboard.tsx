@@ -5724,7 +5724,7 @@ export default function Dashboard() {
       {/* Modules Course Buttons - Spring from modules button (331px) to course row positions */}
       {/* CPPA122 - Green Row */}
       <div 
-        className={`absolute cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto z-[200]' : 'opacity-0 pointer-events-none z-[100]'}`}
+        className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
           top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '331px',
           right: modulesHoneycombOpen === 'modules' ? '97px' : '15px',
@@ -5748,7 +5748,7 @@ export default function Dashboard() {
       
       {/* CFNF400 - Pink Row */}
       <div 
-        className={`absolute cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto z-[200]' : 'opacity-0 pointer-events-none z-[100]'}`}
+        className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
           top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '331px',
           right: modulesHoneycombOpen === 'modules' ? '97px' : '15px',
@@ -5772,7 +5772,7 @@ export default function Dashboard() {
       
       {/* CASL101 - Indigo/Blue Row */}
       <div 
-        className={`absolute cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto z-[200]' : 'opacity-0 pointer-events-none z-[100]'}`}
+        className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         style={{ 
           top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '331px',
           right: modulesHoneycombOpen === 'modules' ? '97px' : '15px',
