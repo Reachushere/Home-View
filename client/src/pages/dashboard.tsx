@@ -8047,7 +8047,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-8 mb-3 mt-[6px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35 }} data-task-boxes-container="true">
+        <div className="flex gap-4 mb-3 mt-[6px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35 }} data-task-boxes-container="true">
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
@@ -8093,8 +8093,8 @@ export default function Dashboard() {
 
           {/* Due Today */}
           <section 
-            className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1 }} 
+            className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] relative ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1, left: '12px' }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
@@ -8136,8 +8136,8 @@ export default function Dashboard() {
 
           {/* Due Tomorrow */}
           <section 
-            className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1 }} 
+            className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] relative ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, left: '-12px' }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
