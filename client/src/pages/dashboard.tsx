@@ -6302,7 +6302,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('cppa122')}
                 >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-green-400" />
+                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3" style={{ color: '#496D85' }} />
                 </div>
               </div>
               {/* Middle honeycomb - Readings CFNF400 */}
@@ -6322,7 +6322,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('cfnf400')}
                 >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-pink-400" />
+                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3" style={{ color: '#496D85' }} />
                 </div>
               </div>
               {/* Bottom honeycomb - Readings CASL101 */}
@@ -6342,7 +6342,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('casl101')}
                 >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-indigo-400" />
+                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3" style={{ color: '#496D85' }} />
                 </div>
               </div>
             </div>
@@ -6423,7 +6423,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={honey1} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-green-400" />
+                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3" style={{ color: '#496D85' }} />
                   </div>
                 </div>
               </div>
@@ -6479,7 +6479,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={honey2} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-pink-400" />
+                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3" style={{ color: '#496D85' }} />
                   </div>
                 </div>
               </div>
@@ -6523,7 +6523,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={honey1} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-indigo-400" />
+                    <FolderOpen className="absolute inset-0 m-auto h-3 w-3" style={{ color: '#496D85' }} />
                   </div>
                 </div>
               </div>
