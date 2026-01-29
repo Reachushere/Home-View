@@ -4334,21 +4334,21 @@ export default function Dashboard() {
               <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
             </Button>
             {/* Stacked: Today/Month above date */}
-            <div className="flex flex-col items-center gap-0.5" style={{ marginLeft: '25px' }}>
+            <div className="flex flex-col items-center gap-0.5">
               {/* Today/Month buttons */}
-              <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginTop: '2px' }}>
+              <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                 <Button 
                   variant="ghost"
-                  className="!h-5 !min-h-0 px-1.5 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
+                  className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
                   onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
                   data-testid="button-today"
                 >
                   Today
                 </Button>
-                <div className="w-[1px] h-3.5 bg-white/50" />
+                <div className="w-[1px] h-3 bg-white/50" />
                 <Button 
                   variant="ghost"
-                  className="!h-5 !min-h-0 px-1.5 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
+                  className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
                   onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
                   data-testid="button-month-view"
                 >
@@ -4356,10 +4356,10 @@ export default function Dashboard() {
                 </Button>
               </div>
               {/* Date display */}
-              <div className="flex items-center justify-between gap-2 bg-white/10 rounded-md px-3 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px', marginTop: '3px' }}>
-                <span className="text-[12px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
-                <span className="text-[12px] text-white/50 relative top-[1px]">—</span>
-                <span className="text-[12px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
+              <div className="flex items-center justify-center gap-1 bg-white/10 rounded-md px-2 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '110px' }}>
+                <span className="text-[11px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
+                <span className="text-[11px] text-white/50 relative top-[1px]">—</span>
+                <span className="text-[11px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
               </div>
             </div>
             {/* Right arrow */}
