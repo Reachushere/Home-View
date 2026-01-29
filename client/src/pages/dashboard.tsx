@@ -4427,7 +4427,7 @@ export default function Dashboard() {
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
-            <GraduationCap className="h-[42px] w-[42px] text-white" />
+            <GraduationCap className="h-[48px] w-[48px] text-white" />
           </Button>
 
           {/* Bell */}
@@ -6557,7 +6557,7 @@ export default function Dashboard() {
                 data-testid="honeycomb-files"
               >
                 <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <Folder className="absolute inset-0 m-auto h-5 w-5" style={{ color: '#3a5a70', strokeWidth: 2 }} />
+                <Folder className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
               </div>
               {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
