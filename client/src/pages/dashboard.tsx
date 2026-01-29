@@ -6611,7 +6611,7 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div style={{ width: 'calc(100% - 65px)' }}>
+          <div style={{ width: 'calc(100% - 65px)', borderRadius: '16px', overflow: 'hidden' }}>
           <Card className="shadow-lg h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
