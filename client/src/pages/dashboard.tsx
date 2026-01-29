@@ -6322,6 +6322,7 @@ export default function Dashboard() {
                 }}
               >
                 <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Readings</span>
               </div>
               <div 
                 className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
@@ -6374,6 +6375,7 @@ export default function Dashboard() {
                 }}
               >
                 <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Readings</span>
               </div>
               <div 
                 className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
@@ -6480,6 +6482,7 @@ export default function Dashboard() {
                   }}
                 >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Readings</span>
                 </div>
                 <div 
                   className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
