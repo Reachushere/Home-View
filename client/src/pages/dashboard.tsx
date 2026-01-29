@@ -6309,49 +6309,56 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              {/* Spring out honeycombs */}
+              {/* Spring out honeycombs - grow to course row size */}
+              {/* Top honeycomb - Readings */}
               <div 
-                className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
-                  width: gridSizes.courseRowHeight * 0.6, 
-                  height: gridSizes.courseRowHeight * 0.6, 
-                  top: '100%', 
-                  left: '50%', 
-                  transform: decorativeHoneycombHover === 'left' ? 'translate(-50%, 10px)' : 'translate(-50%, -50%)',
-                  transformOrigin: 'center top'
+                  width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  top: decorativeHoneycombHover === 'left' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '-4px' : '50%',
+                  transformOrigin: 'center center'
                 }}
               >
-                <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Readings</span>
+                <div className="relative w-full h-full">
+                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Readings</span>
+                </div>
               </div>
+              {/* Middle honeycomb - Files */}
               <div 
-                className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
-                  width: gridSizes.courseRowHeight * 0.6, 
-                  height: gridSizes.courseRowHeight * 0.6, 
-                  top: '150%', 
-                  left: '20%', 
-                  transform: decorativeHoneycombHover === 'left' ? 'translate(-50%, 20px)' : 'translate(-50%, -100%)',
-                  transformOrigin: 'center top',
+                  width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  top: decorativeHoneycombHover === 'left' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '-4px' : '50%',
+                  transformOrigin: 'center center',
                   transitionDelay: '50ms'
                 }}
               >
-                <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <div className="relative w-full h-full">
+                  <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Files</span>
+                </div>
               </div>
+              {/* Bottom honeycomb - Modules */}
               <div 
-                className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
-                  width: gridSizes.courseRowHeight * 0.6, 
-                  height: gridSizes.courseRowHeight * 0.6, 
-                  top: '200%', 
-                  left: '50%', 
-                  transform: decorativeHoneycombHover === 'left' ? 'translate(-50%, 30px)' : 'translate(-50%, -150%)',
-                  transformOrigin: 'center top',
+                  width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  top: decorativeHoneycombHover === 'left' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '-4px' : '50%',
+                  transformOrigin: 'center center',
                   transitionDelay: '100ms'
                 }}
               >
-                <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Modules</span>
+                <div className="relative w-full h-full">
+                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Modules</span>
+                </div>
               </div>
             </div>
             {/* Right decorative honeycomb */}
@@ -6362,49 +6369,56 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              {/* Spring out honeycombs */}
+              {/* Spring out honeycombs - grow to course row size */}
+              {/* Top honeycomb - Readings */}
               <div 
-                className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
-                  width: gridSizes.courseRowHeight * 0.6, 
-                  height: gridSizes.courseRowHeight * 0.6, 
-                  top: '100%', 
-                  left: '50%', 
-                  transform: decorativeHoneycombHover === 'right' ? 'translate(-50%, 10px)' : 'translate(-50%, -50%)',
-                  transformOrigin: 'center top'
+                  width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  top: decorativeHoneycombHover === 'right' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'right' ? '0px' : '50%',
+                  transformOrigin: 'center center'
                 }}
               >
-                <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Readings</span>
+                <div className="relative w-full h-full">
+                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Readings</span>
+                </div>
               </div>
+              {/* Middle honeycomb - Files */}
               <div 
-                className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
-                  width: gridSizes.courseRowHeight * 0.6, 
-                  height: gridSizes.courseRowHeight * 0.6, 
-                  top: '150%', 
-                  left: '80%', 
-                  transform: decorativeHoneycombHover === 'right' ? 'translate(-50%, 20px)' : 'translate(-50%, -100%)',
-                  transformOrigin: 'center top',
+                  width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  top: decorativeHoneycombHover === 'right' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'right' ? '0px' : '50%',
+                  transformOrigin: 'center center',
                   transitionDelay: '50ms'
                 }}
               >
-                <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <div className="relative w-full h-full">
+                  <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Files</span>
+                </div>
               </div>
+              {/* Bottom honeycomb - Modules */}
               <div 
-                className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
-                  width: gridSizes.courseRowHeight * 0.6, 
-                  height: gridSizes.courseRowHeight * 0.6, 
-                  top: '200%', 
-                  left: '50%', 
-                  transform: decorativeHoneycombHover === 'right' ? 'translate(-50%, 30px)' : 'translate(-50%, -150%)',
-                  transformOrigin: 'center top',
+                  width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                  top: decorativeHoneycombHover === 'right' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'right' ? '0px' : '50%',
+                  transformOrigin: 'center center',
                   transitionDelay: '100ms'
                 }}
               >
-                <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Modules</span>
+                <div className="relative w-full h-full">
+                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Modules</span>
+                </div>
               </div>
             </div>
           </div>
@@ -6469,49 +6483,56 @@ export default function Dashboard() {
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
                 <img src={honey2} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                {/* Spring out honeycombs */}
+                {/* Spring out honeycombs - grow to course row size */}
+                {/* Top honeycomb - Readings */}
                 <div 
-                  className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                  className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                   style={{ 
-                    width: gridSizes.courseRowHeight * 0.6, 
-                    height: gridSizes.courseRowHeight * 0.6, 
-                    top: '100%', 
-                    left: '50%', 
-                    transform: decorativeHoneycombHover === 'middle' ? 'translate(-50%, 10px)' : 'translate(-50%, -50%)',
-                    transformOrigin: 'center top'
+                    width: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                    height: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                    top: decorativeHoneycombHover === 'middle' ? `${118 + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                    right: decorativeHoneycombHover === 'middle' ? '-18px' : '50%',
+                    transformOrigin: 'center center'
                   }}
                 >
-                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Readings</span>
+                  <div className="relative w-full h-full">
+                    <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Readings</span>
+                  </div>
                 </div>
+                {/* Middle honeycomb - Files */}
                 <div 
-                  className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                  className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                   style={{ 
-                    width: gridSizes.courseRowHeight * 0.6, 
-                    height: gridSizes.courseRowHeight * 0.6, 
-                    top: '150%', 
-                    left: '50%', 
-                    transform: decorativeHoneycombHover === 'middle' ? 'translate(-50%, 20px)' : 'translate(-50%, -100%)',
-                    transformOrigin: 'center top',
+                    width: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                    height: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                    top: decorativeHoneycombHover === 'middle' ? `${118 + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                    right: decorativeHoneycombHover === 'middle' ? '-18px' : '50%',
+                    transformOrigin: 'center center',
                     transitionDelay: '50ms'
                   }}
                 >
-                  <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <div className="relative w-full h-full">
+                    <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Files</span>
+                  </div>
                 </div>
+                {/* Bottom honeycomb - Modules */}
                 <div 
-                  className={`absolute transition-all duration-300 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+                  className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'middle' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                   style={{ 
-                    width: gridSizes.courseRowHeight * 0.6, 
-                    height: gridSizes.courseRowHeight * 0.6, 
-                    top: '200%', 
-                    left: '50%', 
-                    transform: decorativeHoneycombHover === 'middle' ? 'translate(-50%, 30px)' : 'translate(-50%, -150%)',
-                    transformOrigin: 'center top',
+                    width: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                    height: decorativeHoneycombHover === 'middle' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+                    top: decorativeHoneycombHover === 'middle' ? `${118 + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                    right: decorativeHoneycombHover === 'middle' ? '-18px' : '50%',
+                    transformOrigin: 'center center',
                     transitionDelay: '100ms'
                   }}
                 >
-                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[5px] font-medium" style={{ color: '#406d89' }}>Modules</span>
+                  <div className="relative w-full h-full">
+                    <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                    <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Modules</span>
+                  </div>
                 </div>
               </div>
               {/* Expanded honeycombs - Readings */}
