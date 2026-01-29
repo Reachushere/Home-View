@@ -8245,7 +8245,7 @@ export default function Dashboard() {
         >
           {/* Flyout content */}
           <section 
-            className="shadow-lg h-[158px] overflow-hidden flex flex-col rounded-t-md bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" 
+            className="shadow-lg h-[158px] overflow-hidden flex flex-col rounded-t-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" 
             data-testid="section-todo"
           >
             <div className="grid grid-cols-4 gap-4 flex-1 p-3">
