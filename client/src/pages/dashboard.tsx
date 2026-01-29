@@ -8069,7 +8069,7 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="text-white/60 text-xs">Loading...</div>
               ) : dueThisWeekTasks.length === 0 ? (
-                <div className="text-white/60 text-xs">No other tasks this week</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No other tasks this week</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueThisWeekTasks.map((task, idx) => {
