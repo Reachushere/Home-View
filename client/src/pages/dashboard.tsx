@@ -5612,7 +5612,7 @@ export default function Dashboard() {
       {/* Modules Button - On top of tall pill */}
       <div 
         className="absolute cursor-pointer z-50 pointer-events-auto"
-        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '330px', right: '15px' }}
+        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '331px', right: '15px' }}
         onMouseEnter={() => setDecorativeHoneycombHover('right')}
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
       >
@@ -6553,93 +6553,6 @@ export default function Dashboard() {
         <div className="mb-[12px] mt-[6px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           
           
-          {/* Blank honeycombs above the date - Interactive with spring animation */}
-          <div className="absolute z-[100] flex items-center justify-end gap-1" style={{ top: '-36px', right: '-1px', height: `${41 + gridSizes.allDayRowHeight}px` }}>
-            {/* Left decorative honeycomb - Readings with extended hover zone */}
-            <div 
-              className="relative"
-              style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, transform: 'translateX(8px) translateY(8px)' }}
-              onMouseEnter={() => setDecorativeHoneycombHover('left')}
-              onMouseLeave={() => setDecorativeHoneycombHover(null)}
-            >
-              {/* Main honeycomb */}
-              <div className="relative cursor-pointer w-full h-full">
-                <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <BookOpenCheck className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
-              </div>
-              {/* Invisible bridge to spring-out honeycombs */}
-              <div 
-                className={`absolute ${decorativeHoneycombHover === 'left' ? 'pointer-events-auto' : 'pointer-events-none'}`}
-                style={{ 
-                  top: '100%',
-                  left: '-20px',
-                  right: '-60px',
-                  height: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3}px`
-                }}
-              />
-              {/* Spring out honeycombs - grow to course row size */}
-              {/* Top honeycomb - Readings */}
-              <div 
-                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-                style={{ 
-                  width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
-                  transformOrigin: 'center center'
-                }}
-              >
-                <div 
-                  className="relative w-full h-full cursor-pointer"
-                  onClick={() => setReadingsPopupCourse('cppa122')}
-                >
-                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
-                </div>
-              </div>
-              {/* Middle honeycomb - Readings CFNF400 */}
-              <div 
-                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-                style={{ 
-                  width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
-                  transformOrigin: 'center center',
-                  transitionDelay: '50ms'
-                }}
-              >
-                <div 
-                  className="relative w-full h-full cursor-pointer"
-                  onClick={() => setReadingsPopupCourse('cfnf400')}
-                >
-                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
-                </div>
-              </div>
-              {/* Bottom honeycomb - Readings CASL101 */}
-              <div 
-                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-                style={{ 
-                  width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
-                  transformOrigin: 'center center',
-                  transitionDelay: '100ms'
-                }}
-              >
-                <div 
-                  className="relative w-full h-full cursor-pointer"
-                  onClick={() => setReadingsPopupCourse('casl101')}
-                >
-                  <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
-                </div>
-              </div>
-            </div>
-                      </div>
-          
           {/* Honeycomb Navigation System - Right edge aligned with course rows, on top of tall pill */}
           <div className="absolute z-[100]" style={{ top: `${41 + gridSizes.allDayRowHeight}px`, right: '55px' }}>
                         
@@ -6692,19 +6605,7 @@ export default function Dashboard() {
               className="relative flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
             >
-              {/* Middle decorative honeycomb with spring animation - Files */}
-              <div 
-                className="absolute cursor-pointer"
-                style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '-105px', right: '0px' }}
-                onMouseEnter={() => setDecorativeHoneycombHover('middle')}
-                onMouseLeave={() => setDecorativeHoneycombHover(null)}
-                onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
-                data-testid="honeycomb-files"
-              >
-                <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <Folder className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
-              </div>
-              {/* Expanded honeycombs - Readings */}
+                            {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
                 <div 
                   className="cursor-pointer transition-all duration-200 hover:scale-110"
