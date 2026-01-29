@@ -8245,8 +8245,7 @@ export default function Dashboard() {
         >
           {/* Flyout content */}
           <section 
-            className="shadow-lg border-t border-white/30 h-[158px] overflow-hidden flex flex-col rounded-t-md" 
-            style={{ background: colorSettings.boxBackground }} 
+            className="shadow-lg h-[158px] overflow-hidden flex flex-col rounded-t-md bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" 
             data-testid="section-todo"
           >
             <div className="grid grid-cols-4 gap-4 flex-1 p-3">
@@ -8259,7 +8258,7 @@ export default function Dashboard() {
                         <input type="checkbox" className="checkbox-black" />
                         <input 
                           type="text" 
-                          className="flex-1 text-xs px-1.5 py-0.5 border border-gray-400 rounded bg-white text-black" 
+                          className="flex-1 text-xs px-1.5 py-0.5 border border-white/30 rounded bg-black/50 text-white placeholder:text-white/50" 
                           placeholder="Task..." 
                           value={todoItems[idx]} 
                           onChange={(e) => {
