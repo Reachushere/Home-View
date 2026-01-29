@@ -10,7 +10,7 @@ import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
 import crowdCheer from "@assets/crowd-cheer.mp3";
 import hexIcon from "@assets/Button_1769701329320.png";
-import ovalBanner from "@assets/Oval_1769694161559.png";
+import ovalBanner from "@assets/Oval2_1769706297273.png";
 import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
@@ -7130,7 +7130,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            backgroundColor: (isCurrentHour && isToday) ? '#3B302C' : isToday ? '#EAE4DE' : undefined,
+                            backgroundColor: (isCurrentHour && isToday) ? '#3B302C' : (isToday || isCurrentHour) ? '#EAE4DE' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
