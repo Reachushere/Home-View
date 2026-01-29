@@ -9,7 +9,7 @@ import dashboardBg from "@assets/BG_1769691992519.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
 import crowdCheer from "@assets/crowd-cheer.mp3";
-import hexIcon from "@assets/Hex_1769698287206.png";
+import hexIcon from "@assets/Button_1769701329320.png";
 import ovalBanner from "@assets/Oval_1769694161559.png";
 import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
