@@ -6391,7 +6391,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('cppa122')}
                 >
                   <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
                 </div>
               </div>
               {/* Middle honeycomb - Readings CFNF400 */}
@@ -6411,7 +6411,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('cfnf400')}
                 >
                   <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
                 </div>
               </div>
               {/* Bottom honeycomb - Readings CASL101 */}
@@ -6431,7 +6431,7 @@ export default function Dashboard() {
                   onClick={() => setReadingsPopupCourse('casl101')}
                 >
                   <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
                 </div>
               </div>
             </div>
@@ -6443,7 +6443,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <Library className="absolute inset-0 m-auto h-5 w-5" style={{ color: '#3a5a70', strokeWidth: 2 }} />
+              <Library className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6512,7 +6512,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={hexIcon} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
                   </div>
                 </div>
               </div>
@@ -6568,7 +6568,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={hexIcon} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
                   </div>
                 </div>
               </div>
@@ -6612,7 +6612,7 @@ export default function Dashboard() {
                 >
                   <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
                     <img src={hexIcon} alt="Readings" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: '#3a5a70', strokeWidth: 3 }} />
+                    <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
                   </div>
                 </div>
               </div>
@@ -7130,7 +7130,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            backgroundColor: isToday ? '#EAE4DE' : isCurrentHour ? 'rgba(93, 129, 204, 0.2)' : undefined,
+                            backgroundColor: (isToday || isCurrentHour) ? '#EAE4DE' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
