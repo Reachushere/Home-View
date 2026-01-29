@@ -6301,7 +6301,7 @@ export default function Dashboard() {
           
           {/* Blank honeycombs above the date - Interactive with spring animation */}
           <div className="absolute right-0 z-[100] flex items-center justify-end gap-1" style={{ top: '-40px', height: `${41 + gridSizes.allDayRowHeight}px` }}>
-            {/* Left decorative honeycomb */}
+            {/* Left decorative honeycomb - Readings */}
             <div 
               className="relative cursor-pointer"
               style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75, transform: 'translateX(4px)' }}
@@ -6309,6 +6309,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <span className="absolute inset-0 flex items-center justify-center text-[6px] font-medium" style={{ color: '#496D85' }}>Readings</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6323,7 +6324,6 @@ export default function Dashboard() {
               >
                 <div className="relative w-full h-full">
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Readings</span>
                 </div>
               </div>
               {/* Middle honeycomb - Files */}
@@ -6340,7 +6340,6 @@ export default function Dashboard() {
               >
                 <div className="relative w-full h-full">
                   <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Files</span>
                 </div>
               </div>
               {/* Bottom honeycomb - Modules */}
@@ -6357,11 +6356,10 @@ export default function Dashboard() {
               >
                 <div className="relative w-full h-full">
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Modules</span>
                 </div>
               </div>
             </div>
-            {/* Right decorative honeycomb */}
+            {/* Right decorative honeycomb - Modules */}
             <div 
               className="relative cursor-pointer"
               style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}
@@ -6369,6 +6367,7 @@ export default function Dashboard() {
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <span className="absolute inset-0 flex items-center justify-center text-[6px] font-medium" style={{ color: '#496D85' }}>Modules</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6383,7 +6382,6 @@ export default function Dashboard() {
               >
                 <div className="relative w-full h-full">
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Readings</span>
                 </div>
               </div>
               {/* Middle honeycomb - Files */}
@@ -6400,7 +6398,6 @@ export default function Dashboard() {
               >
                 <div className="relative w-full h-full">
                   <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Files</span>
                 </div>
               </div>
               {/* Bottom honeycomb - Modules */}
@@ -6417,7 +6414,6 @@ export default function Dashboard() {
               >
                 <div className="relative w-full h-full">
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Modules</span>
                 </div>
               </div>
             </div>
@@ -6475,7 +6471,7 @@ export default function Dashboard() {
               className="relative flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
             >
-              {/* Middle decorative honeycomb with spring animation */}
+              {/* Middle decorative honeycomb with spring animation - Files */}
               <div 
                 className="absolute cursor-pointer"
                 style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75, top: '-118px', right: '18px' }}
@@ -6483,6 +6479,7 @@ export default function Dashboard() {
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
                 <img src={honey2} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[6px] font-medium" style={{ color: '#496D85' }}>Files</span>
                 {/* Spring out honeycombs - grow to course row size */}
                 {/* Top honeycomb - Readings */}
                 <div 
@@ -6497,7 +6494,6 @@ export default function Dashboard() {
                 >
                   <div className="relative w-full h-full">
                     <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Readings</span>
                   </div>
                 </div>
                 {/* Middle honeycomb - Files */}
@@ -6514,7 +6510,6 @@ export default function Dashboard() {
                 >
                   <div className="relative w-full h-full">
                     <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Files</span>
                   </div>
                 </div>
                 {/* Bottom honeycomb - Modules */}
@@ -6531,7 +6526,6 @@ export default function Dashboard() {
                 >
                   <div className="relative w-full h-full">
                     <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                    <span className="absolute inset-0 flex items-center justify-center text-[7px] font-medium" style={{ color: '#406d89' }}>Modules</span>
                   </div>
                 </div>
               </div>
