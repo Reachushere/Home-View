@@ -6362,7 +6362,7 @@ export default function Dashboard() {
               {/* Main honeycomb */}
               <div className="relative cursor-pointer w-full h-full">
                 <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <BookOpenCheck className="absolute inset-0 m-auto h-5 w-5" style={{ color: '#3a5a70', strokeWidth: 2 }} />
+                <BookOpenCheck className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
               </div>
               {/* Invisible bridge to spring-out honeycombs */}
               <div 
