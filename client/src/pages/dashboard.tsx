@@ -6279,12 +6279,12 @@ export default function Dashboard() {
             {/* Left decorative honeycomb - Readings */}
             <div 
               className="relative cursor-pointer"
-              style={{ width: gridSizes.courseRowHeight * 0.95, height: gridSizes.courseRowHeight * 0.95, transform: 'translateX(4px)' }}
+              style={{ width: gridSizes.courseRowHeight * 1.15, height: gridSizes.courseRowHeight * 1.15, transform: 'translateX(4px) translateY(10px)' }}
               onMouseEnter={() => setDecorativeHoneycombHover('left')}
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Readings</span>
+              <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Readings</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6349,12 +6349,12 @@ export default function Dashboard() {
             {/* Right decorative honeycomb - Modules */}
             <div 
               className="relative cursor-pointer"
-              style={{ width: gridSizes.courseRowHeight * 0.95, height: gridSizes.courseRowHeight * 0.95 }}
+              style={{ width: gridSizes.courseRowHeight * 1.15, height: gridSizes.courseRowHeight * 1.15, transform: 'translateY(10px)' }}
               onMouseEnter={() => setDecorativeHoneycombHover('right')}
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
               <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Modules</span>
+              <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Modules</span>
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
@@ -6448,7 +6448,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={honey1} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
                 </div>
               </div>
             </div>
@@ -6461,14 +6461,14 @@ export default function Dashboard() {
               {/* Middle decorative honeycomb with spring animation - Files */}
               <div 
                 className="absolute cursor-pointer"
-                style={{ width: gridSizes.courseRowHeight * 0.95, height: gridSizes.courseRowHeight * 0.95, top: '-113px', right: '-59px' }}
+                style={{ width: gridSizes.courseRowHeight * 1.15, height: gridSizes.courseRowHeight * 1.15, top: '-103px', right: '-69px' }}
                 onMouseEnter={() => setDecorativeHoneycombHover('middle')}
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
                 onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
                 data-testid="honeycomb-files"
               >
                 <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Files</span>
+                <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>Files</span>
               </div>
               {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
@@ -6504,7 +6504,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={honey2} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
                 </div>
               </div>
             </div>
@@ -6548,7 +6548,7 @@ export default function Dashboard() {
               >
                 <div className="relative" style={{ width: gridSizes.courseRowHeight * 0.9, height: gridSizes.courseRowHeight * 0.9 }}>
                   <img src={honey1} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-                  <span className="absolute inset-0 flex items-center justify-center text-[10px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
+                  <span className="absolute inset-0 flex items-center justify-center text-[11px] font-medium" style={{ color: '#3a5a70', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
                 </div>
               </div>
             </div>
