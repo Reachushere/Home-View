@@ -120,9 +120,9 @@ const typeColors: Record<string, string> = {
 };
 
 const courseColors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string }> = {
-  "CPPA122": { bg: "bg-green-100 dark:bg-green-900/40", border: "border-green-500", text: "text-green-700 dark:text-green-300", dot: "bg-green-500", prepBg: "bg-green-100 dark:bg-green-900/40", prepBorder: "border-green-300", prepText: "text-green-600 dark:text-green-400" },
-  "CFNF400": { bg: "bg-pink-100 dark:bg-pink-900/40", border: "border-pink-500", text: "text-pink-700 dark:text-pink-300", dot: "bg-pink-500", prepBg: "bg-pink-100 dark:bg-pink-900/40", prepBorder: "border-pink-300", prepText: "text-pink-600 dark:text-pink-400" },
-  "CASL101": { bg: "bg-indigo-100 dark:bg-indigo-900/40", border: "border-indigo-500", text: "text-indigo-700 dark:text-indigo-300", dot: "bg-indigo-500", prepBg: "bg-indigo-100 dark:bg-indigo-900/40", prepBorder: "border-indigo-300", prepText: "text-indigo-600 dark:text-indigo-400" },
+  "CPPA122": { bg: "bg-green-50 dark:bg-green-900/30", border: "border-green-400", text: "text-green-600 dark:text-green-300", dot: "bg-green-400", prepBg: "bg-green-50 dark:bg-green-900/30", prepBorder: "border-green-200", prepText: "text-green-500 dark:text-green-400" },
+  "CFNF400": { bg: "bg-pink-50 dark:bg-pink-900/30", border: "border-pink-400", text: "text-pink-600 dark:text-pink-300", dot: "bg-pink-400", prepBg: "bg-pink-50 dark:bg-pink-900/30", prepBorder: "border-pink-200", prepText: "text-pink-500 dark:text-pink-400" },
+  "CASL101": { bg: "bg-indigo-50 dark:bg-indigo-900/30", border: "border-indigo-400", text: "text-indigo-600 dark:text-indigo-300", dot: "bg-indigo-400", prepBg: "bg-indigo-50 dark:bg-indigo-900/30", prepBorder: "border-indigo-200", prepText: "text-indigo-500 dark:text-indigo-400" },
 };
 
 // Display name mapping for course row labels
@@ -142,9 +142,9 @@ const getCourseRowDisplayName = (courseName: string): string => {
 
 // Course folder configuration for sidebar hamburger menus
 const SIDEBAR_COURSES = [
-  { id: "cppa122", name: "CPPA122", color: "text-green-500", hoverBg: "hover:bg-green-500/20" },
-  { id: "cfnf400", name: "CFNF400", color: "text-pink-500", hoverBg: "hover:bg-pink-500/20" },
-  { id: "casl101", name: "CASL101", color: "text-indigo-500", hoverBg: "hover:bg-indigo-500/20" },
+  { id: "cppa122", name: "CPPA122", color: "text-green-400", hoverBg: "hover:bg-green-400/20" },
+  { id: "cfnf400", name: "CFNF400", color: "text-pink-400", hoverBg: "hover:bg-pink-400/20" },
+  { id: "casl101", name: "CASL101", color: "text-indigo-400", hoverBg: "hover:bg-indigo-400/20" },
 ];
 
 const FOLDER_TYPES = [
@@ -296,9 +296,9 @@ export default function Dashboard() {
   ];
   
   const FLYOUT_COURSES = [
-    { id: "cppa122", name: "CPPA122", color: "text-green-500" },
-    { id: "cfnf400", name: "CFNF400", color: "text-pink-500" },
-    { id: "casl101", name: "CASL101", color: "text-purple-500" },
+    { id: "cppa122", name: "CPPA122", color: "text-green-400" },
+    { id: "cfnf400", name: "CFNF400", color: "text-pink-400" },
+    { id: "casl101", name: "CASL101", color: "text-indigo-400" },
   ];
   
   const FLYOUT_CONTENT = [
@@ -826,9 +826,9 @@ export default function Dashboard() {
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
-      { name: 'CPPA122 - Local Politics', color: '#22c55e', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
-      { name: 'CFNF400 - Human Sexuality', color: '#ec4899', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
-      { name: 'CASL101 - American Sign Language', color: '#6366f1', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
+      { name: 'CPPA122 - Local Politics', color: '#4ade80', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
+      { name: 'CFNF400 - Human Sexuality', color: '#f472b6', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
+      { name: 'CASL101 - American Sign Language', color: '#818cf8', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
@@ -2933,9 +2933,9 @@ export default function Dashboard() {
           // Get course color - black for tasks without a course
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
           let color = "#000000";
-          if (courseCode === "CPPA122") color = "#22c55e";
-          else if (courseCode === "CFNF400") color = "#ec4899";
-          else if (courseCode === "CASL101") color = "#6366f1";
+          if (courseCode === "CPPA122") color = "#4ade80";
+          else if (courseCode === "CFNF400") color = "#f472b6";
+          else if (courseCode === "CASL101") color = "#818cf8";
           
           // Start arrow from left side of checkbox, or fall back to left of task box
           let fromX: number;
@@ -3038,9 +3038,9 @@ export default function Dashboard() {
           // Get course color - black for tasks without a course
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
           let color = "#000000"; // Default to black when no course
-          if (courseCode === "CPPA122") color = "#22c55e";
-          else if (courseCode === "CFNF400") color = "#ec4899";
-          else if (courseCode === "CASL101") color = "#6366f1";
+          if (courseCode === "CPPA122") color = "#4ade80";
+          else if (courseCode === "CFNF400") color = "#f472b6";
+          else if (courseCode === "CASL101") color = "#818cf8";
           
           // Calculate which day column within the prep extension corresponds to targetDate
           const daysDiff = Math.floor((targetDateStart.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -4329,44 +4329,44 @@ export default function Dashboard() {
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px]" style={{ marginLeft: '-11px', marginTop: '2px' }} />
           {/* Week navigation with arrows around date, Today/Month stacked above */}
-          <div className="flex items-center gap-1">
-            {/* Left arrow */}
-            <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
-              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-            </Button>
-            {/* Stacked: Today/Month above date */}
-            <div className="flex flex-col items-center gap-0.5">
-              {/* Today/Month buttons */}
-              <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
-                <Button 
-                  variant="ghost"
-                  className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
-                  onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-                  data-testid="button-today"
-                >
-                  Today
-                </Button>
-                <div className="w-[1px] h-3 bg-white/50" />
-                <Button 
-                  variant="ghost"
-                  className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
-                  onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-                  data-testid="button-month-view"
-                >
-                  {calendarView === "month" ? "Week" : "Month"}
-                </Button>
-              </div>
+          <div className="flex flex-col items-start gap-0.5" style={{ marginLeft: '34px' }}>
+            {/* Today/Month buttons - centered above date range */}
+            <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '2px' }}>
+              <Button 
+                variant="ghost"
+                className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0" 
+                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+                data-testid="button-today"
+              >
+                Today
+              </Button>
+              <div className="w-[1px] h-3 bg-white/50" />
+              <Button 
+                variant="ghost"
+                className="!h-4 !min-h-0 px-1 text-[8px] hover:bg-white/20 rounded font-medium text-white border-0"
+                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+                data-testid="button-month-view"
+              >
+                {calendarView === "month" ? "Week" : "Month"}
+              </Button>
+            </div>
+            {/* Date display with arrows */}
+            <div className="flex items-center gap-1" style={{ marginTop: '3px' }}>
+              {/* Left arrow */}
+              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </Button>
               {/* Date display */}
-              <div className="flex items-center justify-between gap-2 bg-white/10 rounded-md px-3 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px', marginTop: '5px', marginLeft: '34px' }}>
+              <div className="flex items-center justify-between gap-2 bg-white/10 rounded-md px-3 py-0.5 backdrop-blur-sm whitespace-nowrap" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px' }}>
                 <span className="text-[12px] font-medium text-white relative top-[1px]">{format(weekStartDate, "MMM d")}</span>
                 <span className="text-[12px] text-white/50 relative top-[1px]">—</span>
                 <span className="text-[12px] font-medium text-white relative top-[1px]">{format(weekEndDate, "MMM d")}</span>
               </div>
+              {/* Right arrow */}
+              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </Button>
             </div>
-            {/* Right arrow */}
-            <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
-              <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-            </Button>
           </div>
         </div>
 
@@ -7828,9 +7828,9 @@ export default function Dashboard() {
           // Helper function to get course color
           const getCourseColor = (courseName: string | null | undefined) => {
             if (!courseName) return '#888888';
-            if (courseName.startsWith('CPPA122')) return '#22c55e'; // green
-            if (courseName.startsWith('CFNF400')) return '#ec4899'; // pink
-            if (courseName.startsWith('CASL101')) return '#6366f1'; // indigo
+            if (courseName.startsWith('CPPA122')) return '#4ade80'; // green
+            if (courseName.startsWith('CFNF400')) return '#f472b6'; // pink
+            if (courseName.startsWith('CASL101')) return '#818cf8'; // indigo
             return '#888888';
           };
           
