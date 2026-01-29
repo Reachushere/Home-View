@@ -3631,8 +3631,12 @@ export default function Dashboard() {
                 return (
                   <div
                     key={file.id}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer"
                     data-testid={`reading-file-${file.id}`}
+                    onClick={() => {
+                      setPreviewFile(file);
+                      setReadingsPopupCourse(null);
+                    }}
                   >
                     <Checkbox
                       checked={file.listened || false}
@@ -3644,16 +3648,13 @@ export default function Dashboard() {
                           console.error("Failed to update file listened status:", error);
                         }
                       }}
+                      onClick={(e) => e.stopPropagation()}
                       className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
                       data-testid={`checkbox-reading-${file.id}`}
                     />
                     <FileText className="h-3.5 w-3.5 text-red-400 shrink-0" />
                     <span 
-                      className={`text-[11px] cursor-pointer hover:underline ${file.listened ? 'text-white/40' : 'text-white'}`}
-                      onClick={() => {
-                        setPreviewFile(file);
-                        setReadingsPopupCourse(null);
-                      }}
+                      className={`text-[11px] ${file.listened ? 'text-white/40' : 'text-white'}`}
                     >
                       {cleanName || fullName}
                     </span>
@@ -5650,7 +5651,7 @@ export default function Dashboard() {
         data-testid="honeycomb-cppa122"
         data-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
           <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
         </div>
@@ -5673,7 +5674,7 @@ export default function Dashboard() {
         data-testid="honeycomb-cfnf400"
         data-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
           <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
         </div>
@@ -5696,7 +5697,7 @@ export default function Dashboard() {
         data-testid="honeycomb-casl101"
         data-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
           <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
         </div>
@@ -5727,7 +5728,7 @@ export default function Dashboard() {
         data-testid="honeycomb-readings-cppa122"
         data-readings-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
           <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
@@ -5746,7 +5747,7 @@ export default function Dashboard() {
         data-testid="honeycomb-readings-cfnf400"
         data-readings-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
           <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
@@ -5765,7 +5766,7 @@ export default function Dashboard() {
         data-testid="honeycomb-readings-casl101"
         data-readings-course-button
       >
-        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 4, height: gridSizes.courseRowHeight * 0.9 + 4 }}>
+        <div className="relative hover:scale-110 transition-transform" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
           <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
@@ -7409,7 +7410,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - separate panel for week folders, starts below the two flyouts above */}
-          <div className={`absolute z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width) + 155}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 15}px`, bottom: '55px', right: '44px' }}>
+          <div className={`absolute z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width) + 170}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 15}px`, bottom: '49px', right: '44px' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
