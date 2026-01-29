@@ -6317,8 +6317,8 @@ export default function Dashboard() {
                 style={{ 
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  top: decorativeHoneycombHover === 'left' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-4px' : '50%',
+                  top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '1px' : '50%',
                   transformOrigin: 'center center'
                 }}
               >
@@ -6332,8 +6332,8 @@ export default function Dashboard() {
                 style={{ 
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  top: decorativeHoneycombHover === 'left' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-4px' : '50%',
+                  top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '1px' : '50%',
                   transformOrigin: 'center center',
                   transitionDelay: '50ms'
                 }}
@@ -6348,8 +6348,8 @@ export default function Dashboard() {
                 style={{ 
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-                  top: decorativeHoneycombHover === 'left' ? `${40 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
-                  right: decorativeHoneycombHover === 'left' ? '-4px' : '50%',
+                  top: decorativeHoneycombHover === 'left' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
+                  right: decorativeHoneycombHover === 'left' ? '1px' : '50%',
                   transformOrigin: 'center center',
                   transitionDelay: '100ms'
                 }}
