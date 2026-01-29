@@ -4376,8 +4376,8 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden" style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="button-hamburger-menu">
-                <Menu className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
+              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden" style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }} data-testid="button-hamburger-menu">
+                <Menu className="h-[38px] w-[38px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
@@ -4408,12 +4408,12 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
-            <GraduationCap className="h-[14px] w-[14px] text-white" />
+            <GraduationCap className="h-[38px] w-[38px] text-white" />
           </Button>
 
           {/* Bell */}
@@ -4421,12 +4421,12 @@ export default function Dashboard() {
             variant="ghost"
             size="icon"
             onClick={toggleMute}
-            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
-            style={isMuted ? {} : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
+            style={isMuted ? { marginTop: '9px' } : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
           >
-            {isMuted ? <BellOff className="h-[14px] w-[14px] text-white" /> : <Bell className="h-[14px] w-[14px] text-white" />}
+            {isMuted ? <BellOff className="h-[38px] w-[38px] text-white" /> : <Bell className="h-[38px] w-[38px] text-white" />}
           </Button>
 
           {/* Radio Dialog */}
@@ -4435,12 +4435,12 @@ export default function Dashboard() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-                style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+                className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+                style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
               >
-                <Radio className="h-[14px] w-[14px] text-white" />
+                <Radio className="h-[38px] w-[38px] text-white" />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
@@ -4659,16 +4659,16 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
           >
             {syncAllCalendarMutation.isPending ? (
-              <Loader2 className="h-[14px] w-[14px] text-white animate-spin" />
+              <Loader2 className="h-[38px] w-[38px] text-white animate-spin" />
             ) : (
-              <RefreshCw className="h-[14px] w-[14px] text-white" />
+              <RefreshCw className="h-[38px] w-[38px] text-white" />
             )}
           </Button>
 
@@ -4676,14 +4676,14 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
-            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
             title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
           >
-            <Undo2 className="h-[14px] w-[14px] text-white" />
+            <Undo2 className="h-[38px] w-[38px] text-white" />
           </Button>
 
           {/* Completed Tasks Checkbox */}
@@ -4691,7 +4691,7 @@ export default function Dashboard() {
             size="icon"
             variant="ghost"
             className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '362px', marginTop: '9px' }}
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
             data-testid="button-completed-tasks"
             onClick={() => setIsCompletedTasksOpen(true)}
           >
