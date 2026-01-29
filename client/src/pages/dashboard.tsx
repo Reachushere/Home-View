@@ -4693,7 +4693,7 @@ export default function Dashboard() {
             variant="ghost" 
             size="icon" 
             className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
-            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '5px' }}
+            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '5px', zIndex: 30, position: 'relative' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
@@ -5603,7 +5603,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-1px' }}>
-        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '642px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '632px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
