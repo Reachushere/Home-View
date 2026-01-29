@@ -4676,14 +4676,14 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[40px] !w-[40px] !min-h-[40px] !min-w-[40px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+            className={`!h-[38px] !w-[38px] !min-h-[38px] !min-w-[38px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
             style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '9px' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
             title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
           >
-            <Undo2 className="h-[28px] w-[28px] text-white" />
+            <Undo2 className="h-[27px] w-[27px] text-white" />
           </Button>
 
           {/* Completed Tasks Checkbox */}
@@ -5587,7 +5587,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '10px' }}>
-        <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '660px', objectFit: 'fill', marginLeft: '-65px' }} />
+        <img src={ovalBanner} alt="" className="h-[51px]" style={{ opacity: 0.95, width: '660px', objectFit: 'fill', marginLeft: '-67px' }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
