@@ -91,7 +91,6 @@ import {
   Undo2,
   Radio,
   Minus,
-  ListTodo,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -5821,7 +5820,7 @@ export default function Dashboard() {
         data-testid="honeycomb-todo-main"
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <ListTodo className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
+        <CheckSquare className="absolute inset-0 m-auto h-5 w-5" style={{ color: 'white', strokeWidth: 2 }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
