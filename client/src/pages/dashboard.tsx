@@ -4344,7 +4344,7 @@ export default function Dashboard() {
           {/* Week navigation with arrows around date, Today/Month stacked above */}
           <div className="flex flex-col items-start gap-0.5" style={{ marginLeft: '38px' }}>
             {/* Today/Month buttons - centered above date range */}
-            <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '4px' }}>
+            <div className="flex items-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginLeft: '70px', marginTop: '7px' }}>
               <Button 
                 variant="ghost"
                 className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
@@ -4364,7 +4364,7 @@ export default function Dashboard() {
               </Button>
             </div>
             {/* Date display with arrows */}
-            <div className="flex items-center gap-1" style={{ marginTop: '3px' }}>
+            <div className="flex items-center gap-1" style={{ marginTop: '-1px' }}>
               {/* Left arrow */}
               <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
