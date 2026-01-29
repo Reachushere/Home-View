@@ -5604,50 +5604,56 @@ export default function Dashboard() {
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
         <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         {/* Spring out honeycombs - grow to course row size */}
-        {/* Top honeycomb */}
+        {/* Top honeycomb - CPPA122 */}
         <div 
-          className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          className={`absolute transition-all duration-500 ease-out cursor-pointer ${decorativeHoneycombHover === 'right' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
           style={{ 
-            width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            top: decorativeHoneycombHover === 'right' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-            right: decorativeHoneycombHover === 'right' ? '11px' : '50%',
-            transformOrigin: 'center center'
+            width: gridSizes.courseRowHeight * 0.9,
+            height: gridSizes.courseRowHeight * 0.9,
+            top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05}px`,
+            right: '11px',
+            transformOrigin: 'center center',
+            transform: decorativeHoneycombHover === 'right' ? 'scale(1)' : 'scale(0.3)'
           }}
+          onClick={() => setModuleMediaControlCourse('cppa122')}
         >
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full hover:scale-110 transition-transform">
             <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           </div>
         </div>
-        {/* Middle honeycomb */}
+        {/* Middle honeycomb - CFNF400 */}
         <div 
-          className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          className={`absolute transition-all duration-500 ease-out cursor-pointer ${decorativeHoneycombHover === 'right' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
           style={{ 
-            width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            top: decorativeHoneycombHover === 'right' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px` : '50%',
-            right: decorativeHoneycombHover === 'right' ? '11px' : '50%',
+            width: gridSizes.courseRowHeight * 0.9,
+            height: gridSizes.courseRowHeight * 0.9,
+            top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05}px`,
+            right: '11px',
             transformOrigin: 'center center',
+            transform: decorativeHoneycombHover === 'right' ? 'scale(1)' : 'scale(0.3)',
             transitionDelay: '50ms'
           }}
+          onClick={() => setModuleMediaControlCourse('cfnf400')}
         >
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full hover:scale-110 transition-transform">
             <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           </div>
         </div>
-        {/* Bottom honeycomb */}
+        {/* Bottom honeycomb - CASL101 */}
         <div 
-          className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'right' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+          className={`absolute transition-all duration-500 ease-out cursor-pointer ${decorativeHoneycombHover === 'right' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
           style={{ 
-            width: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            height: decorativeHoneycombHover === 'right' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            top: decorativeHoneycombHover === 'right' ? `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px` : '50%',
-            right: decorativeHoneycombHover === 'right' ? '11px' : '50%',
+            width: gridSizes.courseRowHeight * 0.9,
+            height: gridSizes.courseRowHeight * 0.9,
+            top: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05}px`,
+            right: '11px',
             transformOrigin: 'center center',
+            transform: decorativeHoneycombHover === 'right' ? 'scale(1)' : 'scale(0.3)',
             transitionDelay: '100ms'
           }}
+          onClick={() => setModuleMediaControlCourse('casl101')}
         >
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full hover:scale-110 transition-transform">
             <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           </div>
         </div>
