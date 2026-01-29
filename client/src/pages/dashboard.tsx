@@ -6438,7 +6438,7 @@ export default function Dashboard() {
             {/* Right decorative honeycomb - Modules */}
             <div 
               className="relative cursor-pointer z-[200]"
-              style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, transform: 'translateX(16px) translateY(148px)' }}
+              style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, transform: 'translateX(-20px) translateY(148px)' }}
               onMouseEnter={() => setDecorativeHoneycombHover('right')}
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
