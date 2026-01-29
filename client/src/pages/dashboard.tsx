@@ -5576,13 +5576,13 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
+      {/* Wide Pill Banner - Top middle */}
+      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '30px' }}>
+        <img src={widePill} alt="" className="h-[66px] w-auto" style={{ opacity: 0.95 }} />
+      </div>
+
       {/* Main Content - Full width, positioned below unified header */}
       <main className="flex-1 pt-2 pb-2 flex flex-col overflow-hidden relative z-10 min-h-0" style={{ paddingLeft: '24px', paddingRight: '24px', marginTop: '60px' }}>
-        
-        {/* Wide Pill Banner - Top middle */}
-        <div className="absolute left-0 right-0 flex justify-center z-10" style={{ top: '30px' }}>
-          <img src={widePill} alt="" className="h-[66px] w-auto" style={{ opacity: 0.95 }} />
-        </div>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
