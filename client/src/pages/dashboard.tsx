@@ -5603,11 +5603,11 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '4px' }}>
-        <img src={ovalBanner} alt="" className="h-[69px]" style={{ opacity: 0.95, width: '653px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <img src={ovalBanner} alt="" className="h-[66px]" style={{ opacity: 0.95, width: '627px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '185px', right: '14px', width: '55px', height: '540px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '190px', right: '14px', width: '55px', height: '540px' }}>
         <img src={tallPill} alt="" className="h-full w-auto object-contain" style={{ opacity: 0.95 }} />
       </div>
       
