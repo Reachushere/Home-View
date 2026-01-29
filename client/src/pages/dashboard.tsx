@@ -6306,6 +6306,10 @@ export default function Dashboard() {
               className="flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
             >
+              {/* Blank honeycomb */}
+              <div style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              </div>
               {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cppa122' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
                 <div 
@@ -6350,6 +6354,10 @@ export default function Dashboard() {
               className="flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
             >
+              {/* Blank honeycomb */}
+              <div style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              </div>
               {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'cfnf400' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
                 <div 
@@ -6394,6 +6402,10 @@ export default function Dashboard() {
               className="flex items-center justify-end gap-1"
               style={{ height: `${gridSizes.courseRowHeight}px` }}
             >
+              {/* Blank honeycomb */}
+              <div style={{ width: gridSizes.courseRowHeight * 0.75, height: gridSizes.courseRowHeight * 0.75 }}>
+                <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              </div>
               {/* Expanded honeycombs - Readings */}
               <div className={`transition-all duration-300 ${modulesHoneycombOpen === 'casl101' ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none'}`}>
                 <div 
