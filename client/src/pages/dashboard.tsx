@@ -1606,6 +1606,47 @@ export default function Dashboard() {
     };
   }, [previewFile?.id]);
 
+  // Function to filter out French text from content
+  const removeFrenchText = (text: string): string => {
+    // Common French words/patterns to detect French sentences
+    const frenchPatterns = [
+      /\b(le|la|les|un|une|des|du|de la|au|aux)\b/gi,
+      /\b(et|ou|mais|donc|car|ni|que|qui|dont|où)\b/gi,
+      /\b(je|tu|il|elle|nous|vous|ils|elles|on)\b/gi,
+      /\b(mon|ma|mes|ton|ta|tes|son|sa|ses|notre|nos|votre|vos|leur|leurs)\b/gi,
+      /\b(ce|cet|cette|ces|ceci|cela|ça)\b/gi,
+      /\b(être|avoir|faire|aller|pouvoir|vouloir|devoir|savoir)\b/gi,
+      /\b(est|sont|était|étaient|sera|seront|été|suis|sommes|êtes)\b/gi,
+      /\b(a|ai|as|avons|avez|ont|avait|avaient|aura|auront|eu)\b/gi,
+      /\b(fait|fais|font|faisait|fera|feront)\b/gi,
+      /\b(dans|sur|sous|avec|pour|par|sans|chez|entre|vers)\b/gi,
+      /\b(très|plus|moins|aussi|bien|mal|peu|beaucoup|trop)\b/gi,
+      /\b(français|française|france|paris)\b/gi,
+      /[àâäéèêëïîôùûüÿç]/gi,
+    ];
+    
+    // Split into sentences
+    const sentences = text.split(/(?<=[.!?])\s+/);
+    
+    // Filter out sentences that appear to be French (contain multiple French patterns)
+    const englishSentences = sentences.filter(sentence => {
+      const words = sentence.split(/\s+/).length;
+      if (words < 3) return true; // Keep very short sentences
+      
+      let frenchScore = 0;
+      for (const pattern of frenchPatterns) {
+        const matches = sentence.match(pattern);
+        if (matches) frenchScore += matches.length;
+      }
+      
+      // If more than 15% of words match French patterns, consider it French
+      const frenchRatio = frenchScore / words;
+      return frenchRatio < 0.15;
+    });
+    
+    return englishSentences.join(' ');
+  };
+
   // Fetch text when file is selected for preview
   useEffect(() => {
     if (previewFile) {
@@ -1617,7 +1658,9 @@ export default function Dashboard() {
         .then(res => res.json())
         .then(data => {
           if (data.text) {
-            setPreviewText(data.text);
+            // Filter out French text before setting
+            const filteredText = removeFrenchText(data.text);
+            setPreviewText(filteredText);
           }
         })
         .catch(err => console.error("Error fetching text:", err))
