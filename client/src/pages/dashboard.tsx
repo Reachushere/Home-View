@@ -6611,8 +6611,8 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div style={{ width: 'calc(100% - 50px)' }}>
-          <Card className="shadow-lg rounded-xl h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
+          <div style={{ width: 'calc(100% - 65px)' }}>
+          <Card className="shadow-lg h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
             
@@ -7714,7 +7714,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-[12px] transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
-          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm">
+          <Card className="shadow-lg overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm" style={{ borderRadius: '16px' }}>
             <CardContent className="p-0 h-full overflow-auto">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
