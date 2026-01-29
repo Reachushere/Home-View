@@ -210,7 +210,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(699);
+  const [calendarHeight, setCalendarHeight] = useState(689);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -6280,7 +6280,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '-1px', marginRight: '6px', paddingRight: '4px', scrollbarWidth: 'none' }}>
+        <div className="flex-1 overflow-hidden overflow-x-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '-1px', marginRight: '6px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
