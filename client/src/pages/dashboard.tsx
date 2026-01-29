@@ -6279,19 +6279,32 @@ export default function Dashboard() {
           
           {/* Blank honeycombs above the date - Interactive with spring animation */}
           <div className="absolute z-[100] flex items-center justify-end gap-1" style={{ top: '-36px', right: '-1px', height: `${41 + gridSizes.allDayRowHeight}px` }}>
-            {/* Left decorative honeycomb - Readings */}
+            {/* Left decorative honeycomb - Readings with extended hover zone */}
             <div 
-              className="relative cursor-pointer"
+              className="relative"
               style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, transform: 'translateX(8px) translateY(8px)' }}
               onMouseEnter={() => setDecorativeHoneycombHover('left')}
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
-              <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-              <BookOpenCheck className="absolute inset-0 m-auto h-5 w-5" style={{ color: '#3a5a70', strokeWidth: 2 }} />
+              {/* Main honeycomb */}
+              <div className="relative cursor-pointer w-full h-full">
+                <img src={honey1} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <BookOpenCheck className="absolute inset-0 m-auto h-5 w-5" style={{ color: '#3a5a70', strokeWidth: 2 }} />
+              </div>
+              {/* Invisible bridge to spring-out honeycombs */}
+              <div 
+                className={`absolute ${decorativeHoneycombHover === 'left' ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                style={{ 
+                  top: '100%',
+                  left: '-20px',
+                  right: '-60px',
+                  height: `${57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3}px`
+                }}
+              />
               {/* Spring out honeycombs - grow to course row size */}
               {/* Top honeycomb - Readings */}
               <div 
-                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
@@ -6299,8 +6312,6 @@ export default function Dashboard() {
                   right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
                   transformOrigin: 'center center'
                 }}
-                onMouseEnter={() => setDecorativeHoneycombHover('left')}
-                onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
                 <div 
                   className="relative w-full h-full cursor-pointer"
@@ -6312,7 +6323,7 @@ export default function Dashboard() {
               </div>
               {/* Middle honeycomb - Readings CFNF400 */}
               <div 
-                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
@@ -6321,8 +6332,6 @@ export default function Dashboard() {
                   transformOrigin: 'center center',
                   transitionDelay: '50ms'
                 }}
-                onMouseEnter={() => setDecorativeHoneycombHover('left')}
-                onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
                 <div 
                   className="relative w-full h-full cursor-pointer"
@@ -6334,7 +6343,7 @@ export default function Dashboard() {
               </div>
               {/* Bottom honeycomb - Readings CASL101 */}
               <div 
-                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
                   width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
                   height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
@@ -6343,8 +6352,6 @@ export default function Dashboard() {
                   transformOrigin: 'center center',
                   transitionDelay: '100ms'
                 }}
-                onMouseEnter={() => setDecorativeHoneycombHover('left')}
-                onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
                 <div 
                   className="relative w-full h-full cursor-pointer"
