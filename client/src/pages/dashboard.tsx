@@ -5770,14 +5770,47 @@ export default function Dashboard() {
                         const file = e.target.files?.[0];
                         if (!file) return;
                         
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                          const dataUrl = event.target?.result as string;
-                          localStorage.setItem('customBackground', dataUrl);
-                          setCustomBackground(dataUrl);
-                          toast({ title: "Background updated", description: "Your custom background has been saved." });
+                        // Compress image to fit localStorage limits
+                        const compressImage = (file: File, maxWidth: number = 1920, quality: number = 0.7): Promise<string> => {
+                          return new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              const img = new Image();
+                              img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                let { width, height } = img;
+                                
+                                // Scale down if too large
+                                if (width > maxWidth) {
+                                  height = (height * maxWidth) / width;
+                                  width = maxWidth;
+                                }
+                                
+                                canvas.width = width;
+                                canvas.height = height;
+                                const ctx = canvas.getContext('2d');
+                                ctx?.drawImage(img, 0, 0, width, height);
+                                
+                                // Convert to compressed JPEG
+                                const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                                resolve(compressedDataUrl);
+                              };
+                              img.onerror = reject;
+                              img.src = event.target?.result as string;
+                            };
+                            reader.onerror = reject;
+                            reader.readAsDataURL(file);
+                          });
                         };
-                        reader.readAsDataURL(file);
+                        
+                        try {
+                          const compressedDataUrl = await compressImage(file);
+                          localStorage.setItem('customBackground', compressedDataUrl);
+                          setCustomBackground(compressedDataUrl);
+                          toast({ title: "Background updated", description: "Your custom background has been saved." });
+                        } catch (error) {
+                          toast({ title: "Error", description: "Failed to save background image. Try a smaller image.", variant: "destructive" });
+                        }
                       }}
                     />
                     <Button
