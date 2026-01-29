@@ -7051,7 +7051,7 @@ export default function Dashboard() {
                     className="grid border-b border-border/50 overflow-visible relative group/row"
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px` }}
                   >
-                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar }}>
+                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: isCurrentHour ? '#2d4a6f' : colorSettings.headerBar, borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
