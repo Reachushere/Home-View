@@ -15,7 +15,7 @@ import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import tallPill from "@assets/Tall_1769697999710.png";
-import boxBg from "@assets/Box_1769701511727.png";
+import boxBg from "@assets/Box_1769701675106.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
