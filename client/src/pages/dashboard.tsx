@@ -15,7 +15,7 @@ import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import tallPill from "@assets/Tall_1769697999710.png";
-import boxBg from "@assets/Box_1769702530255.png";
+import boxBg from "@assets/BoxBackground.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -8051,7 +8051,7 @@ export default function Dashboard() {
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg}?v=3)`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('this-week') + 1 }} 
+            style={{ backgroundImage: `url(${boxBg}?v=4)`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('this-week') + 1 }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
           >
@@ -8094,7 +8094,7 @@ export default function Dashboard() {
           {/* Due Today */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg}?v=3)`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1 }} 
+            style={{ backgroundImage: `url(${boxBg}?v=4)`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1 }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
@@ -8137,7 +8137,7 @@ export default function Dashboard() {
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg}?v=3)`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1 }} 
+            style={{ backgroundImage: `url(${boxBg}?v=4)`, backgroundSize: 'cover', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1 }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
