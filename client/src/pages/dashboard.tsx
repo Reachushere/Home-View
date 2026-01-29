@@ -5602,8 +5602,8 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle */}
-      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '4px' }}>
-        <img src={ovalBanner} alt="" className="h-[67px]" style={{ opacity: 0.95, width: '633px', objectFit: 'contain', marginLeft: '-75px' }} />
+      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-1px' }}>
+        <img src={ovalBanner} alt="" className="h-[68px]" style={{ opacity: 0.95, width: '639px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Tall Pill Panel - Right side of calendar */}
@@ -5826,7 +5826,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
-      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '27px', paddingRight: '24px', marginTop: '62px' }}>
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '27px', paddingRight: '24px', marginTop: '63px' }}>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
