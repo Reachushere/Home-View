@@ -6279,7 +6279,7 @@ export default function Dashboard() {
             {/* Left decorative honeycomb - Readings */}
             <div 
               className="relative cursor-pointer"
-              style={{ width: gridSizes.courseRowHeight * 1.15, height: gridSizes.courseRowHeight * 1.15, transform: 'translateX(4px) translateY(8px)' }}
+              style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, transform: 'translateX(4px) translateY(8px)' }}
               onMouseEnter={() => setDecorativeHoneycombHover('left')}
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
@@ -6349,7 +6349,7 @@ export default function Dashboard() {
             {/* Right decorative honeycomb - Modules */}
             <div 
               className="relative cursor-pointer"
-              style={{ width: gridSizes.courseRowHeight * 1.15, height: gridSizes.courseRowHeight * 1.15, transform: 'translateY(8px)' }}
+              style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, transform: 'translateY(8px)' }}
               onMouseEnter={() => setDecorativeHoneycombHover('right')}
               onMouseLeave={() => setDecorativeHoneycombHover(null)}
             >
@@ -6461,7 +6461,7 @@ export default function Dashboard() {
               {/* Middle decorative honeycomb with spring animation - Files */}
               <div 
                 className="absolute cursor-pointer"
-                style={{ width: gridSizes.courseRowHeight * 1.15, height: gridSizes.courseRowHeight * 1.15, top: '-103px', right: '-60px' }}
+                style={{ width: gridSizes.courseRowHeight * 1.05, height: gridSizes.courseRowHeight * 1.05, top: '-103px', right: '-60px' }}
                 onMouseEnter={() => setDecorativeHoneycombHover('middle')}
                 onMouseLeave={() => setDecorativeHoneycombHover(null)}
                 onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
