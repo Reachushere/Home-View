@@ -4370,9 +4370,9 @@ export default function Dashboard() {
         </div>
 
         {/* All items with equal gaps - spread between arrow and exam */}
-        <div className="flex items-center flex-1 h-full min-w-0 overflow-hidden pl-[6px] pr-4">
+        <div className="flex items-center justify-center flex-1 h-full min-w-0 overflow-hidden pl-[6px] pr-4">
           {/* Icon buttons and task buttons with adjustable spacing */}
-          <div className="flex items-center flex-wrap" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
+          <div className="flex items-center flex-wrap justify-center" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -4699,7 +4699,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full overflow-hidden !bg-transparent" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '15px', marginTop: '6px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full overflow-hidden !bg-transparent" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '6px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
           </div>
         </div>
 
