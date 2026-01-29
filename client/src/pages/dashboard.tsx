@@ -14,6 +14,7 @@ import honey2 from "@assets/Honey2_1769645399918.png";
 import honey3 from "@assets/Honey3_1769645399918.png";
 import ovalBanner from "@assets/Oval_1769694161559.png";
 import buttonBg from "@assets/Button_1769694441816.png";
+import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -4675,8 +4676,8 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square rounded-full border-0 overflow-hidden ${lastCompletedTaskId ? "bg-amber-500/80 hover:bg-amber-500" : "hover:opacity-80 opacity-50"}`}
-            style={lastCompletedTaskId ? {} : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
