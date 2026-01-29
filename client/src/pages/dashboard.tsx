@@ -6280,7 +6280,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto overflow-x-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '-1px', marginRight: '-9px', paddingRight: '4px', scrollbarWidth: 'none' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '-1px', marginRight: '6px', paddingRight: '4px', scrollbarWidth: 'none' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300 overflow-visible" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
@@ -6612,7 +6612,7 @@ export default function Dashboard() {
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
           <div style={{ width: 'calc(100% - 50px)' }}>
-          <Card className="shadow-lg rounded-md h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
+          <Card className="shadow-lg rounded-xl h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'visible' }}>
             {/* Friday/Saturday divider line */}
             <div className="absolute top-0 bottom-0 w-[3px] bg-black z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }} />
             
@@ -7714,7 +7714,7 @@ export default function Dashboard() {
         </div>
         ) : (
         <div className="mb-[12px] transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
-          <Card className="shadow-lg rounded-md overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm">
+          <Card className="shadow-lg rounded-xl overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm">
             <CardContent className="p-0 h-full overflow-auto">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
