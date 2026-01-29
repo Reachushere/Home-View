@@ -4454,7 +4454,7 @@ export default function Dashboard() {
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
               >
-                <Radio className="h-[42px] w-[42px] text-white" />
+                <Radio className="h-[48px] w-[48px] text-white" />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
