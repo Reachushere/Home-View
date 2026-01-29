@@ -5,6 +5,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 import tmuLogo from "@assets/Chang-School_1768803262583.png";
 import unicalLogo from "@assets/ChatGPT_Image_Jan_22,_2026,_02_34_52_PM_1769110943463.png";
 import campusBg from "@assets/TMU_1769151150961.jpg";
+import dashboardBg from "@assets/BG_1769691992519.jpg";
 import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
 import crowdCheer from "@assets/crowd-cheer.mp3";
@@ -3527,7 +3528,15 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen flex-col overflow-y-hidden overflow-x-visible">
+    <div 
+      className="flex h-screen flex-col overflow-y-hidden overflow-x-visible"
+      style={{ 
+        backgroundImage: `url(${dashboardBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       {/* Dynamic CSS for blink speed */}
       <style>{`
         .animate-file-box-blink-fast {
