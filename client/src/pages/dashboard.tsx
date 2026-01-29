@@ -13,6 +13,7 @@ import honey1 from "@assets/Honey1_1769645399917.png";
 import honey2 from "@assets/Honey2_1769645399918.png";
 import honey3 from "@assets/Honey3_1769645399918.png";
 import ovalBanner from "@assets/Oval_1769694161559.png";
+import buttonBg from "@assets/Button_1769694441816.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -4373,7 +4374,7 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white" data-testid="button-hamburger-menu">
+              <Button variant="ghost" size="icon" className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden" style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="button-hamburger-menu">
                 <Menu className="h-[14px] w-[14px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
@@ -4405,7 +4406,8 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
@@ -4417,7 +4419,8 @@ export default function Dashboard() {
             variant="ghost"
             size="icon"
             onClick={toggleMute}
-            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white ${isMuted ? "!bg-red-500 hover:!bg-red-600 !border-red-500" : ""}`}
+            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
+            style={isMuted ? {} : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
           >
@@ -4430,7 +4433,8 @@ export default function Dashboard() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+                className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+                style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
               >
@@ -4653,7 +4657,8 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
@@ -4669,7 +4674,8 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square rounded-md border-[0.1px] border-white ${lastCompletedTaskId ? "bg-amber-500/80 hover:bg-amber-500" : "hover:bg-white/20 opacity-50"}`}
+            className={`!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square rounded-full border-0 overflow-hidden ${lastCompletedTaskId ? "bg-amber-500/80 hover:bg-amber-500" : "hover:opacity-80 opacity-50"}`}
+            style={lastCompletedTaskId ? {} : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
@@ -4682,7 +4688,8 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:bg-white/20 rounded-md border-[0.1px] border-white"
+            className="!h-[29px] !w-[29px] !min-h-[29px] !min-w-[29px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
             data-testid="button-completed-tasks"
             onClick={() => setIsCompletedTasksOpen(true)}
           >
