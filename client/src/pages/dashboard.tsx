@@ -6298,6 +6298,8 @@ export default function Dashboard() {
                   right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
                   transformOrigin: 'center center'
                 }}
+                onMouseEnter={() => setDecorativeHoneycombHover('left')}
+                onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
                 <div 
                   className="relative w-full h-full cursor-pointer"
@@ -6318,6 +6320,8 @@ export default function Dashboard() {
                   transformOrigin: 'center center',
                   transitionDelay: '50ms'
                 }}
+                onMouseEnter={() => setDecorativeHoneycombHover('left')}
+                onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
                 <div 
                   className="relative w-full h-full cursor-pointer"
@@ -6338,6 +6342,8 @@ export default function Dashboard() {
                   transformOrigin: 'center center',
                   transitionDelay: '100ms'
                 }}
+                onMouseEnter={() => setDecorativeHoneycombHover('left')}
+                onMouseLeave={() => setDecorativeHoneycombHover(null)}
               >
                 <div 
                   className="relative w-full h-full cursor-pointer"
