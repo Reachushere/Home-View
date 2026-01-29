@@ -10,7 +10,7 @@ import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
 import crowdCheer from "@assets/crowd-cheer.mp3";
 import hexIcon from "@assets/Button_1769701329320.png";
-import ovalBanner from "@assets/Oval3_1769706364561.png";
+import ovalBanner from "@assets/Oval4_1769706502235.png";
 import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
