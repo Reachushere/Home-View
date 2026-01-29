@@ -4427,7 +4427,7 @@ export default function Dashboard() {
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
           >
-            <GraduationCap className="h-[38px] w-[38px] text-white" />
+            <GraduationCap className="h-[42px] w-[42px] text-white" />
           </Button>
 
           {/* Bell */}
