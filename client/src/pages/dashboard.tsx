@@ -7573,6 +7573,11 @@ export default function Dashboard() {
                 </Button>
               </div>
               
+              {/* All Files Header */}
+              <div className="flex items-center gap-1.5 pl-2 pr-2 py-1 bg-black/30 border-b border-white/20">
+                <Folder className="h-3 w-3 text-blue-400 fill-blue-300" />
+                <span className="text-xs font-medium">All Files</span>
+              </div>
               
               {/* Week Folders */}
               <div className="flex-1 overflow-y-auto py-2 px-2" style={{ scrollbarWidth: 'none' }}>
