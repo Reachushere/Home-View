@@ -482,23 +482,6 @@ export default function Dashboard() {
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
-  const [customBackground, setCustomBackground] = useState<string | null>(() => {
-    try {
-      const saved = localStorage.getItem('customBackground');
-      // Validate it's actually a valid data URL
-      if (saved && saved.startsWith('data:image/')) {
-        return saved;
-      }
-      // Clear invalid entry
-      if (saved) {
-        localStorage.removeItem('customBackground');
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  });
-  
   // Discussion post checkbox states (persisted per week in localStorage)
   const [startDiscussionComplete, setStartDiscussionComplete] = useState<boolean>(() => {
     const saved = localStorage.getItem(`discussionStart_week${selectedWeek}`);
@@ -3551,7 +3534,7 @@ export default function Dashboard() {
     <div 
       className="flex h-screen flex-col overflow-hidden"
       style={{ 
-        backgroundImage: customBackground ? `url(${customBackground})` : `url(${dashboardBg})`,
+        backgroundImage: `url(${dashboardBg})`,
         backgroundSize: '100% 100%',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
@@ -4318,7 +4301,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 overflow-visible relative z-10" style={{ backgroundColor: customBackground ? 'transparent' : colorSettings.mainBackground }}>
+      <div className="flex flex-1 overflow-visible relative z-10" style={{ backgroundColor: colorSettings.mainBackground }}>
         {/* Constant fade overlay - disabled for solid black background */}
         <div 
           className="absolute inset-0 pointer-events-none"
@@ -4693,7 +4676,7 @@ export default function Dashboard() {
             variant="ghost" 
             size="icon" 
             className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
-            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '4px', zIndex: 30, position: 'relative' }}
+            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '4px', zIndex: 50, position: 'relative' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
@@ -7516,7 +7499,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - separate panel for week folders, starts below the two flyouts above */}
-          <div className={`absolute z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width) + 155}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 15}px`, bottom: '55px', right: '48px' }}>
+          <div className={`absolute z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width) + 155}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 15}px`, bottom: '55px', right: '44px' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
