@@ -6307,9 +6307,9 @@ export default function Dashboard() {
                   <stop offset="0%" stopColor="#546e83" stopOpacity="1" />
                   <stop offset="100%" stopColor="#8695b2" stopOpacity="1" />
                 </linearGradient>
-                <linearGradient id="honeycombGradientMiddle" x1="0%" y1="0%" x2="0%" y2="0%">
-                  <stop offset="0%" stopColor="#8D9DB3" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#8D9DB3" stopOpacity="1" />
+                <linearGradient id="honeycombGradientMiddle" x1="100%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#557082" stopOpacity="1" />
+                  <stop offset="100%" stopColor="#8797b1" stopOpacity="1" />
                 </linearGradient>
                 <filter id="honeycombShadow" x="-20%" y="-20%" width="150%" height="150%">
                   <feDropShadow dx="2" dy="2" stdDeviation="1" floodColor="#0A1B22" floodOpacity="0.6" />
