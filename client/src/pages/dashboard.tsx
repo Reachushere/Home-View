@@ -5961,100 +5961,12 @@ export default function Dashboard() {
                 {/* Left Column */}
                 <div className="space-y-4">
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Background Image and Colours</Label>
+                  <Label className="text-sm font-medium">Colour Settings</Label>
                   <p className="text-xs text-muted-foreground">
-                    Upload a custom background image or customise colours.
+                    Customise colours for the app.
                   </p>
                   
-                  {customBackground && (
-                    <div className="relative w-full h-20 rounded-md overflow-hidden border">
-                      <img 
-                        src={customBackground} 
-                        alt="Current background" 
-                        className="w-full h-full object-cover"
-                      />
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="absolute top-1 right-1"
-                        onClick={() => {
-                          localStorage.removeItem('customBackground');
-                          setCustomBackground(null);
-                          toast({ title: "Background reset", description: "Default background has been restored." });
-                        }}
-                        data-testid="button-reset-background"
-                      >
-                        <X className="h-3 w-3 mr-1" />
-                        Reset
-                      </Button>
-                    </div>
-                  )}
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      id="background-upload"
-                      data-testid="input-background-upload"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        
-                        // Compress image to fit localStorage limits
-                        const compressImage = (file: File, maxWidth: number = 1920, quality: number = 0.7): Promise<string> => {
-                          return new Promise((resolve, reject) => {
-                            const reader = new FileReader();
-                            reader.onload = (event) => {
-                              const img = new Image();
-                              img.onload = () => {
-                                const canvas = document.createElement('canvas');
-                                let { width, height } = img;
-                                
-                                // Scale down if too large
-                                if (width > maxWidth) {
-                                  height = (height * maxWidth) / width;
-                                  width = maxWidth;
-                                }
-                                
-                                canvas.width = width;
-                                canvas.height = height;
-                                const ctx = canvas.getContext('2d');
-                                ctx?.drawImage(img, 0, 0, width, height);
-                                
-                                // Convert to compressed JPEG
-                                const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
-                                resolve(compressedDataUrl);
-                              };
-                              img.onerror = reject;
-                              img.src = event.target?.result as string;
-                            };
-                            reader.onerror = reject;
-                            reader.readAsDataURL(file);
-                          });
-                        };
-                        
-                        try {
-                          const compressedDataUrl = await compressImage(file);
-                          localStorage.setItem('customBackground', compressedDataUrl);
-                          setCustomBackground(compressedDataUrl);
-                          toast({ title: "Background updated", description: "Your custom background has been saved." });
-                        } catch (error) {
-                          toast({ title: "Error", description: "Failed to save background image. Try a smaller image.", variant: "destructive" });
-                        }
-                      }}
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById('background-upload')?.click()}
-                      data-testid="button-upload-background"
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      {customBackground ? "Change Background" : "Upload Background"}
-                    </Button>
-                  </div>
-                  
-                  <div className="space-y-2 pt-2 border-t">
+                  <div className="space-y-2">
                     {/* Main Background Colour */}
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Main Background Colour</Label>
