@@ -4366,7 +4366,7 @@ export default function Dashboard() {
               </Button>
             </div>
             {/* Date display with arrows */}
-            <div className="flex items-center gap-1" style={{ marginTop: '-1px' }}>
+            <div className="flex items-center gap-1" style={{ marginTop: '-9px' }}>
               {/* Left arrow */}
               <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
@@ -6898,9 +6898,9 @@ export default function Dashboard() {
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
               <div data-testid="course-rows-container">
               {[
-                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.35)', label: 'rgba(74, 222, 128, 0.70)', colors: courseColors['CPPA122'] },
-                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.45)', label: 'rgba(244, 114, 182, 0.70)', colors: courseColors['CFNF400'] },
-                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.45)', label: 'rgba(129, 140, 248, 0.70)', colors: courseColors['CASL101'] }
+                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.20)', label: 'rgba(74, 222, 128, 0.50)', colors: courseColors['CPPA122'] },
+                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.25)', label: 'rgba(244, 114, 182, 0.50)', colors: courseColors['CFNF400'] },
+                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.25)', label: 'rgba(129, 140, 248, 0.50)', colors: courseColors['CASL101'] }
               ].map((course, courseIdx) => {
                 // Get full-week tasks for this course (tasks that span from visible start to Friday)
                 // Exclude completed tasks so they are removed from view
