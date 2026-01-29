@@ -7115,7 +7115,7 @@ export default function Dashboard() {
                     className="grid border-b border-border/50 relative group/row"
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'hidden', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                   >
-                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#EAE4DE' : colorSettings.headerBar, color: isCurrentHour ? '#3B302C' : 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
+                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#3B302C' : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
@@ -7130,7 +7130,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            backgroundColor: (isToday || isCurrentHour) ? '#EAE4DE' : undefined,
+                            backgroundColor: isCurrentHour ? '#3B302C' : isToday ? '#EAE4DE' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
