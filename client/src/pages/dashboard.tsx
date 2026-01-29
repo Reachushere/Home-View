@@ -6297,11 +6297,15 @@ export default function Dashboard() {
                   transformOrigin: 'center center'
                 }}
               >
-                <div className="relative w-full h-full">
+                <div 
+                  className="relative w-full h-full cursor-pointer"
+                  onClick={() => setReadingsPopupCourse('cppa122')}
+                >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-green-400" />
                 </div>
               </div>
-              {/* Middle honeycomb - Files */}
+              {/* Middle honeycomb - Readings CFNF400 */}
               <div 
                 className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
@@ -6313,11 +6317,15 @@ export default function Dashboard() {
                   transitionDelay: '50ms'
                 }}
               >
-                <div className="relative w-full h-full">
-                  <img src={honey2} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                <div 
+                  className="relative w-full h-full cursor-pointer"
+                  onClick={() => setReadingsPopupCourse('cfnf400')}
+                >
+                  <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-pink-400" />
                 </div>
               </div>
-              {/* Bottom honeycomb - Modules */}
+              {/* Bottom honeycomb - Readings CASL101 */}
               <div 
                 className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
                 style={{ 
@@ -6329,8 +6337,12 @@ export default function Dashboard() {
                   transitionDelay: '100ms'
                 }}
               >
-                <div className="relative w-full h-full">
+                <div 
+                  className="relative w-full h-full cursor-pointer"
+                  onClick={() => setReadingsPopupCourse('casl101')}
+                >
                   <img src={honey1} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+                  <FolderOpen className="absolute inset-0 m-auto h-3 w-3 text-indigo-400" />
                 </div>
               </div>
             </div>
