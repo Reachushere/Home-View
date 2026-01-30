@@ -5724,7 +5724,7 @@ export default function Dashboard() {
       </div>
       
       {/* Date Range above Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '285px', right: '6px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '285px', right: '11px', width: '70px' }}>
         <Button 
           variant="ghost" 
           size="icon" 
