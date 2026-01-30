@@ -1699,12 +1699,30 @@ export default function Dashboard() {
       .replace(/^Click\s+.+$/gm, '') // Lines starting with "Click"
       .replace(/^See\s+.+$/gm, '') // Lines starting with "See"
       .replace(/^View\s+.+$/gm, '') // Lines starting with "View"
+      .replace(/^Author[s]?:?\s+.+$/gim, '') // Lines starting with "Author" or "Authors"
       .replace(/\[.*?\]/g, '') // Remove bracketed content like [Video], [Link], etc.
       .replace(/\(.*?video.*?\)/gi, '') // Remove parenthetical video references
       .replace(/\(.*?link.*?\)/gi, '') // Remove parenthetical link references
       .replace(/\d+:\d+:\d+/g, '') // Remove timestamps like 1:23:45
       .replace(/\d+:\d+/g, '') // Remove timestamps like 1:23
       .replace(/\n\s*\n\s*\n/g, '\n\n'); // Clean up extra blank lines
+    
+    // Remove entire paragraphs containing JSTOR references
+    const paragraphs = cleanedText.split(/\n\n+/);
+    const filteredParagraphs = paragraphs.filter(para => {
+      const lowerPara = para.toLowerCase();
+      // Skip paragraphs with JSTOR, author info, or publication metadata
+      if (lowerPara.includes('jstor') || 
+          lowerPara.includes('stable url') ||
+          lowerPara.includes('accessed:') ||
+          lowerPara.includes('published by:') ||
+          lowerPara.includes('all rights reserved') ||
+          /^author[s]?:/i.test(para.trim())) {
+        return false;
+      }
+      return true;
+    });
+    cleanedText = filteredParagraphs.join('\n\n');
     
     // Common French words/patterns to detect French sentences
     const frenchPatterns = [
@@ -6044,11 +6062,11 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle (CSS) - Same as side pill rotated 90deg */}
-      <div className="fixed pointer-events-none" style={{ top: '-286px', left: '50%', transform: 'translateX(-50%) translateX(-34px)', zIndex: 1 }}>
+      <div className="fixed pointer-events-none" style={{ top: '-287px', left: '50%', transform: 'translateX(-50%) translateX(-33px)', zIndex: 1 }}>
         <div 
           style={{ 
             width: '48px', 
-            height: '640px', 
+            height: '642px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '24px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
