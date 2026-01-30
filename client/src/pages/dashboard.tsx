@@ -3979,40 +3979,7 @@ export default function Dashboard() {
           
           {/* Top Menu Bar - File Selector and Speaker */}
           <div className="flex items-center justify-between p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
-            {/* File Selector - shows for reading files */}
-            {(() => {
-              const folderParts = previewFile?.folder?.split('-') || [];
-              const weekNum = folderParts[1];
-              const courseCode = folderParts[2];
-              const isReading = previewFile?.folder?.includes('reading');
-              const isModule = previewFile?.folder?.includes('module');
-              const relatedFiles = (isReading || isModule) ? allFiles.filter(f => 
-                f.folder?.includes(`week-${weekNum}-${courseCode}`) && 
-                (isReading ? f.folder?.includes('reading') : f.folder?.includes('module'))
-              ) : [];
-              
-              return (
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] text-white/60">File:</span>
-                  <Select value={previewFile?.id?.toString() || ''} onValueChange={(val) => {
-                    const file = relatedFiles.find(f => f.id.toString() === val);
-                    if (file) setPreviewFile(file);
-                  }}>
-                    <SelectTrigger className="w-[320px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-reading-file">
-                      <SelectValue placeholder="Select File" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
-                      {relatedFiles.map(file => (
-                        <SelectItem key={file.id} value={file.id.toString()} className="text-[10px]">
-                          {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              );
-            })()}
-            
+            {/* Speaker Selector */}
             <div className="flex items-center gap-2">
               <span className="text-[9px] text-white/60">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
@@ -4028,6 +3995,78 @@ export default function Dashboard() {
                 </SelectContent>
               </Select>
             </div>
+            
+            {/* File Selector with Navigation Arrows */}
+            {(() => {
+              const folderParts = previewFile?.folder?.split('-') || [];
+              const weekNum = folderParts[1];
+              const courseCode = folderParts[2];
+              const isReading = previewFile?.folder?.includes('reading');
+              const isModule = previewFile?.folder?.includes('module');
+              const relatedFiles = (isReading || isModule) ? allFiles.filter(f => 
+                f.folder?.includes(`week-${weekNum}-${courseCode}`) && 
+                (isReading ? f.folder?.includes('reading') : f.folder?.includes('module'))
+              ) : [];
+              
+              const currentIndex = relatedFiles.findIndex(f => f.id === previewFile?.id);
+              const canGoPrev = currentIndex > 0;
+              const canGoNext = currentIndex < relatedFiles.length - 1;
+              
+              const goToPrevFile = () => {
+                if (canGoPrev) {
+                  setPreviewFile(relatedFiles[currentIndex - 1]);
+                }
+              };
+              
+              const goToNextFile = () => {
+                if (canGoNext) {
+                  setPreviewFile(relatedFiles[currentIndex + 1]);
+                }
+              };
+              
+              return (
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] text-white/60">File:</span>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 text-white hover:bg-gray-700 disabled:opacity-30"
+                    onClick={goToPrevFile}
+                    disabled={!canGoPrev}
+                    data-testid="button-prev-file"
+                    title="Previous file"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Select value={previewFile?.id?.toString() || ''} onValueChange={(val) => {
+                    const file = relatedFiles.find(f => f.id.toString() === val);
+                    if (file) setPreviewFile(file);
+                  }}>
+                    <SelectTrigger className="w-[320px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-reading-file">
+                      <SelectValue placeholder="Select File" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {relatedFiles.map(file => (
+                        <SelectItem key={file.id} value={file.id.toString()} className="text-[10px]">
+                          {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-6 w-6 text-white hover:bg-gray-700 disabled:opacity-30"
+                    onClick={goToNextFile}
+                    disabled={!canGoNext}
+                    data-testid="button-next-file"
+                    title="Next file"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              );
+            })()}
           </div>
           
           {/* Bottom Media Controls Bar */}
