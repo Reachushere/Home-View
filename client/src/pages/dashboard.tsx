@@ -1964,7 +1964,11 @@ export default function Dashboard() {
         toast({ title: "No text content available", variant: "destructive" });
         return;
       }
-      const cleanTextForTts = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+      let cleanTextForTts = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+      // Normalize whitespace and line breaks
+      cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
+      cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+      cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
       const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
       ttsChunksRef.current = chunks;
       setTtsChunks(chunks);
@@ -2034,7 +2038,11 @@ export default function Dashboard() {
         }
         
         // Remove page markers and split into chunks
-        const cleanTextForTts = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+        let cleanTextForTts = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+        // Normalize whitespace and line breaks
+        cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
+        cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+        cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
         const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
         
         ttsChunksRef.current = chunks;
@@ -4371,7 +4379,14 @@ export default function Dashboard() {
                 <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
                     // Clean text for display - same filtering as TTS
-                    const cleanText = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+                    // First normalize excessive whitespace and line breaks within lines
+                    let cleanText = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+                    // Normalize multiple spaces to single space
+                    cleanText = cleanText.replace(/[ \t]+/g, ' ');
+                    // Normalize line breaks - keep paragraph breaks (2+ newlines) but join single newlines that break sentences mid-flow
+                    cleanText = cleanText.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+                    // Clean up any remaining excessive newlines
+                    cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
                     
                     // Track global word index for highlighting
                     let globalWordIndex = 0;
