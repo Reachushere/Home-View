@@ -6027,8 +6027,11 @@ export default function Dashboard() {
         {showDeviceSaved ? "Saved!" : "Set Default"}
       </label>
       
-      {/* Copyright - Bottom right of page */}
-      <div className="fixed bottom-2 right-4 text-white/60 text-[10px] font-medium z-50 pointer-events-none">
+      {/* Copyright - Right side of page, rotated */}
+      <div 
+        className="fixed right-1 text-white/60 text-[10px] font-medium z-50 pointer-events-none"
+        style={{ bottom: '40px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+      >
         © 2026
       </div>
       
