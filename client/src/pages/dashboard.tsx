@@ -4031,7 +4031,7 @@ export default function Dashboard() {
           </div>
           
           {/* Bottom Media Controls Bar */}
-          <div className="flex items-center p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
+          <div className="flex items-center p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] gap-3">
             {/* Voice selector - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
               <>
@@ -4097,9 +4097,8 @@ export default function Dashboard() {
               </div>
             )}
             
-            <div className="flex items-center" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
-              {/* Playback Controls */}
-              <div className="flex items-center" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
+            {/* Playback Controls */}
+              <div className="flex items-center gap-3">
                 <Button
                   size="icon"
                   variant="outline"
@@ -4157,7 +4156,7 @@ export default function Dashboard() {
               <div className="w-px h-6 bg-white/30" />
               
               {/* Restart Controls */}
-              <div className="flex items-center" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
+              <div className="flex items-center gap-3">
                 <Button
                   size="sm"
                   variant="outline"
@@ -4191,7 +4190,7 @@ export default function Dashboard() {
               <div className="w-px h-6 bg-white/30" />
               
               {/* Volume Controls */}
-              <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -4315,7 +4314,7 @@ export default function Dashboard() {
             <div className="w-px h-6 bg-white/30 mx-2" />
             
             {/* Mark as Completed Checkbox */}
-            <div className="flex items-center gap-1 ml-1">
+            <div className="flex items-center gap-1">
               <Checkbox
                 id="mark-completed"
                 checked={false}
