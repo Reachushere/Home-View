@@ -6012,7 +6012,7 @@ export default function Dashboard() {
         <div 
           style={{ 
             width: '44px', 
-            height: '502px', 
+            height: '507px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '22px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
