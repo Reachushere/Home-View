@@ -555,6 +555,10 @@ export default function Dashboard() {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
+      // Don't close if clicking date navigation arrows
+      const isDateNav = target.closest('[data-date-nav]');
+      if (isDateNav) return;
+      
       // Check if click is on modules button or course buttons
       if (modulesHoneycombOpen === 'modules') {
         const isModulesButton = target.closest('[data-modules-button]');
@@ -1939,7 +1943,7 @@ export default function Dashboard() {
         toast({ title: "No text content available", variant: "destructive" });
         return;
       }
-      const cleanTextForTts = previewText.replace(/---PAGE---/g, '');
+      const cleanTextForTts = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
       const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
       ttsChunksRef.current = chunks;
       setTtsChunks(chunks);
@@ -2009,7 +2013,7 @@ export default function Dashboard() {
         }
         
         // Remove page markers and split into chunks
-        const cleanTextForTts = previewText.replace(/---PAGE---/g, '');
+        const cleanTextForTts = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
         const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
         
         ttsChunksRef.current = chunks;
@@ -4346,7 +4350,7 @@ export default function Dashboard() {
                 <div className="text-sm leading-relaxed">
                   {(() => {
                     // Split text into chunks for display with colored backgrounds
-                    const cleanText = previewText.replace(/---PAGE---/g, '');
+                    const cleanText = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
                     const chunks = splitTextIntoChunks(cleanText, 2000);
                     
                     // Chunk background colors (alternating)
@@ -4494,7 +4498,7 @@ export default function Dashboard() {
             {/* Date display with arrows */}
             <div className="flex items-center justify-center gap-1">
               {/* Left arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week">
+              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week" data-date-nav>
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
               </Button>
               {/* Date display */}
@@ -4504,7 +4508,7 @@ export default function Dashboard() {
                 <span className="text-[12px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
               </div>
               {/* Right arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week">
+              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week" data-date-nav>
                 <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
               </Button>
             </div>
