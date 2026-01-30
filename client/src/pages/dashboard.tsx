@@ -4528,7 +4528,7 @@ export default function Dashboard() {
           </div>
           
           {/* Done Button */}
-          <div className="flex justify-end p-4 mx-6 mb-2 mr-5" style={{ marginTop: '-20px' }}>
+          <div className="flex justify-end p-4 mx-6 mb-2" style={{ marginTop: '-20px', marginRight: '35px' }}>
             <Button
               variant="outline"
               className="px-8 py-2 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
