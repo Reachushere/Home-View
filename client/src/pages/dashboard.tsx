@@ -15,7 +15,7 @@ import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import tallPill from "@assets/Tall_1769697999710.png";
-import boxBg from "@assets/Box11_1769785487858.png";
+import boxBg from "@assets/Box_12_1769785774382.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -5760,7 +5760,7 @@ export default function Dashboard() {
             <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadModuleCount > 0 && (
-              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30">
+              <div className="absolute bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-5px', right: '-2px' }}>
                 {unreadModuleCount}
               </div>
             )}
@@ -5854,7 +5854,7 @@ export default function Dashboard() {
             <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadReadingCount > 0 && (
-              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30">
+              <div className="absolute bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-5px', right: '-2px' }}>
                 {unreadReadingCount}
               </div>
             )}
