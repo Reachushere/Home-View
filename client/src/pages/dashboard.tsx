@@ -5725,32 +5725,32 @@ export default function Dashboard() {
       
       {/* Date Range above Tall Pill */}
       <div className="absolute z-50 flex flex-col items-center justify-center" style={{ top: '285px', right: '11px', width: '70px' }}>
-        <div className="flex items-center justify-center gap-1 mb-0.5">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-4 w-4 p-0 hover:bg-white/20 rounded" 
-            onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} 
-            data-testid="button-pill-prev-week"
-            data-date-nav
-          >
-            <ChevronLeft className="h-2.5 w-2.5 text-white" strokeWidth={2.5} />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="h-4 w-4 p-0 hover:bg-white/20 rounded" 
-            onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} 
-            data-testid="button-pill-next-week"
-            data-date-nav
-          >
-            <ChevronRight className="h-2.5 w-2.5 text-white" strokeWidth={2.5} />
-          </Button>
-        </div>
         <div className="flex items-center gap-0.5">
           <span className="text-[9px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "MMM d")}</span>
           <span className="text-[9px] text-white/60">-</span>
           <span className="text-[9px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
+        </div>
+        <div className="flex items-center justify-center gap-1 mt-0.5">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-5 w-5 p-0 hover:bg-white/20 rounded" 
+            onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} 
+            data-testid="button-pill-prev-week"
+            data-date-nav
+          >
+            <ChevronLeft className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-5 w-5 p-0 hover:bg-white/20 rounded" 
+            onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} 
+            data-testid="button-pill-next-week"
+            data-date-nav
+          >
+            <ChevronRight className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+          </Button>
         </div>
       </div>
       
@@ -6903,7 +6903,7 @@ export default function Dashboard() {
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                <span className="text-[11px] font-medium tracking-wide" style={{ color: '#f97316' }}>Week {selectedWeek}</span>
+                <span className="text-[11px] font-medium tracking-wide" style={{ color: '#fb923c' }}>Week {selectedWeek}</span>
                 {/* Time column resize handle - right edge */}
                 <div
                   className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
