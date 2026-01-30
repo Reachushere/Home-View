@@ -847,7 +847,9 @@ export async function registerRoutes(
         };
         
         res.setHeader('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
-        res.setHeader('Content-Disposition', `attachment; filename="${file.displayName || file.originalName}"`);
+        // Use inline for PDFs to allow browser rendering, attachment for other files
+        const disposition = ext === 'pdf' ? 'inline' : 'attachment';
+        res.setHeader('Content-Disposition', `${disposition}; filename="${file.displayName || file.originalName}"`);
         res.setHeader('Content-Length', content.length.toString());
         res.send(content);
       } else {
