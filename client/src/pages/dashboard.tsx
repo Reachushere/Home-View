@@ -4312,6 +4312,8 @@ export default function Dashboard() {
               <Download className="h-3 w-3" />
             </Button>
             
+            <div className="w-px h-6 bg-white/30 ml-1" />
+            
             {/* Mark as Completed Checkbox */}
             <div className="flex items-center gap-1 ml-1">
               <Checkbox
