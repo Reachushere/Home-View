@@ -4038,7 +4038,7 @@ export default function Dashboard() {
                       } else {
                         fileSelectorGlowTimeoutRef.current = setTimeout(() => {
                           setFileSelectorGlow(false);
-                        }, 3000);
+                        }, 30000);
                       }
                     }}
                   >
