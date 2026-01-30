@@ -5749,7 +5749,7 @@ export default function Dashboard() {
       
       {/* Modules Button - On top of tall pill */}
       {(() => {
-        const unreadModuleCount = allFiles.filter(f => f.folder?.includes('module') && !f.listened).length;
+        const unreadModuleCount = allFiles.filter(f => f.folder?.includes('module') && f.folder?.includes(`week-${selectedWeek}`) && !f.listened).length;
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
@@ -5760,7 +5760,7 @@ export default function Dashboard() {
             <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadModuleCount > 0 && (
-              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-md">
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30">
                 {unreadModuleCount}
               </div>
             )}
@@ -5843,7 +5843,7 @@ export default function Dashboard() {
       
       {/* Readings Button - Below modules button on tall pill */}
       {(() => {
-        const unreadReadingCount = allFiles.filter(f => f.folder?.includes('reading') && !f.listened).length;
+        const unreadReadingCount = allFiles.filter(f => f.folder?.includes('reading') && f.folder?.includes(`week-${selectedWeek}`) && !f.listened).length;
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
@@ -5854,7 +5854,7 @@ export default function Dashboard() {
             <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadReadingCount > 0 && (
-              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-md">
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30">
                 {unreadReadingCount}
               </div>
             )}
