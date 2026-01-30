@@ -4881,12 +4881,17 @@ export default function Dashboard() {
             variant="ghost"
             size="icon"
             onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
-            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
-            style={isMuted ? { marginTop: '7px' } : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
+            className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
+            style={isMuted ? { marginTop: '5px' } : { 
+              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(80,80,80,0.5)',
+              marginTop: '5px' 
+            }}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
           >
-            {isMuted ? <BellOff className="h-[38px] w-[38px] text-white" /> : <Bell className="h-[38px] w-[38px] text-white" />}
+            {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
           </Button>
 
           {/* Radio Dialog */}
@@ -4895,13 +4900,18 @@ export default function Dashboard() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
-                style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
+                className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
+                style={{ 
+                  background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+                  border: '1px solid rgba(80,80,80,0.5)',
+                  marginTop: '5px' 
+                }}
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
                 onClick={() => triggerButtonGlow('radio')}
               >
-                <Radio className="text-white" style={{ height: '19px', width: '19px' }} />
+                <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
@@ -6470,15 +6480,22 @@ export default function Dashboard() {
       
       {/* Files Button - Below readings button on tall pill */}
       <div 
-        className="absolute cursor-pointer z-50 pointer-events-auto"
-        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '432px', right: '15px' }}
+        className="absolute cursor-pointer z-50 pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
+        style={{ 
+          width: '55px', 
+          height: '55px', 
+          top: '432px', 
+          right: '9px',
+          background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+          border: '1px solid rgba(80,80,80,0.5)'
+        }}
         onMouseEnter={() => setDecorativeHoneycombHover('middle')}
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
         onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
         data-testid="honeycomb-files-main"
       >
-        <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <Folder className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         {/* Spring out honeycombs for course readings */}
         {/* CPPA122 */}
         <div 
@@ -6543,29 +6560,38 @@ export default function Dashboard() {
       
       {/* Todo Button - Below files button on tall pill */}
       <div 
-        className="absolute cursor-pointer z-50 pointer-events-auto"
-        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '483px', right: '15px' }}
+        className="absolute cursor-pointer z-50 pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
+        style={{ 
+          width: '55px', 
+          height: '55px', 
+          top: '483px', 
+          right: '9px',
+          background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+          border: '1px solid rgba(80,80,80,0.5)'
+        }}
         onClick={() => setIsTodoFlyoutOpen(!isTodoFlyoutOpen)}
         data-testid="honeycomb-todo-main"
       >
-        <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <ListChecks className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
       </div>
 
       {/* Arrow Toggle Button - Below todo button on tall pill */}
       <div 
-        className="absolute cursor-pointer z-[60] pointer-events-auto"
-        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '534px', right: '15px' }}
+        className="absolute cursor-pointer z-[60] pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
+        style={{ 
+          width: '55px', 
+          height: '55px', 
+          top: '534px', 
+          right: '9px',
+          background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+          border: '1px solid rgba(80,80,80,0.5)'
+        }}
         onClick={() => setBlinkSettings(prev => ({ ...prev, showArrows: !prev.showArrows }))}
         data-testid="honeycomb-arrows-toggle"
       >
-        <img 
-          src={hexIcon} 
-          alt="" 
-          className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" 
-          style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} 
-        />
-        <TrendingUp className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
+        <TrendingUp style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
