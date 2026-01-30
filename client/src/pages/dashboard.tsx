@@ -1969,8 +1969,10 @@ export default function Dashboard() {
       cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
       cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
       cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
-      // Add slight pauses after bullet points (add period if missing)
-      cleanTextForTts = cleanTextForTts.replace(/^([•\-\*►▶→]\s*.+?)([^.!?])$/gm, '$1$2.');
+      // Remove bullet point characters so TTS doesn't say "bullet"
+      cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
+      // Add slight pauses after lines that were bullet points (add period if line doesn't end with punctuation)
+      cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
       // Add longer pause after paragraph breaks (double newline becomes period + pause)
       cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
       // Clean up duplicate periods
@@ -2049,8 +2051,10 @@ export default function Dashboard() {
         cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
         cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
         cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
-        // Add slight pauses after bullet points (add period if missing)
-        cleanTextForTts = cleanTextForTts.replace(/^([•\-\*►▶→]\s*.+?)([^.!?])$/gm, '$1$2.');
+        // Remove bullet point characters so TTS doesn't say "bullet"
+        cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
+        // Add slight pauses after lines that were bullet points (add period if line doesn't end with punctuation)
+        cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
         // Add longer pause after paragraph breaks (double newline becomes period + pause)
         cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
         // Clean up duplicate periods
