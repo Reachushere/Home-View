@@ -1473,6 +1473,18 @@ export default function Dashboard() {
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
   const [fileSelectorGlow, setFileSelectorGlow] = useState(false);
   const fileSelectorGlowTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [clickedButton, setClickedButton] = useState<string | null>(null);
+  const clickedButtonTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const triggerButtonGlow = (buttonId: string) => {
+    if (clickedButtonTimeoutRef.current) {
+      clearTimeout(clickedButtonTimeoutRef.current);
+    }
+    setClickedButton(buttonId);
+    clickedButtonTimeoutRef.current = setTimeout(() => {
+      setClickedButton(null);
+    }, 1000);
+  };
   const [previewSpeaker, setPreviewSpeaker] = useState<string>("media_player.echo_cat_left_am");
   const [previewText, setPreviewText] = useState<string>("");
   const [isLoadingText, setIsLoadingText] = useState(false);
@@ -4638,7 +4650,7 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:outline focus:outline-2 focus:outline-orange-500 focus:outline-offset-2" style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
+              <Button variant="ghost" size="icon" className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${clickedButton === 'hamburger' ? 'shadow-[0_0_8px_rgba(59,130,246,0.6),0_0_4px_rgba(255,255,255,0.5)] outline outline-2 outline-blue-400' : ''}`} style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu" onClick={() => triggerButtonGlow('hamburger')}>
                 <Menu className="h-[38px] w-[38px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
@@ -4670,10 +4682,10 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:outline focus:outline-2 focus:outline-orange-500 focus:outline-offset-2"
+            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${clickedButton === 'settings' ? 'shadow-[0_0_8px_rgba(59,130,246,0.6),0_0_4px_rgba(255,255,255,0.5)] outline outline-2 outline-blue-400' : ''}`}
             style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-settings-panel"
-            onClick={() => setIsSettingsPanelOpen(true)}
+            onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
           >
             <GraduationCap className="text-white" style={{ height: '20px', width: '20px' }} />
           </Button>
@@ -4682,8 +4694,8 @@ export default function Dashboard() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={toggleMute}
-            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_20px_6px_rgba(251,146,60,0.9),0_0_40px_12px_rgba(251,146,60,0.5)] transition-shadow duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
+            onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
+            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${clickedButton === 'bell' ? 'shadow-[0_0_8px_rgba(59,130,246,0.6),0_0_4px_rgba(255,255,255,0.5)] outline outline-2 outline-blue-400' : ''} ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
             style={isMuted ? { marginTop: '7px' } : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
@@ -4697,10 +4709,11 @@ export default function Dashboard() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200"
+                className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${clickedButton === 'radio' ? 'shadow-[0_0_8px_rgba(59,130,246,0.6),0_0_4px_rgba(255,255,255,0.5)] outline outline-2 outline-blue-400' : ''}`}
                 style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
+                onClick={() => triggerButtonGlow('radio')}
               >
                 <Radio className="text-white" style={{ height: '19px', width: '19px' }} />
               </Button>
@@ -4921,9 +4934,9 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200"
+            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${clickedButton === 'sync' ? 'shadow-[0_0_8px_rgba(59,130,246,0.6),0_0_4px_rgba(255,255,255,0.5)] outline outline-2 outline-blue-400' : ''}`}
             style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
-            onClick={() => syncAllCalendarMutation.mutate()}
+            onClick={() => { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); }}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
           >
@@ -4938,9 +4951,9 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 focus:shadow-[0_0_12px_rgba(251,146,60,0.7)] transition-shadow duration-200 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+            className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 transition-all duration-200 ${clickedButton === 'undo' ? 'shadow-[0_0_8px_rgba(59,130,246,0.6),0_0_4px_rgba(255,255,255,0.5)] outline outline-2 outline-blue-400' : ''} ${lastCompletedTaskId ? "" : "opacity-50"}`}
             style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '4px', zIndex: 50, position: 'relative' }}
-            onClick={handleUndoComplete}
+            onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
             title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
@@ -4952,16 +4965,16 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200"
+            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${clickedButton === 'completed' ? 'shadow-[0_0_8px_rgba(59,130,246,0.6),0_0_4px_rgba(255,255,255,0.5)] outline outline-2 outline-blue-400' : ''}`}
             style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-completed-tasks"
-            onClick={() => setIsCompletedTasksOpen(true)}
+            onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
           >
             <CheckSquare className="h-[38px] w-[38px] text-white" />
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200 ${clickedButton === 'addtask' ? 'shadow-[0_0_8px_rgba(59,130,246,0.6),0_0_4px_rgba(255,255,255,0.5)] outline outline-2 outline-blue-400' : ''}`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
           </div>
         </div>
 
