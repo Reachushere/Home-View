@@ -4368,90 +4368,51 @@ export default function Dashboard() {
                   <span className="ml-2 text-muted-foreground">Extracting text...</span>
                 </div>
               ) : previewText ? (
-                <div className="text-sm leading-relaxed">
+                <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
-                    // Split text into chunks for display with colored backgrounds
+                    // Clean text for display - same filtering as TTS
                     const cleanText = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
-                    const chunks = splitTextIntoChunks(cleanText, 2000);
-                    
-                    // Chunk background colors (alternating)
-                    const chunkColors = [
-                      'bg-blue-50 dark:bg-blue-950/40',
-                      'bg-green-50 dark:bg-green-950/40',
-                      'bg-purple-50 dark:bg-purple-950/40',
-                      'bg-orange-50 dark:bg-orange-950/40',
-                      'bg-pink-50 dark:bg-pink-950/40',
-                      'bg-cyan-50 dark:bg-cyan-950/40',
-                    ];
                     
                     // Track global word index for highlighting
                     let globalWordIndex = 0;
                     
-                    return chunks.map((chunk, chunkIdx) => {
-                      const chunkColor = chunkColors[chunkIdx % chunkColors.length];
-                      const isCurrentChunk = isPlaying && chunkIdx === currentChunkIndex;
-                      const chunkStartWordIdx = globalWordIndex;
-                      
-                      // Split chunk into paragraphs
-                      const paragraphs = chunk.split(/\n\n+/);
+                    // Split into paragraphs
+                    const paragraphs = cleanText.split(/\n\n+/);
+                    
+                    return paragraphs.map((paragraph, pIdx) => {
+                      const lines = paragraph.split(/\n/);
                       
                       return (
-                        <div 
-                          key={chunkIdx}
-                          className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-3 mb-2 cursor-pointer hover:opacity-80 transition-opacity relative`}
-                          onClick={() => playFromChunk(chunkIdx)}
-                          title={`Click to play from Section ${chunkIdx + 1}`}
-                        >
-                          {/* Chunk header */}
-                          <div className="flex items-center justify-between mb-2 pb-1 border-b border-gray-300 dark:border-gray-600">
-                            <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-400">
-                              Section {chunkIdx + 1} of {chunks.length}
-                            </span>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-5 px-2 text-[9px] text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900"
-                              onClick={(e) => { e.stopPropagation(); playFromChunk(chunkIdx); }}
-                            >
-                              <Play className="h-3 w-3 mr-1" />
-                              Play
-                            </Button>
-                          </div>
-                          
-                          {paragraphs.map((paragraph, pIdx) => {
-                            const lines = paragraph.split(/\n/);
+                        <div key={pIdx} className="mb-4">
+                          {lines.map((line, lIdx) => {
+                            const words = line.split(/\s+/).filter(w => w.length > 0);
+                            if (words.length === 0) return null;
+                            
+                            const lineStartIdx = globalWordIndex;
+                            globalWordIndex += words.length;
+                            
+                            const isBullet = /^[•\-\*►▶→]/.test(line.trim());
+                            const isHeader = words.length <= 10 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0 && /^[A-Z]/.test(line.trim());
                             
                             return (
-                              <div key={pIdx} className="mb-2">
-                                {lines.map((line, lIdx) => {
-                                  const words = line.split(/\s+/).filter(w => w.length > 0);
-                                  const lineStartIdx = globalWordIndex;
-                                  globalWordIndex += words.length;
-                                  
-                                  const isBullet = /^[•\-\*►▶→]/.test(line.trim());
-                                  const isHeader = words.length <= 8 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0;
-                                  
+                              <p 
+                                key={`${pIdx}-${lIdx}`} 
+                                className={`${isBullet ? 'pl-6 mb-1' : 'mb-2'} ${isHeader && !isBullet ? 'font-bold text-[15px] mt-4 mb-2' : ''}`}
+                                style={{ textIndent: !isBullet && !isHeader ? '1.5em' : '0' }}
+                              >
+                                {words.map((word, wIdx) => {
+                                  const wordGlobalIdx = lineStartIdx + wIdx;
+                                  const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
                                   return (
-                                    <div 
-                                      key={`${pIdx}-${lIdx}`} 
-                                      className={`${isBullet ? 'pl-4' : ''} ${isHeader && !isBullet ? 'font-semibold text-base mt-2' : ''}`}
+                                    <span
+                                      key={wordGlobalIdx}
+                                      className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
                                     >
-                                      {words.map((word, wIdx) => {
-                                        const wordGlobalIdx = lineStartIdx + wIdx;
-                                        const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
-                                        return (
-                                          <span
-                                            key={wordGlobalIdx}
-                                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
-                                          >
-                                            {word}{' '}
-                                          </span>
-                                        );
-                                      })}
-                                    </div>
+                                      {word}{' '}
+                                    </span>
                                   );
                                 })}
-                              </div>
+                              </p>
                             );
                           })}
                         </div>
