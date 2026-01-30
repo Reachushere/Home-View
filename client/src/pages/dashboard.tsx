@@ -5736,9 +5736,9 @@ export default function Dashboard() {
           <ChevronLeft className="h-2.5 w-2.5 text-white" strokeWidth={2.5} />
         </Button>
         <div className="flex items-center gap-0.5">
-          <span className="text-[8px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "M/d")}</span>
-          <span className="text-[8px] text-white/60">-</span>
-          <span className="text-[8px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "M/d")}</span>
+          <span className="text-[9px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "MMM d")}</span>
+          <span className="text-[9px] text-white/60">-</span>
+          <span className="text-[9px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
         </div>
         <Button 
           variant="ghost" 
