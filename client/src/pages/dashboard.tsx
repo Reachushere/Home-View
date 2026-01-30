@@ -5767,7 +5767,7 @@ export default function Dashboard() {
             <img src={hamburgerBg} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadModuleCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[11px] font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-4px', right: '0px' }}>
+              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-3px', right: '1px' }}>
                 {unreadModuleCount}
               </div>
             )}
@@ -5930,7 +5930,7 @@ export default function Dashboard() {
             <img src={hamburgerBg} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadReadingCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[11px] font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-4px', right: '0px' }}>
+              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-3px', right: '1px' }}>
                 {unreadReadingCount}
               </div>
             )}
