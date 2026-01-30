@@ -4856,47 +4856,47 @@ export default function Dashboard() {
         </div>
 
         {/* Timer and Clock - Fixed Right */}
-        <div className="absolute right-0 flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '6px' }}>
+        <div className="absolute right-0 flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginRight: '20px' }}>
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2 rounded-full px-3 h-[32px] overflow-hidden" style={{ position: 'relative', left: '-4px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className={`text-xs font-bold px-1.5 py-0.5 rounded ${
+          <div className="flex items-center gap-2.5 rounded-full px-4 h-[38px] overflow-hidden" style={{ position: 'relative', left: '-4px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className={`text-sm font-bold px-2 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center gap-1">
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-                {pomodoroRunning ? <Pause className="h-3 w-3 text-white" strokeWidth={2.5} /> : <Play className="h-3 w-3 text-white" strokeWidth={2.5} />}
+            <div className="flex items-center gap-1.5">
+              <button className="p-1 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+                {pomodoroRunning ? <Pause className="h-4 w-4 text-white" strokeWidth={2.5} /> : <Play className="h-4 w-4 text-white" strokeWidth={2.5} />}
               </button>
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-                <RotateCcw className="h-3 w-3 text-white" strokeWidth={2.5} />
+              <button className="p-1 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+                <RotateCcw className="h-4 w-4 text-white" strokeWidth={2.5} />
               </button>
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-                <SkipForward className="h-3 w-3 text-white" strokeWidth={2.5} />
+              <button className="p-1 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+                <SkipForward className="h-4 w-4 text-white" strokeWidth={2.5} />
               </button>
             </div>
           </div>
           
           {/* Clock */}
-          <div className="flex items-center gap-1.5 rounded-full px-3 h-[32px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
-            <span className="text-xs text-white font-medium">
+          <div className="flex items-center gap-2 rounded-full px-4 h-[38px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
+            <span className="text-sm text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
-            <div className="w-[1px] h-4 bg-white/50" />
+            <div className="w-[1px] h-5 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-xs font-medium text-white tabular-nums">
+              <span className="text-sm font-medium text-white tabular-nums">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-[10px] font-medium text-white tabular-nums">
+              <span className="text-xs font-medium text-white tabular-nums">
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
-              <span className="text-[10px] font-medium text-white ml-0.5 uppercase">
+              <span className="text-xs font-medium text-white ml-0.5 uppercase">
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
             {profileData.travelTimezone && (
-              <span className="text-[10px] text-orange-400 font-medium ml-1">Travel</span>
+              <span className="text-xs text-orange-400 font-medium ml-1">Travel</span>
             )}
           </div>
         </div>
