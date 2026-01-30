@@ -5728,22 +5728,22 @@ export default function Dashboard() {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-9 w-9 p-0 hover:bg-white/20 rounded" 
+          className="h-10 w-10 p-0 hover:bg-white/20 rounded" 
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} 
           data-testid="button-pill-prev-week"
           data-date-nav
         >
-          <ChevronLeft className="h-7 w-7 text-white" strokeWidth={2.5} />
+          <ChevronLeft className="h-8 w-8 text-white" strokeWidth={2.5} />
         </Button>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-9 w-9 p-0 hover:bg-white/20 rounded" 
+          className="h-10 w-10 p-0 hover:bg-white/20 rounded" 
           onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} 
           data-testid="button-pill-next-week"
           data-date-nav
         >
-          <ChevronRight className="h-7 w-7 text-white" strokeWidth={2.5} />
+          <ChevronRight className="h-8 w-8 text-white" strokeWidth={2.5} />
         </Button>
       </div>
       
@@ -6874,7 +6874,7 @@ export default function Dashboard() {
           {/* Left Arrow - Previous Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ left: '-25px', marginTop: '5px' }}
+            style={{ left: '-23px', marginTop: '8px' }}
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
@@ -6886,7 +6886,7 @@ export default function Dashboard() {
           {/* Right Arrow - Next Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ right: '36px', marginTop: '5px' }}
+            style={{ right: '36px', marginTop: '8px' }}
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
