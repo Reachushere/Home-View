@@ -4028,11 +4028,7 @@ export default function Dashboard() {
                     if (file) setPreviewFile(file);
                   }}>
                     <SelectTrigger 
-                      className="w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white"
-                      style={{ 
-                        boxShadow: '0 0 8px rgba(59,130,246,0.4)',
-                        transition: 'all 0.2s'
-                      }}
+                      className="w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                       data-testid="select-reading-file">
                       <SelectValue placeholder="Select File" />
                     </SelectTrigger>
