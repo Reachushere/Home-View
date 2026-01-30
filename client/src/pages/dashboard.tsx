@@ -6015,8 +6015,8 @@ export default function Dashboard() {
         <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '592px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
-      {/* Set Default Layout Checkbox - Above copyright */}
-      <label className="fixed bottom-7 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-50 cursor-pointer">
+      {/* Set Default Layout Checkbox - Bottom of screen */}
+      <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-50 cursor-pointer">
         <input
           type="checkbox"
           checked={showDeviceSaved}
@@ -6030,7 +6030,7 @@ export default function Dashboard() {
       {/* Copyright - Right side of page, rotated */}
       <div 
         className="fixed right-1 text-white/60 text-[10px] font-medium z-50 pointer-events-none"
-        style={{ bottom: '40px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+        style={{ bottom: '90px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
       >
         © 2026
       </div>
