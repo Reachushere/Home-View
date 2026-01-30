@@ -97,7 +97,76 @@ const CHUNK_SIZE = 2000; // Characters per TTS chunk
 
 // Clean text for TTS - remove special characters that cause errors
 function cleanTextForTTS(text: string): string {
-  return text
+  // First pass: Remove URLs, emails, video/audio references, timestamps
+  let cleanedText = text
+    .replace(/https?:\/\/[^\s]+/g, '')
+    .replace(/www\.[^\s]+/g, '')
+    .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '') // Remove email addresses
+    .replace(/^Video\s+.+$/gm, '') // Lines starting with "Video"
+    .replace(/^Audio\s+.+$/gm, '') // Lines starting with "Audio"
+    .replace(/^Link\s+.+$/gm, '') // Lines starting with "Link"
+    .replace(/^Watch\s+.+$/gm, '') // Lines starting with "Watch"
+    .replace(/^Listen\s+.+$/gm, '') // Lines starting with "Listen"
+    .replace(/^Click\s+.+$/gm, '') // Lines starting with "Click"
+    .replace(/^See\s+.+$/gm, '') // Lines starting with "See"
+    .replace(/^View\s+.+$/gm, '') // Lines starting with "View"
+    .replace(/^Author[s]?:?\s+.+$/gim, '') // Lines starting with "Author" or "Authors"
+    .replace(/\[.*?\]/g, '') // Remove bracketed content like [Video], [Link], etc.
+    .replace(/\(.*?video.*?\)/gi, '') // Remove parenthetical video references
+    .replace(/\(.*?link.*?\)/gi, '') // Remove parenthetical link references
+    .replace(/\d+:\d+:\d+/g, '') // Remove timestamps like 1:23:45
+    .replace(/\d+:\d+/g, ''); // Remove timestamps like 1:23
+  
+  // Remove entire paragraphs containing JSTOR references or publication metadata
+  const paragraphs = cleanedText.split(/\n\n+/);
+  const filteredParagraphs = paragraphs.filter(para => {
+    const lowerPara = para.toLowerCase();
+    if (lowerPara.includes('jstor') || 
+        lowerPara.includes('stable url') ||
+        lowerPara.includes('accessed:') ||
+        lowerPara.includes('published by:') ||
+        lowerPara.includes('all rights reserved') ||
+        /^author[s]?:/i.test(para.trim())) {
+      return false;
+    }
+    return true;
+  });
+  cleanedText = filteredParagraphs.join('\n\n');
+  
+  // French text detection patterns
+  const frenchPatterns = [
+    /\b(le|la|les|un|une|des|du|de la|au|aux)\b/gi,
+    /\b(et|ou|mais|donc|car|ni|que|qui|dont|où)\b/gi,
+    /\b(je|tu|il|elle|nous|vous|ils|elles|on)\b/gi,
+    /\b(mon|ma|mes|ton|ta|tes|son|sa|ses|notre|nos|votre|vos|leur|leurs)\b/gi,
+    /\b(ce|cet|cette|ces|ceci|cela|ça)\b/gi,
+    /\b(être|avoir|faire|aller|pouvoir|vouloir|devoir|savoir)\b/gi,
+    /\b(est|sont|était|étaient|sera|seront|été|suis|sommes|êtes)\b/gi,
+    /\b(dans|sur|sous|avec|pour|par|sans|chez|entre|vers)\b/gi,
+    /\b(très|plus|moins|aussi|bien|mal|peu|beaucoup|trop)\b/gi,
+    /\b(français|française|france|paris)\b/gi,
+    /[àâäéèêëïîôùûüÿç]/gi,
+  ];
+  
+  // Filter out French sentences
+  const sentences = cleanedText.split(/(?<=[.!?])\s+/);
+  const englishSentences = sentences.filter(sentence => {
+    const words = sentence.split(/\s+/).length;
+    if (words < 3) return true;
+    
+    let frenchScore = 0;
+    for (const pattern of frenchPatterns) {
+      const matches = sentence.match(pattern);
+      if (matches) frenchScore += matches.length;
+    }
+    
+    const frenchRatio = frenchScore / words;
+    return frenchRatio < 0.15;
+  });
+  cleanedText = englishSentences.join(' ');
+  
+  // Final cleanup
+  return cleanedText
     .replace(/&amp;/g, 'and')
     .replace(/&/g, 'and')
     .replace(/[<>]/g, '')
