@@ -1969,6 +1969,12 @@ export default function Dashboard() {
       cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
       cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
       cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
+      // Add slight pauses after bullet points (add period if missing)
+      cleanTextForTts = cleanTextForTts.replace(/^([•\-\*►▶→]\s*.+?)([^.!?])$/gm, '$1$2.');
+      // Add longer pause after paragraph breaks (double newline becomes period + pause)
+      cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
+      // Clean up duplicate periods
+      cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
       const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
       ttsChunksRef.current = chunks;
       setTtsChunks(chunks);
@@ -2043,6 +2049,12 @@ export default function Dashboard() {
         cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
         cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
         cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
+        // Add slight pauses after bullet points (add period if missing)
+        cleanTextForTts = cleanTextForTts.replace(/^([•\-\*►▶→]\s*.+?)([^.!?])$/gm, '$1$2.');
+        // Add longer pause after paragraph breaks (double newline becomes period + pause)
+        cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
+        // Clean up duplicate periods
+        cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
         const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
         
         ttsChunksRef.current = chunks;
