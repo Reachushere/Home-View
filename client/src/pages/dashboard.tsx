@@ -2859,19 +2859,12 @@ export default function Dashboard() {
       
       const now = new Date();
       const currentHour = now.getHours();
-      const currentMinutes = now.getMinutes();
       const startHour = 7; // calendar starts at 7am
       
-      // Calculate scroll position based on current time
-      // Use average row height for calculation
+      // Calculate scroll position to show the entire current hour row at the top
       let scrollPosition = 0;
       for (let h = startHour; h < currentHour && h < 24; h++) {
         scrollPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-      }
-      // Add partial hour based on minutes
-      if (currentHour >= startHour) {
-        const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
-        scrollPosition += (currentMinutes / 60) * currentRowHeight;
       }
       
       calendarScrollRef.current.scrollTop = Math.max(0, scrollPosition);
