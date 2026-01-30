@@ -4294,7 +4294,7 @@ export default function Dashboard() {
               <Download className="h-3 w-3" />
             </Button>
             
-            <div className="w-px h-6 bg-white/30 mx-2" />
+            <div className="w-px h-6 bg-white/30 mx-2 ml-auto" />
             
             {/* Sync Checkbox */}
             <div className="flex items-center gap-1">
