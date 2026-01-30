@@ -5731,7 +5731,7 @@ export default function Dashboard() {
           data-testid="button-pill-prev-week"
           data-date-nav
         >
-          <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+          <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
         </div>
         <div 
           className="cursor-pointer hover:bg-white/20 rounded p-0.5"
@@ -5739,7 +5739,7 @@ export default function Dashboard() {
           data-testid="button-pill-next-week"
           data-date-nav
         >
-          <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+          <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
         </div>
       </div>
       
@@ -6882,7 +6882,7 @@ export default function Dashboard() {
           {/* Right Arrow - Next Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ right: '-4px', marginTop: '12px' }}
+            style={{ right: '-19px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
