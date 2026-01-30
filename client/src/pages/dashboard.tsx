@@ -7098,10 +7098,10 @@ export default function Dashboard() {
                   {weekDays.map((day, dayIdx) => {
                     // Course row day cells - prep tasks now appear in All Day row with extensions
                     const isDayToday = isSameDay(day, new Date());
-                    // Make today column 50% transparent by reducing opacity in the rgba
+                    // Make today column slightly less transparent (75% of original opacity)
                     const todayBg = course.bg.replace(/[\d.]+\)$/, (match) => {
                       const opacity = parseFloat(match);
-                      return `${opacity * 0.5})`;
+                      return `${opacity * 0.75})`;
                     });
                     return (
                       <div 
