@@ -4153,6 +4153,8 @@ export default function Dashboard() {
               <SkipForward className="h-4 w-4 text-white stroke-white" />
             </Button>
             
+            <div className="w-px h-6 bg-white/30" />
+            
             <Button
               size="sm"
               variant="outline"
@@ -4182,6 +4184,8 @@ export default function Dashboard() {
                 <span>Current</span>
               </div>
             </Button>
+            
+            <div className="w-px h-6 bg-white/30" />
             
             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
               <Button
@@ -4252,6 +4256,8 @@ export default function Dashboard() {
               <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
             </div>
             
+            <div className="w-px h-6 bg-white/30" />
+            
             {isPlaying && totalChunks > 1 && (
               <div className="flex items-center gap-1 text-[11px] text-green-400">
                 <span>Section {currentChunkIndex + 1}/{totalChunks}</span>
@@ -4286,6 +4292,8 @@ export default function Dashboard() {
               <Download className="h-3 w-3" />
             </Button>
             
+            <div className="w-px h-6 bg-white/30" />
+            
             <div className="flex items-center gap-1">
               <Checkbox
                 id="sync-highlight"
@@ -4298,6 +4306,8 @@ export default function Dashboard() {
                 Sync
               </Label>
             </div>
+            
+            <div className="w-px h-6 bg-white/30" />
             
             <div className="flex items-center gap-1">
               <Checkbox
