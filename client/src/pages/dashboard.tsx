@@ -7293,8 +7293,8 @@ export default function Dashboard() {
                       style={{ top: `${topPosition}px` }}
                     >
                       <div 
-                        className="w-full border-t-2 border-dotted"
-                        style={{ borderColor: '#000000' }}
+                        className="w-full border-t-2 border-dashed"
+                        style={{ borderColor: 'rgba(0, 0, 0, 0.5)' }}
                       />
                     </div>
                   );
