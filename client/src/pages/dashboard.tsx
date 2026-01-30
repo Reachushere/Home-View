@@ -4295,7 +4295,7 @@ export default function Dashboard() {
             <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col">
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
                 <span className="text-xs text-muted-foreground">
-                  Page {currentPdfPage} of {numPages || '?'}
+                  {numPages || '?'} pages
                 </span>
                 <div className="flex items-center gap-2">
                   {/* Zoom Controls */}
@@ -4326,30 +4326,9 @@ export default function Dashboard() {
                       <ZoomIn className="h-3 w-3" />
                     </Button>
                   </div>
-                  {/* Page Navigation */}
-                  <div className="flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 px-2"
-                      onClick={() => setCurrentPdfPage(p => Math.max(1, p - 1))}
-                      disabled={currentPdfPage <= 1}
-                    >
-                      <ChevronLeft className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-6 px-2"
-                      onClick={() => setCurrentPdfPage(p => Math.min(numPages || 1, p + 1))}
-                      disabled={currentPdfPage >= (numPages || 1)}
-                    >
-                      <ChevronRight className="h-3 w-3" />
-                    </Button>
-                  </div>
                 </div>
               </div>
-              <div className="flex-1 overflow-auto flex items-start justify-center p-2">
+              <div className="flex-1 overflow-auto p-2">
                 {pdfUrl ? (
                   <Document
                     file={pdfUrl}
@@ -4365,12 +4344,17 @@ export default function Dashboard() {
                       </div>
                     }
                   >
-                    <Page 
-                      pageNumber={currentPdfPage} 
-                      width={Math.round(467 * pdfZoom)}
-                      renderTextLayer={false}
-                      renderAnnotationLayer={false}
-                    />
+                    <div className="flex flex-col items-center gap-2">
+                      {Array.from({ length: numPages || 0 }, (_, i) => (
+                        <Page 
+                          key={i + 1}
+                          pageNumber={i + 1} 
+                          width={Math.round(467 * pdfZoom)}
+                          renderTextLayer={false}
+                          renderAnnotationLayer={false}
+                        />
+                      ))}
+                    </div>
                   </Document>
                 ) : (
                   <div className="flex items-center justify-center h-full">
