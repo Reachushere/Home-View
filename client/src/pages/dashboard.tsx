@@ -1552,7 +1552,7 @@ export default function Dashboard() {
   const [currentPdfPage, setCurrentPdfPage] = useState(1);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pageWordBoundaries, setPageWordBoundaries] = useState<number[]>([]); // Word index where each page starts
-  const [pdfZoom, setPdfZoom] = useState(1.15); // Default 115% zoom
+  const [pdfZoom, setPdfZoom] = useState(1.10); // Default 110% zoom
   
   // Calculate which PDF page a word index belongs to
   const getPageForWordIndex = (wordIndex: number): number => {
@@ -4524,7 +4524,7 @@ export default function Dashboard() {
           </div>
           
           {/* Done Button */}
-          <div className="flex justify-end p-4 mx-6 mb-2 mr-5" style={{ marginTop: '-10px' }}>
+          <div className="flex justify-end p-4 mx-6 mb-2 mr-5" style={{ marginTop: '-20px' }}>
             <Button
               variant="outline"
               className="px-8 py-2 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
