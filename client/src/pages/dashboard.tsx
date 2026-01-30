@@ -3979,23 +3979,6 @@ export default function Dashboard() {
           
           {/* Top Menu Bar - File Selector and Speaker */}
           <div className="flex items-center justify-between p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
-            {/* Speaker Selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-[9px] text-white/60">Speaker:</span>
-              <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
-                <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
-                  <SelectValue placeholder="Select Speaker" />
-                </SelectTrigger>
-                <SelectContent className="max-h-[300px]">
-                  {SPEAKERS.map(speaker => (
-                    <SelectItem key={speaker.id} value={speaker.id} className="text-[10px]">
-                      {speaker.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
             {/* File Selector with Navigation Arrows */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
@@ -4067,6 +4050,23 @@ export default function Dashboard() {
                 </div>
               );
             })()}
+            
+            {/* Speaker Selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-[9px] text-white/60">Speaker:</span>
+              <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
+                <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
+                  <SelectValue placeholder="Select Speaker" />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {SPEAKERS.map(speaker => (
+                    <SelectItem key={speaker.id} value={speaker.id} className="text-[10px]">
+                      {speaker.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           
           {/* Bottom Media Controls Bar */}
