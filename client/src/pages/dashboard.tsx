@@ -8622,7 +8622,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 255, 255, 0.5)',
+              background: 'rgba(255, 255, 255, 0.35)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
@@ -8649,7 +8649,7 @@ export default function Dashboard() {
                 THIS WEEK ({dueThisWeekTasks.length})
               </h4>
             </div>
-            <div className="flex-1 p-3 flex flex-col">
+            <div className="flex-1 p-3 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueThisWeekTasks.length === 0 ? (
@@ -8679,7 +8679,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 255, 255, 0.5)',
+              background: 'rgba(255, 255, 255, 0.35)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
@@ -8706,7 +8706,7 @@ export default function Dashboard() {
                 TODAY ({dueTodayTasks.length})
               </h4>
             </div>
-            <div className="flex-1 p-3 flex flex-col">
+            <div className="flex-1 p-3 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
@@ -8736,7 +8736,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 255, 255, 0.5)',
+              background: 'rgba(255, 255, 255, 0.35)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
@@ -8763,7 +8763,7 @@ export default function Dashboard() {
                 TOMORROW ({dueTomorrowTasks.length})
               </h4>
             </div>
-            <div className="flex-1 p-3 flex flex-col">
+            <div className="flex-1 p-3 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
