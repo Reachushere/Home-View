@@ -1483,7 +1483,7 @@ export default function Dashboard() {
     setClickedButton(buttonId);
     clickedButtonTimeoutRef.current = setTimeout(() => {
       setClickedButton(null);
-    }, 1000);
+    }, 5000);
   };
   const [previewSpeaker, setPreviewSpeaker] = useState<string>("media_player.echo_cat_left_am");
   const [previewText, setPreviewText] = useState<string>("");
