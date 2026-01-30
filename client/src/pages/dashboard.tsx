@@ -15,7 +15,6 @@ import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import tallPill from "@assets/Tall_1769697999710.png";
-import boxBg from "@assets/Box11_1769794290178.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -8621,11 +8620,11 @@ export default function Dashboard() {
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-3 mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 46px)', marginLeft: '-22px', marginRight: '-19px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
-            className={`flex-1 rounded-[3px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'linear-gradient(160deg, #4a5568 0%, #2d3748 15%, #1a202c 40%, #171923 60%, #1a202c 85%, #2d3748 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3)',
+              background: '#fef3e2',
+              border: '2px solid #f5a855',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
               marginLeft: boxOrder.indexOf('this-week') === 0 ? '5px' : '0px', 
               marginRight: boxOrder.indexOf('this-week') === 2 ? '2px' : '0px' 
@@ -8633,21 +8632,28 @@ export default function Dashboard() {
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
           >
-            <h4 
-              className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
-              draggable
-              onDragStart={() => handleBoxDragStart('this-week')}
-              onDragEnd={handleBoxDragEnd}
+            <div 
+              style={{ 
+                background: 'linear-gradient(180deg, #ff6b4a 0%, #ff8c42 25%, #ffb347 50%, #ffd280 75%, #ffe5a8 100%)',
+                padding: '6px 12px'
+              }}
             >
-              <Calendar className="h-3 w-3 text-white" />
-              THIS WEEK ({dueThisWeekTasks.length})
-            </h4>
+              <h4 
+                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                draggable
+                onDragStart={() => handleBoxDragStart('this-week')}
+                onDragEnd={handleBoxDragEnd}
+              >
+                <Calendar className="h-3 w-3 text-white" />
+                THIS WEEK ({dueThisWeekTasks.length})
+              </h4>
+            </div>
             <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">Loading...</div>
               ) : dueThisWeekTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No other tasks this week</div>
+                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">No other tasks this week</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueThisWeekTasks.map((task, idx) => {
@@ -8656,7 +8662,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                          <div className="text-[10px] text-gray-700 font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-orange-300/50">
                             {task.courseName}
                           </div>
                         )}
@@ -8671,11 +8677,11 @@ export default function Dashboard() {
 
           {/* Due Today - CSS Box */}
           <section 
-            className={`flex-1 rounded-[3px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'linear-gradient(160deg, #4a5568 0%, #2d3748 15%, #1a202c 40%, #171923 60%, #1a202c 85%, #2d3748 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3)',
+              background: '#fef3e2',
+              border: '2px solid #f5a855',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
               marginLeft: boxOrder.indexOf('today') === 0 ? '5px' : '0px', 
               marginRight: boxOrder.indexOf('today') === 2 ? '2px' : '0px' 
@@ -8683,21 +8689,28 @@ export default function Dashboard() {
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
-            <h4 
-              className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
-              draggable
-              onDragStart={() => handleBoxDragStart('today')}
-              onDragEnd={handleBoxDragEnd}
+            <div 
+              style={{ 
+                background: 'linear-gradient(180deg, #ff6b4a 0%, #ff8c42 25%, #ffb347 50%, #ffd280 75%, #ffe5a8 100%)',
+                padding: '6px 12px'
+              }}
             >
-              <Calendar className="h-3 w-3 text-white" />
-              TODAY ({dueTodayTasks.length})
-            </h4>
+              <h4 
+                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                draggable
+                onDragStart={() => handleBoxDragStart('today')}
+                onDragEnd={handleBoxDragEnd}
+              >
+                <Calendar className="h-3 w-3 text-white" />
+                TODAY ({dueTodayTasks.length})
+              </h4>
+            </div>
             <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks today</div>
+                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">No tasks today</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueTodayTasks.map((task, idx) => {
@@ -8706,7 +8719,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                          <div className="text-[10px] text-gray-700 font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-orange-300/50">
                             {task.courseName}
                           </div>
                         )}
@@ -8721,11 +8734,11 @@ export default function Dashboard() {
 
           {/* Due Tomorrow - CSS Box */}
           <section 
-            className={`flex-1 rounded-[3px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'linear-gradient(160deg, #4a5568 0%, #2d3748 15%, #1a202c 40%, #171923 60%, #1a202c 85%, #2d3748 100%)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3)',
+              background: '#fef3e2',
+              border: '2px solid #f5a855',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
               marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '5px' : '0px', 
               marginRight: boxOrder.indexOf('tomorrow') === 2 ? '2px' : '0px' 
@@ -8733,21 +8746,28 @@ export default function Dashboard() {
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
-            <h4 
-              className="text-xs font-normal py-1.5 px-3 flex items-center gap-2 text-white cursor-grab" 
-              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
-              draggable
-              onDragStart={() => handleBoxDragStart('tomorrow')}
-              onDragEnd={handleBoxDragEnd}
+            <div 
+              style={{ 
+                background: 'linear-gradient(180deg, #ff6b4a 0%, #ff8c42 25%, #ffb347 50%, #ffd280 75%, #ffe5a8 100%)',
+                padding: '6px 12px'
+              }}
             >
-              <Calendar className="h-3 w-3 text-white" />
-              TOMORROW ({dueTomorrowTasks.length})
-            </h4>
+              <h4 
+                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                draggable
+                onDragStart={() => handleBoxDragStart('tomorrow')}
+                onDragEnd={handleBoxDragEnd}
+              >
+                <Calendar className="h-3 w-3 text-white" />
+                TOMORROW ({dueTomorrowTasks.length})
+              </h4>
+            </div>
             <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
+                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">No tasks tomorrow</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueTomorrowTasks.map((task, idx) => {
@@ -8756,7 +8776,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                          <div className="text-[10px] text-gray-700 font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-orange-300/50">
                             {task.courseName}
                           </div>
                         )}
