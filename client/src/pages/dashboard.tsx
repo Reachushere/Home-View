@@ -2706,6 +2706,25 @@ export default function Dashboard() {
     });
   };
 
+  // Helper to check if a task is a CASL101 (ASL) class
+  const isCASL101Task = (task: Task) => {
+    const courseName = task.courseName?.toUpperCase() || "";
+    return courseName.startsWith("CASL101") || courseName.startsWith("CASL 101");
+  };
+
+  // Helper to check if a CASL101 task's time has passed (should be auto-hidden)
+  const isCASL101Finished = (task: Task) => {
+    if (!isCASL101Task(task)) return false;
+    const now = new Date();
+    const dueDate = new Date(task.dueDate);
+    if (task.eventEndTime) {
+      // If task has an end time, check if it's passed
+      const [endHour, endMin] = task.eventEndTime.split(':').map(Number);
+      dueDate.setHours(endHour, endMin, 0, 0);
+    }
+    return now > dueDate;
+  };
+
   const missedTasks = sortByAttachments(allTasks.filter(t => t.isMissed && !t.isCompleted));
   const today = new Date();
   // Do Today shows ALL tasks due today OR prep tasks starting today (from all tasks, not just selected week)
@@ -2737,6 +2756,7 @@ export default function Dashboard() {
   // Also include full-week MODULE tasks that span today (startDate <= today <= dueDate)
   const dueTodayTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
+    if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
     if (!t.dueDate) return false;
     
     // Check if task is due today
@@ -2762,6 +2782,7 @@ export default function Dashboard() {
   // Also include tasks where tomorrow falls within the prep period (startDate <= tomorrow <= dueDate)
   const dueTomorrowTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
+    if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
     if (!t.dueDate) return false;
     
     // Check if task is due tomorrow
@@ -2786,6 +2807,7 @@ export default function Dashboard() {
   // School week is Mon-Fri, so we need to find remaining days until Friday
   const dueThisWeekTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
+    if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
     if (!t.dueDate) return false;
     const dueDate = new Date(t.dueDate);
     const dueDateStart = startOfDay(dueDate);
@@ -3168,6 +3190,7 @@ export default function Dashboard() {
   const getTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
+      if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
@@ -3184,6 +3207,7 @@ export default function Dashboard() {
   const getContinuingTasksForHour = (day: Date, hour: number) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
+      if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
       const dueDate = new Date(t.dueDate);
       if (!isSameDay(dueDate, day)) return false;
       
@@ -3205,6 +3229,7 @@ export default function Dashboard() {
   const getMultiHourTasksForWeek = () => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
+      if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
       if (!t.eventStartTime || !t.eventEndTime) return false;
       
       const dueDate = new Date(t.dueDate);
@@ -3453,6 +3478,7 @@ export default function Dashboard() {
   const getAllDayTasks = (day: Date) => {
     return allTasks.filter(t => {
       if (t.isCompleted) return false; // Completed tasks don't show on calendar
+      if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
       if (t.eventStartTime) return false; // Tasks with explicit start time show at that hour
       const dueDate = new Date(t.dueDate);
       const isMidnight = dueDate.getHours() === 0 && dueDate.getMinutes() === 0;
@@ -6945,12 +6971,14 @@ export default function Dashboard() {
                                   : "bg-gray-200 text-black border-gray-400"
                             }`}
                           >
-                            <Checkbox
-                              checked={task.isCompleted || false}
-                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                              className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                              data-testid={`checkbox-allday-${task.id}`}
-                            />
+                            {!isCASL101Task(task) && (
+                              <Checkbox
+                                checked={task.isCompleted || false}
+                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                data-testid={`checkbox-allday-${task.id}`}
+                              />
+                            )}
                             <span 
                               onClick={() => setEditingTask(task)}
                               className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}
@@ -7457,12 +7485,14 @@ export default function Dashboard() {
                               >
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
                                 <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
-                                  <Checkbox
-                                    checked={task.isCompleted || false}
-                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                    data-testid={`checkbox-time-${task.id}`}
-                                  />
+                                  {!isCASL101Task(task) && (
+                                    <Checkbox
+                                      checked={task.isCompleted || false}
+                                      onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                      className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                      data-testid={`checkbox-time-${task.id}`}
+                                    />
+                                  )}
                                   <div 
                                     onClick={() => setEditingTask(task)}
                                     className={`text-[8px] font-bold truncate cursor-pointer flex-1 ${
@@ -7619,12 +7649,14 @@ export default function Dashboard() {
                     >
                       {/* Silver shimmer header with checkbox and title for due today tasks */}
                       <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
-                        <Checkbox
-                          checked={task.isCompleted || false}
-                          onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                          className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                          onClick={(e) => e.stopPropagation()}
-                        />
+                        {!isCASL101Task(task) && (
+                          <Checkbox
+                            checked={task.isCompleted || false}
+                            onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                            className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        )}
                         <span 
                           onClick={() => setEditingTask(task)}
                           className={`text-[9px] leading-tight font-bold line-clamp-2 cursor-pointer ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
@@ -8133,16 +8165,18 @@ export default function Dashboard() {
                 data-testid={`droppable-task-${task.id}`}
               >
                 <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={task.isCompleted ?? false}
-                    onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                    className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer flex-shrink-0"
-                    style={{ accentColor: getCourseColor(task.courseName) }}
-                    data-testid={`checkbox-task-${task.id}`}
-                    {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
-                    {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
-                  />
+                  {!isCASL101Task(task) && (
+                    <input
+                      type="checkbox"
+                      checked={task.isCompleted ?? false}
+                      onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
+                      className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer flex-shrink-0"
+                      style={{ accentColor: getCourseColor(task.courseName) }}
+                      data-testid={`checkbox-task-${task.id}`}
+                      {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
+                      {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
+                    />
+                  )}
                   <button 
                     className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
