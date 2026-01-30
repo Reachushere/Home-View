@@ -8622,7 +8622,7 @@ export default function Dashboard() {
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-[2px] shadow-md overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'top', order: boxOrder.indexOf('this-week') + 1, marginLeft: boxOrder.indexOf('this-week') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('this-week') === 2 ? '2px' : '0px' }} 
+            style={{ background: 'linear-gradient(135deg, rgba(55,65,81,0.95) 0%, rgba(17,24,39,0.95) 50%, rgba(31,41,55,0.95) 100%)', border: '1px solid rgba(255,255,255,0.15)', order: boxOrder.indexOf('this-week') + 1, marginLeft: boxOrder.indexOf('this-week') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('this-week') === 2 ? '2px' : '0px' }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
           >
@@ -8665,7 +8665,7 @@ export default function Dashboard() {
           {/* Due Today */}
           <section 
             className={`flex-1 rounded-[2px] shadow-md overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'top', order: boxOrder.indexOf('today') + 1, marginLeft: boxOrder.indexOf('today') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('today') === 2 ? '2px' : '0px' }} 
+            style={{ background: 'linear-gradient(135deg, rgba(55,65,81,0.95) 0%, rgba(17,24,39,0.95) 50%, rgba(31,41,55,0.95) 100%)', border: '1px solid rgba(255,255,255,0.15)', order: boxOrder.indexOf('today') + 1, marginLeft: boxOrder.indexOf('today') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('today') === 2 ? '2px' : '0px' }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
@@ -8708,7 +8708,7 @@ export default function Dashboard() {
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-[2px] shadow-md overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'top', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('tomorrow') === 2 ? '2px' : '0px' }} 
+            style={{ background: 'linear-gradient(135deg, rgba(55,65,81,0.95) 0%, rgba(17,24,39,0.95) 50%, rgba(31,41,55,0.95) 100%)', border: '1px solid rgba(255,255,255,0.15)', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('tomorrow') === 2 ? '2px' : '0px' }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
