@@ -4030,7 +4030,7 @@ export default function Dashboard() {
                     <SelectTrigger 
                       className="w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white"
                       style={{ 
-                        boxShadow: '0 0 12px rgba(251,146,60,0.9), 0 0 20px rgba(251,146,60,0.6)',
+                        boxShadow: '0 0 8px rgba(59,130,246,0.4)',
                         transition: 'all 0.2s'
                       }}
                       data-testid="select-reading-file">
