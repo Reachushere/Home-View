@@ -4422,6 +4422,10 @@ export default function Dashboard() {
                     let cleanText = previewText.replace(/---PAGE---/g, '\n\n').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
                     // Normalize multiple spaces to single space (but preserve newlines)
                     cleanText = cleanText.replace(/[ \t]+/g, ' ');
+                    // Join lines that are part of the same sentence (lowercase to lowercase, or ends with comma/etc)
+                    cleanText = cleanText.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+                    // Also join lines where a word is broken across lines
+                    cleanText = cleanText.replace(/([a-zA-Z])\s*\n\s*([a-z])/g, '$1 $2');
                     // Clean up excessive newlines (3+ becomes 2)
                     cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
                     
