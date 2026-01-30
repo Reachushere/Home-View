@@ -4855,8 +4855,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Timer and Clock - Fixed Right */}
-        <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: 'calc(33.33% + 7px)' }}>
+        {/* Timer and Clock - Fixed Right, aligned with tall pill left edge */}
+        <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '69px' }}>
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ position: 'relative', left: '-10px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-[13px] font-bold px-1.5 py-0.5 rounded ${
