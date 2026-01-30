@@ -6097,9 +6097,9 @@ export default function Dashboard() {
           src={hexIcon} 
           alt="" 
           className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" 
-          style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))', opacity: blinkSettings.showArrows ? 1 : 0.5 }} 
+          style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} 
         />
-        <TrendingUp className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        <TrendingUp className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4 }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
