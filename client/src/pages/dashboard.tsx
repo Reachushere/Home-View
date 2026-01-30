@@ -3998,13 +3998,13 @@ export default function Dashboard() {
                     const file = relatedFiles.find(f => f.id.toString() === val);
                     if (file) setPreviewFile(file);
                   }}>
-                    <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-reading-file">
+                    <SelectTrigger className="w-[320px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-reading-file">
                       <SelectValue placeholder="Select File" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
                       {relatedFiles.map(file => (
                         <SelectItem key={file.id} value={file.id.toString()} className="text-[10px]">
-                          {(file.displayName || file.originalName).replace(/\.pdf$/i, '').slice(0, 35)}
+                          {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
                         </SelectItem>
                       ))}
                     </SelectContent>
