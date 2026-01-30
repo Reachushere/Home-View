@@ -4516,8 +4516,19 @@ export default function Dashboard() {
               ) : previewText ? (
                 <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
+                    // Detect and skip title pages (short pages with publication info)
+                    let textForDisplay = previewText;
+                    const firstPageEnd = textForDisplay.indexOf('---PAGE---');
+                    if (firstPageEnd !== -1) {
+                      const firstPageContent = textForDisplay.substring(0, firstPageEnd).toLowerCase();
+                      const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
+                      const titlePageKeywords = /jstor|published|publisher|author|doi:|copyright|©|issn|isbn|volume|issue|journal|university press|all rights reserved|accessed|stable url|http|www\./i;
+                      if (wordCount < 200 && titlePageKeywords.test(firstPageContent)) {
+                        textForDisplay = textForDisplay.substring(firstPageEnd + 10);
+                      }
+                    }
                     // Clean text for display - remove page markers and URLs only
-                    let cleanText = previewText.replace(/---PAGE---/g, '\n\n').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+                    let cleanText = textForDisplay.replace(/---PAGE---/g, '\n\n').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
                     // Normalize multiple spaces to single space (but preserve newlines)
                     cleanText = cleanText.replace(/[ \t]+/g, ' ');
                     // Only join lines when previous line does NOT end with sentence-ending punctuation
