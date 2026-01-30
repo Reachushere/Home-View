@@ -6008,15 +6008,14 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle (CSS) */}
-      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-1px' }}>
+      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-35px' }}>
         <div 
           style={{ 
             width: '592px', 
             height: '70px', 
             background: 'rgba(255, 255, 255, 0.35)',
-            borderRadius: '0 0 35px 35px',
+            borderRadius: '35px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
-            borderTop: 'none',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             marginLeft: '-75px'
           }} 
