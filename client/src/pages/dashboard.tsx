@@ -2142,14 +2142,15 @@ export default function Dashboard() {
         
         // Detect and skip title pages (short pages with publication info like JSTOR, author, published, etc.)
         let textForTts = previewText;
-        const titlePageKeywords = /jstor|published|publisher|author[s]?:|doi:|copyright|©|issn|isbn|volume\s+\d|issue\s+\d|journal|university press|all rights reserved|accessed|stable url|abstract|keywords:|introduction\s*\n|pp\.\s*\d+|pages?\s+\d+/i;
+        const titlePageKeywords = /jstor|published|publisher|author[s]?:|doi:|copyright|©|issn|isbn|volume\s+\d|issue\s+\d|journal|university press|all rights reserved|accessed|stable url|abstract|keywords:|introduction\s*\n|pp\.\s*\d+|pages?\s+\d+|supplementary|appendix|supporting information|online resource|electronic supplementary|table of contents|references\s*\n|bibliography|citation/i;
         
         const firstPageEnd = textForTts.indexOf('---PAGE---');
         if (firstPageEnd !== -1) {
           const firstPageContent = textForTts.substring(0, firstPageEnd).toLowerCase();
           const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
-          // Check if first page looks like a title page (short + contains publication keywords)
-          if (wordCount < 300 && titlePageKeywords.test(firstPageContent)) {
+          // Check if first page looks like a title page (contains publication keywords)
+          // Increased word count threshold to 500 for supplementary materials that may have longer cover pages
+          if (wordCount < 500 && titlePageKeywords.test(firstPageContent)) {
             textForTts = textForTts.substring(firstPageEnd + 10); // Skip past first ---PAGE---
             console.log("Skipped title page (via PAGE marker)");
           }
@@ -2159,7 +2160,7 @@ export default function Dashboard() {
           if (titlePageKeywords.test(first500Words)) {
             // Find first paragraph break after initial content
             const skipTo = textForTts.search(/\n\n[A-Z]/);
-            if (skipTo > 100 && skipTo < 2000) {
+            if (skipTo > 100 && skipTo < 3000) {
               textForTts = textForTts.substring(skipTo + 2);
               console.log("Skipped title content (no page markers)");
             }
