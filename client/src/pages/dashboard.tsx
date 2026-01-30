@@ -261,7 +261,7 @@ export default function Dashboard() {
   const [weekReadingSelectedFile, setWeekReadingSelectedFile] = useState<any | null>(null);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
   // Honeycomb navigation state
-  const [modulesHoneycombOpen, setModulesHoneycombOpen] = useState<string | null>(null);
+  const [modulesHoneycombOpen, setModulesHoneycombOpen] = useState<string | null>('modules');
   const [decorativeHoneycombHover, setDecorativeHoneycombHover] = useState<'left' | 'middle' | 'right' | null>(null);
   const [readingsHoneycombOpen, setReadingsHoneycombOpen] = useState(false);
   const [moduleMediaControlCourse, setModuleMediaControlCourse] = useState<string | null>(null);
