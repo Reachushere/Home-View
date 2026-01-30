@@ -4103,34 +4103,34 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="outline"
-                  className="h-8 w-8 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-8 w-8 border-blue-500 text-white hover:text-white hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleSkipBack}
                   data-testid="button-preview-rewind"
                   title="Rewind 20 words"
                 >
-                  <SkipBack className="h-4 w-4" />
+                  <SkipBack className="h-4 w-4 text-white" />
                 </Button>
                 <Button
                   size="icon"
                   variant="outline"
-                  className="h-8 w-8 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-8 w-8 border-blue-500 text-white hover:text-white hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, false)}
                   data-testid="button-preview-play"
                   title="Play from start"
                 >
-                  <Play className="h-4 w-4 fill-blue-400" />
+                  <Play className="h-4 w-4 text-white fill-white" />
                 </Button>
                 {/* Resume button - shows when there's saved progress */}
                 {previewFile && getTtsProgress(previewFile.id) && !isPlaying && (
                   <Button
                     size="icon"
                     variant="outline"
-                    className="h-8 w-8 border-green-500 text-green-400 hover:text-green-300 hover:border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] transition-all duration-200"
+                    className="h-8 w-8 border-green-500 text-white hover:text-white hover:border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] transition-all duration-200"
                     onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
                     data-testid="button-preview-resume"
                     title={`Resume from section ${(getTtsProgress(previewFile.id)?.chunkIndex || 0) + 1}`}
                   >
-                    <RotateCcw className="h-4 w-4" />
+                    <RotateCcw className="h-4 w-4 text-white" />
                   </Button>
                 )}
                 <Button
@@ -4145,12 +4145,12 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="outline"
-                  className="h-8 w-8 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-8 w-8 border-blue-500 text-white hover:text-white hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleSkipForward}
                   data-testid="button-preview-forward"
                   title="Skip forward 20 words"
                 >
-                  <SkipForward className="h-4 w-4" />
+                  <SkipForward className="h-4 w-4 text-white" />
                 </Button>
               </div>
               
@@ -4161,7 +4161,7 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-10 px-3 text-[11px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-10 px-3 text-[11px] border-blue-500 text-white hover:text-white hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleRestartFromBeginning}
                   data-testid="button-preview-restart-beginning"
                   title="Restart from beginning"
@@ -4175,7 +4175,7 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-10 px-3 text-[11px] border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  className="h-10 px-3 text-[11px] border-blue-500 text-white hover:text-white hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                   onClick={handleRestartCurrentChunk}
                   data-testid="button-preview-restart-current"
                   title="Restart current section"
@@ -4212,7 +4212,7 @@ export default function Dashboard() {
                   }}
                   data-testid="button-volume-down"
                 >
-                  <Minus className="h-3 w-3" />
+                  <Minus className="h-3 w-3 text-white" />
                 </Button>
                 <Slider
                   value={[radioVolume]}
@@ -4255,7 +4255,7 @@ export default function Dashboard() {
                   }}
                   data-testid="button-volume-up"
                 >
-                  <Plus className="h-3 w-3" />
+                  <Plus className="h-3 w-3 text-white" />
                 </Button>
                 <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
               </div>
