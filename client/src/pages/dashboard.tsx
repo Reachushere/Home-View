@@ -8622,7 +8622,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: '#fef3e2',
+              background: 'rgba(0, 0, 0, 0.6)',
               border: '2px solid #f5a855',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
@@ -8634,7 +8634,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, #ff6b4a 0%, #ff8c42 25%, #ffb347 50%, #ffd280 75%, #ffe5a8 100%)',
+                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
                 padding: '6px 12px'
               }}
             >
@@ -8651,9 +8651,9 @@ export default function Dashboard() {
             </div>
             <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueThisWeekTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">No other tasks this week</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No other tasks this week</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueThisWeekTasks.map((task, idx) => {
@@ -8662,7 +8662,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-gray-700 font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-orange-300/50">
+                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
                             {task.courseName}
                           </div>
                         )}
@@ -8679,7 +8679,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: '#fef3e2',
+              background: 'rgba(0, 0, 0, 0.6)',
               border: '2px solid #f5a855',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
@@ -8691,7 +8691,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, #ff6b4a 0%, #ff8c42 25%, #ffb347 50%, #ffd280 75%, #ffe5a8 100%)',
+                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
                 padding: '6px 12px'
               }}
             >
@@ -8708,9 +8708,9 @@ export default function Dashboard() {
             </div>
             <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">No tasks today</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks today</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueTodayTasks.map((task, idx) => {
@@ -8719,7 +8719,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-gray-700 font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-orange-300/50">
+                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
                             {task.courseName}
                           </div>
                         )}
@@ -8736,7 +8736,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: '#fef3e2',
+              background: 'rgba(0, 0, 0, 0.6)',
               border: '2px solid #f5a855',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
@@ -8748,7 +8748,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, #ff6b4a 0%, #ff8c42 25%, #ffb347 50%, #ffd280 75%, #ffe5a8 100%)',
+                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
                 padding: '6px 12px'
               }}
             >
@@ -8765,9 +8765,9 @@ export default function Dashboard() {
             </div>
             <div className="flex-1 p-3 flex flex-col">
               {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">Loading...</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-gray-500 text-xs">No tasks tomorrow</div>
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
               ) : (
                 <div className="space-y-0.5">
                   {dueTomorrowTasks.map((task, idx) => {
@@ -8776,7 +8776,7 @@ export default function Dashboard() {
                     return (
                       <div key={task.id}>
                         {showCourseHeader && (
-                          <div className="text-[10px] text-gray-700 font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-orange-300/50">
+                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
                             {task.courseName}
                           </div>
                         )}
