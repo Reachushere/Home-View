@@ -222,7 +222,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(664);
+  const [calendarHeight, setCalendarHeight] = useState(644);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -4470,7 +4470,7 @@ export default function Dashboard() {
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '12px', zIndex: 100 }} />
           {/* Week navigation with arrows around date, Today/Month stacked above */}
-          <div className="flex flex-col items-center gap-0.5" style={{ marginLeft: '44px' }}>
+          <div className="flex flex-col items-center gap-0.5" style={{ marginLeft: '40px' }}>
             {/* Today/Month buttons - centered above date range */}
             <div className="flex items-center justify-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginTop: '2px', width: '100%' }}>
               <Button 
@@ -5729,7 +5729,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-1px' }}>
-        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '622px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '614px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Copyright - Bottom right of page */}
@@ -6169,7 +6169,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
-      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '29px', paddingRight: '24px', marginTop: '63px' }}>
+      <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '29px', paddingRight: '24px', marginTop: '83px' }}>
         
         {/* Completed Tasks Popup */}
           <Dialog open={isCompletedTasksOpen} onOpenChange={setIsCompletedTasksOpen}>
