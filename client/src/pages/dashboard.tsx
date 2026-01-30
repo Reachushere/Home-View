@@ -8623,8 +8623,6 @@ export default function Dashboard() {
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
               background: 'rgba(255, 255, 255, 0.5)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
@@ -8682,8 +8680,6 @@ export default function Dashboard() {
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
               background: 'rgba(255, 255, 255, 0.5)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
@@ -8741,8 +8737,6 @@ export default function Dashboard() {
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
               background: 'rgba(255, 255, 255, 0.5)',
-              backdropFilter: 'blur(4px)',
-              WebkitBackdropFilter: 'blur(4px)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
