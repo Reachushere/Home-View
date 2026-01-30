@@ -4648,9 +4648,9 @@ export default function Dashboard() {
           {/* Icon buttons and task buttons with adjustable spacing */}
           <div className="flex items-center flex-wrap justify-center" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
           {/* Hamburger Menu */}
-          <DropdownMenu>
+          <DropdownMenu onOpenChange={(open) => { if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${clickedButton === 'hamburger' ? 'shadow-[0_0_4px_rgba(59,130,246,0.5),0_0_6px_rgba(255,255,255,0.25)]' : ''}`} style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu" onClick={() => triggerButtonGlow('hamburger')}>
+              <Button variant="ghost" size="icon" className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${clickedButton === 'hamburger' ? 'shadow-[0_0_4px_rgba(59,130,246,0.5),0_0_6px_rgba(255,255,255,0.25)]' : ''}`} style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
                 <Menu className="h-[38px] w-[38px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
