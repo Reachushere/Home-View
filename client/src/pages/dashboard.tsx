@@ -5767,13 +5767,52 @@ export default function Dashboard() {
             <img src={hamburgerBg} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadModuleCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-3px', right: '1px' }}>
+              <div className="absolute bg-[#FF0000] text-white text-[11px] font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-4px', right: '0px' }}>
                 {unreadModuleCount}
               </div>
             )}
           </div>
         );
       })()}
+      
+      {/* Dotted lines from Modules button to course buttons */}
+      {modulesHoneycombOpen === 'modules' && (
+        <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+          {/* Line to CPPA */}
+          <line 
+            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
+            y1={`${331 + gridSizes.courseRowHeight * 0.3}px`}
+            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            stroke="white" 
+            strokeWidth="1" 
+            strokeDasharray="2,2"
+            opacity="0.85"
+          />
+          {/* Line to CFNF */}
+          <line 
+            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
+            y1={`${331 + gridSizes.courseRowHeight * 0.57}px`}
+            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            stroke="white" 
+            strokeWidth="1" 
+            strokeDasharray="2,2"
+            opacity="0.85"
+          />
+          {/* Line to CASL */}
+          <line 
+            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
+            y1={`${331 + gridSizes.courseRowHeight * 0.84}px`}
+            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            stroke="white" 
+            strokeWidth="1" 
+            strokeDasharray="2,2"
+            opacity="0.85"
+          />
+        </svg>
+      )}
       
       {/* Modules Course Buttons - Spring from modules button (331px) to course row positions */}
       {/* CPPA122 - Green Row */}
@@ -5891,13 +5930,52 @@ export default function Dashboard() {
             <img src={hamburgerBg} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
             <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadReadingCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-3px', right: '1px' }}>
+              <div className="absolute bg-[#FF0000] text-white text-[11px] font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-4px', right: '0px' }}>
                 {unreadReadingCount}
               </div>
             )}
           </div>
         );
       })()}
+      
+      {/* Dotted lines from Readings button to course buttons */}
+      {modulesHoneycombOpen === 'readings' && (
+        <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+          {/* Line to CPPA */}
+          <line 
+            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
+            y1={`${381 + gridSizes.courseRowHeight * 0.3}px`}
+            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            stroke="white" 
+            strokeWidth="1" 
+            strokeDasharray="2,2"
+            opacity="0.85"
+          />
+          {/* Line to CFNF */}
+          <line 
+            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
+            y1={`${381 + gridSizes.courseRowHeight * 0.57}px`}
+            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            stroke="white" 
+            strokeWidth="1" 
+            strokeDasharray="2,2"
+            opacity="0.85"
+          />
+          {/* Line to CASL */}
+          <line 
+            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
+            y1={`${381 + gridSizes.courseRowHeight * 0.84}px`}
+            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            stroke="white" 
+            strokeWidth="1" 
+            strokeDasharray="2,2"
+            opacity="0.85"
+          />
+        </svg>
+      )}
       
       {/* Readings Course Buttons - Spring from readings button to SAME course row positions as modules */}
       {/* CPPA122 - Green Row */}
@@ -6860,7 +6938,7 @@ export default function Dashboard() {
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             <div className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
-              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
+              <div className="text-[10px] font-bold tracking-wide flex items-center justify-center text-white relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
               {/* Day cells */}
