@@ -5724,7 +5724,7 @@ export default function Dashboard() {
       </div>
       
       {/* Date Range above Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '235px', right: '6px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '285px', right: '6px', width: '70px' }}>
         <Button 
           variant="ghost" 
           size="icon" 
@@ -5736,9 +5736,9 @@ export default function Dashboard() {
           <ChevronLeft className="h-2.5 w-2.5 text-white" strokeWidth={2.5} />
         </Button>
         <div className="flex items-center gap-0.5">
-          <span className="text-[7px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "M/d")}</span>
-          <span className="text-[7px] text-white/60">-</span>
-          <span className="text-[7px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "M/d")}</span>
+          <span className="text-[8px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "M/d")}</span>
+          <span className="text-[8px] text-white/60">-</span>
+          <span className="text-[8px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "M/d")}</span>
         </div>
         <Button 
           variant="ghost" 
