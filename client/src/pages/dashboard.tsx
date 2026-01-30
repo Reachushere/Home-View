@@ -4186,19 +4186,38 @@ export default function Dashboard() {
               
               <div className="w-px h-6 bg-white/30" />
               
-              {/* Speed Controls (for Browser TTS) */}
-              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                <VolumeX className="h-4 w-4 text-blue-400" />
+              {/* Volume Controls */}
+              <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-blue-400 hover:bg-blue-400/20"
+                  onClick={() => {
+                    const newVal = Math.max(0, radioVolume - 5);
+                    setRadioVolume(newVal);
+                    if (previewSpeaker === "browser_tts") {
+                      const rate = 0.5 + (newVal / 100) * 1.5;
+                      setBrowserTtsRate(rate);
+                    } else {
+                      fetch("/api/media/volume", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ level: newVal, entityId: previewSpeaker }),
+                      }).catch(console.error);
+                    }
+                  }}
+                  data-testid="button-volume-down"
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
                 <Slider
                   value={[radioVolume]}
                   onValueChange={(val) => {
                     setRadioVolume(val[0]);
                     if (previewSpeaker === "browser_tts") {
-                      // For browser TTS, adjust the speech rate (50-100% maps to 0.5-2.0 rate)
-                      const rate = 0.5 + (val[0] / 100) * 1.5; // 0% = 0.5, 100% = 2.0
+                      const rate = 0.5 + (val[0] / 100) * 1.5;
                       setBrowserTtsRate(rate);
                     } else {
-                      // For Alexa speakers, set volume via Home Assistant API
                       fetch("/api/media/volume", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -4209,10 +4228,31 @@ export default function Dashboard() {
                   min={0}
                   max={100}
                   step={5}
-                  className="w-24"
+                  className="w-16 [&_[data-slot=track]]:h-1 [&_[data-slot=range]]:h-1 [&_[data-slot=thumb]]:h-3 [&_[data-slot=thumb]]:w-3"
                   data-testid="slider-preview-volume"
                 />
-                <Volume2 className="h-4 w-4 text-blue-400" />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-blue-400 hover:bg-blue-400/20"
+                  onClick={() => {
+                    const newVal = Math.min(100, radioVolume + 5);
+                    setRadioVolume(newVal);
+                    if (previewSpeaker === "browser_tts") {
+                      const rate = 0.5 + (newVal / 100) * 1.5;
+                      setBrowserTtsRate(rate);
+                    } else {
+                      fetch("/api/media/volume", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ level: newVal, entityId: previewSpeaker }),
+                      }).catch(console.error);
+                    }
+                  }}
+                  data-testid="button-volume-up"
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
                 <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
               </div>
               
