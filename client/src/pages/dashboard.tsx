@@ -4269,7 +4269,7 @@ export default function Dashboard() {
             <Button
               size="icon"
               variant="ghost"
-              className="h-7 w-7 text-white hover:bg-gray-700 ml-auto"
+              className="h-7 w-7 text-white hover:bg-gray-700"
               data-testid="button-preview-download"
               title="Download PDF"
               onClick={async () => {
