@@ -4858,14 +4858,14 @@ export default function Dashboard() {
         {/* Timer and Clock - Fixed Right */}
         <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: 'calc(33.33% + 7px)' }}>
           {/* Pomodoro Timer */}
-          <div className="flex items-center gap-2 rounded-full px-3.5 h-[35px] overflow-hidden" style={{ position: 'relative', left: '-4px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+          <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ position: 'relative', left: '-10px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-[13px] font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
             }`} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
                 {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
               </button>
