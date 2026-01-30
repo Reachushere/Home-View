@@ -8619,10 +8619,17 @@ export default function Dashboard() {
           
           return (
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-3 mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 46px)', marginLeft: '-22px', marginRight: '-19px' }} data-task-boxes-container="true">
-          {/* Due This Week */}
+          {/* Due This Week - CSS Box */}
           <section 
-            className={`flex-1 rounded-[2px] shadow-md overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('this-week') + 1, marginLeft: boxOrder.indexOf('this-week') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('this-week') === 2 ? '2px' : '0px' }} 
+            className={`flex-1 rounded-[3px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
+            style={{ 
+              background: 'linear-gradient(160deg, #4a5568 0%, #2d3748 15%, #1a202c 40%, #171923 60%, #1a202c 85%, #2d3748 100%)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3)',
+              order: boxOrder.indexOf('this-week') + 1, 
+              marginLeft: boxOrder.indexOf('this-week') === 0 ? '5px' : '0px', 
+              marginRight: boxOrder.indexOf('this-week') === 2 ? '2px' : '0px' 
+            }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
           >
@@ -8662,10 +8669,17 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* Due Today */}
+          {/* Due Today - CSS Box */}
           <section 
-            className={`flex-1 rounded-[2px] shadow-md overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1, marginLeft: boxOrder.indexOf('today') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('today') === 2 ? '2px' : '0px' }} 
+            className={`flex-1 rounded-[3px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            style={{ 
+              background: 'linear-gradient(160deg, #4a5568 0%, #2d3748 15%, #1a202c 40%, #171923 60%, #1a202c 85%, #2d3748 100%)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3)',
+              order: boxOrder.indexOf('today') + 1, 
+              marginLeft: boxOrder.indexOf('today') === 0 ? '5px' : '0px', 
+              marginRight: boxOrder.indexOf('today') === 2 ? '2px' : '0px' 
+            }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
@@ -8705,10 +8719,17 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* Due Tomorrow */}
+          {/* Due Tomorrow - CSS Box */}
           <section 
-            className={`flex-1 rounded-[2px] shadow-md overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('tomorrow') === 2 ? '2px' : '0px' }} 
+            className={`flex-1 rounded-[3px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            style={{ 
+              background: 'linear-gradient(160deg, #4a5568 0%, #2d3748 15%, #1a202c 40%, #171923 60%, #1a202c 85%, #2d3748 100%)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.4), 0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3)',
+              order: boxOrder.indexOf('tomorrow') + 1, 
+              marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '5px' : '0px', 
+              marginRight: boxOrder.indexOf('tomorrow') === 2 ? '2px' : '0px' 
+            }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
