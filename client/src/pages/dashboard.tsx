@@ -8622,7 +8622,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 163, 101, 0.6)',
+              background: 'rgba(255, 163, 101, 0.3)',
               border: '2px solid #f5a855',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
@@ -8679,7 +8679,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 163, 101, 0.6)',
+              background: 'rgba(255, 163, 101, 0.3)',
               border: '2px solid #f5a855',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
@@ -8736,7 +8736,7 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 163, 101, 0.6)',
+              background: 'rgba(255, 163, 101, 0.3)',
               border: '2px solid #f5a855',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
