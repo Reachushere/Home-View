@@ -95,6 +95,8 @@ import {
   ListChecks,
   ZoomIn,
   ZoomOut,
+  MoveUpRight,
+  TrendingUp,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -6082,6 +6084,22 @@ export default function Dashboard() {
       >
         <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
         <ListChecks className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+      </div>
+
+      {/* Arrow Toggle Button - Below todo button on tall pill */}
+      <div 
+        className="absolute cursor-pointer z-[60] pointer-events-auto"
+        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '534px', right: '15px' }}
+        onClick={() => setBlinkSettings(prev => ({ ...prev, showArrows: !prev.showArrows }))}
+        data-testid="honeycomb-arrows-toggle"
+      >
+        <img 
+          src={hexIcon} 
+          alt="" 
+          className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" 
+          style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))', opacity: blinkSettings.showArrows ? 1 : 0.5 }} 
+        />
+        <TrendingUp className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
