@@ -6874,8 +6874,8 @@ export default function Dashboard() {
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
-            <div className="bg-gradient-to-r from-orange-500 to-orange-400 rounded-l-full py-1.5 px-0.5 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:-translate-x-2 group-active:scale-110 border border-white/30 border-r-0">
-              <ChevronLeft className="h-2 w-2 text-white" strokeWidth={3} />
+            <div className="bg-gradient-to-r from-orange-500 to-orange-400 rounded-l-full py-2 px-1 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:-translate-x-2 group-active:scale-110 border border-white/30 border-r-0">
+              <ChevronLeft className="h-2.5 w-2.5 text-white" strokeWidth={3} />
             </div>
           </div>
           
@@ -6886,8 +6886,8 @@ export default function Dashboard() {
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
-            <div className="bg-gradient-to-l from-orange-500 to-orange-400 rounded-r-full py-1.5 px-0.5 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:translate-x-2 group-active:scale-110 border border-white/30 border-l-0">
-              <ChevronRight className="h-2 w-2 text-white" strokeWidth={3} />
+            <div className="bg-gradient-to-l from-orange-500 to-orange-400 rounded-r-full py-2 px-1 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:translate-x-2 group-active:scale-110 border border-white/30 border-l-0">
+              <ChevronRight className="h-2.5 w-2.5 text-white" strokeWidth={3} />
             </div>
           </div>
           
