@@ -8329,7 +8329,7 @@ export default function Dashboard() {
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('tomorrow') === 2 ? '3px' : '0px' }} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '5px' : '0px', marginRight: boxOrder.indexOf('tomorrow') === 2 ? '2px' : '0px' }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
