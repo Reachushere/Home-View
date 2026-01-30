@@ -4033,13 +4033,11 @@ export default function Dashboard() {
                           ? 'shadow-[0_0_12px_rgba(251,146,60,0.9),0_0_20px_rgba(251,146,60,0.6)]' 
                           : 'shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]'
                       }`}
-                      onFocus={() => {
+                      onClick={() => {
                         if (fileSelectorGlowTimeoutRef.current) {
                           clearTimeout(fileSelectorGlowTimeoutRef.current);
                         }
                         setFileSelectorGlow(true);
-                      }}
-                      onBlur={() => {
                         fileSelectorGlowTimeoutRef.current = setTimeout(() => {
                           setFileSelectorGlow(false);
                         }, 3000);
