@@ -4139,7 +4139,7 @@ export default function Dashboard() {
             <Button
               size="icon"
               variant="outline"
-              className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
               onClick={handleSkipBack}
               data-testid="button-preview-rewind"
               title="Rewind 20 words"
@@ -4166,7 +4166,7 @@ export default function Dashboard() {
               <Button
                 size="icon"
                 variant="outline"
-                className="h-8 w-8 border !border-green-500 text-white hover:text-white hover:!border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] transition-all duration-200"
+                className="h-8 w-8 border !border-green-500 text-white hover:text-white hover:!border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] focus:ring-2 focus:ring-green-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
                 onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
                 data-testid="button-preview-resume"
                 title={`Resume from section ${(getTtsProgress(previewFile.id)?.chunkIndex || 0) + 1}`}
@@ -4178,7 +4178,7 @@ export default function Dashboard() {
             <Button
               size="icon"
               variant="destructive"
-              className="h-8 w-8 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
+              className="h-8 w-8 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)] focus:ring-2 focus:ring-red-400 focus:ring-offset-1 focus:ring-offset-transparent"
               onClick={handleStopMedia}
               data-testid="button-preview-stop"
             >
@@ -4188,7 +4188,7 @@ export default function Dashboard() {
             <Button
               size="icon"
               variant="outline"
-              className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
               onClick={handleSkipForward}
               data-testid="button-preview-forward"
               title="Skip forward 20 words"
@@ -4201,7 +4201,7 @@ export default function Dashboard() {
             <Button
               size="sm"
               variant="outline"
-              className="h-10 px-3 text-[11px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              className="h-10 px-3 text-[11px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
               onClick={handleRestartFromBeginning}
               data-testid="button-preview-restart-beginning"
               title="Restart from beginning"
@@ -4216,7 +4216,7 @@ export default function Dashboard() {
             <Button
               size="sm"
               variant="outline"
-              className="h-10 px-3 text-[11px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              className="h-10 px-3 text-[11px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
               onClick={handleRestartCurrentChunk}
               data-testid="button-preview-restart-current"
               title="Restart current section"
