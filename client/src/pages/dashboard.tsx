@@ -4016,7 +4016,7 @@ export default function Dashboard() {
             <div className="flex items-center gap-2">
               <span className="text-[9px] text-white/60">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
-                <SelectTrigger className="w-[140px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
+                <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                   <SelectValue placeholder="Select Speaker" />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
