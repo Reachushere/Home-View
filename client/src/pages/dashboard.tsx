@@ -5723,6 +5723,34 @@ export default function Dashboard() {
         © 2026
       </div>
       
+      {/* Date Range above Tall Pill */}
+      <div className="absolute z-50 flex items-center justify-center gap-1" style={{ top: '162px', right: '14px', width: '55px' }}>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-5 w-5 p-0 hover:bg-white/20 rounded" 
+          onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} 
+          data-testid="button-pill-prev-week"
+          data-date-nav
+        >
+          <ChevronLeft className="h-3 w-3 text-white" strokeWidth={2.5} />
+        </Button>
+        <div className="flex flex-col items-center">
+          <span className="text-[8px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "MMM d")}</span>
+          <span className="text-[8px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-5 w-5 p-0 hover:bg-white/20 rounded" 
+          onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} 
+          data-testid="button-pill-next-week"
+          data-date-nav
+        >
+          <ChevronRight className="h-3 w-3 text-white" strokeWidth={2.5} />
+        </Button>
+      </div>
+      
       {/* Tall Pill Panel - Right side of calendar */}
       <div className="absolute z-40 pointer-events-none" style={{ top: '190px', right: '14px', width: '55px', height: '537px' }}>
         <img src={tallPill} alt="" className="h-full w-auto object-contain" style={{ opacity: 0.95 }} />
