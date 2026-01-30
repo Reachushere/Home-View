@@ -4394,7 +4394,7 @@ export default function Dashboard() {
                       const lines = paragraph.split(/\n/);
                       
                       return (
-                        <div key={pIdx} className="mb-4">
+                        <div key={pIdx} className="mb-6 pb-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
                           {lines.map((line, lIdx) => {
                             const words = line.split(/\s+/).filter(w => w.length > 0);
                             if (words.length === 0) return null;
@@ -4408,7 +4408,7 @@ export default function Dashboard() {
                             return (
                               <p 
                                 key={`${pIdx}-${lIdx}`} 
-                                className={`${isBullet ? 'pl-6 mb-1' : 'mb-2'} ${isHeader && !isBullet ? 'font-bold text-[15px] mt-4 mb-2' : ''}`}
+                                className={`${isBullet ? 'pl-6 mb-3' : 'mb-4'} ${isHeader && !isBullet ? 'font-bold text-[15px] mt-6 mb-3' : ''}`}
                                 style={{ textIndent: !isBullet && !isHeader ? '1.5em' : '0' }}
                               >
                                 {words.map((word, wIdx) => {
