@@ -219,7 +219,16 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(534);
+  const [calendarHeight, setCalendarHeight] = useState(() => {
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const pixelRatio = window.devicePixelRatio || 1;
+    const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+    const deviceSaved = localStorage.getItem(`calendarHeight_${deviceId}`);
+    if (deviceSaved) return parseInt(deviceSaved, 10);
+    const saved = localStorage.getItem('calendarHeight');
+    return saved ? parseInt(saved, 10) : 534;
+  });
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -722,15 +731,21 @@ export default function Dashboard() {
   const saveAsDeviceDefault = useCallback(() => {
     const deviceId = getDeviceId();
     localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
+    localStorage.setItem(`calendarHeight_${deviceId}`, calendarHeight.toString());
     setShowDeviceSaved(true);
     setTimeout(() => setShowDeviceSaved(false), 2000);
     toast({ title: `Layout saved for this device (${deviceId})` });
-  }, [gridSizes, getDeviceId, toast]);
+  }, [gridSizes, calendarHeight, getDeviceId, toast]);
   
   // Save grid sizes to localStorage
   useEffect(() => {
     localStorage.setItem('gridSizes', JSON.stringify(gridSizes));
   }, [gridSizes]);
+  
+  // Save calendar height to localStorage
+  useEffect(() => {
+    localStorage.setItem('calendarHeight', calendarHeight.toString());
+  }, [calendarHeight]);
   
   // Column resize state
   const [columnResizing, setColumnResizing] = useState<{
