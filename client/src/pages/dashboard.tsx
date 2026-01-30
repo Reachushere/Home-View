@@ -6018,7 +6018,7 @@ export default function Dashboard() {
             border: '1px solid rgba(255, 255, 255, 0.4)',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
             transform: 'rotate(90deg)',
-            marginLeft: '-153px'
+            marginLeft: '-168px'
           }} 
         />
       </div>
