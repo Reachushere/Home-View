@@ -5724,7 +5724,7 @@ export default function Dashboard() {
       </div>
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-0" style={{ top: '290px', right: '11px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-1" style={{ top: '290px', right: '11px', width: '70px' }}>
         <div 
           className="cursor-pointer hover:bg-white/20 rounded p-0.5"
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
@@ -6882,7 +6882,7 @@ export default function Dashboard() {
           {/* Right Arrow - Next Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ right: '-22px', marginTop: '12px' }}
+            style={{ right: '-24px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
