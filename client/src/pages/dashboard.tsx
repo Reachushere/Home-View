@@ -1543,6 +1543,7 @@ export default function Dashboard() {
   const [currentPdfPage, setCurrentPdfPage] = useState(1);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pageWordBoundaries, setPageWordBoundaries] = useState<number[]>([]); // Word index where each page starts
+  const [pdfZoom, setPdfZoom] = useState(0.75); // Default 75% zoom
   
   // Calculate which PDF page a word index belongs to
   const getPageForWordIndex = (wordIndex: number): number => {
@@ -4256,25 +4257,56 @@ export default function Dashboard() {
                 <span className="text-xs text-muted-foreground">
                   Page {currentPdfPage} of {numPages || '?'}
                 </span>
-                <div className="flex gap-1">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-6 px-2"
-                    onClick={() => setCurrentPdfPage(p => Math.max(1, p - 1))}
-                    disabled={currentPdfPage <= 1}
-                  >
-                    <ChevronLeft className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-6 px-2"
-                    onClick={() => setCurrentPdfPage(p => Math.min(numPages || 1, p + 1))}
-                    disabled={currentPdfPage >= (numPages || 1)}
-                  >
-                    <ChevronRight className="h-3 w-3" />
-                  </Button>
+                <div className="flex items-center gap-2">
+                  {/* Zoom Controls */}
+                  <div className="flex items-center gap-1 bg-gray-300 dark:bg-gray-600 rounded px-1.5 py-0.5">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-5 w-5 text-gray-700 dark:text-gray-300 hover:bg-gray-400 dark:hover:bg-gray-500"
+                      onClick={() => setPdfZoom(z => Math.max(0.25, z - 0.1))}
+                      disabled={pdfZoom <= 0.25}
+                      title="Zoom out"
+                      data-testid="button-pdf-zoom-out"
+                    >
+                      <ZoomOut className="h-3 w-3" />
+                    </Button>
+                    <span className="text-[10px] font-medium text-gray-700 dark:text-gray-300 w-8 text-center">
+                      {Math.round(pdfZoom * 100)}%
+                    </span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-5 w-5 text-gray-700 dark:text-gray-300 hover:bg-gray-400 dark:hover:bg-gray-500"
+                      onClick={() => setPdfZoom(z => Math.min(2, z + 0.1))}
+                      disabled={pdfZoom >= 2}
+                      title="Zoom in"
+                      data-testid="button-pdf-zoom-in"
+                    >
+                      <ZoomIn className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  {/* Page Navigation */}
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 px-2"
+                      onClick={() => setCurrentPdfPage(p => Math.max(1, p - 1))}
+                      disabled={currentPdfPage <= 1}
+                    >
+                      <ChevronLeft className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 px-2"
+                      onClick={() => setCurrentPdfPage(p => Math.min(numPages || 1, p + 1))}
+                      disabled={currentPdfPage >= (numPages || 1)}
+                    >
+                      <ChevronRight className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               </div>
               <div className="flex-1 overflow-auto flex items-start justify-center p-2">
@@ -4295,7 +4327,7 @@ export default function Dashboard() {
                   >
                     <Page 
                       pageNumber={currentPdfPage} 
-                      width={350}
+                      width={Math.round(467 * pdfZoom)}
                       renderTextLayer={false}
                       renderAnnotationLayer={false}
                     />
