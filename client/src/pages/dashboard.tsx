@@ -1552,7 +1552,7 @@ export default function Dashboard() {
   const [currentPdfPage, setCurrentPdfPage] = useState(1);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [pageWordBoundaries, setPageWordBoundaries] = useState<number[]>([]); // Word index where each page starts
-  const [pdfZoom, setPdfZoom] = useState(0.75); // Default 75% zoom
+  const [pdfZoom, setPdfZoom] = useState(1.05); // Default 105% zoom
   
   // Calculate which PDF page a word index belongs to
   const getPageForWordIndex = (wordIndex: number): number => {
