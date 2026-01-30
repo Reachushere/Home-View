@@ -6873,8 +6873,8 @@ export default function Dashboard() {
           
           {/* Left Arrow - Previous Week */}
           <div 
-            className="absolute left-0 top-0 -translate-x-full z-50 cursor-pointer group"
-            style={{ marginLeft: '15px', marginTop: '5px' }}
+            className="absolute top-0 z-50 cursor-pointer group"
+            style={{ left: '15px', marginTop: '5px' }}
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
@@ -6885,8 +6885,8 @@ export default function Dashboard() {
           
           {/* Right Arrow - Next Week */}
           <div 
-            className="absolute right-0 top-0 translate-x-full z-50 cursor-pointer group"
-            style={{ marginRight: '21px', marginTop: '5px' }}
+            className="absolute top-0 z-50 cursor-pointer group"
+            style={{ right: '36px', marginTop: '5px' }}
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
