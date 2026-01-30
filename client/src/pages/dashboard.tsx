@@ -4025,7 +4025,7 @@ export default function Dashboard() {
                     const file = relatedFiles.find(f => f.id.toString() === val);
                     if (file) setPreviewFile(file);
                   }}>
-                    <SelectTrigger className="w-[320px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-reading-file">
+                    <SelectTrigger className="w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200" data-testid="select-reading-file">
                       <SelectValue placeholder="Select File" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
