@@ -5166,7 +5166,7 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="!h-[36px] !w-[36px] !min-h-[36px] !min-w-[36px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+            className="!h-[32px] !w-[32px] !min-h-[32px] !min-w-[32px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
             style={{ 
               background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
               boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
