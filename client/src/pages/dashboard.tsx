@@ -5794,7 +5794,7 @@ export default function Dashboard() {
               <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
               {unreadCount > 0 && (
-                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-2px', right: '-1px' }}>
+                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
                 </div>
               )}
@@ -5828,7 +5828,7 @@ export default function Dashboard() {
               <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
               {unreadCount > 0 && (
-                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-2px', right: '-1px' }}>
+                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
                 </div>
               )}
@@ -5862,7 +5862,7 @@ export default function Dashboard() {
               <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
               {unreadCount > 0 && (
-                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-2px', right: '-1px' }}>
+                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
                 </div>
               )}
@@ -5918,7 +5918,7 @@ export default function Dashboard() {
               <img src={hexIcon} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
-                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-2px', right: '-1px' }}>
+                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
                 </div>
               )}
@@ -5952,7 +5952,7 @@ export default function Dashboard() {
               <img src={hexIcon} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
-                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-2px', right: '-1px' }}>
+                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
                 </div>
               )}
@@ -5986,7 +5986,7 @@ export default function Dashboard() {
               <img src={hexIcon} alt="CASL" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
-                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-2px', right: '-1px' }}>
+                <div className="absolute bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
                 </div>
               )}
