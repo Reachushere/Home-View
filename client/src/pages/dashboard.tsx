@@ -5724,27 +5724,23 @@ export default function Dashboard() {
       </div>
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-0" style={{ top: '290px', right: '3px', width: '90px' }}>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-11 w-11 p-0 hover:bg-white/20 rounded" 
-          onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} 
+      <div className="absolute z-50 flex items-center justify-center gap-0" style={{ top: '290px', right: '11px', width: '70px' }}>
+        <div 
+          className="cursor-pointer hover:bg-white/20 rounded p-1"
+          onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
           data-testid="button-pill-prev-week"
           data-date-nav
         >
-          <ChevronLeft className="h-9 w-9 text-white" strokeWidth={2.5} />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-11 w-11 p-0 hover:bg-white/20 rounded" 
-          onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} 
+          <ChevronLeft className="h-7 w-7 text-white" strokeWidth={2.5} />
+        </div>
+        <div 
+          className="cursor-pointer hover:bg-white/20 rounded p-1"
+          onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
           data-testid="button-pill-next-week"
           data-date-nav
         >
-          <ChevronRight className="h-9 w-9 text-white" strokeWidth={2.5} />
-        </Button>
+          <ChevronRight className="h-7 w-7 text-white" strokeWidth={2.5} />
+        </div>
       </div>
       
       {/* Date Range below Tall Pill */}
@@ -6874,7 +6870,7 @@ export default function Dashboard() {
           {/* Left Arrow - Previous Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ left: '-23px', marginTop: '10px' }}
+            style={{ left: '-23px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
@@ -6886,7 +6882,7 @@ export default function Dashboard() {
           {/* Right Arrow - Next Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ right: '36px', marginTop: '10px' }}
+            style={{ right: '-4px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
