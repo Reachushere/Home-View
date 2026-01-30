@@ -654,6 +654,14 @@ export default function Dashboard() {
   const [originalColorSettings, setOriginalColorSettings] = useState(colorSettings);
   const [originalBlinkSettings, setOriginalBlinkSettings] = useState(blinkSettings);
   
+  // Generate a device-specific identifier based on screen dimensions
+  const getDeviceId = useCallback(() => {
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const pixelRatio = window.devicePixelRatio || 1;
+    return `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+  }, []);
+  
   // Grid size settings for resizable calendar columns and rows
   const [gridSizes, setGridSizes] = useState<{
     timeColumnWidth: number;
@@ -664,8 +672,37 @@ export default function Dashboard() {
     timeSlotHeight: number;
     timeSlotHeights: number[]; // Individual heights for each hour (0-23)
   }>(() => {
-    const saved = localStorage.getItem('gridSizes');
     const defaultHeights = Array(24).fill(36); // Default 36px for each hour
+    const defaultSizes = {
+      timeColumnWidth: 59,
+      moduleColumnWidth: 0,
+      dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
+      allDayRowHeight: 36,
+      courseRowHeight: 48,
+      timeSlotHeight: 36,
+      timeSlotHeights: defaultHeights
+    };
+    
+    // Check for device-specific saved settings first
+    const screenWidth = window.screen.width;
+    const screenHeight = window.screen.height;
+    const pixelRatio = window.devicePixelRatio || 1;
+    const deviceId = `device_${screenWidth}x${screenHeight}@${pixelRatio}`;
+    const deviceSaved = localStorage.getItem(`gridSizes_${deviceId}`);
+    
+    if (deviceSaved) {
+      const parsed = JSON.parse(deviceSaved);
+      // Always reset certain values
+      parsed.timeSlotHeights = defaultHeights;
+      parsed.timeSlotHeight = 36;
+      parsed.courseRowHeight = 48;
+      parsed.moduleColumnWidth = 0;
+      parsed.timeColumnWidth = 59;
+      return parsed;
+    }
+    
+    // Fall back to general saved settings
+    const saved = localStorage.getItem('gridSizes');
     if (saved) {
       const parsed = JSON.parse(saved);
       // Always reset timeSlotHeights to default uniform heights
@@ -678,16 +715,20 @@ export default function Dashboard() {
       parsed.timeColumnWidth = 59;
       return parsed;
     }
-    return {
-      timeColumnWidth: 59,
-      moduleColumnWidth: 0,
-      dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
-      allDayRowHeight: 36,
-      courseRowHeight: 48,
-      timeSlotHeight: 36,
-      timeSlotHeights: defaultHeights
-    };
+    return defaultSizes;
   });
+  
+  // State to show "Saved!" confirmation
+  const [showDeviceSaved, setShowDeviceSaved] = useState(false);
+  
+  // Save grid sizes as default for this device
+  const saveAsDeviceDefault = useCallback(() => {
+    const deviceId = getDeviceId();
+    localStorage.setItem(`gridSizes_${deviceId}`, JSON.stringify(gridSizes));
+    setShowDeviceSaved(true);
+    setTimeout(() => setShowDeviceSaved(false), 2000);
+    toast({ title: `Layout saved for this device (${deviceId})` });
+  }, [gridSizes, getDeviceId, toast]);
   
   // Save grid sizes to localStorage
   useEffect(() => {
@@ -5973,6 +6014,18 @@ export default function Dashboard() {
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-1px' }}>
         <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '592px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
+      
+      {/* Set Default Layout Checkbox - Above copyright */}
+      <label className="fixed bottom-7 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-50 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={showDeviceSaved}
+          onChange={saveAsDeviceDefault}
+          className="w-3 h-3 rounded border-white/40 bg-transparent accent-green-500"
+          data-testid="checkbox-save-device-default"
+        />
+        {showDeviceSaved ? "Saved!" : "Set Default"}
+      </label>
       
       {/* Copyright - Bottom right of page */}
       <div className="fixed bottom-2 right-4 text-white/60 text-[10px] font-medium z-50 pointer-events-none">
