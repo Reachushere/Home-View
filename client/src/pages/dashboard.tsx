@@ -4414,43 +4414,42 @@ export default function Dashboard() {
               ) : previewText ? (
                 <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
-                    // Clean text for display - same filtering as TTS
-                    // First normalize excessive whitespace and line breaks within lines
-                    let cleanText = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
-                    // Normalize multiple spaces to single space
+                    // Clean text for display - remove page markers and URLs only
+                    let cleanText = previewText.replace(/---PAGE---/g, '\n\n').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+                    // Normalize multiple spaces to single space (but preserve newlines)
                     cleanText = cleanText.replace(/[ \t]+/g, ' ');
-                    // Normalize line breaks - keep paragraph breaks (2+ newlines) but join single newlines that break sentences mid-flow
-                    cleanText = cleanText.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
-                    // Clean up any remaining excessive newlines
+                    // Clean up excessive newlines (3+ becomes 2)
                     cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
                     
                     // Track global word index for highlighting
                     let globalWordIndex = 0;
                     
-                    // Split into paragraphs
+                    // Split into paragraphs (double newline)
                     const paragraphs = cleanText.split(/\n\n+/);
                     
                     return paragraphs.map((paragraph, pIdx) => {
-                      const lines = paragraph.split(/\n/);
+                      // Split paragraph into lines (single newline)
+                      const lines = paragraph.split(/\n/).filter(l => l.trim().length > 0);
+                      if (lines.length === 0) return null;
                       
                       return (
-                        <div key={pIdx} className="mb-6 pb-2 border-b border-gray-200 dark:border-gray-700 last:border-b-0">
+                        <div key={pIdx} className="mb-8 pb-4 border-b border-gray-300 dark:border-gray-600 last:border-b-0">
                           {lines.map((line, lIdx) => {
-                            const words = line.split(/\s+/).filter(w => w.length > 0);
+                            const words = line.trim().split(/\s+/).filter(w => w.length > 0);
                             if (words.length === 0) return null;
                             
                             const lineStartIdx = globalWordIndex;
                             globalWordIndex += words.length;
                             
-                            const isBullet = /^[•\-\*►▶→]/.test(line.trim());
+                            const isBullet = /^[•\-\*►▶→·]/.test(line.trim());
                             const isHeader = words.length <= 10 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0 && /^[A-Z]/.test(line.trim());
                             
                             return (
-                              <p 
-                                key={`${pIdx}-${lIdx}`} 
-                                className={`${isBullet ? 'pl-6 mb-3' : 'mb-4'} ${isHeader && !isBullet ? 'font-bold text-[15px] mt-6 mb-3' : ''}`}
-                                style={{ textIndent: !isBullet && !isHeader ? '1.5em' : '0' }}
-                              >
+                              <div key={`${pIdx}-${lIdx}`}>
+                                <p 
+                                  className={`${isBullet ? 'pl-6' : ''} ${isHeader && !isBullet ? 'font-bold text-[15px] mt-4' : ''}`}
+                                  style={{ textIndent: !isBullet && !isHeader ? '1.5em' : '0' }}
+                                >
                                 {words.map((word, wIdx) => {
                                   const wordGlobalIdx = lineStartIdx + wIdx;
                                   const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
@@ -4463,7 +4462,10 @@ export default function Dashboard() {
                                     </span>
                                   );
                                 })}
-                              </p>
+                                </p>
+                                {/* Line break after each line */}
+                                <div className="h-3" />
+                              </div>
                             );
                           })}
                         </div>
