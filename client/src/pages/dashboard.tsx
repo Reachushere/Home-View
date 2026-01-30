@@ -97,6 +97,7 @@ import {
   ZoomOut,
   MoveUpRight,
   TrendingUp,
+  TrendingDown,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -6177,7 +6178,7 @@ export default function Dashboard() {
           className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" 
           style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} 
         />
-        <TrendingUp className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4 }} />
+        <TrendingDown className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4 }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
@@ -8242,7 +8243,7 @@ export default function Dashboard() {
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('this-week') + 1, marginLeft: '0px', marginRight: '7px' }} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('this-week') + 1, marginLeft: boxOrder.indexOf('this-week') === 0 ? '0px' : boxOrder.indexOf('this-week') === 1 ? '-3px' : '5px', marginRight: boxOrder.indexOf('this-week') === 0 ? '7px' : boxOrder.indexOf('this-week') === 2 ? '2px' : '0px' }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
           >
@@ -8285,7 +8286,7 @@ export default function Dashboard() {
           {/* Due Today */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1, marginLeft: '-9px' }} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1, marginLeft: boxOrder.indexOf('today') === 0 ? '0px' : boxOrder.indexOf('today') === 1 ? '-3px' : '5px', marginRight: boxOrder.indexOf('today') === 0 ? '7px' : boxOrder.indexOf('today') === 2 ? '2px' : '0px' }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
@@ -8328,7 +8329,7 @@ export default function Dashboard() {
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: '5px', marginRight: '2px' }} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: boxOrder.indexOf('tomorrow') === 0 ? '0px' : boxOrder.indexOf('tomorrow') === 1 ? '-3px' : '5px', marginRight: boxOrder.indexOf('tomorrow') === 0 ? '7px' : boxOrder.indexOf('tomorrow') === 2 ? '2px' : '0px' }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
