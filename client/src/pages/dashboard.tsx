@@ -5724,26 +5724,26 @@ export default function Dashboard() {
       </div>
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-1" style={{ top: '290px', right: '11px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-0" style={{ top: '290px', right: '3px', width: '90px' }}>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-10 w-10 p-0 hover:bg-white/20 rounded" 
+          className="h-11 w-11 p-0 hover:bg-white/20 rounded" 
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} 
           data-testid="button-pill-prev-week"
           data-date-nav
         >
-          <ChevronLeft className="h-8 w-8 text-white" strokeWidth={2.5} />
+          <ChevronLeft className="h-9 w-9 text-white" strokeWidth={2.5} />
         </Button>
         <Button 
           variant="ghost" 
           size="icon" 
-          className="h-10 w-10 p-0 hover:bg-white/20 rounded" 
+          className="h-11 w-11 p-0 hover:bg-white/20 rounded" 
           onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} 
           data-testid="button-pill-next-week"
           data-date-nav
         >
-          <ChevronRight className="h-8 w-8 text-white" strokeWidth={2.5} />
+          <ChevronRight className="h-9 w-9 text-white" strokeWidth={2.5} />
         </Button>
       </div>
       
