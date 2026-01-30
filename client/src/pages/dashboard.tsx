@@ -1616,8 +1616,14 @@ export default function Dashboard() {
     };
   }, [previewFile?.id]);
 
-  // Function to filter out French text from content
+  // Function to filter out French text and links from content
   const removeFrenchText = (text: string): string => {
+    // First, remove URLs and links
+    let cleanedText = text
+      .replace(/https?:\/\/[^\s]+/g, '')
+      .replace(/www\.[^\s]+/g, '')
+      .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, ''); // Remove email addresses too
+    
     // Common French words/patterns to detect French sentences
     const frenchPatterns = [
       /\b(le|la|les|un|une|des|du|de la|au|aux)\b/gi,
@@ -1636,7 +1642,7 @@ export default function Dashboard() {
     ];
     
     // Split into sentences
-    const sentences = text.split(/(?<=[.!?])\s+/);
+    const sentences = cleanedText.split(/(?<=[.!?])\s+/);
     
     // Filter out sentences that appear to be French (contain multiple French patterns)
     const englishSentences = sentences.filter(sentence => {
