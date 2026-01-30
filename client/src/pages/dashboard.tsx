@@ -6818,7 +6818,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '0px', marginRight: '6px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[20px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
+        <div className="mb-[12px] mt-[0px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
