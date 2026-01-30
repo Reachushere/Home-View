@@ -4152,8 +4152,8 @@ export default function Dashboard() {
                   <SkipForward className="h-4 w-4 text-white stroke-white" />
                 </Button>
               </div>
-              
-              <div className="w-px h-6 bg-white/30" />
+            
+            <div className="w-px h-6 bg-white/30" />
               
               {/* Restart Controls */}
               <div className="flex items-center gap-3">
@@ -4260,12 +4260,11 @@ export default function Dashboard() {
               </div>
               
               {/* Chunk progress indicator */}
-              {isPlaying && totalChunks > 1 && (
-                <div className="flex items-center gap-1 text-[11px] text-green-400">
-                  <span>Section {currentChunkIndex + 1}/{totalChunks}</span>
-                </div>
-              )}
-            </div>
+            {isPlaying && totalChunks > 1 && (
+              <div className="flex items-center gap-1 text-[11px] text-green-400">
+                <span>Section {currentChunkIndex + 1}/{totalChunks}</span>
+              </div>
+            )}
             
             <Button
               size="icon"
