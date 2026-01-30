@@ -4859,7 +4859,7 @@ export default function Dashboard() {
         </div>
 
         {/* Timer and Clock - Fixed Right, aligned with tall pill left edge */}
-        <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '69px' }}>
+        <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '14px' }}>
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ position: 'relative', left: '-10px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-[13px] font-bold px-1.5 py-0.5 rounded ${
@@ -6178,7 +6178,7 @@ export default function Dashboard() {
           className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" 
           style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} 
         />
-        <MoveUpRight className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
+        <TrendingUp className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(-45deg)' }} />
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
@@ -8239,7 +8239,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex gap-4 mb-3 mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 44px)', marginLeft: '-22px' }} data-task-boxes-container="true">
+        <div className="flex gap-4 mb-3 mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 50px)', marginLeft: '-22px' }} data-task-boxes-container="true">
           {/* Due This Week */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
