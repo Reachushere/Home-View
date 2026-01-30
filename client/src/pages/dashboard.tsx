@@ -1616,13 +1616,28 @@ export default function Dashboard() {
     };
   }, [previewFile?.id]);
 
-  // Function to filter out French text and links from content
+  // Function to filter out French text, links, and box content from content
   const removeFrenchText = (text: string): string => {
     // First, remove URLs and links
     let cleanedText = text
       .replace(/https?:\/\/[^\s]+/g, '')
       .replace(/www\.[^\s]+/g, '')
-      .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, ''); // Remove email addresses too
+      .replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '') // Remove email addresses
+      // Remove video references and box content
+      .replace(/^Video\s+.+$/gm, '') // Lines starting with "Video"
+      .replace(/^Audio\s+.+$/gm, '') // Lines starting with "Audio"
+      .replace(/^Link\s+.+$/gm, '') // Lines starting with "Link"
+      .replace(/^Watch\s+.+$/gm, '') // Lines starting with "Watch"
+      .replace(/^Listen\s+.+$/gm, '') // Lines starting with "Listen"
+      .replace(/^Click\s+.+$/gm, '') // Lines starting with "Click"
+      .replace(/^See\s+.+$/gm, '') // Lines starting with "See"
+      .replace(/^View\s+.+$/gm, '') // Lines starting with "View"
+      .replace(/\[.*?\]/g, '') // Remove bracketed content like [Video], [Link], etc.
+      .replace(/\(.*?video.*?\)/gi, '') // Remove parenthetical video references
+      .replace(/\(.*?link.*?\)/gi, '') // Remove parenthetical link references
+      .replace(/\d+:\d+:\d+/g, '') // Remove timestamps like 1:23:45
+      .replace(/\d+:\d+/g, '') // Remove timestamps like 1:23
+      .replace(/\n\s*\n\s*\n/g, '\n\n'); // Clean up extra blank lines
     
     // Common French words/patterns to detect French sentences
     const frenchPatterns = [
