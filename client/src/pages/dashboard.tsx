@@ -5726,20 +5726,20 @@ export default function Dashboard() {
       {/* Arrows on Tall Pill */}
       <div className="absolute z-50 flex items-center justify-center gap-0" style={{ top: '290px', right: '11px', width: '70px' }}>
         <div 
-          className="cursor-pointer hover:bg-white/20 rounded p-1"
+          className="cursor-pointer hover:bg-white/20 rounded p-0.5"
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
           data-testid="button-pill-prev-week"
           data-date-nav
         >
-          <ChevronLeft className="h-7 w-7 text-white" strokeWidth={2.5} />
+          <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
         </div>
         <div 
-          className="cursor-pointer hover:bg-white/20 rounded p-1"
+          className="cursor-pointer hover:bg-white/20 rounded p-0.5"
           onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
           data-testid="button-pill-next-week"
           data-date-nav
         >
-          <ChevronRight className="h-7 w-7 text-white" strokeWidth={2.5} />
+          <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
         </div>
       </div>
       
