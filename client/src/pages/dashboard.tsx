@@ -1978,7 +1978,16 @@ export default function Dashboard() {
         toast({ title: "No text content available", variant: "destructive" });
         return;
       }
-      let cleanTextForTts = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+      // For supplementary files, skip the first page (title/cover page)
+      let textForTts = previewText;
+      const currentFileName = previewFile?.displayName || previewFile?.originalName || '';
+      if (/supplementary/i.test(currentFileName)) {
+        const firstPageEnd = textForTts.indexOf('---PAGE---');
+        if (firstPageEnd !== -1) {
+          textForTts = textForTts.substring(firstPageEnd + 10); // Skip past first ---PAGE---
+        }
+      }
+      let cleanTextForTts = textForTts.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
       // Normalize whitespace and line breaks
       cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
       cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
@@ -2059,8 +2068,16 @@ export default function Dashboard() {
           return;
         }
         
+        // For supplementary files, skip the first page (title/cover page)
+        let textForTts = previewText;
+        if (fileName && /supplementary/i.test(fileName)) {
+          const firstPageEnd = textForTts.indexOf('---PAGE---');
+          if (firstPageEnd !== -1) {
+            textForTts = textForTts.substring(firstPageEnd + 10); // Skip past first ---PAGE---
+          }
+        }
         // Remove page markers and split into chunks
-        let cleanTextForTts = previewText.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+        let cleanTextForTts = textForTts.replace(/---PAGE---/g, '').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
         // Normalize whitespace and line breaks
         cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
         cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
@@ -4490,10 +4507,18 @@ export default function Dashboard() {
                   <span className="ml-2 text-muted-foreground">Extracting text...</span>
                 </div>
               ) : previewText ? (
-                <div className="text-sm leading-relaxed">
+                <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
-                    // Clean text for display - remove page markers
-                    const cleanText = previewText.replace(/---PAGE---/g, '');
+                    // Clean text for display - remove page markers and URLs only
+                    let cleanText = previewText.replace(/---PAGE---/g, '\n\n').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
+                    // Normalize multiple spaces to single space (but preserve newlines)
+                    cleanText = cleanText.replace(/[ \t]+/g, ' ');
+                    // Only join lines when previous line does NOT end with sentence-ending punctuation
+                    cleanText = cleanText.replace(/([a-z,;:\-])\s*\n\s*([a-z])/g, '$1 $2');
+                    // Clean up excessive newlines (3+ becomes 2)
+                    cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
+                    
+                    // Split into chunks for section navigation
                     const chunks = splitTextIntoChunks(cleanText, 2000);
                     
                     // Chunk background colors (alternating)
@@ -4513,25 +4538,25 @@ export default function Dashboard() {
                       const chunkColor = chunkColors[chunkIdx % chunkColors.length];
                       const isCurrentChunk = isPlaying && chunkIdx === currentChunkIndex;
                       
-                      // Split chunk into paragraphs
+                      // Split chunk into paragraphs (double newline)
                       const paragraphs = chunk.split(/\n\n+/);
                       
                       return (
                         <div 
                           key={chunkIdx}
-                          className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-3 mb-2 cursor-pointer hover:opacity-80 transition-opacity relative`}
+                          className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-4 mb-4 cursor-pointer hover:opacity-90 transition-opacity relative`}
                           onClick={() => playFromChunk(chunkIdx)}
                           title={`Click to play from Section ${chunkIdx + 1}`}
                         >
                           {/* Chunk header */}
-                          <div className="flex items-center justify-between mb-2 pb-1 border-b border-gray-300 dark:border-gray-600">
-                            <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-400">
+                          <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-300 dark:border-gray-600">
+                            <span className="text-[11px] font-semibold text-gray-600 dark:text-gray-400">
                               Section {chunkIdx + 1} of {chunks.length}
                             </span>
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="h-5 px-2 text-[9px] text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900"
+                              className="h-6 px-3 text-[10px] text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900"
                               onClick={(e) => { e.stopPropagation(); playFromChunk(chunkIdx); }}
                               data-testid={`button-play-chunk-${chunkIdx}`}
                             >
@@ -4541,24 +4566,28 @@ export default function Dashboard() {
                           </div>
                           
                           {paragraphs.map((paragraph, pIdx) => {
-                            const lines = paragraph.split(/\n/);
+                            // Split paragraph into lines (single newline)
+                            const lines = paragraph.split(/\n/).filter(l => l.trim().length > 0);
+                            if (lines.length === 0) return null;
                             
                             return (
-                              <div key={pIdx} className="mb-2">
+                              <div key={pIdx} className="mb-6 pb-3 border-b border-gray-200 dark:border-gray-700 last:border-b-0 last:pb-0 last:mb-0">
                                 {lines.map((line, lIdx) => {
-                                  const words = line.split(/\s+/).filter(w => w.length > 0);
+                                  const words = line.trim().split(/\s+/).filter(w => w.length > 0);
                                   if (words.length === 0) return null;
+                                  
                                   const lineStartIdx = globalWordIndex;
                                   globalWordIndex += words.length;
                                   
-                                  const isBullet = /^[•\-\*►▶→]/.test(line.trim());
-                                  const isHeader = words.length <= 8 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0;
+                                  const isBullet = /^[•\-\*►▶→·]/.test(line.trim());
+                                  const isHeader = words.length <= 10 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0 && /^[A-Z]/.test(line.trim());
                                   
                                   return (
-                                    <p 
-                                      key={`${pIdx}-${lIdx}`}
-                                      className={`${isBullet ? 'pl-4 my-1' : 'my-0.5'} ${isHeader && !isBullet ? 'font-semibold text-gray-700 dark:text-gray-300 mt-2' : 'text-gray-800 dark:text-gray-200'}`}
-                                    >
+                                    <div key={`${pIdx}-${lIdx}`}>
+                                      <p 
+                                        className={`${isBullet ? 'pl-6' : ''} ${isHeader && !isBullet ? 'font-bold text-[15px] mt-4' : ''}`}
+                                        style={{ textIndent: !isBullet && !isHeader ? '1.5em' : '0' }}
+                                      >
                                       {words.map((word, wIdx) => {
                                         const wordGlobalIdx = lineStartIdx + wIdx;
                                         const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
@@ -4571,7 +4600,10 @@ export default function Dashboard() {
                                           </span>
                                         );
                                       })}
-                                    </p>
+                                      </p>
+                                      {/* Line break after each line */}
+                                      <div className="h-3" />
+                                    </div>
                                   );
                                 })}
                               </div>
