@@ -4029,9 +4029,25 @@ export default function Dashboard() {
                       const file = relatedFiles.find(f => f.id.toString() === val);
                       if (file) setPreviewFile(file);
                     }}
+                    onOpenChange={(open) => {
+                      if (open) {
+                        if (fileSelectorGlowTimeoutRef.current) {
+                          clearTimeout(fileSelectorGlowTimeoutRef.current);
+                        }
+                        setFileSelectorGlow(true);
+                      } else {
+                        fileSelectorGlowTimeoutRef.current = setTimeout(() => {
+                          setFileSelectorGlow(false);
+                        }, 1000);
+                      }
+                    }}
                   >
                     <SelectTrigger 
-                      className="w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white shadow-[0_0_12px_rgba(59,130,246,0.8),0_0_20px_rgba(255,255,255,0.4)] ring-2 ring-blue-400 ring-offset-1 ring-offset-gray-800"
+                      className={`w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white transition-all duration-200 ${
+                        fileSelectorGlow 
+                          ? 'shadow-[0_0_12px_rgba(59,130,246,0.8),0_0_20px_rgba(255,255,255,0.4)] ring-2 ring-blue-400 ring-offset-1 ring-offset-gray-800' 
+                          : 'shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]'
+                      }`}
                       data-testid="select-reading-file">
                       <SelectValue placeholder="Select File" />
                     </SelectTrigger>
