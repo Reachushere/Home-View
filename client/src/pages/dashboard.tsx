@@ -222,7 +222,7 @@ export default function Dashboard() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [rescheduleTask, setRescheduleTask] = useState<Task | null>(null);
   const [isTodayExpanded, setIsTodayExpanded] = useState(false);
-  const [calendarHeight, setCalendarHeight] = useState(574);
+  const [calendarHeight, setCalendarHeight] = useState(534);
   const [isResizing, setIsResizing] = useState(false);
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
@@ -4470,7 +4470,7 @@ export default function Dashboard() {
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '12px', zIndex: 100 }} />
           {/* Week navigation with arrows around date, Today/Month stacked above */}
-          <div className="flex flex-col items-center gap-0.5" style={{ marginLeft: '45px' }}>
+          <div className="flex flex-col items-center gap-0.5" style={{ marginLeft: '49px' }}>
             {/* Today/Month buttons - centered above date range */}
             <div className="flex items-center justify-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginTop: '2px', width: '100%' }}>
               <Button 
@@ -5729,7 +5729,7 @@ export default function Dashboard() {
 
       {/* Wide Pill Banner - Top middle */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-1px' }}>
-        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '599px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '592px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
       {/* Copyright - Bottom right of page */}
@@ -6818,7 +6818,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '0px', marginRight: '6px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[5px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
+        <div className="mb-[12px] mt-[10px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
