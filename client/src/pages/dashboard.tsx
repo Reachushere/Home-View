@@ -4031,7 +4031,7 @@ export default function Dashboard() {
           </div>
           
           {/* Bottom Media Controls Bar */}
-          <div className="flex items-center justify-between p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex items-center justify-evenly p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             {/* Voice selector - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
               <>
@@ -4097,169 +4097,161 @@ export default function Dashboard() {
               </div>
             )}
             
-            {/* Playback Controls */}
-              <div className="flex items-center gap-3">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={handleSkipBack}
-                  data-testid="button-preview-rewind"
-                  title="Rewind 20 words"
-                >
-                  <SkipBack className="h-4 w-4 text-white stroke-white" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, false)}
-                  data-testid="button-preview-play"
-                  title="Play from start"
-                >
-                  <Play className="h-4 w-4 text-white fill-white" />
-                </Button>
-                {/* Resume button - shows when there's saved progress */}
-                {previewFile && getTtsProgress(previewFile.id) && !isPlaying && (
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="h-8 w-8 border !border-green-500 text-white hover:text-white hover:!border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] transition-all duration-200"
-                    onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
-                    data-testid="button-preview-resume"
-                    title={`Resume from section ${(getTtsProgress(previewFile.id)?.chunkIndex || 0) + 1}`}
-                  >
-                    <RotateCcw className="h-4 w-4 text-white stroke-white" />
-                  </Button>
-                )}
-                <Button
-                  size="icon"
-                  variant="destructive"
-                  className="h-8 w-8 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
-                  onClick={handleStopMedia}
-                  data-testid="button-preview-stop"
-                >
-                  <Square className="h-4 w-4 fill-white" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={handleSkipForward}
-                  data-testid="button-preview-forward"
-                  title="Skip forward 20 words"
-                >
-                  <SkipForward className="h-4 w-4 text-white stroke-white" />
-                </Button>
-              </div>
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              onClick={handleSkipBack}
+              data-testid="button-preview-rewind"
+              title="Rewind 20 words"
+            >
+              <SkipBack className="h-4 w-4 text-white stroke-white" />
+            </Button>
             
-            <div className="w-px h-6 bg-white/30" />
-              
-              {/* Restart Controls */}
-              <div className="flex items-center gap-3">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-10 px-3 text-[11px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={handleRestartFromBeginning}
-                  data-testid="button-preview-restart-beginning"
-                  title="Restart from beginning"
-                >
-                  <RotateCcw className="h-4 w-4 mr-1 text-white stroke-white" />
-                  <div className="flex flex-col leading-tight">
-                    <span>Restart</span>
-                    <span>Beginning</span>
-                  </div>
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-10 px-3 text-[11px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={handleRestartCurrentChunk}
-                  data-testid="button-preview-restart-current"
-                  title="Restart current section"
-                >
-                  <RefreshCw className="h-4 w-4 mr-1 text-white stroke-white" />
-                  <div className="flex flex-col leading-tight">
-                    <span>Restart</span>
-                    <span>Current</span>
-                  </div>
-                </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, false)}
+              data-testid="button-preview-play"
+              title="Play from start"
+            >
+              <Play className="h-4 w-4 text-white fill-white" />
+            </Button>
+            
+            {previewFile && getTtsProgress(previewFile.id) && !isPlaying && (
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-8 w-8 border !border-green-500 text-white hover:text-white hover:!border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] transition-all duration-200"
+                onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
+                data-testid="button-preview-resume"
+                title={`Resume from section ${(getTtsProgress(previewFile.id)?.chunkIndex || 0) + 1}`}
+              >
+                <RotateCcw className="h-4 w-4 text-white stroke-white" />
+              </Button>
+            )}
+            
+            <Button
+              size="icon"
+              variant="destructive"
+              className="h-8 w-8 bg-[rgb(255,0,0)] hover:bg-[rgb(220,0,0)] border-[rgb(255,0,0)]"
+              onClick={handleStopMedia}
+              data-testid="button-preview-stop"
+            >
+              <Square className="h-4 w-4 fill-white" />
+            </Button>
+            
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              onClick={handleSkipForward}
+              data-testid="button-preview-forward"
+              title="Skip forward 20 words"
+            >
+              <SkipForward className="h-4 w-4 text-white stroke-white" />
+            </Button>
+            
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-10 px-3 text-[11px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              onClick={handleRestartFromBeginning}
+              data-testid="button-preview-restart-beginning"
+              title="Restart from beginning"
+            >
+              <RotateCcw className="h-4 w-4 mr-1 text-white stroke-white" />
+              <div className="flex flex-col leading-tight">
+                <span>Restart</span>
+                <span>Beginning</span>
               </div>
-              
-              <div className="w-px h-6 bg-white/30" />
-              
-              {/* Volume Controls */}
-              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-white/20"
-                  onClick={() => {
-                    const newVal = Math.max(0, radioVolume - 5);
-                    setRadioVolume(newVal);
-                    if (previewSpeaker === "browser_tts") {
-                      const rate = 0.5 + (newVal / 100) * 1.5;
-                      setBrowserTtsRate(rate);
-                    } else {
-                      fetch("/api/media/volume", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ level: newVal, entityId: previewSpeaker }),
-                      }).catch(console.error);
-                    }
-                  }}
-                  data-testid="button-volume-down"
-                >
-                  <Minus className="h-3 w-3 text-white" />
-                </Button>
-                <Slider
-                  value={[radioVolume]}
-                  onValueChange={(val) => {
-                    setRadioVolume(val[0]);
-                    if (previewSpeaker === "browser_tts") {
-                      const rate = 0.5 + (val[0] / 100) * 1.5;
-                      setBrowserTtsRate(rate);
-                    } else {
-                      fetch("/api/media/volume", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ level: val[0], entityId: previewSpeaker }),
-                      }).catch(console.error);
-                    }
-                  }}
-                  min={0}
-                  max={100}
-                  step={5}
-                  className="w-24 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2 [&_[role=slider]]:w-2 [&_[role=slider]]:border-0"
-                  data-testid="slider-preview-volume"
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-white/20"
-                  onClick={() => {
-                    const newVal = Math.min(100, radioVolume + 5);
-                    setRadioVolume(newVal);
-                    if (previewSpeaker === "browser_tts") {
-                      const rate = 0.5 + (newVal / 100) * 1.5;
-                      setBrowserTtsRate(rate);
-                    } else {
-                      fetch("/api/media/volume", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ level: newVal, entityId: previewSpeaker }),
-                      }).catch(console.error);
-                    }
-                  }}
-                  data-testid="button-volume-up"
-                >
-                  <Plus className="h-3 w-3 text-white" />
-                </Button>
-                <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
+            </Button>
+            
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-10 px-3 text-[11px] border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              onClick={handleRestartCurrentChunk}
+              data-testid="button-preview-restart-current"
+              title="Restart current section"
+            >
+              <RefreshCw className="h-4 w-4 mr-1 text-white stroke-white" />
+              <div className="flex flex-col leading-tight">
+                <span>Restart</span>
+                <span>Current</span>
               </div>
-              
-              {/* Chunk progress indicator */}
+            </Button>
+            
+            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-5 w-5 text-white hover:bg-white/20"
+                onClick={() => {
+                  const newVal = Math.max(0, radioVolume - 5);
+                  setRadioVolume(newVal);
+                  if (previewSpeaker === "browser_tts") {
+                    const rate = 0.5 + (newVal / 100) * 1.5;
+                    setBrowserTtsRate(rate);
+                  } else {
+                    fetch("/api/media/volume", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ level: newVal, entityId: previewSpeaker }),
+                    }).catch(console.error);
+                  }
+                }}
+                data-testid="button-volume-down"
+              >
+                <Minus className="h-3 w-3 text-white" />
+              </Button>
+              <Slider
+                value={[radioVolume]}
+                onValueChange={(val) => {
+                  setRadioVolume(val[0]);
+                  if (previewSpeaker === "browser_tts") {
+                    const rate = 0.5 + (val[0] / 100) * 1.5;
+                    setBrowserTtsRate(rate);
+                  } else {
+                    fetch("/api/media/volume", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ level: val[0], entityId: previewSpeaker }),
+                    }).catch(console.error);
+                  }
+                }}
+                min={0}
+                max={100}
+                step={5}
+                className="w-24 [&>span:first-child]:h-0.5 [&>span:first-child>span]:h-0.5 [&_[role=slider]]:h-2 [&_[role=slider]]:w-2 [&_[role=slider]]:border-0"
+                data-testid="slider-preview-volume"
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-5 w-5 text-white hover:bg-white/20"
+                onClick={() => {
+                  const newVal = Math.min(100, radioVolume + 5);
+                  setRadioVolume(newVal);
+                  if (previewSpeaker === "browser_tts") {
+                    const rate = 0.5 + (newVal / 100) * 1.5;
+                    setBrowserTtsRate(rate);
+                  } else {
+                    fetch("/api/media/volume", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ level: newVal, entityId: previewSpeaker }),
+                    }).catch(console.error);
+                  }
+                }}
+                data-testid="button-volume-up"
+              >
+                <Plus className="h-3 w-3 text-white" />
+              </Button>
+              <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
+            </div>
+            
             {isPlaying && totalChunks > 1 && (
               <div className="flex items-center gap-1 text-[11px] text-green-400">
                 <span>Section {currentChunkIndex + 1}/{totalChunks}</span>
@@ -4294,9 +4286,6 @@ export default function Dashboard() {
               <Download className="h-3 w-3" />
             </Button>
             
-            <div className="w-px h-6 bg-white/30 mx-2" />
-            
-            {/* Sync Checkbox */}
             <div className="flex items-center gap-1">
               <Checkbox
                 id="sync-highlight"
@@ -4310,9 +4299,6 @@ export default function Dashboard() {
               </Label>
             </div>
             
-            <div className="w-px h-6 bg-white/30 mx-2" />
-            
-            {/* Mark as Completed Checkbox */}
             <div className="flex items-center gap-1">
               <Checkbox
                 id="mark-completed"
