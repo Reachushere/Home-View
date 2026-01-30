@@ -4150,7 +4150,11 @@ export default function Dashboard() {
             <Button
               size="icon"
               variant="outline"
-              className="h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              className={`h-8 w-8 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent transition-all duration-200 ${
+                isPlaying 
+                  ? 'animate-pulse shadow-[0_0_16px_rgba(59,130,246,0.8),0_0_24px_rgba(59,130,246,0.6)] hover:shadow-[0_0_20px_rgba(59,130,246,0.9),0_0_28px_rgba(59,130,246,0.7)]' 
+                  : 'shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]'
+              }`}
               onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, false)}
               data-testid="button-preview-play"
               title="Play from start"
