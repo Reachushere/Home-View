@@ -4232,7 +4232,7 @@ export default function Dashboard() {
                   min={0}
                   max={100}
                   step={5}
-                  className="w-16 [&_[data-slot=track]]:h-1 [&_[data-slot=range]]:h-1 [&_[data-slot=thumb]]:h-3 [&_[data-slot=thumb]]:w-3"
+                  className="w-24 [&>span:first-child]:h-1 [&>span:first-child>span]:h-1 [&>span:last-child]:h-3 [&>span:last-child]:w-3"
                   data-testid="slider-preview-volume"
                 />
                 <Button
