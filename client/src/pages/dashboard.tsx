@@ -1471,6 +1471,8 @@ export default function Dashboard() {
 
   // File preview dialog state
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
+  const [fileSelectorGlow, setFileSelectorGlow] = useState(false);
+  const fileSelectorGlowTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [previewSpeaker, setPreviewSpeaker] = useState<string>("media_player.echo_cat_left_am");
   const [previewText, setPreviewText] = useState<string>("");
   const [isLoadingText, setIsLoadingText] = useState(false);
@@ -4025,7 +4027,24 @@ export default function Dashboard() {
                     const file = relatedFiles.find(f => f.id.toString() === val);
                     if (file) setPreviewFile(file);
                   }}>
-                    <SelectTrigger className="w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200" data-testid="select-reading-file">
+                    <SelectTrigger 
+                      className={`w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white transition-all duration-200 ${
+                        fileSelectorGlow 
+                          ? 'shadow-[0_0_12px_rgba(251,146,60,0.9),0_0_20px_rgba(251,146,60,0.6)]' 
+                          : 'shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]'
+                      }`}
+                      onFocus={() => {
+                        if (fileSelectorGlowTimeoutRef.current) {
+                          clearTimeout(fileSelectorGlowTimeoutRef.current);
+                        }
+                        setFileSelectorGlow(true);
+                      }}
+                      onBlur={() => {
+                        fileSelectorGlowTimeoutRef.current = setTimeout(() => {
+                          setFileSelectorGlow(false);
+                        }, 3000);
+                      }}
+                      data-testid="select-reading-file">
                       <SelectValue placeholder="Select File" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
@@ -4615,7 +4634,7 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200" style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
+              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:outline focus:outline-2 focus:outline-orange-500 focus:outline-offset-2" style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
                 <Menu className="h-[38px] w-[38px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
@@ -4647,7 +4666,7 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200"
+            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:outline focus:outline-2 focus:outline-orange-500 focus:outline-offset-2"
             style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
@@ -4660,7 +4679,7 @@ export default function Dashboard() {
             variant="ghost"
             size="icon"
             onClick={toggleMute}
-            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
+            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_20px_6px_rgba(251,146,60,0.9),0_0_40px_12px_rgba(251,146,60,0.5)] transition-shadow duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
             style={isMuted ? { marginTop: '7px' } : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
