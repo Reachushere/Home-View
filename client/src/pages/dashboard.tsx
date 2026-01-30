@@ -6008,7 +6008,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle (CSS) - Same as side pill rotated 90deg */}
-      <div className="fixed left-0 right-0 flex justify-center pointer-events-none" style={{ top: '28px', zIndex: 1 }}>
+      <div className="fixed left-0 right-0 flex justify-center pointer-events-none" style={{ top: '-175px', zIndex: 1 }}>
         <div 
           style={{ 
             width: '40px', 
