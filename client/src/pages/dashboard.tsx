@@ -4863,7 +4863,7 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
+            className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
             style={{ 
               background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
               boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
@@ -4873,7 +4873,7 @@ export default function Dashboard() {
             data-testid="button-settings-panel"
             onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
           >
-            <GraduationCap className="text-white" style={{ height: '20px', width: '20px' }} />
+            <GraduationCap className="text-white" style={{ height: '16px', width: '16px' }} />
           </Button>
 
           {/* Bell */}
