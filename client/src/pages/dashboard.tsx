@@ -4490,62 +4490,90 @@ export default function Dashboard() {
                   <span className="ml-2 text-muted-foreground">Extracting text...</span>
                 </div>
               ) : previewText ? (
-                <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
+                <div className="text-sm leading-relaxed">
                   {(() => {
-                    // Clean text for display - remove page markers and URLs only
-                    let cleanText = previewText.replace(/---PAGE---/g, '\n\n').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
-                    // Normalize multiple spaces to single space (but preserve newlines)
-                    cleanText = cleanText.replace(/[ \t]+/g, ' ');
-                    // Only join lines when previous line does NOT end with sentence-ending punctuation
-                    // This preserves paragraph breaks while fixing mid-sentence line breaks
-                    cleanText = cleanText.replace(/([a-z,;:\-])\s*\n\s*([a-z])/g, '$1 $2');
-                    // Clean up excessive newlines (3+ becomes 2)
-                    cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
+                    // Clean text for display - remove page markers
+                    const cleanText = previewText.replace(/---PAGE---/g, '');
+                    const chunks = splitTextIntoChunks(cleanText, 2000);
+                    
+                    // Chunk background colors (alternating)
+                    const chunkColors = [
+                      'bg-blue-50 dark:bg-blue-950/40',
+                      'bg-green-50 dark:bg-green-950/40',
+                      'bg-purple-50 dark:bg-purple-950/40',
+                      'bg-orange-50 dark:bg-orange-950/40',
+                      'bg-pink-50 dark:bg-pink-950/40',
+                      'bg-cyan-50 dark:bg-cyan-950/40',
+                    ];
                     
                     // Track global word index for highlighting
                     let globalWordIndex = 0;
                     
-                    // Split into paragraphs (double newline)
-                    const paragraphs = cleanText.split(/\n\n+/);
-                    
-                    return paragraphs.map((paragraph, pIdx) => {
-                      // Split paragraph into lines (single newline)
-                      const lines = paragraph.split(/\n/).filter(l => l.trim().length > 0);
-                      if (lines.length === 0) return null;
+                    return chunks.map((chunk, chunkIdx) => {
+                      const chunkColor = chunkColors[chunkIdx % chunkColors.length];
+                      const isCurrentChunk = isPlaying && chunkIdx === currentChunkIndex;
+                      
+                      // Split chunk into paragraphs
+                      const paragraphs = chunk.split(/\n\n+/);
                       
                       return (
-                        <div key={pIdx} className="mb-8 pb-4 border-b border-gray-300 dark:border-gray-600 last:border-b-0">
-                          {lines.map((line, lIdx) => {
-                            const words = line.trim().split(/\s+/).filter(w => w.length > 0);
-                            if (words.length === 0) return null;
-                            
-                            const lineStartIdx = globalWordIndex;
-                            globalWordIndex += words.length;
-                            
-                            const isBullet = /^[•\-\*►▶→·]/.test(line.trim());
-                            const isHeader = words.length <= 10 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0 && /^[A-Z]/.test(line.trim());
+                        <div 
+                          key={chunkIdx}
+                          className={`${chunkColor} ${isCurrentChunk ? 'ring-2 ring-yellow-400' : ''} rounded-lg p-3 mb-2 cursor-pointer hover:opacity-80 transition-opacity relative`}
+                          onClick={() => playFromChunk(chunkIdx)}
+                          title={`Click to play from Section ${chunkIdx + 1}`}
+                        >
+                          {/* Chunk header */}
+                          <div className="flex items-center justify-between mb-2 pb-1 border-b border-gray-300 dark:border-gray-600">
+                            <span className="text-[10px] font-semibold text-gray-600 dark:text-gray-400">
+                              Section {chunkIdx + 1} of {chunks.length}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-5 px-2 text-[9px] text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900"
+                              onClick={(e) => { e.stopPropagation(); playFromChunk(chunkIdx); }}
+                              data-testid={`button-play-chunk-${chunkIdx}`}
+                            >
+                              <Play className="h-3 w-3 mr-1" />
+                              Play
+                            </Button>
+                          </div>
+                          
+                          {paragraphs.map((paragraph, pIdx) => {
+                            const lines = paragraph.split(/\n/);
                             
                             return (
-                              <div key={`${pIdx}-${lIdx}`}>
-                                <p 
-                                  className={`${isBullet ? 'pl-6' : ''} ${isHeader && !isBullet ? 'font-bold text-[15px] mt-4' : ''}`}
-                                  style={{ textIndent: !isBullet && !isHeader ? '1.5em' : '0' }}
-                                >
-                                {words.map((word, wIdx) => {
-                                  const wordGlobalIdx = lineStartIdx + wIdx;
-                                  const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
+                              <div key={pIdx} className="mb-2">
+                                {lines.map((line, lIdx) => {
+                                  const words = line.split(/\s+/).filter(w => w.length > 0);
+                                  if (words.length === 0) return null;
+                                  const lineStartIdx = globalWordIndex;
+                                  globalWordIndex += words.length;
+                                  
+                                  const isBullet = /^[•\-\*►▶→]/.test(line.trim());
+                                  const isHeader = words.length <= 8 && !/[.,:;]$/.test(line.trim()) && line.trim().length > 0;
+                                  
                                   return (
-                                    <span
-                                      key={wordGlobalIdx}
-                                      className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
+                                    <p 
+                                      key={`${pIdx}-${lIdx}`}
+                                      className={`${isBullet ? 'pl-4 my-1' : 'my-0.5'} ${isHeader && !isBullet ? 'font-semibold text-gray-700 dark:text-gray-300 mt-2' : 'text-gray-800 dark:text-gray-200'}`}
                                     >
-                                      {word}{' '}
-                                    </span>
+                                      {words.map((word, wIdx) => {
+                                        const wordGlobalIdx = lineStartIdx + wIdx;
+                                        const isCurrentWord = syncHighlight && isPlaying && wordGlobalIdx === currentWordIndex;
+                                        return (
+                                          <span
+                                            key={wordGlobalIdx}
+                                            className={isCurrentWord ? "bg-yellow-300 dark:bg-yellow-600 text-black dark:text-white px-0.5 rounded" : ""}
+                                          >
+                                            {word}{' '}
+                                          </span>
+                                        );
+                                      })}
+                                    </p>
                                   );
                                 })}
-                                </p>
-                                {/* Line break after each line */}
-                                <div className="h-3" />
                               </div>
                             );
                           })}
