@@ -7755,6 +7755,12 @@ export default function Dashboard() {
                 })}
             </div>
                       </CardContent>
+          {/* Calendar Height Resize Handle */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-3 cursor-ns-resize z-50 hover:bg-blue-400/30 active:bg-blue-400/50"
+            onMouseDown={handleResizeStart}
+            data-testid="calendar-height-resize-handle"
+          />
           </Card>
           </div>
           
