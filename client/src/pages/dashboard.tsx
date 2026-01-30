@@ -10,11 +10,9 @@ import celebrationAnimoji from "@assets/Animoji_1769350617739.webp";
 import victoryFanfare from "@assets/victory-fanfare.mp3";
 import crowdCheer from "@assets/crowd-cheer.mp3";
 import hexIcon from "@assets/Button_1769701329320.png";
-import ovalBanner from "@assets/Oval5_1769706589786.png";
 import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
-import tallPill from "@assets/Tall_1769697999710.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -6009,9 +6007,20 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Wide Pill Banner - Top middle */}
+      {/* Wide Pill Banner - Top middle (CSS) */}
       <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-1px' }}>
-        <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '592px', objectFit: 'contain', marginLeft: '-75px' }} />
+        <div 
+          style={{ 
+            width: '592px', 
+            height: '70px', 
+            background: 'rgba(255, 255, 255, 0.35)',
+            borderRadius: '0 0 35px 35px',
+            border: '1px solid rgba(255, 255, 255, 0.4)',
+            borderTop: 'none',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+            marginLeft: '-75px'
+          }} 
+        />
       </div>
       
       {/* Set Default Layout Checkbox - Bottom of screen */}
@@ -6061,9 +6070,18 @@ export default function Dashboard() {
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
       </div>
       
-      {/* Tall Pill Panel - Right side of calendar */}
+      {/* Tall Pill Panel - Right side of calendar (CSS) */}
       <div className="absolute z-40 pointer-events-none" style={{ top: '190px', right: '14px', width: '55px', height: '537px' }}>
-        <img src={tallPill} alt="" className="h-full w-auto object-contain" style={{ opacity: 0.95 }} />
+        <div 
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            background: 'rgba(255, 255, 255, 0.35)',
+            borderRadius: '28px',
+            border: '1px solid rgba(255, 255, 255, 0.4)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          }} 
+        />
       </div>
       
       {/* Modules Button - On top of tall pill */}
