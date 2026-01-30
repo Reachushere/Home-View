@@ -1978,12 +1978,15 @@ export default function Dashboard() {
         toast({ title: "No text content available", variant: "destructive" });
         return;
       }
-      // For supplementary files, skip the first page (title/cover page)
+      // Detect and skip title pages (short pages with publication info like JSTOR, author, published, etc.)
       let textForTts = previewText;
-      const currentFileName = previewFile?.displayName || previewFile?.originalName || '';
-      if (/supplementary/i.test(currentFileName)) {
-        const firstPageEnd = textForTts.indexOf('---PAGE---');
-        if (firstPageEnd !== -1) {
+      const firstPageEnd = textForTts.indexOf('---PAGE---');
+      if (firstPageEnd !== -1) {
+        const firstPageContent = textForTts.substring(0, firstPageEnd).toLowerCase();
+        const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
+        // Check if first page looks like a title page (short + contains publication keywords)
+        const titlePageKeywords = /jstor|published|publisher|author|doi:|copyright|©|issn|isbn|volume|issue|journal|university press|all rights reserved|accessed|stable url|http|www\./i;
+        if (wordCount < 200 && titlePageKeywords.test(firstPageContent)) {
           textForTts = textForTts.substring(firstPageEnd + 10); // Skip past first ---PAGE---
         }
       }
@@ -2068,11 +2071,15 @@ export default function Dashboard() {
           return;
         }
         
-        // For supplementary files, skip the first page (title/cover page)
+        // Detect and skip title pages (short pages with publication info like JSTOR, author, published, etc.)
         let textForTts = previewText;
-        if (fileName && /supplementary/i.test(fileName)) {
-          const firstPageEnd = textForTts.indexOf('---PAGE---');
-          if (firstPageEnd !== -1) {
+        const firstPageEnd = textForTts.indexOf('---PAGE---');
+        if (firstPageEnd !== -1) {
+          const firstPageContent = textForTts.substring(0, firstPageEnd).toLowerCase();
+          const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
+          // Check if first page looks like a title page (short + contains publication keywords)
+          const titlePageKeywords = /jstor|published|publisher|author|doi:|copyright|©|issn|isbn|volume|issue|journal|university press|all rights reserved|accessed|stable url|http|www\./i;
+          if (wordCount < 200 && titlePageKeywords.test(firstPageContent)) {
             textForTts = textForTts.substring(firstPageEnd + 10); // Skip past first ---PAGE---
           }
         }
