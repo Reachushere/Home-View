@@ -4108,7 +4108,7 @@ export default function Dashboard() {
                   data-testid="button-preview-rewind"
                   title="Rewind 20 words"
                 >
-                  <SkipBack className="h-4 w-4 text-white" />
+                  <SkipBack className="h-4 w-4 text-white stroke-white" />
                 </Button>
                 <Button
                   size="icon"
@@ -4130,7 +4130,7 @@ export default function Dashboard() {
                     data-testid="button-preview-resume"
                     title={`Resume from section ${(getTtsProgress(previewFile.id)?.chunkIndex || 0) + 1}`}
                   >
-                    <RotateCcw className="h-4 w-4 text-white" />
+                    <RotateCcw className="h-4 w-4 text-white stroke-white" />
                   </Button>
                 )}
                 <Button
@@ -4150,7 +4150,7 @@ export default function Dashboard() {
                   data-testid="button-preview-forward"
                   title="Skip forward 20 words"
                 >
-                  <SkipForward className="h-4 w-4 text-white" />
+                  <SkipForward className="h-4 w-4 text-white stroke-white" />
                 </Button>
               </div>
               
@@ -4166,7 +4166,7 @@ export default function Dashboard() {
                   data-testid="button-preview-restart-beginning"
                   title="Restart from beginning"
                 >
-                  <RotateCcw className="h-4 w-4 mr-1" />
+                  <RotateCcw className="h-4 w-4 mr-1 text-white stroke-white" />
                   <div className="flex flex-col leading-tight">
                     <span>Restart</span>
                     <span>Beginning</span>
@@ -4180,7 +4180,7 @@ export default function Dashboard() {
                   data-testid="button-preview-restart-current"
                   title="Restart current section"
                 >
-                  <RefreshCw className="h-4 w-4 mr-1" />
+                  <RefreshCw className="h-4 w-4 mr-1 text-white stroke-white" />
                   <div className="flex flex-col leading-tight">
                     <span>Restart</span>
                     <span>Current</span>
