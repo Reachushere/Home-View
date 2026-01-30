@@ -4195,7 +4195,7 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-5 w-5 text-blue-400 hover:bg-blue-400/20"
+                  className="h-5 w-5 text-white hover:bg-white/20"
                   onClick={() => {
                     const newVal = Math.max(0, radioVolume - 5);
                     setRadioVolume(newVal);
@@ -4238,7 +4238,7 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-5 w-5 text-blue-400 hover:bg-blue-400/20"
+                  className="h-5 w-5 text-white hover:bg-white/20"
                   onClick={() => {
                     const newVal = Math.min(100, radioVolume + 5);
                     setRadioVolume(newVal);
@@ -4422,10 +4422,9 @@ export default function Dashboard() {
                     let cleanText = previewText.replace(/---PAGE---/g, '\n\n').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
                     // Normalize multiple spaces to single space (but preserve newlines)
                     cleanText = cleanText.replace(/[ \t]+/g, ' ');
-                    // Join lines that are part of the same sentence (lowercase to lowercase, or ends with comma/etc)
-                    cleanText = cleanText.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
-                    // Also join lines where a word is broken across lines
-                    cleanText = cleanText.replace(/([a-zA-Z])\s*\n\s*([a-z])/g, '$1 $2');
+                    // Only join lines when previous line does NOT end with sentence-ending punctuation
+                    // This preserves paragraph breaks while fixing mid-sentence line breaks
+                    cleanText = cleanText.replace(/([a-z,;:\-])\s*\n\s*([a-z])/g, '$1 $2');
                     // Clean up excessive newlines (3+ becomes 2)
                     cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
                     
