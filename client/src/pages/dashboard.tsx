@@ -4260,22 +4260,6 @@ export default function Dashboard() {
                 <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
               </div>
               
-              <div className="w-px h-6 bg-white/30" />
-              
-              {/* Sync Checkbox */}
-              <div className="flex items-center gap-1">
-                <Checkbox
-                  id="sync-highlight"
-                  checked={syncHighlight}
-                  onCheckedChange={(checked) => setSyncHighlight(!!checked)}
-                  className="h-4 w-4 border-blue-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                  data-testid="checkbox-sync-highlight"
-                />
-                <Label htmlFor="sync-highlight" className="text-white text-[11px] cursor-pointer">
-                  Sync
-                </Label>
-              </div>
-              
               {/* Chunk progress indicator */}
               {isPlaying && totalChunks > 1 && (
                 <div className="flex items-center gap-1 text-[11px] text-green-400">
@@ -4312,7 +4296,23 @@ export default function Dashboard() {
               <Download className="h-3 w-3" />
             </Button>
             
-            <div className="w-px h-6 bg-white/30 ml-1" />
+            <div className="w-px h-6 bg-white/30 mx-2" />
+            
+            {/* Sync Checkbox */}
+            <div className="flex items-center gap-1">
+              <Checkbox
+                id="sync-highlight"
+                checked={syncHighlight}
+                onCheckedChange={(checked) => setSyncHighlight(!!checked)}
+                className="h-4 w-4 border-blue-400 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                data-testid="checkbox-sync-highlight"
+              />
+              <Label htmlFor="sync-highlight" className="text-white text-[11px] cursor-pointer">
+                Sync
+              </Label>
+            </div>
+            
+            <div className="w-px h-6 bg-white/30 mx-2" />
             
             {/* Mark as Completed Checkbox */}
             <div className="flex items-center gap-1 ml-1">
