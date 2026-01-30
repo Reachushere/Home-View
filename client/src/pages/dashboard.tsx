@@ -4615,7 +4615,7 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden" style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
+              <Button variant="ghost" size="icon" className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200" style={{ backgroundImage: `url(${hamburgerBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }} data-testid="button-hamburger-menu">
                 <Menu className="h-[38px] w-[38px] text-white" strokeWidth={2.5} />
               </Button>
             </DropdownMenuTrigger>
@@ -4647,7 +4647,7 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200"
             style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-settings-panel"
             onClick={() => setIsSettingsPanelOpen(true)}
@@ -4660,7 +4660,7 @@ export default function Dashboard() {
             variant="ghost"
             size="icon"
             onClick={toggleMute}
-            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
+            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
             style={isMuted ? { marginTop: '7px' } : { backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
@@ -4674,7 +4674,7 @@ export default function Dashboard() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+                className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200"
                 style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
                 data-testid="button-radio-dialog"
                 title="Radio Controls"
@@ -4898,7 +4898,7 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200"
             style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             onClick={() => syncAllCalendarMutation.mutate()}
             disabled={syncAllCalendarMutation.isPending}
@@ -4915,7 +4915,7 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 overflow-hidden hover:opacity-80 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+            className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 focus:shadow-[0_0_12px_rgba(251,146,60,0.7)] transition-shadow duration-200 ${lastCompletedTaskId ? "" : "opacity-50"}`}
             style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '4px', zIndex: 50, position: 'relative' }}
             onClick={handleUndoComplete}
             disabled={!lastCompletedTaskId}
@@ -4929,7 +4929,7 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 overflow-hidden"
+            className="!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200"
             style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
             data-testid="button-completed-tasks"
             onClick={() => setIsCompletedTasksOpen(true)}
@@ -4938,7 +4938,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full overflow-hidden !bg-transparent" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className="!h-[38px] !min-h-[38px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent focus:shadow-[0_0_12px_rgba(59,130,246,0.7)] transition-shadow duration-200" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px' }} data-testid="button-add-task" onClick={() => { setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
           </div>
         </div>
 
