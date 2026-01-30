@@ -5179,7 +5179,7 @@ export default function Dashboard() {
             data-testid="button-grad-hat"
             onClick={() => { triggerButtonGlow('gradhat'); }}
           >
-            <GraduationCap className="h-[20px] w-[20px] text-white" />
+            <GraduationCap className="h-[16px] w-[16px] text-white" />
           </Button>
           </div>
         </div>
