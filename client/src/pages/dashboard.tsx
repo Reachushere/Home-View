@@ -5742,6 +5742,11 @@ export default function Dashboard() {
         <img src={ovalBanner} alt="" className="h-[70px]" style={{ opacity: 0.95, width: '622px', objectFit: 'contain', marginLeft: '-75px' }} />
       </div>
       
+      {/* Copyright - Bottom right of page */}
+      <div className="fixed bottom-2 right-4 text-white/60 text-[10px] font-medium z-50 pointer-events-none">
+        © 2026
+      </div>
+      
       {/* Tall Pill Panel - Right side of calendar */}
       <div className="absolute z-40 pointer-events-none" style={{ top: '190px', right: '14px', width: '55px', height: '537px' }}>
         <img src={tallPill} alt="" className="h-full w-auto object-contain" style={{ opacity: 0.95 }} />
@@ -7864,11 +7869,7 @@ export default function Dashboard() {
                 })()}
               </div>
               
-              {/* Copyright */}
-              <div className="absolute bottom-[1px] right-2 text-white/60 text-[10px] font-medium z-50">
-                © 2026
-              </div>
-            </div>
+                          </div>
           </div>
         </div>
         ) : (
