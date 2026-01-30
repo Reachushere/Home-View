@@ -6008,17 +6008,16 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle (CSS) - Same as side pill rotated 90deg */}
-      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '241px' }}>
+      <div className="absolute left-0 right-0 flex justify-center z-5 pointer-events-none" style={{ top: '-105px' }}>
         <div 
           style={{ 
             width: '55px', 
-            height: '537px', 
+            height: '265px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '28px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            transform: 'rotate(90deg)',
-            marginLeft: '-75px'
+            transform: 'rotate(90deg)'
           }} 
         />
       </div>
@@ -6071,7 +6070,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '326px', right: '14px', width: '55px', height: '265px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '327px', right: '14px', width: '55px', height: '263px' }}>
         <div 
           style={{ 
             width: '100%', 
