@@ -6870,25 +6870,25 @@ export default function Dashboard() {
           
           {/* Left Arrow - Previous Week */}
           <div 
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full z-50 cursor-pointer group"
-            style={{ marginLeft: '-4px' }}
+            className="absolute left-0 top-0 -translate-x-full z-50 cursor-pointer group"
+            style={{ marginLeft: '-6px', marginTop: '8px' }}
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
-            <div className="bg-gradient-to-r from-orange-500 to-orange-400 rounded-full p-1.5 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:-translate-x-2 group-active:scale-110 border border-white/30">
-              <ChevronLeft className="h-5 w-5 text-white" strokeWidth={3} />
+            <div className="bg-gradient-to-r from-orange-500 to-orange-400 rounded-full p-1 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:-translate-x-2 group-active:scale-110 border border-white/30">
+              <ChevronLeft className="h-3.5 w-3.5 text-white" strokeWidth={3} />
             </div>
           </div>
           
           {/* Right Arrow - Next Week */}
           <div 
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full z-50 cursor-pointer group"
-            style={{ marginRight: '61px' }}
+            className="absolute right-0 top-0 translate-x-full z-50 cursor-pointer group"
+            style={{ marginRight: '36px', marginTop: '8px' }}
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
-            <div className="bg-gradient-to-l from-orange-500 to-orange-400 rounded-full p-1.5 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:translate-x-2 group-active:scale-110 border border-white/30">
-              <ChevronRight className="h-5 w-5 text-white" strokeWidth={3} />
+            <div className="bg-gradient-to-l from-orange-500 to-orange-400 rounded-full p-1 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:translate-x-2 group-active:scale-110 border border-white/30">
+              <ChevronRight className="h-3.5 w-3.5 text-white" strokeWidth={3} />
             </div>
           </div>
           
