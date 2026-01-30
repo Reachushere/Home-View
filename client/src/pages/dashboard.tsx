@@ -2850,70 +2850,38 @@ export default function Dashboard() {
   const timeSlots = Array.from({ length: 17 }, (_, i) => i + 7); // 7am-11pm
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
-  // Auto-scroll to show first task of today, or first upcoming task
+  // Auto-scroll to current time by default
   useEffect(() => {
-    // Only scroll when we have tasks loaded
-    if (allTasks.length === 0 || calendarView !== "week") return;
+    if (calendarView !== "week") return;
     
-    const scrollToRelevantPosition = () => {
+    const scrollToCurrentTime = () => {
       if (!calendarScrollRef.current) return;
       
-      const today = startOfDay(new Date());
       const now = new Date();
-      const weekInfo = weeks.find(w => w.weekNumber === selectedWeek);
-      if (!weekInfo) return;
-      
-      const weekStart = new Date(weekInfo.startDate);
-      const weekEnd = new Date(weekInfo.endDate);
-      
-      // First priority: tasks due today
-      const tasksDueToday = allTasks.filter(t => {
-        if (t.isCompleted) return false;
-        const dueDate = new Date(t.dueDate);
-        return isSameDay(dueDate, today) && dueDate >= weekStart && dueDate <= weekEnd;
-      });
-      
-      // Second priority: first upcoming task in the selected week (after now)
-      const upcomingTasksInWeek = allTasks.filter(t => {
-        if (t.isCompleted) return false;
-        const dueDate = new Date(t.dueDate);
-        return dueDate > now && dueDate >= weekStart && dueDate <= weekEnd;
-      }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-      
-      const hourHeight = 44; // height of each time slot
+      const currentHour = now.getHours();
+      const currentMinutes = now.getMinutes();
       const startHour = 7; // calendar starts at 7am
       
-      // Find which tasks to scroll to
-      let targetTasks = tasksDueToday.length > 0 ? tasksDueToday : upcomingTasksInWeek;
-      
-      if (targetTasks.length > 0) {
-        // Find the earliest hour among target tasks
-        const earliestHour = Math.min(...targetTasks.map(t => {
-          const dueDate = new Date(t.dueDate);
-          // If it's midnight (ALL DAY), return start hour
-          if (dueDate.getHours() === 0 && dueDate.getMinutes() === 0) return startHour;
-          return dueDate.getHours();
-        }));
-        // Scroll to show that hour
-        const scrollTo = Math.max(0, (earliestHour - startHour) * hourHeight);
-        calendarScrollRef.current.scrollTop = scrollTo;
-      } else {
-        // No tasks in week, scroll to current hour (clamped to start at 7am)
-        const currentHour = Math.max(startHour, new Date().getHours());
-        const scrollTo = (currentHour - startHour) * hourHeight;
-        calendarScrollRef.current.scrollTop = scrollTo;
+      // Calculate scroll position based on current time
+      // Use average row height for calculation
+      let scrollPosition = 0;
+      for (let h = startHour; h < currentHour && h < 24; h++) {
+        scrollPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
       }
+      // Add partial hour based on minutes
+      if (currentHour >= startHour) {
+        const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
+        scrollPosition += (currentMinutes / 60) * currentRowHeight;
+      }
+      
+      calendarScrollRef.current.scrollTop = Math.max(0, scrollPosition);
     };
     
     // Use requestAnimationFrame to ensure DOM is painted
     requestAnimationFrame(() => {
-      requestAnimationFrame(scrollToRelevantPosition);
+      requestAnimationFrame(scrollToCurrentTime);
     });
-    
-    // Update scroll position every minute
-    const interval = setInterval(scrollToRelevantPosition, 60000);
-    return () => clearInterval(interval);
-  }, [selectedWeek, allTasks, calendarView, weeks]);
+  }, [calendarView, gridSizes]);
 
   // Calculate arrow connections from task boxes to calendar
   useEffect(() => {
@@ -7300,6 +7268,37 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px' }}>
+                {/* Current time indicator line */}
+                {(() => {
+                  const now = new Date();
+                  const currentHour = now.getHours();
+                  const currentMinutes = now.getMinutes();
+                  const startHour = 7;
+                  const endHour = 23;
+                  
+                  // Only show if current time is within calendar range
+                  if (currentHour < startHour || currentHour > endHour) return null;
+                  
+                  // Calculate position
+                  let topPosition = 0;
+                  for (let h = startHour; h < currentHour; h++) {
+                    topPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                  }
+                  const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
+                  topPosition += (currentMinutes / 60) * currentRowHeight;
+                  
+                  return (
+                    <div 
+                      className="absolute left-0 right-0 z-50 pointer-events-none"
+                      style={{ top: `${topPosition}px` }}
+                    >
+                      <div 
+                        className="w-full border-t-2 border-dotted"
+                        style={{ borderColor: '#000000' }}
+                      />
+                    </div>
+                  );
+                })()}
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
