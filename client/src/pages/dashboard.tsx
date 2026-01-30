@@ -6872,7 +6872,7 @@ export default function Dashboard() {
           {/* Left Arrow - Previous Week */}
           <div 
             className="absolute left-0 top-0 -translate-x-full z-50 cursor-pointer group"
-            style={{ marginLeft: '0px', marginTop: '5px' }}
+            style={{ marginLeft: '15px', marginTop: '5px' }}
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
@@ -6901,7 +6901,7 @@ export default function Dashboard() {
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                <span className="text-[11px] font-medium tracking-wide" style={{ color: '#FFD45F' }}>Week {selectedWeek}</span>
+                <span className="text-[11px] font-medium tracking-wide" style={{ color: '#f97316' }}>Week {selectedWeek}</span>
                 {/* Time column resize handle - right edge */}
                 <div
                   className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
