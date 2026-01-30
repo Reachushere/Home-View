@@ -8811,14 +8811,14 @@ export default function Dashboard() {
               
               // Path: curved from checkbox to prep text, ending vertically pointing DOWN
               const endY = conn.toY - 14; // Arrowhead ends 14px above the text center
-              const midY = endY - 30; // Control point for final vertical descent
+              const midY = (conn.fromY + endY) / 2; // Midpoint for smooth curve
               
               // Use quadratic bezier curves for smooth path
-              // Start at checkbox, go 21px straight left, then curve down and towards target
+              // Start at checkbox, go 21px straight left, then curve down to target X, then straight down
               const path = `M ${conn.fromX} ${conn.fromY} ` +
                 `L ${exitX} ${conn.fromY} ` + // Go 21px straight left
-                `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve down and towards target
-                `L ${conn.toX} ${endY}`; // Straight down to target
+                `Q ${exitX} ${midY}, ${conn.toX} ${midY} ` + // Curve down and towards target X
+                `L ${conn.toX} ${endY}`; // Straight down to arrowhead
               
               // Find the date cell header row bottom to determine where opaque ends
               const dateCellRow = document.querySelector('[data-calendar-grid="true"]');
