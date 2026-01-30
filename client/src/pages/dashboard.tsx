@@ -4858,7 +4858,7 @@ export default function Dashboard() {
         </div>
 
         {/* Timer and Clock - Fixed Right, aligned with tall pill left edge */}
-        <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '72px' }}>
+        <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '69px' }}>
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ position: 'relative', left: '-10px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-[13px] font-bold px-1.5 py-0.5 rounded ${
@@ -8207,7 +8207,7 @@ export default function Dashboard() {
           {/* Due Today */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1, marginLeft: '-3px' }} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('today') + 1, marginLeft: '-6px' }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
           >
@@ -8250,7 +8250,7 @@ export default function Dashboard() {
           {/* Due Tomorrow */}
           <section 
             className={`flex-1 rounded-md shadow-md overflow-hidden flex flex-col min-h-[120px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
-            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, marginRight: '2px' }} 
+            style={{ backgroundImage: `url(${boxBg})`, backgroundSize: '100% 100%', backgroundPosition: 'center', order: boxOrder.indexOf('tomorrow') + 1, marginLeft: '3px', marginRight: '2px' }} 
             data-testid="section-due-tomorrow"
             onDragOver={(e) => handleBoxDragOver(e, 'tomorrow')}
           >
