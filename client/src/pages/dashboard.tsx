@@ -6030,7 +6030,7 @@ export default function Dashboard() {
       {/* Copyright - Right side of page, rotated */}
       <div 
         className="fixed right-1 text-white/60 text-[10px] font-medium z-50 pointer-events-none"
-        style={{ bottom: '90px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+        style={{ bottom: '70px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
       >
         © 2026
       </div>
