@@ -4864,7 +4864,12 @@ export default function Dashboard() {
             size="icon"
             variant="ghost"
             className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
+            style={{ 
+              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(80,80,80,0.5)',
+              marginTop: '7px' 
+            }}
             data-testid="button-settings-panel"
             onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
           >
@@ -5161,9 +5166,9 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="!h-[38px] !w-[38px] !min-h-[38px] !min-w-[38px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+            className="!h-[40px] !w-[40px] !min-h-[40px] !min-w-[40px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
             style={{ 
-              background: 'linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 50%, #1a1a1a 100%)',
+              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
               boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
               border: '1px solid rgba(80,80,80,0.5)',
               marginLeft: '8px', 
