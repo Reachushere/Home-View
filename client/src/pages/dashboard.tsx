@@ -4868,7 +4868,7 @@ export default function Dashboard() {
               background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
               boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
               border: '1px solid rgba(80,80,80,0.5)',
-              marginTop: '5px' 
+              marginTop: '4px' 
             }}
             data-testid="button-settings-panel"
             onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
@@ -4882,11 +4882,11 @@ export default function Dashboard() {
             size="icon"
             onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
             className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
-            style={isMuted ? { marginTop: '5px' } : { 
+            style={isMuted ? { marginTop: '4px' } : { 
               background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
               boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
               border: '1px solid rgba(80,80,80,0.5)',
-              marginTop: '5px' 
+              marginTop: '4px' 
             }}
             data-testid="button-mute-toggle"
             title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
@@ -5130,16 +5130,21 @@ export default function Dashboard() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
+            className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
+            style={{ 
+              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(80,80,80,0.5)',
+              marginTop: '4px' 
+            }}
             onClick={() => { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); }}
             disabled={syncAllCalendarMutation.isPending}
             data-testid="button-sync-calendar"
           >
             {syncAllCalendarMutation.isPending ? (
-              <Loader2 className="h-[38px] w-[38px] text-white animate-spin" />
+              <Loader2 className="h-[18px] w-[18px] text-white animate-spin" />
             ) : (
-              <RefreshCw className="h-[38px] w-[38px] text-white" />
+              <RefreshCw className="h-[18px] w-[18px] text-white" />
             )}
           </Button>
 
@@ -5161,12 +5166,17 @@ export default function Dashboard() {
           <Button 
             size="icon"
             variant="ghost"
-            className={`!h-[52px] !w-[52px] !min-h-[52px] !min-w-[52px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
-            style={{ backgroundImage: `url(${buttonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '7px' }}
+            className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
+            style={{ 
+              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+              border: '1px solid rgba(80,80,80,0.5)',
+              marginTop: '4px' 
+            }}
             data-testid="button-completed-tasks"
             onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
           >
-            <CheckSquare className="h-[38px] w-[38px] text-white" />
+            <CheckSquare className="h-[18px] w-[18px] text-white" />
           </Button>
 
           {/* Quick Add Button */}
@@ -6482,8 +6492,8 @@ export default function Dashboard() {
       <div 
         className="absolute cursor-pointer z-50 pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
         style={{ 
-          width: '55px', 
-          height: '55px', 
+          width: '50px', 
+          height: '50px', 
           top: '432px', 
           right: '9px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -6562,8 +6572,8 @@ export default function Dashboard() {
       <div 
         className="absolute cursor-pointer z-50 pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
         style={{ 
-          width: '55px', 
-          height: '55px', 
+          width: '50px', 
+          height: '50px', 
           top: '483px', 
           right: '9px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -6580,8 +6590,8 @@ export default function Dashboard() {
       <div 
         className="absolute cursor-pointer z-[60] pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
         style={{ 
-          width: '55px', 
-          height: '55px', 
+          width: '50px', 
+          height: '50px', 
           top: '534px', 
           right: '9px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
