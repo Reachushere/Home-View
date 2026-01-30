@@ -15,7 +15,7 @@ import buttonBg from "@assets/Button_1769694441816.png";
 import orangeButtonBg from "@assets/Orange_Button_1769695828702.png";
 import clockBg from "@assets/Clock_BG_1769697834310.png";
 import tallPill from "@assets/Tall_1769697999710.png";
-import boxBg from "@assets/Box14_1769787128846.png";
+import boxBg from "@assets/Box15_1769792366292.png";
 import hamburgerBg from "@assets/Hamburger_Button_1769709360404.png";
 import taskButtonBg from "@assets/Task_1769694788992.png";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -8508,7 +8508,7 @@ export default function Dashboard() {
                 markerHeight="7"
                 refX="10"
                 refY="3.5"
-                orient="auto"
+                orient="0"
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" fillOpacity="0.75" />
               </marker>
@@ -8518,7 +8518,7 @@ export default function Dashboard() {
                 markerHeight="7"
                 refX="10"
                 refY="3.5"
-                orient="auto"
+                orient="0"
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" fillOpacity="0.75" />
               </marker>
@@ -8528,7 +8528,7 @@ export default function Dashboard() {
                 markerHeight="7"
                 refX="10"
                 refY="3.5"
-                orient="auto"
+                orient="0"
               >
                 <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.75" />
               </marker>
@@ -8538,7 +8538,7 @@ export default function Dashboard() {
                 markerHeight="7"
                 refX="3.5"
                 refY="10"
-                orient="auto"
+                orient="90"
               >
                 <polygon points="0 0, 3.5 10, 7 0" fill="#000000" fillOpacity="0.75" />
               </marker>
@@ -8783,43 +8783,43 @@ export default function Dashboard() {
             <defs>
               <marker
                 id="arrowhead-prep-pink"
-                markerWidth="10"
-                markerHeight="7"
-                refX="10"
-                refY="3.5"
-                orient="auto"
+                markerWidth="7"
+                markerHeight="10"
+                refX="3.5"
+                refY="10"
+                orient="90"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#ec4899" fillOpacity="0.75" />
+                <polygon points="0 0, 7 0, 3.5 10" fill="#ec4899" fillOpacity="0.75" />
               </marker>
               <marker
                 id="arrowhead-prep-green"
-                markerWidth="10"
-                markerHeight="7"
-                refX="10"
-                refY="3.5"
-                orient="auto"
+                markerWidth="7"
+                markerHeight="10"
+                refX="3.5"
+                refY="10"
+                orient="90"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" fillOpacity="0.75" />
+                <polygon points="0 0, 7 0, 3.5 10" fill="#22c55e" fillOpacity="0.75" />
               </marker>
               <marker
                 id="arrowhead-prep-indigo"
-                markerWidth="10"
-                markerHeight="7"
-                refX="10"
-                refY="3.5"
-                orient="auto"
+                markerWidth="7"
+                markerHeight="10"
+                refX="3.5"
+                refY="10"
+                orient="90"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" fillOpacity="0.75" />
+                <polygon points="0 0, 7 0, 3.5 10" fill="#6366f1" fillOpacity="0.75" />
               </marker>
               <marker
                 id="arrowhead-prep-black"
-                markerWidth="10"
-                markerHeight="7"
-                refX="10"
-                refY="3.5"
-                orient="auto"
+                markerWidth="7"
+                markerHeight="10"
+                refX="3.5"
+                refY="10"
+                orient="90"
               >
-                <polygon points="0 0, 10 3.5, 0 7" fill="#000000" fillOpacity="0.75" />
+                <polygon points="0 0, 7 0, 3.5 10" fill="#000000" fillOpacity="0.75" />
               </marker>
             </defs>
             {prepArrowConnections.map((conn) => {
