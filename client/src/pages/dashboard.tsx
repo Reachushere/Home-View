@@ -93,6 +93,8 @@ import {
   Radio,
   Minus,
   ListChecks,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -4150,30 +4152,33 @@ export default function Dashboard() {
               <div className="w-px h-6 bg-white/30" />
               
               {/* Speed Controls (for Browser TTS) */}
-              <div className="flex items-center" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  className="h-8 w-8 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleVolumeChange("down"); }}
-                  data-testid="button-preview-vol-down"
-                  title="Slower"
-                >
-                  <Minus className="h-4 w-4" />
-                </Button>
+              <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                <VolumeX className="h-4 w-4 text-blue-400" />
+                <Slider
+                  value={[radioVolume]}
+                  onValueChange={(val) => {
+                    setRadioVolume(val[0]);
+                    if (previewSpeaker === "browser_tts") {
+                      // For browser TTS, adjust the speech rate (50-100% maps to 0.5-2.0 rate)
+                      const rate = 0.5 + (val[0] / 100) * 1.5; // 0% = 0.5, 100% = 2.0
+                      setBrowserTtsRate(rate);
+                    } else {
+                      // For Alexa speakers, set volume via Home Assistant API
+                      fetch("/api/media/volume", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ level: val[0], entityId: previewSpeaker }),
+                      }).catch(console.error);
+                    }
+                  }}
+                  min={0}
+                  max={100}
+                  step={5}
+                  className="w-24"
+                  data-testid="slider-preview-volume"
+                />
                 <Volume2 className="h-4 w-4 text-blue-400" />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="outline"
-                  className="h-8 w-8 border-blue-500 text-blue-400 hover:text-blue-300 hover:border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleVolumeChange("up"); }}
-                  data-testid="button-preview-vol-up"
-                  title="Faster"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
+                <span className="text-[10px] text-white/70 w-7">{radioVolume}%</span>
               </div>
               
               <div className="w-px h-6 bg-white/30" />
@@ -5743,15 +5748,25 @@ export default function Dashboard() {
       </div>
       
       {/* Modules Button - On top of tall pill */}
-      <div 
-        className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '331px', right: '15px' }}
-        onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
-        data-modules-button
-      >
-        <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-      </div>
+      {(() => {
+        const unreadModuleCount = allFiles.filter(f => f.folder?.includes('module') && !f.listened).length;
+        return (
+          <div 
+            className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
+            style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '331px', right: '15px' }}
+            onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
+            data-modules-button
+          >
+            <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+            <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+            {unreadModuleCount > 0 && (
+              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-md">
+                {unreadModuleCount}
+              </div>
+            )}
+          </div>
+        );
+      })()}
       
       {/* Modules Course Buttons - Spring from modules button (331px) to course row positions */}
       {/* CPPA122 - Green Row */}
@@ -5827,15 +5842,25 @@ export default function Dashboard() {
       </div>
       
       {/* Readings Button - Below modules button on tall pill */}
-      <div 
-        className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-        style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '381px', right: '15px' }}
-        onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
-        data-readings-button
-      >
-        <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-        <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-      </div>
+      {(() => {
+        const unreadReadingCount = allFiles.filter(f => f.folder?.includes('reading') && !f.listened).length;
+        return (
+          <div 
+            className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
+            style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '381px', right: '15px' }}
+            onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
+            data-readings-button
+          >
+            <img src={hexIcon} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+            <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+            {unreadReadingCount > 0 && (
+              <div className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-bold rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 shadow-md">
+                {unreadReadingCount}
+              </div>
+            )}
+          </div>
+        );
+      })()}
       
       {/* Readings Course Buttons - Spring from readings button to SAME course row positions as modules */}
       {/* CPPA122 - Green Row */}
