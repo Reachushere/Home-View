@@ -6866,7 +6866,32 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div style={{ width: 'calc(100% - 65px)' }}>
+          <div style={{ width: 'calc(100% - 65px)' }} className="relative">
+          
+          {/* Left Arrow - Previous Week */}
+          <div 
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full z-50 cursor-pointer group"
+            style={{ marginLeft: '-4px' }}
+            onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+            data-date-nav
+          >
+            <div className="bg-gradient-to-r from-orange-500 to-orange-400 rounded-full p-1.5 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:-translate-x-2 group-active:scale-110 border border-white/30">
+              <ChevronLeft className="h-5 w-5 text-white" strokeWidth={3} />
+            </div>
+          </div>
+          
+          {/* Right Arrow - Next Week */}
+          <div 
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full z-50 cursor-pointer group"
+            style={{ marginRight: '61px' }}
+            onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+            data-date-nav
+          >
+            <div className="bg-gradient-to-l from-orange-500 to-orange-400 rounded-full p-1.5 shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:translate-x-2 group-active:scale-110 border border-white/30">
+              <ChevronRight className="h-5 w-5 text-white" strokeWidth={3} />
+            </div>
+          </div>
+          
           <Card className="shadow-lg h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line - dashed */}
             <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundImage: 'repeating-linear-gradient(to bottom, black 0px, black 8px, transparent 8px, transparent 14px)' }} />
