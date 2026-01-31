@@ -8259,7 +8259,7 @@ export default function Dashboard() {
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
                               const isActualToday = isSameDay(day, today);
-                              const cellBg = isActualToday ? '#280B05' : course.bg;
+                              const cellBg = course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
@@ -8398,7 +8398,7 @@ export default function Dashboard() {
                     // Course row day cells - prep tasks now appear in All Day row with extensions
                     const isDayToday = isSameDay(day, new Date());
                     // Use solid color for today's column, no transparency
-                    const cellBgColor = isDayToday ? '#280B05' : course.bg;
+                    const cellBgColor = course.bg;
                     return (
                       <div 
                         key={dayIdx} 
