@@ -9449,7 +9449,11 @@ export default function Dashboard() {
                         {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')}
                       </span>
                       {boxType === 'thisweek' ? (
-                        <span className="text-[11px] text-white/80 font-normal" title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}>
+                        <span 
+                          className="text-[10px] text-white font-medium px-1.5 py-0.5 rounded-full" 
+                          style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)' }}
+                          title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
+                        >
                           {daysUntil}d
                         </span>
                       ) : (
