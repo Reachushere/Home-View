@@ -274,6 +274,7 @@ export default function Dashboard() {
   const [uploadTargetFolder, setUploadTargetFolder] = useState<string>('week-3-cppa122-reading');
   const [renameFileId, setRenameFileId] = useState<number | null>(null);
   const [renameFileName, setRenameFileName] = useState<string>('');
+  const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
   const [newFolderName, setNewFolderName] = useState('');
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
@@ -8930,8 +8931,35 @@ export default function Dashboard() {
                                         return (
                                           <div key={contentFolderId} className="mb-0.5">
                                             <div
-                                              className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded"
+                                              className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded transition-colors ${draggedFileForMove && draggedFileForMove.folder !== contentFolderId ? 'border border-dashed border-transparent hover:border-blue-400' : ''}`}
                                               onClick={() => toggleFlyoutFolder(contentFolderId)}
+                                              onDragOver={(e) => {
+                                                if (draggedFileForMove && draggedFileForMove.folder !== contentFolderId) {
+                                                  e.preventDefault();
+                                                  e.currentTarget.classList.add('bg-blue-500/20', 'border-blue-400');
+                                                }
+                                              }}
+                                              onDragLeave={(e) => {
+                                                e.currentTarget.classList.remove('bg-blue-500/20', 'border-blue-400');
+                                              }}
+                                              onDrop={async (e) => {
+                                                e.preventDefault();
+                                                e.currentTarget.classList.remove('bg-blue-500/20', 'border-blue-400');
+                                                if (draggedFileForMove && draggedFileForMove.folder !== contentFolderId) {
+                                                  try {
+                                                    await fetch(`/api/files/${draggedFileForMove.id}`, {
+                                                      method: 'PATCH',
+                                                      headers: { 'Content-Type': 'application/json' },
+                                                      body: JSON.stringify({ folder: contentFolderId })
+                                                    });
+                                                    queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                    toast({ title: "File moved successfully" });
+                                                  } catch (err) {
+                                                    toast({ title: "Failed to move file", variant: "destructive" });
+                                                  }
+                                                  setDraggedFileForMove(null);
+                                                }
+                                              }}
                                             >
                                               {isContentExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
                                               {isContentExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
@@ -8950,12 +8978,18 @@ export default function Dashboard() {
                                                         onDragStart={(e) => {
                                                           e.dataTransfer.setData('application/json', JSON.stringify({ 
                                                             url: file.objectPath, 
-                                                            name: file.displayName || file.originalName 
+                                                            name: file.displayName || file.originalName,
+                                                            fileId: file.id,
+                                                            folder: file.folder
                                                           }));
                                                           setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
+                                                          setDraggedFileForMove({ id: file.id, folder: file.folder || '' });
                                                         }}
-                                                        onDragEnd={() => setDraggedFile(null)}
-                                                        className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded"
+                                                        onDragEnd={() => {
+                                                          setDraggedFile(null);
+                                                          setDraggedFileForMove(null);
+                                                        }}
+                                                        className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-grab active:cursor-grabbing rounded"
                                                         onClick={() => setPreviewFile(file)}
                                                       >
                                                         <Checkbox
