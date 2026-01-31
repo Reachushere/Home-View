@@ -103,6 +103,11 @@ All arrows connecting task boxes to calendar follow these exact specifications:
 - **Blinking Animations**: Tasks due today blink fast (0.8s), tasks due tomorrow blink slowly (60s)
 - **Task Repeat**: Tasks can repeat daily, weekly, monthly, or at custom intervals with child task generation and Google Calendar sync
 - **Semester Transition**: When past Week 13 end date, a banner prompts user to set up a new semester with configurable start date and 3 color-coded courses (code, name, professor). Week calculations use the active semester's start date dynamically.
+- **Subtasks**: Tasks can have subtasks for breaking down complex assignments. Subtasks appear in the Edit Task dialog and support:
+  - Create/toggle/delete subtasks
+  - Completion tracking with progress counter (e.g., "2/5 done")
+  - Cascading deletion when parent task is deleted
+  - Database tables: `subtasks` (with hierarchy support via parentSubtaskId) and `taskLinks` (for dependencies: blocks, blocked_by, relates_to)
 
 ### Key Design Patterns
 - **Type Safety**: End-to-end TypeScript with shared types between frontend and backend

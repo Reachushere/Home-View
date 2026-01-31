@@ -695,6 +695,9 @@ export async function registerRoutes(
       await storage.deleteChildTasks(taskId);
     }
     
+    // Delete all subtasks and related links for this task
+    await storage.deleteSubtasksByTask(taskId);
+    
     await storage.deleteTask(taskId);
     res.status(204).end();
   });

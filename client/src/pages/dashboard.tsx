@@ -12017,58 +12017,40 @@ function SubtasksSection({ taskId }: { taskId: number }) {
   const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // Fetch subtasks for this task
-  const { data: subtasks = [], isLoading } = useQuery<Subtask[]>({
-    queryKey: ["/api/tasks", taskId, "subtasks"],
-    queryFn: async () => {
-      const res = await fetch(`/api/tasks/${taskId}/subtasks`);
-      if (!res.ok) throw new Error("Failed to fetch subtasks");
-      return res.json();
-    },
+  // Fetch subtasks for this task - use array queryKey for proper cache invalidation
+  const { data: subtasks = [], isLoading, isError } = useQuery<Subtask[]>({
+    queryKey: [`/api/tasks/${taskId}/subtasks`],
   });
 
-  // Create subtask mutation
+  // Create subtask mutation using apiRequest
   const createSubtaskMutation = useMutation({
     mutationFn: async (title: string) => {
-      const res = await fetch(`/api/tasks/${taskId}/subtasks`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title }),
-      });
-      if (!res.ok) throw new Error("Failed to create subtask");
-      return res.json();
+      return apiRequest("POST", `/api/tasks/${taskId}/subtasks`, { title });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/tasks", taskId, "subtasks"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tasks/${taskId}/subtasks`] });
       setNewSubtaskTitle("");
       setShowAddForm(false);
     },
   });
 
-  // Toggle subtask completion
+  // Toggle subtask completion using apiRequest
   const toggleSubtaskMutation = useMutation({
     mutationFn: async ({ id, isCompleted }: { id: number; isCompleted: boolean }) => {
-      const res = await fetch(`/api/subtasks/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isCompleted }),
-      });
-      if (!res.ok) throw new Error("Failed to update subtask");
-      return res.json();
+      return apiRequest("PATCH", `/api/subtasks/${id}`, { isCompleted });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/tasks", taskId, "subtasks"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tasks/${taskId}/subtasks`] });
     },
   });
 
-  // Delete subtask mutation
+  // Delete subtask mutation using apiRequest
   const deleteSubtaskMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/subtasks/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete subtask");
+      return apiRequest("DELETE", `/api/subtasks/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/tasks", taskId, "subtasks"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tasks/${taskId}/subtasks`] });
     },
   });
 
@@ -12110,6 +12092,8 @@ function SubtasksSection({ taskId }: { taskId: number }) {
 
       {isLoading ? (
         <div className="text-[10px] text-white/50">Loading subtasks...</div>
+      ) : isError ? (
+        <div className="text-[10px] text-red-400">Failed to load subtasks</div>
       ) : (
         <div className="space-y-1 max-h-40 overflow-y-auto">
           {subtasks.map((subtask) => (
