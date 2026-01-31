@@ -843,57 +843,82 @@ export default function ProjectsPage() {
       </header>
 
       <main className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-          <Card 
-            className={`cursor-pointer hover-elevate ${statusFilter === "all" ? "ring-2 ring-primary" : ""}`}
-            onClick={() => setStatusFilter("all")}
-            data-testid="filter-all"
-          >
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold" data-testid="stat-total">{projectStats.total}</div>
-              <div className="text-sm text-muted-foreground">All Projects</div>
-            </CardContent>
-          </Card>
-          <Card 
-            className={`cursor-pointer hover-elevate ${statusFilter === "in_progress" ? "ring-2 ring-yellow-500" : ""}`}
-            onClick={() => setStatusFilter("in_progress")}
-            data-testid="filter-in-progress"
-          >
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-yellow-600" data-testid="stat-in-progress">{projectStats.in_progress}</div>
-              <div className="text-sm text-muted-foreground">In Progress</div>
-            </CardContent>
-          </Card>
-          <Card 
-            className={`cursor-pointer hover-elevate ${statusFilter === "planning" ? "ring-2 ring-blue-500" : ""}`}
-            onClick={() => setStatusFilter("planning")}
-            data-testid="filter-planning"
-          >
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600" data-testid="stat-planning">{projectStats.planning}</div>
-              <div className="text-sm text-muted-foreground">Planning</div>
-            </CardContent>
-          </Card>
-          <Card 
-            className={`cursor-pointer hover-elevate ${statusFilter === "completed" ? "ring-2 ring-green-500" : ""}`}
-            onClick={() => setStatusFilter("completed")}
-            data-testid="filter-completed"
-          >
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-green-600" data-testid="stat-completed">{projectStats.completed}</div>
-              <div className="text-sm text-muted-foreground">Completed</div>
-            </CardContent>
-          </Card>
-          <Card 
-            className={`cursor-pointer hover-elevate ${statusFilter === "on_hold" ? "ring-2 ring-gray-500" : ""}`}
-            onClick={() => setStatusFilter("on_hold")}
-            data-testid="filter-on-hold"
-          >
-            <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-gray-600" data-testid="stat-on-hold">{projectStats.on_hold}</div>
-              <div className="text-sm text-muted-foreground">On Hold</div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-6">
+          <div className="p-[7px] rounded-xl bg-white/50">
+            <div 
+              className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "all" ? "bg-white/40" : ""}`}
+              onClick={() => setStatusFilter("all")}
+              data-testid="filter-all"
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.35)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)'
+              }}
+            >
+              <div className="text-2xl font-bold text-white" data-testid="stat-total">{projectStats.total}</div>
+              <div className="text-sm text-white/70">All Projects</div>
+            </div>
+          </div>
+          <div className="p-[7px] rounded-xl bg-white/50">
+            <div 
+              className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "in_progress" ? "bg-white/40" : ""}`}
+              onClick={() => setStatusFilter("in_progress")}
+              data-testid="filter-in-progress"
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.35)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)'
+              }}
+            >
+              <div className="text-2xl font-bold text-yellow-300" data-testid="stat-in-progress">{projectStats.in_progress}</div>
+              <div className="text-sm text-white/70">In Progress</div>
+            </div>
+          </div>
+          <div className="p-[7px] rounded-xl bg-white/50">
+            <div 
+              className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "planning" ? "bg-white/40" : ""}`}
+              onClick={() => setStatusFilter("planning")}
+              data-testid="filter-planning"
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.35)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)'
+              }}
+            >
+              <div className="text-2xl font-bold text-blue-300" data-testid="stat-planning">{projectStats.planning}</div>
+              <div className="text-sm text-white/70">Planning</div>
+            </div>
+          </div>
+          <div className="p-[7px] rounded-xl bg-white/50">
+            <div 
+              className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "completed" ? "bg-white/40" : ""}`}
+              onClick={() => setStatusFilter("completed")}
+              data-testid="filter-completed"
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.35)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)'
+              }}
+            >
+              <div className="text-2xl font-bold text-green-300" data-testid="stat-completed">{projectStats.completed}</div>
+              <div className="text-sm text-white/70">Completed</div>
+            </div>
+          </div>
+          <div className="p-[7px] rounded-xl bg-white/50">
+            <div 
+              className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "on_hold" ? "bg-white/40" : ""}`}
+              onClick={() => setStatusFilter("on_hold")}
+              data-testid="filter-on-hold"
+              style={{ 
+                background: 'rgba(255, 255, 255, 0.35)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)'
+              }}
+            >
+              <div className="text-2xl font-bold text-gray-300" data-testid="stat-on-hold">{projectStats.on_hold}</div>
+              <div className="text-sm text-white/70">On Hold</div>
+            </div>
+          </div>
         </div>
 
         {overallProgress.totalTasks > 0 && (
