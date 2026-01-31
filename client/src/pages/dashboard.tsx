@@ -4679,7 +4679,7 @@ export default function Dashboard() {
                       data-testid="select-reading-file">
                       <SelectValue placeholder="Select File" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-[300px]">
+                    <SelectContent className="max-h-[300px] min-w-[450px]">
                       {relatedFiles.map(file => (
                         <SelectItem 
                           key={file.id} 
