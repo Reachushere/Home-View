@@ -5440,59 +5440,50 @@ export default function Dashboard() {
           </DropdownMenu>
 
           {/* Graduation Hat - Opens Settings Panel */}
-          <Button 
-            size="icon"
-            variant="ghost"
-            className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
-            style={{ 
-              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(80,80,80,0.5)',
-              marginTop: '4px' 
-            }}
-            data-testid="button-settings-panel"
-            onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
-          >
-            <GraduationCap className="text-white" style={{ height: '16px', width: '16px' }} />
-          </Button>
+          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              data-testid="button-settings-panel"
+              onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
+            >
+              <GraduationCap className="text-white" style={{ height: '16px', width: '16px' }} />
+            </Button>
+          </div>
 
           {/* Bell */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
-            className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
-            style={isMuted ? { marginTop: '4px' } : { 
-              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(80,80,80,0.5)',
-              marginTop: '4px' 
-            }}
-            data-testid="button-mute-toggle"
-            title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
-          >
-            {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
-          </Button>
+          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: isMuted ? 'transparent' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
+              className={`!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
+              style={isMuted ? {} : { background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              data-testid="button-mute-toggle"
+              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+            >
+              {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
+            </Button>
+          </div>
 
           {/* Radio Dialog */}
           <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
             <DialogTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
-                style={{ 
-                  background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-                  border: '1px solid rgba(80,80,80,0.5)',
-                  marginTop: '5px' 
-                }}
-                data-testid="button-radio-dialog"
-                title="Radio Controls"
-                onClick={() => triggerButtonGlow('radio')}
-              >
-                <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
-              </Button>
+              <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px', cursor: 'pointer' }}>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+                  style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+                  data-testid="button-radio-dialog"
+                  title="Radio Controls"
+                  onClick={() => triggerButtonGlow('radio')}
+                >
+                  <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
+                </Button>
+              </div>
             </DialogTrigger>
             <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
               <DialogHeader>
@@ -5707,26 +5698,23 @@ export default function Dashboard() {
           </Dialog>
 
           {/* Sync */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
-            style={{ 
-              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(80,80,80,0.5)',
-              marginTop: '4px' 
-            }}
-            onClick={() => { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); }}
-            disabled={syncAllCalendarMutation.isPending}
-            data-testid="button-sync-calendar"
-          >
-            {syncAllCalendarMutation.isPending ? (
-              <Loader2 className="h-[18px] w-[18px] text-white animate-spin" />
-            ) : (
-              <RefreshCw className="h-[18px] w-[18px] text-white" />
-            )}
-          </Button>
+          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              onClick={() => { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); }}
+              disabled={syncAllCalendarMutation.isPending}
+              data-testid="button-sync-calendar"
+            >
+              {syncAllCalendarMutation.isPending ? (
+                <Loader2 className="h-[18px] w-[18px] text-white animate-spin" />
+              ) : (
+                <RefreshCw className="h-[18px] w-[18px] text-white" />
+              )}
+            </Button>
+          </div>
 
           {/* Undo Complete */}
           <div 
@@ -5759,21 +5747,18 @@ export default function Dashboard() {
           </div>
 
           {/* Completed Tasks Checkbox */}
-          <Button 
-            size="icon"
-            variant="ghost"
-            className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`}
-            style={{ 
-              background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(80,80,80,0.5)',
-              marginTop: '4px' 
-            }}
-            data-testid="button-completed-tasks"
-            onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
-          >
-            <CheckSquare className="h-[18px] w-[18px] text-white" />
-          </Button>
+          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              data-testid="button-completed-tasks"
+              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
+            >
+              <CheckSquare className="h-[18px] w-[18px] text-white" />
+            </Button>
+          </div>
 
           {/* Quick Add Button */}
           <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
@@ -7151,22 +7136,29 @@ export default function Dashboard() {
       
       {/* Files Button - Below readings button on tall pill */}
       <div 
-        className="absolute cursor-pointer z-50 pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
+        className="absolute z-50 pointer-events-auto"
         style={{ 
-          width: '45px', 
-          height: '45px', 
+          width: '44px', 
+          height: '44px', 
           top: '484px', 
           right: '19px',
-          background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-          border: '1px solid rgba(80,80,80,0.5)'
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px'
         }}
         onMouseEnter={() => setDecorativeHoneycombHover('middle')}
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
-        onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
         data-testid="honeycomb-files-main"
       >
-        <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        <Button 
+          size="icon"
+          variant="ghost"
+          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+          onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
+        >
+          <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        </Button>
       </div>
       {/* Spring out honeycombs for course readings - moved outside files button */}
       {/* CPPA122 */}
@@ -7231,38 +7223,52 @@ export default function Dashboard() {
       
       {/* Todo Button - Below files button on tall pill */}
       <div 
-        className="absolute cursor-pointer z-50 pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
+        className="absolute z-50 pointer-events-auto"
         style={{ 
-          width: '45px', 
-          height: '45px', 
+          width: '44px', 
+          height: '44px', 
           top: '535px', 
           right: '19px',
-          background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-          border: '1px solid rgba(80,80,80,0.5)'
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px'
         }}
-        onClick={() => setIsTodoFlyoutOpen(!isTodoFlyoutOpen)}
         data-testid="honeycomb-todo-main"
       >
-        <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        <Button 
+          size="icon"
+          variant="ghost"
+          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+          onClick={() => setIsTodoFlyoutOpen(!isTodoFlyoutOpen)}
+        >
+          <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        </Button>
       </div>
 
       {/* Arrow Toggle Button - Below todo button on tall pill */}
       <div 
-        className="absolute cursor-pointer z-[60] pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
+        className="absolute z-[60] pointer-events-auto"
         style={{ 
-          width: '45px', 
-          height: '45px', 
+          width: '44px', 
+          height: '44px', 
           top: '586px', 
           right: '19px',
-          background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-          border: '1px solid rgba(80,80,80,0.5)'
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px'
         }}
-        onClick={() => setBlinkSettings(prev => ({ ...prev, showArrows: !prev.showArrows }))}
         data-testid="honeycomb-arrows-toggle"
       >
-        <TrendingUp style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
+        <Button 
+          size="icon"
+          variant="ghost"
+          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+          onClick={() => setBlinkSettings(prev => ({ ...prev, showArrows: !prev.showArrows }))}
+        >
+          <TrendingUp style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
+        </Button>
       </div>
 
       {/* Main Content - Full width, positioned below unified header */}
