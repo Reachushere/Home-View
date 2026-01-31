@@ -10164,7 +10164,8 @@ export default function Dashboard() {
                             className="rounded-xl overflow-hidden flex flex-col"
                             style={{ 
                               background: 'rgba(255, 255, 255, 0.2)',
-                              border: '1px solid rgba(255, 255, 255, 0.2)'
+                              border: '1px solid rgba(255, 255, 255, 0.2)',
+                              minHeight: '220px'
                             }}
                           >
                             {/* Project Header with Orange Gradient */}
@@ -10285,7 +10286,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <div className="flex-1" />
+                              <div style={{ height: '6px' }} />
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
