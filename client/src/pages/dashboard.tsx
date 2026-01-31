@@ -5654,7 +5654,8 @@ export default function Dashboard() {
             style={{ 
               background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
               boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)',
-              border: '2px solid rgba(200,100,50,0.8)',
+              border: '2px solid transparent',
+              borderImage: 'linear-gradient(0deg, #FF6E3D 0%, #FFDD63 100%) 1',
               marginTop: '4px', 
               zIndex: 50, 
               position: 'relative' 
