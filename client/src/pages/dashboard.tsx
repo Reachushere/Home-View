@@ -7844,7 +7844,7 @@ export default function Dashboard() {
             data-date-nav
           >
             <div 
-              className="rounded-l-full py-[4.95px] px-[2.95px] shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:-translate-x-2 group-active:scale-110 border border-white/30 border-r-0"
+              className="rounded-l-full py-[5px] px-[3px] shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:-translate-x-2 group-active:scale-110 border border-white/30 border-r-0"
               style={{ 
                 background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
@@ -7862,7 +7862,7 @@ export default function Dashboard() {
             data-date-nav
           >
             <div 
-              className="rounded-r-full py-[4.95px] px-[2.95px] shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:translate-x-2 group-active:scale-110 border border-white/30 border-l-0"
+              className="rounded-r-full py-[5px] px-[3px] shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:translate-x-2 group-active:scale-110 border border-white/30 border-l-0"
               style={{ 
                 background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
