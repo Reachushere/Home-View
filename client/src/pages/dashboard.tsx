@@ -8732,7 +8732,7 @@ export default function Dashboard() {
               {/* All Files Header with Upload Button */}
               <div className="flex items-center gap-1.5 pl-2 pr-2 py-1 bg-black/30 border-b border-white/20">
                 <Folder className="h-3 w-3 text-blue-400 fill-blue-300" />
-                <span className="text-xs font-medium">All Files</span>
+                <span className="text-sm font-medium">All Files</span>
                 <Button
                   size="sm"
                   className="ml-auto h-7 px-3 text-[11px] font-medium bg-transparent hover:bg-[#5979CC]/10 text-white border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 rounded-md transition-all duration-200"
@@ -8795,16 +8795,16 @@ export default function Dashboard() {
                     if (!hasFiles) return null;
                     
                     return (
-                      <div key={week.id}>
+                      <div key={week.id} className="mb-1">
                         {/* Week folder row */}
                         <div 
-                          className={`flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded border-0 ${shouldBlink ? 'animate-week-blink' : ''}`}
+                          className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded border-0 ${shouldBlink ? 'animate-week-blink' : ''}`}
                           onClick={() => toggleFlyoutFolder(week.id)}
                         >
-                          {isWeekExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
-                          {isWeekExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                          <span className={`text-[12px] truncate ${shouldStrikethrough ? 'text-white/50' : 'text-white/90'}`}>{week.name}</span>
-                          <span className="text-[10px] text-white/40 ml-auto">{weekFiles.length}</span>
+                          {isWeekExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
+                          {isWeekExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
+                          <span className={`text-[13px] truncate ${shouldStrikethrough ? 'text-white/50' : 'text-white/90'}`}>{week.name}</span>
+                          <span className="text-[11px] text-white/40 ml-auto">{weekFiles.length}</span>
                         </div>
                         
                         {/* Course folders inside week */}
@@ -8818,15 +8818,15 @@ export default function Dashboard() {
                               if (courseFiles.length === 0) return null;
                               
                               return (
-                                <div key={courseFolderId}>
+                                <div key={courseFolderId} className="mb-0.5">
                                   <div
-                                    className="flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded"
+                                    className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded"
                                     onClick={() => toggleFlyoutFolder(courseFolderId)}
                                   >
-                                    {isCourseExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
-                                    {isCourseExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                                    <span className={`text-[11px] truncate flex-1 ${course.color}`}>{course.name}</span>
-                                    <span className="text-[10px] text-white/40">{courseFiles.length}</span>
+                                    {isCourseExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
+                                    {isCourseExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
+                                    <span className={`text-[12px] truncate flex-1 ${course.color}`}>{course.name}</span>
+                                    <span className="text-[11px] text-white/40">{courseFiles.length}</span>
                                   </div>
                                   
                                   {/* Content folders inside course */}
@@ -8840,20 +8840,20 @@ export default function Dashboard() {
                                         if (contentFiles.length === 0) return null;
                                         
                                         return (
-                                          <div key={contentFolderId}>
+                                          <div key={contentFolderId} className="mb-0.5">
                                             <div
-                                              className="flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded"
+                                              className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded"
                                               onClick={() => toggleFlyoutFolder(contentFolderId)}
                                             >
-                                              {isContentExpanded ? <ChevronDown className="h-3 w-3 text-white/60" /> : <ChevronRight className="h-3 w-3 text-white/60" />}
-                                              {isContentExpanded ? <FolderOpen className="h-3 w-3 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3 w-3 text-yellow-500 fill-yellow-400" />}
-                                              <span className="text-[11px] text-white/90 truncate flex-1">{content.name}</span>
-                                              <span className="text-[10px] text-white/40">{contentFiles.length}</span>
+                                              {isContentExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
+                                              {isContentExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
+                                              <span className="text-[12px] text-white/90 truncate flex-1">{content.name}</span>
+                                              <span className="text-[11px] text-white/40">{contentFiles.length}</span>
                                             </div>
                                             
                                             {/* Files inside content folder */}
                                             {isContentExpanded && (
-                                              <div className="ml-3 space-y-0">
+                                              <div className="ml-3 space-y-0.5">
                                                 {contentFiles.map((file) => (
                                                   <div
                                                     key={file.id}
@@ -8866,7 +8866,7 @@ export default function Dashboard() {
                                                       setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
                                                     }}
                                                     onDragEnd={() => setDraggedFile(null)}
-                                                    className="flex items-center gap-1 pr-2 py-0.5 hover:bg-white/10 cursor-pointer rounded"
+                                                    className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded"
                                                     onClick={() => setPreviewFile(file)}
                                                   >
                                                     <Checkbox
@@ -8884,10 +8884,10 @@ export default function Dashboard() {
                                                         }
                                                       }}
                                                       onClick={(e) => e.stopPropagation()}
-                                                      className="h-3 w-3 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                                      className="h-3.5 w-3.5 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                                     />
-                                                    <FileText className="h-3 w-3 text-white/50 shrink-0" />
-                                                    <span className={`text-[10px] truncate flex-1 hover:underline ${file.listened ? 'text-white/40' : 'text-white/80'}`}>
+                                                    <FileText className="h-3.5 w-3.5 text-white/50 shrink-0" />
+                                                    <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'text-white/40' : 'text-white/80'}`}>
                                                       {file.displayName || file.originalName}
                                                     </span>
                                                   </div>
