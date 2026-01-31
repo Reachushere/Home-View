@@ -8240,6 +8240,29 @@ export default function Dashboard() {
                         <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
                       </a>
                     ))}
+                    {/* Projects with target date on this day */}
+                    {getProjectsForDay(day).map(project => {
+                      const isCompleted = project.status === 'completed';
+                      return (
+                        <RouterLink
+                          key={`project-${project.id}`}
+                          href="/projects"
+                          className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 w-full min-w-0 ${
+                            isCompleted ? "text-gray-400" : "text-white"
+                          }`}
+                          style={{
+                            background: isCompleted ? '#9ca3af' : 'linear-gradient(to right, #6366F1, #8B5CF6)',
+                            borderColor: isCompleted ? '#6b7280' : '#4F46E5'
+                          }}
+                          data-testid={`calendar-project-${project.id}`}
+                        >
+                          <FolderOpen className="h-3 w-3 shrink-0" />
+                          <span className={`truncate font-bold flex-1 min-w-0 ${isCompleted ? "line-through" : ""}`}>
+                            {project.name}
+                          </span>
+                        </RouterLink>
+                      );
+                    })}
                   </div>
                 );
               })}
