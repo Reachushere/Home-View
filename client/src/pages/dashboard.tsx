@@ -10185,7 +10185,7 @@ export default function Dashboard() {
                           >
                             {/* Project Header with Orange Gradient */}
                             <div 
-                              className="px-4 py-3"
+                              className="px-3 py-1.5"
                               style={{ 
                                 background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
                               }}
