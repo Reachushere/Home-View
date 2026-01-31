@@ -9673,6 +9673,10 @@ export default function Dashboard() {
             // Color based on box type: Today=red, Tomorrow=yellow, This Week=based on days
             const progressColor = boxType === 'today' ? '#ef4444' : boxType === 'tomorrow' ? '#eab308' : (daysUntil <= 3 ? '#eab308' : '#22c55e');
             
+            // Parse course code and name (format: "CPPA122" or "CPPA122 - Full Name")
+            const courseCode = task.courseName?.split(' - ')[0] || '';
+            const courseFullName = task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '';
+            
             return (
               <div 
                 key={task.id} 
@@ -9683,25 +9687,25 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div className="flex items-center gap-2">
-                  {/* Checkbox - at very left, or spacer for alignment */}
+                <div className="flex items-center gap-1" style={{ display: 'grid', gridTemplateColumns: '16px 8px 8px 1fr auto auto auto auto', gap: '6px', alignItems: 'center' }}>
+                  {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
                       type="checkbox"
                       checked={task.isCompleted ?? false}
                       onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                      className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer flex-shrink-0"
+                      className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer"
                       style={{ accentColor: getCourseColor(task.courseName) }}
                       data-testid={`checkbox-task-${task.id}`}
                       {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
                       {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
                     />
                   ) : (
-                    <div className="h-3.5 w-3.5 flex-shrink-0" />
+                    <div className="h-3.5 w-3.5" />
                   )}
-                  {/* Days until due - colored urgency dot */}
+                  {/* Urgency dot column */}
                   <div 
-                    className="flex-shrink-0 rounded-full"
+                    className="rounded-full"
                     style={{ 
                       width: '8px', 
                       height: '8px', 
@@ -9710,62 +9714,63 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  {/* Progress oval - wider when farther away */}
+                  {/* Progress oval column */}
                   <div 
-                    className="flex-shrink-0 rounded-full transition-all duration-300"
+                    className="rounded-full transition-all duration-300"
                     style={{ 
-                      width: `${Math.max(4, Math.min(24, daysUntil * 4))}px`, 
+                      width: '8px', 
                       height: '6px', 
                       backgroundColor: progressColor,
                       opacity: 0.7
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
+                  {/* Task name column - left aligned */}
                   <button 
-                    className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
+                    className="text-[11px] text-white font-normal truncate text-left hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
                   >
-                    <span className="truncate">{task.title}</span>
-                    {task.courseName && (
-                      <span className="text-[9px] text-white/60 whitespace-nowrap">• {task.courseName}</span>
-                    )}
+                    {task.title}
                   </button>
-                  {attachments.length > 0 && (
-                    <div className="flex-shrink-0" style={{ marginRight: '55px' }}>
-                      <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
-                    </div>
+                  {/* Course code column */}
+                  <span className="text-[10px] text-white/70 whitespace-nowrap" style={{ minWidth: '55px' }}>
+                    {courseCode}
+                  </span>
+                  {/* Course name column */}
+                  <span className="text-[10px] text-white/50 whitespace-nowrap truncate" style={{ maxWidth: '100px' }}>
+                    {courseFullName}
+                  </span>
+                  {/* Paperclip for attachments */}
+                  {attachments.length > 0 ? (
+                    <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
+                  ) : (
+                    <div className="w-3" />
                   )}
-                  {showDaysUntil && (
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-[11px] text-white font-normal">
-                        {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')}
+                  {/* Due date & days column */}
+                  {showDaysUntil ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-white/70 whitespace-nowrap">
+                        {format(new Date(task.dueDate), 'EEE')} {format(new Date(task.dueDate), 'M/d')}
                       </span>
-                      {boxType === 'thisweek' ? (
-                        <span 
-                          className="text-[10px] font-medium"
-                          style={{ color: progressColor }}
-                          title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
-                        >
-                          {daysUntil}d
-                        </span>
-                      ) : (
-                        <div 
-                          className="working-indicator" 
-                          title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
-                        >
-                          <div className="circle"></div>
-                          <div className="circle"></div>
-                          <div className="circle"></div>
-                          <div className="circle"></div>
-                          <div className="circle"></div>
-                          <div className="circle"></div>
-                          <div className="circle"></div>
-                          <div className="circle"></div>
-                          <div className="circle"></div>
-                          <span className="days-overlay">{daysUntil}</span>
-                        </div>
-                      )}
+                      <span 
+                        className="text-[10px] font-medium whitespace-nowrap"
+                        style={{ color: progressColor, minWidth: '20px' }}
+                      >
+                        {daysUntil}d
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-white/70 whitespace-nowrap">
+                        {format(new Date(task.dueDate), 'M/d')}
+                      </span>
+                      <span 
+                        className="text-[10px] font-medium whitespace-nowrap"
+                        style={{ color: progressColor, minWidth: '20px' }}
+                      >
+                        {daysUntil}d
+                      </span>
                     </div>
                   )}
                 </div>
