@@ -6732,13 +6732,13 @@ export default function Dashboard() {
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
             style={{ 
-              width: '44px', 
-              height: '44px', 
+              width: '43px', 
+              height: '43px', 
               top: '382px', 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-              padding: '1px'
+              padding: '0.5px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
@@ -6937,13 +6937,13 @@ export default function Dashboard() {
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
             style={{ 
-              width: '44px', 
-              height: '44px', 
+              width: '43px', 
+              height: '43px', 
               top: '432px', 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-              padding: '1px'
+              padding: '0.5px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
             data-readings-button
