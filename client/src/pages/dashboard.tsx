@@ -9818,9 +9818,8 @@ export default function Dashboard() {
         >
           {/* Flyout content */}
           <section 
-            className="h-[158px] overflow-hidden flex flex-col rounded-t-xl text-white" 
+            className="h-[158px] overflow-hidden flex flex-col rounded-t-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white" 
             style={{
-              background: 'rgba(255, 255, 255, 0.35)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
