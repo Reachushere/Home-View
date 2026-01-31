@@ -6608,7 +6608,7 @@ export default function Dashboard() {
       </div>
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '342px', right: '8px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '342px', right: '4px', width: '70px' }}>
         <div 
           className="cursor-pointer hover:bg-white/20 rounded p-0.5"
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
@@ -6628,7 +6628,7 @@ export default function Dashboard() {
       </div>
       
       {/* Date Range above arrows (20px above) */}
-      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '310px', right: '11px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '310px', right: '7px', width: '70px' }}>
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "MMM d")}</span>
         <span className="text-[10px] text-white/60">-</span>
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
@@ -7839,7 +7839,7 @@ export default function Dashboard() {
           {/* Left Arrow - Previous Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ left: '-19px', marginTop: '12px' }}
+            style={{ left: '-21px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
@@ -7857,7 +7857,7 @@ export default function Dashboard() {
           {/* Right Arrow - Next Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ right: '-19px', marginTop: '12px' }}
+            style={{ right: '-21px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
