@@ -6782,7 +6782,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 22}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 33}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6793,7 +6793,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 22}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 33}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6814,7 +6814,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 - 44}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 55}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '0ms'
@@ -6857,7 +6857,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 44}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 55}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '50ms'
@@ -6900,7 +6900,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 44}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 4 - 55}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '100ms'
@@ -6987,7 +6987,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 22}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 33}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6998,7 +6998,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 22}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 4 - 33}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7019,7 +7019,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 - 44}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 55}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '0ms'
@@ -7062,7 +7062,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 44}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 55}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '50ms'
@@ -7105,7 +7105,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 44}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 4 - 55}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '100ms'
