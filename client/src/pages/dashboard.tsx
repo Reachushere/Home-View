@@ -9460,7 +9460,7 @@ export default function Dashboard() {
                       {boxType === 'thisweek' ? (
                         <span 
                           className="text-[10px] font-medium"
-                          style={{ color: '#042550' }}
+                          style={{ color: '#FFD761' }}
                           title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
                         >
                           {daysUntil}d
