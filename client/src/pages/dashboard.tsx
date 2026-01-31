@@ -5395,13 +5395,25 @@ export default function Dashboard() {
           {/* Hamburger Menu */}
           <DropdownMenu onOpenChange={(open) => { if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`} style={{ 
-                  background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
-                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-                  marginTop: '4px' 
-                }} data-testid="button-hamburger-menu">
-                <Menu className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
-              </Button>
+              <div 
+                style={{ 
+                  marginTop: '4px',
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
+                  padding: '3px',
+                  cursor: 'pointer'
+                }}
+                data-testid="button-hamburger-menu"
+              >
+                <Button variant="ghost" size="icon" className={`!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`} style={{ 
+                    background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
+                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)'
+                  }}>
+                  <Menu className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
+                </Button>
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
               <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
