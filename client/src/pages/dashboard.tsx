@@ -7839,7 +7839,7 @@ export default function Dashboard() {
           {/* Left Arrow - Previous Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ left: '-23px', marginTop: '12px' }}
+            style={{ left: '-25px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
