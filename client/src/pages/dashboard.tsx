@@ -10285,24 +10285,26 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => {
-                                  setExpandedProjects(prev => {
-                                    const next = new Set(prev);
-                                    if (next.has(project.id)) {
-                                      next.delete(project.id);
-                                    } else {
-                                      next.add(project.id);
-                                    }
-                                    return next;
-                                  });
-                                }}
-                                className="w-full justify-center gap-1 text-white/70 hover:text-white hover:bg-white/10 text-[10px] !mt-[14px]"
-                              >
-                                {isExpanded ? 'Hide Tasks' : `Show Tasks (${projectTasks.length})`}
-                              </Button>
+                              <div className="pt-[14px]">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => {
+                                    setExpandedProjects(prev => {
+                                      const next = new Set(prev);
+                                      if (next.has(project.id)) {
+                                        next.delete(project.id);
+                                      } else {
+                                        next.add(project.id);
+                                      }
+                                      return next;
+                                    });
+                                  }}
+                                  className="w-full justify-center gap-1 text-white/70 hover:text-white hover:bg-white/10 text-[10px]"
+                                >
+                                  {isExpanded ? 'Hide Tasks' : `Show Tasks (${projectTasks.length})`}
+                                </Button>
+                              </div>
 
                               {isExpanded && projectTasks.length > 0 && (
                                 <div className="space-y-1 pt-2 mt-2 border-t border-white/20">
