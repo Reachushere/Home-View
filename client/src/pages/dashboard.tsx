@@ -1013,11 +1013,15 @@ export default function Dashboard() {
   // Helper to generate button gradient from course hex color
   const getButtonGradient = (hex: string): string => {
     const rgb = hexToRgb(hex);
-    // Create a lighter version for the gradient end
-    const lighterR = Math.min(255, rgb.r + 80);
-    const lighterG = Math.min(255, rgb.g + 80);
-    const lighterB = Math.min(255, rgb.b + 80);
-    return `linear-gradient(180deg, rgb(${rgb.r}, ${rgb.g}, ${rgb.b}) 0%, rgb(${lighterR}, ${lighterG}, ${lighterB}) 100%)`;
+    // Create a darker version for gradient start (top)
+    const darkerR = Math.max(0, rgb.r - 40);
+    const darkerG = Math.max(0, rgb.g - 40);
+    const darkerB = Math.max(0, rgb.b - 40);
+    // Create a much lighter version for the gradient end (bottom)
+    const lighterR = Math.min(255, rgb.r + 100);
+    const lighterG = Math.min(255, rgb.g + 100);
+    const lighterB = Math.min(255, rgb.b + 100);
+    return `linear-gradient(180deg, rgb(${darkerR}, ${darkerG}, ${darkerB}) 0%, rgb(${lighterR}, ${lighterG}, ${lighterB}) 100%)`;
   };
   
   // Dynamic course colors based on coursesData
