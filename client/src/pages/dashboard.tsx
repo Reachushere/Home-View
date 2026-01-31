@@ -21,7 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
@@ -297,6 +297,8 @@ export default function Dashboard() {
   const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
   const [isProjectsFlyoutOpen, setIsProjectsFlyoutOpen] = useState(false);
+  const [projectDialogOpen, setProjectDialogOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
   const toggleFlyoutFolder = (folderId: string) => {
@@ -2883,6 +2885,46 @@ export default function Dashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       toast({ title: "File attached to task" });
+    },
+  });
+
+  // Project mutations for flyout
+  const createProjectMutation = useMutation({
+    mutationFn: async (data: { name: string; description?: string; color?: string; status?: string; courseName?: string; startDate?: string; targetDate?: string; priority?: string; notes?: string }) => {
+      return await apiRequest("POST", "/api/projects", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      toast({ title: "Project created successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to create project", variant: "destructive" });
+    },
+  });
+
+  const updateProjectMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: { name?: string; description?: string; color?: string; status?: string; courseName?: string; startDate?: string; targetDate?: string; priority?: string; notes?: string } }) => {
+      return await apiRequest("PATCH", `/api/projects/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      toast({ title: "Project updated successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to update project", variant: "destructive" });
+    },
+  });
+
+  const deleteProjectMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/projects/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/projects"] });
+      toast({ title: "Project deleted successfully" });
+    },
+    onError: () => {
+      toast({ title: "Failed to delete project", variant: "destructive" });
     },
   });
 
@@ -10021,6 +10063,283 @@ export default function Dashboard() {
         </div>
 
         </div>
+
+        {/* Projects Flyout */}
+        <div 
+          className={`fixed left-0 top-0 bottom-0 z-[200] transition-transform duration-300 ease-in-out ${isProjectsFlyoutOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          style={{ width: '400px' }}
+        >
+          <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border-r border-white/20 flex flex-col text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),4px_0_20px_rgba(0,0,0,0.3)]">
+            {/* Header */}
+            <div 
+              className="flex items-center justify-between px-3 py-2"
+              style={{ 
+                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
+              }}
+            >
+              <h4 
+                className="text-sm font-medium text-white flex items-center gap-2"
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+              >
+                <FolderOpen className="h-4 w-4" />
+                Projects
+              </h4>
+              <div className="flex items-center gap-2">
+                <Button 
+                  size="sm"
+                  className="h-7 px-3 text-[11px] font-medium bg-transparent hover:bg-white/20 text-white border border-white/50 rounded-md"
+                  onClick={() => {
+                    setEditingProject(null);
+                    setProjectDialogOpen(true);
+                  }}
+                  data-testid="button-new-project-flyout"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  New
+                </Button>
+                <button 
+                  onClick={() => setIsProjectsFlyoutOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors"
+                  data-testid="button-close-projects-flyout"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Projects List */}
+            <div className="flex-1 overflow-y-auto p-3 space-y-2" style={{ scrollbarWidth: 'none' }}>
+              {allProjects.length === 0 ? (
+                <div className="text-center text-white/50 py-8">
+                  <FolderOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">No projects yet</p>
+                  <p className="text-xs mt-1">Click "New" to create one</p>
+                </div>
+              ) : (
+                allProjects.map(project => {
+                  const projectTasks = allTasks.filter(t => t.projectId === project.id);
+                  const completedTasks = projectTasks.filter(t => t.isCompleted);
+                  const progress = projectTasks.length > 0 ? Math.round((completedTasks.length / projectTasks.length) * 100) : 0;
+                  const isCompleted = project.status === 'completed';
+                  
+                  return (
+                    <div 
+                      key={project.id}
+                      className="rounded-lg overflow-hidden border border-white/20 hover:border-white/40 transition-colors"
+                      style={{ background: 'rgba(255, 255, 255, 0.1)' }}
+                    >
+                      {/* Project header with color */}
+                      <div 
+                        className="px-3 py-2 flex items-center justify-between"
+                        style={{ 
+                          background: `linear-gradient(180deg, ${project.color || '#6366F1'}88 0%, ${project.color || '#6366F1'}44 100%)`
+                        }}
+                      >
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <FolderOpen className="h-4 w-4 shrink-0" />
+                          <span className={`font-medium text-sm truncate ${isCompleted ? 'line-through opacity-70' : ''}`}>
+                            {project.name}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6 hover:bg-white/20"
+                            onClick={() => {
+                              setEditingProject(project);
+                              setProjectDialogOpen(true);
+                            }}
+                            data-testid={`button-edit-project-${project.id}`}
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6 hover:bg-red-500/20 text-red-300"
+                            onClick={() => {
+                              if (confirm("Delete this project?")) {
+                                deleteProjectMutation.mutate(project.id);
+                              }
+                            }}
+                            data-testid={`button-delete-project-${project.id}`}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      {/* Project body */}
+                      <div className="px-3 py-2 space-y-2">
+                        {project.description && (
+                          <p className="text-xs text-white/70 line-clamp-2">{project.description}</p>
+                        )}
+                        
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                            project.status === 'completed' ? 'bg-green-500/30 text-green-300' :
+                            project.status === 'in_progress' ? 'bg-yellow-500/30 text-yellow-300' :
+                            project.status === 'planning' ? 'bg-blue-500/30 text-blue-300' :
+                            project.status === 'on_hold' ? 'bg-gray-500/30 text-gray-300' :
+                            'bg-red-500/30 text-red-300'
+                          }`}>
+                            {project.status?.replace('_', ' ')}
+                          </span>
+                          {project.targetDate && (
+                            <span className="text-[10px] text-white/50 flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {format(new Date(project.targetDate), 'MMM d')}
+                            </span>
+                          )}
+                        </div>
+                        
+                        {projectTasks.length > 0 && (
+                          <div className="space-y-1">
+                            <div className="flex items-center justify-between text-[10px] text-white/60">
+                              <span>{completedTasks.length}/{projectTasks.length} tasks</span>
+                              <span>{progress}%</span>
+                            </div>
+                            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-green-400 transition-all duration-300"
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Project Dialog */}
+        <Dialog open={projectDialogOpen} onOpenChange={setProjectDialogOpen}>
+          <DialogContent className="max-w-lg text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_input]:text-black [&_input]:bg-white [&_textarea]:text-black [&_textarea]:bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-white text-sm">{editingProject ? "Edit Project" : "Create New Project"}</DialogTitle>
+            </DialogHeader>
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const data = {
+                  name: formData.get('name') as string,
+                  description: formData.get('description') as string,
+                  color: formData.get('color') as string || '#6366F1',
+                  status: formData.get('status') as string || 'planning',
+                  targetDate: formData.get('targetDate') as string || undefined,
+                  priority: formData.get('priority') as string || 'medium',
+                };
+                if (editingProject) {
+                  updateProjectMutation.mutate({ id: editingProject.id, data });
+                } else {
+                  createProjectMutation.mutate(data);
+                }
+                setProjectDialogOpen(false);
+                setEditingProject(null);
+              }} 
+              className="space-y-3"
+            >
+              <div className="space-y-2">
+                <label className="text-[11px] font-medium text-white">Project Name</label>
+                <Input 
+                  name="name"
+                  defaultValue={editingProject?.name || ''}
+                  placeholder="Enter project name"
+                  required
+                  className="text-[11px]"
+                  data-testid="input-project-name-flyout"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-[11px] font-medium text-white">Description</label>
+                <Textarea 
+                  name="description"
+                  defaultValue={editingProject?.description || ''}
+                  placeholder="Describe your project..."
+                  rows={2}
+                  className="text-[11px]"
+                  data-testid="input-project-description-flyout"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium text-white">Color</label>
+                  <input 
+                    type="color"
+                    name="color"
+                    defaultValue={editingProject?.color || '#6366F1'}
+                    className="h-9 w-full rounded-md border cursor-pointer"
+                    data-testid="input-project-color-flyout"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium text-white">Status</label>
+                  <select 
+                    name="status"
+                    defaultValue={editingProject?.status || 'planning'}
+                    className="w-full h-9 rounded-md border px-2 text-[11px] bg-white text-black"
+                    data-testid="select-project-status-flyout"
+                  >
+                    <option value="planning">Planning</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="on_hold">On Hold</option>
+                    <option value="completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium text-white">Target Date</label>
+                  <Input 
+                    type="date"
+                    name="targetDate"
+                    defaultValue={editingProject?.targetDate ? format(new Date(editingProject.targetDate), 'yyyy-MM-dd') : ''}
+                    className="text-[11px]"
+                    data-testid="input-project-targetdate-flyout"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-[11px] font-medium text-white">Priority</label>
+                  <select 
+                    name="priority"
+                    defaultValue={editingProject?.priority || 'medium'}
+                    className="w-full h-9 rounded-md border px-2 text-[11px] bg-white text-black"
+                    data-testid="select-project-priority-flyout"
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
+              
+              <DialogFooter>
+                <Button type="button" variant="outline" onClick={() => { setProjectDialogOpen(false); setEditingProject(null); }} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="outline"
+                  className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+                  data-testid="button-save-project-flyout"
+                >
+                  {editingProject ? "Save Changes" : "Create Project"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
