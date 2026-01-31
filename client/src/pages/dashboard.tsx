@@ -3896,7 +3896,7 @@ export default function Dashboard() {
                     />
                     <FileText className="h-3.5 w-3.5 text-red-400 shrink-0" />
                     <span 
-                      className={`text-[11px] ${file.listened ? 'text-white/40' : 'text-white'}`}
+                      className={`text-[11px] ${file.listened ? 'text-white/40 line-through' : 'text-white'}`}
                     >
                       {cleanName || fullName}
                     </span>
