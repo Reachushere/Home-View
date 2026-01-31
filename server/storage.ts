@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or } from "drizzle-orm";
 
 export interface IStorage {
@@ -43,6 +43,13 @@ export interface IStorage {
   getLinksForSubtask(subtaskId: number): Promise<TaskLink[]>;
   createTaskLink(link: InsertTaskLink): Promise<TaskLink>;
   deleteTaskLink(id: number): Promise<void>;
+  // Projects
+  getProjects(): Promise<Project[]>;
+  getProject(id: number): Promise<Project | undefined>;
+  createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: number, updates: Partial<InsertProject>): Promise<Project>;
+  deleteProject(id: number): Promise<void>;
+  getTasksByProject(projectId: number): Promise<Task[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -341,6 +348,44 @@ export class DatabaseStorage implements IStorage {
 
   async deleteTaskLink(id: number): Promise<void> {
     await db.delete(taskLinks).where(eq(taskLinks.id, id));
+  }
+
+  // Project methods
+  async getProjects(): Promise<Project[]> {
+    return await db.select().from(projects).orderBy(desc(projects.createdAt));
+  }
+
+  async getProject(id: number): Promise<Project | undefined> {
+    const [project] = await db.select().from(projects).where(eq(projects.id, id));
+    return project;
+  }
+
+  async createProject(project: InsertProject): Promise<Project> {
+    const [created] = await db.insert(projects).values(project).returning();
+    return created;
+  }
+
+  async updateProject(id: number, updates: Partial<InsertProject>): Promise<Project> {
+    const modifiedUpdates = { ...updates, updatedAt: new Date() } as typeof updates & { updatedAt: Date; completedAt?: Date | null };
+    if ('status' in updates) {
+      if (updates.status === 'completed') {
+        modifiedUpdates.completedAt = new Date();
+      } else {
+        modifiedUpdates.completedAt = null;
+      }
+    }
+    const [updated] = await db.update(projects).set(modifiedUpdates).where(eq(projects.id, id)).returning();
+    return updated;
+  }
+
+  async deleteProject(id: number): Promise<void> {
+    // Unlink tasks from this project before deleting
+    await db.update(tasks).set({ projectId: null }).where(eq(tasks.projectId, id));
+    await db.delete(projects).where(eq(projects.id, id));
+  }
+
+  async getTasksByProject(projectId: number): Promise<Task[]> {
+    return await db.select().from(tasks).where(eq(tasks.projectId, projectId)).orderBy(tasks.dueDate);
   }
 }
 

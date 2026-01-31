@@ -1814,6 +1814,122 @@ export async function registerRoutes(
     }
   });
 
+  // ============================================
+  // PROJECT ROUTES
+  // ============================================
+
+  // GET /api/projects - Get all projects
+  app.get("/api/projects", async (req, res) => {
+    try {
+      const projects = await storage.getProjects();
+      res.json(projects);
+    } catch (err) {
+      console.error("Error fetching projects:", err);
+      res.status(500).json({ message: "Failed to fetch projects" });
+    }
+  });
+
+  // GET /api/projects/:id - Get a single project
+  app.get("/api/projects/:id", async (req, res) => {
+    try {
+      const projectId = Number(req.params.id);
+      const project = await storage.getProject(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      res.json(project);
+    } catch (err) {
+      console.error("Error fetching project:", err);
+      res.status(500).json({ message: "Failed to fetch project" });
+    }
+  });
+
+  // GET /api/projects/:id/tasks - Get all tasks for a project
+  app.get("/api/projects/:id/tasks", async (req, res) => {
+    try {
+      const projectId = Number(req.params.id);
+      const tasks = await storage.getTasksByProject(projectId);
+      res.json(tasks);
+    } catch (err) {
+      console.error("Error fetching project tasks:", err);
+      res.status(500).json({ message: "Failed to fetch project tasks" });
+    }
+  });
+
+  // POST /api/projects - Create a new project
+  app.post("/api/projects", async (req, res) => {
+    try {
+      const { name, description, color, status, courseName, startDate, targetDate, priority, notes } = req.body;
+      const project = await storage.createProject({
+        name,
+        description,
+        color,
+        status,
+        courseName,
+        startDate: startDate ? new Date(startDate) : null,
+        targetDate: targetDate ? new Date(targetDate) : null,
+        priority,
+        notes,
+      });
+      res.status(201).json(project);
+    } catch (err) {
+      console.error("Error creating project:", err);
+      res.status(500).json({ message: "Failed to create project" });
+    }
+  });
+
+  // PATCH /api/projects/:id - Update a project
+  app.patch("/api/projects/:id", async (req, res) => {
+    try {
+      const projectId = Number(req.params.id);
+      const updates = req.body;
+      if (updates.startDate) updates.startDate = new Date(updates.startDate);
+      if (updates.targetDate) updates.targetDate = new Date(updates.targetDate);
+      const project = await storage.updateProject(projectId, updates);
+      res.json(project);
+    } catch (err) {
+      console.error("Error updating project:", err);
+      res.status(500).json({ message: "Failed to update project" });
+    }
+  });
+
+  // DELETE /api/projects/:id - Delete a project
+  app.delete("/api/projects/:id", async (req, res) => {
+    try {
+      const projectId = Number(req.params.id);
+      await storage.deleteProject(projectId);
+      res.status(204).send();
+    } catch (err) {
+      console.error("Error deleting project:", err);
+      res.status(500).json({ message: "Failed to delete project" });
+    }
+  });
+
+  // POST /api/projects/:id/tasks/:taskId - Add a task to a project
+  app.post("/api/projects/:id/tasks/:taskId", async (req, res) => {
+    try {
+      const projectId = Number(req.params.id);
+      const taskId = Number(req.params.taskId);
+      const task = await storage.updateTask(taskId, { projectId });
+      res.json(task);
+    } catch (err) {
+      console.error("Error adding task to project:", err);
+      res.status(500).json({ message: "Failed to add task to project" });
+    }
+  });
+
+  // DELETE /api/projects/:id/tasks/:taskId - Remove a task from a project
+  app.delete("/api/projects/:id/tasks/:taskId", async (req, res) => {
+    try {
+      const taskId = Number(req.params.taskId);
+      const task = await storage.updateTask(taskId, { projectId: null });
+      res.json(task);
+    } catch (err) {
+      console.error("Error removing task from project:", err);
+      res.status(500).json({ message: "Failed to remove task from project" });
+    }
+  });
+
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
 
