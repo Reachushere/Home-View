@@ -8935,8 +8935,9 @@ export default function Dashboard() {
                                               className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded transition-colors ${draggedFileForMove && draggedFileForMove.folder !== contentFolderId ? 'border border-dashed border-transparent hover:border-blue-400' : ''}`}
                                               onClick={() => toggleFlyoutFolder(contentFolderId)}
                                               onDragOver={(e) => {
+                                                e.preventDefault();
+                                                e.dataTransfer.dropEffect = 'move';
                                                 if (draggedFileForMove && draggedFileForMove.folder !== contentFolderId) {
-                                                  e.preventDefault();
                                                   e.currentTarget.classList.add('bg-blue-500/20', 'border-blue-400');
                                                 }
                                               }}
@@ -8974,31 +8975,26 @@ export default function Dashboard() {
                                                 {contentFiles.map((file) => (
                                                   <div
                                                     key={file.id}
-                                                    className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 rounded group ${draggedFileForMove?.id === file.id ? 'opacity-50' : ''}`}
+                                                    draggable="true"
+                                                    onDragStart={(e) => {
+                                                      e.dataTransfer.setData('text/plain', file.id.toString());
+                                                      e.dataTransfer.setData('application/json', JSON.stringify({ 
+                                                        url: file.objectPath, 
+                                                        name: file.displayName || file.originalName,
+                                                        fileId: file.id,
+                                                        folder: file.folder
+                                                      }));
+                                                      e.dataTransfer.effectAllowed = 'move';
+                                                      setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
+                                                      setDraggedFileForMove({ id: file.id, folder: file.folder || '' });
+                                                    }}
+                                                    onDragEnd={() => {
+                                                      setDraggedFile(null);
+                                                      setDraggedFileForMove(null);
+                                                    }}
+                                                    className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 rounded group cursor-grab active:cursor-grabbing ${draggedFileForMove?.id === file.id ? 'opacity-50 bg-blue-500/20' : ''}`}
                                                   >
-                                                    <div
-                                                      draggable="true"
-                                                      onDragStart={(e) => {
-                                                        e.dataTransfer.setData('text/plain', file.id.toString());
-                                                        e.dataTransfer.setData('application/json', JSON.stringify({ 
-                                                          url: file.objectPath, 
-                                                          name: file.displayName || file.originalName,
-                                                          fileId: file.id,
-                                                          folder: file.folder
-                                                        }));
-                                                        e.dataTransfer.effectAllowed = 'move';
-                                                        setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
-                                                        setDraggedFileForMove({ id: file.id, folder: file.folder || '' });
-                                                      }}
-                                                      onDragEnd={() => {
-                                                        setDraggedFile(null);
-                                                        setDraggedFileForMove(null);
-                                                      }}
-                                                      className="cursor-grab active:cursor-grabbing p-0.5 -ml-0.5 hover:bg-white/20 rounded"
-                                                      title="Drag to move file"
-                                                    >
-                                                      <GripVertical className="h-3 w-3 text-white/40 group-hover:text-white/70" />
-                                                    </div>
+                                                    <GripVertical className="h-3 w-3 text-white/40 group-hover:text-white/70 shrink-0" />
                                                     <Checkbox
                                                       checked={file.listened || false}
                                                       onCheckedChange={async (checked) => {
