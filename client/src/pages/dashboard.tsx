@@ -9703,7 +9703,8 @@ export default function Dashboard() {
                       width: '5px', 
                       height: '5px', 
                       backgroundColor: progressColor,
-                      boxShadow: `0 0 4px ${progressColor}`
+                      boxShadow: `0 0 4px ${progressColor}`,
+                      marginLeft: '-2px'
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
