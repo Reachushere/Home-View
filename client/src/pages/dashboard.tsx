@@ -3889,6 +3889,11 @@ export default function Dashboard() {
     return allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
   };
 
+  // Get projects with targetDate on a specific day
+  const getProjectsForDay = (day: Date) => {
+    return allProjects.filter(p => p.targetDate && isSameDay(new Date(p.targetDate), day));
+  };
+
   // Get reminders for a day (tasks due 2 days after this day, and 24-hour urgent reminders)
   const getRemindersForDay = (day: Date) => {
     const twoDayReminders = allTasks.filter(t => {
