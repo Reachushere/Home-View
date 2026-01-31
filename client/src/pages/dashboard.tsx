@@ -9742,13 +9742,13 @@ export default function Dashboard() {
                   {/* 10px spacer between task name and course code */}
                   <div />
                   {/* Course code column - left aligned, white */}
-                  <span className="text-[10px] text-white whitespace-nowrap text-left justify-self-start">
+                  <div className="text-[10px] text-white whitespace-nowrap" style={{ textAlign: 'left', justifySelf: 'start' }}>
                     {courseCode}
-                  </span>
+                  </div>
                   {/* Course name column - left aligned, white */}
-                  <span className="text-[10px] text-white whitespace-nowrap truncate text-left justify-self-start">
+                  <div className="text-[10px] text-white whitespace-nowrap truncate" style={{ textAlign: 'left', justifySelf: 'start', width: '100%' }}>
                     {courseFullName}
-                  </span>
+                  </div>
                   {/* Paperclip for attachments */}
                   {attachments.length > 0 ? (
                     <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
