@@ -6075,7 +6075,7 @@ export default function Dashboard() {
       <div className="fixed pointer-events-none" style={{ top: '-274px', left: '50%', transform: 'translateX(-50%) translateX(-10px)', zIndex: 1 }}>
         <div 
           style={{ 
-            width: '48px', 
+            width: '42px', 
             height: '616px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '24px',
