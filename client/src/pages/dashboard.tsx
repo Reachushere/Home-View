@@ -6583,8 +6583,8 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Date Range below Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '607px', right: '11px', width: '70px' }}>
+      {/* Date Range above arrows (20px above) */}
+      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '272px', right: '11px', width: '70px' }}>
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "MMM d")}</span>
         <span className="text-[10px] text-white/60">-</span>
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
