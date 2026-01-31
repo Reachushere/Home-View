@@ -10286,7 +10286,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <div style={{ height: '12px' }} />
+                              <div style={{ height: '18px' }} />
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
