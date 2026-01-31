@@ -297,6 +297,8 @@ export default function Dashboard() {
   const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
   const [isProjectsFlyoutOpen, setIsProjectsFlyoutOpen] = useState(false);
+  const [projectStatusFilter, setProjectStatusFilter] = useState<string>("all");
+  const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
@@ -5908,7 +5910,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-4px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-14px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
 
                     </div>
         </div>
@@ -10064,158 +10066,307 @@ export default function Dashboard() {
 
         </div>
 
-        {/* Projects Flyout */}
-        <div 
-          className={`fixed left-0 top-0 bottom-0 z-[200] transition-transform duration-300 ease-in-out ${isProjectsFlyoutOpen ? 'translate-x-0' : '-translate-x-full'}`}
-          style={{ width: '400px' }}
-        >
-          <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border-r border-white/20 flex flex-col text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),4px_0_20px_rgba(0,0,0,0.3)]">
-            {/* Header */}
+        {/* Projects Flyout - Large Centered Panel */}
+        {isProjectsFlyoutOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center">
+            {/* Backdrop */}
             <div 
-              className="flex items-center justify-between px-3 py-2"
-              style={{ 
-                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsProjectsFlyoutOpen(false)}
+            />
+            
+            {/* Flyout Panel */}
+            <div 
+              className="relative w-[90vw] max-w-[1200px] h-[85vh] rounded-2xl overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+              style={{
+                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif"
               }}
             >
-              <h4 
-                className="text-sm font-medium text-white flex items-center gap-2"
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+              {/* Header */}
+              <div 
+                className="flex items-center justify-between px-6 py-4"
+                style={{ 
+                  background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
+                }}
               >
-                <FolderOpen className="h-4 w-4" />
-                Projects
-              </h4>
-              <div className="flex items-center gap-2">
-                <Button 
-                  size="sm"
-                  className="h-7 px-3 text-[11px] font-medium bg-transparent hover:bg-white/20 text-white border border-white/50 rounded-md"
-                  onClick={() => {
-                    setEditingProject(null);
-                    setProjectDialogOpen(true);
-                  }}
-                  data-testid="button-new-project-flyout"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  New
-                </Button>
-                <button 
-                  onClick={() => setIsProjectsFlyoutOpen(false)}
-                  className="text-white hover:text-white/80 transition-colors"
-                  data-testid="button-close-projects-flyout"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-            
-            {/* Projects List */}
-            <div className="flex-1 overflow-y-auto p-3 space-y-2" style={{ scrollbarWidth: 'none' }}>
-              {allProjects.length === 0 ? (
-                <div className="text-center text-white/50 py-8">
-                  <FolderOpen className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No projects yet</p>
-                  <p className="text-xs mt-1">Click "New" to create one</p>
+                <div className="flex items-center gap-3">
+                  <FolderOpen className="h-6 w-6 text-white" />
+                  <h2 
+                    className="text-xl font-bold text-white"
+                    style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                  >
+                    Projects
+                  </h2>
+                  <span className="text-sm text-white/80">
+                    {allProjects.length} projects, {allTasks.filter(t => t.projectId).length} tasks assigned
+                  </span>
                 </div>
-              ) : (
-                allProjects.map(project => {
-                  const projectTasks = allTasks.filter(t => t.projectId === project.id);
-                  const completedTasks = projectTasks.filter(t => t.isCompleted);
-                  const progress = projectTasks.length > 0 ? Math.round((completedTasks.length / projectTasks.length) * 100) : 0;
-                  const isCompleted = project.status === 'completed';
+                <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:bg-white/20 hover:!border-white/70"
+                    onClick={() => {
+                      setEditingProject(null);
+                      setProjectDialogOpen(true);
+                    }}
+                    data-testid="button-new-project-flyout"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Project
+                  </Button>
+                  <button 
+                    onClick={() => setIsProjectsFlyoutOpen(false)}
+                    className="text-white hover:text-white/80 transition-colors p-1"
+                    data-testid="button-close-projects-flyout"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'thin' }}>
+                {/* Status Filter Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+                  {[
+                    { key: 'all', label: 'All Projects', count: allProjects.length, color: 'text-white' },
+                    { key: 'in_progress', label: 'In Progress', count: allProjects.filter(p => p.status === 'in_progress').length, color: 'text-yellow-300' },
+                    { key: 'planning', label: 'Planning', count: allProjects.filter(p => p.status === 'planning').length, color: 'text-blue-300' },
+                    { key: 'completed', label: 'Completed', count: allProjects.filter(p => p.status === 'completed').length, color: 'text-green-300' },
+                    { key: 'on_hold', label: 'On Hold', count: allProjects.filter(p => p.status === 'on_hold').length, color: 'text-gray-300' },
+                  ].map(filter => (
+                    <div 
+                      key={filter.key}
+                      className={`cursor-pointer rounded-xl p-4 text-center transition-all ${projectStatusFilter === filter.key ? 'ring-2 ring-white/50' : ''}`}
+                      onClick={() => setProjectStatusFilter(filter.key)}
+                      style={{ 
+                        background: projectStatusFilter === filter.key ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)'
+                      }}
+                    >
+                      <div className={`text-2xl font-bold ${filter.color}`}>{filter.count}</div>
+                      <div className="text-sm text-white/70">{filter.label}</div>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Projects Grid */}
+                {(() => {
+                  const filteredProjects = projectStatusFilter === 'all' 
+                    ? allProjects 
+                    : allProjects.filter(p => p.status === projectStatusFilter);
+                  
+                  if (filteredProjects.length === 0) {
+                    return (
+                      <div className="text-center py-12 text-white/50">
+                        <FolderOpen className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                        <h3 className="text-lg font-medium mb-2">
+                          {projectStatusFilter === 'all' ? 'No projects yet' : `No ${projectStatusFilter.replace('_', ' ')} projects`}
+                        </h3>
+                        <p className="text-sm mb-4">Create a project to organize your tasks and track progress.</p>
+                        <Button 
+                          variant="outline"
+                          className="border-white/30 text-white hover:bg-white/10 hover:text-white"
+                          onClick={() => { setEditingProject(null); setProjectDialogOpen(true); }}
+                        >
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create Your First Project
+                        </Button>
+                      </div>
+                    );
+                  }
                   
                   return (
-                    <div 
-                      key={project.id}
-                      className="rounded-lg overflow-hidden border border-white/20 hover:border-white/40 transition-colors"
-                      style={{ background: 'rgba(255, 255, 255, 0.1)' }}
-                    >
-                      {/* Project header with color */}
-                      <div 
-                        className="px-3 py-2 flex items-center justify-between"
-                        style={{ 
-                          background: `linear-gradient(180deg, ${project.color || '#6366F1'}88 0%, ${project.color || '#6366F1'}44 100%)`
-                        }}
-                      >
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          <FolderOpen className="h-4 w-4 shrink-0" />
-                          <span className={`font-medium text-sm truncate ${isCompleted ? 'line-through opacity-70' : ''}`}>
-                            {project.name}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 hover:bg-white/20"
-                            onClick={() => {
-                              setEditingProject(project);
-                              setProjectDialogOpen(true);
-                            }}
-                            data-testid={`button-edit-project-${project.id}`}
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-6 w-6 hover:bg-red-500/20 text-red-300"
-                            onClick={() => {
-                              if (confirm("Delete this project?")) {
-                                deleteProjectMutation.mutate(project.id);
-                              }
-                            }}
-                            data-testid={`button-delete-project-${project.id}`}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      {/* Project body */}
-                      <div className="px-3 py-2 space-y-2">
-                        {project.description && (
-                          <p className="text-xs text-white/70 line-clamp-2">{project.description}</p>
-                        )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredProjects.map(project => {
+                        const projectTasks = allTasks.filter(t => t.projectId === project.id);
+                        const completedTasks = projectTasks.filter(t => t.isCompleted);
+                        const progress = projectTasks.length > 0 ? Math.round((completedTasks.length / projectTasks.length) * 100) : 0;
+                        const isExpanded = expandedProjects.has(project.id);
                         
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                            project.status === 'completed' ? 'bg-green-500/30 text-green-300' :
-                            project.status === 'in_progress' ? 'bg-yellow-500/30 text-yellow-300' :
-                            project.status === 'planning' ? 'bg-blue-500/30 text-blue-300' :
-                            project.status === 'on_hold' ? 'bg-gray-500/30 text-gray-300' :
-                            'bg-red-500/30 text-red-300'
-                          }`}>
-                            {project.status?.replace('_', ' ')}
-                          </span>
-                          {project.targetDate && (
-                            <span className="text-[10px] text-white/50 flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {format(new Date(project.targetDate), 'MMM d')}
-                            </span>
-                          )}
-                        </div>
-                        
-                        {projectTasks.length > 0 && (
-                          <div className="space-y-1">
-                            <div className="flex items-center justify-between text-[10px] text-white/60">
-                              <span>{completedTasks.length}/{projectTasks.length} tasks</span>
-                              <span>{progress}%</span>
+                        return (
+                          <div 
+                            key={project.id}
+                            className="rounded-xl overflow-hidden flex flex-col"
+                            style={{ 
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              border: '1px solid rgba(255, 255, 255, 0.2)'
+                            }}
+                          >
+                            {/* Project Header with Orange Gradient */}
+                            <div 
+                              className="px-4 py-3"
+                              style={{ 
+                                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
+                              }}
+                            >
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  <div 
+                                    className="w-3 h-3 rounded-full flex-shrink-0 border border-white/30" 
+                                    style={{ backgroundColor: project.color || "#6366F1" }} 
+                                  />
+                                  <span 
+                                    className="text-sm font-medium text-white truncate"
+                                    style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                                  >
+                                    {project.name}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    onClick={() => {
+                                      setEditingProject(project);
+                                      setProjectDialogOpen(true);
+                                    }}
+                                    className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
+                                    data-testid={`button-edit-project-${project.id}`}
+                                  >
+                                    <Pencil className="w-3.5 h-3.5" />
+                                  </Button>
+                                  <Button 
+                                    size="icon" 
+                                    variant="ghost" 
+                                    onClick={() => {
+                                      if (confirm("Delete this project?")) {
+                                        deleteProjectMutation.mutate(project.id);
+                                      }
+                                    }}
+                                    className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
+                                    data-testid={`button-delete-project-${project.id}`}
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </Button>
+                                </div>
+                              </div>
                             </div>
-                            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-green-400 transition-all duration-300"
-                                style={{ width: `${progress}%` }}
-                              />
+                            
+                            {/* Project Body */}
+                            <div className="flex-1 p-4 text-white">
+                              {project.description && (
+                                <p className="text-xs text-white/70 mb-3 line-clamp-2">
+                                  {project.description}
+                                </p>
+                              )}
+                              
+                              <div className="flex flex-wrap items-center gap-2 mb-3">
+                                <Badge className={`text-xs ${
+                                  project.status === 'completed' ? 'bg-green-500/30 text-green-300 border-green-500/50' :
+                                  project.status === 'in_progress' ? 'bg-yellow-500/30 text-yellow-300 border-yellow-500/50' :
+                                  project.status === 'planning' ? 'bg-blue-500/30 text-blue-300 border-blue-500/50' :
+                                  project.status === 'on_hold' ? 'bg-gray-500/30 text-gray-300 border-gray-500/50' :
+                                  'bg-red-500/30 text-red-300 border-red-500/50'
+                                }`}>
+                                  {(project.status || 'planning').replace('_', ' ')}
+                                </Badge>
+                                <Badge className={`text-xs ${
+                                  project.priority === 'high' ? 'bg-red-500/30 text-red-300 border-red-500/50' :
+                                  project.priority === 'medium' ? 'bg-orange-500/30 text-orange-300 border-orange-500/50' :
+                                  'bg-green-500/30 text-green-300 border-green-500/50'
+                                }`}>
+                                  {(project.priority || 'medium').toUpperCase()}
+                                </Badge>
+                                {project.courseName && (
+                                  <Badge 
+                                    className="text-xs"
+                                    style={{ 
+                                      backgroundColor: project.courseName === 'CPPA122' ? '#22C55E' : 
+                                                      project.courseName === 'CFNF400' ? '#EC4899' : 
+                                                      project.courseName === 'CASL101' ? '#6366F1' : '#6366F1',
+                                      color: 'white'
+                                    }}
+                                  >
+                                    {project.courseName}
+                                  </Badge>
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-4 text-xs text-white/60 mb-3">
+                                {project.startDate && (
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>Start: {format(new Date(project.startDate), "MMM d")}</span>
+                                  </div>
+                                )}
+                                {project.targetDate && (
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>Due: {format(new Date(project.targetDate), "MMM d")}</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="space-y-1 mb-3">
+                                <div className="flex items-center justify-between text-xs text-white/70">
+                                  <span>Progress</span>
+                                  <span className="font-medium">{completedTasks.length}/{projectTasks.length} tasks</span>
+                                </div>
+                                <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-green-400 transition-all duration-300"
+                                    style={{ width: `${progress}%` }}
+                                  />
+                                </div>
+                              </div>
+
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => {
+                                  setExpandedProjects(prev => {
+                                    const next = new Set(prev);
+                                    if (next.has(project.id)) {
+                                      next.delete(project.id);
+                                    } else {
+                                      next.add(project.id);
+                                    }
+                                    return next;
+                                  });
+                                }}
+                                className="w-full justify-center gap-1 text-white/70 hover:text-white hover:bg-white/10 text-xs"
+                              >
+                                {isExpanded ? 'Hide Tasks' : `Show Tasks (${projectTasks.length})`}
+                              </Button>
+
+                              {isExpanded && projectTasks.length > 0 && (
+                                <div className="space-y-1 pt-2 mt-2 border-t border-white/20">
+                                  {projectTasks.map((task) => (
+                                    <div 
+                                      key={task.id}
+                                      className={`flex items-center gap-2 p-2 rounded-md text-xs ${
+                                        task.isCompleted 
+                                          ? "bg-green-500/20 line-through text-white/50" 
+                                          : "bg-white/10 text-white"
+                                      }`}
+                                    >
+                                      {task.isCompleted ? (
+                                        <CheckCircle2 className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
+                                      ) : (
+                                        <div className="w-3.5 h-3.5 rounded-full border-2 border-white/40 flex-shrink-0" />
+                                      )}
+                                      <span className="flex-1 truncate">{task.title}</span>
+                                      {task.dueDate && (
+                                        <span className="text-[10px] text-white/50">
+                                          {format(new Date(task.dueDate), "MMM d")}
+                                        </span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           </div>
-                        )}
-                      </div>
+                        );
+                      })}
                     </div>
                   );
-                })
-              )}
+                })()}
+              </div>
             </div>
           </div>
-        </div>
+        )}
         
         {/* Project Dialog */}
         <Dialog open={projectDialogOpen} onOpenChange={setProjectDialogOpen}>
