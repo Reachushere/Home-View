@@ -5157,7 +5157,13 @@ export default function Dashboard() {
             variant="ghost" 
             size="icon" 
             className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 transition-all duration-200 ${lastCompletedTaskId ? "" : "opacity-50"}`}
-            style={{ backgroundImage: `url(${orangeButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '4px', zIndex: 50, position: 'relative' }}
+            style={{ 
+              background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)',
+              marginTop: '4px', 
+              zIndex: 50, 
+              position: 'relative' 
+            }}
             onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
             disabled={!lastCompletedTaskId}
             data-testid="button-undo-complete"
