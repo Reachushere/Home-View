@@ -5647,26 +5647,34 @@ export default function Dashboard() {
           </Button>
 
           {/* Undo Complete */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 transition-all duration-200 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+          <div 
+            className="relative"
             style={{ 
-              background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
-              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)',
-              border: '2px solid transparent',
-              borderImage: 'linear-gradient(0deg, #FF6E3D 0%, #FFDD63 100%) 1',
-              marginTop: '4px', 
-              zIndex: 50, 
-              position: 'relative' 
+              marginTop: '4px',
+              zIndex: 50,
+              width: '43px',
+              height: '43px',
+              borderRadius: '50%',
+              background: 'linear-gradient(0deg, #FF6E3D 0%, #FFDD63 100%)',
+              padding: '2px'
             }}
-            onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
-            disabled={!lastCompletedTaskId}
-            data-testid="button-undo-complete"
-            title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
           >
-            <Undo2 className="h-[28px] w-[28px] text-white" />
-          </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 transition-all duration-200 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+              style={{ 
+                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+              }}
+              onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
+              disabled={!lastCompletedTaskId}
+              data-testid="button-undo-complete"
+              title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
+            >
+              <Undo2 className="h-[28px] w-[28px] text-white" />
+            </Button>
+          </div>
 
           {/* Completed Tasks Checkbox */}
           <Button 
