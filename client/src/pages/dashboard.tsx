@@ -6115,7 +6115,11 @@ export default function Dashboard() {
       {/* Arrows on Tall Pill */}
       <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '292px', right: '10px', width: '70px' }}>
         <div 
-          className="cursor-pointer hover:bg-white/20 rounded p-0.5"
+          className="cursor-pointer hover:opacity-80 rounded-full p-1 transition-opacity"
+          style={{ 
+            background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+          }}
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
           data-testid="button-pill-prev-week"
           data-date-nav
@@ -6123,7 +6127,11 @@ export default function Dashboard() {
           <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
         </div>
         <div 
-          className="cursor-pointer hover:bg-white/20 rounded p-0.5"
+          className="cursor-pointer hover:opacity-80 rounded-full p-1 transition-opacity"
+          style={{ 
+            background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+          }}
           onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
           data-testid="button-pill-next-week"
           data-date-nav
