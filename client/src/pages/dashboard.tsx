@@ -10151,7 +10151,7 @@ export default function Dashboard() {
                   }
                   
                   return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" style={{ gridAutoRows: 'minmax(240px, auto)' }}>
                       {filteredProjects.map(project => {
                         const projectTasks = allTasks.filter(t => t.projectId === project.id);
                         const completedTasks = projectTasks.filter(t => t.isCompleted);
@@ -10161,11 +10161,10 @@ export default function Dashboard() {
                         return (
                           <div 
                             key={project.id}
-                            className="rounded-xl overflow-hidden flex flex-col"
+                            className="rounded-xl overflow-hidden flex flex-col h-full"
                             style={{ 
                               background: 'rgba(255, 255, 255, 0.2)',
-                              border: '1px solid rgba(255, 255, 255, 0.2)',
-                              minHeight: '220px'
+                              border: '1px solid rgba(255, 255, 255, 0.2)'
                             }}
                           >
                             {/* Project Header with Orange Gradient */}
