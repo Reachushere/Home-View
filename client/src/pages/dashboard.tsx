@@ -10056,9 +10056,10 @@ export default function Dashboard() {
             
             {/* Flyout Panel */}
             <div 
-              className="relative w-[90vw] max-w-[1200px] h-[85vh] rounded-2xl overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/80 via-black/70 to-gray-900/80 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-md"
+              className="relative w-[90vw] max-w-[1200px] h-[85vh] rounded-2xl overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/80 via-black/70 to-gray-900/80 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-md"
               style={{
-                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif"
+                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+                border: '1px solid rgba(255, 255, 255, 0.2)'
               }}
             >
               {/* Header */}
