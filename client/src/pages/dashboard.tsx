@@ -9818,7 +9818,7 @@ export default function Dashboard() {
         {/* To Do Bottom Flyout */}
         <div 
           className="fixed left-[12px] z-[100] transition-all duration-300 ease-in-out"
-          style={{ bottom: isTodoFlyoutOpen ? '0' : '-180px', right: 'calc(33.33% + 4px)' }}
+          style={{ bottom: isTodoFlyoutOpen ? '0' : '-180px', right: '14px' }}
         >
           {/* Flyout content */}
           <section 
