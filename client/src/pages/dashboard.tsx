@@ -9718,10 +9718,12 @@ export default function Dashboard() {
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
                     style={{ 
-                      width: '48px', 
+                      width: '44px', 
                       height: '3px', 
                       backgroundColor: progressColor,
-                      opacity: 0.7
+                      opacity: 0.7,
+                      marginLeft: '2px',
+                      marginRight: '2px'
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
