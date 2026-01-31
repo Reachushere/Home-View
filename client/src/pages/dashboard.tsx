@@ -5879,7 +5879,7 @@ export default function Dashboard() {
               data-testid="button-undo-complete"
               title={completedTaskHistory.length > 0 ? `Undo last completion (${completedTaskHistory.length} available)` : "No task to undo"}
             >
-              <Undo2 className="h-[28px] w-[28px] text-white" />
+              <Undo2 className="h-[18px] w-[18px] text-white" />
             </Button>
           </div>
 
