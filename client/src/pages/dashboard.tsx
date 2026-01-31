@@ -8902,7 +8902,14 @@ export default function Dashboard() {
               </div>
               
               {/* Week Folders */}
-              <div className="flex-1 overflow-y-auto py-2 px-2" style={{ scrollbarWidth: 'none' }}>
+              <div 
+                className="flex-1 overflow-y-auto py-2 px-2" 
+                style={{ scrollbarWidth: 'none' }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                }}
+              >
                 {(() => {
                   // Get current week number based on today's date
                   const today = new Date();
