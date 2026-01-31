@@ -5869,7 +5869,7 @@ export default function Dashboard() {
             <div 
               className={`h-[38px] w-[38px] rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-200 ${completedTaskHistory.length > 0 ? "" : "opacity-50 pointer-events-none"}`}
               style={{ 
-                background: 'linear-gradient(0deg, #FFFF00 0%, #FFA500 50%, #FF0000 100%)',
+                background: 'linear-gradient(0deg, #FFDD63 0%, #FFAA50 50%, #FF6E3D 100%)',
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)'
               }}
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
