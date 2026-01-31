@@ -289,56 +289,77 @@ function ProjectCard({
   const progress = tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
   
   return (
-    <Card 
+    <div 
       data-testid={`card-project-${project.id}`}
-      className="hover-elevate transition-all"
+      className="rounded-[12px] overflow-hidden flex flex-col hover-elevate transition-all"
+      style={{ 
+        background: 'rgba(255, 255, 255, 0.35)',
+        border: '1px solid rgba(255, 255, 255, 0.4)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+      }}
     >
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <div 
-                className="w-3 h-3 rounded-full flex-shrink-0" 
-                style={{ backgroundColor: project.color || "#6366F1" }} 
-              />
-              <span className="truncate">{project.name}</span>
-            </CardTitle>
-            {project.description && (
-              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                {project.description}
-              </p>
-            )}
+      {/* Orange gradient header */}
+      <div 
+        style={{ 
+          background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+          padding: '8px 12px'
+        }}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <div 
+              className="w-3 h-3 rounded-full flex-shrink-0 border border-white/30" 
+              style={{ backgroundColor: project.color || "#6366F1" }} 
+            />
+            <span 
+              className="text-sm font-medium text-white truncate"
+              style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+            >
+              {project.name}
+            </span>
           </div>
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-0.5 flex-shrink-0">
             <Button 
               size="icon" 
               variant="ghost" 
               onClick={onEdit}
+              className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
               data-testid={`button-edit-project-${project.id}`}
             >
-              <Pencil className="w-4 h-4" />
+              <Pencil className="w-3.5 h-3.5" />
             </Button>
             <Button 
               size="icon" 
               variant="ghost" 
               onClick={onDelete}
+              className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
               data-testid={`button-delete-project-${project.id}`}
             >
-              <Trash2 className="w-4 h-4 text-destructive" />
+              <Trash2 className="w-3.5 h-3.5" />
             </Button>
           </div>
         </div>
+      </div>
+      
+      {/* Body with backdrop blur */}
+      <div className="flex-1 p-3" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+        {project.description && (
+          <p className="text-xs text-white/80 mb-3 line-clamp-2">
+            {project.description}
+          </p>
+        )}
         
-        <div className="flex flex-wrap items-center gap-2 mt-2">
-          <Badge className={getStatusColor(project.status || "planning")}>
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <Badge className={`${getStatusColor(project.status || "planning")} text-xs`}>
             {getStatusIcon(project.status || "planning")}
             <span className="ml-1">{(project.status || "planning").replace("_", " ")}</span>
           </Badge>
-          <Badge className={getPriorityColor(project.priority || "medium")}>
+          <Badge className={`${getPriorityColor(project.priority || "medium")} text-xs`}>
             {(project.priority || "medium").toUpperCase()}
           </Badge>
           {project.courseName && (
             <Badge 
+              className="text-xs"
               style={{ 
                 backgroundColor: COURSE_COLORS[project.courseName] || "#6366F1",
                 color: "white"
@@ -348,26 +369,24 @@ function ProjectCard({
             </Badge>
           )}
         </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-3">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+
+        <div className="flex items-center gap-4 text-xs text-white/70 mb-3">
           {project.startDate && (
             <div className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />
+              <Calendar className="w-3 h-3" />
               <span>Start: {format(new Date(project.startDate), "MMM d")}</span>
             </div>
           )}
           {project.targetDate && (
             <div className="flex items-center gap-1">
-              <Target className="w-3.5 h-3.5" />
+              <Target className="w-3 h-3" />
               <span>Due: {format(new Date(project.targetDate), "MMM d")}</span>
             </div>
           )}
         </div>
 
-        <div className="space-y-1">
-          <div className="flex items-center justify-between text-sm">
+        <div className="space-y-1 mb-3">
+          <div className="flex items-center justify-between text-xs text-white/80">
             <span>Progress</span>
             <span className="font-medium">{completedTasks.length}/{tasks.length} tasks</span>
           </div>
@@ -378,42 +397,42 @@ function ProjectCard({
           variant="ghost" 
           size="sm" 
           onClick={onToggleExpand}
-          className="w-full justify-center gap-1"
+          className="w-full justify-center gap-1 text-white hover:text-white hover:bg-white/20 text-xs"
           data-testid={`button-toggle-tasks-${project.id}`}
         >
           {expanded ? (
             <>
-              <ChevronUp className="w-4 h-4" />
+              <ChevronUp className="w-3.5 h-3.5" />
               Hide Tasks
             </>
           ) : (
             <>
-              <ChevronDown className="w-4 h-4" />
+              <ChevronDown className="w-3.5 h-3.5" />
               Show Tasks ({tasks.length})
             </>
           )}
         </Button>
 
         {expanded && tasks.length > 0 && (
-          <div className="space-y-1 pt-2 border-t">
+          <div className="space-y-1 pt-2 mt-2 border-t border-white/30">
             {tasks.map((task) => (
               <div 
                 key={task.id}
-                className={`flex items-center gap-2 p-2 rounded-md text-sm ${
+                className={`flex items-center gap-2 p-2 rounded-md text-xs ${
                   task.isCompleted 
-                    ? "bg-green-50 dark:bg-green-900/20 line-through text-muted-foreground" 
-                    : "bg-muted/50"
+                    ? "bg-green-500/20 line-through text-white/60" 
+                    : "bg-white/20 text-white"
                 }`}
                 data-testid={`task-item-${task.id}`}
               >
                 {task.isCompleted ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-green-400 flex-shrink-0" />
                 ) : (
-                  <div className="w-4 h-4 rounded-full border-2 flex-shrink-0" />
+                  <div className="w-3.5 h-3.5 rounded-full border-2 border-white/50 flex-shrink-0" />
                 )}
                 <span className="flex-1 truncate">{task.title}</span>
                 {task.dueDate && (
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-[10px] text-white/60">
                     {format(new Date(task.dueDate), "MMM d")}
                   </span>
                 )}
@@ -421,8 +440,8 @@ function ProjectCard({
             ))}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
