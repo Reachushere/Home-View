@@ -6072,11 +6072,11 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle (CSS) - Same as side pill rotated 90deg */}
-      <div className="fixed pointer-events-none" style={{ top: '-271px', left: '50%', transform: 'translateX(-50%) translateX(-14px)', zIndex: 1 }}>
+      <div className="fixed pointer-events-none" style={{ top: '-270px', left: '50%', transform: 'translateX(-50%) translateX(-16px)', zIndex: 1 }}>
         <div 
           style={{ 
             width: '48px', 
-            height: '608px', 
+            height: '604px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '24px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
