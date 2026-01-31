@@ -872,6 +872,10 @@ export default function Dashboard() {
   };
   
   const [draggedBox, setDraggedBox] = useState<string | null>(null);
+  const [thisWeekBoxHeight, setThisWeekBoxHeight] = useState<number | null>(null);
+  const [isResizingThisWeek, setIsResizingThisWeek] = useState(false);
+  const thisWeekResizeStartY = useRef<number>(0);
+  const thisWeekResizeStartHeight = useRef<number>(0);
   
   // Save box order to localStorage
   useEffect(() => {
@@ -897,6 +901,37 @@ export default function Dashboard() {
   const handleBoxDragEnd = () => {
     setDraggedBox(null);
   };
+
+  // This Week box resize handlers
+  const handleThisWeekResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizingThisWeek(true);
+    thisWeekResizeStartY.current = e.clientY;
+    const section = (e.target as HTMLElement).closest('section');
+    thisWeekResizeStartHeight.current = section?.offsetHeight || 125;
+  };
+
+  useEffect(() => {
+    if (!isResizingThisWeek) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const deltaY = e.clientY - thisWeekResizeStartY.current;
+      const newHeight = Math.max(85, thisWeekResizeStartHeight.current + deltaY);
+      setThisWeekBoxHeight(newHeight);
+    };
+    
+    const handleMouseUp = () => {
+      setIsResizingThisWeek(false);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizingThisWeek]);
+
   const [profileData, setProfileData] = useState<{ firstName: string; lastName: string; birthdate: string; timezone: string; travelTimezone: string | null }>(() => {
     const saved = localStorage.getItem('profileData');
     return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
@@ -9685,7 +9720,8 @@ export default function Dashboard() {
               order: boxOrder.indexOf('this-week') + 1, 
               marginLeft: boxOrder.indexOf('this-week') === 0 ? '0px' : '0px', 
               marginRight: boxOrder.indexOf('this-week') === 2 ? '0px' : '0px',
-              paddingBottom: '5px'
+              paddingBottom: '5px',
+              ...(thisWeekBoxHeight ? { height: `${thisWeekBoxHeight}px`, flex: 'none' } : {})
             }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
@@ -9707,7 +9743,7 @@ export default function Dashboard() {
                 THIS WEEK ({dueThisWeekTasks.length})
               </h4>
             </div>
-            <div className="flex-1 p-3 pb-5 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+            <div className="flex-1 p-3 pb-5 flex flex-col overflow-auto" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueThisWeekTasks.length === 0 ? (
@@ -9724,6 +9760,14 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
+            </div>
+            {/* Resize handle */}
+            <div 
+              className="h-2 cursor-ns-resize flex items-center justify-center hover:bg-white/20 transition-colors"
+              onMouseDown={handleThisWeekResizeStart}
+              style={{ marginTop: '-2px' }}
+            >
+              <div className="w-8 h-1 rounded-full bg-white/40" />
             </div>
           </section>
 
