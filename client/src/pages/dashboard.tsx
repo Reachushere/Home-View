@@ -582,6 +582,10 @@ export default function Dashboard() {
       const isDateNav = target.closest('[data-date-nav]');
       if (isDateNav) return;
       
+      // Don't close if clicking resize handle
+      const isResizeHandle = target.closest('[data-resize-handle]');
+      if (isResizeHandle) return;
+      
       // Check if click is on modules button or course buttons
       if (modulesHoneycombOpen === 'modules') {
         const isModulesButton = target.closest('[data-modules-button]');
@@ -9786,6 +9790,7 @@ export default function Dashboard() {
               className="h-2 cursor-ns-resize flex items-center justify-center hover:bg-white/20 transition-colors"
               onMouseDown={handleThisWeekResizeStart}
               style={{ marginTop: '-2px' }}
+              data-resize-handle
             >
               <div className="w-8 h-1 rounded-full bg-white/40" />
             </div>
