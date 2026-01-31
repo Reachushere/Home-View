@@ -119,13 +119,13 @@ function ProjectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
+      <DialogContent className="max-w-lg text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white [&_input]:text-[11px] [&_select]:text-[11px] [&_textarea]:text-[11px]">
         <DialogHeader>
-          <DialogTitle className="text-white">{project ? "Edit Project" : "Create New Project"}</DialogTitle>
+          <DialogTitle className="text-white text-sm">{project ? "Edit Project" : "Create New Project"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-white">Project Name</label>
+            <label className="text-[11px] font-medium text-white">Project Name</label>
             <Input 
               data-testid="input-project-name"
               value={formData.name}
@@ -136,7 +136,7 @@ function ProjectDialog({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Description</label>
+            <label className="text-[11px] font-medium">Description</label>
             <Textarea 
               data-testid="input-project-description"
               value={formData.description}
@@ -148,7 +148,7 @@ function ProjectDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Color</label>
+              <label className="text-[11px] font-medium">Color</label>
               <div className="flex gap-2 items-center">
                 <input 
                   type="color"
@@ -166,7 +166,7 @@ function ProjectDialog({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Status</label>
+              <label className="text-[11px] font-medium">Status</label>
               <Select 
                 value={formData.status} 
                 onValueChange={(v) => setFormData({ ...formData, status: v })}
@@ -187,7 +187,7 @@ function ProjectDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Course (optional)</label>
+              <label className="text-[11px] font-medium">Course (optional)</label>
               <Select 
                 value={formData.courseName || "none"} 
                 onValueChange={(v) => setFormData({ ...formData, courseName: v === "none" ? "" : v })}
@@ -205,7 +205,7 @@ function ProjectDialog({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Priority</label>
+              <label className="text-[11px] font-medium">Priority</label>
               <Select 
                 value={formData.priority} 
                 onValueChange={(v) => setFormData({ ...formData, priority: v })}
@@ -226,7 +226,7 @@ function ProjectDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Start Date</label>
+              <label className="text-[11px] font-medium">Start Date</label>
               <Input 
                 type="date"
                 data-testid="input-project-start-date"
@@ -235,7 +235,7 @@ function ProjectDialog({
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Target Date</label>
+              <label className="text-[11px] font-medium">Target Date</label>
               <Input 
                 type="date"
                 data-testid="input-project-target-date"
@@ -246,7 +246,7 @@ function ProjectDialog({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Notes</label>
+            <label className="text-[11px] font-medium">Notes</label>
             <Textarea 
               data-testid="input-project-notes"
               value={formData.notes}
