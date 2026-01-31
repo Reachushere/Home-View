@@ -7996,7 +7996,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          <Card className="shadow-lg h-full border-[0.1px] border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
+          <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line - dashed */}
             <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundImage: 'repeating-linear-gradient(to bottom, black 0px, black 8px, transparent 8px, transparent 14px)' }} />
             
