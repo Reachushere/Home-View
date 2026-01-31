@@ -352,9 +352,9 @@ export default function Dashboard() {
   };
   const [draggedFile, setDraggedFile] = useState<{ url: string; name: string } | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [lastCompletedTaskId, setLastCompletedTaskId] = useState<number | null>(() => {
-    const saved = localStorage.getItem('lastCompletedTaskId');
-    return saved ? parseInt(saved) : null;
+  const [completedTaskHistory, setCompletedTaskHistory] = useState<number[]>(() => {
+    const saved = localStorage.getItem('completedTaskHistory');
+    return saved ? JSON.parse(saved) : [];
   });
   const celebrationAudioRef = useRef<HTMLAudioElement | null>(null);
   
@@ -2723,18 +2723,22 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
       if (variables.isCompleted) {
-        setLastCompletedTaskId(variables.id);
-        localStorage.setItem('lastCompletedTaskId', variables.id.toString());
+        setCompletedTaskHistory(prev => {
+          const newHistory = [variables.id, ...prev].slice(0, 10); // Keep max 10
+          localStorage.setItem('completedTaskHistory', JSON.stringify(newHistory));
+          return newHistory;
+        });
         setShowCelebration(true);
       }
     },
   });
 
   const handleUndoComplete = () => {
-    if (lastCompletedTaskId) {
-      completeMutation.mutate({ id: lastCompletedTaskId, isCompleted: false });
-      setLastCompletedTaskId(null);
-      localStorage.removeItem('lastCompletedTaskId');
+    if (completedTaskHistory.length > 0) {
+      const [taskToUndo, ...rest] = completedTaskHistory;
+      completeMutation.mutate({ id: taskToUndo, isCompleted: false });
+      setCompletedTaskHistory(rest);
+      localStorage.setItem('completedTaskHistory', JSON.stringify(rest));
     }
   };
 
@@ -3128,16 +3132,31 @@ export default function Dashboard() {
       }
     };
     updateCalendarTop();
-    window.addEventListener('resize', updateCalendarTop);
-    const observer = new ResizeObserver(updateCalendarTop);
+    // Use requestAnimationFrame for smoother updates during resize
+    let rafId: number;
+    const rafUpdateCalendarTop = () => {
+      rafId = requestAnimationFrame(() => {
+        updateCalendarTop();
+      });
+    };
+    window.addEventListener('resize', rafUpdateCalendarTop);
+    window.addEventListener('scroll', rafUpdateCalendarTop);
+    const observer = new ResizeObserver(rafUpdateCalendarTop);
     if (calendarWrapperRef.current) {
       observer.observe(calendarWrapperRef.current);
     }
+    // Also observe the parent container for height changes
+    const taskBoxesContainer = document.querySelector('[data-task-boxes-container]');
+    if (taskBoxesContainer) {
+      observer.observe(taskBoxesContainer);
+    }
     return () => {
-      window.removeEventListener('resize', updateCalendarTop);
+      window.removeEventListener('resize', rafUpdateCalendarTop);
+      window.removeEventListener('scroll', rafUpdateCalendarTop);
       observer.disconnect();
+      cancelAnimationFrame(rafId);
     };
-  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length]);
+  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, thisWeekBoxHeight, modulesHoneycombOpen]);
   
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
@@ -5789,15 +5808,15 @@ export default function Dashboard() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 transition-all duration-200 ${lastCompletedTaskId ? "" : "opacity-50"}`}
+              className={`!h-[39px] !w-[39px] !min-h-[39px] !min-w-[39px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 transition-all duration-200 ${completedTaskHistory.length > 0 ? "" : "opacity-50"}`}
               style={{ 
                 background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
               }}
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
-              disabled={!lastCompletedTaskId}
+              disabled={completedTaskHistory.length === 0}
               data-testid="button-undo-complete"
-              title={lastCompletedTaskId ? "Undo last completion" : "No task to undo"}
+              title={completedTaskHistory.length > 0 ? `Undo last completion (${completedTaskHistory.length} available)` : "No task to undo"}
             >
               <Undo2 className="h-[28px] w-[28px] text-white" />
             </Button>
