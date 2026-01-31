@@ -5862,7 +5862,7 @@ export default function Dashboard() {
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+              background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
               padding: '2px'
             }}
           >
