@@ -119,7 +119,7 @@ function ProjectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white [&_input]:text-[11px] [&_select]:text-[11px] [&_textarea]:text-[11px]">
+      <DialogContent className="max-w-lg text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_input]:text-black [&_input]:bg-white [&_select]:text-black [&_select]:bg-white [&_textarea]:text-black [&_textarea]:bg-white [&_input]:text-[11px] [&_select]:text-[11px] [&_textarea]:text-[11px]">
         <DialogHeader>
           <DialogTitle className="text-white text-sm">{project ? "Edit Project" : "Create New Project"}</DialogTitle>
         </DialogHeader>
