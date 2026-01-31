@@ -9826,18 +9826,18 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+                background: '#EAE4DE',
                 padding: '6px 12px'
               }}
             >
               <h4 
-                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                className="text-xs font-normal flex items-center gap-2 text-gray-700 cursor-grab" 
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('this-week')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <Calendar className="h-3 w-3 text-white" />
+                <Calendar className="h-3 w-3 text-gray-700" />
                 THIS WEEK ({dueThisWeekTasks.length})
               </h4>
             </div>
@@ -9878,18 +9878,18 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+                background: '#EAE4DE',
                 padding: '6px 12px'
               }}
             >
               <h4 
-                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                className="text-xs font-normal flex items-center gap-2 text-gray-700 cursor-grab" 
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('today')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <Calendar className="h-3 w-3 text-white" />
+                <Calendar className="h-3 w-3 text-gray-700" />
                 TODAY ({dueTodayTasks.length})
               </h4>
             </div>
@@ -9936,18 +9936,18 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+                background: '#EAE4DE',
                 padding: '6px 12px'
               }}
             >
               <h4 
-                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                className="text-xs font-normal flex items-center gap-2 text-gray-700 cursor-grab" 
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('tomorrow')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <Calendar className="h-3 w-3 text-white" />
+                <Calendar className="h-3 w-3 text-gray-700" />
                 TOMORROW ({dueTomorrowTasks.length})
               </h4>
             </div>
@@ -9998,18 +9998,18 @@ export default function Dashboard() {
             <div 
               className="flex items-center justify-between px-3 py-1.5"
               style={{ 
-                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
+                background: '#EAE4DE'
               }}
             >
               <h4 
-                className="text-xs font-normal text-white"
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+                className="text-xs font-normal text-gray-700"
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
               >
                 To Do
               </h4>
               <button 
                 onClick={() => setIsTodoFlyoutOpen(false)}
-                className="text-white hover:text-white/80 transition-colors"
+                className="text-gray-700 hover:text-gray-900 transition-colors"
                 data-testid="button-close-todo-flyout"
               >
                 <X className="h-4 w-4" />
