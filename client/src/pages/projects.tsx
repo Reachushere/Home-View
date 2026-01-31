@@ -759,33 +759,34 @@ export default function ProjectsPage() {
         backgroundAttachment: 'fixed'
       }}
     >
-      <header className="border-b sticky top-0 bg-background z-10">
+      <header className="border-b border-white/20 sticky top-0 z-10 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
               <Link href="/">
-                <Button variant="ghost" size="icon" data-testid="button-back-home">
+                <Button variant="ghost" size="icon" data-testid="button-back-home" className="text-white hover:text-white hover:bg-white/10">
                   <ArrowLeft className="w-5 h-5" />
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
+                <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
                   <FolderOpen className="w-6 h-6" />
                   Projects
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white/70">
                   {projects.length} projects, {allTasks.filter(t => t.projectId).length} tasks assigned
                 </p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
-              <div className="flex border rounded-md">
+              <div className="flex border border-white/20 rounded-md">
                 <Button 
                   variant={viewMode === "grid" ? "secondary" : "ghost"} 
                   size="sm"
                   onClick={() => setViewMode("grid")}
                   data-testid="button-view-grid"
+                  className="text-white hover:text-white hover:bg-white/10"
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </Button>
@@ -794,6 +795,7 @@ export default function ProjectsPage() {
                   size="sm"
                   onClick={() => setViewMode("list")}
                   data-testid="button-view-list"
+                  className="text-white hover:text-white hover:bg-white/10"
                 >
                   <LayoutList className="w-4 h-4" />
                 </Button>
@@ -802,14 +804,17 @@ export default function ProjectsPage() {
                   size="sm"
                   onClick={() => setViewMode("workflow")}
                   data-testid="button-view-workflow"
+                  className="text-white hover:text-white hover:bg-white/10"
                 >
                   <GitBranch className="w-4 h-4" />
                 </Button>
               </div>
               
               <Button 
+                variant="outline"
                 onClick={() => { setEditingProject(null); setDialogOpen(true); }}
                 data-testid="button-create-project"
+                className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 New Project
