@@ -101,7 +101,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
-import type { Task, SemesterSettings } from "@shared/schema";
+import type { Task, SemesterSettings, Subtask } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, isBefore } from "date-fns";
 
@@ -11998,12 +11998,217 @@ function TaskForm({
         </div>
       </div>
 
+      {/* Subtasks Section - Only show when editing existing task */}
+      {task && (
+        <SubtasksSection taskId={task.id} />
+      )}
+
       <div className="flex gap-2 pt-4">
         <Button type="submit" disabled={createMutation.isPending} className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8" style={{ fontSize: '11px' }} data-testid="button-submit-task">
           {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
         </Button>
       </div>
     </form>
+  );
+}
+
+// Subtasks Section Component
+function SubtasksSection({ taskId }: { taskId: number }) {
+  const [newSubtaskTitle, setNewSubtaskTitle] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+
+  // Fetch subtasks for this task
+  const { data: subtasks = [], isLoading } = useQuery<Subtask[]>({
+    queryKey: ["/api/tasks", taskId, "subtasks"],
+    queryFn: async () => {
+      const res = await fetch(`/api/tasks/${taskId}/subtasks`);
+      if (!res.ok) throw new Error("Failed to fetch subtasks");
+      return res.json();
+    },
+  });
+
+  // Create subtask mutation
+  const createSubtaskMutation = useMutation({
+    mutationFn: async (title: string) => {
+      const res = await fetch(`/api/tasks/${taskId}/subtasks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title }),
+      });
+      if (!res.ok) throw new Error("Failed to create subtask");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks", taskId, "subtasks"] });
+      setNewSubtaskTitle("");
+      setShowAddForm(false);
+    },
+  });
+
+  // Toggle subtask completion
+  const toggleSubtaskMutation = useMutation({
+    mutationFn: async ({ id, isCompleted }: { id: number; isCompleted: boolean }) => {
+      const res = await fetch(`/api/subtasks/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isCompleted }),
+      });
+      if (!res.ok) throw new Error("Failed to update subtask");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks", taskId, "subtasks"] });
+    },
+  });
+
+  // Delete subtask mutation
+  const deleteSubtaskMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/subtasks/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete subtask");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks", taskId, "subtasks"] });
+    },
+  });
+
+  const handleAddSubtask = () => {
+    if (newSubtaskTitle.trim()) {
+      createSubtaskMutation.mutate(newSubtaskTitle.trim());
+    }
+  };
+
+  const completedCount = subtasks.filter(s => s.isCompleted).length;
+  const totalCount = subtasks.length;
+
+  return (
+    <div className="border-t border-white/20 pt-4 mt-4">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <ListChecks className="h-4 w-4 text-white/70" />
+          <Label className="text-[11px] text-white">Subtasks</Label>
+          {totalCount > 0 && (
+            <span className="text-[10px] text-white/50">
+              ({completedCount}/{totalCount} done)
+            </span>
+          )}
+        </div>
+        {!showAddForm && (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => setShowAddForm(true)}
+            className="h-6 px-2 text-[10px] text-white/70 hover:text-white hover:bg-white/10"
+            data-testid="button-add-subtask"
+          >
+            <Plus className="h-3 w-3 mr-1" />
+            Add
+          </Button>
+        )}
+      </div>
+
+      {isLoading ? (
+        <div className="text-[10px] text-white/50">Loading subtasks...</div>
+      ) : (
+        <div className="space-y-1 max-h-40 overflow-y-auto">
+          {subtasks.map((subtask) => (
+            <div
+              key={subtask.id}
+              className="flex items-center gap-2 group p-1 rounded hover:bg-white/5"
+              data-testid={`subtask-item-${subtask.id}`}
+            >
+              <button
+                type="button"
+                onClick={() => toggleSubtaskMutation.mutate({ 
+                  id: subtask.id, 
+                  isCompleted: !subtask.isCompleted 
+                })}
+                className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${
+                  subtask.isCompleted 
+                    ? 'bg-green-500 border-green-500' 
+                    : 'border-white/40 hover:border-white/60'
+                }`}
+                data-testid={`button-toggle-subtask-${subtask.id}`}
+              >
+                {subtask.isCompleted && <Check className="h-3 w-3 text-white" />}
+              </button>
+              <span 
+                className={`flex-1 text-[11px] ${
+                  subtask.isCompleted ? 'text-white/40 line-through' : 'text-white/90'
+                }`}
+              >
+                {subtask.title}
+              </span>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={() => deleteSubtaskMutation.mutate(subtask.id)}
+                className="h-5 w-5 opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                data-testid={`button-delete-subtask-${subtask.id}`}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          ))}
+
+          {subtasks.length === 0 && !showAddForm && (
+            <div className="text-[10px] text-white/40 py-2">
+              No subtasks yet. Click "Add" to create one.
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Add subtask form */}
+      {showAddForm && (
+        <div className="flex gap-2 mt-2">
+          <input
+            type="text"
+            value={newSubtaskTitle}
+            onChange={(e) => setNewSubtaskTitle(e.target.value)}
+            placeholder="Subtask title..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleAddSubtask();
+              } else if (e.key === "Escape") {
+                setShowAddForm(false);
+                setNewSubtaskTitle("");
+              }
+            }}
+            autoFocus
+            className="flex h-7 flex-1 rounded-md border border-white/20 bg-white/10 px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/40 text-white placeholder:text-white/40"
+            style={{ fontSize: '11px' }}
+            data-testid="input-new-subtask"
+          />
+          <Button
+            type="button"
+            size="sm"
+            onClick={handleAddSubtask}
+            disabled={!newSubtaskTitle.trim() || createSubtaskMutation.isPending}
+            className="h-7 px-2 text-[10px] bg-green-600 hover:bg-green-500 text-white"
+            data-testid="button-save-subtask"
+          >
+            {createSubtaskMutation.isPending ? "..." : "Add"}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setShowAddForm(false);
+              setNewSubtaskTitle("");
+            }}
+            className="h-7 px-2 text-[10px] text-white/70 hover:text-white hover:bg-white/10"
+            data-testid="button-cancel-subtask"
+          >
+            Cancel
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
 
