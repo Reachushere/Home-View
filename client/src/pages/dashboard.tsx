@@ -4388,9 +4388,19 @@ export default function Dashboard() {
                       const files = e.target.files;
                       if (!files || files.length === 0) return;
                       
+                      // Require folder selection
+                      if (!uploadTargetFolder) {
+                        toast({ title: "Please select a folder first", variant: "destructive" });
+                        e.target.value = '';
+                        return;
+                      }
+                      
+                      let successCount = 0;
+                      let errorCount = 0;
+                      
                       for (const file of Array.from(files)) {
                         try {
-                          // Step 1: Request a presigned upload URL
+                          // Step 1: Request a presigned upload URL (with folder)
                           const requestRes = await fetch('/api/uploads/request-url', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -4398,6 +4408,7 @@ export default function Dashboard() {
                               name: file.name,
                               size: file.size,
                               contentType: file.type || 'application/octet-stream',
+                              folder: uploadTargetFolder,
                             }),
                           });
                           
@@ -4420,26 +4431,22 @@ export default function Dashboard() {
                             throw new Error('Failed to upload file');
                           }
                           
-                          // Step 3: Update the file with the target folder
-                          // Get the latest files to find the one we just uploaded
-                          const filesRes = await fetch('/api/files');
-                          const allFilesData = await filesRes.json();
-                          const uploadedFile = allFilesData.find((f: any) => f.originalName === file.name);
-                          
-                          if (uploadedFile && uploadTargetFolder) {
-                            await fetch(`/api/files/${uploadedFile.id}`, {
-                              method: 'PATCH',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ folder: uploadTargetFolder }),
-                            });
-                          }
-                          
-                          queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                          successCount++;
                         } catch (error) {
                           console.error('Upload error:', error);
+                          errorCount++;
                         }
                       }
                       
+                      // Show result toast
+                      if (successCount > 0) {
+                        toast({ title: `Uploaded ${successCount} file${successCount > 1 ? 's' : ''} to ${uploadTargetFolder}` });
+                      }
+                      if (errorCount > 0) {
+                        toast({ title: `Failed to upload ${errorCount} file${errorCount > 1 ? 's' : ''}`, variant: "destructive" });
+                      }
+                      
+                      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
                       e.target.value = '';
                       setIsUploadDialogOpen(false);
                     }}

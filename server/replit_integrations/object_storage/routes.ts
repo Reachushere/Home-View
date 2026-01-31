@@ -38,7 +38,7 @@ export function registerObjectStorageRoutes(app: Express): void {
    */
   app.post("/api/uploads/request-url", async (req, res) => {
     try {
-      const { name, size, contentType } = req.body;
+      const { name, size, contentType, folder } = req.body;
 
       if (!name) {
         return res.status(400).json({
@@ -51,20 +51,27 @@ export function registerObjectStorageRoutes(app: Express): void {
       // Extract object path from the presigned URL for later reference
       const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
 
-      // Save file metadata to database
-      await storage.createFile({
+      // Save file metadata to database (including folder if provided)
+      const fileData: any = {
         originalName: name,
         displayName: name,
         objectPath,
         contentType: contentType || "application/octet-stream",
         size: size || null,
-      });
+      };
+      
+      if (folder) {
+        fileData.folder = folder;
+      }
+      
+      const createdFile = await storage.createFile(fileData);
 
       res.json({
         uploadURL,
         objectPath,
+        fileId: createdFile?.id,
         // Echo back the metadata for client convenience
-        metadata: { name, size, contentType },
+        metadata: { name, size, contentType, folder },
       });
     } catch (error) {
       console.error("Error generating upload URL:", error);
