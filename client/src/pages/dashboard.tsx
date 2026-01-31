@@ -5862,14 +5862,14 @@ export default function Dashboard() {
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              background: 'linear-gradient(180deg, #FFDD63 0%, #FF6E3D 100%)',
+              background: 'linear-gradient(180deg, #FFDD63 0%, #FFAA50 50%, #FF6E3D 100%)',
               padding: '3px'
             }}
           >
             <div 
               className={`h-[38px] w-[38px] rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-200 ${completedTaskHistory.length > 0 ? "" : "opacity-50 pointer-events-none"}`}
               style={{ 
-                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFAA50 50%, #FFDD63 100%)',
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)'
               }}
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
