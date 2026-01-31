@@ -68,6 +68,7 @@ import {
   PlusCircle,
   Folder,
   FolderOpen,
+  FolderPlus,
   Trash2,
   Sun,
   Home,
@@ -4116,136 +4117,242 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Upload Files Dialog with Folder Management */}
+      {/* Upload Files Dialog - Windows Explorer Style */}
       <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-white">
-              <Upload className="h-5 w-5" />
-              Upload Files
-            </DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-4xl h-[70vh] p-0 overflow-hidden bg-[#1e1e1e] border border-[#3c3c3c] text-white shadow-2xl">
+          {/* Title Bar */}
+          <div className="flex items-center gap-2 px-3 py-2 bg-[#323232] border-b border-[#3c3c3c]">
+            <Upload className="h-4 w-4 text-blue-400" />
+            <span className="text-sm font-medium">Upload Files</span>
+          </div>
           
-          <div className="space-y-4">
-            {/* File Upload Area */}
-            <div className="border-2 border-dashed border-white/30 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-              <input 
-                type="file" 
-                id="file-upload" 
-                multiple 
-                accept=".pdf,.doc,.docx,.txt" 
-                className="hidden"
-                onChange={async (e) => {
-                  const files = e.target.files;
-                  if (!files || files.length === 0) return;
-                  
-                  for (const file of Array.from(files)) {
-                    try {
-                      const formData = new FormData();
-                      formData.append('file', file);
-                      formData.append('folder', uploadTargetFolder);
-                      
-                      await fetch('/api/files/upload', {
-                        method: 'POST',
-                        body: formData,
-                      });
-                      
-                      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                    } catch (error) {
-                      console.error('Upload error:', error);
-                    }
-                  }
-                  
-                  e.target.value = '';
-                  setIsUploadDialogOpen(false);
-                }}
-              />
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <Upload className="h-10 w-10 mx-auto mb-2 text-white/60" />
-                <p className="text-sm text-white/80">Click to upload or drag files here</p>
-                <p className="text-xs text-white/50 mt-1">PDF, DOC, DOCX, TXT files</p>
-              </label>
+          {/* Address Bar */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-[#252526] border-b border-[#3c3c3c]">
+            <div className="flex items-center gap-1 px-2 py-1 bg-[#3c3c3c] rounded text-xs flex-1">
+              <Folder className="h-3 w-3 text-yellow-500" />
+              <span className="text-white/80">{uploadTargetFolder || 'Select a folder...'}</span>
             </div>
-            
-            {/* Target Folder Selection */}
-            <div>
-              <Label className="text-sm mb-2 block">Upload to Folder:</Label>
-              <Select value={uploadTargetFolder} onValueChange={setUploadTargetFolder}>
-                <SelectTrigger className="w-full bg-black/30 border-white/20" data-testid="select-upload-folder">
-                  <SelectValue placeholder="Select folder" />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-900 border-white/20">
-                  {Array.from({ length: 13 }, (_, i) => i + 1).map(weekNum => (
-                    <div key={weekNum}>
-                      <SelectItem value={`week-${weekNum}-cppa122-reading`} className="text-green-400">
-                        <span className="flex items-center gap-2">
-                          <Folder className="h-3 w-3" />
-                          Week {weekNum} - CPPA122 Reading
-                        </span>
-                      </SelectItem>
-                      <SelectItem value={`week-${weekNum}-cppa122-module`} className="text-green-400">
-                        <span className="flex items-center gap-2">
-                          <Folder className="h-3 w-3" />
-                          Week {weekNum} - CPPA122 Module
-                        </span>
-                      </SelectItem>
-                      <SelectItem value={`week-${weekNum}-cfnf400-reading`} className="text-pink-400">
-                        <span className="flex items-center gap-2">
-                          <Folder className="h-3 w-3" />
-                          Week {weekNum} - CFNF400 Reading
-                        </span>
-                      </SelectItem>
-                      <SelectItem value={`week-${weekNum}-cfnf400-module`} className="text-pink-400">
-                        <span className="flex items-center gap-2">
-                          <Folder className="h-3 w-3" />
-                          Week {weekNum} - CFNF400 Module
-                        </span>
-                      </SelectItem>
-                      <SelectItem value={`week-${weekNum}-casl101-reading`} className="text-indigo-400">
-                        <span className="flex items-center gap-2">
-                          <Folder className="h-3 w-3" />
-                          Week {weekNum} - CASL101 Reading
-                        </span>
-                      </SelectItem>
-                      <SelectItem value={`week-${weekNum}-casl101-module`} className="text-indigo-400">
-                        <span className="flex items-center gap-2">
-                          <Folder className="h-3 w-3" />
-                          Week {weekNum} - CASL101 Module
-                        </span>
-                      </SelectItem>
+          </div>
+          
+          <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100% - 80px)' }}>
+            {/* Left Panel - Folder Tree */}
+            <div className="w-64 bg-[#252526] border-r border-[#3c3c3c] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+              <div className="p-2">
+                {/* Root folder */}
+                <div className="flex items-center gap-1 py-1 px-1 text-white/90 text-sm font-medium">
+                  <Folder className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                  <span>Course Files</span>
+                </div>
+                
+                {/* Week folders */}
+                {Array.from({ length: 13 }, (_, i) => i + 1).map(weekNum => {
+                  const weekId = `upload-week-${weekNum}`;
+                  const isWeekExpanded = flyoutExpandedFolders.has(weekId);
+                  
+                  return (
+                    <div key={weekNum} className="ml-2">
+                      {/* Week row */}
+                      <div 
+                        className="flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer"
+                        onClick={() => toggleFlyoutFolder(weekId)}
+                      >
+                        <div className="w-4 h-4 flex items-center justify-center">
+                          {isWeekExpanded ? (
+                            <ChevronDown className="h-3 w-3 text-white/60" />
+                          ) : (
+                            <ChevronRight className="h-3 w-3 text-white/60" />
+                          )}
+                        </div>
+                        {isWeekExpanded ? (
+                          <FolderOpen className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                        ) : (
+                          <Folder className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                        )}
+                        <span className="text-xs text-white/80">Week {weekNum}</span>
+                      </div>
+                      
+                      {/* Course folders inside week */}
+                      {isWeekExpanded && (
+                        <div className="ml-4">
+                          {/* CPPA122 */}
+                          {(() => {
+                            const courseId = `upload-week-${weekNum}-cppa122`;
+                            const isCourseExpanded = flyoutExpandedFolders.has(courseId);
+                            return (
+                              <div>
+                                <div 
+                                  className="flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer"
+                                  onClick={() => toggleFlyoutFolder(courseId)}
+                                >
+                                  <div className="w-4 h-4 flex items-center justify-center">
+                                    {isCourseExpanded ? (
+                                      <ChevronDown className="h-3 w-3 text-white/60" />
+                                    ) : (
+                                      <ChevronRight className="h-3 w-3 text-white/60" />
+                                    )}
+                                  </div>
+                                  {isCourseExpanded ? (
+                                    <FolderOpen className="h-4 w-4 text-green-500 fill-green-400" />
+                                  ) : (
+                                    <Folder className="h-4 w-4 text-green-500 fill-green-400" />
+                                  )}
+                                  <span className="text-xs text-green-400">CPPA122</span>
+                                </div>
+                                {isCourseExpanded && (
+                                  <div className="ml-4">
+                                    <div 
+                                      className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === `week-${weekNum}-cppa122-reading` ? 'bg-[#094771]' : ''}`}
+                                      onClick={() => setUploadTargetFolder(`week-${weekNum}-cppa122-reading`)}
+                                    >
+                                      <div className="w-4 h-4" />
+                                      <Folder className="h-4 w-4 text-green-500 fill-green-400" />
+                                      <span className="text-xs text-white/80">Reading</span>
+                                    </div>
+                                    <div 
+                                      className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === `week-${weekNum}-cppa122-module` ? 'bg-[#094771]' : ''}`}
+                                      onClick={() => setUploadTargetFolder(`week-${weekNum}-cppa122-module`)}
+                                    >
+                                      <div className="w-4 h-4" />
+                                      <Folder className="h-4 w-4 text-green-500 fill-green-400" />
+                                      <span className="text-xs text-white/80">Module</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                          
+                          {/* CFNF400 */}
+                          {(() => {
+                            const courseId = `upload-week-${weekNum}-cfnf400`;
+                            const isCourseExpanded = flyoutExpandedFolders.has(courseId);
+                            return (
+                              <div>
+                                <div 
+                                  className="flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer"
+                                  onClick={() => toggleFlyoutFolder(courseId)}
+                                >
+                                  <div className="w-4 h-4 flex items-center justify-center">
+                                    {isCourseExpanded ? (
+                                      <ChevronDown className="h-3 w-3 text-white/60" />
+                                    ) : (
+                                      <ChevronRight className="h-3 w-3 text-white/60" />
+                                    )}
+                                  </div>
+                                  {isCourseExpanded ? (
+                                    <FolderOpen className="h-4 w-4 text-pink-500 fill-pink-400" />
+                                  ) : (
+                                    <Folder className="h-4 w-4 text-pink-500 fill-pink-400" />
+                                  )}
+                                  <span className="text-xs text-pink-400">CFNF400</span>
+                                </div>
+                                {isCourseExpanded && (
+                                  <div className="ml-4">
+                                    <div 
+                                      className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === `week-${weekNum}-cfnf400-reading` ? 'bg-[#094771]' : ''}`}
+                                      onClick={() => setUploadTargetFolder(`week-${weekNum}-cfnf400-reading`)}
+                                    >
+                                      <div className="w-4 h-4" />
+                                      <Folder className="h-4 w-4 text-pink-500 fill-pink-400" />
+                                      <span className="text-xs text-white/80">Reading</span>
+                                    </div>
+                                    <div 
+                                      className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === `week-${weekNum}-cfnf400-module` ? 'bg-[#094771]' : ''}`}
+                                      onClick={() => setUploadTargetFolder(`week-${weekNum}-cfnf400-module`)}
+                                    >
+                                      <div className="w-4 h-4" />
+                                      <Folder className="h-4 w-4 text-pink-500 fill-pink-400" />
+                                      <span className="text-xs text-white/80">Module</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                          
+                          {/* CASL101 */}
+                          {(() => {
+                            const courseId = `upload-week-${weekNum}-casl101`;
+                            const isCourseExpanded = flyoutExpandedFolders.has(courseId);
+                            return (
+                              <div>
+                                <div 
+                                  className="flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer"
+                                  onClick={() => toggleFlyoutFolder(courseId)}
+                                >
+                                  <div className="w-4 h-4 flex items-center justify-center">
+                                    {isCourseExpanded ? (
+                                      <ChevronDown className="h-3 w-3 text-white/60" />
+                                    ) : (
+                                      <ChevronRight className="h-3 w-3 text-white/60" />
+                                    )}
+                                  </div>
+                                  {isCourseExpanded ? (
+                                    <FolderOpen className="h-4 w-4 text-indigo-500 fill-indigo-400" />
+                                  ) : (
+                                    <Folder className="h-4 w-4 text-indigo-500 fill-indigo-400" />
+                                  )}
+                                  <span className="text-xs text-indigo-400">CASL101</span>
+                                </div>
+                                {isCourseExpanded && (
+                                  <div className="ml-4">
+                                    <div 
+                                      className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === `week-${weekNum}-casl101-reading` ? 'bg-[#094771]' : ''}`}
+                                      onClick={() => setUploadTargetFolder(`week-${weekNum}-casl101-reading`)}
+                                    >
+                                      <div className="w-4 h-4" />
+                                      <Folder className="h-4 w-4 text-indigo-500 fill-indigo-400" />
+                                      <span className="text-xs text-white/80">Reading</span>
+                                    </div>
+                                    <div 
+                                      className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === `week-${weekNum}-casl101-module` ? 'bg-[#094771]' : ''}`}
+                                      onClick={() => setUploadTargetFolder(`week-${weekNum}-casl101-module`)}
+                                    >
+                                      <div className="w-4 h-4" />
+                                      <Folder className="h-4 w-4 text-indigo-500 fill-indigo-400" />
+                                      <span className="text-xs text-white/80">Module</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      )}
                     </div>
-                  ))}
-                </SelectContent>
-              </Select>
+                  );
+                })}
+              </div>
             </div>
             
-            {/* Create New Folder Section */}
-            <div className="border-t border-white/10 pt-4">
-              <div className="flex items-center justify-between mb-2">
-                <Label className="text-sm">Create New Folder:</Label>
+            {/* Right Panel - Upload Area */}
+            <div className="flex-1 bg-[#1e1e1e] flex flex-col">
+              {/* Toolbar */}
+              <div className="flex items-center gap-2 px-3 py-2 bg-[#252526] border-b border-[#3c3c3c]">
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-6 px-2 text-[10px] text-white/60 hover:text-white"
+                  className="h-7 px-3 text-xs text-white/80 hover:bg-[#3c3c3c] rounded"
                   onClick={() => setIsCreatingFolder(!isCreatingFolder)}
-                  data-testid="button-toggle-create-folder"
                 >
-                  {isCreatingFolder ? 'Cancel' : '+ New Folder'}
+                  <FolderPlus className="h-4 w-4 mr-1" />
+                  New Folder
                 </Button>
               </div>
               
+              {/* New Folder Input */}
               {isCreatingFolder && (
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2 px-3 py-2 bg-[#2d2d2d] border-b border-[#3c3c3c]">
                   <Input
-                    placeholder="Folder name (e.g., week-1-cppa122-notes)"
+                    placeholder="New folder name..."
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
-                    className="flex-1 bg-black/30 border-white/20"
+                    className="flex-1 h-7 text-xs bg-[#3c3c3c] border-[#5c5c5c] text-white"
                     data-testid="input-new-folder-name"
                   />
                   <Button
                     size="sm"
-                    className="bg-blue-600 hover:bg-blue-500"
+                    className="h-7 px-3 text-xs bg-blue-600 hover:bg-blue-500"
                     onClick={() => {
                       if (newFolderName.trim()) {
                         setUploadTargetFolder(newFolderName.trim().toLowerCase().replace(/\s+/g, '-'));
@@ -4257,8 +4364,67 @@ export default function Dashboard() {
                   >
                     Create
                   </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 px-2 text-xs text-white/60 hover:text-white"
+                    onClick={() => setIsCreatingFolder(false)}
+                  >
+                    Cancel
+                  </Button>
                 </div>
               )}
+              
+              {/* Upload Drop Zone */}
+              <div className="flex-1 flex items-center justify-center p-8">
+                <div className="w-full max-w-md border-2 border-dashed border-[#3c3c3c] rounded-lg p-8 text-center hover:border-blue-500 hover:bg-[#252526] transition-all cursor-pointer">
+                  <input 
+                    type="file" 
+                    id="file-upload" 
+                    multiple 
+                    accept=".pdf,.doc,.docx,.txt" 
+                    className="hidden"
+                    onChange={async (e) => {
+                      const files = e.target.files;
+                      if (!files || files.length === 0) return;
+                      
+                      for (const file of Array.from(files)) {
+                        try {
+                          const formData = new FormData();
+                          formData.append('file', file);
+                          formData.append('folder', uploadTargetFolder);
+                          
+                          await fetch('/api/files/upload', {
+                            method: 'POST',
+                            body: formData,
+                          });
+                          
+                          queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                        } catch (error) {
+                          console.error('Upload error:', error);
+                        }
+                      }
+                      
+                      e.target.value = '';
+                      setIsUploadDialogOpen(false);
+                    }}
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer block">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#3c3c3c] flex items-center justify-center">
+                      <Upload className="h-8 w-8 text-blue-400" />
+                    </div>
+                    <p className="text-base text-white/90 font-medium mb-1">Drop files here</p>
+                    <p className="text-sm text-white/60 mb-3">or click to browse</p>
+                    <p className="text-xs text-white/40">Supports: PDF, DOC, DOCX, TXT</p>
+                  </label>
+                </div>
+              </div>
+              
+              {/* Status Bar */}
+              <div className="flex items-center justify-between px-3 py-1.5 bg-[#007acc] text-white text-xs">
+                <span>{uploadTargetFolder ? `Uploading to: ${uploadTargetFolder}` : 'Select a folder from the tree'}</span>
+                <span>13 weeks available</span>
+              </div>
             </div>
           </div>
         </DialogContent>
