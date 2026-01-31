@@ -171,7 +171,7 @@ function ProjectDialog({
                 value={formData.status} 
                 onValueChange={(v) => setFormData({ ...formData, status: v })}
               >
-                <SelectTrigger data-testid="select-project-status">
+                <SelectTrigger data-testid="select-project-status" className="bg-white text-black [&>span]:text-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -192,7 +192,7 @@ function ProjectDialog({
                 value={formData.courseName || "none"} 
                 onValueChange={(v) => setFormData({ ...formData, courseName: v === "none" ? "" : v })}
               >
-                <SelectTrigger data-testid="select-project-course">
+                <SelectTrigger data-testid="select-project-course" className="bg-white text-black [&>span]:text-black">
                   <SelectValue placeholder="Select course" />
                 </SelectTrigger>
                 <SelectContent>
@@ -210,7 +210,7 @@ function ProjectDialog({
                 value={formData.priority} 
                 onValueChange={(v) => setFormData({ ...formData, priority: v })}
               >
-                <SelectTrigger data-testid="select-project-priority">
+                <SelectTrigger data-testid="select-project-priority" className="bg-white text-black [&>span]:text-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
