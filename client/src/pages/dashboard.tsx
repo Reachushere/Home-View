@@ -10273,7 +10273,7 @@ export default function Dashboard() {
                               </div>
 
                               <div className="mt-auto space-y-1 mb-3">
-                                <div className="flex items-center justify-between text-xs text-white/70">
+                                <div className="flex items-center justify-between text-[10px] text-white/70">
                                   <span>Progress</span>
                                   <span className="font-medium">{completedTasks.length}/{projectTasks.length} tasks</span>
                                 </div>
