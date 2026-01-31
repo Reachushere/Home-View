@@ -8700,13 +8700,7 @@ export default function Dashboard() {
                 <span className="text-xs font-medium">All Files</span>
                 <Button
                   size="sm"
-                  variant="ghost"
-                  className="ml-auto h-7 px-3 text-[11px] font-medium text-white rounded-full hover:opacity-90 transition-all duration-200"
-                  style={{
-                    background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
-                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-                    border: '1px solid rgba(69,120,176,0.5)'
-                  }}
+                  className="ml-auto h-7 px-3 text-[11px] font-medium bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 rounded-md transition-all duration-200"
                   onClick={() => setIsUploadDialogOpen(true)}
                   data-testid="button-upload-file"
                 >
