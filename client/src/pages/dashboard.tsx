@@ -9737,11 +9737,11 @@ export default function Dashboard() {
                     {task.title}
                   </button>
                   {/* Course code column - left aligned, white */}
-                  <div className="text-[10px] text-white font-normal whitespace-nowrap" style={{ marginLeft: '-12px' }}>
+                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap" style={{ marginLeft: '-12px' }}>
                     {courseCode}
                   </div>
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white font-normal whitespace-nowrap truncate" style={{ maxWidth: '150px', marginLeft: '-14px' }}>
+                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate" style={{ maxWidth: '150px', marginLeft: '-14px' }}>
                     {courseFullName}
                   </div>
                   {/* Paperclip for attachments */}
