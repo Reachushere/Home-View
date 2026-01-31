@@ -95,6 +95,7 @@ All arrows connecting task boxes to calendar follow these exact specifications:
   - Opaque dasharray: `"5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,3,5,0,0,99999"`
 - Uses unique `data-today-checkbox` attribute on Today box checkboxes for precise targeting
 
+- **OpenAI TTS**: Server-side text-to-speech using OpenAI's gpt-audio model for devices without browser speechSynthesis (Fire tablets). Endpoint at `/api/tts` accepts text and voice parameters (alloy, echo, fable, onyx, nova, shimmer). Audio plays through device speakers or Bluetooth-paired Echo.
 - **File Attachments**: Upload files directly to Replit object storage or paste URLs
 - **File Management**: Dedicated /files page for viewing, renaming, and assigning files to tasks
 - **Course Color Coding**: CPPA122 (green), CFNF400 (pink), CASL101 (indigo)

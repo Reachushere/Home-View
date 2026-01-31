@@ -300,3 +300,6 @@ export function getWeekDates(weekNum: number, customSemesterStart?: Date): { sta
   weekEnd.setHours(23, 59, 59, 999);
   return { start: weekStart, end: weekEnd };
 }
+
+// Export chat models for AI integrations
+export * from "./models/chat";

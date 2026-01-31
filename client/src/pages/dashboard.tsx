@@ -1664,6 +1664,77 @@ export default function Dashboard() {
   const currentChunkIndexRef = useRef(0);
   const shouldContinueRef = useRef(false);
   
+  // OpenAI TTS for Fire tablets (no browser speechSynthesis)
+  const openaiAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [isOpenAiTtsAvailable] = useState(() => !window.speechSynthesis);
+  const [openaiVoice, setOpenaiVoice] = useState<"alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer">("nova");
+  
+  // Play text using OpenAI TTS (for Fire tablets and other devices without browser TTS)
+  const playWithOpenAiTts = async (text: string, voice: typeof openaiVoice = openaiVoice) => {
+    try {
+      // Stop any existing audio
+      if (openaiAudioRef.current) {
+        openaiAudioRef.current.pause();
+        openaiAudioRef.current = null;
+      }
+      
+      toast({ title: "Generating speech..." });
+      
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, voice }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('TTS generation failed');
+      }
+      
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      openaiAudioRef.current = audio;
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        setIsPlaying(false);
+        // Play next chunk if available
+        if (shouldContinueRef.current && currentChunkIndexRef.current < ttsChunksRef.current.length - 1) {
+          currentChunkIndexRef.current++;
+          setCurrentChunkIndex(currentChunkIndexRef.current);
+          const nextChunk = ttsChunksRef.current[currentChunkIndexRef.current];
+          if (nextChunk) {
+            playWithOpenAiTts(nextChunk, voice);
+          }
+        }
+      };
+      
+      audio.onerror = () => {
+        URL.revokeObjectURL(audioUrl);
+        setIsPlaying(false);
+        toast({ title: "Audio playback failed", variant: "destructive" });
+      };
+      
+      setIsPlaying(true);
+      await audio.play();
+      
+    } catch (error) {
+      console.error('OpenAI TTS error:', error);
+      toast({ title: "Failed to generate speech", variant: "destructive" });
+      setIsPlaying(false);
+    }
+  };
+  
+  // Stop OpenAI TTS playback
+  const stopOpenAiTts = () => {
+    if (openaiAudioRef.current) {
+      openaiAudioRef.current.pause();
+      openaiAudioRef.current = null;
+    }
+    shouldContinueRef.current = false;
+    setIsPlaying(false);
+  };
+  
   // Save/load TTS progress for each file
   const getTtsProgress = (fileId: number): { chunkIndex: number; wordIndex: number } | null => {
     try {
@@ -2151,14 +2222,13 @@ export default function Dashboard() {
 
   // Play from a specific chunk index
   const playFromChunk = async (chunkIndex: number) => {
-    if (!window.speechSynthesis) {
-      toast({ title: "Browser TTS not available on this device", variant: "destructive" });
-      return;
-    }
+    const useBrowserTts = !!window.speechSynthesis;
     
-    // Auto-switch to browser TTS for chunk playback
-    if (previewSpeaker !== "browser_tts") {
+    // Auto-switch to appropriate TTS mode
+    if (useBrowserTts && previewSpeaker !== "browser_tts") {
       setPreviewSpeaker("browser_tts");
+    } else if (!useBrowserTts && previewSpeaker !== "openai_tts") {
+      setPreviewSpeaker("openai_tts");
     }
     
     // Make sure we have chunks
@@ -2222,22 +2292,13 @@ export default function Dashboard() {
     }
     
     // Cancel any current speech
-    window.speechSynthesis.cancel();
+    if (useBrowserTts) {
+      window.speechSynthesis.cancel();
+    } else {
+      stopOpenAiTts();
+    }
     shouldContinueRef.current = false;
     await new Promise(r => setTimeout(r, 100));
-    
-    // Wait for voices
-    const voices = await waitForVoices();
-    if (voices.length === 0) {
-      toast({ title: "No TTS voices found", variant: "destructive" });
-      return;
-    }
-    
-    // Calculate word offset for highlighting
-    let wordOffset = 0;
-    for (let i = 0; i < chunkIndex; i++) {
-      wordOffset += chunks[i].split(/\s+/).length;
-    }
     
     // Start playing from this chunk
     setCurrentChunkIndex(chunkIndex);
@@ -2247,35 +2308,49 @@ export default function Dashboard() {
     isPlayingRef.current = true;
     
     toast({ title: `Playing from section ${chunkIndex + 1} of ${chunks.length}` });
-    speakChunk(chunkIndex, chunks, voices, wordOffset);
+    
+    if (useBrowserTts) {
+      // Wait for voices
+      const voices = await waitForVoices();
+      if (voices.length === 0) {
+        toast({ title: "No TTS voices found", variant: "destructive" });
+        return;
+      }
+      
+      // Calculate word offset for highlighting
+      let wordOffset = 0;
+      for (let i = 0; i < chunkIndex; i++) {
+        wordOffset += chunks[i].split(/\s+/).length;
+      }
+      
+      speakChunk(chunkIndex, chunks, voices, wordOffset);
+    } else {
+      // Use OpenAI TTS for Fire tablets and devices without browser TTS
+      const chunk = chunks[chunkIndex];
+      await playWithOpenAiTts(chunk, openaiVoice);
+    }
   };
 
   const handlePlayFile = async (fileUrl: string, fileName: string, resumeFromProgress: boolean = false) => {
     try {
+      // Check TTS availability
+      const useBrowserTts = !!window.speechSynthesis;
+      
       // Check if using browser TTS only
-      if (previewSpeaker === "browser_tts") {
-        if (!window.speechSynthesis) {
-          toast({ title: "Browser TTS not available on this device", variant: "destructive" });
-          return;
-        }
+      if (previewSpeaker === "browser_tts" || previewSpeaker === "openai_tts") {
         if (!previewText) {
           toast({ title: "No text content available", variant: "destructive" });
           return;
         }
         
         // Cancel any existing speech
-        window.speechSynthesis.cancel();
+        if (useBrowserTts) {
+          window.speechSynthesis.cancel();
+        } else {
+          stopOpenAiTts();
+        }
         shouldContinueRef.current = false;
         await new Promise(r => setTimeout(r, 100));
-        
-        // Wait for voices to load
-        const voices = await waitForVoices();
-        console.log("Available voices:", voices.length);
-        
-        if (voices.length === 0) {
-          toast({ title: "No TTS voices found. Make sure Chrome has TTS enabled.", variant: "destructive" });
-          return;
-        }
         
         // Detect and skip title pages (short pages with publication info like JSTOR, author, published, etc.)
         let textForTts = previewText;
@@ -2349,7 +2424,22 @@ export default function Dashboard() {
         toast({ title: `Reading: ${fileName} (${chunks.length} sections)` });
         
         // Start speaking from the appropriate chunk
-        speakChunk(startChunk, chunks, voices, startWordOffset);
+        if (useBrowserTts) {
+          // Wait for voices to load
+          const voices = await waitForVoices();
+          console.log("Available voices:", voices.length);
+          
+          if (voices.length === 0) {
+            toast({ title: "No TTS voices found. Make sure Chrome has TTS enabled.", variant: "destructive" });
+            setIsPlaying(false);
+            return;
+          }
+          speakChunk(startChunk, chunks, voices, startWordOffset);
+        } else {
+          // Use OpenAI TTS for Fire tablets and devices without browser TTS
+          const chunk = chunks[startChunk];
+          await playWithOpenAiTts(chunk, openaiVoice);
+        }
         return;
       }
       
@@ -2388,6 +2478,18 @@ export default function Dashboard() {
         
         setIsPlaying(false);
         isPlayingRef.current = false;
+        return;
+      }
+      
+      // Stop OpenAI TTS if active
+      if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
+        stopOpenAiTts();
+        
+        // Save progress so user can resume later
+        if (previewFile && currentChunkIndexRef.current > 0) {
+          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex);
+          toast({ title: `Paused at section ${currentChunkIndexRef.current + 1} of ${totalChunks}. Progress saved.` });
+        }
         return;
       }
       

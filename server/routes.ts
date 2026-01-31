@@ -9,6 +9,7 @@ import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
+import { textToSpeech } from "./replit_integrations/audio/client";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -1822,6 +1823,45 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error deleting task link:", err);
       res.status(500).json({ message: "Failed to delete task link" });
+    }
+  });
+
+  // ============================================
+  // TEXT-TO-SPEECH ROUTES (OpenAI TTS for Fire tablets)
+  // ============================================
+
+  // POST /api/tts - Generate speech from text using OpenAI
+  app.post("/api/tts", async (req, res) => {
+    try {
+      const { text, voice = "alloy" } = req.body;
+      
+      if (!text || typeof text !== "string") {
+        return res.status(400).json({ message: "Text is required" });
+      }
+      
+      // Validate voice parameter
+      const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
+      const selectedVoice = validVoices.includes(voice) ? voice : "alloy";
+      
+      // Limit text length to avoid excessive API costs
+      const trimmedText = text.slice(0, 4096);
+      
+      console.log(`TTS request: ${trimmedText.length} chars, voice: ${selectedVoice}`);
+      
+      const audioBuffer = await textToSpeech(
+        trimmedText,
+        selectedVoice as "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer",
+        "mp3"
+      );
+      
+      res.set({
+        "Content-Type": "audio/mpeg",
+        "Content-Length": audioBuffer.length.toString(),
+      });
+      res.send(audioBuffer);
+    } catch (err) {
+      console.error("Error generating TTS:", err);
+      res.status(500).json({ message: "Failed to generate speech" });
     }
   });
 
