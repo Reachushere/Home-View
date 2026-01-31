@@ -10070,20 +10070,14 @@ export default function Dashboard() {
             >
               {/* Header */}
               <div 
-                className="flex items-center justify-between px-6 py-4"
-                style={{ 
-                  background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
-                }}
+                className="flex items-center justify-between px-6 py-3 bg-black/30 border-b border-white/20"
               >
                 <div className="flex items-center gap-3">
-                  <FolderOpen className="h-6 w-6 text-white" />
-                  <h2 
-                    className="text-xl font-bold text-white"
-                    style={{ textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
-                  >
+                  <FolderOpen className="h-5 w-5 text-white" />
+                  <h2 className="text-lg font-bold text-white">
                     Projects
                   </h2>
-                  <span className="text-sm text-white/80">
+                  <span className="text-sm text-white/70">
                     {allProjects.length} projects, {allTasks.filter(t => t.projectId).length} tasks assigned
                   </span>
                 </div>
