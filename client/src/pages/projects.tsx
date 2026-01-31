@@ -783,9 +783,24 @@ export default function ProjectsPage() {
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
               <Link href="/">
-                <Button variant="ghost" size="icon" data-testid="button-back-home" className="text-white hover:text-white hover:bg-white/10">
-                  <ArrowLeft className="w-5 h-5" />
-                </Button>
+                <div 
+                  style={{ 
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
+                    padding: '1px',
+                    cursor: 'pointer'
+                  }}
+                  data-testid="button-back-home"
+                >
+                  <Button variant="ghost" size="icon" className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200" style={{ 
+                    background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
+                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)'
+                  }}>
+                    <ArrowLeft className="w-5 h-5 text-white" />
+                  </Button>
+                </div>
               </Link>
               <div>
                 <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
