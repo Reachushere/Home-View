@@ -4807,9 +4807,19 @@ export default function Dashboard() {
             {/* Date display with arrows */}
             <div className="flex items-center justify-center gap-1">
               {/* Left arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week" data-date-nav>
+              <div 
+                className="h-6 w-6 rounded-full relative cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center" 
+                style={{ 
+                  top: '-8px',
+                  background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+                }} 
+                onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} 
+                data-testid="button-prev-week" 
+                data-date-nav
+              >
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
+              </div>
               {/* Date display */}
               <div className="flex items-center justify-center gap-1 whitespace-nowrap relative" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px', top: '3px' }}>
                 <span className="text-[12px] font-medium text-white">{format(weekStartDate, "MMMM d")}</span>
@@ -4817,9 +4827,19 @@ export default function Dashboard() {
                 <span className="text-[12px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
               </div>
               {/* Right arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week" data-date-nav>
+              <div 
+                className="h-6 w-6 rounded-full relative cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center" 
+                style={{ 
+                  top: '-8px',
+                  background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
+                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+                }} 
+                onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} 
+                data-testid="button-next-week" 
+                data-date-nav
+              >
                 <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
+              </div>
             </div>
           </div>
         </div>
