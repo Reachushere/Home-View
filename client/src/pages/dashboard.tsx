@@ -9687,7 +9687,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 8px 6px 48px 8px 1fr 14px 60px 90px auto', gap: '4px', alignItems: 'center' }}>
+                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 6px 8px 6px 48px 8px 1fr 10px 60px 90px 14px auto', gap: '4px', alignItems: 'center' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9703,6 +9703,8 @@ export default function Dashboard() {
                   ) : (
                     <div className="h-3.5 w-3.5" />
                   )}
+                  {/* Spacer between checkbox and urgency */}
+                  <div />
                   {/* Urgency dot column - small circle */}
                   <div 
                     className="rounded-full flex-shrink-0"
@@ -9716,12 +9718,12 @@ export default function Dashboard() {
                   />
                   {/* Spacer between urgency and progress */}
                   <div />
-                  {/* Progress oval column - thin bar */}
+                  {/* Progress oval column - thinner bar */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
                     style={{ 
                       width: '48px', 
-                      height: '6px', 
+                      height: '4px', 
                       backgroundColor: progressColor,
                       opacity: 0.7
                     }}
@@ -9737,12 +9739,8 @@ export default function Dashboard() {
                   >
                     {task.title}
                   </button>
-                  {/* Paperclip for attachments */}
-                  {attachments.length > 0 ? (
-                    <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
-                  ) : (
-                    <div className="w-3" />
-                  )}
+                  {/* 10px spacer between task name and course code */}
+                  <div />
                   {/* Course code column - left aligned, white */}
                   <span className="text-[10px] text-white whitespace-nowrap text-left">
                     {courseCode}
@@ -9751,6 +9749,12 @@ export default function Dashboard() {
                   <span className="text-[10px] text-white whitespace-nowrap truncate text-left">
                     {courseFullName}
                   </span>
+                  {/* Paperclip for attachments */}
+                  {attachments.length > 0 ? (
+                    <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
+                  ) : (
+                    <div className="w-3" />
+                  )}
                   {/* Due date and days column - combined */}
                   <div className="flex items-center gap-1 whitespace-nowrap">
                     <span className="text-[10px] text-white">
