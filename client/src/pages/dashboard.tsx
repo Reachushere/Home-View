@@ -7138,13 +7138,13 @@ export default function Dashboard() {
       <div 
         className="absolute z-50 pointer-events-auto"
         style={{ 
-          width: '44px', 
-          height: '44px', 
+          width: '43px', 
+          height: '43px', 
           top: '484px', 
           right: '19px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px'
+          padding: '0.5px'
         }}
         onMouseEnter={() => setDecorativeHoneycombHover('middle')}
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
@@ -7225,13 +7225,13 @@ export default function Dashboard() {
       <div 
         className="absolute z-50 pointer-events-auto"
         style={{ 
-          width: '44px', 
-          height: '44px', 
+          width: '43px', 
+          height: '43px', 
           top: '535px', 
           right: '19px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px'
+          padding: '0.5px'
         }}
         data-testid="honeycomb-todo-main"
       >
@@ -7250,13 +7250,13 @@ export default function Dashboard() {
       <div 
         className="absolute z-[60] pointer-events-auto"
         style={{ 
-          width: '44px', 
-          height: '44px', 
+          width: '43px', 
+          height: '43px', 
           top: '586px', 
           right: '19px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px'
+          padding: '0.5px'
         }}
         data-testid="honeycomb-arrows-toggle"
       >
