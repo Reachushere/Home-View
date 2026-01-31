@@ -1000,6 +1000,41 @@ export default function Dashboard() {
     return course?.color || '#6b7280';
   };
   
+  // Helper function to convert hex to RGB
+  const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : { r: 107, g: 114, b: 128 }; // gray fallback
+  };
+  
+  // Dynamic course colors based on coursesData
+  const dynamicCourseColors = useMemo(() => {
+    const colors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string; hex: string }> = {};
+    
+    coursesData.courses.forEach(course => {
+      if (!course.name) return;
+      const courseCode = course.name.split(' - ')[0].toUpperCase();
+      const hex = course.color;
+      const rgb = hexToRgb(hex);
+      
+      colors[courseCode] = {
+        hex,
+        bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
+        border: hex,
+        text: hex,
+        dot: hex,
+        prepBg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`,
+        prepBorder: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.4)`,
+        prepText: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.8)`
+      };
+    });
+    
+    return colors;
+  }, [coursesData]);
+  
   // Common timezones
   const timezones = [
     // North America
@@ -4595,11 +4630,20 @@ export default function Dashboard() {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
             const folderParts = previewFile?.folder?.split('-') || [];
             const courseCodeFromFolder = folderParts.length >= 3 ? folderParts[2]?.toUpperCase() : null;
-            const colors = courseCodeFromFolder ? courseColors[courseCodeFromFolder] : null;
+            const colors = courseCodeFromFolder ? dynamicCourseColors[courseCodeFromFolder] : null;
             
             return (
-              <DialogHeader className={`px-6 py-4 ${colors ? `${colors.bg} ${colors.border} border-b` : 'border-b'}`}>
-                <DialogTitle className={`flex items-center gap-2 text-sm ${colors ? colors.text : ''}`}>
+              <DialogHeader 
+                className="px-6 py-4 border-b"
+                style={{ 
+                  backgroundColor: colors?.bg || undefined,
+                  borderColor: colors?.border || undefined
+                }}
+              >
+                <DialogTitle 
+                  className="flex items-center gap-2 text-sm"
+                  style={{ color: colors?.text || undefined }}
+                >
                   <FileText className="h-4 w-4" />
                   {previewFile?.displayName || previewFile?.originalName}
                 </DialogTitle>
@@ -7975,13 +8019,11 @@ export default function Dashboard() {
                     {/* All-day tasks - simple rendering, no prep days here */}
                     {allDayTasks.map(task => {
                       const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                      const colors = courseColors[courseCode];
+                      const colors = dynamicCourseColors[courseCode];
                       const today = startOfDay(new Date());
                       const tomorrow = addDays(today, 1);
                       const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                       const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                      const borderClass = task.isCompleted ? "border-gray-300" : colors ? colors.border : "border-gray-400";
-                      
                       return (
                         <div
                           key={task.id}
@@ -7991,13 +8033,11 @@ export default function Dashboard() {
                           <div
                             className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 ${
                               isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                            } ${
-                              task.isCompleted 
-                                ? "bg-gray-200 text-gray-400 border-gray-300" 
-                                : colors 
-                                  ? `${colors.bg} text-black ${borderClass}` 
-                                  : "bg-gray-200 text-black border-gray-400"
-                            }`}
+                            } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            style={{
+                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
+                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                            }}
                           >
                             {!isCASL101Task(task) && (
                               <Checkbox
@@ -8045,11 +8085,15 @@ export default function Dashboard() {
                           
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
               <div data-testid="course-rows-container">
-              {[
-                { name: 'CPPA122', bg: 'rgba(134, 239, 172, 0.20)', label: 'rgb(74, 222, 128)', colors: courseColors['CPPA122'] },
-                { name: 'CFNF400', bg: 'rgba(249, 168, 212, 0.25)', label: 'rgb(244, 114, 182)', colors: courseColors['CFNF400'] },
-                { name: 'CASL101', bg: 'rgba(165, 180, 252, 0.25)', label: 'rgb(129, 140, 248)', colors: courseColors['CASL101'] }
-              ].map((course, courseIdx) => {
+              {coursesData.courses.filter(c => c.name).slice(0, 3).map((courseData, courseIdx) => {
+                const courseName = courseData.name.split(' - ')[0].toUpperCase();
+                const rgb = hexToRgb(courseData.color);
+                const course = { 
+                  name: courseName, 
+                  bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.20)`, 
+                  label: courseData.color, 
+                  colors: dynamicCourseColors[courseName] 
+                };
                 // Get full-week tasks for this course (tasks that span from visible start to Friday)
                 // Exclude completed tasks so they are removed from view
                 const fullWeekTasks = weekPlanningTasks.filter(task => {
@@ -8100,9 +8144,6 @@ export default function Dashboard() {
                         const isWednesdayOrLater = currentDayOfWeek >= 3 && currentDayOfWeek <= 5;
                         const shouldBlink = !task.isCompleted && isWednesdayOrLater;
                         
-                        const moduleBg = task.isCompleted ? "bg-gray-200 text-gray-400" : course.colors ? `${course.colors.bg} text-black` : "bg-gray-200 text-black";
-                        const moduleBorder = task.isCompleted ? "border-gray-300" : course.colors ? course.colors.border : "border-gray-400";
-                        
                         // Render ONE row with BOTH static MODULE task AND dynamic task on same line
                         return (
                           <div 
@@ -8121,7 +8162,11 @@ export default function Dashboard() {
                             {/* Static MODULE column task - always visible */}
                             <div style={{ backgroundColor: course.bg }}>
                               <div 
-                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 ${moduleBg} border ${moduleBorder}`}
+                                className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 border ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                                style={{
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (course.colors?.bg || '#e5e7eb'),
+                                  borderColor: task.isCompleted ? '#d1d5db' : (course.colors?.border || '#9ca3af')
+                                }}
                                 data-testid={`course-module-task-static-${task.id}`}
                               >
                                 <Checkbox
@@ -8192,10 +8237,15 @@ export default function Dashboard() {
                                 return (
                                   <div key={dayIdx} className="flex items-center" style={{ backgroundColor: course.bg }}>
                                     <div 
-                                      className={`flex-1 flex items-center gap-1 text-[8px] px-1 ml-0.5 ${isFriday ? 'mr-0.5' : ''} ${moduleBg} ${todayBorderClass} ${
+                                      className={`flex-1 flex items-center gap-1 text-[8px] px-1 ml-0.5 ${isFriday ? 'mr-0.5' : ''} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
-                                      }`}
-                                      style={{ height: 'calc(100% - 4px)', marginTop: '2px', marginBottom: '2px' }}
+                                      } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                                      style={{ 
+                                        height: 'calc(100% - 4px)', 
+                                        marginTop: '2px', 
+                                        marginBottom: '2px',
+                                        backgroundColor: task.isCompleted ? '#e5e7eb' : (course.colors?.bg || '#e5e7eb')
+                                      }}
                                       data-testid={`course-fullweek-task-today-${task.id}`}
                                     >
                                       <Checkbox
@@ -8422,7 +8472,7 @@ export default function Dashboard() {
                             return true;
                           }).map((task, taskIdx) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                            const colors = courseColors[courseCode];
+                            const colors = dynamicCourseColors[courseCode];
                             const today = startOfDay(new Date());
                             const tomorrow = addDays(today, 1);
                             const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
@@ -8482,7 +8532,7 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing border ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -8492,12 +8542,6 @@ export default function Dashboard() {
                                   hasPrepDays && prepDaysCount > 0
                                     ? "rounded-r rounded-bl overflow-visible" 
                                     : "rounded overflow-hidden"
-                                } ${
-                                  task.isCompleted 
-                                    ? "bg-gray-200 border border-gray-300" 
-                                    : colors 
-                                      ? `${colors.bg} border ${colors.border}` 
-                                      : "bg-gray-200 border border-gray-400"
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -8505,7 +8549,9 @@ export default function Dashboard() {
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
-                                  borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
+                                  borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
+                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -8584,7 +8630,7 @@ export default function Dashboard() {
                 {/* Multi-hour tasks overlay - rendered as single absolute positioned elements */}
                 {getMultiHourTasksForWeek().map(({ task, dayIdx, topPx, heightPx }) => {
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                  const colors = courseColors[courseCode];
+                  const colors = dynamicCourseColors[courseCode];
                   const today = startOfDay(new Date());
                   const tomorrow = addDays(today, 1);
                   const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
@@ -8610,10 +8656,6 @@ export default function Dashboard() {
                     ? getPrepTaskHeightExtension(task.id, taskHour, prepStartDayIdx, dayIdx) 
                     : 0;
                   const adjustedHeightPx = heightPx + heightExtension;
-                  
-                  // Prep colors from course colors
-                  const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
-                  const prepBorderClass = colors ? colors.prepBorder : 'border-gray-300';
                   
                   // Calculate day column width for prep extension
                   const dayColWidth = `calc((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)`;
@@ -8647,20 +8689,11 @@ export default function Dashboard() {
                         isDueToday ? "task-blink-border" : ""
                       } ${
                         hasPrepDays && prepDaysCount > 0
-                          ? "rounded-r rounded-bl overflow-visible" 
-                          : "rounded overflow-hidden"
-                      } ${
-                        task.isCompleted 
-                          ? "bg-gray-200 border border-gray-300" 
-                          : colors 
-                            ? hasPrepDays && prepDaysCount > 0
-                              ? `${colors.bg} border-t border-r border-b ${colors.border}` 
-                              : `${colors.bg} border ${colors.border}`
-                            : "bg-gray-200 border border-gray-400"
+                          ? "rounded-r rounded-bl overflow-visible border-t border-r border-b" 
+                          : "rounded overflow-hidden border"
                       }`}
                       style={{
                         top: `${adjustedTopPx}px`,
-                        // For tasks with prep days, start at exact column edge (no left padding) for seamless connection
                         left: hasPrepDays && prepDaysCount > 0
                           ? `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)))`
                           : `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
@@ -8669,7 +8702,9 @@ export default function Dashboard() {
                           : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
                         height: `${adjustedHeightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
-                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined
+                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
+                        backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
+                        borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
                       }}
                       data-testid={`multi-hour-task-${task.id}`}
                       data-cal-task-id={task.id}
@@ -8703,9 +8738,10 @@ export default function Dashboard() {
                       {/* Left border segment for tasks with prep days - from below prep bar to bottom */}
                       {hasPrepDays && prepDaysCount > 0 && (
                         <div 
-                          className={`absolute left-0 bottom-0 w-px ${colors ? colors.border.replace('border-', 'bg-') : 'bg-gray-400'}`}
+                          className="absolute left-0 bottom-0 w-px"
                           style={{
-                            height: `calc(100% - 20px)`
+                            height: `calc(100% - 20px)`,
+                            backgroundColor: colors?.border || '#9ca3af'
                           }}
                         />
                       )}
@@ -8716,11 +8752,7 @@ export default function Dashboard() {
                 {/* Prep Extensions Overlay - rendered as separate elements spanning day columns */}
                 {getPrepExtensionsForWeek().map(({ task, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx, heightPx }) => {
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                  const colors = courseColors[courseCode];
-                  const prepBgClass = colors ? colors.prepBg : 'bg-gray-100';
-                  
-                  // Get the darker border color from the main task colors for the prep extension border
-                  const mainBorderClass = colors ? colors.border : 'border-gray-400';
+                  const colors = dynamicCourseColors[courseCode];
                   
                   // Prep extension is a short bar at the top (about 20px), not full height
                   const prepBarHeight = 20;
@@ -8738,27 +8770,27 @@ export default function Dashboard() {
                   return (
                     <div
                       key={`prep-ext-${task.id}`}
-                      className={`absolute ${prepBgClass} border-l border-t border-b ${mainBorderClass} rounded-tl rounded-bl pointer-events-none`}
+                      className="absolute border-l border-t border-b rounded-tl rounded-bl pointer-events-none"
                       style={{
-                        // Align exactly with task top (remove the +2 offset that was added in topPx calculation)
                         top: `${topPx - 2}px`,
-                        // Start with 2px padding from column edge
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        // Width spans prep days, overlapping 1px into task to ensure seamless connection
                         width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 1px)`,
                         height: `${prepBarHeight}px`,
-                        zIndex: 35
+                        zIndex: 35,
+                        backgroundColor: colors?.prepBg || '#f3f4f6',
+                        borderColor: colors?.border || '#9ca3af'
                       }}
                       data-testid={`prep-extension-${task.id}`}
                     >
                       {/* Blinking overlay for today column portion - uses task background color */}
                       {isTodayInPrepRange && (
                         <div
-                          className={`absolute inset-y-0 animate-pulse-task ${colors ? colors.bg.split(' ')[0] : 'bg-gray-100'}`}
+                          className="absolute inset-y-0 animate-pulse-task"
                           style={{
                             left: `calc(${todayOffsetInPrep} * (100% / ${prepDaysCount}))`,
                             width: `calc(100% / ${prepDaysCount})`,
-                            borderRadius: todayOffsetInPrep === 0 ? '4px 0 0 4px' : '0'
+                            borderRadius: todayOffsetInPrep === 0 ? '4px 0 0 4px' : '0',
+                            backgroundColor: colors?.bg || '#f3f4f6'
                           }}
                           data-prep-today-task-id={task.id}
                         />
@@ -9297,15 +9329,18 @@ export default function Dashboard() {
                         <div className="space-y-0.5">
                           {dayTasks.slice(0, 3).map((task) => {
                             const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                            const colors = courseColors[courseCode];
+                            const colors = dynamicCourseColors[courseCode];
                             return (
                               <div
                                 key={task.id}
-                                className={`text-[7px] px-1 py-0.5 rounded truncate ${
-                                  task.isCompleted 
-                                    ? "bg-gray-200 text-gray-500 line-through" 
-                                    : colors ? `${colors.bg} ${colors.text} border ${colors.border}` : "bg-gray-200"
+                                className={`text-[7px] px-1 py-0.5 rounded truncate border ${
+                                  task.isCompleted ? "line-through" : ""
                                 }`}
+                                style={{
+                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
+                                  color: task.isCompleted ? '#6b7280' : (colors?.text || '#000'),
+                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                                }}
                                 title={task.title}
                               >
                                 {task.title}
@@ -10292,6 +10327,7 @@ function TaskCard({
   urgentBlink = false,
   blinkSyncDelay,
   colorSettings,
+  courseColors,
 }: {
   task: Task;
   onComplete: (isCompleted: boolean) => void;
@@ -10305,13 +10341,14 @@ function TaskCard({
   blinkSyncDelay?: string;
   urgentBlink?: boolean;
   colorSettings?: { headerBar: string; pomodoroButton: string; icons: string };
+  courseColors?: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string; hex: string }>;
 }) {
   const Icon = iconMap[task.type] || ClipboardCheck;
   const isMissed = task.isMissed && !task.isCompleted;
   
   // Get course color
   const courseCode = task.courseName?.split(" ")[0] || "";
-  const colors = courseColors[courseCode];
+  const colors = courseColors?.[courseCode];
   
   const handleExportCalendar = () => {
     window.open(`/api/tasks/${task.id}/ics`, '_blank');
@@ -10417,12 +10454,14 @@ function TaskCard({
     <Card
       className={`transition-all rounded-md shadow-sm border ${
         compact ? "h-[60px] flex flex-col" : "flex-1"
-      } ${cardBgClass ? cardBgClass : colors ? colors.bg : ""} ${
-        colors ? colors.border : "border-gray-400"
       } ${isMissed && !cardBgClass ? "border-destructive bg-destructive/5" : ""} ${
         task.isCompleted ? "opacity-60" : ""
       } ${overdueBlink ? "animate-urgent-blink" : ""} ${urgentBlink ? "animate-shimmer" : ""}`}
-      style={overdueBlink && blinkSyncDelay ? { animationDelay: blinkSyncDelay } : undefined}
+      style={{
+        ...(overdueBlink && blinkSyncDelay ? { animationDelay: blinkSyncDelay } : {}),
+        backgroundColor: cardBgClass ? undefined : (colors?.bg || undefined),
+        borderColor: colors?.border || '#9ca3af'
+      }}
       data-testid={`card-task-${task.id}`}
     >
       <CardHeader className={`flex flex-row items-start justify-between gap-1 space-y-0 ${compact ? "pb-0 pt-1.5 px-2 flex-shrink-0" : "pb-1 pt-3 px-3"}`}>
@@ -10438,14 +10477,20 @@ function TaskCard({
               {task.title}
             </CardTitle>
             {task.courseName && (
-              <p className={`font-normal ${colors?.text || "text-muted-foreground"} ${compact ? "text-[8px]" : "text-[10px]"}`}>
+              <p 
+                className={`font-normal ${compact ? "text-[8px]" : "text-[10px]"}`}
+                style={{ color: colors?.text || undefined }}
+              >
                 {compact ? (task.courseName.split(" - ")[1] || task.courseName) : task.courseName.split(" - ")[0]}
               </p>
             )}
           </div>
         </div>
         {!compact && (
-          <Badge className={`${colors ? `${colors.bg} ${colors.border} ${colors.text}` : typeColors[task.type]}`}>
+          <Badge 
+            className={colors ? "" : typeColors[task.type]}
+            style={colors ? { backgroundColor: colors.bg, borderColor: colors.border, color: colors.text } : undefined}
+          >
             <Icon className="h-3 w-3 mr-1" />
             {task.type}
           </Badge>
@@ -10460,7 +10505,10 @@ function TaskCard({
         
         {compact ? (
           <div className="flex items-center">
-            <Badge className={`${colors ? `${colors.bg} ${colors.border} ${colors.text}` : typeColors[task.type]} text-[8px] px-1.5 py-0.5`}>
+            <Badge 
+              className={`${colors ? "" : typeColors[task.type]} text-[8px] px-1.5 py-0.5`}
+              style={colors ? { backgroundColor: colors.bg, borderColor: colors.border, color: colors.text } : undefined}
+            >
               <Icon className="h-2.5 w-2.5 mr-0.5" />
               {task.type}
             </Badge>
