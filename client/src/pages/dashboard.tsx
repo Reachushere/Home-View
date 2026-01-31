@@ -8226,7 +8226,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? undefined : 'white'
+                      backgroundColor: isSameDay(day, new Date()) ? '#EAE4DE' : 'white'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -8645,7 +8645,7 @@ export default function Dashboard() {
                     className="grid border-b border-border/50 relative group/row"
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'hidden', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                   >
-                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#280B05' : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
+                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#E8E8E8' : colorSettings.headerBar, color: isCurrentHour ? '#333' : 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
@@ -8660,7 +8660,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            backgroundColor: (isToday && isCurrentHour) ? '#160502' : undefined,
+                            backgroundColor: (isToday && isCurrentHour) ? '#C5D8EC' : isToday ? '#EAE4DE' : isCurrentHour ? '#E8E8E8' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
