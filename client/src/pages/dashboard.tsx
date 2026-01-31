@@ -6635,7 +6635,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '328px', right: '14px', width: '55px', height: '261px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '14px', width: '55px', height: '261px' }}>
         <div 
           style={{ 
             width: '100%', 
@@ -6655,7 +6655,7 @@ export default function Dashboard() {
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ width: '45px', height: '45px', top: '333px', right: '19px' }}
+            style={{ width: '45px', height: '45px', top: '383px', right: '19px' }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
           >
@@ -6681,7 +6681,7 @@ export default function Dashboard() {
           {/* Line to CPPA */}
           <line 
             x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${333 + 15}px`}
+            y1={`${383 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.45}px`}
             stroke="white" 
@@ -6692,7 +6692,7 @@ export default function Dashboard() {
           {/* Line to CFNF */}
           <line 
             x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${333 + 23}px`}
+            y1={`${383 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.45}px`}
             stroke="white" 
@@ -6703,7 +6703,7 @@ export default function Dashboard() {
           {/* Line to CASL */}
           <line 
             x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${333 + 30}px`}
+            y1={`${383 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3.45}px`}
             stroke="white" 
@@ -6848,7 +6848,7 @@ export default function Dashboard() {
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ width: '45px', height: '45px', top: '383px', right: '19px' }}
+            style={{ width: '45px', height: '45px', top: '433px', right: '19px' }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
             data-readings-button
           >
@@ -6874,7 +6874,7 @@ export default function Dashboard() {
           {/* Line to CPPA */}
           <line 
             x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${383 + 15}px`}
+            y1={`${433 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.45}px`}
             stroke="white" 
@@ -6885,7 +6885,7 @@ export default function Dashboard() {
           {/* Line to CFNF */}
           <line 
             x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${383 + 23}px`}
+            y1={`${433 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.45}px`}
             stroke="white" 
@@ -6896,7 +6896,7 @@ export default function Dashboard() {
           {/* Line to CASL */}
           <line 
             x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${383 + 30}px`}
+            y1={`${433 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3.45}px`}
             stroke="white" 
@@ -7040,7 +7040,7 @@ export default function Dashboard() {
         style={{ 
           width: '45px', 
           height: '45px', 
-          top: '434px', 
+          top: '484px', 
           right: '19px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
@@ -7120,7 +7120,7 @@ export default function Dashboard() {
         style={{ 
           width: '45px', 
           height: '45px', 
-          top: '485px', 
+          top: '535px', 
           right: '19px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
@@ -7138,7 +7138,7 @@ export default function Dashboard() {
         style={{ 
           width: '45px', 
           height: '45px', 
-          top: '536px', 
+          top: '586px', 
           right: '19px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
