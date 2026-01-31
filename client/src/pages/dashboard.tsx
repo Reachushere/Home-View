@@ -6663,7 +6663,7 @@ export default function Dashboard() {
       </div>
       
       {/* Set Default Layout Checkbox - Bottom of screen */}
-      <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-50 cursor-pointer">
+      <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-40 cursor-pointer">
         <input
           type="checkbox"
           checked={showDeviceSaved}
@@ -9821,6 +9821,27 @@ export default function Dashboard() {
             className="shadow-lg h-[158px] overflow-hidden flex flex-col rounded-t-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" 
             data-testid="section-todo"
           >
+            {/* Header bar with gradient matching Today box */}
+            <div 
+              className="flex items-center justify-between px-3 py-1.5"
+              style={{ 
+                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
+              }}
+            >
+              <h4 
+                className="text-xs font-normal text-white"
+                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
+              >
+                ToDo
+              </h4>
+              <button 
+                onClick={() => setIsTodoFlyoutOpen(false)}
+                className="text-white hover:text-white/80 transition-colors"
+                data-testid="button-close-todo-flyout"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
             <div className="grid grid-cols-4 gap-4 flex-1 p-3">
               {[0, 1, 2, 3].map(col => (
                 <div key={col} className="flex flex-col gap-1.5 overflow-hidden">
