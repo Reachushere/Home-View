@@ -9745,21 +9745,21 @@ export default function Dashboard() {
                   {/* 10px spacer between task name and course code */}
                   <div />
                   {/* Course code column - left aligned, white */}
-                  <span className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-9px' }}>
+                  <span className="text-[10px] text-white whitespace-nowrap" style={{ transform: 'translateX(-11px)' }}>
                     {courseCode}
                   </span>
                   {/* Course name column - left aligned, white */}
-                  <span className="text-[10px] text-white whitespace-nowrap truncate" style={{ marginLeft: '-10px', maxWidth: '90px', display: 'inline-block' }}>
+                  <span className="text-[10px] text-white whitespace-nowrap truncate" style={{ transform: 'translateX(-12px)', maxWidth: '90px', display: 'inline-block' }}>
                     {courseFullName}
                   </span>
                   {/* Paperclip for attachments */}
                   {attachments.length > 0 ? (
-                    <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
+                    <Paperclip className="h-3 w-3 text-white" style={{ transform: 'translateX(-13px)' }} strokeWidth={2.5} />
                   ) : (
                     <div className="w-3" />
                   )}
                   {/* Due date and days column - combined */}
-                  <div className="flex items-center gap-1 whitespace-nowrap" style={{ marginLeft: '-13px' }}>
+                  <div className="flex items-center gap-1 whitespace-nowrap" style={{ transform: 'translateX(-16px)' }}>
                     <span className="text-[10px] text-white">
                       {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                     </span>
