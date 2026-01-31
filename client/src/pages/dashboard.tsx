@@ -4390,14 +4390,49 @@ export default function Dashboard() {
                       
                       for (const file of Array.from(files)) {
                         try {
-                          const formData = new FormData();
-                          formData.append('file', file);
-                          formData.append('folder', uploadTargetFolder);
-                          
-                          await fetch('/api/files/upload', {
+                          // Step 1: Request a presigned upload URL
+                          const requestRes = await fetch('/api/uploads/request-url', {
                             method: 'POST',
-                            body: formData,
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              name: file.name,
+                              size: file.size,
+                              contentType: file.type || 'application/octet-stream',
+                            }),
                           });
+                          
+                          if (!requestRes.ok) {
+                            throw new Error('Failed to get upload URL');
+                          }
+                          
+                          const { uploadURL } = await requestRes.json();
+                          
+                          // Step 2: Upload file directly to presigned URL
+                          const uploadRes = await fetch(uploadURL, {
+                            method: 'PUT',
+                            body: file,
+                            headers: {
+                              'Content-Type': file.type || 'application/octet-stream',
+                            },
+                          });
+                          
+                          if (!uploadRes.ok) {
+                            throw new Error('Failed to upload file');
+                          }
+                          
+                          // Step 3: Update the file with the target folder
+                          // Get the latest files to find the one we just uploaded
+                          const filesRes = await fetch('/api/files');
+                          const allFilesData = await filesRes.json();
+                          const uploadedFile = allFilesData.find((f: any) => f.originalName === file.name);
+                          
+                          if (uploadedFile && uploadTargetFolder) {
+                            await fetch(`/api/files/${uploadedFile.id}`, {
+                              method: 'PATCH',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ folder: uploadTargetFolder }),
+                            });
+                          }
                           
                           queryClient.invalidateQueries({ queryKey: ['/api/files'] });
                         } catch (error) {
@@ -8700,11 +8735,11 @@ export default function Dashboard() {
                 <span className="text-xs font-medium">All Files</span>
                 <Button
                   size="sm"
-                  className="ml-auto h-7 px-3 text-[11px] font-medium bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 rounded-md transition-all duration-200"
+                  className="ml-auto h-7 px-3 text-[11px] font-medium bg-transparent hover:bg-[#5979CC]/10 text-white border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 rounded-md transition-all duration-200"
                   onClick={() => setIsUploadDialogOpen(true)}
                   data-testid="button-upload-file"
                 >
-                  <Upload className="h-3.5 w-3.5 mr-1.5" />
+                  <Upload className="h-3.5 w-3.5 mr-1.5 text-white" />
                   Upload
                 </Button>
               </div>
