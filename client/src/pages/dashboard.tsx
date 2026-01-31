@@ -3126,21 +3126,23 @@ export default function Dashboard() {
   // Track calendar wrapper position for course button alignment
   useEffect(() => {
     const updateCalendarTop = () => {
+      // Don't update during resize to prevent buttons from jumping
+      if (isResizingThisWeek) return;
       if (calendarWrapperRef.current) {
         const rect = calendarWrapperRef.current.getBoundingClientRect();
         setCalendarTop(rect.top + window.scrollY);
       }
     };
     updateCalendarTop();
-    // Use requestAnimationFrame for smoother updates during resize
+    // Use requestAnimationFrame for smoother updates
     let rafId: number;
     const rafUpdateCalendarTop = () => {
+      if (isResizingThisWeek) return;
       rafId = requestAnimationFrame(() => {
         updateCalendarTop();
       });
     };
     window.addEventListener('resize', rafUpdateCalendarTop);
-    window.addEventListener('scroll', rafUpdateCalendarTop);
     const observer = new ResizeObserver(rafUpdateCalendarTop);
     if (calendarWrapperRef.current) {
       observer.observe(calendarWrapperRef.current);
@@ -3152,11 +3154,10 @@ export default function Dashboard() {
     }
     return () => {
       window.removeEventListener('resize', rafUpdateCalendarTop);
-      window.removeEventListener('scroll', rafUpdateCalendarTop);
       observer.disconnect();
       cancelAnimationFrame(rafId);
     };
-  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, thisWeekBoxHeight, modulesHoneycombOpen]);
+  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek]);
   
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
