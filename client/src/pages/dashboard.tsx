@@ -9687,7 +9687,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 6px 6px 6px 48px 8px 1fr 10px 60px 90px 14px auto', gap: '4px', alignItems: 'center', justifyItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '16px 6px 6px 6px 48px 8px 1fr 10px 60px 90px 14px auto', gap: '4px', alignItems: 'center' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9759,7 +9759,7 @@ export default function Dashboard() {
                     <div className="w-3" />
                   )}
                   {/* Due date and days column - combined */}
-                  <div className="flex items-center gap-1 whitespace-nowrap" style={{ marginLeft: '-10px' }}>
+                  <div className="flex items-center gap-1 whitespace-nowrap" style={{ marginLeft: '-13px' }}>
                     <span className="text-[10px] text-white">
                       {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                     </span>
