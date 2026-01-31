@@ -101,7 +101,7 @@ import {
   GripVertical,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
-import type { Task, SemesterSettings, Subtask } from "@shared/schema";
+import type { Task, SemesterSettings, Subtask, Project } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, isBefore } from "date-fns";
 
@@ -1519,6 +1519,12 @@ export default function Dashboard() {
   const { data: tasks = [], isLoading } = useQuery<Task[]>({
     queryKey: ["/api/tasks", { weekNumber: selectedWeek }],
     queryFn: () => fetch(`/api/tasks?weekNumber=${selectedWeek}`).then(r => r.json()),
+  });
+
+  // Fetch all projects for calendar display
+  const { data: allProjects = [] } = useQuery<Project[]>({
+    queryKey: ["/api/projects"],
+    queryFn: () => fetch("/api/projects").then(r => r.json()),
   });
 
   // Files for weekly files flyout (moved up for allTaskFiles dependency)
