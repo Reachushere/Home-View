@@ -10225,8 +10225,8 @@ export default function Dashboard() {
                                 </p>
                               )}
                               
-                              <div className="flex flex-wrap items-center gap-2 mb-3">
-                                <Badge className={`text-xs ${
+                              <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                                <Badge className={`text-[9px] px-1.5 py-0 h-4 ${
                                   project.status === 'completed' ? 'bg-green-500/30 text-green-300 border-green-500/50' :
                                   project.status === 'in_progress' ? 'bg-yellow-500/30 text-yellow-300 border-yellow-500/50' :
                                   project.status === 'planning' ? 'bg-blue-500/30 text-blue-300 border-blue-500/50' :
@@ -10235,7 +10235,7 @@ export default function Dashboard() {
                                 }`}>
                                   {(project.status || 'planning').replace('_', ' ')}
                                 </Badge>
-                                <Badge className={`text-xs ${
+                                <Badge className={`text-[9px] px-1.5 py-0 h-4 ${
                                   project.priority === 'high' ? 'bg-red-500/30 text-red-300 border-red-500/50' :
                                   project.priority === 'medium' ? 'bg-orange-500/30 text-orange-300 border-orange-500/50' :
                                   'bg-green-500/30 text-green-300 border-green-500/50'
@@ -10244,7 +10244,7 @@ export default function Dashboard() {
                                 </Badge>
                                 {project.courseName && (
                                   <Badge 
-                                    className="text-xs"
+                                    className="text-[9px] px-1.5 py-0 h-4"
                                     style={{ 
                                       backgroundColor: project.courseName === 'CPPA122' ? '#22C55E' : 
                                                       project.courseName === 'CFNF400' ? '#EC4899' : 
