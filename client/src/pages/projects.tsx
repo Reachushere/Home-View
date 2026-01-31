@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import type { Project, Task, TaskLink } from "@shared/schema";
+import projectsBg from "@assets/BG2_1769891044656.jpg";
 
 const PROJECT_STATUSES = ["planning", "in_progress", "on_hold", "completed", "cancelled"] as const;
 const PRIORITIES = ["low", "medium", "high"] as const;
@@ -749,7 +750,15 @@ export default function ProjectsPage() {
   }, [allTasks, projects, tasksByProject]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div 
+      className="min-h-screen"
+      style={{
+        backgroundImage: `url(${projectsBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <header className="border-b sticky top-0 bg-background z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
