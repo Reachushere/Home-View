@@ -5398,11 +5398,11 @@ export default function Dashboard() {
               <div 
                 style={{ 
                   marginTop: '4px',
-                  width: '44px',
-                  height: '44px',
+                  width: '43px',
+                  height: '43px',
                   borderRadius: '50%',
                   background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-                  padding: '1px',
+                  padding: '0.5px',
                   cursor: 'pointer'
                 }}
                 data-testid="button-hamburger-menu"
