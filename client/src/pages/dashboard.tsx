@@ -8003,7 +8003,7 @@ export default function Dashboard() {
           
           <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line - dashed */}
-            <div className="absolute top-0 bottom-0 w-[3px] z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundImage: 'repeating-linear-gradient(to bottom, black 0px, black 8px, transparent 8px, transparent 14px)' }} />
+            <div className="absolute top-0 bottom-0 w-[1.5px] z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundImage: 'repeating-linear-gradient(to bottom, black 0px, black 8px, transparent 8px, transparent 14px)' }} />
             
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
