@@ -676,6 +676,7 @@ export default function ProjectsPage() {
       createProjectMutation.mutate(data);
     }
     setEditingProject(null);
+    setDialogOpen(false);
   };
 
   const handleEditProject = (project: Project) => {
