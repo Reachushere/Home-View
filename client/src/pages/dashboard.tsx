@@ -9741,7 +9741,7 @@ export default function Dashboard() {
                     {courseCode}
                   </div>
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white font-normal whitespace-nowrap truncate" style={{ maxWidth: '120px', marginLeft: '-14px' }}>
+                  <div className="text-[10px] text-white font-normal whitespace-nowrap truncate" style={{ maxWidth: '150px', marginLeft: '-14px' }}>
                     {courseFullName}
                   </div>
                   {/* Paperclip for attachments */}
