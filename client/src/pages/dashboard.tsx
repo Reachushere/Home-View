@@ -8645,7 +8645,7 @@ export default function Dashboard() {
                     className="grid border-b border-border/50 relative group/row"
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'hidden', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                   >
-                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#A0A0A0' : colorSettings.headerBar, color: isCurrentHour ? '#000' : 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
+                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#160502' : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
