@@ -9420,21 +9420,27 @@ export default function Dashboard() {
                       <span className="text-[11px] text-white font-normal">
                         {format(new Date(task.dueDate), 'EEEE')} {format(new Date(task.dueDate), 'MMM d')}
                       </span>
-                      <div 
-                        className="working-indicator" 
-                        title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
-                      >
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                        <div className="circle"></div>
-                        <span className="days-overlay">{daysUntil}</span>
-                      </div>
+                      {boxType === 'thisweek' ? (
+                        <span className="text-[11px] text-white/80 font-normal" title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}>
+                          {daysUntil}d
+                        </span>
+                      ) : (
+                        <div 
+                          className="working-indicator" 
+                          title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
+                        >
+                          <div className="circle"></div>
+                          <div className="circle"></div>
+                          <div className="circle"></div>
+                          <div className="circle"></div>
+                          <div className="circle"></div>
+                          <div className="circle"></div>
+                          <div className="circle"></div>
+                          <div className="circle"></div>
+                          <div className="circle"></div>
+                          <span className="days-overlay">{daysUntil}</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -9594,7 +9600,7 @@ export default function Dashboard() {
                             {task.courseName}
                           </div>
                         )}
-                        {renderTask(task, false, 'today')}
+                        {renderTask(task, true, 'today')}
                       </div>
                     );
                   })}
@@ -9651,7 +9657,7 @@ export default function Dashboard() {
                             {task.courseName}
                           </div>
                         )}
-                        {renderTask(task, false, 'tomorrow')}
+                        {renderTask(task, true, 'tomorrow')}
                       </div>
                     );
                   })}
