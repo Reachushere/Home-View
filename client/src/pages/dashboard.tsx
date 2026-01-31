@@ -8535,11 +8535,16 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="ml-auto h-6 px-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white"
+                  className="ml-auto h-7 px-3 text-[11px] font-medium text-white rounded-full hover:opacity-90 transition-all duration-200"
+                  style={{
+                    background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
+                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(69,120,176,0.5)'
+                  }}
                   onClick={() => setIsUploadDialogOpen(true)}
                   data-testid="button-upload-file"
                 >
-                  <Upload className="h-3 w-3 mr-1" />
+                  <Upload className="h-3.5 w-3.5 mr-1.5" />
                   Upload
                 </Button>
               </div>
