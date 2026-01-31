@@ -6725,7 +6725,7 @@ export default function Dashboard() {
               right: '17px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #0A3A7A 0%, #6BA3E0 100%)',
-              padding: '2px'
+              padding: '3px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
@@ -6935,7 +6935,7 @@ export default function Dashboard() {
               right: '17px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #0A3A7A 0%, #6BA3E0 100%)',
-              padding: '2px'
+              padding: '3px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
             data-readings-button
