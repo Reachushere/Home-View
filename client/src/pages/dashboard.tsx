@@ -6663,24 +6663,28 @@ export default function Dashboard() {
       </div>
       
       {/* Set Default Layout Checkbox - Bottom of screen */}
-      <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-30 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={showDeviceSaved}
-          onChange={saveAsDeviceDefault}
-          className="w-3 h-3 rounded border-white/40 bg-transparent accent-green-500"
-          data-testid="checkbox-save-device-default"
-        />
-        {showDeviceSaved ? "Saved!" : "Set Default"}
-      </label>
+      {!isTodoFlyoutOpen && (
+        <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-30 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showDeviceSaved}
+            onChange={saveAsDeviceDefault}
+            className="w-3 h-3 rounded border-white/40 bg-transparent accent-green-500"
+            data-testid="checkbox-save-device-default"
+          />
+          {showDeviceSaved ? "Saved!" : "Set Default"}
+        </label>
+      )}
       
       {/* Copyright - Right side of page, rotated */}
-      <div 
-        className="fixed right-1 text-white/60 text-[10px] font-medium z-30 pointer-events-none"
-        style={{ bottom: '70px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
-      >
-        © 2026
-      </div>
+      {!isTodoFlyoutOpen && (
+        <div 
+          className="fixed right-1 text-white/60 text-[10px] font-medium z-30 pointer-events-none"
+          style={{ bottom: '70px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
+        >
+          © 2026
+        </div>
+      )}
       
       {/* Arrows on Tall Pill */}
       <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '342px', right: '4px', width: '70px' }}>
