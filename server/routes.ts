@@ -1688,6 +1688,129 @@ export async function registerRoutes(
     res.json(weeks);
   });
 
+  // ============================================
+  // SUBTASK ROUTES
+  // ============================================
+  
+  // GET /api/tasks/:taskId/subtasks - Get all subtasks for a task
+  app.get("/api/tasks/:taskId/subtasks", async (req, res) => {
+    try {
+      const taskId = Number(req.params.taskId);
+      const subtasks = await storage.getSubtasksByTask(taskId);
+      res.json(subtasks);
+    } catch (err) {
+      console.error("Error fetching subtasks:", err);
+      res.status(500).json({ message: "Failed to fetch subtasks" });
+    }
+  });
+
+  // POST /api/tasks/:taskId/subtasks - Create a subtask
+  app.post("/api/tasks/:taskId/subtasks", async (req, res) => {
+    try {
+      const taskId = Number(req.params.taskId);
+      const subtaskData = {
+        ...req.body,
+        parentTaskId: taskId,
+        startDate: req.body.startDate ? new Date(req.body.startDate) : null,
+        dueDate: req.body.dueDate ? new Date(req.body.dueDate) : null,
+      };
+      const subtask = await storage.createSubtask(subtaskData);
+      res.status(201).json(subtask);
+    } catch (err) {
+      console.error("Error creating subtask:", err);
+      res.status(500).json({ message: "Failed to create subtask" });
+    }
+  });
+
+  // PATCH /api/subtasks/:id - Update a subtask
+  app.patch("/api/subtasks/:id", async (req, res) => {
+    try {
+      const subtaskId = Number(req.params.id);
+      const updates = {
+        ...req.body,
+        startDate: req.body.startDate ? new Date(req.body.startDate) : undefined,
+        dueDate: req.body.dueDate ? new Date(req.body.dueDate) : undefined,
+      };
+      // Remove undefined values
+      Object.keys(updates).forEach(key => updates[key] === undefined && delete updates[key]);
+      const subtask = await storage.updateSubtask(subtaskId, updates);
+      res.json(subtask);
+    } catch (err) {
+      console.error("Error updating subtask:", err);
+      res.status(500).json({ message: "Failed to update subtask" });
+    }
+  });
+
+  // DELETE /api/subtasks/:id - Delete a subtask
+  app.delete("/api/subtasks/:id", async (req, res) => {
+    try {
+      const subtaskId = Number(req.params.id);
+      await storage.deleteSubtask(subtaskId);
+      res.status(204).send();
+    } catch (err) {
+      console.error("Error deleting subtask:", err);
+      res.status(500).json({ message: "Failed to delete subtask" });
+    }
+  });
+
+  // ============================================
+  // TASK LINK ROUTES
+  // ============================================
+
+  // GET /api/tasks/:taskId/links - Get all links for a task
+  app.get("/api/tasks/:taskId/links", async (req, res) => {
+    try {
+      const taskId = Number(req.params.taskId);
+      const links = await storage.getLinksForTask(taskId);
+      res.json(links);
+    } catch (err) {
+      console.error("Error fetching task links:", err);
+      res.status(500).json({ message: "Failed to fetch task links" });
+    }
+  });
+
+  // GET /api/subtasks/:subtaskId/links - Get all links for a subtask
+  app.get("/api/subtasks/:subtaskId/links", async (req, res) => {
+    try {
+      const subtaskId = Number(req.params.subtaskId);
+      const links = await storage.getLinksForSubtask(subtaskId);
+      res.json(links);
+    } catch (err) {
+      console.error("Error fetching subtask links:", err);
+      res.status(500).json({ message: "Failed to fetch subtask links" });
+    }
+  });
+
+  // POST /api/links - Create a new link between tasks/subtasks
+  app.post("/api/links", async (req, res) => {
+    try {
+      const { sourceType, sourceId, targetType, targetId, linkType } = req.body;
+      const link = await storage.createTaskLink({
+        sourceType,
+        sourceId,
+        targetType,
+        targetId,
+        linkType: linkType || "relates_to",
+      });
+      res.status(201).json(link);
+    } catch (err) {
+      console.error("Error creating task link:", err);
+      res.status(500).json({ message: "Failed to create task link" });
+    }
+  });
+
+  // DELETE /api/links/:id - Delete a link
+  app.delete("/api/links/:id", async (req, res) => {
+    try {
+      const linkId = Number(req.params.id);
+      await storage.deleteTaskLink(linkId);
+      res.status(204).send();
+    } catch (err) {
+      console.error("Error deleting task link:", err);
+      res.status(500).json({ message: "Failed to delete task link" });
+    }
+  });
+
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
 
