@@ -10211,7 +10211,7 @@ export default function Dashboard() {
                                     className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
                                     data-testid={`button-delete-project-${project.id}`}
                                   >
-                                    <Trash2 className="w-3.5 h-3.5" />
+                                    <Trash2 className="w-3.5 h-3.5 text-red-500" />
                                   </Button>
                                 </div>
                               </div>
@@ -10499,7 +10499,7 @@ export default function Dashboard() {
                   }}
                   data-testid="button-delete-task-dialog"
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-5 w-5 text-red-500" />
                 </Button>
               )}
             </DialogHeader>
