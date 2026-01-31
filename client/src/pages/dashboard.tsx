@@ -6171,6 +6171,7 @@ export default function Dashboard() {
       {/* Modules Button - On top of tall pill */}
       {(() => {
         const unreadModuleCount = allFiles.filter(f => f.folder?.includes('module') && f.folder?.includes(`week-${selectedWeek}`) && !f.listened).length;
+        const completedModuleCount = allFiles.filter(f => f.folder?.includes('module') && f.folder?.includes(`week-${selectedWeek}`) && f.listened).length;
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
@@ -6183,6 +6184,11 @@ export default function Dashboard() {
             {unreadModuleCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-5px', right: '-1px' }}>
                 {unreadModuleCount}
+              </div>
+            )}
+            {completedModuleCount > 0 && (
+              <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '20px', right: '-1px' }}>
+                {completedModuleCount}
               </div>
             )}
           </div>
@@ -6232,6 +6238,7 @@ export default function Dashboard() {
       {/* CPPA122 - Green Row */}
       {(() => {
         const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('module') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('module') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6260,6 +6267,11 @@ export default function Dashboard() {
                   {unreadCount}
                 </div>
               )}
+              {completedCount > 0 && (
+                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                  {completedCount}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -6268,6 +6280,7 @@ export default function Dashboard() {
       {/* CFNF400 - Pink Row */}
       {(() => {
         const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('module') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('module') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6296,6 +6309,11 @@ export default function Dashboard() {
                   {unreadCount}
                 </div>
               )}
+              {completedCount > 0 && (
+                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                  {completedCount}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -6304,6 +6322,7 @@ export default function Dashboard() {
       {/* CASL101 - Indigo/Blue Row */}
       {(() => {
         const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('module') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('module') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6332,6 +6351,11 @@ export default function Dashboard() {
                   {unreadCount}
                 </div>
               )}
+              {completedCount > 0 && (
+                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                  {completedCount}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -6340,6 +6364,7 @@ export default function Dashboard() {
       {/* Readings Button - Below modules button on tall pill */}
       {(() => {
         const unreadReadingCount = allFiles.filter(f => f.folder?.includes('reading') && f.folder?.includes(`week-${selectedWeek}`) && !f.listened).length;
+        const completedReadingCount = allFiles.filter(f => f.folder?.includes('reading') && f.folder?.includes(`week-${selectedWeek}`) && f.listened).length;
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
@@ -6352,6 +6377,11 @@ export default function Dashboard() {
             {unreadReadingCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-5px', right: '-1px' }}>
                 {unreadReadingCount}
+              </div>
+            )}
+            {completedReadingCount > 0 && (
+              <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '20px', right: '-1px' }}>
+                {completedReadingCount}
               </div>
             )}
           </div>
@@ -6401,6 +6431,7 @@ export default function Dashboard() {
       {/* CPPA122 - Green Row */}
       {(() => {
         const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('reading') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('reading') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6429,6 +6460,11 @@ export default function Dashboard() {
                   {unreadCount}
                 </div>
               )}
+              {completedCount > 0 && (
+                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                  {completedCount}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -6437,6 +6473,7 @@ export default function Dashboard() {
       {/* CFNF400 - Pink Row */}
       {(() => {
         const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('reading') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('reading') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6465,6 +6502,11 @@ export default function Dashboard() {
                   {unreadCount}
                 </div>
               )}
+              {completedCount > 0 && (
+                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                  {completedCount}
+                </div>
+              )}
             </div>
           </div>
         );
@@ -6473,6 +6515,7 @@ export default function Dashboard() {
       {/* CASL101 - Indigo/Blue Row */}
       {(() => {
         const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('reading') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('reading') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6499,6 +6542,11 @@ export default function Dashboard() {
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
+                </div>
+              )}
+              {completedCount > 0 && (
+                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                  {completedCount}
                 </div>
               )}
             </div>
