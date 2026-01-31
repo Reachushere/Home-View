@@ -5329,7 +5329,7 @@ export default function Dashboard() {
             style={{ 
               background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
               boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)',
-              border: '1px solid rgba(255,150,80,0.5)',
+              border: '1.5px solid rgba(200,100,50,0.8)',
               marginTop: '4px', 
               zIndex: 50, 
               position: 'relative' 
