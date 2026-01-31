@@ -9405,18 +9405,17 @@ export default function Dashboard() {
                 data-testid={`droppable-task-${task.id}`}
               >
                 <div className="flex items-center gap-2">
-                  {/* Days until due progress bar */}
+                  {/* Days until due progress bar - horizontal */}
                   <div 
                     className="flex-shrink-0 rounded-full overflow-hidden" 
-                    style={{ width: '4px', height: '20px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                    style={{ width: '24px', height: '4px', backgroundColor: 'rgba(255,255,255,0.2)' }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   >
                     <div 
-                      className="w-full rounded-full transition-all duration-300"
+                      className="h-full rounded-full transition-all duration-300"
                       style={{ 
-                        height: `${progressPercent}%`, 
-                        backgroundColor: progressColor,
-                        marginTop: `${100 - progressPercent}%`
+                        width: `${progressPercent}%`, 
+                        backgroundColor: progressColor
                       }}
                     />
                   </div>
