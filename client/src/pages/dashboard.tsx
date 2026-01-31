@@ -8736,6 +8736,7 @@ export default function Dashboard() {
                 <Button
                   size="sm"
                   className="ml-auto h-7 px-3 text-[11px] font-medium bg-transparent hover:bg-[#5979CC]/10 text-white border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 rounded-md transition-all duration-200"
+                  style={{ marginTop: '-3px' }}
                   onClick={() => setIsUploadDialogOpen(true)}
                   data-testid="button-upload-file"
                 >
