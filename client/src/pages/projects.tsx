@@ -1018,19 +1018,23 @@ export default function ProjectsPage() {
           </div>
         ) : (
           <div className={viewMode === "grid" 
-            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" 
-            : "space-y-4"
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" 
+            : "space-y-8"
           }>
             {filteredProjects.map((project) => (
-              <ProjectCard
+              <div 
                 key={project.id}
-                project={project}
-                tasks={tasksByProject.get(project.id) || []}
-                onEdit={() => handleEditProject(project)}
-                onDelete={() => handleDeleteProject(project.id)}
-                expanded={expandedProjects.has(project.id)}
-                onToggleExpand={() => toggleProjectExpanded(project.id)}
-              />
+                className="relative p-[7px] rounded-xl bg-white/50"
+              >
+                <ProjectCard
+                  project={project}
+                  tasks={tasksByProject.get(project.id) || []}
+                  onEdit={() => handleEditProject(project)}
+                  onDelete={() => handleDeleteProject(project.id)}
+                  expanded={expandedProjects.has(project.id)}
+                  onToggleExpand={() => toggleProjectExpanded(project.id)}
+                />
+              </div>
             ))}
           </div>
         )}
