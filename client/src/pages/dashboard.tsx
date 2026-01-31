@@ -9712,8 +9712,7 @@ export default function Dashboard() {
                       width: '6px', 
                       height: '6px', 
                       backgroundColor: progressColor,
-                      boxShadow: `0 0 4px ${progressColor}`,
-                      marginLeft: '-3px'
+                      boxShadow: `0 0 4px ${progressColor}`
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
@@ -9726,8 +9725,7 @@ export default function Dashboard() {
                       width: '48px', 
                       height: '4px', 
                       backgroundColor: progressColor,
-                      opacity: 0.7,
-                      marginLeft: '-3px'
+                      opacity: 0.7
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
@@ -9738,7 +9736,7 @@ export default function Dashboard() {
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
-                    style={{ marginLeft: '-1px', textAlign: 'left' }}
+                    style={{ textAlign: 'left' }}
                   >
                     {task.title}
                   </button>
@@ -9754,7 +9752,7 @@ export default function Dashboard() {
                   </div>
                   {/* Paperclip for attachments */}
                   {attachments.length > 0 ? (
-                    <Paperclip className="h-3 w-3 text-white" style={{ transform: 'translateX(-13px)' }} strokeWidth={2.5} />
+                    <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
                   ) : (
                     <div className="w-3" />
                   )}
