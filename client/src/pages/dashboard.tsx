@@ -6724,13 +6724,13 @@ export default function Dashboard() {
               top: '381px', 
               right: '17px',
               borderRadius: '50%',
-              background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
+              background: 'linear-gradient(0deg, #0A3A7A 0%, #6BA3E0 100%)',
               padding: '2px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
           >
-            <div className="w-full h-full rounded-full transition-transform duration-200 hover:scale-110" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+            <div className="w-full h-full rounded-full transition-transform duration-200 hover:scale-110" style={{ background: 'linear-gradient(180deg, #0A3A7A 0%, #6BA3E0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
             <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadModuleCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
@@ -6934,13 +6934,13 @@ export default function Dashboard() {
               top: '431px', 
               right: '17px',
               borderRadius: '50%',
-              background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
+              background: 'linear-gradient(0deg, #0A3A7A 0%, #6BA3E0 100%)',
               padding: '2px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
             data-readings-button
           >
-            <div className="w-full h-full rounded-full transition-transform duration-200 hover:scale-110" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+            <div className="w-full h-full rounded-full transition-transform duration-200 hover:scale-110" style={{ background: 'linear-gradient(180deg, #0A3A7A 0%, #6BA3E0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
             <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadReadingCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
