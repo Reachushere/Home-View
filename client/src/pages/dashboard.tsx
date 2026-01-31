@@ -10066,11 +10066,11 @@ export default function Dashboard() {
                 className="flex items-center justify-between px-6 py-3 bg-black/30 border-b border-white/20"
               >
                 <div className="flex items-center gap-3">
-                  <FolderOpen className="h-5 w-5 text-white" />
-                  <h2 className="text-lg font-bold text-white">
+                  <FolderOpen className="h-4 w-4 text-white" />
+                  <h2 className="text-sm font-bold text-white">
                     Projects
                   </h2>
-                  <span className="text-sm text-white/70">
+                  <span className="text-xs text-white/70">
                     {allProjects.length} projects, {allTasks.filter(t => t.projectId).length} tasks assigned
                   </span>
                 </div>
