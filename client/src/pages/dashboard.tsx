@@ -7797,7 +7797,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-visible flex flex-col" style={{ marginTop: '0px', marginLeft: '0px', marginRight: '6px', paddingRight: '4px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '0px', marginRight: '6px', paddingRight: '4px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[10px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
@@ -9222,7 +9222,7 @@ export default function Dashboard() {
         ) : (
         <div className="mb-[12px] transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
           <Card className="shadow-lg overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm" style={{ borderRadius: '16px' }}>
-            <CardContent className="p-0 h-full overflow-auto">
+            <CardContent className="p-0 h-full overflow-auto scrollbar-hidden">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
