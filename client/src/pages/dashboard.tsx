@@ -9687,7 +9687,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 8px 48px 1fr 14px 60px 90px 70px 24px', gap: '4px', alignItems: 'center' }}>
+                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 8px 6px 48px 8px 1fr 14px 60px 90px auto', gap: '4px', alignItems: 'center' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9714,6 +9714,8 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
+                  {/* Spacer between urgency and progress */}
+                  <div />
                   {/* Progress oval column - thin bar */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
@@ -9725,9 +9727,11 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  {/* Task name column - left aligned, bold */}
+                  {/* Spacer between progress and title */}
+                  <div />
+                  {/* Task name column - left aligned, bold, same size as course name */}
                   <button 
-                    className="text-[11px] text-white font-bold truncate text-left hover:underline cursor-pointer"
+                    className="text-[10px] text-white font-bold truncate text-left hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
                   >
@@ -9747,23 +9751,18 @@ export default function Dashboard() {
                   <span className="text-[10px] text-white whitespace-nowrap truncate text-left">
                     {courseFullName}
                   </span>
-                  {/* Due date column - left aligned, white */}
-                  {showDaysUntil ? (
-                    <span className="text-[10px] text-white whitespace-nowrap text-left">
-                      {format(new Date(task.dueDate), 'EEE')} {format(new Date(task.dueDate), 'M/d')}
+                  {/* Due date and days column - combined */}
+                  <div className="flex items-center gap-1 whitespace-nowrap">
+                    <span className="text-[10px] text-white">
+                      {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                     </span>
-                  ) : (
-                    <span className="text-[10px] text-white whitespace-nowrap text-left">
-                      {format(new Date(task.dueDate), 'M/d')}
+                    <span 
+                      className="text-[10px] font-medium"
+                      style={{ color: progressColor }}
+                    >
+                      {daysUntil}d
                     </span>
-                  )}
-                  {/* Days until column */}
-                  <span 
-                    className="text-[10px] font-medium whitespace-nowrap text-left"
-                    style={{ color: progressColor }}
-                  >
-                    {daysUntil}d
-                  </span>
+                  </div>
                 </div>
                 {attachments.length > 0 && (
                   <div className="mt-0.5 space-y-0.5">
