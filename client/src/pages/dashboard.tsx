@@ -8961,8 +8961,46 @@ export default function Dashboard() {
                       <div key={week.id} className="mb-1">
                         {/* Week folder row */}
                         <div 
-                          className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded border-0 ${shouldBlink ? 'animate-week-blink' : ''}`}
+                          className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded transition-colors ${shouldBlink ? 'animate-week-blink' : ''} ${draggedFileForMove ? 'border border-dashed border-blue-400/50' : 'border-0'}`}
                           onClick={() => toggleFlyoutFolder(week.id)}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.dataTransfer.dropEffect = 'move';
+                            if (draggedFileForMove) {
+                              e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
+                            }
+                          }}
+                          onDragLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = '';
+                          }}
+                          onDrop={async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.currentTarget.style.backgroundColor = '';
+                            const fileId = e.dataTransfer.getData('text/plain');
+                            // Default to first course's reading folder
+                            const targetFolder = `${week.id}-cppa122-reading`;
+                            console.log('Week drop:', { fileId, targetFolder });
+                            if (fileId) {
+                              try {
+                                const res = await fetch(`/api/files/${fileId}`, {
+                                  method: 'PATCH',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ folder: targetFolder })
+                                });
+                                if (res.ok) {
+                                  queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                  toast({ title: "File moved to CPPA122 Reading" });
+                                } else {
+                                  toast({ title: "Failed to move file", variant: "destructive" });
+                                }
+                              } catch (err) {
+                                toast({ title: "Failed to move file", variant: "destructive" });
+                              }
+                            }
+                            setDraggedFileForMove(null);
+                          }}
                         >
                           {isWeekExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
                           {isWeekExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
@@ -8983,8 +9021,46 @@ export default function Dashboard() {
                               return (
                                 <div key={courseFolderId} className="mb-0.5">
                                   <div
-                                    className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded"
+                                    className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded transition-colors ${draggedFileForMove ? 'border border-dashed border-blue-400/50' : ''}`}
                                     onClick={() => toggleFlyoutFolder(courseFolderId)}
+                                    onDragOver={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      e.dataTransfer.dropEffect = 'move';
+                                      if (draggedFileForMove) {
+                                        e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
+                                      }
+                                    }}
+                                    onDragLeave={(e) => {
+                                      e.currentTarget.style.backgroundColor = '';
+                                    }}
+                                    onDrop={async (e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      e.currentTarget.style.backgroundColor = '';
+                                      const fileId = e.dataTransfer.getData('text/plain');
+                                      // Default to 'reading' content folder when dropping on course
+                                      const targetFolder = `${week.id}-${course.id}-reading`;
+                                      console.log('Course drop:', { fileId, targetFolder });
+                                      if (fileId) {
+                                        try {
+                                          const res = await fetch(`/api/files/${fileId}`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ folder: targetFolder })
+                                          });
+                                          if (res.ok) {
+                                            queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                            toast({ title: "File moved to Reading folder" });
+                                          } else {
+                                            toast({ title: "Failed to move file", variant: "destructive" });
+                                          }
+                                        } catch (err) {
+                                          toast({ title: "Failed to move file", variant: "destructive" });
+                                        }
+                                      }
+                                      setDraggedFileForMove(null);
+                                    }}
                                   >
                                     {isCourseExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
                                     {isCourseExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
