@@ -4203,7 +4203,11 @@ export default function Dashboard() {
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
                       {relatedFiles.map(file => (
-                        <SelectItem key={file.id} value={file.id.toString()} className="text-[10px]">
+                        <SelectItem 
+                          key={file.id} 
+                          value={file.id.toString()} 
+                          className={`text-[10px] ${file.listened ? 'text-gray-500 line-through' : ''}`}
+                        >
                           {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
                         </SelectItem>
                       ))}
