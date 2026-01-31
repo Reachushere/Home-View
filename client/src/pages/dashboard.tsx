@@ -6663,7 +6663,7 @@ export default function Dashboard() {
       </div>
       
       {/* Set Default Layout Checkbox - Bottom of screen */}
-      <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-40 cursor-pointer">
+      <label className="fixed bottom-2 right-2 flex items-center gap-1.5 text-white/60 hover:text-white text-[9px] z-30 cursor-pointer">
         <input
           type="checkbox"
           checked={showDeviceSaved}
@@ -6676,7 +6676,7 @@ export default function Dashboard() {
       
       {/* Copyright - Right side of page, rotated */}
       <div 
-        className="fixed right-1 text-white/60 text-[10px] font-medium z-50 pointer-events-none"
+        className="fixed right-1 text-white/60 text-[10px] font-medium z-30 pointer-events-none"
         style={{ bottom: '70px', transform: 'rotate(-90deg)', transformOrigin: 'right bottom' }}
       >
         © 2026
