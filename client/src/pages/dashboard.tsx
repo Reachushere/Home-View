@@ -8998,8 +8998,39 @@ export default function Dashboard() {
                                         return (
                                           <div key={contentFolderId} className="mb-0.5">
                                             <div
-                                              className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded transition-colors"
+                                              className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded transition-colors ${draggedFileForMove && draggedFileForMove.folder !== contentFolderId ? 'border border-dashed border-blue-400/50' : ''}`}
                                               onClick={() => toggleFlyoutFolder(contentFolderId)}
+                                              onDragOver={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                e.dataTransfer.dropEffect = 'move';
+                                                if (draggedFileForMove && draggedFileForMove.folder !== contentFolderId) {
+                                                  e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
+                                                }
+                                              }}
+                                              onDragLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = '';
+                                              }}
+                                              onDrop={async (e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                                e.currentTarget.style.backgroundColor = '';
+                                                const fileId = e.dataTransfer.getData('text/plain');
+                                                if (fileId && draggedFileForMove && draggedFileForMove.folder !== contentFolderId) {
+                                                  try {
+                                                    await fetch(`/api/files/${fileId}`, {
+                                                      method: 'PATCH',
+                                                      headers: { 'Content-Type': 'application/json' },
+                                                      body: JSON.stringify({ folder: contentFolderId })
+                                                    });
+                                                    queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                    toast({ title: "File moved successfully" });
+                                                  } catch (err) {
+                                                    toast({ title: "Failed to move file", variant: "destructive" });
+                                                  }
+                                                }
+                                                setDraggedFileForMove(null);
+                                              }}
                                             >
                                               {isContentExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
                                               {isContentExpanded ? <FolderOpen className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" /> : <Folder className="h-3.5 w-3.5 text-yellow-500 fill-yellow-400" />}
@@ -9013,7 +9044,14 @@ export default function Dashboard() {
                                                 {contentFiles.map((file) => (
                                                   <div
                                                     key={file.id}
-                                                    className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 rounded group"
+                                                    draggable
+                                                    onDragStart={(e) => {
+                                                      e.dataTransfer.setData('text/plain', file.id.toString());
+                                                      e.dataTransfer.effectAllowed = 'move';
+                                                      setDraggedFileForMove({ id: file.id, folder: file.folder || '' });
+                                                    }}
+                                                    onDragEnd={() => setDraggedFileForMove(null)}
+                                                    className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 rounded group cursor-grab active:cursor-grabbing ${draggedFileForMove?.id === file.id ? 'opacity-50' : ''}`}
                                                   >
                                                     <Checkbox
                                                       checked={file.listened || false}
