@@ -6511,65 +6511,65 @@ export default function Dashboard() {
         data-testid="honeycomb-files-main"
       >
         <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-        {/* Spring out honeycombs for course readings */}
-        {/* CPPA122 */}
+      </div>
+      {/* Spring out honeycombs for course readings - moved outside files button */}
+      {/* CPPA122 */}
+      <div 
+        className={`absolute transition-all duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ 
+          width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+          height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+          top: decorativeHoneycombHover === 'left' ? `${432 + gridSizes.courseRowHeight * 1.2}px` : '455px',
+          right: decorativeHoneycombHover === 'left' ? '-26px' : '30px',
+          transformOrigin: 'center center'
+        }}
+      >
         <div 
-          className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-          style={{ 
-            width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            top: decorativeHoneycombHover === 'left' ? `${gridSizes.courseRowHeight * 1.2}px` : '50%',
-            right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
-            transformOrigin: 'center center'
-          }}
+          className="relative w-full h-full cursor-pointer"
+          onClick={() => setReadingsPopupCourse('cppa122')}
         >
-          <div 
-            className="relative w-full h-full cursor-pointer"
-            onClick={() => setReadingsPopupCourse('cppa122')}
-          >
-            <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-            <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
-          </div>
+          <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
-        {/* CFNF400 */}
+      </div>
+      {/* CFNF400 */}
+      <div 
+        className={`absolute transition-all duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ 
+          width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+          height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+          top: decorativeHoneycombHover === 'left' ? `${432 + gridSizes.courseRowHeight * 2.2}px` : '455px',
+          right: decorativeHoneycombHover === 'left' ? '-26px' : '30px',
+          transformOrigin: 'center center',
+          transitionDelay: '50ms'
+        }}
+      >
         <div 
-          className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-          style={{ 
-            width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            top: decorativeHoneycombHover === 'left' ? `${gridSizes.courseRowHeight * 2.2}px` : '50%',
-            right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
-            transformOrigin: 'center center',
-            transitionDelay: '50ms'
-          }}
+          className="relative w-full h-full cursor-pointer"
+          onClick={() => setReadingsPopupCourse('cfnf400')}
         >
-          <div 
-            className="relative w-full h-full cursor-pointer"
-            onClick={() => setReadingsPopupCourse('cfnf400')}
-          >
-            <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-            <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
-          </div>
+          <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
-        {/* CASL101 */}
+      </div>
+      {/* CASL101 */}
+      <div 
+        className={`absolute transition-all duration-500 ease-out z-50 ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        style={{ 
+          width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+          height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
+          top: decorativeHoneycombHover === 'left' ? `${432 + gridSizes.courseRowHeight * 3.2}px` : '455px',
+          right: decorativeHoneycombHover === 'left' ? '-26px' : '30px',
+          transformOrigin: 'center center',
+          transitionDelay: '100ms'
+        }}
+      >
         <div 
-          className={`absolute transition-all duration-500 ease-out ${decorativeHoneycombHover === 'left' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-          style={{ 
-            width: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            height: decorativeHoneycombHover === 'left' ? gridSizes.courseRowHeight * 0.9 : gridSizes.courseRowHeight * 0.3,
-            top: decorativeHoneycombHover === 'left' ? `${gridSizes.courseRowHeight * 3.2}px` : '50%',
-            right: decorativeHoneycombHover === 'left' ? '-45px' : '50%',
-            transformOrigin: 'center center',
-            transitionDelay: '100ms'
-          }}
+          className="relative w-full h-full cursor-pointer"
+          onClick={() => setReadingsPopupCourse('casl101')}
         >
-          <div 
-            className="relative w-full h-full cursor-pointer"
-            onClick={() => setReadingsPopupCourse('casl101')}
-          >
-            <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
-            <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
-          </div>
+          <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+          <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
         </div>
       </div>
       
