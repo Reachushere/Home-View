@@ -9751,7 +9751,7 @@ export default function Dashboard() {
                     <div className="w-3" />
                   )}
                   {/* Due date and days column - combined */}
-                  <div className="flex items-center whitespace-nowrap" style={{ marginLeft: '-12px' }}>
+                  <div className="flex items-center whitespace-nowrap" style={{ marginLeft: '-24px' }}>
                     <span className="text-[10px] text-white" style={{ width: '55px' }}>
                       {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                     </span>
