@@ -237,6 +237,8 @@ export default function Dashboard() {
   const resizeRef = useRef<{ startY: number; startHeight: number } | null>(null);
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
+  const calendarWrapperRef = useRef<HTMLDivElement>(null);
+  const [calendarTop, setCalendarTop] = useState(247); // Default offset
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedFiles');
     return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -3081,6 +3083,26 @@ export default function Dashboard() {
     endOfSchoolWeek.setHours(23, 59, 59, 999);
     return dueDateStart <= endOfSchoolWeek;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+  // Track calendar wrapper position for course button alignment
+  useEffect(() => {
+    const updateCalendarTop = () => {
+      if (calendarWrapperRef.current) {
+        const rect = calendarWrapperRef.current.getBoundingClientRect();
+        setCalendarTop(rect.top + window.scrollY);
+      }
+    };
+    updateCalendarTop();
+    window.addEventListener('resize', updateCalendarTop);
+    const observer = new ResizeObserver(updateCalendarTop);
+    if (calendarWrapperRef.current) {
+      observer.observe(calendarWrapperRef.current);
+    }
+    return () => {
+      window.removeEventListener('resize', updateCalendarTop);
+      observer.disconnect();
+    };
+  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length]);
   
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
@@ -6776,7 +6798,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 10}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 51}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6787,7 +6809,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 10}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 51}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6798,7 +6820,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 10}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 51}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6819,7 +6841,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 - 12}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 31}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -6863,7 +6885,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 - 12}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 31}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '50ms'
@@ -6906,7 +6928,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 - 12}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 31}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '100ms'
@@ -6982,7 +7004,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 10}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 51}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6993,7 +7015,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 10}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 51}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7004,7 +7026,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 10}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 51}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7025,7 +7047,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 - 12}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 31}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '0ms'
@@ -7068,7 +7090,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 - 12}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 31}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '50ms'
@@ -7111,7 +7133,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 - 12}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 31}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '100ms'
@@ -7964,7 +7986,7 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div style={{ width: 'calc(100% - 65px)' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 65px)' }} className="relative overflow-visible">
           
           {/* Left Arrow - Previous Week */}
           <div 
