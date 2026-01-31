@@ -3069,14 +3069,14 @@ export default function Dashboard() {
   if (rawWeekDays.length === 7) {
     // rawWeekDays[0] = Saturday (start of school week), rawWeekDays[1-6] = Sun-Fri
     if (isTodaySaturday) {
-      // On Saturday: Sun-Fri should be NEXT week, Saturday stays the same
-      // So we add 7 days to Sun-Fri but keep Saturday as is
-      const saturdayDate = rawWeekDays[0]; // Current Saturday
-      const nextWeekSunToFri = rawWeekDays.slice(1).map(d => addDays(d, 7));
-      weekDays = [...nextWeekSunToFri, saturdayDate];
+      // On Saturday: Show the full school week starting today (Sat, Sun, Mon, Tue, Wed, Thu, Fri)
+      // rawWeekDays already has [Sat, Sun, Mon, Tue, Wed, Thu, Fri] - just reorder to put Sat at end for display
+      const saturdayDate = rawWeekDays[0]; // Current Saturday (today)
+      const sunToFri = rawWeekDays.slice(1); // Sun through Fri of THIS week
+      weekDays = [...sunToFri, saturdayDate];
     } else {
-      // On Sunday-Friday: Show current week with Saturday at end
-      // Saturday should be the UPCOMING Saturday (end of school week = Friday + 1 day)
+      // On Sunday-Friday: Show current week with UPCOMING Saturday at end
+      // Saturday should be the UPCOMING Saturday (Friday + 1 day)
       const upcomingSaturday = addDays(rawWeekDays[6], 1); // Friday + 1 = Saturday
       weekDays = [...rawWeekDays.slice(1), upcomingSaturday];
     }
