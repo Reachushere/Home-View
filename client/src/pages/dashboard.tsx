@@ -4590,7 +4590,7 @@ export default function Dashboard() {
 
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
-        <DialogContent className="max-w-6xl max-h-[98vh] h-[95vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+        <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] sm:max-h-[95vh] h-auto sm:h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
             const folderParts = previewFile?.folder?.split('-') || [];
@@ -4608,7 +4608,7 @@ export default function Dashboard() {
           })()}
           
           {/* Top Menu Bar - File Selector and Speaker */}
-          <div className="flex items-center justify-between p-1.5 px-4 mx-6 mt-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" style={{ gap: `${blinkSettings.mediaControlSpacing}px` }}>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 sm:mt-4 gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             {/* File Selector with Navigation Arrows */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
@@ -4638,8 +4638,8 @@ export default function Dashboard() {
               };
               
               return (
-                <div className="flex items-center gap-2">
-                  <span className="text-[9px] text-white/60">File:</span>
+                <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+                  <span className="text-[9px] text-white/60 hidden sm:inline">File:</span>
                   <Button
                     size="icon"
                     variant="ghost"
@@ -4671,7 +4671,7 @@ export default function Dashboard() {
                     }}
                   >
                     <SelectTrigger 
-                      className={`w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white transition-all duration-200 ${
+                      className={`w-full sm:w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white transition-all duration-200 ${
                         fileSelectorGlow 
                           ? 'ring-2 ring-blue-500' 
                           : 'shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]'
@@ -4707,10 +4707,10 @@ export default function Dashboard() {
             })()}
             
             {/* Speaker Selector */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <span className="text-[9px] text-white/60">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
-                <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
+                <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
                   <SelectValue placeholder="Select Speaker" />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
@@ -4725,7 +4725,7 @@ export default function Dashboard() {
           </div>
           
           {/* Bottom Media Controls Bar */}
-          <div className="flex items-center justify-between p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="flex flex-wrap items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             {/* Voice selector - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
               <>
