@@ -5146,8 +5146,9 @@ export default function Dashboard() {
       )}
 
       {/* Top Controls - Positioned directly on background */}
-      <div className="absolute z-20 left-0 right-0 top-0 flex items-center mx-3 mt-2" style={{ 
-        height: '50px'
+      <div className="absolute z-20 left-0 right-0 top-0 flex items-center mx-3" style={{ 
+        height: '50px',
+        marginTop: '9px'
       }}>
         {/* Logo, Date Range, and Week Navigation - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
