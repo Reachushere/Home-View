@@ -119,13 +119,13 @@ function ProjectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
         <DialogHeader>
-          <DialogTitle>{project ? "Edit Project" : "Create New Project"}</DialogTitle>
+          <DialogTitle className="text-white">{project ? "Edit Project" : "Create New Project"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Project Name</label>
+            <label className="text-sm font-medium text-white">Project Name</label>
             <Input 
               data-testid="input-project-name"
               value={formData.name}
@@ -257,10 +257,15 @@ function ProjectDialog({
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="border-white/30 text-white hover:bg-white/10 hover:text-white">
               Cancel
             </Button>
-            <Button type="submit" data-testid="button-save-project">
+            <Button 
+              type="submit" 
+              variant="outline"
+              data-testid="button-save-project"
+              className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+            >
               {project ? "Save Changes" : "Create Project"}
             </Button>
           </DialogFooter>
