@@ -126,33 +126,44 @@ function cleanTextForTTS(text: string): string {
   
   console.log("After JSTOR cleanup:", cleanedText.length);
   
-  // Only filter out sentences that are HEAVILY French (over 40% French words)
-  // This is much less aggressive than before
-  const frenchPatterns = [
-    /\b(je|tu|nous|vous|ils|elles)\b/gi,  // French pronouns (not "il", "elle", "on" as these appear in English)
-    /\b(être|avoir|faire|aller|pouvoir|vouloir|devoir|savoir)\b/gi,  // French infinitives
-    /\b(était|étaient|sera|seront|été|suis|sommes|êtes)\b/gi,  // French verb forms
-    /\b(très|beaucoup|trop|peu|aussi|bien|mal)\b/gi,  // French adverbs
-    /\b(français|française|france)\b/gi,  // Explicitly French words
-    /[àâäéèêëïîôùûüÿç]/g,  // French accented characters (strong indicator)
-  ];
+  // Remove French abstract sections entirely (common in Canadian academic papers)
+  // Look for "R sum" or "Résumé" followed by French text until "Abstract" or English section
+  cleanedText = cleanedText
+    .replace(/R\s*sum[^]*?(?=Abstract|Introduction|The\s|This\s|In\s)/gi, '')
+    .replace(/Résumé[^]*?(?=Abstract|Introduction|The\s|This\s|In\s)/gi, '');
   
-  const sentences = cleanedText.split(/(?<=[.!?])\s+/);
-  const englishSentences = sentences.filter(sentence => {
-    const words = sentence.split(/\s+/).length;
-    if (words < 5) return true;  // Keep short sentences
+  // Split into chunks (by sentences or line breaks) and filter French ones
+  const chunks = cleanedText.split(/(?<=[.!?])\s+|\n+/);
+  const englishChunks = chunks.filter(chunk => {
+    const trimmed = chunk.trim();
+    if (trimmed.length < 20) return true;  // Keep short chunks
     
-    let frenchScore = 0;
-    for (const pattern of frenchPatterns) {
-      const matches = sentence.match(pattern);
-      if (matches) frenchScore += matches.length;
+    // Count French indicators
+    const frenchWordPatterns = [
+      /\b(le|la|les|du|des|au|aux|un|une)\b/gi,  // French articles
+      /\b(et|ou|que|qui|dont|dans|sur|pour|par|avec|sans)\b/gi,  // French prepositions/conjunctions
+      /\b(je|tu|il|elle|nous|vous|ils|elles|on)\b/gi,  // French pronouns
+      /\b(est|sont|ont|fait|peut|doit|cette|ces|cette)\b/gi,  // Common French words
+      /\b(gouvernement|municipale?|canadien|question|politique)\b/gi,  // French versions of English words
+    ];
+    
+    let frenchWordCount = 0;
+    for (const pattern of frenchWordPatterns) {
+      const matches = trimmed.match(pattern);
+      if (matches) frenchWordCount += matches.length;
     }
     
+    // Count accented characters (strong French indicator)
+    const accentedCount = (trimmed.match(/[àâäéèêëïîôùûüÿçÀÂÄÉÈÊËÏÎÔÙÛÜŸÇ]/g) || []).length;
+    
+    const words = trimmed.split(/\s+/).length;
+    const frenchScore = frenchWordCount + (accentedCount * 2);  // Weight accents more
     const frenchRatio = frenchScore / words;
-    // Only filter if more than 40% French (was 15% before - way too aggressive)
-    return frenchRatio < 0.40;
+    
+    // Filter if more than 25% French indicators
+    return frenchRatio < 0.25;
   });
-  cleanedText = englishSentences.join(' ');
+  cleanedText = englishChunks.join(' ');
   
   console.log("After French filter:", cleanedText.length);
   
