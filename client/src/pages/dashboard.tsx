@@ -6577,7 +6577,7 @@ export default function Dashboard() {
         <div 
           style={{ 
             width: '48px', 
-            height: '600px', 
+            height: '588px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '24px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
@@ -6635,13 +6635,13 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '20px', width: '43px', height: '261px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '14px', width: '55px', height: '261px' }}>
         <div 
           style={{ 
             width: '100%', 
             height: '100%', 
             background: 'rgba(255, 255, 255, 0.35)',
-            borderRadius: '22px',
+            borderRadius: '28px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }} 
@@ -7797,7 +7797,7 @@ export default function Dashboard() {
           </Dialog>
 
         {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '0px', marginRight: '6px', paddingRight: '4px' }}>
+        <div className="flex-1 overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-22px', marginRight: '-19px', paddingLeft: '22px', paddingRight: '23px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
         <div className="mb-[12px] mt-[10px] relative flex gap-4 transition-all duration-300" style={{ height: isTodoFlyoutOpen ? calendarHeight - 164 : calendarHeight, order: 2 }}>
@@ -7850,7 +7850,7 @@ export default function Dashboard() {
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
               }}
             >
-              <ChevronLeft className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={3} />
             </div>
           </div>
           
@@ -7868,7 +7868,7 @@ export default function Dashboard() {
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
               }}
             >
-              <ChevronRight className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+              <ChevronRight className="h-4 w-4 text-white" strokeWidth={3} />
             </div>
           </div>
           
@@ -9494,7 +9494,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-3 mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 46px)', marginLeft: '-22px', marginRight: '-19px' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-3 mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: '100%' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[80px] sm:min-h-[120px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
@@ -9503,8 +9503,8 @@ export default function Dashboard() {
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
-              marginLeft: boxOrder.indexOf('this-week') === 0 ? '5px' : '0px', 
-              marginRight: boxOrder.indexOf('this-week') === 2 ? '2px' : '0px' 
+              marginLeft: boxOrder.indexOf('this-week') === 0 ? '0px' : '0px', 
+              marginRight: boxOrder.indexOf('this-week') === 2 ? '0px' : '0px' 
             }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
@@ -9560,8 +9560,8 @@ export default function Dashboard() {
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
-              marginLeft: boxOrder.indexOf('today') === 0 ? '5px' : '0px', 
-              marginRight: boxOrder.indexOf('today') === 2 ? '2px' : '0px' 
+              marginLeft: boxOrder.indexOf('today') === 0 ? '0px' : '0px', 
+              marginRight: boxOrder.indexOf('today') === 2 ? '0px' : '0px' 
             }} 
             data-testid="section-due-today"
             onDragOver={(e) => handleBoxDragOver(e, 'today')}
