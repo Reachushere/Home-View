@@ -8971,80 +8971,95 @@ export default function Dashboard() {
                                             {isContentExpanded && (
                                               <div className="ml-3 space-y-0.5">
                                                 {contentFiles.map((file) => (
-                                                  <ContextMenu key={file.id}>
-                                                    <ContextMenuTrigger asChild>
-                                                      <div
-                                                        draggable
-                                                        onDragStart={(e) => {
-                                                          e.dataTransfer.setData('application/json', JSON.stringify({ 
-                                                            url: file.objectPath, 
-                                                            name: file.displayName || file.originalName,
-                                                            fileId: file.id,
-                                                            folder: file.folder
-                                                          }));
-                                                          setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
-                                                          setDraggedFileForMove({ id: file.id, folder: file.folder || '' });
-                                                        }}
-                                                        onDragEnd={() => {
-                                                          setDraggedFile(null);
-                                                          setDraggedFileForMove(null);
-                                                        }}
-                                                        className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-grab active:cursor-grabbing rounded"
-                                                        onClick={() => setPreviewFile(file)}
-                                                      >
-                                                        <Checkbox
-                                                          checked={file.listened || false}
-                                                          onCheckedChange={async (checked) => {
-                                                            try {
-                                                              await fetch(`/api/files/${file.id}`, {
-                                                                method: 'PATCH',
-                                                                headers: { 'Content-Type': 'application/json' },
-                                                                body: JSON.stringify({ listened: checked === true })
-                                                              });
-                                                              queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                                                            } catch (err) {
-                                                              console.error('Failed to update listened status:', err);
-                                                            }
-                                                          }}
-                                                          onClick={(e) => e.stopPropagation()}
-                                                          className="h-3.5 w-3.5 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                                                        />
-                                                        <FileText className="h-3.5 w-3.5 text-white/50 shrink-0" />
-                                                        <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'text-white/40' : 'text-white/80'}`}>
-                                                          {file.displayName || file.originalName}
-                                                        </span>
-                                                      </div>
-                                                    </ContextMenuTrigger>
-                                                    <ContextMenuContent className="bg-[#252526] border-white/20">
-                                                      <ContextMenuItem 
-                                                        className="text-white/90 focus:bg-white/10 focus:text-white cursor-pointer"
-                                                        onClick={() => {
-                                                          setRenameFileId(file.id);
-                                                          setRenameFileName(file.displayName || file.originalName);
-                                                        }}
-                                                      >
-                                                        <Pencil className="h-3.5 w-3.5 mr-2" />
-                                                        Rename
-                                                      </ContextMenuItem>
-                                                      <ContextMenuItem 
-                                                        className="text-red-400 focus:bg-red-500/20 focus:text-red-300 cursor-pointer"
-                                                        onClick={async () => {
-                                                          if (confirm(`Delete "${file.displayName || file.originalName}"?`)) {
-                                                            try {
-                                                              await fetch(`/api/files/${file.id}`, { method: 'DELETE' });
-                                                              queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                                                              toast({ title: "File deleted" });
-                                                            } catch (err) {
-                                                              toast({ title: "Failed to delete file", variant: "destructive" });
-                                                            }
+                                                  <div
+                                                    key={file.id}
+                                                    draggable
+                                                    onDragStart={(e) => {
+                                                      e.dataTransfer.setData('application/json', JSON.stringify({ 
+                                                        url: file.objectPath, 
+                                                        name: file.displayName || file.originalName,
+                                                        fileId: file.id,
+                                                        folder: file.folder
+                                                      }));
+                                                      e.dataTransfer.effectAllowed = 'move';
+                                                      setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
+                                                      setDraggedFileForMove({ id: file.id, folder: file.folder || '' });
+                                                    }}
+                                                    onDragEnd={() => {
+                                                      setDraggedFile(null);
+                                                      setDraggedFileForMove(null);
+                                                    }}
+                                                    className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-grab active:cursor-grabbing rounded ${draggedFileForMove?.id === file.id ? 'opacity-50' : ''}`}
+                                                    onClick={() => setPreviewFile(file)}
+                                                    onContextMenu={(e) => {
+                                                      e.preventDefault();
+                                                      const rect = e.currentTarget.getBoundingClientRect();
+                                                      const menu = document.createElement('div');
+                                                      menu.className = 'fixed z-[9999] bg-[#252526] border border-white/20 rounded-md py-1 shadow-lg min-w-[120px]';
+                                                      menu.style.left = `${e.clientX}px`;
+                                                      menu.style.top = `${e.clientY}px`;
+                                                      menu.innerHTML = `
+                                                        <div class="px-3 py-1.5 text-sm text-white/90 hover:bg-white/10 cursor-pointer flex items-center gap-2" data-action="rename">
+                                                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                                          Rename
+                                                        </div>
+                                                        <div class="px-3 py-1.5 text-sm text-red-400 hover:bg-red-500/20 cursor-pointer flex items-center gap-2" data-action="delete">
+                                                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                                          Delete
+                                                        </div>
+                                                      `;
+                                                      document.body.appendChild(menu);
+                                                      
+                                                      const closeMenu = () => {
+                                                        menu.remove();
+                                                        document.removeEventListener('click', closeMenu);
+                                                      };
+                                                      
+                                                      menu.querySelector('[data-action="rename"]')?.addEventListener('click', () => {
+                                                        setRenameFileId(file.id);
+                                                        setRenameFileName(file.displayName || file.originalName);
+                                                        closeMenu();
+                                                      });
+                                                      
+                                                      menu.querySelector('[data-action="delete"]')?.addEventListener('click', async () => {
+                                                        if (confirm(`Delete "${file.displayName || file.originalName}"?`)) {
+                                                          try {
+                                                            await fetch(`/api/files/${file.id}`, { method: 'DELETE' });
+                                                            queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                            toast({ title: "File deleted" });
+                                                          } catch (err) {
+                                                            toast({ title: "Failed to delete file", variant: "destructive" });
                                                           }
-                                                        }}
-                                                      >
-                                                        <Trash2 className="h-3.5 w-3.5 mr-2" />
-                                                        Delete
-                                                      </ContextMenuItem>
-                                                    </ContextMenuContent>
-                                                  </ContextMenu>
+                                                        }
+                                                        closeMenu();
+                                                      });
+                                                      
+                                                      setTimeout(() => document.addEventListener('click', closeMenu), 0);
+                                                    }}
+                                                  >
+                                                    <Menu className="h-3 w-3 text-white/30 hover:text-white/60 cursor-grab shrink-0" />
+                                                    <Checkbox
+                                                      checked={file.listened || false}
+                                                      onCheckedChange={async (checked) => {
+                                                        try {
+                                                          await fetch(`/api/files/${file.id}`, {
+                                                            method: 'PATCH',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify({ listened: checked === true })
+                                                          });
+                                                          queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                        } catch (err) {
+                                                          console.error('Failed to update listened status:', err);
+                                                        }
+                                                      }}
+                                                      onClick={(e) => e.stopPropagation()}
+                                                      className="h-3.5 w-3.5 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                                    />
+                                                    <FileText className="h-3.5 w-3.5 text-white/50 shrink-0" />
+                                                    <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'text-white/40' : 'text-white/80'}`}>
+                                                      {file.displayName || file.originalName}
+                                                    </span>
+                                                  </div>
                                                 ))}
                                               </div>
                                             )}
