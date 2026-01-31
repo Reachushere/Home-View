@@ -9458,8 +9458,8 @@ export default function Dashboard() {
                       </span>
                       {boxType === 'thisweek' ? (
                         <span 
-                          className="text-[10px] text-white font-medium px-1.5 py-0.5 rounded-full" 
-                          style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)' }}
+                          className="text-[10px] font-medium"
+                          style={{ color: '#4578B0' }}
                           title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'}`}
                         >
                           {daysUntil}d
