@@ -9517,6 +9517,21 @@ export default function Dashboard() {
                 data-testid={`droppable-task-${task.id}`}
               >
                 <div className="flex items-center gap-2">
+                  {/* Checkbox - at very left, or spacer for alignment */}
+                  {!isCASL101Task(task) ? (
+                    <input
+                      type="checkbox"
+                      checked={task.isCompleted ?? false}
+                      onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
+                      className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer flex-shrink-0"
+                      style={{ accentColor: getCourseColor(task.courseName) }}
+                      data-testid={`checkbox-task-${task.id}`}
+                      {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
+                      {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
+                    />
+                  ) : (
+                    <div className="h-3.5 w-3.5 flex-shrink-0" />
+                  )}
                   {/* Days until due - colored urgency dot */}
                   <div 
                     className="flex-shrink-0 rounded-full"
@@ -9539,18 +9554,6 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  {!isCASL101Task(task) && (
-                    <input
-                      type="checkbox"
-                      checked={task.isCompleted ?? false}
-                      onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                      className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer flex-shrink-0"
-                      style={{ accentColor: getCourseColor(task.courseName) }}
-                      data-testid={`checkbox-task-${task.id}`}
-                      {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
-                      {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
-                    />
-                  )}
                   <button 
                     className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
                     onClick={() => setEditingTask(task)}
