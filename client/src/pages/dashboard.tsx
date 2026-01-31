@@ -6608,7 +6608,7 @@ export default function Dashboard() {
       </div>
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '342px', right: '10px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '342px', right: '8px', width: '70px' }}>
         <div 
           className="cursor-pointer hover:bg-white/20 rounded p-0.5"
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
@@ -6628,7 +6628,7 @@ export default function Dashboard() {
       </div>
       
       {/* Date Range above arrows (20px above) */}
-      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '322px', right: '11px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '318px', right: '11px', width: '70px' }}>
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "MMM d")}</span>
         <span className="text-[10px] text-white/60">-</span>
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
