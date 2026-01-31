@@ -6711,7 +6711,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '14px', width: '55px', height: '261px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '14px', width: '53px', height: '259px' }}>
         <div 
           style={{ 
             width: '100%', 
