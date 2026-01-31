@@ -10285,7 +10285,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <div style={{ height: '14px' }} />
+                              <div style={{ height: '14px', background: 'red' }} />
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
