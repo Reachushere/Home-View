@@ -9546,11 +9546,14 @@ export default function Dashboard() {
                     />
                   )}
                   <button 
-                    className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer"
+                    className="text-[11px] text-white font-normal truncate flex-1 text-left hover:underline cursor-pointer flex items-center gap-1"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
                   >
-                    {task.title}
+                    <span className="truncate">{task.title}</span>
+                    {task.courseName && (
+                      <span className="text-[9px] text-white/60 whitespace-nowrap">• {task.courseName}</span>
+                    )}
                   </button>
                   {attachments.length > 0 && (
                     <div className="flex-shrink-0" style={{ marginRight: '55px' }}>
