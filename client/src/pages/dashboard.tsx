@@ -601,23 +601,9 @@ export default function Dashboard() {
     return () => document.removeEventListener('click', handleClickOutside);
   }, [modulesHoneycombOpen]);
   
-  // Box order based on current day of week
-  // Sunday/Monday: Today=LEFT, Tomorrow=MIDDLE, This Week=RIGHT
-  // Tuesday/Wednesday: Today=MIDDLE, Tomorrow=RIGHT, This Week=LEFT
-  // Thursday/Friday/Saturday: Today=RIGHT, Tomorrow=LEFT, This Week=MIDDLE
+  // Default box order: Today, Tomorrow, This Week (left to right)
   const getDefaultBoxOrder = (): string[] => {
-    const dayOfWeek = new Date().getDay(); // 0=Sunday, 1=Monday, etc.
-    
-    if (dayOfWeek === 0 || dayOfWeek === 1) {
-      // Sunday & Monday: Today LEFT, Tomorrow MIDDLE, This Week RIGHT
-      return ['today', 'tomorrow', 'this-week'];
-    } else if (dayOfWeek === 2 || dayOfWeek === 3) {
-      // Tuesday & Wednesday: This Week LEFT, Today MIDDLE, Tomorrow RIGHT
-      return ['this-week', 'today', 'tomorrow'];
-    } else {
-      // Thursday, Friday, Saturday: Tomorrow LEFT, This Week MIDDLE, Today RIGHT
-      return ['tomorrow', 'this-week', 'today'];
-    }
+    return ['today', 'tomorrow', 'this-week'];
   };
   
   // Box order state - initialized from day-based default, but can be dragged
