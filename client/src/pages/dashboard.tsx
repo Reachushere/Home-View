@@ -1895,10 +1895,12 @@ export default function Dashboard() {
   const waitForVoices = (): Promise<SpeechSynthesisVoice[]> => {
     return new Promise((resolve) => {
       if (!window.speechSynthesis) {
+        console.log("TTS: speechSynthesis not available");
         resolve([]);
         return;
       }
       const voices = window.speechSynthesis.getVoices();
+      console.log("TTS: Initial voices check:", voices?.length || 0);
       if (voices && voices.length > 0) {
         resolve(voices);
         return;
@@ -1906,14 +1908,23 @@ export default function Dashboard() {
       // Chrome loads voices asynchronously
       const handleVoicesChanged = () => {
         const loadedVoices = window.speechSynthesis.getVoices();
+        console.log("TTS: Voices loaded via event:", loadedVoices?.length || 0);
         resolve(loadedVoices || []);
       };
       window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged, { once: true });
-      // Timeout after 3 seconds
-      setTimeout(() => {
+      // Timeout after 3 seconds - try multiple times
+      let attempts = 0;
+      const tryGetVoices = () => {
+        attempts++;
         const fallbackVoices = window.speechSynthesis.getVoices() || [];
-        resolve(fallbackVoices);
-      }, 3000);
+        console.log(`TTS: Attempt ${attempts} got ${fallbackVoices.length} voices`);
+        if (fallbackVoices.length > 0 || attempts >= 5) {
+          resolve(fallbackVoices);
+        } else {
+          setTimeout(tryGetVoices, 500);
+        }
+      };
+      setTimeout(tryGetVoices, 500);
     });
   };
   

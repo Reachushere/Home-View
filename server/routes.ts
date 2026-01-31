@@ -1890,8 +1890,11 @@ export async function registerRoutes(
       // Use 90% speaking rate
       const ssmlContent = `<speak><prosody rate="90%">${cleanedContent}</prosody></speak>`;
       
-      console.log("Sending TTS to:", targetEntity);
+      console.log("=== TTS PLAY REQUEST ===");
+      console.log("Target entity:", targetEntity);
       console.log("Cleaned message length:", cleanedContent.length);
+      console.log("HA URL:", haUrl);
+      console.log("Message preview:", cleanedContent.substring(0, 100));
       
       const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
@@ -1908,9 +1911,12 @@ export async function registerRoutes(
         }),
       });
 
+      const responseText = await response.text();
+      console.log("HA Response status:", response.status);
+      console.log("HA Response:", responseText);
+      
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Home Assistant TTS error:", errorText);
+        console.error("Home Assistant TTS error:", responseText);
         currentTTSSession = null;
         return res.status(response.status).json({ error: "Failed to read file content" });
       }
