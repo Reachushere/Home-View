@@ -606,18 +606,10 @@ export default function Dashboard() {
     return ['today', 'tomorrow', 'this-week'];
   };
   
-  // Box order state - initialized from day-based default, but can be dragged
+  // Box order state - initialized from default, but can be dragged
   const [boxOrder, setBoxOrder] = useState<string[]>(() => {
-    const saved = localStorage.getItem('boxOrder');
-    const savedDate = localStorage.getItem('boxOrderDate');
-    const today = new Date().toDateString();
-    
-    // Reset to day-based default if it's a new day (midnight reset)
-    if (savedDate !== today) {
-      return getDefaultBoxOrder();
-    }
-    
-    return saved ? JSON.parse(saved) : getDefaultBoxOrder();
+    // Always use the fixed default order: Today, Tomorrow, This Week
+    return getDefaultBoxOrder();
   });
   
   // Reset box order at midnight (when date changes)
