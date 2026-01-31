@@ -9687,7 +9687,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 20px 48px 1fr 14px 60px 90px 70px 24px', gap: '4px', alignItems: 'center' }}>
+                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 8px 48px 1fr 14px 60px 90px 70px 24px', gap: '4px', alignItems: 'center' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9703,23 +9703,23 @@ export default function Dashboard() {
                   ) : (
                     <div className="h-3.5 w-3.5" />
                   )}
-                  {/* Urgency dot column - doubled to 20px */}
+                  {/* Urgency dot column - small circle */}
                   <div 
                     className="rounded-full flex-shrink-0"
                     style={{ 
-                      width: '20px', 
-                      height: '20px', 
+                      width: '8px', 
+                      height: '8px', 
                       backgroundColor: progressColor,
                       boxShadow: `0 0 4px ${progressColor}`
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  {/* Progress oval column - doubled to 48px */}
+                  {/* Progress oval column - thin bar */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
                     style={{ 
                       width: '48px', 
-                      height: '16px', 
+                      height: '6px', 
                       backgroundColor: progressColor,
                       opacity: 0.7
                     }}
