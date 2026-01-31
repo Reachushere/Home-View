@@ -6341,7 +6341,7 @@ export default function Dashboard() {
               </div>
             )}
             {completedModuleCount > 0 && (
-              <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '20px', right: '-1px' }}>
+              <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
                 {completedModuleCount}
               </div>
             )}
@@ -6422,7 +6422,7 @@ export default function Dashboard() {
                 </div>
               )}
               {completedCount > 0 && (
-                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
                   {completedCount}
                 </div>
               )}
@@ -6464,7 +6464,7 @@ export default function Dashboard() {
                 </div>
               )}
               {completedCount > 0 && (
-                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
                   {completedCount}
                 </div>
               )}
@@ -6506,7 +6506,7 @@ export default function Dashboard() {
                 </div>
               )}
               {completedCount > 0 && (
-                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
                   {completedCount}
                 </div>
               )}
@@ -6534,7 +6534,7 @@ export default function Dashboard() {
               </div>
             )}
             {completedReadingCount > 0 && (
-              <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '20px', right: '-1px' }}>
+              <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
                 {completedReadingCount}
               </div>
             )}
@@ -6615,7 +6615,7 @@ export default function Dashboard() {
                 </div>
               )}
               {completedCount > 0 && (
-                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
                   {completedCount}
                 </div>
               )}
@@ -6657,7 +6657,7 @@ export default function Dashboard() {
                 </div>
               )}
               {completedCount > 0 && (
-                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
                   {completedCount}
                 </div>
               )}
@@ -6699,7 +6699,7 @@ export default function Dashboard() {
                 </div>
               )}
               {completedCount > 0 && (
-                <div className="absolute bg-gray-500 text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '20px', right: '1px' }}>
+                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
                   {completedCount}
                 </div>
               )}
