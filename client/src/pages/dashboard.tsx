@@ -9023,16 +9023,23 @@ export default function Dashboard() {
                                                 e.stopPropagation();
                                                 e.currentTarget.style.backgroundColor = '';
                                                 const fileId = e.dataTransfer.getData('text/plain');
-                                                if (fileId && draggedFileForMove && draggedFileForMove.folder !== contentFolderId) {
+                                                console.log('Drop event:', { fileId, draggedFileForMove, contentFolderId });
+                                                if (fileId) {
                                                   try {
-                                                    await fetch(`/api/files/${fileId}`, {
+                                                    const res = await fetch(`/api/files/${fileId}`, {
                                                       method: 'PATCH',
                                                       headers: { 'Content-Type': 'application/json' },
                                                       body: JSON.stringify({ folder: contentFolderId })
                                                     });
-                                                    queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                                                    toast({ title: "File moved successfully" });
+                                                    console.log('Move response:', res.status);
+                                                    if (res.ok) {
+                                                      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                      toast({ title: "File moved successfully" });
+                                                    } else {
+                                                      toast({ title: "Failed to move file", variant: "destructive" });
+                                                    }
                                                   } catch (err) {
+                                                    console.error('Move error:', err);
                                                     toast({ title: "Failed to move file", variant: "destructive" });
                                                   }
                                                 }
