@@ -10198,7 +10198,7 @@ export default function Dashboard() {
                                     className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
                                     data-testid={`button-edit-project-${project.id}`}
                                   >
-                                    <Pencil className="w-3.5 h-3.5 text-black" />
+                                    <Pencil className="w-3.5 h-3.5 !text-black" />
                                   </Button>
                                   <Button 
                                     size="icon" 
@@ -10211,7 +10211,7 @@ export default function Dashboard() {
                                     className="h-7 w-7 text-white hover:text-white hover:bg-white/20"
                                     data-testid={`button-delete-project-${project.id}`}
                                   >
-                                    <Trash2 className="w-3.5 h-3.5 text-black" />
+                                    <Trash2 className="w-3.5 h-3.5 !text-black" />
                                   </Button>
                                 </div>
                               </div>
@@ -10285,7 +10285,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <div style={{ height: '14px' }} />
+                              <div style={{ height: '24px' }} />
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
