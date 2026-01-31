@@ -8981,7 +8981,6 @@ export default function Dashboard() {
                             const fileId = e.dataTransfer.getData('text/plain');
                             // Default to first course's reading folder
                             const targetFolder = `${week.id}-cppa122-reading`;
-                            console.log('Week drop:', { fileId, targetFolder });
                             if (fileId) {
                               try {
                                 const res = await fetch(`/api/files/${fileId}`, {
@@ -9041,7 +9040,6 @@ export default function Dashboard() {
                                       const fileId = e.dataTransfer.getData('text/plain');
                                       // Default to 'reading' content folder when dropping on course
                                       const targetFolder = `${week.id}-${course.id}-reading`;
-                                      console.log('Course drop:', { fileId, targetFolder });
                                       if (fileId) {
                                         try {
                                           const res = await fetch(`/api/files/${fileId}`, {
@@ -9099,7 +9097,6 @@ export default function Dashboard() {
                                                 e.stopPropagation();
                                                 e.currentTarget.style.backgroundColor = '';
                                                 const fileId = e.dataTransfer.getData('text/plain');
-                                                console.log('Drop event:', { fileId, draggedFileForMove, contentFolderId });
                                                 if (fileId) {
                                                   try {
                                                     const res = await fetch(`/api/files/${fileId}`, {
@@ -9107,7 +9104,6 @@ export default function Dashboard() {
                                                       headers: { 'Content-Type': 'application/json' },
                                                       body: JSON.stringify({ folder: contentFolderId })
                                                     });
-                                                    console.log('Move response:', res.status);
                                                     if (res.ok) {
                                                       queryClient.invalidateQueries({ queryKey: ['/api/files'] });
                                                       toast({ title: "File moved successfully" });
@@ -9115,7 +9111,6 @@ export default function Dashboard() {
                                                       toast({ title: "Failed to move file", variant: "destructive" });
                                                     }
                                                   } catch (err) {
-                                                    console.error('Move error:', err);
                                                     toast({ title: "Failed to move file", variant: "destructive" });
                                                   }
                                                 }
