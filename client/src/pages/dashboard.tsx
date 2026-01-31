@@ -10066,13 +10066,13 @@ export default function Dashboard() {
               <div 
                 className="flex items-center justify-between px-6 py-3 bg-black/30 border-b border-white/20"
               >
-                <div className="flex items-center gap-3">
-                  <FolderOpen className="h-4 w-4 text-white" />
-                  <h2 className="text-sm font-bold text-white">
-                    Projects
+                <div className="flex items-center gap-2">
+                  <FolderOpen className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    PROJECTS ({allProjects.length})
                   </h2>
-                  <span className="text-xs text-white/70">
-                    {allProjects.length} projects, {allTasks.filter(t => t.projectId).length} tasks assigned
+                  <span className="text-[10px] text-white/70">
+                    {allTasks.filter(t => t.projectId).length} tasks assigned
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
