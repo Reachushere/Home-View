@@ -10168,11 +10168,11 @@ export default function Dashboard() {
                               height: '240px'
                             }}
                           >
-                            {/* Project Header with Orange Gradient */}
+                            {/* Project Header with Brown */}
                             <div 
                               className="px-2 py-0.5"
                               style={{ 
-                                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)'
+                                background: '#160502'
                               }}
                             >
                               <div className="flex items-center justify-between gap-2">
