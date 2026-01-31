@@ -9688,20 +9688,14 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No other tasks this week</div>
               ) : (
                 <div className="space-y-0.5">
-                  {dueThisWeekTasks.map((task, idx) => {
-                    const prevTask = idx > 0 ? dueThisWeekTasks[idx - 1] : null;
-                    const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
-                    return (
-                      <div key={task.id}>
-                        {showCourseHeader && (
-                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
-                            {task.courseName}
-                          </div>
-                        )}
-                        {renderTask(task, true, 'thisweek')}
-                      </div>
-                    );
-                  })}
+                  {dueThisWeekTasks.map((task, idx) => (
+                    <div key={task.id}>
+                      {idx > 0 && (
+                        <div className="border-b border-white/20 my-1" />
+                      )}
+                      {renderTask(task, true, 'thisweek')}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
