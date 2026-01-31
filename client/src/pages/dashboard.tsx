@@ -9735,11 +9735,11 @@ export default function Dashboard() {
                     {task.title}
                   </button>
                   {/* Course code column - left aligned, white */}
-                  <div className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-10px' }}>
+                  <div className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-12px' }}>
                     {courseCode}
                   </div>
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white whitespace-nowrap truncate" style={{ maxWidth: '140px', marginLeft: '-12px' }}>
+                  <div className="text-[10px] text-white whitespace-nowrap truncate" style={{ maxWidth: '140px', marginLeft: '-14px' }}>
                     {courseFullName}
                   </div>
                   {/* Paperclip for attachments */}
