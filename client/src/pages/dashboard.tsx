@@ -6635,13 +6635,13 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '14px', width: '55px', height: '261px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '20px', width: '43px', height: '261px' }}>
         <div 
           style={{ 
             width: '100%', 
             height: '100%', 
             background: 'rgba(255, 255, 255, 0.35)',
-            borderRadius: '28px',
+            borderRadius: '22px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
             boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
           }} 
