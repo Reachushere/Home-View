@@ -6399,8 +6399,10 @@ export default function Dashboard() {
             data-readings-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
+              <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 5px)' }}>
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
+              </div>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
@@ -6433,8 +6435,10 @@ export default function Dashboard() {
             data-readings-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
+              <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 5px)' }}>
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
+              </div>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
@@ -6467,8 +6471,10 @@ export default function Dashboard() {
             data-readings-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
+              <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 5px)' }}>
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
+              </div>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
                   {unreadCount}
