@@ -5195,7 +5195,7 @@ export default function Dashboard() {
         </div>
 
         {/* All items with equal gaps - absolutely centered on screen */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center h-full" style={{ marginLeft: '-12px', zIndex: 50 }}>
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center h-full" style={{ marginLeft: '-11px', zIndex: 50 }}>
           {/* Icon buttons and task buttons with adjustable spacing */}
           <div className="flex items-center flex-wrap justify-center" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
           {/* Hamburger Menu */}
