@@ -6798,7 +6798,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 46}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 39}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6809,7 +6809,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 46}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 32}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6820,7 +6820,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 46}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 25}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6841,7 +6841,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 26}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 19}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
@@ -6885,7 +6885,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 26}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 12}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '50ms'
@@ -6928,7 +6928,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 26}px` : '331px',
+              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 5}px` : '331px',
               right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '100ms'
@@ -7004,7 +7004,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 46}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 39}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7015,7 +7015,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 46}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 32}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7026,7 +7026,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 46}px`}
+            y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 25}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7047,7 +7047,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 26}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 19}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '0ms'
@@ -7090,7 +7090,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 26}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 12}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '50ms'
@@ -7133,7 +7133,7 @@ export default function Dashboard() {
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
             style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 26}px` : '381px',
+              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 5}px` : '381px',
               right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
               transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
               transitionDelay: '100ms'
