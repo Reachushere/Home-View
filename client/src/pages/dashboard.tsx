@@ -9687,7 +9687,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 10px 24px 1fr 60px 90px 14px 70px 24px', gap: '4px', alignItems: 'center' }}>
+                <div className="flex items-center" style={{ display: 'grid', gridTemplateColumns: '16px 20px 48px 1fr 14px 60px 90px 70px 24px', gap: '4px', alignItems: 'center' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9703,23 +9703,23 @@ export default function Dashboard() {
                   ) : (
                     <div className="h-3.5 w-3.5" />
                   )}
-                  {/* Urgency dot column */}
+                  {/* Urgency dot column - doubled to 20px */}
                   <div 
                     className="rounded-full flex-shrink-0"
                     style={{ 
-                      width: '10px', 
-                      height: '10px', 
+                      width: '20px', 
+                      height: '20px', 
                       backgroundColor: progressColor,
                       boxShadow: `0 0 4px ${progressColor}`
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  {/* Progress oval column */}
+                  {/* Progress oval column - doubled to 48px */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
                     style={{ 
-                      width: '24px', 
-                      height: '8px', 
+                      width: '48px', 
+                      height: '16px', 
                       backgroundColor: progressColor,
                       opacity: 0.7
                     }}
@@ -9733,6 +9733,12 @@ export default function Dashboard() {
                   >
                     {task.title}
                   </button>
+                  {/* Paperclip for attachments */}
+                  {attachments.length > 0 ? (
+                    <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
+                  ) : (
+                    <div className="w-3" />
+                  )}
                   {/* Course code column - left aligned, white */}
                   <span className="text-[10px] text-white whitespace-nowrap text-left">
                     {courseCode}
@@ -9741,12 +9747,6 @@ export default function Dashboard() {
                   <span className="text-[10px] text-white whitespace-nowrap truncate text-left">
                     {courseFullName}
                   </span>
-                  {/* Paperclip for attachments */}
-                  {attachments.length > 0 ? (
-                    <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
-                  ) : (
-                    <div className="w-3" />
-                  )}
                   {/* Due date column - left aligned, white */}
                   {showDaysUntil ? (
                     <span className="text-[10px] text-white whitespace-nowrap text-left">
