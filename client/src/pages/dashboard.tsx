@@ -6172,7 +6172,7 @@ export default function Dashboard() {
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ width: '45px', height: '45px', top: '331px', right: '15px' }}
+            style={{ width: '45px', height: '45px', top: '331px', right: '19px' }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
           >
@@ -6192,7 +6192,7 @@ export default function Dashboard() {
         <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
           {/* Line to CPPA */}
           <line 
-            x1={`calc(100% - ${15 + 45}px)`} 
+            x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${331 + 15}px`}
             x2={`calc(100% - ${97 + 20}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
@@ -6203,7 +6203,7 @@ export default function Dashboard() {
           />
           {/* Line to CFNF */}
           <line 
-            x1={`calc(100% - ${15 + 45}px)`} 
+            x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${331 + 23}px`}
             x2={`calc(100% - ${97 + 20}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
@@ -6214,7 +6214,7 @@ export default function Dashboard() {
           />
           {/* Line to CASL */}
           <line 
-            x1={`calc(100% - ${15 + 45}px)`} 
+            x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${331 + 30}px`}
             x2={`calc(100% - ${97 + 20}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + 20}px`}
@@ -6335,7 +6335,7 @@ export default function Dashboard() {
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ width: '45px', height: '45px', top: '381px', right: '15px' }}
+            style={{ width: '45px', height: '45px', top: '381px', right: '19px' }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
             data-readings-button
           >
@@ -6355,7 +6355,7 @@ export default function Dashboard() {
         <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
           {/* Line to CPPA */}
           <line 
-            x1={`calc(100% - ${15 + 45}px)`} 
+            x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${381 + 15}px`}
             x2={`calc(100% - ${97 + 20}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
@@ -6366,7 +6366,7 @@ export default function Dashboard() {
           />
           {/* Line to CFNF */}
           <line 
-            x1={`calc(100% - ${15 + 45}px)`} 
+            x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${381 + 23}px`}
             x2={`calc(100% - ${97 + 20}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
@@ -6377,7 +6377,7 @@ export default function Dashboard() {
           />
           {/* Line to CASL */}
           <line 
-            x1={`calc(100% - ${15 + 45}px)`} 
+            x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${381 + 30}px`}
             x2={`calc(100% - ${97 + 20}px)`}
             y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + 20}px`}
