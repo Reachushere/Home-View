@@ -6172,7 +6172,7 @@ export default function Dashboard() {
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '331px', right: '15px' }}
+            style={{ width: '45px', height: '45px', top: '331px', right: '15px' }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
           >
@@ -6192,10 +6192,10 @@ export default function Dashboard() {
         <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
           {/* Line to CPPA */}
           <line 
-            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
-            y1={`${331 + gridSizes.courseRowHeight * 0.3}px`}
-            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            x1={`calc(100% - ${15 + 45}px)`} 
+            y1={`${331 + 15}px`}
+            x2={`calc(100% - ${97 + 20}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6203,10 +6203,10 @@ export default function Dashboard() {
           />
           {/* Line to CFNF */}
           <line 
-            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
-            y1={`${331 + gridSizes.courseRowHeight * 0.57}px`}
-            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            x1={`calc(100% - ${15 + 45}px)`} 
+            y1={`${331 + 23}px`}
+            x2={`calc(100% - ${97 + 20}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6214,10 +6214,10 @@ export default function Dashboard() {
           />
           {/* Line to CASL */}
           <line 
-            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
-            y1={`${331 + gridSizes.courseRowHeight * 0.84}px`}
-            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            x1={`calc(100% - ${15 + 45}px)`} 
+            y1={`${331 + 30}px`}
+            x2={`calc(100% - ${97 + 20}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + 20}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6248,7 +6248,7 @@ export default function Dashboard() {
             data-testid="honeycomb-cppa122"
             data-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '40px', height: '40px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
               {unreadCount > 0 && (
@@ -6282,7 +6282,7 @@ export default function Dashboard() {
             data-testid="honeycomb-cfnf400"
             data-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '40px', height: '40px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
               {unreadCount > 0 && (
@@ -6316,7 +6316,7 @@ export default function Dashboard() {
             data-testid="honeycomb-casl101"
             data-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '40px', height: '40px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
               {unreadCount > 0 && (
@@ -6335,7 +6335,7 @@ export default function Dashboard() {
         return (
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ width: gridSizes.courseRowHeight * 1.14, height: gridSizes.courseRowHeight * 1.14, top: '381px', right: '15px' }}
+            style={{ width: '45px', height: '45px', top: '381px', right: '15px' }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
             data-readings-button
           >
@@ -6355,10 +6355,10 @@ export default function Dashboard() {
         <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
           {/* Line to CPPA */}
           <line 
-            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
-            y1={`${381 + gridSizes.courseRowHeight * 0.3}px`}
-            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            x1={`calc(100% - ${15 + 45}px)`} 
+            y1={`${381 + 15}px`}
+            x2={`calc(100% - ${97 + 20}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6366,10 +6366,10 @@ export default function Dashboard() {
           />
           {/* Line to CFNF */}
           <line 
-            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
-            y1={`${381 + gridSizes.courseRowHeight * 0.57}px`}
-            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            x1={`calc(100% - ${15 + 45}px)`} 
+            y1={`${381 + 23}px`}
+            x2={`calc(100% - ${97 + 20}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6377,10 +6377,10 @@ export default function Dashboard() {
           />
           {/* Line to CASL */}
           <line 
-            x1={`calc(100% - ${15 + gridSizes.courseRowHeight * 1.14}px)`} 
-            y1={`${381 + gridSizes.courseRowHeight * 0.84}px`}
-            x2={`calc(100% - ${97 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + (gridSizes.courseRowHeight * 0.9 + 10) / 2}px`}
+            x1={`calc(100% - ${15 + 45}px)`} 
+            y1={`${381 + 30}px`}
+            x2={`calc(100% - ${97 + 20}px)`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + 20}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6411,7 +6411,7 @@ export default function Dashboard() {
             data-testid="honeycomb-readings-cppa122"
             data-readings-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '40px', height: '40px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
@@ -6445,7 +6445,7 @@ export default function Dashboard() {
             data-testid="honeycomb-readings-cfnf400"
             data-readings-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '40px', height: '40px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
@@ -6479,7 +6479,7 @@ export default function Dashboard() {
             data-testid="honeycomb-readings-casl101"
             data-readings-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '40px', height: '40px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
