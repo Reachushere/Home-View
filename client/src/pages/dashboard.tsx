@@ -6495,7 +6495,7 @@ export default function Dashboard() {
           width: '45px', 
           height: '45px', 
           top: '432px', 
-          right: '9px',
+          right: '17px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
           border: '1px solid rgba(80,80,80,0.5)'
@@ -6575,7 +6575,7 @@ export default function Dashboard() {
           width: '45px', 
           height: '45px', 
           top: '483px', 
-          right: '9px',
+          right: '17px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
           border: '1px solid rgba(80,80,80,0.5)'
@@ -6593,7 +6593,7 @@ export default function Dashboard() {
           width: '45px', 
           height: '45px', 
           top: '534px', 
-          right: '9px',
+          right: '17px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
           border: '1px solid rgba(80,80,80,0.5)'
