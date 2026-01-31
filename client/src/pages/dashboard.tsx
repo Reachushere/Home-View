@@ -10218,7 +10218,7 @@ export default function Dashboard() {
                             </div>
                             
                             {/* Project Body */}
-                            <div className="flex-1 p-4 text-white">
+                            <div className="flex-1 p-4 text-white flex flex-col">
                               <div className="flex flex-wrap items-center gap-1.5 mb-2">
                                 <Badge className={`text-[9px] px-1.5 py-0 h-4 ${
                                   project.status === 'completed' ? 'bg-green-500/30 text-green-300 border-green-500/50' :
@@ -10272,7 +10272,7 @@ export default function Dashboard() {
                                 )}
                               </div>
 
-                              <div className="space-y-1 mb-3">
+                              <div className="mt-auto space-y-1 mb-3">
                                 <div className="flex items-center justify-between text-xs text-white/70">
                                   <span>Progress</span>
                                   <span className="font-medium">{completedTasks.length}/{projectTasks.length} tasks</span>
