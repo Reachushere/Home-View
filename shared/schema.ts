@@ -145,6 +145,30 @@ export const insertCustomFolderSchema = createInsertSchema(customFolders).omit({
 export type CustomFolder = typeof customFolders.$inferSelect;
 export type InsertCustomFolder = z.infer<typeof insertCustomFolderSchema>;
 
+// Projects table - containers for grouping related tasks and workflows
+export const PROJECT_STATUSES = ["planning", "in_progress", "on_hold", "completed", "cancelled"] as const;
+export type ProjectStatus = typeof PROJECT_STATUSES[number];
+
+export const projects = pgTable("projects", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  color: text("color").default("#6366F1"), // Default indigo
+  status: text("status").default("planning"), // planning, in_progress, on_hold, completed, cancelled
+  courseName: text("course_name"), // Optional: associate with a course
+  startDate: timestamp("start_date"),
+  targetDate: timestamp("target_date"), // Target completion date
+  completedAt: timestamp("completed_at"),
+  priority: text("priority").default("medium"), // low, medium, high
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertProjectSchema = createInsertSchema(projects).omit({ id: true, createdAt: true, updatedAt: true });
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = z.infer<typeof insertProjectSchema>;
+
 // Subtasks table - child items of tasks with full scheduling support
 export const subtasks = pgTable("subtasks", {
   id: serial("id").primaryKey(),
@@ -195,6 +219,7 @@ export const tasks = pgTable("tasks", {
   description: text("description"),
   type: text("type").notNull(), // reading, module, essay, project, discussion, poll, exam, quiz
   courseName: text("course_name"),
+  projectId: integer("project_id"), // Optional: link task to a project
   startDate: timestamp("start_date"), // Optional: when to start working on the task (planning/prep period)
   dueDate: timestamp("due_date").notNull(),
   eventStartTime: text("event_start_time"), // Time the task/event starts (e.g., "09:00")
