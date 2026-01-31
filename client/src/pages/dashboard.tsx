@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu";
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -96,6 +97,7 @@ import {
   MoveUpRight,
   TrendingUp,
   TrendingDown,
+  Pencil,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -270,6 +272,8 @@ export default function Dashboard() {
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [uploadTargetFolder, setUploadTargetFolder] = useState<string>('week-3-cppa122-reading');
+  const [renameFileId, setRenameFileId] = useState<number | null>(null);
+  const [renameFileName, setRenameFileName] = useState<string>('');
   const [newFolderName, setNewFolderName] = useState('');
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
@@ -4472,6 +4476,72 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
+      {/* Rename File Dialog */}
+      <Dialog open={renameFileId !== null} onOpenChange={(open) => !open && setRenameFileId(null)}>
+        <DialogContent className="max-w-md bg-[#252526] border-white/20 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-sm">
+              <Pencil className="h-4 w-4" />
+              Rename File
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              value={renameFileName}
+              onChange={(e) => setRenameFileName(e.target.value)}
+              placeholder="Enter new name..."
+              className="bg-[#3c3c3c] border-[#5c5c5c] text-white"
+              data-testid="input-rename-file"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && renameFileName.trim() && renameFileId) {
+                  fetch(`/api/files/${renameFileId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ displayName: renameFileName.trim() })
+                  }).then(() => {
+                    queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                    setRenameFileId(null);
+                    toast({ title: "File renamed" });
+                  }).catch(() => {
+                    toast({ title: "Failed to rename file", variant: "destructive" });
+                  });
+                }
+              }}
+            />
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => setRenameFileId(null)}
+                className="text-white/70 hover:text-white hover:bg-white/10"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (renameFileName.trim() && renameFileId) {
+                    fetch(`/api/files/${renameFileId}`, {
+                      method: 'PATCH',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ displayName: renameFileName.trim() })
+                    }).then(() => {
+                      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                      setRenameFileId(null);
+                      toast({ title: "File renamed" });
+                    }).catch(() => {
+                      toast({ title: "Failed to rename file", variant: "destructive" });
+                    });
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-500"
+                data-testid="button-confirm-rename"
+              >
+                Rename
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
         <DialogContent className="max-w-6xl max-h-[98vh] h-[95vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
@@ -8668,7 +8738,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
-          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'scale-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? '600px' : '0', height: isWeeksFlyoutOpen ? '70vh' : '0', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%)' : 'translate(-50%, -50%) scale(0)' }}>
+          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'scale-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? '900px' : '0', height: isWeeksFlyoutOpen ? '85vh' : '0', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%)' : 'translate(-50%, -50%) scale(0)' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -8700,7 +8770,17 @@ export default function Dashboard() {
             />
             <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 flex flex-col text-white relative rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)]">
               {/* Header with arrows and date */}
-              <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
+              <div className="flex items-center justify-between px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="h-7 px-2 text-xs text-white/80 hover:bg-white/20 rounded-md gap-1"
+                  onClick={() => setIsUploadDialogOpen(true)}
+                  data-testid="button-flyout-upload"
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  Upload
+                </Button>
                 <div className="flex items-center gap-1">
                   <Button 
                     variant="ghost" 
@@ -8730,7 +8810,7 @@ export default function Dashboard() {
                   size="icon" 
                   variant="ghost" 
                   onClick={() => setIsWeeksFlyoutOpen(false)}
-                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20 absolute right-1"
+                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20"
                   data-testid="button-close-weeks-flyout"
                 >
                   <X className="h-3 w-3" />
@@ -8863,42 +8943,74 @@ export default function Dashboard() {
                                             {isContentExpanded && (
                                               <div className="ml-3 space-y-0.5">
                                                 {contentFiles.map((file) => (
-                                                  <div
-                                                    key={file.id}
-                                                    draggable
-                                                    onDragStart={(e) => {
-                                                      e.dataTransfer.setData('application/json', JSON.stringify({ 
-                                                        url: file.objectPath, 
-                                                        name: file.displayName || file.originalName 
-                                                      }));
-                                                      setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
-                                                    }}
-                                                    onDragEnd={() => setDraggedFile(null)}
-                                                    className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded"
-                                                    onClick={() => setPreviewFile(file)}
-                                                  >
-                                                    <Checkbox
-                                                      checked={file.listened || false}
-                                                      onCheckedChange={async (checked) => {
-                                                        try {
-                                                          await fetch(`/api/files/${file.id}`, {
-                                                            method: 'PATCH',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify({ listened: checked === true })
-                                                          });
-                                                          queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                                                        } catch (err) {
-                                                          console.error('Failed to update listened status:', err);
-                                                        }
-                                                      }}
-                                                      onClick={(e) => e.stopPropagation()}
-                                                      className="h-3.5 w-3.5 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
-                                                    />
-                                                    <FileText className="h-3.5 w-3.5 text-white/50 shrink-0" />
-                                                    <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'text-white/40' : 'text-white/80'}`}>
-                                                      {file.displayName || file.originalName}
-                                                    </span>
-                                                  </div>
+                                                  <ContextMenu key={file.id}>
+                                                    <ContextMenuTrigger asChild>
+                                                      <div
+                                                        draggable
+                                                        onDragStart={(e) => {
+                                                          e.dataTransfer.setData('application/json', JSON.stringify({ 
+                                                            url: file.objectPath, 
+                                                            name: file.displayName || file.originalName 
+                                                          }));
+                                                          setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
+                                                        }}
+                                                        onDragEnd={() => setDraggedFile(null)}
+                                                        className="flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded"
+                                                        onClick={() => setPreviewFile(file)}
+                                                      >
+                                                        <Checkbox
+                                                          checked={file.listened || false}
+                                                          onCheckedChange={async (checked) => {
+                                                            try {
+                                                              await fetch(`/api/files/${file.id}`, {
+                                                                method: 'PATCH',
+                                                                headers: { 'Content-Type': 'application/json' },
+                                                                body: JSON.stringify({ listened: checked === true })
+                                                              });
+                                                              queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                            } catch (err) {
+                                                              console.error('Failed to update listened status:', err);
+                                                            }
+                                                          }}
+                                                          onClick={(e) => e.stopPropagation()}
+                                                          className="h-3.5 w-3.5 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+                                                        />
+                                                        <FileText className="h-3.5 w-3.5 text-white/50 shrink-0" />
+                                                        <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'text-white/40' : 'text-white/80'}`}>
+                                                          {file.displayName || file.originalName}
+                                                        </span>
+                                                      </div>
+                                                    </ContextMenuTrigger>
+                                                    <ContextMenuContent className="bg-[#252526] border-white/20">
+                                                      <ContextMenuItem 
+                                                        className="text-white/90 focus:bg-white/10 focus:text-white cursor-pointer"
+                                                        onClick={() => {
+                                                          setRenameFileId(file.id);
+                                                          setRenameFileName(file.displayName || file.originalName);
+                                                        }}
+                                                      >
+                                                        <Pencil className="h-3.5 w-3.5 mr-2" />
+                                                        Rename
+                                                      </ContextMenuItem>
+                                                      <ContextMenuItem 
+                                                        className="text-red-400 focus:bg-red-500/20 focus:text-red-300 cursor-pointer"
+                                                        onClick={async () => {
+                                                          if (confirm(`Delete "${file.displayName || file.originalName}"?`)) {
+                                                            try {
+                                                              await fetch(`/api/files/${file.id}`, { method: 'DELETE' });
+                                                              queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                              toast({ title: "File deleted" });
+                                                            } catch (err) {
+                                                              toast({ title: "Failed to delete file", variant: "destructive" });
+                                                            }
+                                                          }
+                                                        }}
+                                                      >
+                                                        <Trash2 className="h-3.5 w-3.5 mr-2" />
+                                                        Delete
+                                                      </ContextMenuItem>
+                                                    </ContextMenuContent>
+                                                  </ContextMenu>
                                                 ))}
                                               </div>
                                             )}
