@@ -1062,22 +1062,15 @@ export async function registerRoutes(
       // Apply boxed content filter
       textContent = filterBoxedContent(textContent);
       
-      // Clean up the text while preserving formatting structure
+      // Apply the same TTS cleaning to display text (removes French, JSTOR refs, URLs, etc.)
+      // This ensures what users see matches what they hear
+      textContent = cleanTextForTTS(textContent);
+      
+      // Restore some formatting for display (TTS cleaning removes newlines)
+      // Re-add paragraph breaks where there were multiple spaces
       textContent = textContent
-        // Convert fancy quotes to regular quotes
-        .replace(/[\u2018\u2019]/g, "'")
-        .replace(/[\u201C\u201D]/g, '"')
-        // Convert dashes
-        .replace(/[\u2013\u2014]/g, "-")
-        // Preserve bullet characters
-        .replace(/[\u2022\u25CF\u25E6\u25AA\u25AB]/g, '•')
-        // Keep alphanumeric, punctuation, newlines, and common symbols
-        .replace(/[^\x20-\x7E\n•→►▶]/g, ' ')
-        // Normalize multiple spaces (but not newlines)
-        .replace(/[ \t]+/g, ' ')
-        // Preserve single line breaks (likely formatting)
-        // but collapse 3+ into 2
-        .replace(/\n{3,}/g, '\n\n')
+        .replace(/\. {2,}/g, '.\n\n')
+        .replace(/\s+/g, ' ')
         .trim();
 
       res.json({ text: textContent, fileName: file.displayName || file.originalName });
@@ -1838,13 +1831,8 @@ export async function registerRoutes(
         cleanedContent = cleanedContent.substring(0, 3000);
       }
       // Save session for resume functionality - store full cleaned text (up to 100,000 chars)
-      const fullCleanedText = textContent.trim()
-        .replace(/\s+/g, ' ')
-        .replace(/[\u2018\u2019]/g, "'")
-        .replace(/[\u201C\u201D]/g, '"')
-        .replace(/[\u2013\u2014]/g, "-")
-        .replace(/[^\x20-\x7E]/g, ' ')
-        .replace(/\s+/g, ' ').trim();
+      // Apply the same French/JSTOR filtering to the full text so all chunks are clean
+      const fullCleanedText = cleanTextForTTS(textContent);
       
       currentTTSSession = {
         fullText: fullCleanedText.length > 100000 ? fullCleanedText.substring(0, 100000) : fullCleanedText,
