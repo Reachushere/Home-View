@@ -10252,7 +10252,7 @@ export default function Dashboard() {
                               </div>
 
                               {project.description && (
-                                <p className="text-xs text-white/70 mb-3 line-clamp-2">
+                                <p className="text-[10px] text-white/70 mb-3 line-clamp-2">
                                   {project.description}
                                 </p>
                               )}
