@@ -9674,8 +9674,8 @@ export default function Dashboard() {
             const progressColor = boxType === 'today' ? '#ef4444' : boxType === 'tomorrow' ? '#eab308' : (daysUntil <= 3 ? '#eab308' : '#22c55e');
             
             // Parse course code and name (format: "CPPA122" or "CPPA122 - Full Name")
-            const courseCode = task.courseName?.split(' - ')[0] || '';
-            const courseFullName = task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '';
+            const courseCode = (task.courseName?.split(' - ')[0] || '').trim();
+            const courseFullName = (task.courseName?.includes(' - ') ? task.courseName.split(' - ').slice(1).join(' - ') : '').trim();
             
             return (
               <div 
