@@ -9804,10 +9804,10 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-3 mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 17px + 14px)', marginLeft: '-17px', marginRight: '-14px' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-[6px] mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 17px + 14px)', marginLeft: '-17px', marginRight: '-14px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[85px] sm:min-h-[125px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
               background: 'rgba(255, 255, 255, 0.35)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
@@ -9860,7 +9860,7 @@ export default function Dashboard() {
 
           {/* Due Today - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[85px] sm:min-h-[125px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
               background: 'rgba(255, 255, 255, 0.35)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
@@ -9918,7 +9918,7 @@ export default function Dashboard() {
 
           {/* Due Tomorrow - CSS Box */}
           <section 
-            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[85px] sm:min-h-[125px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
+            className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
               background: 'rgba(255, 255, 255, 0.35)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
