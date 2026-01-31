@@ -9719,7 +9719,7 @@ export default function Dashboard() {
                     className="rounded-full transition-all duration-300 flex-shrink-0"
                     style={{ 
                       width: '48px', 
-                      height: '4px', 
+                      height: '3px', 
                       backgroundColor: progressColor,
                       opacity: 0.7
                     }}
@@ -9730,7 +9730,7 @@ export default function Dashboard() {
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
-                    style={{ textAlign: 'left' }}
+                    style={{ textAlign: 'left', marginLeft: '1px' }}
                   >
                     {task.title}
                   </button>
