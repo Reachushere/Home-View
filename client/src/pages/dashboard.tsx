@@ -10272,7 +10272,7 @@ export default function Dashboard() {
                                 )}
                               </div>
 
-                              <div className="mt-auto space-y-1">
+                              <div className="mt-auto space-y-1 mb-3">
                                 <div className="flex items-center justify-between text-[10px] text-white/70">
                                   <span>Progress</span>
                                   <span className="font-medium">{completedTasks.length}/{projectTasks.length} tasks</span>
@@ -10285,7 +10285,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <div style={{ height: '30px' }} />
+                              <div style={{ height: '50px', background: 'rgba(255,0,0,0.3)' }} />
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
