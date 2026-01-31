@@ -9405,20 +9405,17 @@ export default function Dashboard() {
                 data-testid={`droppable-task-${task.id}`}
               >
                 <div className="flex items-center gap-2">
-                  {/* Days until due progress bar - horizontal */}
+                  {/* Days until due - colored urgency dot */}
                   <div 
-                    className="flex-shrink-0 rounded-full overflow-hidden" 
-                    style={{ width: '24px', height: '4px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                    className="flex-shrink-0 rounded-full"
+                    style={{ 
+                      width: '8px', 
+                      height: '8px', 
+                      backgroundColor: progressColor,
+                      boxShadow: `0 0 4px ${progressColor}`
+                    }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
-                  >
-                    <div 
-                      className="h-full rounded-full transition-all duration-300"
-                      style={{ 
-                        width: `${progressPercent}%`, 
-                        backgroundColor: progressColor
-                      }}
-                    />
-                  </div>
+                  />
                   {!isCASL101Task(task) && (
                     <input
                       type="checkbox"
