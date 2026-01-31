@@ -9832,7 +9832,7 @@ export default function Dashboard() {
                 className="text-xs font-normal text-white"
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}
               >
-                ToDo
+                To Do
               </h4>
               <button 
                 onClick={() => setIsTodoFlyoutOpen(false)}
