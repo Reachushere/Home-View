@@ -6628,7 +6628,7 @@ export default function Dashboard() {
       </div>
       
       {/* Date Range above arrows (20px above) */}
-      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '318px', right: '11px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '310px', right: '11px', width: '70px' }}>
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "MMM d")}</span>
         <span className="text-[10px] text-white/60">-</span>
         <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
