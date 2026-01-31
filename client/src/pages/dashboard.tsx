@@ -1010,6 +1010,16 @@ export default function Dashboard() {
     } : { r: 107, g: 114, b: 128 }; // gray fallback
   };
   
+  // Helper to generate button gradient from course hex color
+  const getButtonGradient = (hex: string): string => {
+    const rgb = hexToRgb(hex);
+    // Create a lighter version for the gradient end
+    const lighterR = Math.min(255, rgb.r + 80);
+    const lighterG = Math.min(255, rgb.g + 80);
+    const lighterB = Math.min(255, rgb.b + 80);
+    return `linear-gradient(180deg, rgb(${rgb.r}, ${rgb.g}, ${rgb.b}) 0%, rgb(${lighterR}, ${lighterG}, ${lighterB}) 100%)`;
+  };
+  
   // Dynamic course colors based on coursesData
   const dynamicCourseColors = useMemo(() => {
     const colors: Record<string, { bg: string; border: string; text: string; dot: string; prepBg: string; prepBorder: string; prepText: string; hex: string }> = {};
@@ -6768,10 +6778,13 @@ export default function Dashboard() {
       )}
       
       {/* Modules Course Buttons - Spring from modules button (331px) to course row positions */}
-      {/* CPPA122 - Green Row */}
+      {/* CPPA122 - Course 1 */}
       {(() => {
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('module') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('module') && f.listened).length;
+        const courseCode = coursesData.courses[0]?.name?.split(' - ')[0]?.toUpperCase() || 'CPPA122';
+        const courseHex = coursesData.courses[0]?.color || '#4ADE80';
+        const courseId = courseCode.toLowerCase();
+        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6783,7 +6796,7 @@ export default function Dashboard() {
             }}
             onClick={(e) => { 
               e.stopPropagation();
-              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('module'));
+              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
               if (moduleFile) setPreviewFile(moduleFile);
               setModulesHoneycombOpen(null); 
             }}
@@ -6792,8 +6805,8 @@ export default function Dashboard() {
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
               <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 3px)' }}>
-                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #4ADE80 0%, #A8FFC8 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
               </div>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
@@ -6810,10 +6823,13 @@ export default function Dashboard() {
         );
       })()}
       
-      {/* CFNF400 - Pink Row */}
+      {/* CFNF400 - Course 2 */}
       {(() => {
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('module') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('module') && f.listened).length;
+        const courseCode = coursesData.courses[1]?.name?.split(' - ')[0]?.toUpperCase() || 'CFNF400';
+        const courseHex = coursesData.courses[1]?.color || '#F472B6';
+        const courseId = courseCode.toLowerCase();
+        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6825,7 +6841,7 @@ export default function Dashboard() {
             }}
             onClick={(e) => { 
               e.stopPropagation();
-              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('module'));
+              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
               if (moduleFile) setPreviewFile(moduleFile);
               setModulesHoneycombOpen(null); 
             }}
@@ -6834,8 +6850,8 @@ export default function Dashboard() {
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
               <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 3px)' }}>
-                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #F472B6 0%, #FFD4EA 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
               </div>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
@@ -6852,10 +6868,13 @@ export default function Dashboard() {
         );
       })()}
       
-      {/* CASL101 - Indigo/Blue Row */}
+      {/* CASL101 - Course 3 */}
       {(() => {
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('module') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('module') && f.listened).length;
+        const courseCode = coursesData.courses[2]?.name?.split(' - ')[0]?.toUpperCase() || 'CASL101';
+        const courseHex = coursesData.courses[2]?.color || '#6366F1';
+        const courseId = courseCode.toLowerCase();
+        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6867,7 +6886,7 @@ export default function Dashboard() {
             }}
             onClick={(e) => { 
               e.stopPropagation();
-              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('module'));
+              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
               if (moduleFile) setPreviewFile(moduleFile);
               setModulesHoneycombOpen(null); 
             }}
@@ -6876,8 +6895,8 @@ export default function Dashboard() {
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
               <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 3px)' }}>
-                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #2C3CB8 0%, #BAA3D4 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
               </div>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
@@ -6961,10 +6980,13 @@ export default function Dashboard() {
       )}
       
       {/* Readings Course Buttons - Spring from readings button to SAME course row positions as modules */}
-      {/* CPPA122 - Green Row */}
+      {/* Course 1 Reading */}
       {(() => {
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('reading') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('reading') && f.listened).length;
+        const courseCode = coursesData.courses[0]?.name?.split(' - ')[0]?.toUpperCase() || 'CPPA122';
+        const courseHex = coursesData.courses[0]?.color || '#4ADE80';
+        const courseId = courseCode.toLowerCase();
+        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -6976,7 +6998,7 @@ export default function Dashboard() {
             }}
             onClick={(e) => { 
               e.stopPropagation();
-              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cppa122`) && f.folder?.includes('reading'));
+              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
               if (readingFile) setPreviewFile(readingFile);
               setModulesHoneycombOpen(null); 
             }}
@@ -6985,7 +7007,7 @@ export default function Dashboard() {
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
               <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 3px)' }}>
-                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #4ADE80 0%, #A8FFC8 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
                 <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               </div>
               {unreadCount > 0 && (
@@ -7003,10 +7025,13 @@ export default function Dashboard() {
         );
       })()}
       
-      {/* CFNF400 - Pink Row */}
+      {/* Course 2 Reading */}
       {(() => {
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('reading') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('reading') && f.listened).length;
+        const courseCode = coursesData.courses[1]?.name?.split(' - ')[0]?.toUpperCase() || 'CFNF400';
+        const courseHex = coursesData.courses[1]?.color || '#F472B6';
+        const courseId = courseCode.toLowerCase();
+        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -7018,7 +7043,7 @@ export default function Dashboard() {
             }}
             onClick={(e) => { 
               e.stopPropagation();
-              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-cfnf400`) && f.folder?.includes('reading'));
+              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
               if (readingFile) setPreviewFile(readingFile);
               setModulesHoneycombOpen(null); 
             }}
@@ -7027,7 +7052,7 @@ export default function Dashboard() {
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
               <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 3px)' }}>
-                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #F472B6 0%, #FFD4EA 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
                 <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               </div>
               {unreadCount > 0 && (
@@ -7045,10 +7070,13 @@ export default function Dashboard() {
         );
       })()}
       
-      {/* CASL101 - Indigo/Blue Row */}
+      {/* Course 3 Reading */}
       {(() => {
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('reading') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('reading') && f.listened).length;
+        const courseCode = coursesData.courses[2]?.name?.split(' - ')[0]?.toUpperCase() || 'CASL101';
+        const courseHex = coursesData.courses[2]?.color || '#6366F1';
+        const courseId = courseCode.toLowerCase();
+        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && !f.listened).length;
+        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && f.listened).length;
         return (
           <div 
             className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
@@ -7060,7 +7088,7 @@ export default function Dashboard() {
             }}
             onClick={(e) => { 
               e.stopPropagation();
-              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-casl101`) && f.folder?.includes('reading'));
+              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
               if (readingFile) setPreviewFile(readingFile);
               setModulesHoneycombOpen(null); 
             }}
@@ -7069,7 +7097,7 @@ export default function Dashboard() {
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '42px', height: '42px' }}>
               <div className="absolute inset-0 pointer-events-none" style={{ transform: 'translate(-3px, 3px)' }}>
-                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #2C3CB8 0%, #BAA3D4 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
                 <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               </div>
               {unreadCount > 0 && (
