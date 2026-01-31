@@ -5902,7 +5902,7 @@ export default function Dashboard() {
             variant="ghost" 
             size="sm" 
             className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} 
-            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '0px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
+            style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
             data-testid="button-projects"
             onClick={() => setIsProjectsFlyoutOpen(true)}
           >
@@ -5910,7 +5910,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-24px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-31px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
 
                     </div>
         </div>
