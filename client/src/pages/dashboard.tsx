@@ -5760,8 +5760,13 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Projects Button */}
+          <RouterLink href="/projects">
+            <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-projects">+ Projects</Button>
+          </RouterLink>
+
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '4px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
 
                     </div>
         </div>
@@ -11548,11 +11553,23 @@ function TaskForm({
       if (task) {
         return apiRequest("PATCH", `/api/tasks/${task.id}`, payload);
       }
-      return apiRequest("POST", "/api/tasks", payload);
+      // Create the task and return the response to get the new task ID
+      const response = await apiRequest("POST", "/api/tasks", payload);
+      const newTask = await response.json();
+      
+      // If there are pending subtasks, create them for the new task
+      if (pendingSubtasks.length > 0 && newTask?.id) {
+        for (const subtaskTitle of pendingSubtasks) {
+          await apiRequest("POST", `/api/tasks/${newTask.id}/subtasks`, { title: subtaskTitle });
+        }
+      }
+      
+      return newTask;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
       queryClient.invalidateQueries({ queryKey: ["/api/weeks"] });
+      setPendingSubtasks([]); // Clear pending subtasks after successful creation
       onSuccess();
     },
   });
@@ -12075,6 +12092,71 @@ function TaskForm({
           </div>
         </div>
       </div>
+
+      {/* Subtasks Section for NEW tasks - Pending subtasks */}
+      {!task && (
+        <div className="border border-white/20 rounded-lg p-3 space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="text-xs font-medium">Subtasks (optional)</Label>
+            <span className="text-[10px] text-white/60">{pendingSubtasks.length} subtask{pendingSubtasks.length !== 1 ? 's' : ''}</span>
+          </div>
+          
+          {pendingSubtasks.length > 0 && (
+            <div className="space-y-1">
+              {pendingSubtasks.map((subtask, index) => (
+                <div key={index} className="flex items-center gap-2 bg-white/5 rounded px-2 py-1.5">
+                  <div className="w-3 h-3 rounded-full border border-white/40" />
+                  <span className="flex-1 text-xs">{subtask}</span>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="ghost"
+                    className="h-5 w-5 hover:bg-red-500/20"
+                    onClick={() => setPendingSubtasks(prev => prev.filter((_, i) => i !== index))}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+          
+          <div className="flex gap-2">
+            <Input
+              placeholder="Add a subtask..."
+              value={newPendingSubtask}
+              onChange={(e) => setNewPendingSubtask(e.target.value)}
+              className="flex-1 h-8 text-xs bg-black/20 border-white/20"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (newPendingSubtask.trim()) {
+                    setPendingSubtasks(prev => [...prev, newPendingSubtask.trim()]);
+                    setNewPendingSubtask("");
+                  }
+                }
+              }}
+              data-testid="input-new-subtask"
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs border-white/20 hover:bg-white/10"
+              onClick={() => {
+                if (newPendingSubtask.trim()) {
+                  setPendingSubtasks(prev => [...prev, newPendingSubtask.trim()]);
+                  setNewPendingSubtask("");
+                }
+              }}
+              data-testid="button-add-subtask"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Add
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Subtasks Section - Only show when editing existing task */}
       {task && (

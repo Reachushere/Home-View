@@ -1784,6 +1784,17 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/links - Get all task links
+  app.get("/api/links", async (req, res) => {
+    try {
+      const links = await storage.getAllTaskLinks();
+      res.json(links);
+    } catch (err) {
+      console.error("Error fetching all task links:", err);
+      res.status(500).json({ message: "Failed to fetch task links" });
+    }
+  });
+
   // POST /api/links - Create a new link between tasks/subtasks
   app.post("/api/links", async (req, res) => {
     try {

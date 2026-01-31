@@ -39,6 +39,7 @@ export interface IStorage {
   deleteSubtask(id: number): Promise<void>;
   deleteSubtasksByTask(taskId: number): Promise<void>;
   // Task Links
+  getAllTaskLinks(): Promise<TaskLink[]>;
   getLinksForTask(taskId: number): Promise<TaskLink[]>;
   getLinksForSubtask(subtaskId: number): Promise<TaskLink[]>;
   createTaskLink(link: InsertTaskLink): Promise<TaskLink>;
@@ -323,6 +324,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Task Link methods
+  async getAllTaskLinks(): Promise<TaskLink[]> {
+    return await db.select().from(taskLinks);
+  }
+
   async getLinksForTask(taskId: number): Promise<TaskLink[]> {
     return await db.select().from(taskLinks).where(
       or(
