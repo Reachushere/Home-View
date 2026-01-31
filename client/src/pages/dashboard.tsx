@@ -10299,8 +10299,7 @@ export default function Dashboard() {
                                     return next;
                                   });
                                 }}
-                                className="w-full justify-center gap-1 text-white/70 hover:text-white hover:bg-white/10 text-[10px]"
-                                style={{ marginTop: '14px' }}
+                                className="w-full justify-center gap-1 text-white/70 hover:text-white hover:bg-white/10 text-[10px] mt-[14px]"
                               >
                                 {isExpanded ? 'Hide Tasks' : `Show Tasks (${projectTasks.length})`}
                               </Button>
