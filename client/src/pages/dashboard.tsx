@@ -10219,13 +10219,7 @@ export default function Dashboard() {
                             
                             {/* Project Body */}
                             <div className="flex-1 p-4 text-white">
-                              {project.description && (
-                                <p className="text-xs text-white/70 mb-3 line-clamp-2">
-                                  {project.description}
-                                </p>
-                              )}
-                              
-                              <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                              <div className="flex flex-wrap items-center gap-1.5 mb-2">
                                 <Badge className={`text-[9px] px-1.5 py-0 h-4 ${
                                   project.status === 'completed' ? 'bg-green-500/30 text-green-300 border-green-500/50' :
                                   project.status === 'in_progress' ? 'bg-yellow-500/30 text-yellow-300 border-yellow-500/50' :
@@ -10256,6 +10250,12 @@ export default function Dashboard() {
                                   </Badge>
                                 )}
                               </div>
+
+                              {project.description && (
+                                <p className="text-xs text-white/70 mb-3 line-clamp-2">
+                                  {project.description}
+                                </p>
+                              )}
 
                               <div className="flex items-center gap-4 text-xs text-white/60 mb-3">
                                 {project.startDate && (
