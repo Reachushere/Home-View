@@ -4832,7 +4832,7 @@ export default function Dashboard() {
           <DropdownMenu onOpenChange={(open) => { if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className={`!h-[44px] !w-[44px] !min-h-[44px] !min-w-[44px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200`} style={{ 
-                  background: 'linear-gradient(180deg, #052F5B 0%, #4D84C1 100%)',
+                  background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
                   boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
                   marginTop: '4px' 
                 }} data-testid="button-hamburger-menu">
@@ -6095,7 +6095,7 @@ export default function Dashboard() {
         <div 
           style={{ 
             width: '48px', 
-            height: '634px', 
+            height: '624px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '24px',
             border: '1px solid rgba(255, 255, 255, 0.4)',
