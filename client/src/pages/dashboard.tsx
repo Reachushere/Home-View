@@ -5869,9 +5869,10 @@ export default function Dashboard() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className={`!h-[40px] !w-[40px] !min-h-[40px] !min-w-[40px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 transition-all duration-200 ${completedTaskHistory.length > 0 ? "" : "opacity-50"}`}
+              className={`!h-[40px] !w-[40px] !min-h-[40px] !min-w-[40px] !p-0 aspect-square rounded-full border-0 hover:opacity-80 transition-all duration-200 !bg-none ${completedTaskHistory.length > 0 ? "" : "opacity-50"}`}
               style={{ 
-                background: 'linear-gradient(0deg, #FF6E3D 0%, #FFDD63 100%)'
+                background: 'linear-gradient(0deg, #FF6E3D 0%, #FFDD63 100%)',
+                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)'
               }}
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
               disabled={completedTaskHistory.length === 0}
