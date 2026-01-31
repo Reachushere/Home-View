@@ -9416,6 +9416,17 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
+                  {/* Progress oval - wider when farther away */}
+                  <div 
+                    className="flex-shrink-0 rounded-full transition-all duration-300"
+                    style={{ 
+                      width: `${Math.max(4, Math.min(24, daysUntil * 4))}px`, 
+                      height: '6px', 
+                      backgroundColor: progressColor,
+                      opacity: 0.7
+                    }}
+                    title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
+                  />
                   {!isCASL101Task(task) && (
                     <input
                       type="checkbox"
