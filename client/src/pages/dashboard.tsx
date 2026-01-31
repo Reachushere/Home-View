@@ -8218,13 +8218,15 @@ export default function Dashboard() {
                               const isBeforeToday = dayOfWeek < currentDayOfWeek;
                               const isTodayColumn = dayOfWeek === currentDayOfWeek;
                               const isFriday = dayOfWeek === 5;
+                              const isActualToday = isSameDay(day, today);
+                              const cellBg = isActualToday ? '#280B05' : course.bg;
                               
                               // If this day is before today, show empty cell
                               if (isBeforeToday) {
                                 return (
                                   <div 
                                     key={dayIdx}
-                                    style={{ backgroundColor: course.bg }}
+                                    style={{ backgroundColor: cellBg }}
                                   />
                                 );
                               }
@@ -8235,7 +8237,7 @@ export default function Dashboard() {
                                 return (
                                   <div 
                                     key={dayIdx}
-                                    style={{ backgroundColor: course.bg }}
+                                    style={{ backgroundColor: cellBg }}
                                   />
                                 );
                               }
@@ -8263,7 +8265,7 @@ export default function Dashboard() {
                                   ? `border ${borderColor} rounded`
                                   : `border-l border-t border-b ${borderColor} rounded-l`;
                                 return (
-                                  <div key={dayIdx} className="flex items-center" style={{ backgroundColor: course.bg }}>
+                                  <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg }}>
                                     <div 
                                       className={`flex-1 flex items-center gap-1 text-[8px] px-1 ml-0.5 ${isFriday ? 'mr-0.5' : ''} ${todayBorderClass} ${
                                         shouldBlink ? "animate-blink" : ""
@@ -8298,7 +8300,7 @@ export default function Dashboard() {
                                 ? `border-t border-b border-r ${borderColor} rounded-r`
                                 : `border-t border-b ${borderColor}`;
                               return (
-                                <div key={dayIdx} className="flex items-center" style={{ backgroundColor: course.bg }}>
+                                <div key={dayIdx} className="flex items-center" style={{ backgroundColor: cellBg }}>
                                   <div 
                                     className={`w-full ${bgOnly} ${contBorderClass} ${
                                       shouldBlink ? "animate-blink" : ""
@@ -8355,17 +8357,14 @@ export default function Dashboard() {
                   {weekDays.map((day, dayIdx) => {
                     // Course row day cells - prep tasks now appear in All Day row with extensions
                     const isDayToday = isSameDay(day, new Date());
-                    // Make today column slightly less transparent (75% of original opacity)
-                    const todayBg = course.bg.replace(/[\d.]+\)$/, (match) => {
-                      const opacity = parseFloat(match);
-                      return `${opacity * 0.75})`;
-                    });
+                    // Use solid color for today's column, no transparency
+                    const cellBgColor = isDayToday ? '#280B05' : course.bg;
                     return (
                       <div 
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
                         style={{ 
-                          backgroundColor: isDayToday ? todayBg : course.bg
+                          backgroundColor: cellBgColor
                         }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -8373,10 +8372,10 @@ export default function Dashboard() {
                           e.currentTarget.style.backgroundColor = '#8B8070';
                         }}
                         onDragLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = isDayToday ? todayBg : course.bg;
+                          e.currentTarget.style.backgroundColor = cellBgColor;
                         }}
                         onDrop={(e) => {
-                          e.currentTarget.style.backgroundColor = isDayToday ? todayBg : course.bg;
+                          e.currentTarget.style.backgroundColor = cellBgColor;
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       />
