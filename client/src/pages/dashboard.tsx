@@ -296,6 +296,7 @@ export default function Dashboard() {
   const [isResizingFlyout2, setIsResizingFlyout2] = useState(false);
   const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
+  const [isProjectsFlyoutOpen, setIsProjectsFlyoutOpen] = useState(false);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
   const toggleFlyoutFolder = (folderId: string) => {
