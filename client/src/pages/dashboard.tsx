@@ -6855,13 +6855,6 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Date Range above arrows (20px above) */}
-      <div className="absolute z-50 flex items-center justify-center gap-0.5" style={{ top: '310px', right: '7px', width: '70px' }}>
-        <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekStartDate, "MMM d")}</span>
-        <span className="text-[10px] text-white/60">-</span>
-        <span className="text-[10px] font-medium text-white whitespace-nowrap">{format(weekEndDate, "MMM d")}</span>
-      </div>
-      
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
       <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '14px', width: '52px', height: '259px' }}>
         <div 
