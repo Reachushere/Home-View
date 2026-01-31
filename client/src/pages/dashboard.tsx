@@ -6771,7 +6771,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 - 22}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 28}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6782,7 +6782,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 28}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 28}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6793,7 +6793,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3 - 28}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 4 - 28}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6976,7 +6976,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 - 22}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 - 28}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
