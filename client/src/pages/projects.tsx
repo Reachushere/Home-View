@@ -1066,19 +1066,15 @@ export default function ProjectsPage() {
             : "space-y-8"
           }>
             {filteredProjects.map((project) => (
-              <div 
+              <ProjectCard
                 key={project.id}
-                className="relative p-[7px] rounded-xl bg-white/50"
-              >
-                <ProjectCard
-                  project={project}
-                  tasks={tasksByProject.get(project.id) || []}
-                  onEdit={() => handleEditProject(project)}
-                  onDelete={() => handleDeleteProject(project.id)}
-                  expanded={expandedProjects.has(project.id)}
-                  onToggleExpand={() => toggleProjectExpanded(project.id)}
-                />
-              </div>
+                project={project}
+                tasks={tasksByProject.get(project.id) || []}
+                onEdit={() => handleEditProject(project)}
+                onDelete={() => handleDeleteProject(project.id)}
+                expanded={expandedProjects.has(project.id)}
+                onToggleExpand={() => toggleProjectExpanded(project.id)}
+              />
             ))}
           </div>
         )}
