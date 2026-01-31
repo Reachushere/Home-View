@@ -9824,7 +9824,7 @@ export default function Dashboard() {
           <section 
             className="h-[180px] overflow-hidden flex flex-col rounded-t-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white" 
             style={{
-              border: '1px solid rgba(255, 255, 255, 0.4)',
+              border: '2px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
             data-testid="section-todo"
