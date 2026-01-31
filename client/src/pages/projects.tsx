@@ -825,7 +825,8 @@ export default function ProjectsPage() {
                   size="sm"
                   onClick={() => setViewMode("grid")}
                   data-testid="button-view-grid"
-                  className="text-white hover:text-white hover:bg-white/10"
+                  style={{ background: 'linear-gradient(to bottom, #042550, #4578B0)' }}
+                  className="text-white hover:text-white border border-white/30"
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </Button>
