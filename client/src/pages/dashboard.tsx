@@ -5790,7 +5790,7 @@ export default function Dashboard() {
           </div>
           
           {/* Clock */}
-          <div className="flex items-center gap-1.5 rounded-full px-3.5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', left: '2px' }} data-testid="digital-clock">
+          <div className="flex items-center gap-1.5 rounded-full px-3.5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', left: '-2px' }} data-testid="digital-clock">
             <span className="text-[13px] text-white font-medium">
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
