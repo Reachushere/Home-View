@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, getWeekNumber } from "@shared/schema";
-import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, getWeekNumber } from "@shared/schema";
+import { eq, and, gte, lte, desc, or } from "drizzle-orm";
 
 export interface IStorage {
   getTasks(filters?: { weekNumber?: number; type?: string; showCompleted?: boolean }): Promise<Task[]>;
@@ -31,6 +31,18 @@ export interface IStorage {
   createCustomFolder(folder: InsertCustomFolder): Promise<CustomFolder>;
   updateCustomFolder(id: number, name: string): Promise<CustomFolder>;
   deleteCustomFolder(id: number): Promise<void>;
+  // Subtasks
+  getSubtasksByTask(taskId: number): Promise<Subtask[]>;
+  getSubtask(id: number): Promise<Subtask | undefined>;
+  createSubtask(subtask: InsertSubtask): Promise<Subtask>;
+  updateSubtask(id: number, updates: Partial<InsertSubtask>): Promise<Subtask>;
+  deleteSubtask(id: number): Promise<void>;
+  deleteSubtasksByTask(taskId: number): Promise<void>;
+  // Task Links
+  getLinksForTask(taskId: number): Promise<TaskLink[]>;
+  getLinksForSubtask(subtaskId: number): Promise<TaskLink[]>;
+  createTaskLink(link: InsertTaskLink): Promise<TaskLink>;
+  deleteTaskLink(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -238,6 +250,97 @@ export class DatabaseStorage implements IStorage {
 
   async deleteCustomFolder(id: number): Promise<void> {
     await db.delete(customFolders).where(eq(customFolders.id, id));
+  }
+
+  // Subtask methods
+  async getSubtasksByTask(taskId: number): Promise<Subtask[]> {
+    return await db.select().from(subtasks)
+      .where(eq(subtasks.parentTaskId, taskId))
+      .orderBy(subtasks.position, subtasks.createdAt);
+  }
+
+  async getSubtask(id: number): Promise<Subtask | undefined> {
+    const [subtask] = await db.select().from(subtasks).where(eq(subtasks.id, id));
+    return subtask;
+  }
+
+  async createSubtask(subtask: InsertSubtask): Promise<Subtask> {
+    const [created] = await db.insert(subtasks).values(subtask).returning();
+    return created;
+  }
+
+  async updateSubtask(id: number, updates: Partial<InsertSubtask>): Promise<Subtask> {
+    const modifiedUpdates = { ...updates } as typeof updates & { completedAt?: Date | null };
+    if ('isCompleted' in updates) {
+      if (updates.isCompleted === true) {
+        modifiedUpdates.completedAt = new Date();
+      } else if (updates.isCompleted === false) {
+        modifiedUpdates.completedAt = null;
+      }
+    }
+    const [updated] = await db
+      .update(subtasks)
+      .set(modifiedUpdates)
+      .where(eq(subtasks.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteSubtask(id: number): Promise<void> {
+    // Also delete any links associated with this subtask
+    await db.delete(taskLinks).where(
+      or(
+        and(eq(taskLinks.sourceType, 'subtask'), eq(taskLinks.sourceId, id)),
+        and(eq(taskLinks.targetType, 'subtask'), eq(taskLinks.targetId, id))
+      )
+    );
+    await db.delete(subtasks).where(eq(subtasks.id, id));
+  }
+
+  async deleteSubtasksByTask(taskId: number): Promise<void> {
+    // Get all subtask IDs for this task first
+    const taskSubtasks = await db.select({ id: subtasks.id }).from(subtasks)
+      .where(eq(subtasks.parentTaskId, taskId));
+    
+    // Delete links for each subtask
+    for (const sub of taskSubtasks) {
+      await db.delete(taskLinks).where(
+        or(
+          and(eq(taskLinks.sourceType, 'subtask'), eq(taskLinks.sourceId, sub.id)),
+          and(eq(taskLinks.targetType, 'subtask'), eq(taskLinks.targetId, sub.id))
+        )
+      );
+    }
+    
+    await db.delete(subtasks).where(eq(subtasks.parentTaskId, taskId));
+  }
+
+  // Task Link methods
+  async getLinksForTask(taskId: number): Promise<TaskLink[]> {
+    return await db.select().from(taskLinks).where(
+      or(
+        and(eq(taskLinks.sourceType, 'task'), eq(taskLinks.sourceId, taskId)),
+        and(eq(taskLinks.targetType, 'task'), eq(taskLinks.targetId, taskId))
+      )
+    );
+  }
+
+  async getLinksForSubtask(subtaskId: number): Promise<TaskLink[]> {
+    return await db.select().from(taskLinks).where(
+      or(
+        and(eq(taskLinks.sourceType, 'subtask'), eq(taskLinks.sourceId, subtaskId)),
+        and(eq(taskLinks.targetType, 'subtask'), eq(taskLinks.targetId, subtaskId))
+      )
+    );
+  }
+
+  async createTaskLink(link: InsertTaskLink): Promise<TaskLink> {
+    const [created] = await db.insert(taskLinks).values(link).returning();
+    return created;
+  }
+
+  async deleteTaskLink(id: number): Promise<void> {
+    await db.delete(taskLinks).where(eq(taskLinks.id, id));
   }
 }
 

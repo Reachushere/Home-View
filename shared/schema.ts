@@ -145,6 +145,50 @@ export const insertCustomFolderSchema = createInsertSchema(customFolders).omit({
 export type CustomFolder = typeof customFolders.$inferSelect;
 export type InsertCustomFolder = z.infer<typeof insertCustomFolderSchema>;
 
+// Subtasks table - child items of tasks with full scheduling support
+export const subtasks = pgTable("subtasks", {
+  id: serial("id").primaryKey(),
+  parentTaskId: integer("parent_task_id").notNull(), // Links to tasks.id
+  parentSubtaskId: integer("parent_subtask_id"), // Optional: for nested subtasks (hierarchy)
+  title: text("title").notNull(),
+  description: text("description"),
+  startDate: timestamp("start_date"), // When to start working on subtask
+  dueDate: timestamp("due_date"), // When subtask is due
+  eventStartTime: text("event_start_time"), // Time slot start
+  eventEndTime: text("event_end_time"), // Time slot end
+  weekNumber: integer("week_number"), // Derived from dueDate
+  isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"),
+  priority: text("priority").default("medium"), // low, medium, high
+  notes: text("notes"),
+  referenceLink: text("reference_link"),
+  attachments: text("attachments").array(),
+  position: integer("position").default(0), // For ordering subtasks
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSubtaskSchema = createInsertSchema(subtasks).omit({ id: true, createdAt: true });
+export type Subtask = typeof subtasks.$inferSelect;
+export type InsertSubtask = z.infer<typeof insertSubtaskSchema>;
+
+// Task links table - dependencies and relationships between tasks/subtasks
+export const LINK_TYPES = ["blocks", "blocked_by", "relates_to", "parent_of", "child_of"] as const;
+export type LinkType = typeof LINK_TYPES[number];
+
+export const taskLinks = pgTable("task_links", {
+  id: serial("id").primaryKey(),
+  sourceType: text("source_type").notNull(), // "task" or "subtask"
+  sourceId: integer("source_id").notNull(),
+  targetType: text("target_type").notNull(), // "task" or "subtask"
+  targetId: integer("target_id").notNull(),
+  linkType: text("link_type").notNull().default("relates_to"), // blocks, blocked_by, relates_to, etc.
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertTaskLinkSchema = createInsertSchema(taskLinks).omit({ id: true, createdAt: true });
+export type TaskLink = typeof taskLinks.$inferSelect;
+export type InsertTaskLink = z.infer<typeof insertTaskLinkSchema>;
+
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
