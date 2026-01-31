@@ -774,7 +774,8 @@ export default function ProjectsPage() {
         backgroundImage: `url(${projectsBg})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
+        fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif"
       }}
     >
       <header className="border-b border-white/20 sticky top-0 z-10 bg-black/40 backdrop-blur-sm">
@@ -845,11 +846,12 @@ export default function ProjectsPage() {
       <main className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-6">
           <div 
-            className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "all" ? "bg-white/50" : ""}`}
+            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "all" ? "bg-white/50" : ""}`}
             onClick={() => setStatusFilter("all")}
             data-testid="filter-all"
             style={{ 
               background: 'rgba(255, 255, 255, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)'
             }}
@@ -858,11 +860,12 @@ export default function ProjectsPage() {
             <div className="text-sm text-white/70">All Projects</div>
           </div>
           <div 
-            className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "in_progress" ? "bg-white/50" : ""}`}
+            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "in_progress" ? "bg-white/50" : ""}`}
             onClick={() => setStatusFilter("in_progress")}
             data-testid="filter-in-progress"
             style={{ 
               background: 'rgba(255, 255, 255, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)'
             }}
@@ -871,11 +874,12 @@ export default function ProjectsPage() {
             <div className="text-sm text-white/70">In Progress</div>
           </div>
           <div 
-            className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "planning" ? "bg-white/50" : ""}`}
+            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "planning" ? "bg-white/50" : ""}`}
             onClick={() => setStatusFilter("planning")}
             data-testid="filter-planning"
             style={{ 
               background: 'rgba(255, 255, 255, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)'
             }}
@@ -884,11 +888,12 @@ export default function ProjectsPage() {
             <div className="text-sm text-white/70">Planning</div>
           </div>
           <div 
-            className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "completed" ? "bg-white/50" : ""}`}
+            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "completed" ? "bg-white/50" : ""}`}
             onClick={() => setStatusFilter("completed")}
             data-testid="filter-completed"
             style={{ 
               background: 'rgba(255, 255, 255, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)'
             }}
@@ -897,11 +902,12 @@ export default function ProjectsPage() {
             <div className="text-sm text-white/70">Completed</div>
           </div>
           <div 
-            className={`cursor-pointer hover-elevate rounded-lg p-4 text-center ${statusFilter === "on_hold" ? "bg-white/50" : ""}`}
+            className={`cursor-pointer hover-elevate rounded-[12px] p-4 text-center ${statusFilter === "on_hold" ? "bg-white/50" : ""}`}
             onClick={() => setStatusFilter("on_hold")}
             data-testid="filter-on-hold"
             style={{ 
               background: 'rgba(255, 255, 255, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)'
             }}
