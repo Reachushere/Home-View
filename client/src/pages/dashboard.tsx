@@ -5184,7 +5184,7 @@ export default function Dashboard() {
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '5px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
 
           {/* Grad Hat Button - CSS Gradient */}
           <Button 
@@ -6176,7 +6176,7 @@ export default function Dashboard() {
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
           >
-            <img src={hamburgerBg} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+            <div className="w-full h-full rounded-full transition-transform duration-200 hover:scale-110" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
             <Library className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadModuleCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-3px', right: '1px' }}>
@@ -6249,7 +6249,7 @@ export default function Dashboard() {
             data-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-              <img src={hamburgerBg} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CPPA</span>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
@@ -6283,7 +6283,7 @@ export default function Dashboard() {
             data-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-              <img src={hamburgerBg} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CFNF</span>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
@@ -6317,7 +6317,7 @@ export default function Dashboard() {
             data-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-              <img src={hamburgerBg} alt="CASL" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>CASL</span>
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
@@ -6339,7 +6339,7 @@ export default function Dashboard() {
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
             data-readings-button
           >
-            <img src={hamburgerBg} alt="" className="w-full h-full object-contain transition-transform duration-200 hover:scale-110" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+            <div className="w-full h-full rounded-full transition-transform duration-200 hover:scale-110" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
             <BookOpenCheck className="absolute inset-0 m-auto" style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             {unreadReadingCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-3px', right: '1px' }}>
@@ -6412,7 +6412,7 @@ export default function Dashboard() {
             data-readings-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-              <img src={hamburgerBg} alt="CPPA" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
@@ -6446,7 +6446,7 @@ export default function Dashboard() {
             data-readings-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-              <img src={hamburgerBg} alt="CFNF" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
@@ -6480,7 +6480,7 @@ export default function Dashboard() {
             data-readings-course-button
           >
             <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: gridSizes.courseRowHeight * 0.9 + 10, height: gridSizes.courseRowHeight * 0.9 + 10 }}>
-              <img src={hamburgerBg} alt="CASL" className="w-full h-full object-contain drop-shadow-lg pointer-events-none" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
+              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
                 <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-3px', right: '1px' }}>
