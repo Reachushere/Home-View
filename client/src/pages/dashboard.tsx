@@ -8146,7 +8146,7 @@ export default function Dashboard() {
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
-              <div className="flex items-center justify-center relative" style={{ backgroundColor: selectedWeek === 4 ? '#280B05' : colorSettings.headerBar }}>
+              <div className="flex items-center justify-center relative" style={{ backgroundColor: selectedWeek === 4 ? '#160502' : colorSettings.headerBar }}>
                 <span className="text-[11px] font-medium tracking-wide" style={{ color: selectedWeek === 4 ? '#ffffff' : '#fb923c' }}>Week {selectedWeek}</span>
                 {/* Time column resize handle - right edge */}
                 <div
@@ -8183,7 +8183,7 @@ export default function Dashboard() {
                     key={idx} 
                     className={`border-l border-border flex items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ 
-                      backgroundColor: isToday ? '#280B05' : "black"
+                      backgroundColor: isToday ? '#160502' : "black"
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -8226,7 +8226,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? '#EAE4DE' : 'white'
+                      backgroundColor: isSameDay(day, new Date()) ? undefined : 'white'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -8660,7 +8660,7 @@ export default function Dashboard() {
                           key={dayIdx} 
                           className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
                           style={{
-                            backgroundColor: (isToday && isCurrentHour) ? '#C5D8EC' : isToday ? '#EAE4DE' : isCurrentHour ? '#E8E8E8' : undefined,
+                            backgroundColor: (isToday && isCurrentHour) ? '#160502' : isToday ? undefined : isCurrentHour ? '#160502' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
@@ -9543,7 +9543,7 @@ export default function Dashboard() {
                         key={idx}
                         className={`min-h-[80px] p-1 border-r border-b border-border last:border-r-0 ${
                           isCurrentMonth ? "bg-card" : "bg-muted/30"
-                        } ${isToday ? "bg-[#EAE4DE]" : ""}`}
+                        } ${isToday ? "" : ""}`}
                         onClick={() => {
                           // Find which week this day belongs to
                           const weekInfo = weeks.find(w => {
