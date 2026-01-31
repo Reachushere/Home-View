@@ -9751,7 +9751,7 @@ export default function Dashboard() {
                     </span>
                     <span 
                       className="text-[10px] font-medium"
-                      style={{ color: progressColor, marginLeft: '-4px' }}
+                      style={{ color: progressColor, marginLeft: '-8px' }}
                     >
                       {daysUntil}d
                     </span>
