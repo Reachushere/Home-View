@@ -9712,7 +9712,8 @@ export default function Dashboard() {
                       width: '6px', 
                       height: '6px', 
                       backgroundColor: progressColor,
-                      boxShadow: `0 0 4px ${progressColor}`
+                      boxShadow: `0 0 4px ${progressColor}`,
+                      marginLeft: '-3px'
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
@@ -9725,7 +9726,8 @@ export default function Dashboard() {
                       width: '48px', 
                       height: '4px', 
                       backgroundColor: progressColor,
-                      opacity: 0.7
+                      opacity: 0.7,
+                      marginLeft: '-3px'
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
@@ -9742,11 +9744,11 @@ export default function Dashboard() {
                   {/* 10px spacer between task name and course code */}
                   <div />
                   {/* Course code column - left aligned, white */}
-                  <div className="text-[10px] text-white whitespace-nowrap" style={{ textAlign: 'left', justifySelf: 'start' }}>
+                  <div className="text-[10px] text-white whitespace-nowrap" style={{ textAlign: 'left', justifySelf: 'start', marginLeft: '-4px' }}>
                     {courseCode}
                   </div>
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white whitespace-nowrap truncate" style={{ textAlign: 'left', justifySelf: 'start', width: '100%' }}>
+                  <div className="text-[10px] text-white whitespace-nowrap truncate" style={{ textAlign: 'left', justifySelf: 'start', width: '100%', marginLeft: '-4px' }}>
                     {courseFullName}
                   </div>
                   {/* Paperclip for attachments */}
