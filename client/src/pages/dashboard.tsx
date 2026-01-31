@@ -99,6 +99,8 @@ import {
   TrendingDown,
   Pencil,
   GripVertical,
+  CheckCircle2,
+  Check,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings, Subtask, Project } from "@shared/schema";
