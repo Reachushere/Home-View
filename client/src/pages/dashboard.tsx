@@ -9742,11 +9742,11 @@ export default function Dashboard() {
                   {/* 10px spacer between task name and course code */}
                   <div />
                   {/* Course code column - left aligned, white */}
-                  <span className="text-[10px] text-white whitespace-nowrap text-left">
+                  <span className="text-[10px] text-white whitespace-nowrap text-left justify-self-start">
                     {courseCode}
                   </span>
                   {/* Course name column - left aligned, white */}
-                  <span className="text-[10px] text-white whitespace-nowrap truncate text-left">
+                  <span className="text-[10px] text-white whitespace-nowrap truncate text-left justify-self-start">
                     {courseFullName}
                   </span>
                   {/* Paperclip for attachments */}
