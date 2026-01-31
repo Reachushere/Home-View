@@ -9687,7 +9687,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: '16px 2px 6px 2px 48px 2px 1fr 10px 60px 100px 14px auto', gap: '0px', alignItems: 'center', justifyItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '16px 2px 6px 2px 48px 2px 1fr 4px 60px 100px 14px auto', gap: '0px', alignItems: 'center', justifyItems: 'start' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9704,7 +9704,7 @@ export default function Dashboard() {
                     <div className="h-3.5 w-3.5" />
                   )}
                   {/* Spacer between checkbox and urgency */}
-                  <div />
+                  <div style={{ width: '2px' }} />
                   {/* Urgency dot column - small circle */}
                   <div 
                     className="rounded-full flex-shrink-0"
@@ -9717,7 +9717,7 @@ export default function Dashboard() {
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
                   {/* Spacer between urgency and progress */}
-                  <div />
+                  <div style={{ width: '2px' }} />
                   {/* Progress oval column - thinner bar */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
@@ -9730,7 +9730,7 @@ export default function Dashboard() {
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
                   {/* Spacer between progress and title */}
-                  <div />
+                  <div style={{ width: '2px' }} />
                   {/* Task name column - left aligned, bold, same size as course name */}
                   <button 
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
@@ -9740,8 +9740,8 @@ export default function Dashboard() {
                   >
                     {task.title}
                   </button>
-                  {/* 10px spacer between task name and course code */}
-                  <div />
+                  {/* 4px spacer between task name and course code */}
+                  <div style={{ width: '4px' }} />
                   {/* Course code column - left aligned, white */}
                   <div className="text-[10px] text-white whitespace-nowrap">
                     {courseCode}
