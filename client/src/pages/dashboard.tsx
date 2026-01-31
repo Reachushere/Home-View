@@ -9687,7 +9687,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: '16px 5px 48px 100px 55px 150px 14px auto', gap: '6px', alignItems: 'center' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '16px 5px 48px 100px 55px 130px 14px auto', gap: '6px', alignItems: 'center' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9741,7 +9741,7 @@ export default function Dashboard() {
                     {courseCode}
                   </div>
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate" style={{ maxWidth: '150px', marginLeft: '-14px' }}>
+                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate" style={{ maxWidth: '130px', marginLeft: '-14px' }}>
                     {courseFullName}
                   </div>
                   {/* Paperclip for attachments */}
@@ -9751,7 +9751,7 @@ export default function Dashboard() {
                     <div className="w-3" />
                   )}
                   {/* Due date and days column - combined */}
-                  <div className="flex items-center gap-2 whitespace-nowrap justify-start" style={{ marginLeft: '-24px' }}>
+                  <div className="flex items-center gap-2 whitespace-nowrap justify-start" style={{ marginLeft: '-12px' }}>
                     <span className="text-[10px] text-white">
                       {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                     </span>
