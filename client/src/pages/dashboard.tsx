@@ -9876,15 +9876,6 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-            {/* Resize handle */}
-            <div 
-              className="h-2 cursor-ns-resize flex items-center justify-center hover:bg-white/20 transition-colors"
-              onMouseDown={handleThisWeekResizeStart}
-              style={{ marginTop: '-2px' }}
-              data-resize-handle
-            >
-              <div className="w-8 h-1 rounded-full bg-white/40" />
-            </div>
           </section>
 
           {/* Due Today - CSS Box */}
