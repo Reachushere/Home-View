@@ -6840,7 +6840,7 @@ export default function Dashboard() {
             data-testid="honeycomb-cppa122"
             data-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '45px', height: '45px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
               {unreadCount > 0 && (
@@ -6883,7 +6883,7 @@ export default function Dashboard() {
             data-testid="honeycomb-cfnf400"
             data-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '45px', height: '45px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
               {unreadCount > 0 && (
@@ -6926,7 +6926,7 @@ export default function Dashboard() {
             data-testid="honeycomb-casl101"
             data-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '45px', height: '45px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
               {unreadCount > 0 && (
@@ -7045,7 +7045,7 @@ export default function Dashboard() {
             data-testid="honeycomb-readings-cppa122"
             data-readings-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '45px', height: '45px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
@@ -7088,7 +7088,7 @@ export default function Dashboard() {
             data-testid="honeycomb-readings-cfnf400"
             data-readings-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '45px', height: '45px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
@@ -7131,7 +7131,7 @@ export default function Dashboard() {
             data-testid="honeycomb-readings-casl101"
             data-readings-course-button
           >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '45px', height: '45px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
+            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
               <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
               <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
               {unreadCount > 0 && (
