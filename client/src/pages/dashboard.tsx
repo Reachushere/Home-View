@@ -9818,7 +9818,12 @@ export default function Dashboard() {
         >
           {/* Flyout content */}
           <section 
-            className="shadow-lg h-[158px] overflow-hidden flex flex-col rounded-t-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]" 
+            className="h-[158px] overflow-hidden flex flex-col rounded-t-xl text-white" 
+            style={{
+              background: 'rgba(255, 255, 255, 0.35)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}
             data-testid="section-todo"
           >
             {/* Header bar with gradient matching Today box */}
