@@ -9735,22 +9735,23 @@ export default function Dashboard() {
                   <div />
                   {/* Task name column - left aligned, bold, same size as course name */}
                   <button 
-                    className="text-[10px] text-white font-bold truncate text-left hover:underline cursor-pointer"
+                    className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
+                    style={{ marginLeft: '-1px', textAlign: 'left' }}
                   >
                     {task.title}
                   </button>
                   {/* 10px spacer between task name and course code */}
                   <div />
                   {/* Course code column - left aligned, white */}
-                  <div className="text-[10px] text-white whitespace-nowrap" style={{ width: '60px', textAlign: 'left', marginLeft: '-4px' }}>
+                  <span className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-9px' }}>
                     {courseCode}
-                  </div>
+                  </span>
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white whitespace-nowrap truncate" style={{ width: '90px', textAlign: 'left', marginLeft: '-4px' }}>
+                  <span className="text-[10px] text-white whitespace-nowrap truncate" style={{ marginLeft: '-10px', maxWidth: '90px', display: 'inline-block' }}>
                     {courseFullName}
-                  </div>
+                  </span>
                   {/* Paperclip for attachments */}
                   {attachments.length > 0 ? (
                     <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
