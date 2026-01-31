@@ -8937,19 +8937,21 @@ export default function Dashboard() {
                                               onDragOver={(e) => {
                                                 e.preventDefault();
                                                 e.dataTransfer.dropEffect = 'move';
-                                                if (draggedFileForMove && draggedFileForMove.folder !== contentFolderId) {
-                                                  e.currentTarget.classList.add('bg-blue-500/20', 'border-blue-400');
-                                                }
+                                                e.currentTarget.classList.add('bg-blue-500/20', 'border-blue-400');
                                               }}
                                               onDragLeave={(e) => {
                                                 e.currentTarget.classList.remove('bg-blue-500/20', 'border-blue-400');
                                               }}
                                               onDrop={async (e) => {
                                                 e.preventDefault();
+                                                e.stopPropagation();
                                                 e.currentTarget.classList.remove('bg-blue-500/20', 'border-blue-400');
-                                                if (draggedFileForMove && draggedFileForMove.folder !== contentFolderId) {
+                                                
+                                                // Get file ID from dataTransfer (more reliable than state)
+                                                const fileId = e.dataTransfer.getData('text/plain');
+                                                if (fileId) {
                                                   try {
-                                                    await fetch(`/api/files/${draggedFileForMove.id}`, {
+                                                    await fetch(`/api/files/${fileId}`, {
                                                       method: 'PATCH',
                                                       headers: { 'Content-Type': 'application/json' },
                                                       body: JSON.stringify({ folder: contentFolderId })
@@ -8959,8 +8961,8 @@ export default function Dashboard() {
                                                   } catch (err) {
                                                     toast({ title: "Failed to move file", variant: "destructive" });
                                                   }
-                                                  setDraggedFileForMove(null);
                                                 }
+                                                setDraggedFileForMove(null);
                                               }}
                                             >
                                               {isContentExpanded ? <ChevronDown className="h-3.5 w-3.5 text-white/60" /> : <ChevronRight className="h-3.5 w-3.5 text-white/60" />}
