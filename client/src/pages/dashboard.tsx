@@ -276,6 +276,8 @@ export default function Dashboard() {
   const [renameFileId, setRenameFileId] = useState<number | null>(null);
   const [renameFileName, setRenameFileName] = useState<string>('');
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
+  const [moveFileId, setMoveFileId] = useState<number | null>(null);
+  const [moveFileCurrentFolder, setMoveFileCurrentFolder] = useState<string>('');
   const [newFolderName, setNewFolderName] = useState('');
   const [isCreatingFolder, setIsCreatingFolder] = useState(false);
   const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
@@ -4540,6 +4542,70 @@ export default function Dashboard() {
                 Rename
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Move File Dialog */}
+      <Dialog open={moveFileId !== null} onOpenChange={(open) => !open && setMoveFileId(null)}>
+        <DialogContent className="max-w-md bg-[#252526] border-white/20 text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-sm">
+              <Folder className="h-4 w-4" />
+              Move File to Folder
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2 py-4 max-h-[400px] overflow-y-auto">
+            {(() => {
+              const folders = allFiles
+                .map(f => f.folder)
+                .filter((f): f is string => !!f && f !== moveFileCurrentFolder)
+                .filter((value, index, self) => self.indexOf(value) === index)
+                .sort();
+              
+              return folders.map(folder => {
+                const parts = folder.split('-');
+                const weekNum = parts[1];
+                const course = parts[2]?.toUpperCase() || '';
+                const type = parts[3] || '';
+                const displayName = `Week ${weekNum} - ${course} - ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                
+                return (
+                  <div
+                    key={folder}
+                    className="px-3 py-2 hover:bg-white/10 rounded cursor-pointer flex items-center gap-2"
+                    onClick={async () => {
+                      if (moveFileId) {
+                        try {
+                          await fetch(`/api/files/${moveFileId}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ folder })
+                          });
+                          queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                          setMoveFileId(null);
+                          toast({ title: "File moved successfully" });
+                        } catch (err) {
+                          toast({ title: "Failed to move file", variant: "destructive" });
+                        }
+                      }
+                    }}
+                  >
+                    <Folder className="h-4 w-4 text-yellow-500" />
+                    <span className="text-sm">{displayName}</span>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+          <div className="flex justify-end">
+            <Button
+              variant="ghost"
+              onClick={() => setMoveFileId(null)}
+              className="text-white/70 hover:text-white hover:bg-white/10"
+            >
+              Cancel
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -9021,10 +9087,14 @@ export default function Dashboard() {
                                                       onContextMenu={(e) => {
                                                         e.preventDefault();
                                                         const menu = document.createElement('div');
-                                                        menu.className = 'fixed z-[9999] bg-[#252526] border border-white/20 rounded-md py-1 shadow-lg min-w-[120px]';
+                                                        menu.className = 'fixed z-[9999] bg-[#252526] border border-white/20 rounded-md py-1 shadow-lg min-w-[140px]';
                                                         menu.style.left = `${e.clientX}px`;
                                                         menu.style.top = `${e.clientY}px`;
                                                         menu.innerHTML = `
+                                                          <div class="px-3 py-1.5 text-sm text-white/90 hover:bg-white/10 cursor-pointer flex items-center gap-2" data-action="move">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4"/></svg>
+                                                            Move to...
+                                                          </div>
                                                           <div class="px-3 py-1.5 text-sm text-white/90 hover:bg-white/10 cursor-pointer flex items-center gap-2" data-action="rename">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                                                             Rename
@@ -9040,6 +9110,12 @@ export default function Dashboard() {
                                                           menu.remove();
                                                           document.removeEventListener('click', closeMenu);
                                                         };
+                                                        
+                                                        menu.querySelector('[data-action="move"]')?.addEventListener('click', () => {
+                                                          setMoveFileId(file.id);
+                                                          setMoveFileCurrentFolder(file.folder || '');
+                                                          closeMenu();
+                                                        });
                                                         
                                                         menu.querySelector('[data-action="rename"]')?.addEventListener('click', () => {
                                                           setRenameFileId(file.id);
