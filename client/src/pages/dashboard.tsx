@@ -10151,7 +10151,7 @@ export default function Dashboard() {
                   }
                   
                   return (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
                       {filteredProjects.map(project => {
                         const projectTasks = allTasks.filter(t => t.projectId === project.id);
                         const completedTasks = projectTasks.filter(t => t.isCompleted);
@@ -10285,7 +10285,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <div style={{ height: '50px', background: 'rgba(255,0,0,0.3)' }} />
+                              <div className="flex-1" />
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
@@ -10300,7 +10300,7 @@ export default function Dashboard() {
                                     return next;
                                   });
                                 }}
-                                className="w-full justify-center gap-1 text-white/70 hover:text-white hover:bg-white/10 text-[10px]"
+                                className="w-full justify-center gap-1 text-white/70 hover:text-white hover:bg-white/10 text-[10px] mb-2"
                               >
                                 {isExpanded ? 'Hide Tasks' : `Show Tasks (${projectTasks.length})`}
                               </Button>
