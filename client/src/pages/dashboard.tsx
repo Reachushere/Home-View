@@ -267,6 +267,12 @@ export default function Dashboard() {
   const [isWeekReadingsOpen, setIsWeekReadingsOpen] = useState(false);
   const [weekReadingSelectedFile, setWeekReadingSelectedFile] = useState<any | null>(null);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [uploadTargetFolder, setUploadTargetFolder] = useState<string>('week-3-cppa122-reading');
+  const [newFolderName, setNewFolderName] = useState('');
+  const [isCreatingFolder, setIsCreatingFolder] = useState(false);
+  const [editingFolderId, setEditingFolderId] = useState<string | null>(null);
+  const [editingFolderName, setEditingFolderName] = useState('');
   // Honeycomb navigation state
   const [modulesHoneycombOpen, setModulesHoneycombOpen] = useState<string | null>('modules');
   const [decorativeHoneycombHover, setDecorativeHoneycombHover] = useState<'left' | 'middle' | 'right' | null>(null);
@@ -4107,6 +4113,154 @@ export default function Dashboard() {
               )}
             </Button>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Files Dialog with Folder Management */}
+      <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-white">
+              <Upload className="h-5 w-5" />
+              Upload Files
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* File Upload Area */}
+            <div className="border-2 border-dashed border-white/30 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+              <input 
+                type="file" 
+                id="file-upload" 
+                multiple 
+                accept=".pdf,.doc,.docx,.txt" 
+                className="hidden"
+                onChange={async (e) => {
+                  const files = e.target.files;
+                  if (!files || files.length === 0) return;
+                  
+                  for (const file of Array.from(files)) {
+                    try {
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      formData.append('folder', uploadTargetFolder);
+                      
+                      await fetch('/api/files/upload', {
+                        method: 'POST',
+                        body: formData,
+                      });
+                      
+                      queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                    } catch (error) {
+                      console.error('Upload error:', error);
+                    }
+                  }
+                  
+                  e.target.value = '';
+                  setIsUploadDialogOpen(false);
+                }}
+              />
+              <label htmlFor="file-upload" className="cursor-pointer">
+                <Upload className="h-10 w-10 mx-auto mb-2 text-white/60" />
+                <p className="text-sm text-white/80">Click to upload or drag files here</p>
+                <p className="text-xs text-white/50 mt-1">PDF, DOC, DOCX, TXT files</p>
+              </label>
+            </div>
+            
+            {/* Target Folder Selection */}
+            <div>
+              <Label className="text-sm mb-2 block">Upload to Folder:</Label>
+              <Select value={uploadTargetFolder} onValueChange={setUploadTargetFolder}>
+                <SelectTrigger className="w-full bg-black/30 border-white/20" data-testid="select-upload-folder">
+                  <SelectValue placeholder="Select folder" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900 border-white/20">
+                  {Array.from({ length: 13 }, (_, i) => i + 1).map(weekNum => (
+                    <div key={weekNum}>
+                      <SelectItem value={`week-${weekNum}-cppa122-reading`} className="text-green-400">
+                        <span className="flex items-center gap-2">
+                          <Folder className="h-3 w-3" />
+                          Week {weekNum} - CPPA122 Reading
+                        </span>
+                      </SelectItem>
+                      <SelectItem value={`week-${weekNum}-cppa122-module`} className="text-green-400">
+                        <span className="flex items-center gap-2">
+                          <Folder className="h-3 w-3" />
+                          Week {weekNum} - CPPA122 Module
+                        </span>
+                      </SelectItem>
+                      <SelectItem value={`week-${weekNum}-cfnf400-reading`} className="text-pink-400">
+                        <span className="flex items-center gap-2">
+                          <Folder className="h-3 w-3" />
+                          Week {weekNum} - CFNF400 Reading
+                        </span>
+                      </SelectItem>
+                      <SelectItem value={`week-${weekNum}-cfnf400-module`} className="text-pink-400">
+                        <span className="flex items-center gap-2">
+                          <Folder className="h-3 w-3" />
+                          Week {weekNum} - CFNF400 Module
+                        </span>
+                      </SelectItem>
+                      <SelectItem value={`week-${weekNum}-casl101-reading`} className="text-indigo-400">
+                        <span className="flex items-center gap-2">
+                          <Folder className="h-3 w-3" />
+                          Week {weekNum} - CASL101 Reading
+                        </span>
+                      </SelectItem>
+                      <SelectItem value={`week-${weekNum}-casl101-module`} className="text-indigo-400">
+                        <span className="flex items-center gap-2">
+                          <Folder className="h-3 w-3" />
+                          Week {weekNum} - CASL101 Module
+                        </span>
+                      </SelectItem>
+                    </div>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Create New Folder Section */}
+            <div className="border-t border-white/10 pt-4">
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-sm">Create New Folder:</Label>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 px-2 text-[10px] text-white/60 hover:text-white"
+                  onClick={() => setIsCreatingFolder(!isCreatingFolder)}
+                  data-testid="button-toggle-create-folder"
+                >
+                  {isCreatingFolder ? 'Cancel' : '+ New Folder'}
+                </Button>
+              </div>
+              
+              {isCreatingFolder && (
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Folder name (e.g., week-1-cppa122-notes)"
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    className="flex-1 bg-black/30 border-white/20"
+                    data-testid="input-new-folder-name"
+                  />
+                  <Button
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-500"
+                    onClick={() => {
+                      if (newFolderName.trim()) {
+                        setUploadTargetFolder(newFolderName.trim().toLowerCase().replace(/\s+/g, '-'));
+                        setNewFolderName('');
+                        setIsCreatingFolder(false);
+                      }
+                    }}
+                    data-testid="button-create-folder"
+                  >
+                    Create
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -8303,8 +8457,8 @@ export default function Dashboard() {
           </Card>
           </div>
           
-          {/* Weeks Flyout - separate panel for week folders, starts below the two flyouts above */}
-          <div className={`absolute z-50 ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'w-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? `${Math.max(flyoutWidth, flyout2Width) * 1.1 + 170}px` : '0', top: `${41 + gridSizes.allDayRowHeight + 3 * gridSizes.courseRowHeight + 15}px`, bottom: '35px', right: '44px' }}>
+          {/* Weeks Flyout - centered panel for week folders */}
+          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'scale-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? '600px' : '0', height: isWeeksFlyoutOpen ? '70vh' : '0', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%)' : 'translate(-50%, -50%) scale(0)' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -8334,7 +8488,7 @@ export default function Dashboard() {
               }}
               data-testid="weeks-flyout-resize-handle"
             />
-            <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border-l border-white/20 flex flex-col text-white relative rounded-l-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+            <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 flex flex-col text-white relative rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)]">
               {/* Header with arrows and date */}
               <div className="flex items-center justify-center px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
                 <div className="flex items-center gap-1">
@@ -8373,10 +8527,20 @@ export default function Dashboard() {
                 </Button>
               </div>
               
-              {/* All Files Header */}
+              {/* All Files Header with Upload Button */}
               <div className="flex items-center gap-1.5 pl-2 pr-2 py-1 bg-black/30 border-b border-white/20">
                 <Folder className="h-3 w-3 text-blue-400 fill-blue-300" />
                 <span className="text-xs font-medium">All Files</span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="ml-auto h-6 px-2 text-[10px] bg-blue-600 hover:bg-blue-500 text-white"
+                  onClick={() => setIsUploadDialogOpen(true)}
+                  data-testid="button-upload-file"
+                >
+                  <Upload className="h-3 w-3 mr-1" />
+                  Upload
+                </Button>
               </div>
               
               {/* Week Folders */}
