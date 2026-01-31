@@ -10273,7 +10273,7 @@ export default function Dashboard() {
                                 )}
                               </div>
 
-                              <div className="mt-auto space-y-1 mb-3">
+                              <div className="mt-auto space-y-1">
                                 <div className="flex items-center justify-between text-[10px] text-white/70">
                                   <span>Progress</span>
                                   <span className="font-medium">{completedTasks.length}/{projectTasks.length} tasks</span>
@@ -10286,7 +10286,6 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <div style={{ height: '18px' }} />
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
@@ -10302,7 +10301,7 @@ export default function Dashboard() {
                                   });
                                 }}
                                 className="w-full justify-center gap-1 text-white/70 hover:text-white hover:bg-white/10 text-[10px]"
-                                style={{ marginBottom: '2px' }}
+                                style={{ marginTop: '12px', marginBottom: '6px' }}
                               >
                                 {isExpanded ? 'Hide Tasks' : `Show Tasks (${projectTasks.length})`}
                               </Button>
