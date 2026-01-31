@@ -142,3 +142,45 @@ All arrows connecting task boxes to calendar follow these exact specifications:
 - **esbuild**: Fast JavaScript bundler for server code
 - **Drizzle Kit**: Database migration tooling
 - **Replit Plugins**: Runtime error overlay, cartographer, and dev banner for Replit environment
+
+## Known Issues & Lessons Learned (January 2026 Session)
+
+### CRITICAL: HMR/Browser Caching Issues
+- Changes often don't apply despite code updates due to HMR or browser caching
+- ALWAYS restart workflow AND ask user to hard refresh (Ctrl+Shift+R) after styling changes
+- Don't keep making changes if they're not visible - restart first
+
+### Undo Button Styling Errors
+- **Problem**: Went in circles trying to apply gradients that weren't visible
+- **Root cause**: Used Button component which has its own background styling that interferes
+- **Solution**: Use two nested div elements instead of Button component
+- **Gradient directions**: 0deg = bottom to top, 180deg = top to bottom
+- **Final design**: 
+  - Back circle (border): `linear-gradient(180deg, #FFE566 0%, #FF8C00 100%)` - yellow top, orange bottom
+  - Front circle: `linear-gradient(0deg, #FFE566 0%, #FF8C00 100%)` - yellow bottom, orange top (flipped)
+  - Inner circle: 38x38px, Border: 3px padding (44x44px total)
+- **Lesson**: Don't copy-paste and modify - leads to duplicate handlers and mismatched closing tags
+
+### Project Page Errors
+- Project box header colors needed to match Today/Tomorrow/This Week boxes (brown #160502)
+- Project cards: Fixed height 240px, background `rgba(255, 255, 255, 0.2)`
+
+### Dashboard Layout Issues Encountered
+- **This Week box columns**: Layout issues with task columns
+- **Oval shapes**: Styling problems
+- **Three boxes (Today/Tomorrow/This Week)**: Positioning and sizing issues
+- **Calendar**: Current time styling - grey cells for current hour, light beige for today column, blue (#C5D8EC) at intersection
+- **Brown headers**: Color consistency across all box headers (#160502)
+- **Button attachment**: Buttons not attaching properly to containers
+- **Backgrounds**: Various background color issues
+
+### General Lessons
+1. **Don't use Button component for custom circular buttons** - use div elements instead
+2. **Always restart workflow after styling changes** - HMR is unreliable
+3. **Use contrasting colors in gradients** - similar colors don't show visible gradients on small elements
+4. **Document gradient directions explicitly**: 0deg goes bottom→top, 180deg goes top→bottom
+5. **Check for duplicate code** when copy-pasting - leads to syntax errors
+6. **Verify changes are applied** before making more changes - avoid going in circles
+
+### Production vs Development Sync Issue
+- Production deployment not syncing with development version - ongoing issue
