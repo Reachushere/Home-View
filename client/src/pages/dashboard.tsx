@@ -11435,6 +11435,10 @@ function TaskForm({
   const [newAttachment, setNewAttachment] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   
+  // Pending subtasks for new task creation
+  const [pendingSubtasks, setPendingSubtasks] = useState<string[]>([]);
+  const [newPendingSubtask, setNewPendingSubtask] = useState("");
+  
   // Query files to look up display names for attachments
   const { data: allFiles = [] } = useQuery<FileRecord[]>({
     queryKey: ["/api/files"],
