@@ -10077,7 +10077,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3">
                   <Button 
                     variant="outline"
-                    className="border !border-white/30 text-white hover:text-white hover:bg-white/10 hover:!border-white/50"
+                    className="border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
                     onClick={() => {
                       setEditingProject(null);
                       setProjectDialogOpen(true);
