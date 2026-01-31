@@ -9389,6 +9389,11 @@ export default function Dashboard() {
             const isModuleTask = task.startDate && task.startDate !== task.dueDate;
             const shouldBlinkInTodayBox = isModuleTask && isWednesdayOrLater && !task.isCompleted;
             
+            // Calculate progress bar fill (max 7 days, inverted so more days = less fill)
+            const maxDays = 7;
+            const progressPercent = Math.max(0, Math.min(100, ((maxDays - daysUntil) / maxDays) * 100));
+            const progressColor = daysUntil === 0 ? '#ef4444' : daysUntil === 1 ? '#f97316' : daysUntil <= 3 ? '#eab308' : '#22c55e';
+            
             return (
               <div 
                 key={task.id} 
@@ -9400,6 +9405,21 @@ export default function Dashboard() {
                 data-testid={`droppable-task-${task.id}`}
               >
                 <div className="flex items-center gap-2">
+                  {/* Days until due progress bar */}
+                  <div 
+                    className="flex-shrink-0 rounded-full overflow-hidden" 
+                    style={{ width: '4px', height: '20px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                    title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
+                  >
+                    <div 
+                      className="w-full rounded-full transition-all duration-300"
+                      style={{ 
+                        height: `${progressPercent}%`, 
+                        backgroundColor: progressColor,
+                        marginTop: `${100 - progressPercent}%`
+                      }}
+                    />
+                  </div>
                   {!isCASL101Task(task) && (
                     <input
                       type="checkbox"
