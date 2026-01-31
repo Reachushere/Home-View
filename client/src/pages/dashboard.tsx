@@ -9687,7 +9687,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: '16px 6px 48px 120px 60px 100px 14px auto', gap: '8px', alignItems: 'center', justifyItems: 'start' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '16px 6px 48px 120px 60px 140px 14px auto', gap: '8px', alignItems: 'center', justifyItems: 'start' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9735,11 +9735,11 @@ export default function Dashboard() {
                     {task.title}
                   </button>
                   {/* Course code column - left aligned, white */}
-                  <div className="text-[10px] text-white whitespace-nowrap">
+                  <div className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-10px' }}>
                     {courseCode}
                   </div>
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white whitespace-nowrap truncate" style={{ maxWidth: '100px' }}>
+                  <div className="text-[10px] text-white whitespace-nowrap truncate" style={{ maxWidth: '140px', marginLeft: '-12px' }}>
                     {courseFullName}
                   </div>
                   {/* Paperclip for attachments */}
