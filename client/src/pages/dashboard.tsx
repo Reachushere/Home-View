@@ -6492,8 +6492,8 @@ export default function Dashboard() {
       <div 
         className="absolute cursor-pointer z-50 pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
         style={{ 
-          width: '50px', 
-          height: '50px', 
+          width: '45px', 
+          height: '45px', 
           top: '432px', 
           right: '9px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -6572,8 +6572,8 @@ export default function Dashboard() {
       <div 
         className="absolute cursor-pointer z-50 pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
         style={{ 
-          width: '50px', 
-          height: '50px', 
+          width: '45px', 
+          height: '45px', 
           top: '483px', 
           right: '9px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -6590,8 +6590,8 @@ export default function Dashboard() {
       <div 
         className="absolute cursor-pointer z-[60] pointer-events-auto flex items-center justify-center rounded-full transition-transform duration-200 hover:scale-110 hover:opacity-80"
         style={{ 
-          width: '50px', 
-          height: '50px', 
+          width: '45px', 
+          height: '45px', 
           top: '534px', 
           right: '9px',
           background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
