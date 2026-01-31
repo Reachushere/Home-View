@@ -9392,7 +9392,8 @@ export default function Dashboard() {
             // Calculate progress bar fill (max 7 days, inverted so more days = less fill)
             const maxDays = 7;
             const progressPercent = Math.max(0, Math.min(100, ((maxDays - daysUntil) / maxDays) * 100));
-            const progressColor = daysUntil === 0 ? '#ef4444' : daysUntil === 1 ? '#f97316' : daysUntil <= 3 ? '#eab308' : '#22c55e';
+            // Color based on box type: Today=red, Tomorrow=yellow, This Week=based on days
+            const progressColor = boxType === 'today' ? '#ef4444' : boxType === 'tomorrow' ? '#eab308' : (daysUntil <= 3 ? '#eab308' : '#22c55e');
             
             return (
               <div 
