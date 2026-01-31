@@ -292,7 +292,6 @@ function ProjectCard({
     <Card 
       data-testid={`card-project-${project.id}`}
       className="hover-elevate transition-all"
-      style={{ borderLeftColor: project.color || "#6366F1", borderLeftWidth: "4px" }}
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
@@ -504,12 +503,12 @@ function WorkflowView({
               <div className="absolute left-6 -top-3 h-3 w-0.5 bg-orange-400" />
             )}
             <Card 
-              className={`border-l-4 ${
+              className={`${
                 task.isCompleted 
-                  ? 'border-l-green-500 bg-green-50/50 dark:bg-green-900/10' 
+                  ? 'bg-green-50/50 dark:bg-green-900/10' 
                   : isBlocked 
-                    ? 'border-l-orange-500 bg-orange-50/50 dark:bg-orange-900/10'
-                    : 'border-l-blue-500'
+                    ? 'bg-orange-50/50 dark:bg-orange-900/10'
+                    : ''
               }`}
               data-testid={`workflow-task-${task.id}`}
             >
@@ -759,7 +758,7 @@ export default function ProjectsPage() {
         backgroundAttachment: 'fixed'
       }}
     >
-      <header className="border-b border-white/20 sticky top-0 z-10 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+      <header className="border-b border-white/20 sticky top-0 z-10 bg-black/40 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-4">
