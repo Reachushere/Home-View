@@ -10219,7 +10219,7 @@ export default function Dashboard() {
                             
                             {/* Project Body */}
                             <div className="flex-1 p-4 text-white flex flex-col">
-                              <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                              <div className="flex flex-wrap items-center gap-1.5 mb-2" style={{ marginTop: '-4px' }}>
                                 <Badge className={`text-[9px] px-1.5 py-0 h-4 ${
                                   project.status === 'completed' ? 'bg-green-500/30 text-green-300 border-green-500/50' :
                                   project.status === 'in_progress' ? 'bg-yellow-500/30 text-yellow-300 border-yellow-500/50' :
