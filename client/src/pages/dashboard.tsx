@@ -9817,7 +9817,7 @@ export default function Dashboard() {
 
         {/* To Do Bottom Flyout */}
         <div 
-          className="fixed left-[12px] right-[12px] z-[100] transition-all duration-300 ease-in-out"
+          className="fixed left-[4px] right-[5px] z-[100] transition-all duration-300 ease-in-out"
           style={{ bottom: isTodoFlyoutOpen ? '0' : '-180px' }}
         >
           {/* Flyout content */}
