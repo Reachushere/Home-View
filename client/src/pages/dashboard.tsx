@@ -5398,11 +5398,11 @@ export default function Dashboard() {
               <div 
                 style={{ 
                   marginTop: '4px',
-                  width: '43px',
-                  height: '43px',
+                  width: '44px',
+                  height: '44px',
                   borderRadius: '50%',
                   background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-                  padding: '0.5px',
+                  padding: '1px',
                   cursor: 'pointer'
                 }}
                 data-testid="button-hamburger-menu"
@@ -6732,13 +6732,13 @@ export default function Dashboard() {
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
             style={{ 
-              width: '43px', 
-              height: '43px', 
+              width: '44px', 
+              height: '44px', 
               top: '382px', 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-              padding: '0.5px'
+              padding: '1px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
@@ -6937,13 +6937,13 @@ export default function Dashboard() {
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
             style={{ 
-              width: '43px', 
-              height: '43px', 
+              width: '44px', 
+              height: '44px', 
               top: '432px', 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-              padding: '0.5px'
+              padding: '1px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
             data-readings-button
@@ -7138,13 +7138,13 @@ export default function Dashboard() {
       <div 
         className="absolute z-50 pointer-events-auto"
         style={{ 
-          width: '43px', 
-          height: '43px', 
+          width: '44px', 
+          height: '44px', 
           top: '484px', 
           right: '19px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '0.5px'
+          padding: '1px'
         }}
         onMouseEnter={() => setDecorativeHoneycombHover('middle')}
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
@@ -7225,13 +7225,13 @@ export default function Dashboard() {
       <div 
         className="absolute z-50 pointer-events-auto"
         style={{ 
-          width: '43px', 
-          height: '43px', 
+          width: '44px', 
+          height: '44px', 
           top: '535px', 
           right: '19px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '0.5px'
+          padding: '1px'
         }}
         data-testid="honeycomb-todo-main"
       >
@@ -7250,13 +7250,13 @@ export default function Dashboard() {
       <div 
         className="absolute z-[60] pointer-events-auto"
         style={{ 
-          width: '43px', 
-          height: '43px', 
+          width: '44px', 
+          height: '44px', 
           top: '586px', 
           right: '19px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '0.5px'
+          padding: '1px'
         }}
         data-testid="honeycomb-arrows-toggle"
       >
