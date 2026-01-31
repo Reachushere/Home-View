@@ -10163,7 +10163,7 @@ export default function Dashboard() {
                             key={project.id}
                             className="rounded-xl overflow-hidden flex flex-col"
                             style={{ 
-                              background: 'rgba(255, 255, 255, 0.1)',
+                              background: 'rgba(255, 255, 255, 0.2)',
                               border: '1px solid rgba(255, 255, 255, 0.2)'
                             }}
                           >
@@ -10272,7 +10272,7 @@ export default function Dashboard() {
                                 )}
                               </div>
 
-                              <div className="mt-auto space-y-1 mb-6">
+                              <div className="mt-auto space-y-1">
                                 <div className="flex items-center justify-between text-[10px] text-white/70">
                                   <span>Progress</span>
                                   <span className="font-medium">{completedTasks.length}/{projectTasks.length} tasks</span>
@@ -10285,7 +10285,7 @@ export default function Dashboard() {
                                 </div>
                               </div>
 
-                              <div style={{ height: '6px' }} />
+                              <div style={{ height: '30px' }} />
                               <Button 
                                 variant="ghost" 
                                 size="sm" 
