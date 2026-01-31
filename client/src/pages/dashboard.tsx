@@ -98,6 +98,7 @@ import {
   TrendingUp,
   TrendingDown,
   Pencil,
+  GripVertical,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings } from "@shared/schema";
@@ -8973,71 +8974,31 @@ export default function Dashboard() {
                                                 {contentFiles.map((file) => (
                                                   <div
                                                     key={file.id}
-                                                    draggable
-                                                    onDragStart={(e) => {
-                                                      e.dataTransfer.setData('application/json', JSON.stringify({ 
-                                                        url: file.objectPath, 
-                                                        name: file.displayName || file.originalName,
-                                                        fileId: file.id,
-                                                        folder: file.folder
-                                                      }));
-                                                      e.dataTransfer.effectAllowed = 'move';
-                                                      setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
-                                                      setDraggedFileForMove({ id: file.id, folder: file.folder || '' });
-                                                    }}
-                                                    onDragEnd={() => {
-                                                      setDraggedFile(null);
-                                                      setDraggedFileForMove(null);
-                                                    }}
-                                                    className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-grab active:cursor-grabbing rounded ${draggedFileForMove?.id === file.id ? 'opacity-50' : ''}`}
-                                                    onClick={() => setPreviewFile(file)}
-                                                    onContextMenu={(e) => {
-                                                      e.preventDefault();
-                                                      const rect = e.currentTarget.getBoundingClientRect();
-                                                      const menu = document.createElement('div');
-                                                      menu.className = 'fixed z-[9999] bg-[#252526] border border-white/20 rounded-md py-1 shadow-lg min-w-[120px]';
-                                                      menu.style.left = `${e.clientX}px`;
-                                                      menu.style.top = `${e.clientY}px`;
-                                                      menu.innerHTML = `
-                                                        <div class="px-3 py-1.5 text-sm text-white/90 hover:bg-white/10 cursor-pointer flex items-center gap-2" data-action="rename">
-                                                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                                                          Rename
-                                                        </div>
-                                                        <div class="px-3 py-1.5 text-sm text-red-400 hover:bg-red-500/20 cursor-pointer flex items-center gap-2" data-action="delete">
-                                                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                                          Delete
-                                                        </div>
-                                                      `;
-                                                      document.body.appendChild(menu);
-                                                      
-                                                      const closeMenu = () => {
-                                                        menu.remove();
-                                                        document.removeEventListener('click', closeMenu);
-                                                      };
-                                                      
-                                                      menu.querySelector('[data-action="rename"]')?.addEventListener('click', () => {
-                                                        setRenameFileId(file.id);
-                                                        setRenameFileName(file.displayName || file.originalName);
-                                                        closeMenu();
-                                                      });
-                                                      
-                                                      menu.querySelector('[data-action="delete"]')?.addEventListener('click', async () => {
-                                                        if (confirm(`Delete "${file.displayName || file.originalName}"?`)) {
-                                                          try {
-                                                            await fetch(`/api/files/${file.id}`, { method: 'DELETE' });
-                                                            queryClient.invalidateQueries({ queryKey: ['/api/files'] });
-                                                            toast({ title: "File deleted" });
-                                                          } catch (err) {
-                                                            toast({ title: "Failed to delete file", variant: "destructive" });
-                                                          }
-                                                        }
-                                                        closeMenu();
-                                                      });
-                                                      
-                                                      setTimeout(() => document.addEventListener('click', closeMenu), 0);
-                                                    }}
+                                                    className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 rounded group ${draggedFileForMove?.id === file.id ? 'opacity-50' : ''}`}
                                                   >
-                                                    <Menu className="h-3 w-3 text-white/30 hover:text-white/60 cursor-grab shrink-0" />
+                                                    <div
+                                                      draggable="true"
+                                                      onDragStart={(e) => {
+                                                        e.dataTransfer.setData('text/plain', file.id.toString());
+                                                        e.dataTransfer.setData('application/json', JSON.stringify({ 
+                                                          url: file.objectPath, 
+                                                          name: file.displayName || file.originalName,
+                                                          fileId: file.id,
+                                                          folder: file.folder
+                                                        }));
+                                                        e.dataTransfer.effectAllowed = 'move';
+                                                        setDraggedFile({ url: file.objectPath, name: file.displayName || file.originalName });
+                                                        setDraggedFileForMove({ id: file.id, folder: file.folder || '' });
+                                                      }}
+                                                      onDragEnd={() => {
+                                                        setDraggedFile(null);
+                                                        setDraggedFileForMove(null);
+                                                      }}
+                                                      className="cursor-grab active:cursor-grabbing p-0.5 -ml-0.5 hover:bg-white/20 rounded"
+                                                      title="Drag to move file"
+                                                    >
+                                                      <GripVertical className="h-3 w-3 text-white/40 group-hover:text-white/70" />
+                                                    </div>
                                                     <Checkbox
                                                       checked={file.listened || false}
                                                       onCheckedChange={async (checked) => {
@@ -9056,7 +9017,54 @@ export default function Dashboard() {
                                                       className="h-3.5 w-3.5 border border-white/40 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
                                                     />
                                                     <FileText className="h-3.5 w-3.5 text-white/50 shrink-0" />
-                                                    <span className={`text-[11px] truncate flex-1 hover:underline ${file.listened ? 'text-white/40' : 'text-white/80'}`}>
+                                                    <span 
+                                                      className={`text-[11px] truncate flex-1 hover:underline cursor-pointer ${file.listened ? 'text-white/40' : 'text-white/80'}`}
+                                                      onClick={() => setPreviewFile(file)}
+                                                      onContextMenu={(e) => {
+                                                        e.preventDefault();
+                                                        const menu = document.createElement('div');
+                                                        menu.className = 'fixed z-[9999] bg-[#252526] border border-white/20 rounded-md py-1 shadow-lg min-w-[120px]';
+                                                        menu.style.left = `${e.clientX}px`;
+                                                        menu.style.top = `${e.clientY}px`;
+                                                        menu.innerHTML = `
+                                                          <div class="px-3 py-1.5 text-sm text-white/90 hover:bg-white/10 cursor-pointer flex items-center gap-2" data-action="rename">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                                                            Rename
+                                                          </div>
+                                                          <div class="px-3 py-1.5 text-sm text-red-400 hover:bg-red-500/20 cursor-pointer flex items-center gap-2" data-action="delete">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                                            Delete
+                                                          </div>
+                                                        `;
+                                                        document.body.appendChild(menu);
+                                                        
+                                                        const closeMenu = () => {
+                                                          menu.remove();
+                                                          document.removeEventListener('click', closeMenu);
+                                                        };
+                                                        
+                                                        menu.querySelector('[data-action="rename"]')?.addEventListener('click', () => {
+                                                          setRenameFileId(file.id);
+                                                          setRenameFileName(file.displayName || file.originalName);
+                                                          closeMenu();
+                                                        });
+                                                        
+                                                        menu.querySelector('[data-action="delete"]')?.addEventListener('click', async () => {
+                                                          if (confirm(`Delete "${file.displayName || file.originalName}"?`)) {
+                                                            try {
+                                                              await fetch(`/api/files/${file.id}`, { method: 'DELETE' });
+                                                              queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                                              toast({ title: "File deleted" });
+                                                            } catch (err) {
+                                                              toast({ title: "Failed to delete file", variant: "destructive" });
+                                                            }
+                                                          }
+                                                          closeMenu();
+                                                        });
+                                                        
+                                                        setTimeout(() => document.addEventListener('click', closeMenu), 0);
+                                                      }}
+                                                    >
                                                       {file.displayName || file.originalName}
                                                     </span>
                                                   </div>
