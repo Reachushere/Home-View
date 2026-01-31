@@ -9826,7 +9826,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: '#280B05',
+                background: '#160502',
                 padding: '6px 12px'
               }}
             >
@@ -9878,7 +9878,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: '#280B05',
+                background: '#160502',
                 padding: '6px 12px'
               }}
             >
@@ -9936,7 +9936,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: '#280B05',
+                background: '#160502',
                 padding: '6px 12px'
               }}
             >
@@ -9998,7 +9998,7 @@ export default function Dashboard() {
             <div 
               className="flex items-center justify-between px-3 py-1.5"
               style={{ 
-                background: '#280B05'
+                background: '#160502'
               }}
             >
               <h4 
