@@ -6683,7 +6683,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${333 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6694,7 +6694,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${333 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6705,7 +6705,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${333 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + 20}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3.5}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6876,7 +6876,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6887,7 +6887,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight + gridSizes.courseRowHeight * 0.05 + 20}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -6898,7 +6898,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${383 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight * 0.05 + 20}px`}
+            y2={`${190 + 57 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 3.5}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
