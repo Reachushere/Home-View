@@ -5762,7 +5762,7 @@ export default function Dashboard() {
 
           {/* Projects Button */}
           <RouterLink href="/projects">
-            <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '10px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-projects">+ Projects</Button>
+            <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '4px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-projects">+ Projects</Button>
           </RouterLink>
 
           {/* Quick Add Button */}
