@@ -9737,7 +9737,7 @@ export default function Dashboard() {
                     {task.title}
                   </button>
                   {/* Course code column - left aligned, white */}
-                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap" style={{ marginLeft: '-12px' }}>
+                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap" style={{ marginLeft: '-9px' }}>
                     {courseCode}
                   </div>
                   {/* Course name column - left aligned, white */}
