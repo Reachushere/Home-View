@@ -8045,11 +8045,21 @@ export default function Dashboard() {
                   <Plus className="h-4 w-4 mr-2" />
                   Add Task
                 </Button>
-                <div className="flex items-center gap-2">
-                  <ListTodo className="h-3 w-3 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                    NEW TASK
-                  </h2>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <ListTodo className="h-3 w-3 text-white" />
+                    <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                      NEW TASK
+                    </h2>
+                  </div>
+                  <DialogClose asChild>
+                    <button 
+                      className="text-white hover:text-white/80 transition-colors p-1"
+                      data-testid="button-close-add-task"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </DialogClose>
                 </div>
               </div>
               <div className="p-4 max-h-[70vh] overflow-y-auto">
