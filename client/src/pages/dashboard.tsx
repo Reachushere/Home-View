@@ -10254,15 +10254,11 @@ export default function Dashboard() {
             const isModuleTask = task.startDate && task.startDate !== task.dueDate;
             const shouldBlinkInTodayBox = isModuleTask && isWednesdayOrLater && !task.isCompleted;
             
-            // Calculate progress based on subtasks (if available) or completion status
-            const subtaskCount = (task as any).subtaskCount || 0;
-            const completedSubtaskCount = (task as any).completedSubtaskCount || 0;
-            const hasSubtasks = subtaskCount > 0;
-            const subtaskProgress = hasSubtasks ? (completedSubtaskCount / subtaskCount) * 100 : (task.isCompleted ? 100 : 0);
-            const progressBarWidth = hasSubtasks ? Math.round((subtaskProgress / 100) * 44) : (task.isCompleted ? 44 : 0);
+            // Calculate progress using the helper function (subtasks or time-based)
+            const progressBarWidth = getProgressBarWidth(task);
             
             // Color based on box type: Today=red, Tomorrow=yellow, This Week=based on days
-            const progressColor = boxType === 'today' ? '#ef4444' : boxType === 'tomorrow' ? '#eab308' : (daysUntil <= 3 ? '#eab308' : '#22c55e');
+            const progressColor = getProgressColor(task, boxType);
             
             // Parse course code and name (format: "CPPA122" or "CPPA122 - Full Name")
             const courseCode = (task.courseName?.split(' - ')[0] || '').trim();
