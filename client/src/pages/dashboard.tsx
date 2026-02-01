@@ -9866,7 +9866,7 @@ export default function Dashboard() {
                     {courseCode}
                   </div>
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate" style={{ maxWidth: '145px', marginLeft: '-4px' }}>
+                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate" style={{ maxWidth: '145px', marginLeft: '6px' }}>
                     {courseFullName}
                   </div>
                   {/* Paperclip for attachments */}
