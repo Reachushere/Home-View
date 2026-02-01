@@ -6032,9 +6032,9 @@ export default function Dashboard() {
         </div>
 
         {/* All items with equal gaps - absolutely centered on screen */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center h-full" style={{ marginLeft: '-68px', zIndex: 50 }}>
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center h-full max-w-[calc(100vw-450px)] md:max-w-none" style={{ marginLeft: '-77px', paddingLeft: '15px', zIndex: 50 }}>
           {/* Icon buttons and task buttons with adjustable spacing */}
-          <div className="flex items-center flex-wrap justify-center" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
+          <div className="flex items-center flex-wrap justify-center flex-shrink" style={{ gap: `${blinkSettings.buttonSpacing + 4}px` }}>
           {/* Hamburger Menu */}
           <DropdownMenu onOpenChange={(open) => { if (open) triggerButtonGlow('hamburger'); }}>
             <DropdownMenuTrigger asChild>
