@@ -10221,11 +10221,11 @@ export default function Dashboard() {
                 title="Resize"
               />
               {/* Fake progress bar - width controlled by taskName */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '20px', marginRight: '4px' }}>
                 <div 
                   className="rounded-full"
                   style={{ 
-                    width: `${taskColumnWidths.taskName}px`, 
+                    width: '44px', 
                     height: '3px', 
                     backgroundColor: '#22c55e',
                     opacity: 0.7
