@@ -10362,7 +10362,7 @@ export default function Dashboard() {
                     backgroundColor: '#22c55e',
                     opacity: 0.7,
                     marginLeft: '7px',
-                    marginTop: '5px'
+                    marginTop: '7px'
                   }}
                 />
               </div>
