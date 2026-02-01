@@ -10372,9 +10372,7 @@ export default function Dashboard() {
                 THIS WEEK ({dueThisWeekTasks.length})
               </h4>
             </div>
-            <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflow: 'hidden' }}>
-              {/* Scrollable task rows container */}
-              <div style={{ overflowY: 'auto', flex: 1 }}>
+            <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {/* Task row with labels above */}
               <div ref={row1ContainerRef} className="flex" style={{ position: 'relative' }}>
               {/* Blank checkbox - hidden for class type tasks */}
@@ -10476,7 +10474,7 @@ export default function Dashboard() {
               </div>
               {/* Second task row - only render after measurements are available */}
               {dueThisWeekTasks[1] && row1Positions.due > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '6px' }}>
+              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
                 {/* Checkbox - position 0 */}
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -10507,7 +10505,7 @@ export default function Dashboard() {
               )}
               {/* Third task row - same settings as row 2 */}
               {dueThisWeekTasks[2] && row1Positions.due > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '6px' }}>
+              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
                 {/* Checkbox - position 0 */}
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueThisWeekTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -10538,7 +10536,7 @@ export default function Dashboard() {
               )}
               {/* Fourth task row - temporary test (using task 2 data for layout testing) */}
               {dueThisWeekTasks[2] && row1Positions.due > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '6px' }}>
+              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
                 {/* Checkbox - position 0 */}
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueThisWeekTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -10567,7 +10565,6 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
-              </div>{/* End scrollable task rows container */}
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
                   <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
