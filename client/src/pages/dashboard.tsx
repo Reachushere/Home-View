@@ -10376,7 +10376,7 @@ export default function Dashboard() {
                     onMouseDown={handleTestTextResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal">Task</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Task</span>
                 </div>
                 {/* Task title */}
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Online ASL Class</span>
@@ -10391,7 +10391,7 @@ export default function Dashboard() {
                     onMouseDown={handleTestCourseResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal">Code</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Code</span>
                 </div>
                 {/* Course number */}
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>CASL 101</span>
@@ -10406,7 +10406,7 @@ export default function Dashboard() {
                     onMouseDown={handleTestCourseNameResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal">Course</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Course</span>
                 </div>
                 {/* Course name */}
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>American Sign Language</span>
@@ -10421,7 +10421,7 @@ export default function Dashboard() {
                     onMouseDown={handleTestDueDateResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal">Due</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Due</span>
                 </div>
                 {/* Due date */}
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Thu 2/5</span>
@@ -10436,7 +10436,7 @@ export default function Dashboard() {
                     onMouseDown={handleTestDaysLeftResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal">Days</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Days</span>
                 </div>
                 {/* Days left */}
                 <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px' }}>5d</span>
