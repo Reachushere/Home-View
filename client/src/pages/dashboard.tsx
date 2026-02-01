@@ -9958,7 +9958,7 @@ export default function Dashboard() {
                     title="Drag to resize due date column"
                   />
                   {/* Due date column */}
-                  <span className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-8px' }}>
+                  <span className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-3px' }}>
                     {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                   </span>
                   {/* Resize handle - due date */}
