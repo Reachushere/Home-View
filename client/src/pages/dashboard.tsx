@@ -10888,8 +10888,13 @@ export default function Dashboard() {
                     width: '38px',
                     height: '38px',
                     borderRadius: '50%',
-                    background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)'
-                  }} />
+                    background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Undo2 className="h-[18px] w-[18px] text-white" />
+                  </div>
                 </div>
               </div>
               {isLoading ? (
