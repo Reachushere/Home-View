@@ -9858,26 +9858,36 @@ export default function Dashboard() {
           
           // Render column header with resize handles on both sides of progress bar
           const renderTaskColumnHeader = () => (
-            <div style={{ display: 'grid', gridTemplateColumns: `16px 49px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px ${taskColumnWidths.dueDate}px 3px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `16px 3px 44px 3px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px ${taskColumnWidths.dueDate}px 3px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
               <div /> {/* Checkbox spacer */}
+              <div 
+                className="cursor-col-resize hover:bg-white/50"
+                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName', true)}
+              />
               <div /> {/* Progress bar spacer */}
-              <div className="text-[8px] text-white/50 font-normal">Task</div>
               <div 
                 className="cursor-col-resize hover:bg-white/50"
                 style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
                 onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
               />
-              <div className="text-[8px] text-white/50 font-normal">Code</div>
+              <div className="text-[8px] text-white/50 font-normal">Task</div>
               <div 
                 className="cursor-col-resize hover:bg-white/50"
                 style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
                 onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
               />
-              <div className="text-[8px] text-white/50 font-normal">Course</div>
+              <div className="text-[8px] text-white/50 font-normal">Code</div>
               <div 
                 className="cursor-col-resize hover:bg-white/50"
                 style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
                 onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')}
+              />
+              <div className="text-[8px] text-white/50 font-normal">Course</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/50"
+                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
               />
               <div className="text-[8px] text-white/50 font-normal">Due</div>
               <div 
@@ -9922,7 +9932,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 49px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px ${taskColumnWidths.dueDate}px 3px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 3px 44px 3px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px ${taskColumnWidths.dueDate}px 3px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9938,6 +9948,7 @@ export default function Dashboard() {
                   ) : (
                     <div className="h-3.5 w-3.5" />
                   )}
+                  <div /> {/* Handle spacer */}
                   {/* Progress oval column */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
@@ -9949,6 +9960,7 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
+                  <div /> {/* Handle spacer */}
                   {/* Task name column */}
                   <button 
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
