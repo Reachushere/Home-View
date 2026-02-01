@@ -9883,7 +9883,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 3px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 14px ${taskColumnWidths.dueDate}px 3px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 2px 2px ${taskColumnWidths.courseCode}px 2px ${taskColumnWidths.courseName}px 14px ${taskColumnWidths.dueDate}px 2px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9924,14 +9924,14 @@ export default function Dashboard() {
                   {/* Resize handle - task name */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '3px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
+                    style={{ width: '2px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
                     title="Drag to resize task column"
                   />
                   {/* Resize handle - course code (left side) */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '3px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
+                    style={{ width: '2px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
                     title="Drag to resize course code column"
                   />
@@ -9942,7 +9942,7 @@ export default function Dashboard() {
                   {/* Resize handle - course name (left side) */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '3px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
+                    style={{ width: '2px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')}
                     title="Drag to resize course name column"
                   />
@@ -9957,13 +9957,13 @@ export default function Dashboard() {
                     <div className="w-3" />
                   )}
                   {/* Due date column */}
-                  <span className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-2px' }}>
+                  <span className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-8px' }}>
                     {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                   </span>
                   {/* Resize handle - due date */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '3px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
+                    style={{ width: '2px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
                     title="Drag to resize due date column"
                   />
