@@ -8037,7 +8037,7 @@ export default function Dashboard() {
               onClick={() => bringFlyoutToFront('addTask')}
             >
               {/* Header bar matching other flyouts */}
-              <div className="flex items-center justify-between px-4 py-2 bg-black/30 border-b border-white/20">
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <Button 
                   variant="outline"
                   className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
@@ -11106,7 +11106,7 @@ export default function Dashboard() {
           >
             {/* Header bar matching projects/files flyouts */}
             <div 
-              className="flex items-center justify-between px-4 py-2 bg-black/30 border-b border-white/20"
+              className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20"
             >
               <Button 
                 variant="outline"
