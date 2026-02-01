@@ -10338,7 +10338,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-[6px] mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 17px + 14px)', marginLeft: '-17px', marginRight: '-14px' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-[6px] mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 17px + 14px)', marginLeft: '-17px', marginRight: '-14px', height: '145px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
@@ -10372,7 +10372,7 @@ export default function Dashboard() {
                 THIS WEEK ({dueThisWeekTasks.length})
               </h4>
             </div>
-            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {/* Task row with labels above */}
               <div ref={row1ContainerRef} className="flex" style={{ position: 'relative' }}>
               {/* Blank checkbox - hidden for class type tasks */}
