@@ -10337,49 +10337,54 @@ export default function Dashboard() {
             </div>
             <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {/* Header row with labels */}
-              <div className="flex" style={{ position: 'relative', marginBottom: '4px' }}>
+              <div className="flex items-center" style={{ marginBottom: '4px' }}>
                 {/* Checkbox placeholder */}
                 <div style={{ width: '18px', flexShrink: 0 }} />
                 {/* Progress bar placeholder */}
-                <div style={{ width: '44px', flexShrink: 0, marginLeft: `${testProgressBarLeft}px` }} />
+                <div style={{ width: '44px', flexShrink: 0, marginLeft: '4px' }} />
                 {/* Task header */}
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testTextLeft}px` }}>Task</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ width: '100px', flexShrink: 0, marginLeft: '8px' }}>Task</span>
                 {/* Code header */}
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseLeft}px` }}>Code</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ width: '55px', flexShrink: 0 }}>Code</span>
                 {/* Course header */}
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseNameLeft}px` }}>Course</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ width: '80px', flexShrink: 0 }}>Course</span>
                 {/* Due header */}
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testDueDateLeft}px` }}>Due</span>
-                {/* Days header - absolutely positioned */}
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px' }}>Days</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ width: '55px', flexShrink: 0 }}>Due</span>
+                {/* Days header */}
+                <span className="text-[8px] text-white/50 font-normal">Days</span>
               </div>
-              {/* Scrollable task list */}
-              <div className="flex-1 overflow-y-auto" style={{ maxHeight: '120px' }}>
+              {/* Task list */}
+              <div className="flex-1">
                 {dueThisWeekTasks.length === 0 ? (
                   <div className="text-white/60 text-xs">No tasks this week</div>
                 ) : (
-                  dueThisWeekTasks.map((task) => (
-                    <div key={task.id} className="flex items-center" style={{ position: 'relative', marginBottom: '2px' }}>
-                      {/* Checkbox - hidden for class type tasks */}
-                      <div style={{ width: '18px', flexShrink: 0, visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
-                        <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                  dueThisWeekTasks.map((task) => {
+                    const daysLeft = task.dueDate ? Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : 0;
+                    const maxDays = 7;
+                    const barWidth = Math.max(8, Math.min(44, Math.round((daysLeft / maxDays) * 44)));
+                    return (
+                      <div key={task.id} className="flex items-center" style={{ marginBottom: '2px' }}>
+                        {/* Checkbox - hidden for class type tasks */}
+                        <div style={{ width: '18px', flexShrink: 0, visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
+                          <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                        </div>
+                        {/* Progress bar container - fixed width, bar inside varies */}
+                        <div style={{ width: '44px', flexShrink: 0, marginLeft: '4px' }}>
+                          <div className="rounded-full" style={{ width: `${barWidth}px`, height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                        </div>
+                        {/* Task title */}
+                        <span className="truncate" style={{ fontSize: '10px', color: 'white', width: '100px', flexShrink: 0, marginLeft: '8px' }}>{task.title}</span>
+                        {/* Course code */}
+                        <span style={{ fontSize: '10px', color: '#9ca3af', width: '55px', flexShrink: 0 }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                        {/* Course name */}
+                        <span className="truncate" style={{ fontSize: '10px', color: '#9ca3af', width: '80px', flexShrink: 0 }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                        {/* Due date */}
+                        <span style={{ fontSize: '10px', color: 'white', width: '55px', flexShrink: 0 }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                        {/* Days left */}
+                        <span style={{ fontSize: '10px', color: '#4ade80' }}>{daysLeft}d</span>
                       </div>
-                      {/* Progress bar */}
-                      <div style={{ marginLeft: `${testProgressBarLeft}px`, width: '44px', flexShrink: 0 }}>
-                        <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
-                      </div>
-                      {/* Task title */}
-                      <span style={{ fontSize: '10px', color: 'white', marginLeft: `${testTextLeft}px` }}>{task.title}</span>
-                      {/* Course code */}
-                      <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: `${testCourseLeft}px` }}>{task.courseName?.split(' - ')[0] || ''}</span>
-                      {/* Course name */}
-                      <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: `${testCourseNameLeft}px` }}>{task.courseName?.split(' - ')[1] || ''}</span>
-                      {/* Due date */}
-                      <span style={{ fontSize: '10px', color: 'white', marginLeft: `${testDueDateLeft}px` }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
-                      {/* Days left - absolutely positioned */}
-                      <span style={{ fontSize: '10px', color: '#4ade80', position: 'absolute', right: '0px' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
               <div className="flex-1 flex flex-col">
