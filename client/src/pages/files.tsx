@@ -43,7 +43,8 @@ import {
   SkipBack,
   SkipForward,
   RotateCcw,
-  Minus
+  Minus,
+  BookOpen
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { FileRecord } from "@shared/schema";
@@ -958,6 +959,14 @@ export default function FilesPage() {
           </div>
           {/* Action buttons */}
           <div className="flex items-center justify-center gap-4">
+            {file.contentType?.includes("pdf") && (
+              <Link href={`/pdf-reader/${file.id}`}>
+                <BookOpen 
+                  className="h-4 w-4 text-amber-600 cursor-pointer hover:opacity-70" 
+                  data-testid={`button-read-pdf-${file.id}`}
+                />
+              </Link>
+            )}
             <Edit2 
               className="h-4 w-4 text-black cursor-pointer hover:opacity-70" 
               onClick={() => {
