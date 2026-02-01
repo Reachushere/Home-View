@@ -1513,7 +1513,7 @@ export default function Dashboard() {
 
   const [currentPagLevel, setCurrentPagLevel] = useState(1);
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
-  const [todoItems, setTodoItems] = useState<string[]>(Array(20).fill(""));
+  const [todoItems, setTodoItems] = useState<string[]>([]);
   const [dragOverSlot, setDragOverSlot] = useState<{ day: Date; hour: number } | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   
@@ -11054,11 +11054,11 @@ export default function Dashboard() {
           className={`fixed z-[200] transition-all ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
             width: '900px', 
-            height: '250px',
+            height: '85vh',
             top: '50%',
             left: '50%',
             transform: isTodoFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
-            transformOrigin: '50% calc(50vh + 125px)',
+            transformOrigin: '50% calc(50vh + 42.5vh)',
             transitionDuration: '400ms'
           }}
         >
@@ -11088,13 +11088,12 @@ export default function Dashboard() {
                   e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
                 }}
                 onClick={() => {
-                  const newItems = [...todoItems];
-                  const emptyIdx = newItems.findIndex(item => !item.trim());
-                  if (emptyIdx !== -1) {
-                    // Focus the first empty field
-                    const inputEl = document.querySelector(`[data-todo-idx="${emptyIdx}"]`) as HTMLInputElement;
+                  const newItems = [...todoItems, ''];
+                  setTodoItems(newItems);
+                  setTimeout(() => {
+                    const inputEl = document.querySelector(`[data-todo-idx="${newItems.length - 1}"]`) as HTMLInputElement;
                     if (inputEl) inputEl.focus();
-                  }
+                  }, 50);
                 }}
                 data-testid="button-add-item-flyout"
               >
@@ -11105,7 +11104,7 @@ export default function Dashboard() {
                 <div className="flex items-center gap-2">
                   <ListTodo className="h-3 w-3 text-white" />
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                    TO DO ({todoItems.filter(item => item.trim()).length})
+                    TO DO ({todoItems.filter(item => item.trim() && !item.startsWith('✓')).length})
                   </h2>
                 </div>
                 <button 
@@ -11117,45 +11116,56 @@ export default function Dashboard() {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-4 flex-1 p-3 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
-              {[0, 1, 2, 3].map(col => (
-                <div key={col} className="flex flex-col gap-1.5 overflow-hidden">
-                  {[0, 1, 2, 3, 4, 5].map(row => {
-                    const idx = col * 6 + row;
-                    return (
-                      <div key={idx} className="flex items-center gap-1.5">
-                        <input 
-                          type="checkbox" 
-                          className="w-4 h-4 rounded border-white/40 bg-transparent accent-green-500"
-                          checked={!!todoItems[idx]?.startsWith('✓')}
-                          onChange={(e) => {
-                            const newItems = [...todoItems];
-                            if (e.target.checked && newItems[idx] && !newItems[idx].startsWith('✓')) {
-                              newItems[idx] = '✓' + newItems[idx];
-                            } else if (!e.target.checked && newItems[idx]?.startsWith('✓')) {
-                              newItems[idx] = newItems[idx].slice(1);
-                            }
-                            setTodoItems(newItems);
-                          }}
-                        />
-                        <input 
-                          type="text" 
-                          data-todo-idx={idx}
-                          className={`flex-1 text-xs px-1.5 py-1 border border-white/20 rounded bg-white/10 text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none ${todoItems[idx]?.startsWith('✓') ? 'line-through text-white/50' : ''}`}
-                          placeholder="Item..." 
-                          value={todoItems[idx]?.replace(/^✓/, '') || ''} 
-                          onChange={(e) => {
-                            const newItems = [...todoItems];
-                            const wasChecked = newItems[idx]?.startsWith('✓');
-                            newItems[idx] = (wasChecked ? '✓' : '') + e.target.value;
-                            setTodoItems(newItems);
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
+            <div className="flex-1 p-4 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+              {todoItems.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-white/40 text-sm">
+                  Click "Add Item" to create a to-do item
                 </div>
-              ))}
+              ) : (
+                <div className="grid grid-cols-4 gap-3">
+                  {todoItems.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-1.5">
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4 rounded border-white/40 bg-transparent accent-green-500 flex-shrink-0"
+                        checked={item.startsWith('✓')}
+                        onChange={(e) => {
+                          const newItems = [...todoItems];
+                          if (e.target.checked && !newItems[idx].startsWith('✓')) {
+                            newItems[idx] = '✓' + newItems[idx];
+                          } else if (!e.target.checked && newItems[idx].startsWith('✓')) {
+                            newItems[idx] = newItems[idx].slice(1);
+                          }
+                          setTodoItems(newItems);
+                        }}
+                      />
+                      <input 
+                        type="text" 
+                        data-todo-idx={idx}
+                        className={`flex-1 text-xs px-1.5 py-1 border border-white/20 rounded bg-white/10 text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none ${item.startsWith('✓') ? 'line-through text-white/50' : ''}`}
+                        placeholder="Item..." 
+                        value={item.replace(/^✓/, '')} 
+                        onChange={(e) => {
+                          const newItems = [...todoItems];
+                          const wasChecked = newItems[idx].startsWith('✓');
+                          newItems[idx] = (wasChecked ? '✓' : '') + e.target.value;
+                          setTodoItems(newItems);
+                        }}
+                      />
+                      <button
+                        className="text-white/40 hover:text-white/80 transition-colors p-0.5 flex-shrink-0"
+                        onClick={() => {
+                          const newItems = todoItems.filter((_, i) => i !== idx);
+                          setTodoItems(newItems);
+                        }}
+                        data-testid={`button-delete-todo-${idx}`}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -11164,12 +11174,12 @@ export default function Dashboard() {
         <div 
           className={`fixed z-[200] transition-all ease-out ${isProjectsFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
-            width: '500px', 
+            width: '900px', 
             height: '85vh',
             top: '50%',
             left: '50%',
             transform: isProjectsFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
-            transformOrigin: 'calc(-50vw + 250px) 50%',
+            transformOrigin: 'calc(-50vw + 450px) 50%',
             transitionDuration: '400ms'
           }}
         >
