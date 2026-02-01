@@ -8396,30 +8396,28 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    {/* Main Background Color (only when overlay is on) */}
-                    {colorSettings.mainBackgroundOverlay && (
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Overlay Colour</Label>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
-                          <div className="relative">
-                            <div 
-                              className="w-8 h-8 rounded cursor-pointer border border-white/30"
-                              style={{ backgroundColor: colorSettings.mainBackground }}
-                              onClick={() => document.getElementById('color-main-background-input')?.click()}
-                              data-testid="color-main-background"
-                            />
-                            <input
-                              id="color-main-background-input"
-                              type="color"
-                              value={colorSettings.mainBackground}
-                              onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackground: e.target.value }))}
-                              className="absolute opacity-0 w-0 h-0"
-                            />
-                          </div>
+                    {/* Main Background Colour - always visible */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Main Background Colour</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
+                        <div className="relative">
+                          <div 
+                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            style={{ backgroundColor: colorSettings.mainBackground }}
+                            onClick={() => document.getElementById('color-main-background-input')?.click()}
+                            data-testid="color-main-background"
+                          />
+                          <input
+                            id="color-main-background-input"
+                            type="color"
+                            value={colorSettings.mainBackground}
+                            onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackground: e.target.value }))}
+                            className="absolute opacity-0 w-0 h-0"
+                          />
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
                 
