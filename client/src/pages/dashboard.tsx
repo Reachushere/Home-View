@@ -10242,7 +10242,7 @@ export default function Dashboard() {
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Container for resize handle + progress bar + right handle - all move together */}
-              <div className="flex-shrink-0 self-start flex items-start" style={{ marginTop: '16px', marginLeft: `${testProgressBarLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex items-start" style={{ marginTop: '16px', position: 'relative', left: `${testProgressBarLeft}px` }}>
                 {/* Left resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
