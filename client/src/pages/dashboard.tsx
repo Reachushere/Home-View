@@ -10223,12 +10223,12 @@ export default function Dashboard() {
               return Math.round((completedSubtaskCount / subtaskCount) * 44);
             }
             
-            // For tasks without subtasks, show time-based progress
-            // Closer to due date = more filled (max 7 days)
+            // For tasks without subtasks, show time remaining
+            // More days until due = longer bar (more time remaining)
             const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
             const maxDays = 7;
-            // Invert: fewer days = more fill
-            const progressPercent = Math.max(0, Math.min(100, ((maxDays - daysUntil) / maxDays) * 100));
+            // More days = more fill (capped at 7 days)
+            const progressPercent = Math.max(0, Math.min(100, (daysUntil / maxDays) * 100));
             return Math.round((progressPercent / 100) * 44);
           };
 
