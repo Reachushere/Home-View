@@ -10447,9 +10447,20 @@ export default function Dashboard() {
                 TOMORROW ({dueTomorrowTasks.length})
               </h4>
             </div>
-            <div className="flex-1 p-3 pb-5 flex" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+            <div className="flex-1 p-3 pb-5 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+              {/* Column headers row */}
+              <div className="flex items-center mb-1" style={{ marginLeft: '18px' }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testProgressBarLeft + 7}px`, width: '44px' }}></span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testTextLeft + 7}px` }}>Task</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseLeft + 7}px` }}>Code</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseNameLeft + 7}px` }}>Course</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testDueDateLeft + 7}px` }}>Due</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testDaysLeftLeft + 7}px` }}>Days</span>
+              </div>
+              {/* Task row */}
+              <div className="flex">
               {/* Blank checkbox */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '14px', marginRight: '4px' }}>
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '2px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Group 1: Left handle + progress bar - moves together with left handle drag */}
@@ -10531,6 +10542,7 @@ export default function Dashboard() {
                 />
                 {/* Days left */}
                 <span style={{ fontSize: '10px', color: '#4ade80' }}>5d</span>
+              </div>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
