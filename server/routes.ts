@@ -333,14 +333,22 @@ export async function registerRoutes(
     
     const tasks = await storage.getTasks({ weekNumber, type, showCompleted });
     
-    // Mark missed tasks
+    // Mark missed tasks and add subtask counts
     const now = new Date();
-    const tasksWithMissed = tasks.map(task => ({
-      ...task,
-      isMissed: !task.isCompleted && new Date(task.dueDate) < now
+    const tasksWithExtras = await Promise.all(tasks.map(async (task) => {
+      const subtasks = await storage.getSubtasksByTask(task.id);
+      const subtaskCount = subtasks.length;
+      const completedSubtaskCount = subtasks.filter(s => s.isCompleted).length;
+      
+      return {
+        ...task,
+        isMissed: !task.isCompleted && new Date(task.dueDate) < now,
+        subtaskCount,
+        completedSubtaskCount
+      };
     }));
     
-    res.json(tasksWithMissed);
+    res.json(tasksWithExtras);
   });
 
   // GET /api/tasks/:id

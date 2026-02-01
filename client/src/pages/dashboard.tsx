@@ -10184,6 +10184,27 @@ export default function Dashboard() {
             );
           };
 
+          // Helper to calculate progress bar width based on subtasks
+          const getProgressBarWidth = (task: typeof dueTodayTasks[0] | undefined): number => {
+            if (!task) return 0;
+            const subtaskCount = (task as any).subtaskCount || 0;
+            const completedSubtaskCount = (task as any).completedSubtaskCount || 0;
+            const hasSubtasks = subtaskCount > 0;
+            if (hasSubtasks) {
+              return Math.round((completedSubtaskCount / subtaskCount) * 44);
+            }
+            return task.isCompleted ? 44 : 0;
+          };
+
+          // Helper to get progress bar color based on box type and days until due
+          const getProgressColor = (task: typeof dueTodayTasks[0] | undefined, boxType: 'today' | 'tomorrow' | 'thisweek' = 'thisweek'): string => {
+            if (!task) return '#22c55e';
+            const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
+            if (boxType === 'today') return '#ef4444';
+            if (boxType === 'tomorrow') return '#eab308';
+            return daysUntil <= 3 ? '#eab308' : '#22c55e';
+          };
+
           // Render a single task row
           const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false, boxType: 'today' | 'tomorrow' | 'thisweek' = 'today') => {
             const attachments = parseAttachments(task.attachments);
@@ -10197,9 +10218,13 @@ export default function Dashboard() {
             const isModuleTask = task.startDate && task.startDate !== task.dueDate;
             const shouldBlinkInTodayBox = isModuleTask && isWednesdayOrLater && !task.isCompleted;
             
-            // Calculate progress bar fill (max 7 days, inverted so more days = less fill)
-            const maxDays = 7;
-            const progressPercent = Math.max(0, Math.min(100, ((maxDays - daysUntil) / maxDays) * 100));
+            // Calculate progress based on subtasks (if available) or completion status
+            const subtaskCount = (task as any).subtaskCount || 0;
+            const completedSubtaskCount = (task as any).completedSubtaskCount || 0;
+            const hasSubtasks = subtaskCount > 0;
+            const subtaskProgress = hasSubtasks ? (completedSubtaskCount / subtaskCount) * 100 : (task.isCompleted ? 100 : 0);
+            const progressBarWidth = hasSubtasks ? Math.round((subtaskProgress / 100) * 44) : (task.isCompleted ? 44 : 0);
+            
             // Color based on box type: Today=red, Tomorrow=yellow, This Week=based on days
             const progressColor = boxType === 'today' ? '#ef4444' : boxType === 'tomorrow' ? '#eab308' : (daysUntil <= 3 ? '#eab308' : '#22c55e');
             
@@ -10238,16 +10263,29 @@ export default function Dashboard() {
                   {/* Handle 1 spacer */}
                   <div style={{ width: '3px', flexShrink: 0 }} />
                   {/* Col 2: Progress bar */}
-                  <div style={{ width: '44px', flexShrink: 0 }}>
+                  <div style={{ width: '44px', flexShrink: 0, position: 'relative' }}>
+                    {/* Background track */}
                     <div 
-                      className="rounded-full transition-all duration-300"
+                      className="rounded-full"
                       style={{ 
                         width: '44px', 
                         height: '3px', 
-                        backgroundColor: progressColor,
-                        opacity: 0.7
+                        backgroundColor: 'rgba(255,255,255,0.15)'
                       }}
-                      title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
+                    />
+                    {/* Progress fill */}
+                    <div 
+                      className="rounded-full transition-all duration-300"
+                      style={{ 
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: `${progressBarWidth}px`, 
+                        height: '3px', 
+                        backgroundColor: progressColor,
+                        opacity: 0.9
+                      }}
+                      title={hasSubtasks ? `${completedSubtaskCount}/${subtaskCount} subtasks` : `${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                     />
                   </div>
                   {/* Handle 2 spacer */}
@@ -10515,8 +10553,9 @@ export default function Dashboard() {
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
                 {/* Progress bar - same position as row 1 */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[1]), opacity: 0.9 }} />
                 </div>
                 {/* Task title - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.title || ''}</span>
@@ -10546,8 +10585,9 @@ export default function Dashboard() {
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
                 {/* Progress bar - same position as row 1 */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[2]), opacity: 0.9 }} />
                 </div>
                 {/* Task title - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[2]?.title || ''}</span>
@@ -10648,8 +10688,9 @@ export default function Dashboard() {
                   <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Progress</span>
                 </div>
-                <div className="flex items-center">
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                <div className="flex items-center" style={{ position: 'relative', width: '44px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[0], 'today'), opacity: 0.9 }} />
                 </div>
               </div>
               {/* Task title with label above */}
@@ -10703,8 +10744,9 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTodayTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[1], 'today'), opacity: 0.9 }} />
                 </div>
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.title || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
@@ -10720,8 +10762,9 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTodayTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[2], 'today'), opacity: 0.9 }} />
                 </div>
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.title || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
@@ -10811,8 +10854,9 @@ export default function Dashboard() {
                   <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Progress</span>
                 </div>
-                <div className="flex items-center">
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                <div className="flex items-center" style={{ position: 'relative', width: '44px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[0], 'tomorrow'), opacity: 0.9 }} />
                 </div>
               </div>
               {/* Task title with label above */}
@@ -10866,8 +10910,9 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTomorrowTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[1], 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.title || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
@@ -10883,8 +10928,9 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTomorrowTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[2], 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.title || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
