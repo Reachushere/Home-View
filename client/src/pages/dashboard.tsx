@@ -10336,23 +10336,7 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 p-3 pb-5 flex flex-col overflow-auto" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-              {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
-              ) : dueThisWeekTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No other tasks this week</div>
-              ) : (
-                <div className="space-y-0.5">
-                  {renderTaskColumnHeader()}
-                  {dueThisWeekTasks.map((task, idx) => (
-                    <div key={task.id} style={idx === 0 ? { marginTop: '-7px' } : undefined}>
-                      {idx > 0 && (
-                        <div className="border-b border-white/20 my-1" />
-                      )}
-                      {renderTask(task, true, 'thisweek')}
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* Content cleared */}
             </div>
           </section>
 
