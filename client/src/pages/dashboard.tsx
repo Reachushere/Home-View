@@ -564,6 +564,41 @@ export default function Dashboard() {
     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
   }, [blinkSettings]);
   
+  // TEST: Isolated progress bar width (completely separate from task columns)
+  const [testProgressBarWidth, setTestProgressBarWidth] = useState(44);
+  const [resizingTestBar, setResizingTestBar] = useState(false);
+  const testBarStartX = useRef(0);
+  const testBarStartWidth = useRef(0);
+  
+  const handleTestBarResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingTestBar(true);
+    testBarStartX.current = e.clientX;
+    testBarStartWidth.current = testProgressBarWidth;
+  };
+  
+  useEffect(() => {
+    if (!resizingTestBar) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const diff = e.clientX - testBarStartX.current;
+      const newWidth = Math.max(20, Math.min(200, testBarStartWidth.current + diff));
+      setTestProgressBarWidth(newWidth);
+    };
+    
+    const handleMouseUp = () => {
+      setResizingTestBar(false);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizingTestBar]);
+
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
     taskGap: number;
@@ -10213,19 +10248,19 @@ export default function Dashboard() {
               <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
-              {/* Right resize handle */}
+              {/* Right resize handle - controls ONLY the test progress bar */}
               <div 
                 className="cursor-col-resize hover:bg-white/50 flex-shrink-0 self-start"
                 style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '16px' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
+                onMouseDown={handleTestBarResizeStart}
                 title="Resize"
               />
-              {/* Fake progress bar - width controlled by taskName */}
+              {/* Test progress bar - width controlled by testProgressBarWidth ONLY */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '20px', marginRight: '4px' }}>
                 <div 
                   className="rounded-full"
                   style={{ 
-                    width: '44px', 
+                    width: `${testProgressBarWidth}px`, 
                     height: '3px', 
                     backgroundColor: '#22c55e',
                     opacity: 0.7
