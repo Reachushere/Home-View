@@ -10366,7 +10366,7 @@ export default function Dashboard() {
                 />
               </div>
               {/* Group 2: Right handle + text with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px', width: '110px', overflow: 'hidden' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10377,10 +10377,10 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Task</span>
                 </div>
                 {/* Task title */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
               </div>
               {/* Group 3: Third handle + course code with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px', width: '55px', overflow: 'hidden' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10391,10 +10391,10 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Code</span>
                 </div>
                 {/* Course number */}
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
               </div>
               {/* Group 4: Fourth handle + course name with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px', width: '130px', overflow: 'hidden' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10405,10 +10405,10 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Course</span>
                 </div>
                 {/* Course name */}
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
               </div>
               {/* Group 5: Fifth handle + due date with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px', width: '55px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
