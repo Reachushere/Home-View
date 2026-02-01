@@ -1200,6 +1200,32 @@ export default function Dashboard() {
   const thisWeekResizeStartY = useRef<number>(0);
   const thisWeekResizeStartHeight = useRef<number>(0);
   
+  // Refs to measure first row column positions for alignment
+  const row1TaskRef = useRef<HTMLDivElement>(null);
+  const row1CodeRef = useRef<HTMLDivElement>(null);
+  const row1CourseRef = useRef<HTMLDivElement>(null);
+  const row1DueRef = useRef<HTMLDivElement>(null);
+  const row1ContainerRef = useRef<HTMLDivElement>(null);
+  const [row1Positions, setRow1Positions] = useState({ task: 0, code: 0, course: 0, due: 0 });
+  
+  // Measure first row positions after render
+  useEffect(() => {
+    const measurePositions = () => {
+      if (row1ContainerRef.current && row1TaskRef.current && row1CodeRef.current && row1CourseRef.current && row1DueRef.current) {
+        const containerLeft = row1ContainerRef.current.getBoundingClientRect().left;
+        setRow1Positions({
+          task: row1TaskRef.current.getBoundingClientRect().left - containerLeft,
+          code: row1CodeRef.current.getBoundingClientRect().left - containerLeft,
+          course: row1CourseRef.current.getBoundingClientRect().left - containerLeft,
+          due: row1DueRef.current.getBoundingClientRect().left - containerLeft
+        });
+      }
+    };
+    measurePositions();
+    window.addEventListener('resize', measurePositions);
+    return () => window.removeEventListener('resize', measurePositions);
+  }, [dueThisWeekTasks, testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft]);
+  
   // Save box order to localStorage
   useEffect(() => {
     localStorage.setItem('boxOrder', JSON.stringify(boxOrder));
@@ -10337,7 +10363,7 @@ export default function Dashboard() {
             </div>
             <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {/* Task row with labels above */}
-              <div className="flex" style={{ position: 'relative' }}>
+              <div ref={row1ContainerRef} className="flex" style={{ position: 'relative' }}>
               {/* Blank checkbox - hidden for class type tasks */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -10366,7 +10392,7 @@ export default function Dashboard() {
                 />
               </div>
               {/* Group 2: Right handle + text with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
+              <div ref={row1TaskRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10380,7 +10406,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
               </div>
               {/* Group 3: Third handle + course code with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
+              <div ref={row1CodeRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10394,7 +10420,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
               </div>
               {/* Group 4: Fourth handle + course name with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
+              <div ref={row1CourseRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10408,7 +10434,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
               </div>
               {/* Group 5: Fifth handle + due date with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
+              <div ref={row1DueRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10445,20 +10471,20 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 7}px`, top: '6px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
                 </div>
-                {/* Task title - positioned after progress bar area + testTextLeft + 7px inner margin */}
-                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 51 + testTextLeft + 7}px`, top: '1px' }}>
+                {/* Task title - use measured position from row 1 + 7px for inner margin */}
+                <div style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px' }}>
                   <span style={{ fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.title || ''}</span>
                 </div>
-                {/* Course code - need to measure row 1 task width, use estimate for now */}
-                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 51 + testTextLeft + 130 + testCourseLeft + 7}px`, top: '1px' }}>
+                {/* Course code - use measured position from row 1 + 7px for inner margin */}
+                <div style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px' }}>
                   <span style={{ fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 </div>
-                {/* Course name */}
-                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 51 + testTextLeft + 130 + testCourseLeft + 60 + testCourseNameLeft + 7}px`, top: '1px' }}>
+                {/* Course name - use measured position from row 1 + 7px for inner margin */}
+                <div style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px' }}>
                   <span style={{ fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 </div>
-                {/* Due date */}
-                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 51 + testTextLeft + 130 + testCourseLeft + 60 + testCourseNameLeft + 160 + testDueDateLeft + 7}px`, top: '1px' }}>
+                {/* Due date - use measured position from row 1 + 7px for inner margin */}
+                <div style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px' }}>
                   <span style={{ fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 </div>
                 {/* Days left - absolutely positioned at right */}
