@@ -9856,11 +9856,23 @@ export default function Dashboard() {
             });
           };
           
-          // Render column header with resize handles
+          // Render column header with resize handles on both sides of progress bar
           const renderTaskColumnHeader = () => (
-            <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `16px 1px 44px 1px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
               <div /> {/* Checkbox spacer */}
+              <div 
+                className="cursor-col-resize hover:bg-white/70 transition-colors"
+                style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName', true)}
+                title="Drag to resize"
+              />
               <div /> {/* Progress bar spacer */}
+              <div 
+                className="cursor-col-resize hover:bg-white/70 transition-colors"
+                style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
+                title="Drag to resize task column"
+              />
               <div className="text-[8px] text-white/50 font-normal">Task</div>
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
@@ -9926,7 +9938,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 1px 44px 1px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9942,17 +9954,19 @@ export default function Dashboard() {
                   ) : (
                     <div className="h-3.5 w-3.5" />
                   )}
+                  <div /> {/* Spacer for left handle */}
                   {/* Progress oval column */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
                     style={{ 
-                      width: '5px', 
+                      width: '44px', 
                       height: '3px', 
                       backgroundColor: progressColor,
                       opacity: 0.7
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
+                  <div /> {/* Spacer for right handle */}
                   {/* Task name column */}
                   <button 
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
