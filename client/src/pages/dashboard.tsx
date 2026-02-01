@@ -10455,14 +10455,16 @@ export default function Dashboard() {
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Group 1: Left handle + progress bar - moves together with left handle drag */}
-              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '22px', marginLeft: `${testProgressBarLeft}px` }}>
-                {/* Left resize handle */}
-                <div 
-                  className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
-                  onMouseDown={handleTestBarResizeStart}
-                  title="Resize"
-                />
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '6px', marginLeft: `${testProgressBarLeft}px` }}>
+                <div className="flex items-center" style={{ marginBottom: '6px' }}>
+                  {/* Resize handle on header line */}
+                  <div 
+                    className="cursor-col-resize hover:bg-white/50"
+                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                    onMouseDown={handleTestBarResizeStart}
+                    title="Resize"
+                  />
+                </div>
                 {/* Progress bar */}
                 <div 
                   className="rounded-full"
@@ -10470,7 +10472,8 @@ export default function Dashboard() {
                     width: '44px', 
                     height: '3px', 
                     backgroundColor: '#22c55e',
-                    opacity: 0.7
+                    opacity: 0.7,
+                    marginLeft: '7px'
                   }}
                 />
               </div>
