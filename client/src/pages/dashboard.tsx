@@ -7312,11 +7312,11 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="flex pt-4 border-t border-white/20 mt-4">
+          <div className="flex justify-end pt-4 border-t border-white/20 mt-4">
             <Button 
               type="button" 
               variant="outline"
-              className="w-full border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200" 
+              className="w-1/2 border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200" 
               style={{
                 boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
               }}
@@ -13137,11 +13137,11 @@ function CoursesForm({
         ))}
       </div>
       
-      <div className="flex">
+      <div className="flex justify-end">
         <Button 
           type="submit" 
           variant="outline"
-          className="w-full border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 text-xs h-8" 
+          className="w-1/2 border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 text-xs h-8" 
           style={{
             boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
           }}
