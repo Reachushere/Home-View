@@ -8019,7 +8019,8 @@ export default function Dashboard() {
             }
           }}>
             <DialogContent 
-              className="max-w-[95vw] sm:max-w-3xl p-0 overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-dialog-burst-from-top data-[state=closed]:animate-dialog-burst-to-top [&>button]:hidden"
+              className="flex flex-col p-0 overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-dialog-burst-from-top data-[state=closed]:animate-dialog-burst-to-top [&>button]:hidden"
+              style={{ width: '900px', maxWidth: '95vw', height: '85vh' }}
             >
               {/* Header bar matching other flyouts */}
               <div className="flex items-center justify-between px-4 py-2 bg-black/30 border-b border-white/20">
@@ -8061,7 +8062,7 @@ export default function Dashboard() {
                   </DialogClose>
                 </div>
               </div>
-              <div className="p-4 max-h-[70vh] overflow-y-auto">
+              <div className="p-4 flex-1 overflow-y-auto">
                 <TaskForm 
                   key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
                   weekNumber={selectedWeek}
