@@ -10403,6 +10403,14 @@ export default function Dashboard() {
                 />
                 {/* Course name */}
                 <span style={{ fontSize: '10px', color: 'white' }}>American Sign Language</span>
+                {/* Fifth resize handle */}
+                <div 
+                  className="cursor-col-resize hover:bg-white/50"
+                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
+                  title="Resize"
+                />
+                {/* Due date */}
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '4px' }}>Thu 2/5</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
