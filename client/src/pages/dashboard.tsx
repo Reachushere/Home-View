@@ -7391,20 +7391,34 @@ export default function Dashboard() {
           <div 
             className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
             style={{ 
+              position: 'absolute',
               width: '44px', 
               height: '44px', 
               top: '382px', 
               right: '18px',
               borderRadius: '50%',
-              background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-              padding: '1px'
+              backgroundColor: '#FFA365'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
           >
-            <Button variant="ghost" size="icon" className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}>
+            <div 
+              className="hover:opacity-80 transition-all duration-200"
+              style={{
+                position: 'absolute',
+                top: '3px',
+                left: '3px',
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
               <Library className="h-[18px] w-[18px] text-white" strokeWidth={2} />
-            </Button>
+            </div>
             {unreadModuleCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
                 {unreadModuleCount}
