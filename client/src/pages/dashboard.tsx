@@ -7446,9 +7446,9 @@ export default function Dashboard() {
       {/* Dotted lines from Modules button to course buttons */}
       {modulesHoneycombOpen === 'modules' && (
         <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
-          {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width = 62px from right) */}
+          {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width + 1px = 63px from right) */}
           <line 
-            x1={`calc(100% - 62px)`} 
+            x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 39}px`}
@@ -7459,7 +7459,7 @@ export default function Dashboard() {
           />
           {/* Line to CFNF */}
           <line 
-            x1={`calc(100% - 62px)`} 
+            x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 39}px`}
@@ -7470,7 +7470,7 @@ export default function Dashboard() {
           />
           {/* Line to CASL */}
           <line 
-            x1={`calc(100% - 62px)`} 
+            x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
             y2={`${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 39}px`}
