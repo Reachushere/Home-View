@@ -10247,9 +10247,9 @@ export default function Dashboard() {
               <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
-              {/* Container for resize handle + progress bar - both move together */}
+              {/* Container for resize handle + progress bar + right handle - all move together */}
               <div className="flex-shrink-0 self-start flex items-start" style={{ marginTop: '16px', marginLeft: `${testProgressBarLeft}px` }}>
-                {/* Resize handle */}
+                {/* Left resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
@@ -10266,6 +10266,12 @@ export default function Dashboard() {
                     opacity: 0.7,
                     marginTop: '4px'
                   }}
+                />
+                {/* Right resize handle */}
+                <div 
+                  className="cursor-col-resize hover:bg-white/50"
+                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
+                  title="Resize"
                 />
               </div>
               <div className="flex-1 flex flex-col">
