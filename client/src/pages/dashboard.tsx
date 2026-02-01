@@ -10474,7 +10474,7 @@ export default function Dashboard() {
               </div>
               {/* Second task row - only render after measurements are available */}
               {dueThisWeekTasks[1] && row1Positions.due > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '-1px' }}>
+              <div style={{ position: 'relative', height: '16px', marginTop: '-5px' }}>
                 {/* Checkbox - position 0 */}
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -10505,7 +10505,7 @@ export default function Dashboard() {
               )}
               {/* Third task row - same settings as row 2 */}
               {dueThisWeekTasks[2] && row1Positions.due > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '-1px' }}>
+              <div style={{ position: 'relative', height: '16px', marginTop: '2px' }}>
                 {/* Checkbox - position 0 */}
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueThisWeekTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -10536,7 +10536,7 @@ export default function Dashboard() {
               )}
               {/* Fourth task row - temporary test (using task 2 data for layout testing) */}
               {dueThisWeekTasks[2] && row1Positions.due > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '-1px' }}>
+              <div style={{ position: 'relative', height: '16px', marginTop: '2px' }}>
                 {/* Checkbox - position 0 */}
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueThisWeekTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
