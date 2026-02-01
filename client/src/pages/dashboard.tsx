@@ -10853,6 +10853,31 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
+              {/* TEST UNDO BUTTON CIRCLES - For comparison */}
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ position: 'relative', width: '44px', height: '44px' }}>
+                  {/* Bottom circle: 44px, solid #FFA365 */}
+                  <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '50%',
+                    backgroundColor: '#FFA365'
+                  }} />
+                  {/* Top circle: 38px, gradient #FFDD63 bottom to #FF6E3D top */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '3px',
+                    left: '3px',
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)'
+                  }} />
+                </div>
+              </div>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
