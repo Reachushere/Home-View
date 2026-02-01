@@ -9066,14 +9066,28 @@ export default function Dashboard() {
                     })()}
                   </div>
                   {weekDays.map((day, dayIdx) => {
-                    // Course row day cells - prep tasks now appear in All Day row with extensions
+                    // Course row day cells - show tasks due on this day for this course
                     const isDayToday = isSameDay(day, new Date());
                     // Use solid color for today's column, no transparency
                     const cellBgColor = course.bg;
+                    
+                    // Find tasks for this course on this day
+                    const dayTasks = tasks?.filter(task => {
+                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (task.isCompleted) return false;
+                      const taskDueDate = startOfDay(new Date(task.dueDate));
+                      const cellDate = startOfDay(day);
+                      return isSameDay(taskDueDate, cellDate);
+                    }) || [];
+                    
+                    // Get task summary for this cell (first task title, truncated)
+                    const taskSummary = dayTasks.length > 0 ? dayTasks[0].title : '';
+                    const hasMultipleTasks = dayTasks.length > 1;
+                    
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible"
+                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden"
                         style={{ 
                           backgroundColor: cellBgColor
                         }}
@@ -9089,7 +9103,19 @@ export default function Dashboard() {
                           e.currentTarget.style.backgroundColor = cellBgColor;
                           handleCourseRowDrop(e, course.name, day);
                         }}
-                      />
+                      >
+                        {taskSummary && (
+                          <div 
+                            className="text-[8px] text-black truncate px-0.5 flex items-center gap-0.5"
+                            title={dayTasks.map(t => t.title).join(', ')}
+                          >
+                            <span className="truncate">{taskSummary}</span>
+                            {hasMultipleTasks && (
+                              <span className="text-[7px] opacity-60">+{dayTasks.length - 1}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                   {/* Course row resize handle */}
