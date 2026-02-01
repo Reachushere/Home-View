@@ -564,6 +564,64 @@ export default function Dashboard() {
     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
   }, [blinkSettings]);
   
+  // Task column widths - resizable
+  const [taskColumnWidths, setTaskColumnWidths] = useState<{
+    taskName: number;
+    courseCode: number;
+    courseName: number;
+  }>(() => {
+    const saved = localStorage.getItem('taskColumnWidths');
+    const parsed = saved ? JSON.parse(saved) : {};
+    return {
+      taskName: parsed.taskName ?? 48,
+      courseCode: parsed.courseCode ?? 100,
+      courseName: parsed.courseName ?? 145
+    };
+  });
+  
+  // Save column widths to localStorage
+  useEffect(() => {
+    localStorage.setItem('taskColumnWidths', JSON.stringify(taskColumnWidths));
+  }, [taskColumnWidths]);
+  
+  // Column resize state
+  const [resizingColumn, setResizingColumn] = useState<string | null>(null);
+  const resizeStartX = useRef(0);
+  const resizeStartWidth = useRef(0);
+  
+  // Handle task column resize
+  const handleTaskColumnResizeStart = (e: React.MouseEvent, column: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingColumn(column);
+    resizeStartX.current = e.clientX;
+    resizeStartWidth.current = taskColumnWidths[column as keyof typeof taskColumnWidths];
+  };
+  
+  useEffect(() => {
+    if (!resizingColumn) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const diff = e.clientX - resizeStartX.current;
+      const newWidth = Math.max(30, Math.min(300, resizeStartWidth.current + diff));
+      setTaskColumnWidths(prev => ({
+        ...prev,
+        [resizingColumn]: newWidth
+      }));
+    };
+    
+    const handleMouseUp = () => {
+      setResizingColumn(null);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizingColumn]);
+  
   // Save and reload discussion post checkboxes when week changes
   useEffect(() => {
     localStorage.setItem(`discussionStart_week${selectedWeek}`, String(startDiscussionComplete));
@@ -9823,7 +9881,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: '16px 5px 48px 100px 55px 145px 14px auto', gap: '6px', alignItems: 'center' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 4px ${taskColumnWidths.courseCode}px 4px ${taskColumnWidths.courseName}px 14px auto`, gap: '2px', alignItems: 'center' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9852,7 +9910,7 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  {/* Task name column - left aligned, bold, same size as course name */}
+                  {/* Task name column - left aligned, bold, resizable */}
                   <button 
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
@@ -9861,12 +9919,26 @@ export default function Dashboard() {
                   >
                     {task.title}
                   </button>
+                  {/* Resize handle - task name */}
+                  <div 
+                    className="h-full cursor-col-resize hover:bg-white/30 transition-colors"
+                    style={{ width: '4px', minHeight: '14px' }}
+                    onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
+                    title="Drag to resize task column"
+                  />
                   {/* Course code column - left aligned, white */}
-                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap" style={{ marginLeft: '-9px' }}>
+                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
                     {courseCode}
                   </div>
+                  {/* Resize handle - course code */}
+                  <div 
+                    className="h-full cursor-col-resize hover:bg-white/30 transition-colors"
+                    style={{ width: '4px', minHeight: '14px' }}
+                    onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
+                    title="Drag to resize course code column"
+                  />
                   {/* Course name column - left aligned, white */}
-                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate" style={{ maxWidth: '145px', marginLeft: '6px' }}>
+                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
                     {courseFullName}
                   </div>
                   {/* Paperclip for attachments */}
@@ -9876,7 +9948,7 @@ export default function Dashboard() {
                     <div className="w-3" />
                   )}
                   {/* Due date and days column - combined */}
-                  <div className="flex items-center whitespace-nowrap" style={{ marginLeft: '-36px' }}>
+                  <div className="flex items-center whitespace-nowrap">
                     <span className="text-[10px] text-white" style={{ width: '55px' }}>
                       {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                     </span>
