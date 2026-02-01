@@ -6564,7 +6564,7 @@ export default function Dashboard() {
           </div>
           <div className="flex-1 overflow-y-auto space-y-4 p-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {/* Course Legend */}
-            <div className="space-y-2">
+            <div className="space-y-4">
               {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
                 const courseCode = course.name.split(' - ')[0];
                 const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
@@ -6591,7 +6591,7 @@ export default function Dashboard() {
                             href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-white/70 hover:text-white hover:underline cursor-pointer"
+                            className="text-blue-400 underline hover:text-blue-300 cursor-pointer"
                             data-testid={`link-settings-email-professor-${index + 1}`}
                             onClick={(e) => {
                               e.stopPropagation();
