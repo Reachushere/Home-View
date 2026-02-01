@@ -10434,6 +10434,39 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
+              {/* Second task row - only show if exists */}
+              {dueThisWeekTasks[1] && (
+              <div className="flex" style={{ position: 'relative', marginTop: '2px' }}>
+                {/* Checkbox - hidden for class type tasks */}
+                <div className="flex-shrink-0 self-start" style={{ marginTop: '2px', marginRight: '4px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
+                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                </div>
+                {/* Progress bar */}
+                <div className="flex-shrink-0 self-start" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7, marginLeft: '7px', marginTop: '5px' }} />
+                </div>
+                {/* Task title */}
+                <div className="flex-shrink-0 self-start" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
+                  <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.title || ''}</span>
+                </div>
+                {/* Course code */}
+                <div className="flex-shrink-0 self-start" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
+                  <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                </div>
+                {/* Course name */}
+                <div className="flex-shrink-0 self-start" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
+                  <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                </div>
+                {/* Due date */}
+                <div className="flex-shrink-0 self-start" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
+                  <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                </div>
+                {/* Days left - absolutely positioned */}
+                <div className="flex-shrink-0" style={{ position: 'absolute', right: '0px', top: '2px' }}>
+                  <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                </div>
+              </div>
+              )}
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
                   <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
