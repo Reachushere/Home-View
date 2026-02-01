@@ -1002,6 +1002,14 @@ export default function Dashboard() {
     };
     if (saved) {
       const parsed = JSON.parse(saved);
+      // Force reset boxBackground to white - migration to new glass effect system
+      if (parsed.boxGlassEffect === undefined || parsed.boxBackground === '#01a0af') {
+        parsed.boxBackground = '#ffffff';
+        parsed.boxGlassEffect = true;
+        parsed.boxTransparency = 35;
+        // Save the corrected settings
+        localStorage.setItem('colorSettings', JSON.stringify({ ...defaults, ...parsed }));
+      }
       return { ...defaults, ...parsed };
     }
     return defaults;
