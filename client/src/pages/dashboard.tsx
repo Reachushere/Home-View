@@ -566,6 +566,7 @@ export default function Dashboard() {
   
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
+    taskGap: number;
     taskName: number;
     courseCode: number;
     courseName: number;
@@ -574,6 +575,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('taskColumnWidths');
     const parsed = saved ? JSON.parse(saved) : {};
     return {
+      taskGap: parsed.taskGap ?? 0,
       taskName: parsed.taskName ?? 48,
       courseCode: parsed.courseCode ?? 100,
       courseName: parsed.courseName ?? 145,
@@ -9855,17 +9857,19 @@ export default function Dashboard() {
           };
           
           // Render column header with resize handles
+          // Each handle moves the column directly to its right by expanding a gap
           const renderTaskColumnHeader = () => (
-            <div style={{ display: 'grid', gridTemplateColumns: `16px 1px 44px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `16px 44px 1px ${taskColumnWidths.taskGap}px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
               <div /> {/* Checkbox spacer */}
+              <div /> {/* Progress bar spacer */}
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
-                title="Drag right to expand task column"
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskGap')}
+                title="Drag to move task column"
               />
-              <div /> {/* Progress bar spacer */}
-              <div className="text-[8px] text-white/50 font-normal">Task</div>
+              <div /> {/* Gap that expands when handle is dragged */}
+              <div className="text-[8px] text-white/50 font-normal" style={{ textAlign: 'left' }}>Task</div>
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
@@ -9930,7 +9934,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 1px 44px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 44px 1px ${taskColumnWidths.taskGap}px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9946,26 +9950,25 @@ export default function Dashboard() {
                   ) : (
                     <div className="h-3.5 w-3.5" />
                   )}
-                  <div /> {/* Spacer for resize handle column */}
-                  {/* Progress oval column - thinner bar */}
+                  {/* Progress oval column */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
                     style={{ 
                       width: '44px', 
                       height: '3px', 
                       backgroundColor: progressColor,
-                      opacity: 0.7,
-                      marginLeft: '-2px',
-                      marginRight: '2px'
+                      opacity: 0.7
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  {/* Task name column - right aligned so it moves with left handle */}
+                  <div /> {/* Spacer for resize handle */}
+                  <div /> {/* Gap that expands when handle is dragged */}
+                  {/* Task name column - left aligned */}
                   <button 
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
-                    style={{ textAlign: 'right', marginRight: '1px' }}
+                    style={{ textAlign: 'left' }}
                   >
                     {task.title}
                   </button>
