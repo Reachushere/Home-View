@@ -8322,7 +8322,7 @@ export default function Dashboard() {
                     Fine-tune word highlighting to sync with your Home Assistant TTS voice.
                   </p>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs">Start Delay</Label>
@@ -8335,7 +8335,7 @@ export default function Dashboard() {
                         step="1"
                         value={ttsSettings.startDelay}
                         onChange={(e) => setTtsSettings(prev => ({ ...prev, startDelay: Number(e.target.value) }))}
-                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="input-tts-start-delay"
                       />
                       <p className="text-xs text-muted-foreground">
@@ -8355,7 +8355,7 @@ export default function Dashboard() {
                         step="5"
                         value={ttsSettings.wordsPerMinute}
                         onChange={(e) => setTtsSettings(prev => ({ ...prev, wordsPerMinute: Number(e.target.value) }))}
-                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="input-tts-wpm"
                       />
                       <p className="text-xs text-muted-foreground">
@@ -8401,7 +8401,7 @@ export default function Dashboard() {
                     Control blinking animations and button spacing.
                   </p>
                   
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {/* Today Column Blink */}
                     <div className="border rounded p-2 space-y-2">
                       <div className="flex items-center justify-between">
@@ -8427,7 +8427,7 @@ export default function Dashboard() {
                             step="0.1"
                             value={blinkSettings.todayColumnBlinkSpeed}
                             onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlinkSpeed: Number(e.target.value) }))}
-                            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer"
+                            className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                             data-testid="slider-today-column-speed"
                           />
                         </div>
@@ -8459,7 +8459,7 @@ export default function Dashboard() {
                             step="0.1"
                             value={blinkSettings.allDayFilesBlinkSpeed}
                             onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlinkSpeed: Number(e.target.value) }))}
-                            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer"
+                            className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                             data-testid="slider-allday-files-speed"
                           />
                         </div>
@@ -8491,7 +8491,7 @@ export default function Dashboard() {
                             step="0.1"
                             value={blinkSettings.taskBoxFilesBlinkSpeed}
                             onChange={(e) => setBlinkSettings(prev => ({ ...prev, taskBoxFilesBlinkSpeed: Number(e.target.value) }))}
-                            className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer"
+                            className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                             data-testid="slider-taskbox-files-speed"
                           />
                         </div>
@@ -8527,7 +8527,7 @@ export default function Dashboard() {
                         step="2"
                         value={blinkSettings.buttonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
-                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="slider-button-spacing"
                       />
                       <p className="text-xs text-muted-foreground">
@@ -8547,7 +8547,7 @@ export default function Dashboard() {
                         step="2"
                         value={blinkSettings.mediaControlSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, mediaControlSpacing: Number(e.target.value) }))}
-                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="slider-media-control-spacing"
                       />
                       <p className="text-xs text-muted-foreground">
