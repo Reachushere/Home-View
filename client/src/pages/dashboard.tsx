@@ -10338,8 +10338,8 @@ export default function Dashboard() {
             <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {/* Task row with labels above */}
               <div className="flex" style={{ position: 'relative' }}>
-              {/* Blank checkbox */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px' }}>
+              {/* Blank checkbox - hidden for class type tasks */}
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Group 1: Left handle on header + progress bar on content line */}
