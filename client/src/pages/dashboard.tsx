@@ -584,6 +584,7 @@ export default function Dashboard() {
     const handleMouseMove = (e: MouseEvent) => {
       const diff = e.clientX - testBarStartX.current;
       const newLeft = Math.max(0, Math.min(200, testBarStartLeft.current + diff));
+      console.log('Dragging - newLeft:', newLeft);
       setTestProgressBarLeft(newLeft);
     };
     
