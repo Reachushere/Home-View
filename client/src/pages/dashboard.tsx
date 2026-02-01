@@ -10366,7 +10366,7 @@ export default function Dashboard() {
                 />
               </div>
               {/* Group 2: Right handle + text with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px', width: '110px', overflow: 'hidden' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10377,10 +10377,10 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Task</span>
                 </div>
                 {/* Task title */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
               </div>
               {/* Group 3: Third handle + course code with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px', width: '55px', overflow: 'hidden' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10391,10 +10391,10 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Code</span>
                 </div>
                 {/* Course number */}
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
               </div>
               {/* Group 4: Fourth handle + course name with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px', width: '130px', overflow: 'hidden' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10405,10 +10405,10 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Course</span>
                 </div>
                 {/* Course name */}
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
               </div>
               {/* Group 5: Fifth handle + due date with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px', width: '55px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10434,36 +10434,36 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
-              {/* Second task row - only if exists */}
+              {/* Second task row - uses absolute positioning to align with first row */}
               {dueThisWeekTasks[1] && (
-              <div className="flex" style={{ position: 'relative', marginTop: '2px' }}>
+              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
                 {/* Checkbox */}
-                <div className="flex-shrink-0 self-center" style={{ marginRight: '4px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '1px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                {/* Progress bar */}
-                <div className="flex-shrink-0 self-center flex flex-col" style={{ marginLeft: `${testProgressBarLeft}px` }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7, marginLeft: '7px' }} />
+                {/* Progress bar - positioned after checkbox (18px) + testProgressBarLeft + 7px inner margin */}
+                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 7}px`, top: '6px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
                 </div>
-                {/* Task title - with overflow hidden */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testTextLeft}px`, width: '110px', overflow: 'hidden' }}>
-                  <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[1]?.title || ''}</span>
+                {/* Task title - positioned after progress bar area + testTextLeft + 7px inner margin */}
+                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 51 + testTextLeft + 7}px`, top: '1px' }}>
+                  <span style={{ fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.title || ''}</span>
                 </div>
-                {/* Course code - with overflow hidden */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testCourseLeft}px`, width: '55px', overflow: 'hidden' }}>
-                  <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                {/* Course code - need to measure row 1 task width, use estimate for now */}
+                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 51 + testTextLeft + 130 + testCourseLeft + 7}px`, top: '1px' }}>
+                  <span style={{ fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 </div>
-                {/* Course name - with overflow hidden */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testCourseNameLeft}px`, width: '130px', overflow: 'hidden' }}>
-                  <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                {/* Course name */}
+                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 51 + testTextLeft + 130 + testCourseLeft + 60 + testCourseNameLeft + 7}px`, top: '1px' }}>
+                  <span style={{ fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 </div>
                 {/* Due date */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testDueDateLeft}px`, width: '55px' }}>
-                  <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 51 + testTextLeft + 130 + testCourseLeft + 60 + testCourseNameLeft + 160 + testDueDateLeft + 7}px`, top: '1px' }}>
+                  <span style={{ fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 </div>
-                {/* Days left - absolutely positioned */}
-                <div style={{ position: 'absolute', right: '0px' }}>
-                  <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                {/* Days left - absolutely positioned at right */}
+                <div style={{ position: 'absolute', right: '0px', top: '1px' }}>
+                  <span style={{ fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
                 </div>
               </div>
               )}
