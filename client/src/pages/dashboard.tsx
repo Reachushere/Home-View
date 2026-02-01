@@ -10104,7 +10104,7 @@ export default function Dashboard() {
           
           // Render column header with resize handles on both sides of progress bar
           const renderTaskColumnHeader = () => {
-            const handleStyle = { width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' };
+            const handleStyle = { width: '3px', minHeight: '12px', backgroundColor: 'transparent' };
             return (
               <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px', gap: '0px' }}>
                 {/* Col 1: Checkbox placeholder */}
