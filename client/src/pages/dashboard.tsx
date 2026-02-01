@@ -10472,37 +10472,35 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
-              {/* Second task row - uses same flex structure as row 1 for natural alignment */}
-              {dueThisWeekTasks[1] && (
-              <div className="flex" style={{ position: 'relative', marginTop: '2px' }}>
-                {/* Checkbox - same structure as row 1 */}
-                <div className="flex-shrink-0 self-center" style={{ marginRight: '4px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
+              {/* Second task row - only render after measurements are available */}
+              {dueThisWeekTasks[1] && row1Positions.due > 0 && (
+              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
+                {/* Checkbox - position 0 */}
+                <div style={{ position: 'absolute', left: '0px', top: '1px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                {/* Progress bar - same structure as row 1 */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testProgressBarLeft}px` }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7, marginLeft: '7px' }} />
+                {/* Progress bar - same position as row 1 */}
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
                 </div>
-                {/* Task title - same structure as row 1 */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testTextLeft}px` }}>
-                  <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.title || ''}</span>
-                </div>
-                {/* Course code - same structure as row 1 */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testCourseLeft}px` }}>
-                  <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
-                </div>
-                {/* Course name - same structure as row 1, with truncation */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testCourseNameLeft}px`, width: '140px' }}>
-                  <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', display: 'inline-block', maxWidth: '133px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
-                </div>
-                {/* Due date - same structure as row 1 */}
-                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testDueDateLeft}px` }}>
-                  <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
-                </div>
-                {/* Days left - absolutely positioned same as row 1 */}
-                <div style={{ position: 'absolute', right: '0px' }}>
-                  <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                </div>
+                {/* Task title - same position as row 1 */}
+                <span style={{ position: 'absolute', left: `${row1Positions.task}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.title || ''}</span>
+                {/* Course code - same position as row 1 */}
+                <span style={{ position: 'absolute', left: `${row1Positions.code}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                {/* Course name - same position as row 1, clipped to not overflow into due date */}
+                <span className="truncate" style={{ 
+                  position: 'absolute', 
+                  left: `${row1Positions.course}px`, 
+                  top: '1px', 
+                  fontSize: '10px', 
+                  color: '#9ca3af',
+                  maxWidth: `${row1Positions.due - row1Positions.course - 10}px`,
+                  display: 'inline-block'
+                }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                {/* Due date - same position as row 1 */}
+                <span style={{ position: 'absolute', left: `${row1Positions.due}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                {/* Days left - absolutely positioned at right */}
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               <div className="flex-1 flex flex-col">

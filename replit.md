@@ -175,6 +175,20 @@ All arrows connecting task boxes to calendar follow these exact specifications:
 - **Button attachment**: Buttons not attaching properly to containers
 - **Backgrounds**: Various background color issues
 
+### This Week Box - Second Row Alignment (February 2026 Fix)
+- **Problem**: Second task row columns not aligning with first row; course name overflowing into due date column
+- **Root cause**: First row uses flex layout with dynamic content widths; second row needed to match positions exactly
+- **Solution**: Use absolute positioning for row 2 elements based on measured positions from row 1
+- **Implementation**:
+  - Row 1 uses refs to measure element positions: `row1TaskRef`, `row1CodeRef`, `row1CourseRef`, `row1DueRef`, `row1ProgressBarRef`
+  - `measurePositions()` function in useEffect calculates pixel positions relative to container (100ms delay)
+  - Row 2 ONLY renders when measurements are available (guard: `row1Positions.due > 0`)
+  - Row 2 elements are absolutely positioned using measured values directly (no fallbacks)
+  - Course name in row 2 has `maxWidth` set to `(row1Positions.due - row1Positions.course - 10)px` to prevent overflow
+  - Tailwind `truncate` class handles text ellipsis
+- **CRITICAL**: Row 1 layout must NEVER be modified - it's the reference for all measurements
+- **Key state**: `row1Positions` stores { task, code, course, due, days, progressBar, progressBarTop }
+
 ### General Lessons
 1. **Don't use Button component for custom circular buttons** - use div elements instead
 2. **Always restart workflow after styling changes** - HMR is unreliable
