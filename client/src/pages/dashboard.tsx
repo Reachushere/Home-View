@@ -9883,7 +9883,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px 14px ${taskColumnWidths.dueDate}px 3px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 3px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px 14px ${taskColumnWidths.dueDate}px 3px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9928,16 +9928,23 @@ export default function Dashboard() {
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
                     title="Drag to resize task column"
                   />
-                  {/* Course code column - left aligned, white */}
-                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
-                    {courseCode}
-                  </div>
-                  {/* Resize handle - course code */}
+                  {/* Resize handle - course code (left side) */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50 transition-colors"
                     style={{ width: '3px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
                     title="Drag to resize course code column"
+                  />
+                  {/* Course code column - left aligned, white */}
+                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
+                    {courseCode}
+                  </div>
+                  {/* Resize handle - course name (left side) */}
+                  <div 
+                    className="cursor-col-resize hover:bg-white/50 transition-colors"
+                    style={{ width: '3px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '1px' }}
+                    onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')}
+                    title="Drag to resize course name column"
                   />
                   {/* Course name column - left aligned, white */}
                   <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
