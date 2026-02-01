@@ -11101,23 +11101,20 @@ export default function Dashboard() {
 
         </div>
 
-        {/* Projects Flyout - Large Centered Panel */}
-        {isProjectsFlyoutOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center">
-            {/* Backdrop */}
-            <div 
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsProjectsFlyoutOpen(false)}
-            />
-            
-            {/* Flyout Panel */}
-            <div 
-              className="relative w-[90vw] max-w-[1200px] h-[85vh] rounded-2xl overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/80 via-black/70 to-gray-900/80 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)] backdrop-blur-md"
-              style={{
-                fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
-                border: '1px solid rgba(255, 255, 255, 0.2)'
-              }}
-            >
+        {/* Projects Flyout - Slide from Left */}
+        <div 
+          className={`fixed top-0 left-0 z-[200] h-full transition-transform duration-300 ease-in-out ${isProjectsFlyoutOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          style={{ width: '500px' }}
+        >
+          {/* Flyout Panel */}
+          <div 
+            className="h-full overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+            style={{
+              fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderLeft: 'none'
+            }}
+          >
               {/* Header */}
               <div 
                 className="flex items-center justify-between px-6 py-3 bg-black/30 border-b border-white/20"
@@ -11407,7 +11404,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        )}
+        </div>
         
         {/* Project Dialog */}
         <Dialog open={projectDialogOpen} onOpenChange={setProjectDialogOpen}>
