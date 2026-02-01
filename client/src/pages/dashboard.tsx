@@ -566,10 +566,15 @@ export default function Dashboard() {
   
   // TEST: Isolated progress bar position (completely separate from task columns)
   const [testProgressBarLeft, setTestProgressBarLeft] = useState(0);
+  const [testTextLeft, setTestTextLeft] = useState(0); // Separate state for text position
   const [resizingTestBar, setResizingTestBar] = useState(false);
+  const [resizingTestText, setResizingTestText] = useState(false); // Separate state for text resizing
   const testBarStartX = useRef(0);
   const testBarStartLeft = useRef(0);
+  const testTextStartX = useRef(0);
+  const testTextStartLeft = useRef(0);
   
+  // Left handle: moves progress bar group
   const handleTestBarResizeStart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -578,13 +583,22 @@ export default function Dashboard() {
     testBarStartLeft.current = testProgressBarLeft;
   };
   
+  // Right handle: moves text only
+  const handleTestTextResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingTestText(true);
+    testTextStartX.current = e.clientX;
+    testTextStartLeft.current = testTextLeft;
+  };
+  
   useEffect(() => {
     if (!resizingTestBar) return;
     
     const handleMouseMove = (e: MouseEvent) => {
       const diff = e.clientX - testBarStartX.current;
       const newLeft = Math.max(0, Math.min(200, testBarStartLeft.current + diff));
-      console.log('Dragging - newLeft:', newLeft);
+      console.log('Left handle - newLeft:', newLeft);
       setTestProgressBarLeft(newLeft);
     };
     
@@ -599,6 +613,28 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [resizingTestBar]);
+  
+  useEffect(() => {
+    if (!resizingTestText) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const diff = e.clientX - testTextStartX.current;
+      const newLeft = Math.max(0, Math.min(200, testTextStartLeft.current + diff));
+      console.log('Right handle - text newLeft:', newLeft);
+      setTestTextLeft(newLeft);
+    };
+    
+    const handleMouseUp = () => {
+      setResizingTestText(false);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizingTestText]);
 
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
@@ -10242,14 +10278,14 @@ export default function Dashboard() {
               <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
-              {/* Container for resize handle + progress bar + right handle - all move together */}
+              {/* Container for left resize handle + progress bar - moves with left handle */}
               <div className="flex-shrink-0 self-start flex items-start" style={{ marginTop: '16px', position: 'relative', left: `${testProgressBarLeft}px` }}>
                 {/* Left resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
                   onMouseDown={handleTestBarResizeStart}
-                  title="Resize"
+                  title="Resize - moves progress bar"
                 />
                 {/* Progress bar */}
                 <div 
@@ -10262,12 +10298,15 @@ export default function Dashboard() {
                     marginTop: '4px'
                   }}
                 />
+              </div>
+              {/* Right resize handle + text - right handle only moves text */}
+              <div className="flex-shrink-0 self-start flex items-start" style={{ marginTop: '16px', position: 'relative', left: `${testTextLeft}px` }}>
                 {/* Right resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
-                  onMouseDown={handleTestBarResizeStart}
-                  title="Resize"
+                  onMouseDown={handleTestTextResizeStart}
+                  title="Resize - moves text"
                 />
                 {/* Fake task title */}
                 <span style={{ marginLeft: '4px', fontSize: '10px', color: 'white' }}>Online ASL Class</span>
