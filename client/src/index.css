@@ -911,6 +911,30 @@
   color: black !important;
 }
 
+/* Blue checkboxes matching hamburger menu */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #4578B0 0%, #042550 100%);
+  border: 1px solid #4578B0;
+  cursor: pointer;
+  position: relative;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
 /* Orange gradient slider thumbs */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
