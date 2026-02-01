@@ -8600,21 +8600,10 @@ export default function Dashboard() {
                 </div>
                 </div>
               </div>
-              <div className="flex justify-end gap-2 pt-4 border-t">
+              <div className="flex justify-end pt-4 border-t">
                 <Button 
                   variant="outline"
-                  onClick={() => {
-                    setColorSettings(originalColorSettings);
-                    setBlinkSettings(originalBlinkSettings);
-                    setIsSettingsDialogOpen(false);
-                  }}
-                  data-testid="button-cancel-settings"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  variant="outline"
-                  className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
+                  className="w-1/2 border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
                   style={{
                     boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
                   }}
