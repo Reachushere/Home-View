@@ -10448,10 +10448,9 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 p-3 pb-5 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-              {/* Column headers row */}
-              <div className="flex items-center mb-1" style={{ marginLeft: '18px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testProgressBarLeft + 7}px`, width: '44px' }}></span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testTextLeft + 7}px` }}>Task</span>
+              {/* Column headers row - 6px above task row, aligned with content */}
+              <div className="flex items-center" style={{ marginLeft: `${18 + testProgressBarLeft + 7 + 44 + testTextLeft + 7}px`, marginBottom: '6px' }}>
+                <span className="text-[8px] text-white/50 font-normal">Task</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseLeft + 7}px` }}>Code</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseNameLeft + 7}px` }}>Course</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testDueDateLeft + 7}px` }}>Due</span>
