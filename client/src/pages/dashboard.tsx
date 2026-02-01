@@ -10298,7 +10298,7 @@ export default function Dashboard() {
                   }}
                 />
               </div>
-              {/* Group 2: Right handle + text - moves together with right handle drag */}
+              {/* Group 2: Right handle + text + end handle - moves together with right handle drag */}
               <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testTextLeft}px` }}>
                 {/* Right resize handle */}
                 <div 
@@ -10309,6 +10309,12 @@ export default function Dashboard() {
                 />
                 {/* Task title */}
                 <span style={{ fontSize: '10px', color: 'white' }}>Online ASL Class</span>
+                {/* End resize handle */}
+                <div 
+                  className="cursor-col-resize hover:bg-white/50"
+                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
+                  title="Resize"
+                />
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
