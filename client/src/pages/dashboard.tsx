@@ -8047,7 +8047,7 @@ export default function Dashboard() {
                 </Button>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
-                    <ListTodo className="h-3 w-3 text-white" />
+                    <CheckSquare className="h-3 w-3 text-white" />
                     <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                       NEW TASK
                     </h2>
@@ -11114,7 +11114,7 @@ export default function Dashboard() {
               </Button>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <ListTodo className="h-3 w-3 text-white" />
+                  <CheckSquare className="h-3 w-3 text-white" />
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                     TO DO ({todoItems.filter(item => item.trim() && !item.startsWith('✓')).length})
                   </h2>
