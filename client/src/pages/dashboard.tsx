@@ -9862,15 +9862,15 @@ export default function Dashboard() {
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName', true)}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
                 title="Drag to resize task column"
               />
               <div className="text-[8px] text-white/50 font-normal">Task</div>
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
-                title="Drag to resize task column"
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
+                title="Drag to resize code column"
               />
               <div className="text-[8px] text-white/50 font-normal">Code</div>
               <div 
