@@ -8019,7 +8019,7 @@ export default function Dashboard() {
             }
           }}>
             <DialogContent 
-              className="max-w-[95vw] sm:max-w-3xl p-0 overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-dialog-burst-from-top data-[state=closed]:animate-dialog-burst-to-top"
+              className="max-w-[95vw] sm:max-w-3xl p-0 overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-dialog-burst-from-top data-[state=closed]:animate-dialog-burst-to-top [&>button]:hidden"
             >
               {/* Header bar matching other flyouts */}
               <div className="flex items-center justify-between px-4 py-2 bg-black/30 border-b border-white/20">
@@ -11128,7 +11128,7 @@ export default function Dashboard() {
             <div className="flex-1 p-4 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
               {todoItems.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-white/40 text-sm">
-                  Click "Add Item" to create a to-do item
+                  Click "Add To Do" to create an item
                 </div>
               ) : (
                 <div className="grid grid-cols-4 gap-3">
