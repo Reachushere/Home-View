@@ -10310,7 +10310,7 @@ export default function Dashboard() {
                         backgroundColor: progressColor,
                         opacity: 0.9
                       }}
-                      title={hasSubtasks ? `${completedSubtaskCount}/${subtaskCount} subtasks` : `${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
+                      title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                     />
                   </div>
                   {/* Handle 2 spacer */}
