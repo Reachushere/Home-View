@@ -10315,6 +10315,8 @@ export default function Dashboard() {
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
                   title="Resize"
                 />
+                {/* Course number */}
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '4px' }}>CASL 101</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
