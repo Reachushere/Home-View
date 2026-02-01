@@ -5323,10 +5323,9 @@ export default function Dashboard() {
                 }}
               >
                 <DialogTitle 
-                  className="flex items-center gap-2 text-sm"
-                  style={{ color: colors?.text || undefined }}
+                  className="flex items-center gap-2 text-sm text-white"
                 >
-                  <FileText className="h-4 w-4" />
+                  <FileText className="h-4 w-4 text-white" />
                   {previewFile?.displayName || previewFile?.originalName}
                 </DialogTitle>
               </DialogHeader>
@@ -5754,7 +5753,7 @@ export default function Dashboard() {
           </div>
           
           {/* Split View: PDF on left, Highlighted Text on right */}
-          <div className="flex-1 flex gap-4 min-h-[500px] max-h-[60vh] mx-6 mb-6 mt-4">
+          <div className="flex-1 flex gap-4 min-h-0 mx-6 mb-4 mt-4 overflow-hidden">
             {/* PDF Viewer */}
             <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col">
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
@@ -5813,7 +5812,7 @@ export default function Dashboard() {
                         <Page 
                           key={i + 1}
                           pageNumber={i + 1} 
-                          width={Math.round(467 * pdfZoom)}
+                          width={Math.round(380 * pdfZoom)}
                           renderTextLayer={false}
                           renderAnnotationLayer={false}
                         />
