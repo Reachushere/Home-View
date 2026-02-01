@@ -12878,13 +12878,9 @@ function SchoolForm({
   onSave: (data: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => void;
   onCancel: () => void;
 }) {
-  const [schoolLogo, setSchoolLogo] = useState<string | null>(schoolData.schoolLogo);
   const [numberOfWeeks, setNumberOfWeeks] = useState(schoolData.numberOfWeeks);
   const [week1StartDate, setWeek1StartDate] = useState(schoolData.week1StartDate);
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
-  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const logoInputRef = useRef<HTMLInputElement>(null);
-  const { uploadFile } = useUpload();
   
   const daysOfWeek = [
     { value: 'sunday', label: 'Sunday' },
@@ -12896,26 +12892,9 @@ function SchoolForm({
     { value: 'saturday', label: 'Saturday' },
   ];
   
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    setIsUploadingLogo(true);
-    try {
-      const result = await uploadFile(file);
-      if (result?.objectPath) {
-        setSchoolLogo(result.objectPath);
-      }
-    } catch (error) {
-      console.error('Logo upload failed:', error);
-    } finally {
-      setIsUploadingLogo(false);
-    }
-  };
-  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ schoolLogo, numberOfWeeks, week1StartDate, firstDayOfWeek });
+    onSave({ schoolLogo: schoolData.schoolLogo, numberOfWeeks, week1StartDate, firstDayOfWeek });
   };
 
   const semesterEnd = week1StartDate 
@@ -12924,54 +12903,6 @@ function SchoolForm({
   
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
-      <div className="space-y-2">
-        <Label className="text-[10px]">School Logo</Label>
-        <div className="flex items-center gap-3">
-          {schoolLogo ? (
-            <img src={schoolLogo} alt="School logo" className="h-10 w-auto object-contain rounded border" />
-          ) : (
-            <div className="h-10 w-16 bg-muted rounded border flex items-center justify-center text-[9px] !text-black">
-              No logo
-            </div>
-          )}
-          <div className="flex gap-2">
-            <Button 
-              type="button" 
-              variant="outline" 
-              size="sm"
-              className="text-[10px] h-7"
-              onClick={() => logoInputRef.current?.click()}
-              disabled={isUploadingLogo}
-              data-testid="button-upload-logo"
-            >
-              {isUploadingLogo ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
-              <span className="ml-1">{schoolLogo ? 'Change' : 'Upload'}</span>
-            </Button>
-            {schoolLogo && (
-              <Button 
-                type="button" 
-                variant="ghost" 
-                size="sm"
-                className="h-7"
-                onClick={() => setSchoolLogo(null)}
-                data-testid="button-remove-logo"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-            )}
-          </div>
-          <input
-            ref={logoInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleLogoUpload}
-            className="hidden"
-            data-testid="input-logo-file"
-          />
-        </div>
-        <p className="text-[9px] text-muted-foreground">Upload your school logo to replace the default.</p>
-      </div>
-      
       <div className="border rounded-lg p-3 space-y-3">
         <Label className="text-[10px] font-medium">School Schedule</Label>
         <div className="space-y-3">
