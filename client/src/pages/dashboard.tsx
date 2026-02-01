@@ -8018,7 +8018,10 @@ export default function Dashboard() {
               setNewTaskType("module"); // Reset to default
             }
           }}>
-            <DialogContent className="max-w-[95vw] sm:max-w-3xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
+            <DialogContent 
+              className="max-w-[95vw] sm:max-w-3xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-burst-from-top data-[state=closed]:animate-burst-to-top"
+              style={{ transformOrigin: '50% calc(-50vh)' }}
+            >
               <DialogHeader>
                 <DialogTitle className="text-white">Add New Task</DialogTitle>
               </DialogHeader>
