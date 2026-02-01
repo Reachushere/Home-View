@@ -10472,36 +10472,36 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
-              {/* Second task row - uses absolute positioning to align with first row */}
+              {/* Second task row - uses same flex structure as row 1 for natural alignment */}
               {dueThisWeekTasks[1] && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
-                {/* Checkbox */}
-                <div style={{ position: 'absolute', left: '0px', top: '1px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
+              <div className="flex" style={{ position: 'relative', marginTop: '2px' }}>
+                {/* Checkbox - same structure as row 1 */}
+                <div className="flex-shrink-0 self-center" style={{ marginRight: '4px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                {/* Progress bar - positioned same as row 1 */}
-                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 7}px`, top: '5px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                {/* Progress bar - same structure as row 1 */}
+                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testProgressBarLeft}px` }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7, marginLeft: '7px' }} />
                 </div>
-                {/* Task title - use measured position from row 1 + 7px for inner margin */}
-                <div style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px' }}>
-                  <span style={{ fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.title || ''}</span>
+                {/* Task title - same structure as row 1 */}
+                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testTextLeft}px` }}>
+                  <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.title || ''}</span>
                 </div>
-                {/* Course code - use measured position from row 1 + 7px for inner margin */}
-                <div style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px' }}>
-                  <span style={{ fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                {/* Course code - same structure as row 1 */}
+                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testCourseLeft}px` }}>
+                  <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 </div>
-                {/* Course name - use measured position from row 1 + 7px for inner margin, truncate to fit */}
-                <div style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', maxWidth: `${row1Positions.due - row1Positions.course - 10}px` }}>
-                  <span style={{ fontSize: '10px', color: '#9ca3af', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', maxWidth: '100%' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                {/* Course name - same structure as row 1, with truncation */}
+                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testCourseNameLeft}px`, width: '140px' }}>
+                  <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', display: 'inline-block', maxWidth: '133px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', verticalAlign: 'middle' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 </div>
-                {/* Due date - use measured position from row 1 + 7px for inner margin */}
-                <div style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px' }}>
-                  <span style={{ fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                {/* Due date - same structure as row 1 */}
+                <div className="flex-shrink-0 self-center" style={{ marginLeft: `${testDueDateLeft}px` }}>
+                  <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 </div>
-                {/* Days left - use measured position from row 1 + 7px for inner margin */}
-                <div style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px' }}>
-                  <span style={{ fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                {/* Days left - absolutely positioned same as row 1 */}
+                <div style={{ position: 'absolute', right: '0px' }}>
+                  <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
                 </div>
               </div>
               )}
