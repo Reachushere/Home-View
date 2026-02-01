@@ -1009,9 +1009,13 @@ export default function Dashboard() {
         parsed.boxBackground = '#ffffff';
         parsed.boxGlassEffect = true;
         parsed.boxTransparency = 35;
-        // Save the corrected settings
-        localStorage.setItem('colorSettings', JSON.stringify({ ...defaults, ...parsed }));
       }
+      // Force reset headerBar to brown if it has old default value
+      if (parsed.headerBar === '#000000' || !parsed.headerBar) {
+        parsed.headerBar = '#160502';
+      }
+      // Save the corrected settings
+      localStorage.setItem('colorSettings', JSON.stringify({ ...defaults, ...parsed }));
       return { ...defaults, ...parsed };
     }
     return defaults;
