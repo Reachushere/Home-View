@@ -10372,7 +10372,7 @@ export default function Dashboard() {
                 THIS WEEK ({dueThisWeekTasks.length})
               </h4>
             </div>
-            <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflow: 'hidden' }}>
+            <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflow: 'hidden', maxHeight: '115px' }}>
               {/* Task row with labels above */}
               <div ref={row1ContainerRef} className="flex" style={{ position: 'relative' }}>
               {/* Blank checkbox - hidden for class type tasks */}
