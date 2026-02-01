@@ -8824,41 +8824,6 @@ export default function Dashboard() {
           {/* Calendar wrapper - leaves space for honeycombs on right */}
           <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 65px)' }} className="relative overflow-visible">
           
-          {/* Left Arrow - Previous Week */}
-          <div 
-            className="absolute top-0 z-50 cursor-pointer group"
-            style={{ left: '-20px', marginTop: '12px' }}
-            onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
-            data-date-nav
-          >
-            <div 
-              className="rounded-md py-[5px] px-[3px] transition-all duration-200 ease-out group-hover:scale-110 group-hover:-translate-x-1 group-active:scale-95"
-              style={{ 
-                background: 'linear-gradient(135deg, #FF6E3D 0%, #FFDD63 100%)',
-                boxShadow: '0 2px 8px rgba(255,110,61,0.4)'
-              }}
-            >
-              <ChevronLeft className="h-4 w-4 text-white drop-shadow-sm" strokeWidth={2.5} />
-            </div>
-          </div>
-          
-          {/* Right Arrow - Next Week */}
-          <div 
-            className="absolute top-0 z-50 cursor-pointer group"
-            style={{ right: '-20px', marginTop: '12px' }}
-            onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
-            data-date-nav
-          >
-            <div 
-              className="rounded-md py-[5px] px-[3px] transition-all duration-200 ease-out group-hover:scale-110 group-hover:translate-x-1 group-active:scale-95"
-              style={{ 
-                background: 'linear-gradient(135deg, #FFDD63 0%, #FF6E3D 100%)',
-                boxShadow: '0 2px 8px rgba(255,110,61,0.4)'
-              }}
-            >
-              <ChevronRight className="h-4 w-4 text-white drop-shadow-sm" strokeWidth={2.5} />
-            </div>
-          </div>
           
           <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line - dashed */}
