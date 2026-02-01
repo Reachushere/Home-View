@@ -10362,7 +10362,7 @@ export default function Dashboard() {
                     backgroundColor: '#22c55e',
                     opacity: 0.7,
                     marginLeft: '7px',
-                    marginTop: '9px'
+                    marginTop: '6px'
                   }}
                 />
               </div>
@@ -10379,7 +10379,7 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Task</span>
                 </div>
                 {/* Task title */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Online ASL Class</span>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>Online ASL Class</span>
               </div>
               {/* Group 3: Third handle + course code with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '6px' }}>
@@ -10394,7 +10394,7 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Code</span>
                 </div>
                 {/* Course number */}
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>CASL 101</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>CASL 101</span>
               </div>
               {/* Group 4: Fourth handle + course name with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '6px' }}>
@@ -10409,7 +10409,7 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Course</span>
                 </div>
                 {/* Course name */}
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>American Sign Language</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>American Sign Language</span>
               </div>
               {/* Group 5: Fifth handle + due date with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '6px' }}>
@@ -10424,7 +10424,7 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Due</span>
                 </div>
                 {/* Due date */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Thu 2/5</span>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>Thu 2/5</span>
               </div>
               {/* Group 6: Sixth handle + days left with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px`, marginTop: '6px' }}>
@@ -10439,7 +10439,7 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
                 </div>
                 {/* Days left */}
-                <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px' }}>5d</span>
+                <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>5d</span>
               </div>
               </div>
               <div className="flex-1 flex flex-col">
