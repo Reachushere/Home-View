@@ -10348,7 +10348,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-8px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-10px' }}
                     onMouseDown={handleTestBarResizeStart}
                     title="Resize"
                   />
@@ -10372,11 +10372,11 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-8px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-10px' }}
                     onMouseDown={handleTestTextResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Task</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '6px' }}>Task</span>
                 </div>
                 {/* Task title */}
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Online ASL Class</span>
@@ -10387,11 +10387,11 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-8px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-10px' }}
                     onMouseDown={handleTestCourseResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Code</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '6px' }}>Code</span>
                 </div>
                 {/* Course number */}
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>CASL 101</span>
@@ -10402,11 +10402,11 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-8px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-10px' }}
                     onMouseDown={handleTestCourseNameResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Course</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '6px' }}>Course</span>
                 </div>
                 {/* Course name */}
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>American Sign Language</span>
@@ -10417,11 +10417,11 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-8px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-10px' }}
                     onMouseDown={handleTestDueDateResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Due</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '6px' }}>Due</span>
                 </div>
                 {/* Due date */}
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Thu 2/5</span>
@@ -10432,11 +10432,11 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-8px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-10px' }}
                     onMouseDown={handleTestDaysLeftResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '4px' }}>Days</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '6px' }}>Days</span>
                 </div>
                 {/* Days left */}
                 <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px' }}>5d</span>
