@@ -8411,7 +8411,7 @@ export default function Dashboard() {
                           {/* Red X when disabled */}
                           {!colorSettings.mainBackgroundOverlay && (
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                              <X className="w-6 h-6 text-red-600" strokeWidth={1.5} />
+                              <X className="w-6 h-6" strokeWidth={1.5} style={{ color: '#dc2626' }} />
                             </div>
                           )}
                           <input
