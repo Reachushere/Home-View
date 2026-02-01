@@ -8580,11 +8580,8 @@ export default function Dashboard() {
                     Push to or pull from the published app.
                   </p>
                   <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      className="bg-transparent hover:bg-transparent text-[#5979CC] border-2 border-[#5979CC] no-default-hover-elevate no-default-active-elevate"
-                      size="sm"
-                      style={{ boxShadow: 'none', outline: 'none' }}
+                    <div
+                      className="inline-flex items-center justify-center bg-transparent text-[#5979CC] border-2 border-[#5979CC] rounded-md px-3 py-1.5 text-sm cursor-pointer hover:bg-[#5979CC]/10 transition-colors"
                       onClick={async () => {
                         try {
                           toast({ title: "Pushing...", description: "Sending data to production." });
@@ -8623,7 +8620,7 @@ export default function Dashboard() {
                     >
                       <Upload className="h-4 w-4 mr-2" />
                       Push
-                    </Button>
+                    </div>
                     <Button
                       variant="outline"
                       size="sm"
@@ -8679,7 +8676,7 @@ export default function Dashboard() {
               <div className="flex justify-end pt-4 border-t border-white/20">
                 <Button 
                   variant="outline"
-                  className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 text-xs h-8 px-6"
+                  className="w-1/2 border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 text-xs h-8"
                   style={{
                     boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
                   }}
