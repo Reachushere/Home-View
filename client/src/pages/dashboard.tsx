@@ -10500,7 +10500,7 @@ export default function Dashboard() {
                 {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 11}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Third task row - same settings as row 2 */}
@@ -10531,7 +10531,7 @@ export default function Dashboard() {
                 {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[2]?.dueDate ? format(new Date(dueThisWeekTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 11}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Fourth task row - temporary test (using task 2 data for layout testing) */}
@@ -10562,7 +10562,7 @@ export default function Dashboard() {
                 {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[2]?.dueDate ? format(new Date(dueThisWeekTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 11}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Fifth task row - fake task for layout testing */}
@@ -10592,7 +10592,7 @@ export default function Dashboard() {
                 {/* Due date */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>Mon 2/10</span>
                 {/* Days left */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>9d</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 11}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>9d</span>
               </div>
               )}
               <div className="flex-1 flex flex-col">
