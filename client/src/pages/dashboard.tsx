@@ -570,11 +570,13 @@ export default function Dashboard() {
   const [testCourseLeft, setTestCourseLeft] = useState(0); // Separate state for course position
   const [testCourseNameLeft, setTestCourseNameLeft] = useState(0); // Separate state for course name position
   const [testDueDateLeft, setTestDueDateLeft] = useState(0); // Separate state for due date position
+  const [testDaysLeftLeft, setTestDaysLeftLeft] = useState(0); // Separate state for days left position
   const [resizingTestBar, setResizingTestBar] = useState(false);
   const [resizingTestText, setResizingTestText] = useState(false); // Separate state for text resizing
   const [resizingTestCourse, setResizingTestCourse] = useState(false); // Separate state for course resizing
   const [resizingTestCourseName, setResizingTestCourseName] = useState(false); // Separate state for course name resizing
   const [resizingTestDueDate, setResizingTestDueDate] = useState(false); // Separate state for due date resizing
+  const [resizingTestDaysLeft, setResizingTestDaysLeft] = useState(false); // Separate state for days left resizing
   const testBarStartX = useRef(0);
   const testBarStartLeft = useRef(0);
   const testTextStartX = useRef(0);
@@ -585,6 +587,8 @@ export default function Dashboard() {
   const testCourseNameStartLeft = useRef(0);
   const testDueDateStartX = useRef(0);
   const testDueDateStartLeft = useRef(0);
+  const testDaysLeftStartX = useRef(0);
+  const testDaysLeftStartLeft = useRef(0);
   
   // Left handle: moves progress bar group
   const handleTestBarResizeStart = (e: React.MouseEvent) => {
@@ -629,6 +633,15 @@ export default function Dashboard() {
     setResizingTestDueDate(true);
     testDueDateStartX.current = e.clientX;
     testDueDateStartLeft.current = testDueDateLeft;
+  };
+  
+  // Sixth handle: moves days left only
+  const handleTestDaysLeftResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingTestDaysLeft(true);
+    testDaysLeftStartX.current = e.clientX;
+    testDaysLeftStartLeft.current = testDaysLeftLeft;
   };
   
   useEffect(() => {
@@ -740,6 +753,28 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [resizingTestDueDate]);
+  
+  useEffect(() => {
+    if (!resizingTestDaysLeft) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const diff = e.clientX - testDaysLeftStartX.current;
+      const newLeft = Math.max(0, Math.min(200, testDaysLeftStartLeft.current + diff));
+      console.log('Sixth handle - days left newLeft:', newLeft);
+      setTestDaysLeftLeft(newLeft);
+    };
+    
+    const handleMouseUp = () => {
+      setResizingTestDaysLeft(false);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizingTestDaysLeft]);
 
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
@@ -10450,14 +10485,18 @@ export default function Dashboard() {
                 />
                 {/* Due date */}
                 <span style={{ fontSize: '10px', color: 'white' }}>Thu 2/5</span>
+              </div>
+              {/* Group 6: Sixth handle + days left - moves together with sixth handle drag */}
+              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testDaysLeftLeft}px` }}>
                 {/* Sixth resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
+                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                  onMouseDown={handleTestDaysLeftResizeStart}
                   title="Resize"
                 />
                 {/* Days left */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '4px' }}>5d</span>
+                <span style={{ fontSize: '10px', color: 'white' }}>5d</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
