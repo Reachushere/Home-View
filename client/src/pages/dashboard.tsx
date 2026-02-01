@@ -8019,25 +8019,55 @@ export default function Dashboard() {
             }
           }}>
             <DialogContent 
-              className="max-w-[95vw] sm:max-w-3xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-burst-from-top data-[state=closed]:animate-burst-to-top"
+              className="max-w-[95vw] sm:max-w-3xl p-0 overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-burst-from-top data-[state=closed]:animate-burst-to-top"
               style={{ transformOrigin: '50% calc(-50vh)' }}
             >
-              <DialogHeader>
-                <DialogTitle className="text-white">Add New Task</DialogTitle>
-              </DialogHeader>
-              <TaskForm 
-                key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
-                weekNumber={selectedWeek}
-                initialDate={selectedDate}
-                initialType={newTaskType}
-                initialStartTime={initialStartTime}
-                initialEndTime={initialEndTime}
-                onSuccess={() => {
-                  setIsAddDialogOpen(false);
-                  setInitialStartTime("");
-                  setInitialEndTime("");
-                }} 
-              />
+              {/* Header bar matching other flyouts */}
+              <div className="flex items-center justify-between px-4 py-2 bg-black/30 border-b border-white/20">
+                <Button 
+                  variant="outline"
+                  className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
+                  style={{
+                    boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 0 8px rgba(255,221,99,0.8), 0 0 16px rgba(255,163,101,0.6), 0 0 24px rgba(255,110,61,0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
+                  }}
+                  onClick={() => {
+                    const form = document.querySelector('[data-task-form]') as HTMLFormElement;
+                    if (form) form.requestSubmit();
+                  }}
+                  data-testid="button-submit-task-header"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Task
+                </Button>
+                <div className="flex items-center gap-2">
+                  <ListTodo className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    NEW TASK
+                  </h2>
+                </div>
+              </div>
+              <div className="p-4 max-h-[70vh] overflow-y-auto">
+                <TaskForm 
+                  key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
+                  weekNumber={selectedWeek}
+                  initialDate={selectedDate}
+                  initialType={newTaskType}
+                  initialStartTime={initialStartTime}
+                  initialEndTime={initialEndTime}
+                  hideSubmitButton={true}
+                  onSuccess={() => {
+                    setIsAddDialogOpen(false);
+                    setInitialStartTime("");
+                    setInitialEndTime("");
+                  }} 
+                />
+              </div>
             </DialogContent>
           </Dialog>
           
@@ -13057,6 +13087,7 @@ function TaskForm({
   initialType,
   initialStartTime,
   initialEndTime,
+  hideSubmitButton,
   onSuccess 
 }: { 
   task?: Task; 
@@ -13065,6 +13096,7 @@ function TaskForm({
   initialType?: string;
   initialStartTime?: string;
   initialEndTime?: string;
+  hideSubmitButton?: boolean;
   onSuccess: () => void;
 }) {
   const getDefaultDate = () => {
@@ -13254,7 +13286,7 @@ function TaskForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" data-task-form>
       {/* Two column layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left Column */}
@@ -13837,11 +13869,13 @@ function TaskForm({
         <SubtasksSection taskId={task.id} />
       )}
 
-      <div className="flex gap-2 pt-4">
-        <Button type="submit" disabled={createMutation.isPending} className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8" style={{ fontSize: '11px' }} data-testid="button-submit-task">
-          {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
-        </Button>
-      </div>
+      {!hideSubmitButton && (
+        <div className="flex gap-2 pt-4">
+          <Button type="submit" disabled={createMutation.isPending} className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8" style={{ fontSize: '11px' }} data-testid="button-submit-task">
+            {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }
