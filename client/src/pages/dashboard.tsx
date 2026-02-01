@@ -9858,13 +9858,33 @@ export default function Dashboard() {
           
           // Render column header with resize handles on both sides of progress bar
           const renderTaskColumnHeader = () => (
-            <div style={{ display: 'grid', gridTemplateColumns: `16px 49px ${taskColumnWidths.taskName}px ${taskColumnWidths.courseCode}px ${taskColumnWidths.courseName}px ${taskColumnWidths.dueDate}px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `16px 49px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px ${taskColumnWidths.dueDate}px 3px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
               <div /> {/* Checkbox spacer */}
               <div /> {/* Progress bar spacer */}
               <div className="text-[8px] text-white/50 font-normal">Task</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/50"
+                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
+              />
               <div className="text-[8px] text-white/50 font-normal">Code</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/50"
+                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
+              />
               <div className="text-[8px] text-white/50 font-normal">Course</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/50"
+                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')}
+              />
               <div className="text-[8px] text-white/50 font-normal">Due</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/50"
+                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
+              />
               <div className="text-[8px] text-white/50 font-normal">Days</div>
             </div>
           );
@@ -9902,7 +9922,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 49px ${taskColumnWidths.taskName}px ${taskColumnWidths.courseCode}px ${taskColumnWidths.courseName}px ${taskColumnWidths.dueDate}px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 49px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px ${taskColumnWidths.dueDate}px 3px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9938,18 +9958,22 @@ export default function Dashboard() {
                   >
                     {task.title}
                   </button>
+                  <div /> {/* Handle spacer */}
                   {/* Course code column */}
                   <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
                     {courseCode}
                   </div>
+                  <div /> {/* Handle spacer */}
                   {/* Course name column */}
                   <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
                     {courseFullName}
                   </div>
+                  <div /> {/* Handle spacer */}
                   {/* Due date column */}
                   <span className="text-[10px] text-white whitespace-nowrap">
                     {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                   </span>
+                  <div /> {/* Handle spacer */}
                   {/* Days column */}
                   <span 
                     className="text-[10px] font-medium whitespace-nowrap"
