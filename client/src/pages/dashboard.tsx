@@ -991,6 +991,7 @@ export default function Dashboard() {
     mainBackground: string;
     boxGlassEffect: boolean;
     boxTransparency: number;
+    mainBackgroundOverlay: boolean;
   }>(() => {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
@@ -998,7 +999,8 @@ export default function Dashboard() {
       headerBar: '#000000',
       mainBackground: '#1a1a2e',
       boxGlassEffect: true,
-      boxTransparency: 35
+      boxTransparency: 35,
+      mainBackgroundOverlay: false
     };
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -4528,7 +4530,7 @@ export default function Dashboard() {
 
   return (
     <div 
-      className="flex h-screen flex-col overflow-hidden"
+      className="flex h-screen flex-col overflow-hidden relative"
       style={{ 
         backgroundImage: `url(${dashboardBg})`,
         backgroundSize: '100% 100%',
@@ -4536,6 +4538,16 @@ export default function Dashboard() {
         backgroundRepeat: 'no-repeat'
       }}
     >
+      {/* Main Background Color Overlay */}
+      {colorSettings.mainBackgroundOverlay && (
+        <div 
+          className="absolute inset-0 pointer-events-none"
+          style={{ 
+            backgroundColor: colorSettings.mainBackground,
+            zIndex: 1
+          }}
+        />
+      )}
       {/* Dynamic CSS for blink speed */}
       <style>{`
         .animate-file-box-blink-fast {
@@ -8285,21 +8297,6 @@ export default function Dashboard() {
                   </p>
                   
                   <div className="space-y-2">
-                    {/* Main Background Colour */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Main Background Colour</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
-                        <input
-                          type="color"
-                          value={colorSettings.mainBackground}
-                          onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackground: e.target.value }))}
-                          className="w-8 h-8 rounded cursor-pointer border-0"
-                          data-testid="color-main-background"
-                        />
-                      </div>
-                    </div>
-                    
                     {/* Box Background Colour */}
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Task Boxes Background</Label>
@@ -8380,6 +8377,45 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Main Background Overlay Toggle */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Background Color Overlay</Label>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className={`w-7 h-3.5 rounded-full cursor-pointer transition-colors ${colorSettings.mainBackgroundOverlay ? 'bg-gradient-to-r from-[#4578B0] to-[#042550]' : 'bg-gray-500'}`}
+                          onClick={() => setColorSettings(prev => ({ ...prev, mainBackgroundOverlay: !prev.mainBackgroundOverlay }))}
+                          data-testid="toggle-background-overlay"
+                        >
+                          <div className={`w-2.5 h-2.5 bg-white rounded-full mt-0.5 transition-transform ${colorSettings.mainBackgroundOverlay ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Main Background Color (only when overlay is on) */}
+                    {colorSettings.mainBackgroundOverlay && (
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Overlay Color</Label>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
+                          <div className="relative">
+                            <div 
+                              className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                              style={{ backgroundColor: colorSettings.mainBackground }}
+                              onClick={() => document.getElementById('color-main-background-input')?.click()}
+                              data-testid="color-main-background"
+                            />
+                            <input
+                              id="color-main-background-input"
+                              type="color"
+                              value={colorSettings.mainBackground}
+                              onChange={(e) => setColorSettings(prev => ({ ...prev, mainBackground: e.target.value }))}
+                              className="absolute opacity-0 w-0 h-0"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
@@ -8729,7 +8765,7 @@ export default function Dashboard() {
               <div className="flex justify-end pt-4 border-t border-white/20">
                 <Button 
                   variant="outline"
-                  className="w-1/2 border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 h-8"
+                  className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 h-8 px-6"
                   style={{
                     boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)',
                     fontSize: '12px'
