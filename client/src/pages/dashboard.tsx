@@ -591,13 +591,15 @@ export default function Dashboard() {
   const resizeStartX = useRef(0);
   const resizeStartWidth = useRef(0);
   
-  // Handle task column resize
-  const handleTaskColumnResizeStart = (e: React.MouseEvent, column: string) => {
+  // Handle task column resize (inverted = true for left-side handles)
+  const resizeInvertedRef = useRef(false);
+  const handleTaskColumnResizeStart = (e: React.MouseEvent, column: string, inverted = false) => {
     e.preventDefault();
     e.stopPropagation();
     setResizingColumn(column);
     resizeStartX.current = e.clientX;
     resizeStartWidth.current = taskColumnWidths[column as keyof typeof taskColumnWidths];
+    resizeInvertedRef.current = inverted;
   };
   
   useEffect(() => {
@@ -605,7 +607,9 @@ export default function Dashboard() {
     
     const handleMouseMove = (e: MouseEvent) => {
       const diff = e.clientX - resizeStartX.current;
-      const newWidth = Math.max(30, Math.min(300, resizeStartWidth.current + diff));
+      // Invert direction for left-side handles (drag right = shrink, drag left = grow)
+      const adjustedDiff = resizeInvertedRef.current ? -diff : diff;
+      const newWidth = Math.max(30, Math.min(300, resizeStartWidth.current + adjustedDiff));
       setTaskColumnWidths(prev => ({
         ...prev,
         [resizingColumn]: newWidth
@@ -9858,37 +9862,32 @@ export default function Dashboard() {
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName', true)}
                 title="Drag to resize task column"
               />
               <div className="text-[8px] text-white/50 font-normal">Task</div>
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
-                title="Drag to resize task column"
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode', true)}
+                title="Drag to resize course code column"
               />
               <div className="text-[8px] text-white/50 font-normal">Code</div>
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
-                title="Drag to resize course code column"
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName', true)}
+                title="Drag to resize course name column"
               />
               <div className="text-[8px] text-white/50 font-normal">Course</div>
               <div 
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')}
-                title="Drag to resize course name column"
-              />
-              <div className="text-[8px] text-white/50 font-normal">Due</div>
-              <div 
-                className="cursor-col-resize hover:bg-white/70 transition-colors"
-                style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate', true)}
                 title="Drag to resize due date column"
               />
+              <div className="text-[8px] text-white/50 font-normal">Due</div>
+              <div /> {/* Spacer before Days (auto column, no resize) */}
               <div className="text-[8px] text-white/50 font-normal">Days</div>
             </div>
           );
