@@ -10372,11 +10372,11 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-14px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestTextResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ position: 'relative', top: '2px' }}>Task</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Task</span>
                 </div>
                 {/* Task title */}
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Online ASL Class</span>
