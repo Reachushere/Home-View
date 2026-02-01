@@ -569,10 +569,12 @@ export default function Dashboard() {
   const [testTextLeft, setTestTextLeft] = useState(0); // Separate state for text position
   const [testCourseLeft, setTestCourseLeft] = useState(0); // Separate state for course position
   const [testCourseNameLeft, setTestCourseNameLeft] = useState(0); // Separate state for course name position
+  const [testDueDateLeft, setTestDueDateLeft] = useState(0); // Separate state for due date position
   const [resizingTestBar, setResizingTestBar] = useState(false);
   const [resizingTestText, setResizingTestText] = useState(false); // Separate state for text resizing
   const [resizingTestCourse, setResizingTestCourse] = useState(false); // Separate state for course resizing
   const [resizingTestCourseName, setResizingTestCourseName] = useState(false); // Separate state for course name resizing
+  const [resizingTestDueDate, setResizingTestDueDate] = useState(false); // Separate state for due date resizing
   const testBarStartX = useRef(0);
   const testBarStartLeft = useRef(0);
   const testTextStartX = useRef(0);
@@ -581,6 +583,8 @@ export default function Dashboard() {
   const testCourseStartLeft = useRef(0);
   const testCourseNameStartX = useRef(0);
   const testCourseNameStartLeft = useRef(0);
+  const testDueDateStartX = useRef(0);
+  const testDueDateStartLeft = useRef(0);
   
   // Left handle: moves progress bar group
   const handleTestBarResizeStart = (e: React.MouseEvent) => {
@@ -616,6 +620,15 @@ export default function Dashboard() {
     setResizingTestCourseName(true);
     testCourseNameStartX.current = e.clientX;
     testCourseNameStartLeft.current = testCourseNameLeft;
+  };
+  
+  // Fifth handle: moves due date only
+  const handleTestDueDateResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingTestDueDate(true);
+    testDueDateStartX.current = e.clientX;
+    testDueDateStartLeft.current = testDueDateLeft;
   };
   
   useEffect(() => {
@@ -705,6 +718,28 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [resizingTestCourseName]);
+  
+  useEffect(() => {
+    if (!resizingTestDueDate) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const diff = e.clientX - testDueDateStartX.current;
+      const newLeft = Math.max(0, Math.min(200, testDueDateStartLeft.current + diff));
+      console.log('Fifth handle - due date newLeft:', newLeft);
+      setTestDueDateLeft(newLeft);
+    };
+    
+    const handleMouseUp = () => {
+      setResizingTestDueDate(false);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizingTestDueDate]);
 
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
@@ -10403,14 +10438,18 @@ export default function Dashboard() {
                 />
                 {/* Course name */}
                 <span style={{ fontSize: '10px', color: 'white' }}>American Sign Language</span>
+              </div>
+              {/* Group 5: Fifth handle + due date - moves together with fifth handle drag */}
+              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testDueDateLeft}px` }}>
                 {/* Fifth resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
+                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                  onMouseDown={handleTestDueDateResizeStart}
                   title="Resize"
                 />
                 {/* Due date */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '4px' }}>Thu 2/5</span>
+                <span style={{ fontSize: '10px', color: 'white' }}>Thu 2/5</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
