@@ -10247,15 +10247,16 @@ export default function Dashboard() {
               <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
-              {/* Right resize handle - controls ONLY the test progress bar */}
-              <div 
-                className="cursor-col-resize hover:bg-white/50 flex-shrink-0 self-start"
-                style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '16px' }}
-                onMouseDown={handleTestBarResizeStart}
-                title="Resize"
-              />
-              {/* Test progress bar - position controlled by testProgressBarLeft ONLY */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '20px', marginRight: '4px', width: '150px', overflow: 'hidden' }}>
+              {/* Container for resize handle + progress bar - both move together */}
+              <div className="flex-shrink-0 self-start flex items-start" style={{ marginTop: '16px', marginLeft: `${testProgressBarLeft}px` }}>
+                {/* Resize handle */}
+                <div 
+                  className="cursor-col-resize hover:bg-white/50"
+                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                  onMouseDown={handleTestBarResizeStart}
+                  title="Resize"
+                />
+                {/* Progress bar */}
                 <div 
                   className="rounded-full"
                   style={{ 
@@ -10263,7 +10264,7 @@ export default function Dashboard() {
                     height: '3px', 
                     backgroundColor: '#22c55e',
                     opacity: 0.7,
-                    marginLeft: `${testProgressBarLeft}px`
+                    marginTop: '4px'
                   }}
                 />
               </div>
