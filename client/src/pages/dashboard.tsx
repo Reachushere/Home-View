@@ -8331,11 +8331,11 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Glass Effect</Label>
                       <div 
-                        className={`w-10 h-5 rounded-full cursor-pointer transition-colors ${colorSettings.boxGlassEffect ? 'bg-gradient-to-r from-[#4578B0] to-[#042550]' : 'bg-gray-500'}`}
+                        className={`w-7 h-3.5 rounded-full cursor-pointer transition-colors ${colorSettings.boxGlassEffect ? 'bg-gradient-to-r from-[#4578B0] to-[#042550]' : 'bg-gray-500'}`}
                         onClick={() => setColorSettings(prev => ({ ...prev, boxGlassEffect: !prev.boxGlassEffect }))}
                         data-testid="toggle-glass-effect"
                       >
-                        <div className={`w-4 h-4 bg-white rounded-full mt-0.5 transition-transform ${colorSettings.boxGlassEffect ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                        <div className={`w-2.5 h-2.5 bg-white rounded-full mt-0.5 transition-transform ${colorSettings.boxGlassEffect ? 'translate-x-4' : 'translate-x-0.5'}`} />
                       </div>
                     </div>
                     
