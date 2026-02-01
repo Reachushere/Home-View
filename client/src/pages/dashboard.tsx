@@ -10209,6 +10209,10 @@ export default function Dashboard() {
                 onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
                 title="Resize"
               />
+              {/* Blank checkbox */}
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
+                <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+              </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
                   <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
