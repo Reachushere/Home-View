@@ -10434,7 +10434,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
-                                          <div className="flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col">
                 {isLoading ? (
                   <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
                 ) : dueTomorrowTasks.length === 0 ? (
