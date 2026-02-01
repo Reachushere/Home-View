@@ -8566,9 +8566,9 @@ export default function Dashboard() {
                   </p>
                   <div className="flex gap-2">
                     <Button
-                      className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] !shadow-none"
+                      className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] !shadow-none focus:!shadow-none focus-visible:!shadow-none !ring-0 focus:!ring-0 focus-visible:!ring-0 !outline-none"
                       size="sm"
-                      style={{ boxShadow: 'none' }}
+                      style={{ boxShadow: 'none', outline: 'none' }}
                       onClick={async () => {
                         try {
                           toast({ title: "Pushing...", description: "Sending data to production." });
