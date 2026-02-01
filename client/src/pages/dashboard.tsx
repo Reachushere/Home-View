@@ -9881,7 +9881,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 4px ${taskColumnWidths.courseCode}px 4px ${taskColumnWidths.courseName}px 14px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 6px ${taskColumnWidths.courseCode}px 6px ${taskColumnWidths.courseName}px 14px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9921,8 +9921,8 @@ export default function Dashboard() {
                   </button>
                   {/* Resize handle - task name */}
                   <div 
-                    className="h-full cursor-col-resize hover:bg-white/30 transition-colors"
-                    style={{ width: '4px', minHeight: '14px' }}
+                    className="cursor-col-resize hover:bg-white/50 transition-colors"
+                    style={{ width: '6px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '2px' }}
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
                     title="Drag to resize task column"
                   />
@@ -9932,8 +9932,8 @@ export default function Dashboard() {
                   </div>
                   {/* Resize handle - course code */}
                   <div 
-                    className="h-full cursor-col-resize hover:bg-white/30 transition-colors"
-                    style={{ width: '4px', minHeight: '14px' }}
+                    className="cursor-col-resize hover:bg-white/50 transition-colors"
+                    style={{ width: '6px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '2px' }}
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
                     title="Drag to resize course code column"
                   />
