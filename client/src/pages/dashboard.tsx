@@ -10483,24 +10483,24 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
                 </div>
-                {/* Task title - same position as row 1 */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.title || ''}</span>
-                {/* Course code - same position as row 1 */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course name - same position as row 1, clipped to not overflow into due date */}
+                {/* Task title - same position as row 1 (add 7px for marginLeft in row 1 text) */}
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.title || ''}</span>
+                {/* Course code - same position as row 1 (add 7px for marginLeft in row 1 text) */}
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                {/* Course name - same position as row 1, clipped to not overflow into due date (add 7px for marginLeft in row 1 text) */}
                 <span className="truncate" style={{ 
                   position: 'absolute', 
-                  left: `${row1Positions.course}px`, 
+                  left: `${row1Positions.course + 7}px`, 
                   top: '1px', 
                   fontSize: '10px', 
                   color: '#9ca3af',
                   maxWidth: `${row1Positions.due - row1Positions.course - 10}px`,
                   display: 'inline-block'
                 }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due date - same position as row 1 */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days left - absolutely positioned at right */}
-                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
+                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                {/* Days left - absolutely positioned at right (add 7px for marginLeft in row 1 text) */}
+                <span style={{ position: 'absolute', right: '7px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               <div className="flex-1 flex flex-col">
