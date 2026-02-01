@@ -101,6 +101,7 @@ import {
   GripVertical,
   CheckCircle2,
   Check,
+  ListTodo,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings, Subtask, Project } from "@shared/schema";
@@ -11029,26 +11030,46 @@ export default function Dashboard() {
             }}
             data-testid="section-todo"
           >
-            {/* Header bar with gradient matching Today box */}
+            {/* Header bar matching projects/files flyouts */}
             <div 
-              className="flex items-center justify-between px-3 py-1.5"
-              style={{ 
-                background: '#160502'
-              }}
+              className="flex items-center justify-between px-4 py-2 bg-black/30 border-b border-white/20"
             >
-              <h4 
-                className="text-xs font-normal text-white"
-                style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
+              <Button 
+                variant="outline"
+                className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
+                style={{
+                  boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 8px rgba(255,221,99,0.8), 0 0 16px rgba(255,163,101,0.6), 0 0 24px rgba(255,110,61,0.5)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
+                }}
+                onClick={() => {
+                  setNewTaskType("other");
+                  setIsAddDialogOpen(true);
+                }}
+                data-testid="button-add-task-flyout"
               >
-                To Do
-              </h4>
-              <button 
-                onClick={() => setIsTodoFlyoutOpen(false)}
-                className="text-white hover:text-white/80 transition-colors"
-                data-testid="button-close-todo-flyout"
-              >
-                <X className="h-4 w-4" />
-              </button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Task
+              </Button>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <ListTodo className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    TO DO ({todoItems.filter(item => item.trim()).length})
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setIsTodoFlyoutOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-todo-flyout"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </div>
             <div className="grid grid-cols-4 gap-4 flex-1 p-3">
               {[0, 1, 2, 3].map(col => (
