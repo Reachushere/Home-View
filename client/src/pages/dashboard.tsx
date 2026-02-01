@@ -10278,16 +10278,16 @@ export default function Dashboard() {
               <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
-              {/* Container for left resize handle + progress bar - moves with left handle */}
-              <div className="flex-shrink-0 self-start flex items-start" style={{ marginTop: '16px', position: 'relative', left: `${testProgressBarLeft}px` }}>
-                {/* Left resize handle */}
+              {/* All in one row: left handle + progress bar + right handle + text */}
+              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px' }}>
+                {/* Left resize handle - moves progress bar */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
                   onMouseDown={handleTestBarResizeStart}
-                  title="Resize - moves progress bar"
+                  title="Resize"
                 />
-                {/* Progress bar */}
+                {/* Progress bar with dynamic left margin */}
                 <div 
                   className="rounded-full"
                   style={{ 
@@ -10295,21 +10295,18 @@ export default function Dashboard() {
                     height: '3px', 
                     backgroundColor: '#22c55e',
                     opacity: 0.7,
-                    marginTop: '4px'
+                    marginLeft: `${testProgressBarLeft}px`
                   }}
                 />
-              </div>
-              {/* Right resize handle + text - right handle only moves text */}
-              <div className="flex-shrink-0 self-start flex items-start" style={{ marginTop: '16px', position: 'relative', left: `${testTextLeft}px` }}>
-                {/* Right resize handle */}
+                {/* Right resize handle - moves text */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
                   onMouseDown={handleTestTextResizeStart}
-                  title="Resize - moves text"
+                  title="Resize"
                 />
-                {/* Fake task title */}
-                <span style={{ marginLeft: '4px', fontSize: '10px', color: 'white' }}>Online ASL Class</span>
+                {/* Task title with dynamic left margin */}
+                <span style={{ marginLeft: `${4 + testTextLeft}px`, fontSize: '10px', color: 'white' }}>Online ASL Class</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
