@@ -7312,13 +7312,14 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-          <div className="flex gap-2 pt-4 border-t border-white/20 mt-4">
-            <Button type="button" variant="outline" className="flex-1 text-white border-white/50 hover:bg-white/10" onClick={() => setIsSettingsPanelOpen(false)} data-testid="button-cancel-settings-panel">
-              Cancel
-            </Button>
+          <div className="flex pt-4 border-t border-white/20 mt-4">
             <Button 
               type="button" 
-              className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40" 
+              variant="outline"
+              className="w-full border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200" 
+              style={{
+                boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+              }}
               onClick={() => {
                 // Save the checked courses and grades to localStorage
                 localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
