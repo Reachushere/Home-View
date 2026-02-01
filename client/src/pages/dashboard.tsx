@@ -6140,7 +6140,7 @@ export default function Dashboard() {
                 </Button>
               </div>
             </DialogTrigger>
-            <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0" style={{ top: '55%' }}>
+            <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button]:hidden" style={{ top: '55%' }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
@@ -6511,7 +6511,7 @@ export default function Dashboard() {
 
       {/* Settings Panel Popup - Contains sidebar content */}
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
-        <DialogContent className="overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0" style={{ width: '900px', maxWidth: '95vw', height: '85vh' }}>
+        <DialogContent className="overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button]:hidden" style={{ width: '900px', maxWidth: '95vw', height: '85vh' }}>
           {/* Header bar matching flyouts */}
           <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
             <Button 
