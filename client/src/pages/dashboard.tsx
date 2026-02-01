@@ -6384,7 +6384,7 @@ export default function Dashboard() {
                 borderRadius: '50%',
                 backgroundColor: '#FF5C5C'
               }} />
-              {/* Top circle: 38px, gradient #FF9494 bottom to #FF3D3D top */}
+              {/* Top circle: 38px, gradient #FF9494 bottom to #FF0000 top */}
               <div 
                 style={{
                   position: 'absolute',
@@ -6393,7 +6393,7 @@ export default function Dashboard() {
                   width: '38px',
                   height: '38px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(0deg, #FF9494 0%, #FF3D3D 100%)',
+                  background: 'linear-gradient(0deg, #FF9494 0%, #FF0000 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
