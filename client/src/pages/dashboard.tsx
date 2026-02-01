@@ -7405,10 +7405,10 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Wide Pill Banner - Top middle (CSS) */}
-      <div className="fixed pointer-events-none" style={{ top: '9px', left: '50%', transform: 'translateX(-50%) translateX(-37px)', zIndex: 1 }}>
+      <div className="fixed pointer-events-none" style={{ top: '9px', left: '50%', transform: 'translateX(-50%) translateX(-52px)', zIndex: 1 }}>
         <div 
           style={{ 
-            width: '620px', 
+            width: '650px', 
             height: '50px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '25px',
