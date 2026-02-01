@@ -7421,7 +7421,8 @@ export default function Dashboard() {
               top: '382px', 
               right: '18px',
               borderRadius: '50%',
-              backgroundColor: '#FFA365'
+              background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
+              padding: '1px'
             }}
             onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
             data-modules-button
@@ -7430,12 +7431,13 @@ export default function Dashboard() {
               className="hover:opacity-80 transition-all duration-200"
               style={{
                 position: 'absolute',
-                top: '3px',
-                left: '3px',
-                width: '38px',
-                height: '38px',
+                top: '1px',
+                left: '1px',
+                width: '42px',
+                height: '42px',
                 borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
+                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
@@ -7841,7 +7843,7 @@ export default function Dashboard() {
           top: '484px', 
           right: '18px',
           borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
           padding: '1px'
         }}
         onMouseEnter={() => setDecorativeHoneycombHover('middle')}
@@ -7852,7 +7854,7 @@ export default function Dashboard() {
           size="icon"
           variant="ghost"
           className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-          style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+          style={{ background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
           onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
         >
           <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
@@ -7928,7 +7930,7 @@ export default function Dashboard() {
           top: '535px', 
           right: '18px',
           borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
           padding: '1px'
         }}
         data-testid="honeycomb-todo-main"
@@ -7937,7 +7939,7 @@ export default function Dashboard() {
           size="icon"
           variant="ghost"
           className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-          style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+          style={{ background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
           onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
         >
           <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
@@ -8023,18 +8025,30 @@ export default function Dashboard() {
               </div>
             </DialogContent>
           </Dialog>
-          <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
-            setIsAddDialogOpen(open);
-            if (!open) {
-              setInitialStartTime("");
-              setInitialEndTime("");
-              setNewTaskType("module"); // Reset to default
-            }
-          }}>
-            <DialogContent 
-              className="flex flex-col p-0 overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-dialog-burst-from-top data-[state=closed]:animate-dialog-burst-to-top [&>button]:hidden"
-              style={{ width: '900px', maxWidth: '95vw', height: '85vh', zIndex: getFlyoutZIndex('addTask') }}
-              onClick={() => bringFlyoutToFront('addTask')}
+          {/* Add Task Flyout - Burst from Top */}
+          <div 
+            className={`fixed transition-all ease-out ${isAddDialogOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0 pointer-events-none'}`}
+            style={{ 
+              width: '900px', 
+              maxWidth: '95vw',
+              height: '85vh',
+              top: '50%',
+              left: '50%',
+              transform: isAddDialogOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
+              transformOrigin: '50% calc(-50vh + 42.5vh)',
+              transitionDuration: '400ms',
+              zIndex: getFlyoutZIndex('addTask')
+            }}
+            onClick={() => bringFlyoutToFront('addTask')}
+          >
+            {/* Flyout content */}
+            <section 
+              className="h-full overflow-hidden flex flex-col rounded-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white [&_label]:font-normal" 
+              style={{
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.3)'
+              }}
+              data-testid="section-add-task"
             >
               {/* Header bar matching other flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
@@ -8066,17 +8080,21 @@ export default function Dashboard() {
                       NEW TASK
                     </h2>
                   </div>
-                  <DialogClose asChild>
-                    <button 
-                      className="text-white hover:text-white/80 transition-colors p-1"
-                      data-testid="button-close-add-task"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </DialogClose>
+                  <button 
+                    onClick={() => {
+                      setIsAddDialogOpen(false);
+                      setInitialStartTime("");
+                      setInitialEndTime("");
+                      setNewTaskType("module");
+                    }}
+                    className="text-white hover:text-white/80 transition-colors p-1"
+                    data-testid="button-close-add-task"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
               </div>
-              <div className="p-4 flex-1 overflow-y-auto">
+              <div className="p-4 flex-1 overflow-y-auto [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
                 <TaskForm 
                   key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
                   weekNumber={selectedWeek}
@@ -8092,8 +8110,8 @@ export default function Dashboard() {
                   }} 
                 />
               </div>
-            </DialogContent>
-          </Dialog>
+            </section>
+          </div>
           
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
