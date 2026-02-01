@@ -7427,7 +7427,7 @@ export default function Dashboard() {
                 justifyContent: 'center'
               }}
             >
-              <Library className="h-[18px] w-[18px] text-black" strokeWidth={2} />
+              <Library className="h-[18px] w-[18px] text-white" strokeWidth={2} />
             </div>
             {unreadModuleCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
