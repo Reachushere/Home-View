@@ -10488,18 +10488,31 @@ export default function Dashboard() {
                   />
                 </div>
                 {/* Progress bar - stays on content line */}
-                <div 
-                  ref={row1ProgressBarRef}
-                  className="rounded-full"
-                  style={{ 
-                    width: '44px', 
-                    height: '3px', 
-                    backgroundColor: '#22c55e',
-                    opacity: 0.7,
-                    marginLeft: '7px',
-                    marginTop: '3px'
-                  }}
-                />
+                <div style={{ position: 'relative', width: '44px', marginLeft: '7px', marginTop: '3px' }}>
+                  {/* Background track */}
+                  <div 
+                    className="rounded-full"
+                    style={{ 
+                      width: '44px', 
+                      height: '3px', 
+                      backgroundColor: 'rgba(255,255,255,0.15)'
+                    }}
+                  />
+                  {/* Progress fill */}
+                  <div 
+                    ref={row1ProgressBarRef}
+                    className="rounded-full"
+                    style={{ 
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: `${getProgressBarWidth(dueThisWeekTasks[0])}px`, 
+                      height: '3px', 
+                      backgroundColor: getProgressColor(dueThisWeekTasks[0]),
+                      opacity: 0.9
+                    }}
+                  />
+                </div>
               </div>
               {/* Group 2: Right handle + text with label above */}
               <div ref={row1TaskRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
