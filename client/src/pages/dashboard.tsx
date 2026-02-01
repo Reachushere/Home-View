@@ -9946,7 +9946,7 @@ export default function Dashboard() {
                   {/* Resize handle - due date (left side) */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '1px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                    style={{ width: '1px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', marginLeft: '-4px' }}
                     onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
                     title="Drag to resize due date column"
                   />
