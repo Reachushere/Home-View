@@ -10255,14 +10255,15 @@ export default function Dashboard() {
                 title="Resize"
               />
               {/* Test progress bar - position controlled by testProgressBarLeft ONLY */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '20px', marginRight: '4px', marginLeft: `${testProgressBarLeft}px` }}>
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '20px', marginRight: '4px', width: '150px', overflow: 'hidden' }}>
                 <div 
                   className="rounded-full"
                   style={{ 
                     width: '44px', 
                     height: '3px', 
                     backgroundColor: '#22c55e',
-                    opacity: 0.7
+                    opacity: 0.7,
+                    marginLeft: `${testProgressBarLeft}px`
                   }}
                 />
               </div>
