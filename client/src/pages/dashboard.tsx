@@ -8288,14 +8288,21 @@ export default function Dashboard() {
                       <Label className="text-xs">Task Boxes Background</Label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.boxBackground}</span>
-                        <input
-                          type="color"
-                          value={colorSettings.boxBackground}
-                          onChange={(e) => setColorSettings(prev => ({ ...prev, boxBackground: e.target.value }))}
-                          className="w-8 h-8 rounded cursor-pointer border-0 p-0"
-                          style={{ backgroundColor: colorSettings.boxBackground }}
-                          data-testid="color-box-background"
-                        />
+                        <div className="relative">
+                          <div 
+                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            style={{ backgroundColor: colorSettings.boxBackground }}
+                            onClick={() => document.getElementById('color-box-background-input')?.click()}
+                            data-testid="color-box-background"
+                          />
+                          <input
+                            id="color-box-background-input"
+                            type="color"
+                            value={colorSettings.boxBackground}
+                            onChange={(e) => setColorSettings(prev => ({ ...prev, boxBackground: e.target.value }))}
+                            className="absolute opacity-0 w-0 h-0"
+                          />
+                        </div>
                       </div>
                     </div>
                     
@@ -8304,13 +8311,21 @@ export default function Dashboard() {
                       <Label className="text-xs">Header & Menu Bar</Label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
-                        <input
-                          type="color"
-                          value={colorSettings.headerBar}
-                          onChange={(e) => setColorSettings(prev => ({ ...prev, headerBar: e.target.value }))}
-                          className="w-8 h-8 rounded cursor-pointer border-0"
-                          data-testid="color-header-bar"
-                        />
+                        <div className="relative">
+                          <div 
+                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            style={{ backgroundColor: colorSettings.headerBar }}
+                            onClick={() => document.getElementById('color-header-bar-input')?.click()}
+                            data-testid="color-header-bar"
+                          />
+                          <input
+                            id="color-header-bar-input"
+                            type="color"
+                            value={colorSettings.headerBar}
+                            onChange={(e) => setColorSettings(prev => ({ ...prev, headerBar: e.target.value }))}
+                            className="absolute opacity-0 w-0 h-0"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
