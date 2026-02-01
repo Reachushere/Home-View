@@ -8290,7 +8290,7 @@ export default function Dashboard() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="p-4">
+              <div className="p-4 overflow-y-auto max-h-[70vh]">
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
                 <div className="space-y-4">
@@ -8399,7 +8399,7 @@ export default function Dashboard() {
                     {/* Main Background Color (only when overlay is on) */}
                     {colorSettings.mainBackgroundOverlay && (
                       <div className="flex items-center justify-between">
-                        <Label className="text-xs">Overlay Color</Label>
+                        <Label className="text-xs">Overlay Colour</Label>
                         <div className="flex items-center gap-2">
                           <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
                           <div className="relative">
