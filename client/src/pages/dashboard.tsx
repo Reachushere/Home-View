@@ -10347,10 +10347,9 @@ export default function Dashboard() {
                 <div className="flex items-center" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
-                    className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-14px' }}
+                    className="cursor-col-resize"
+                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', position: 'relative', top: '-14px' }}
                     onMouseDown={handleTestBarResizeStart}
-                    title="Resize"
                   />
                 </div>
                 {/* Progress bar - stays on content line */}
@@ -10371,10 +10370,9 @@ export default function Dashboard() {
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
-                    className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
+                    className="cursor-col-resize"
+                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestTextResizeStart}
-                    title="Resize"
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Task</span>
                 </div>
@@ -10386,10 +10384,9 @@ export default function Dashboard() {
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
-                    className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
+                    className="cursor-col-resize"
+                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestCourseResizeStart}
-                    title="Resize"
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Code</span>
                 </div>
@@ -10401,10 +10398,9 @@ export default function Dashboard() {
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
-                    className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
+                    className="cursor-col-resize"
+                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestCourseNameResizeStart}
-                    title="Resize"
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Course</span>
                 </div>
@@ -10416,10 +10412,9 @@ export default function Dashboard() {
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
-                    className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
+                    className="cursor-col-resize"
+                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestDueDateResizeStart}
-                    title="Resize"
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Due</span>
                 </div>
@@ -10431,7 +10426,7 @@ export default function Dashboard() {
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Visual divider */}
                   <div 
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
                 </div>
