@@ -6547,7 +6547,7 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-          <div className="flex-1 overflow-y-auto space-y-4 p-4">
+          <div className="flex-1 overflow-y-auto space-y-4 p-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {/* Course Legend */}
             <div className="space-y-2">
               {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
