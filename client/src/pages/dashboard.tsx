@@ -6140,14 +6140,24 @@ export default function Dashboard() {
                 </Button>
               </div>
             </DialogTrigger>
-            <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-white text-xs">
-                  <Radio className="h-4 w-4" />
-                  Radio Controls
-                </DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col gap-3 py-2">
+            <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0" style={{ top: '55%' }}>
+              {/* Header bar matching flyouts */}
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                <div className="flex items-center gap-2">
+                  <Radio className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    RADIO CONTROLS
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setIsRadioDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-radio"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="flex flex-col gap-3 p-4">
                 {/* Speaker Selection */}
                 <div className="flex flex-col gap-1">
                   <Label className="text-white text-[10px]">Speaker</Label>
