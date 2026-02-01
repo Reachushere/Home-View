@@ -9626,7 +9626,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
-          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{ width: '900px', height: '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'right center' }}>
+          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{ width: '900px', height: '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'calc(50vw + 450px) 50%' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -11025,7 +11025,7 @@ export default function Dashboard() {
             top: '50%',
             left: '50%',
             transform: isTodoFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
-            transformOrigin: 'bottom center'
+            transformOrigin: '50% calc(50vh + 125px)'
           }}
         >
           {/* Flyout content */}
@@ -11135,7 +11135,7 @@ export default function Dashboard() {
             top: '50%',
             left: '50%',
             transform: isProjectsFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
-            transformOrigin: 'left center'
+            transformOrigin: 'calc(-50vw + 250px) 50%'
           }}
         >
           {/* Flyout Panel */}
