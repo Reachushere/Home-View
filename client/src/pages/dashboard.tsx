@@ -10213,6 +10213,13 @@ export default function Dashboard() {
               <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
+              {/* Right resize handle */}
+              <div 
+                className="cursor-col-resize hover:bg-white/50 flex-shrink-0 self-start"
+                style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '16px' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
+                title="Resize"
+              />
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
                   <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
