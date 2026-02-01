@@ -9857,40 +9857,39 @@ export default function Dashboard() {
           };
           
           // Render column header with resize handles on both sides of progress bar
-          const renderTaskColumnHeader = () => (
-            <div style={{ display: 'grid', gridTemplateColumns: `60px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px ${taskColumnWidths.dueDate}px 3px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
-              <div /> {/* Checkbox + Progress bar container */}
-              <div className="text-[8px] text-white/50 font-normal">Task</div>
-              <div 
-                className="cursor-col-resize hover:bg-white/50"
-                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
-                title="Resize Task column"
-              />
-              <div className="text-[8px] text-white/50 font-normal">Code</div>
-              <div 
-                className="cursor-col-resize hover:bg-white/50"
-                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
-                title="Resize Code column"
-              />
-              <div className="text-[8px] text-white/50 font-normal">Course</div>
-              <div 
-                className="cursor-col-resize hover:bg-white/50"
-                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')}
-                title="Resize Course column"
-              />
-              <div className="text-[8px] text-white/50 font-normal">Due</div>
-              <div 
-                className="cursor-col-resize hover:bg-white/50"
-                style={{ width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
-                title="Resize Due column"
-              />
-              <div className="text-[8px] text-white/50 font-normal">Days</div>
-            </div>
-          );
+          const renderTaskColumnHeader = () => {
+            const handleStyle = { width: '3px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.3)' };
+            return (
+              <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px', gap: '0px' }}>
+                {/* Col 1: Checkbox placeholder */}
+                <div style={{ width: '16px', flexShrink: 0 }} />
+                {/* Handle 1 */}
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName', true)} />
+                {/* Col 2: Progress bar placeholder */}
+                <div style={{ width: '44px', flexShrink: 0 }} />
+                {/* Handle 2 */}
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')} />
+                {/* Col 3: Task */}
+                <div style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Task</div>
+                {/* Handle 3 */}
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')} />
+                {/* Col 4: Code */}
+                <div style={{ width: `${taskColumnWidths.courseCode}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Code</div>
+                {/* Handle 4 */}
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')} />
+                {/* Col 5: Course */}
+                <div style={{ width: `${taskColumnWidths.courseName}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Course</div>
+                {/* Handle 5 */}
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')} />
+                {/* Col 6: Due */}
+                <div style={{ width: `${taskColumnWidths.dueDate}px`, flexShrink: 0 }} className="text-[8px] text-white/50 font-normal">Due</div>
+                {/* Handle 6 */}
+                <div className="cursor-col-resize hover:bg-white/50" style={handleStyle} onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')} />
+                {/* Col 7: Days */}
+                <div className="text-[8px] text-white/50 font-normal">Days</div>
+              </div>
+            );
+          };
 
           // Render a single task row
           const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false, boxType: 'today' | 'tomorrow' | 'thisweek' = 'today') => {
@@ -9925,27 +9924,32 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `60px ${taskColumnWidths.taskName}px 3px ${taskColumnWidths.courseCode}px 3px ${taskColumnWidths.courseName}px 3px ${taskColumnWidths.dueDate}px 3px auto`, gap: '0px', alignItems: 'center', marginLeft: '-25px' }}>
-                  {/* Checkbox + Progress bar in one container */}
-                  <div className="flex items-center gap-1">
+                <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-25px', gap: '0px' }}>
+                  {/* Col 1: Checkbox */}
+                  <div style={{ width: '16px', flexShrink: 0 }}>
                     {!isCASL101Task(task) ? (
                       <input
                         type="checkbox"
                         checked={task.isCompleted ?? false}
                         onChange={(e) => completeMutation.mutate({ id: task.id, isCompleted: e.target.checked })}
-                        className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer flex-shrink-0"
+                        className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer"
                         style={{ accentColor: getCourseColor(task.courseName) }}
                         data-testid={`checkbox-task-${task.id}`}
                         {...(boxType === 'today' ? { 'data-today-checkbox': task.id } : {})}
                         {...(boxType === 'tomorrow' ? { 'data-tomorrow-checkbox': task.id } : {})}
                       />
                     ) : (
-                      <div className="h-3.5 w-3.5 flex-shrink-0" />
+                      <div className="h-3.5 w-3.5" />
                     )}
+                  </div>
+                  {/* Handle 1 spacer */}
+                  <div style={{ width: '3px', flexShrink: 0 }} />
+                  {/* Col 2: Progress bar */}
+                  <div style={{ width: '44px', flexShrink: 0 }}>
                     <div 
-                      className="rounded-full transition-all duration-300 flex-shrink-0"
+                      className="rounded-full transition-all duration-300"
                       style={{ 
-                        width: '40px', 
+                        width: '44px', 
                         height: '3px', 
                         backgroundColor: progressColor,
                         opacity: 0.7
@@ -9953,35 +9957,50 @@ export default function Dashboard() {
                       title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                     />
                   </div>
-                  {/* Task name column */}
+                  {/* Handle 2 spacer */}
+                  <div style={{ width: '3px', flexShrink: 0 }} />
+                  {/* Col 3: Task name */}
                   <button 
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
-                    style={{ textAlign: 'left' }}
+                    style={{ width: `${taskColumnWidths.taskName}px`, flexShrink: 0, textAlign: 'left' }}
                   >
                     {task.title}
                   </button>
-                  <div /> {/* Handle spacer */}
-                  {/* Course code column */}
-                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
+                  {/* Handle 3 spacer */}
+                  <div style={{ width: '3px', flexShrink: 0 }} />
+                  {/* Col 4: Course code */}
+                  <div 
+                    className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate"
+                    style={{ width: `${taskColumnWidths.courseCode}px`, flexShrink: 0 }}
+                  >
                     {courseCode}
                   </div>
-                  <div /> {/* Handle spacer */}
-                  {/* Course name column */}
-                  <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
+                  {/* Handle 4 spacer */}
+                  <div style={{ width: '3px', flexShrink: 0 }} />
+                  {/* Col 5: Course name */}
+                  <div 
+                    className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate"
+                    style={{ width: `${taskColumnWidths.courseName}px`, flexShrink: 0 }}
+                  >
                     {courseFullName}
                   </div>
-                  <div /> {/* Handle spacer */}
-                  {/* Due date column */}
-                  <span className="text-[10px] text-white whitespace-nowrap">
+                  {/* Handle 5 spacer */}
+                  <div style={{ width: '3px', flexShrink: 0 }} />
+                  {/* Col 6: Due date */}
+                  <span 
+                    className="text-[10px] text-white whitespace-nowrap"
+                    style={{ width: `${taskColumnWidths.dueDate}px`, flexShrink: 0 }}
+                  >
                     {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                   </span>
-                  <div /> {/* Handle spacer */}
-                  {/* Days column */}
+                  {/* Handle 6 spacer */}
+                  <div style={{ width: '3px', flexShrink: 0 }} />
+                  {/* Col 7: Days */}
                   <span 
                     className="text-[10px] font-medium whitespace-nowrap"
-                    style={{ color: progressColor, marginLeft: '2px' }}
+                    style={{ color: progressColor }}
                   >
                     {daysUntil}d
                   </span>
