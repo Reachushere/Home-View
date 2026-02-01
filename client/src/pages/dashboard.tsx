@@ -10339,11 +10339,11 @@ export default function Dashboard() {
               {/* Task row with labels above */}
               <div className="flex">
               {/* Blank checkbox */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '18px', marginRight: '4px' }}>
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '14px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Group 1: Left handle on header + progress bar on content line */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '6px', marginLeft: `${testProgressBarLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
                 <div className="flex items-center" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10367,7 +10367,7 @@ export default function Dashboard() {
                 />
               </div>
               {/* Group 2: Right handle + text with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '6px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-center" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10382,7 +10382,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Online ASL Class</span>
               </div>
               {/* Group 3: Third handle + course code with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '6px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-center" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10397,7 +10397,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>CASL 101</span>
               </div>
               {/* Group 4: Fourth handle + course name with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '6px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-center" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10412,7 +10412,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>American Sign Language</span>
               </div>
               {/* Group 5: Fifth handle + due date with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '6px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-center" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
@@ -10427,7 +10427,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px' }}>Thu 2/5</span>
               </div>
               {/* Group 6: Sixth handle + days left with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px`, marginTop: '6px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-center" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
