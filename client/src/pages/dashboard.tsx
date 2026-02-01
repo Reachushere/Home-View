@@ -214,6 +214,16 @@ interface WeekInfo {
 
 export default function Dashboard() {
   const { toast } = useToast();
+  
+  // Mobile detection
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 640);
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 17)); // January 2026
@@ -10373,7 +10383,32 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
-              {/* Task row with labels above */}
+              {/* Mobile Layout */}
+              {isMobile ? (
+                <div className="flex flex-col gap-2">
+                  {dueThisWeekTasks.slice(0, 5).map((task) => (
+                    <div key={task.id} className="flex items-center gap-3 py-2 px-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 rounded-sm border-2 border-white/50 flex-shrink-0" 
+                        disabled
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-white truncate">{task.title}</div>
+                        <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
+                      </div>
+                      <div className="text-xs text-green-400 flex-shrink-0">
+                        {task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}
+                      </div>
+                    </div>
+                  ))}
+                  {dueThisWeekTasks.length > 5 && (
+                    <div className="text-xs text-white/50 text-center">+{dueThisWeekTasks.length - 5} more</div>
+                  )}
+                </div>
+              ) : (
+              <>
+              {/* Desktop Layout - Task row with labels above */}
               <div ref={row1ContainerRef} className="flex" style={{ position: 'relative' }}>
               {/* Blank checkbox - hidden for class type tasks */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
@@ -10534,31 +10569,8 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
-              <div className="flex-1 flex flex-col">
-                {isLoading ? (
-                  <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
-                ) : dueTomorrowTasks.length === 0 ? (
-                  <div className="flex-1"></div>
-                ) : (
-                  <div className="space-y-0.5">
-                    {renderTaskColumnHeader()}
-                    {dueTomorrowTasks.map((task, idx) => {
-                      const prevTask = idx > 0 ? dueTomorrowTasks[idx - 1] : null;
-                      const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
-                      return (
-                        <div key={task.id}>
-                          {showCourseHeader && (
-                            <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
-                              {task.courseName}
-                            </div>
-                          )}
-                          {renderTask(task, true, 'tomorrow')}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+              </>
+              )}
             </div>
           </section>
 
@@ -10599,9 +10611,32 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks today</div>
+              ) : isMobile ? (
+                <div className="flex flex-col gap-2">
+                  {dueTodayTasks.slice(0, 5).map((task) => (
+                    <div key={task.id} className="flex items-center gap-3 py-2 px-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 rounded-sm border-2 border-white/50 flex-shrink-0" 
+                        disabled
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-white truncate">{task.title}</div>
+                        <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
+                      </div>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <span className="text-xs text-green-400">{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                        <div className="w-2 h-2 rounded-full bg-orange-500" />
+                      </div>
+                    </div>
+                  ))}
+                  {dueTodayTasks.length > 5 && (
+                    <div className="text-xs text-white/50 text-center">+{dueTodayTasks.length - 5} more</div>
+                  )}
+                </div>
               ) : (
                 <>
-              {/* Task row 1 with labels above */}
+              {/* Desktop Layout - Task row 1 with labels above */}
               <div className="flex" style={{ position: 'relative' }}>
               {/* Blank checkbox */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueTodayTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
@@ -10739,9 +10774,32 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
+              ) : isMobile ? (
+                <div className="flex flex-col gap-2">
+                  {dueTomorrowTasks.slice(0, 5).map((task) => (
+                    <div key={task.id} className="flex items-center gap-3 py-2 px-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                      <input 
+                        type="checkbox" 
+                        className="h-5 w-5 rounded-sm border-2 border-white/50 flex-shrink-0" 
+                        disabled
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-white truncate">{task.title}</div>
+                        <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
+                      </div>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <span className="text-xs text-green-400">{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                        <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                      </div>
+                    </div>
+                  ))}
+                  {dueTomorrowTasks.length > 5 && (
+                    <div className="text-xs text-white/50 text-center">+{dueTomorrowTasks.length - 5} more</div>
+                  )}
+                </div>
               ) : (
                 <>
-              {/* Task row 1 with labels above */}
+              {/* Desktop Layout - Task row 1 with labels above */}
               <div className="flex" style={{ position: 'relative' }}>
               {/* Blank checkbox */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueTomorrowTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
