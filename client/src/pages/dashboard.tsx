@@ -1205,8 +1205,10 @@ export default function Dashboard() {
   const row1CodeRef = useRef<HTMLDivElement>(null);
   const row1CourseRef = useRef<HTMLDivElement>(null);
   const row1DueRef = useRef<HTMLDivElement>(null);
+  const row1DaysRef = useRef<HTMLDivElement>(null);
+  const row1ProgressBarRef = useRef<HTMLDivElement>(null);
   const row1ContainerRef = useRef<HTMLDivElement>(null);
-  const [row1Positions, setRow1Positions] = useState({ task: 0, code: 0, course: 0, due: 0 });
+  const [row1Positions, setRow1Positions] = useState({ task: 0, code: 0, course: 0, due: 0, days: 0, progressBar: 0, progressBarTop: 0 });
   
   // Save box order to localStorage
   useEffect(() => {
@@ -3648,12 +3650,17 @@ export default function Dashboard() {
   useEffect(() => {
     const measurePositions = () => {
       if (row1ContainerRef.current && row1TaskRef.current && row1CodeRef.current && row1CourseRef.current && row1DueRef.current) {
-        const containerLeft = row1ContainerRef.current.getBoundingClientRect().left;
+        const containerRect = row1ContainerRef.current.getBoundingClientRect();
+        const containerLeft = containerRect.left;
+        const containerTop = containerRect.top;
         setRow1Positions({
           task: row1TaskRef.current.getBoundingClientRect().left - containerLeft,
           code: row1CodeRef.current.getBoundingClientRect().left - containerLeft,
           course: row1CourseRef.current.getBoundingClientRect().left - containerLeft,
-          due: row1DueRef.current.getBoundingClientRect().left - containerLeft
+          due: row1DueRef.current.getBoundingClientRect().left - containerLeft,
+          days: row1DaysRef.current ? row1DaysRef.current.getBoundingClientRect().left - containerLeft : 0,
+          progressBar: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().left - containerLeft : 0,
+          progressBarTop: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().top - containerTop : 0
         });
       }
     };
@@ -10384,6 +10391,7 @@ export default function Dashboard() {
                 </div>
                 {/* Progress bar - stays on content line */}
                 <div 
+                  ref={row1ProgressBarRef}
                   className="rounded-full"
                   style={{ 
                     width: '44px', 
@@ -10452,7 +10460,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
               {/* Group 6: Days left - absolutely positioned to stay fixed */}
-              <div className="flex flex-col" style={{ position: 'absolute', right: '0px', top: '2px' }}>
+              <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '0px', top: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Visual divider */}
                   <div 
@@ -10471,8 +10479,8 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: '0px', top: '1px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                {/* Progress bar - positioned after checkbox (18px) + testProgressBarLeft + 7px inner margin */}
-                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 7}px`, top: '6px' }}>
+                {/* Progress bar - use measured position from row 1 */}
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '5px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
                 </div>
                 {/* Task title - use measured position from row 1 + 7px for inner margin */}
@@ -10491,8 +10499,8 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px' }}>
                   <span style={{ fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 </div>
-                {/* Days left - absolutely positioned at right */}
-                <div style={{ position: 'absolute', right: '0px', top: '1px' }}>
+                {/* Days left - use measured position from row 1 + 7px for inner margin */}
+                <div style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px' }}>
                   <span style={{ fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
                 </div>
               </div>
