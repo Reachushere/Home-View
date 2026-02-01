@@ -7,6 +7,7 @@ This is a full-stack task management application designed for academic coursewor
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Publishing preference: Always publish with mobile-ready compatibility enabled.
 
 ## System Architecture
 
