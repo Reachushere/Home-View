@@ -6104,7 +6104,7 @@ export default function Dashboard() {
               data-testid="button-settings-panel"
               onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
             >
-              <GraduationCap className="text-white" style={{ height: '20px', width: '20px' }} />
+              <GraduationCap className="text-white" style={{ height: '18px', width: '18px' }} />
             </Button>
           </div>
 
