@@ -122,6 +122,28 @@
   }
 }
 
+@keyframes dialog-burst-from-top {
+  0% { 
+    opacity: 0; 
+    scale: 0;
+  }
+  100% { 
+    opacity: 1; 
+    scale: 1;
+  }
+}
+
+@keyframes dialog-burst-to-top {
+  0% { 
+    opacity: 1; 
+    scale: 1;
+  }
+  100% { 
+    opacity: 0; 
+    scale: 0;
+  }
+}
+
 .animate-burst-from-top {
   animation: burst-from-top 0.4s ease-out forwards;
   transform-origin: 50% calc(-50vh);
@@ -130,6 +152,16 @@
 .animate-burst-to-top {
   animation: burst-to-top 0.25s ease-in forwards;
   transform-origin: 50% calc(-50vh);
+}
+
+.animate-dialog-burst-from-top {
+  animation: dialog-burst-from-top 0.4s ease-out forwards;
+  transform-origin: top center;
+}
+
+.animate-dialog-burst-to-top {
+  animation: dialog-burst-to-top 0.25s ease-in forwards;
+  transform-origin: top center;
 }
 
 @keyframes urgent-blink {
