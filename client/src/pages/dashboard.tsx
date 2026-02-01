@@ -568,15 +568,19 @@ export default function Dashboard() {
   const [testProgressBarLeft, setTestProgressBarLeft] = useState(0);
   const [testTextLeft, setTestTextLeft] = useState(0); // Separate state for text position
   const [testCourseLeft, setTestCourseLeft] = useState(0); // Separate state for course position
+  const [testCourseNameLeft, setTestCourseNameLeft] = useState(0); // Separate state for course name position
   const [resizingTestBar, setResizingTestBar] = useState(false);
   const [resizingTestText, setResizingTestText] = useState(false); // Separate state for text resizing
   const [resizingTestCourse, setResizingTestCourse] = useState(false); // Separate state for course resizing
+  const [resizingTestCourseName, setResizingTestCourseName] = useState(false); // Separate state for course name resizing
   const testBarStartX = useRef(0);
   const testBarStartLeft = useRef(0);
   const testTextStartX = useRef(0);
   const testTextStartLeft = useRef(0);
   const testCourseStartX = useRef(0);
   const testCourseStartLeft = useRef(0);
+  const testCourseNameStartX = useRef(0);
+  const testCourseNameStartLeft = useRef(0);
   
   // Left handle: moves progress bar group
   const handleTestBarResizeStart = (e: React.MouseEvent) => {
@@ -603,6 +607,15 @@ export default function Dashboard() {
     setResizingTestCourse(true);
     testCourseStartX.current = e.clientX;
     testCourseStartLeft.current = testCourseLeft;
+  };
+  
+  // Fourth handle: moves course name only
+  const handleTestCourseNameResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingTestCourseName(true);
+    testCourseNameStartX.current = e.clientX;
+    testCourseNameStartLeft.current = testCourseNameLeft;
   };
   
   useEffect(() => {
@@ -670,6 +683,28 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [resizingTestCourse]);
+  
+  useEffect(() => {
+    if (!resizingTestCourseName) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const diff = e.clientX - testCourseNameStartX.current;
+      const newLeft = Math.max(0, Math.min(200, testCourseNameStartLeft.current + diff));
+      console.log('Fourth handle - course name newLeft:', newLeft);
+      setTestCourseNameLeft(newLeft);
+    };
+    
+    const handleMouseUp = () => {
+      setResizingTestCourseName(false);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizingTestCourseName]);
 
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
@@ -10345,7 +10380,7 @@ export default function Dashboard() {
                 {/* Task title */}
                 <span style={{ fontSize: '10px', color: 'white' }}>Online ASL Class</span>
               </div>
-              {/* Group 3: Third handle + course - moves together with third handle drag */}
+              {/* Group 3: Third handle + course code - moves together with third handle drag */}
               <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testCourseLeft}px` }}>
                 {/* Third resize handle */}
                 <div 
@@ -10356,14 +10391,18 @@ export default function Dashboard() {
                 />
                 {/* Course number */}
                 <span style={{ fontSize: '10px', color: 'white' }}>CASL 101</span>
+              </div>
+              {/* Group 4: Fourth handle + course name - moves together with fourth handle drag */}
+              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testCourseNameLeft}px` }}>
                 {/* Fourth resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
+                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                  onMouseDown={handleTestCourseNameResizeStart}
                   title="Resize"
                 />
                 {/* Course name */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '4px' }}>American Sign Language</span>
+                <span style={{ fontSize: '10px', color: 'white' }}>American Sign Language</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
