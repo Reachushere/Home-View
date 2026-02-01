@@ -8292,7 +8292,8 @@ export default function Dashboard() {
                           type="color"
                           value={colorSettings.boxBackground}
                           onChange={(e) => setColorSettings(prev => ({ ...prev, boxBackground: e.target.value }))}
-                          className="w-8 h-8 rounded cursor-pointer border-0"
+                          className="w-8 h-8 rounded cursor-pointer border-0 p-0"
+                          style={{ backgroundColor: colorSettings.boxBackground }}
                           data-testid="color-box-background"
                         />
                       </div>
