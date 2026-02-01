@@ -11121,7 +11121,16 @@ export default function Dashboard() {
                 <div className="flex items-center gap-3">
                   <Button 
                     variant="outline"
-                    className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent shadow-[0_0_8px_rgba(255,110,61,0.5)] hover:shadow-[0_0_12px_rgba(255,221,99,0.6)] transition-all duration-200"
+                    className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
+                    style={{
+                      boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 8px rgba(255,221,99,0.8), 0 0 16px rgba(255,163,101,0.6), 0 0 24px rgba(255,110,61,0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
+                    }}
                     onClick={() => {
                       setEditingProject(null);
                       setProjectDialogOpen(true);
