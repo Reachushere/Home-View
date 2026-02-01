@@ -10491,9 +10491,9 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px' }}>
                   <span style={{ fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 </div>
-                {/* Course name - use measured position from row 1 + 7px for inner margin */}
-                <div style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px' }}>
-                  <span style={{ fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                {/* Course name - use measured position from row 1 + 7px for inner margin, truncate to fit */}
+                <div style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, overflow: 'hidden' }}>
+                  <span style={{ fontSize: '10px', color: '#9ca3af', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 </div>
                 {/* Due date - use measured position from row 1 + 7px for inner margin */}
                 <div style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px' }}>
