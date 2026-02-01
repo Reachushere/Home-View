@@ -8296,7 +8296,7 @@ export default function Dashboard() {
                     Customise colours for the app.
                   </p>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     {/* Box Background Colour */}
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Task Boxes Background</Label>
@@ -8354,8 +8354,6 @@ export default function Dashboard() {
                         />
                       </div>
                     )}
-                    
-                    <div className="pt-3" />
                     
                     {/* Header Bar Colour */}
                     <div className="flex items-center justify-between">
