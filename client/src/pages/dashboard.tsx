@@ -12775,49 +12775,49 @@ function ProfileForm({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
       <div className="space-y-2">
-        <Label htmlFor="firstName">First Name</Label>
+        <Label htmlFor="firstName" className="text-[10px]">First Name</Label>
         <Input 
           id="firstName" 
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="Enter your first name"
-          className="!text-black"
+          className="!text-black text-[10px] h-8"
           data-testid="input-profile-firstname"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="lastName">Last Name</Label>
+        <Label htmlFor="lastName" className="text-[10px]">Last Name</Label>
         <Input 
           id="lastName" 
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           placeholder="Enter your last name"
-          className="!text-black"
+          className="!text-black text-[10px] h-8"
           data-testid="input-profile-lastname"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="birthdate">Birthdate</Label>
+        <Label htmlFor="birthdate" className="text-[10px]">Birthdate</Label>
         <Input 
           id="birthdate" 
           type="date"
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
-          className="!text-black"
+          className="!text-black text-[10px] h-8"
           data-testid="input-profile-birthdate"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="timezone">Home Time Zone</Label>
+        <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
         <Select value={timezone} onValueChange={setTimezone}>
-          <SelectTrigger className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-profile-timezone">
+          <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-8" style={{ color: 'black' }} data-testid="select-profile-timezone">
             <SelectValue placeholder="Select time zone" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-white text-[10px]">
             {timezones.map(tz => (
-              <SelectItem key={tz.value} value={tz.value} className="text-black">{tz.label}</SelectItem>
+              <SelectItem key={tz.value} value={tz.value} className="text-black text-[10px]">{tz.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -12828,21 +12828,22 @@ function ProfileForm({
             id="traveling" 
             checked={isTraveling}
             onCheckedChange={(checked) => setIsTraveling(!!checked)}
+            className="h-3 w-3"
             data-testid="checkbox-traveling"
           />
-          <Label htmlFor="traveling" className="text-sm font-medium cursor-pointer">I'm traveling</Label>
+          <Label htmlFor="traveling" className="text-[10px] font-medium cursor-pointer">I'm traveling</Label>
         </div>
         {isTraveling && (
           <div className="space-y-2">
-            <Label htmlFor="travelTimezone" className="text-sm">Travel Time Zone</Label>
-            <p className="text-xs text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
+            <Label htmlFor="travelTimezone" className="text-[10px]">Travel Time Zone</Label>
+            <p className="text-[9px] text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
             <Select value={travelTimezone || timezone} onValueChange={setTravelTimezone}>
-              <SelectTrigger className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-travel-timezone">
+              <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-8" style={{ color: 'black' }} data-testid="select-travel-timezone">
                 <SelectValue placeholder="Select travel time zone" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-white text-[10px]">
                 {timezones.map(tz => (
-                  <SelectItem key={tz.value} value={tz.value} className="text-black">{tz.label}</SelectItem>
+                  <SelectItem key={tz.value} value={tz.value} className="text-black text-[10px]">{tz.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -12922,14 +12923,14 @@ function SchoolForm({
     : 'Not set';
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
       <div className="space-y-2">
-        <Label>School Logo</Label>
+        <Label className="text-[10px]">School Logo</Label>
         <div className="flex items-center gap-3">
           {schoolLogo ? (
-            <img src={schoolLogo} alt="School logo" className="h-12 w-auto object-contain rounded border" />
+            <img src={schoolLogo} alt="School logo" className="h-10 w-auto object-contain rounded border" />
           ) : (
-            <div className="h-12 w-20 bg-muted rounded border flex items-center justify-center text-xs !text-black">
+            <div className="h-10 w-16 bg-muted rounded border flex items-center justify-center text-[9px] !text-black">
               No logo
             </div>
           )}
@@ -12938,11 +12939,12 @@ function SchoolForm({
               type="button" 
               variant="outline" 
               size="sm"
+              className="text-[10px] h-7"
               onClick={() => logoInputRef.current?.click()}
               disabled={isUploadingLogo}
               data-testid="button-upload-logo"
             >
-              {isUploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+              {isUploadingLogo ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}
               <span className="ml-1">{schoolLogo ? 'Change' : 'Upload'}</span>
             </Button>
             {schoolLogo && (
@@ -12950,10 +12952,11 @@ function SchoolForm({
                 type="button" 
                 variant="ghost" 
                 size="sm"
+                className="h-7"
                 onClick={() => setSchoolLogo(null)}
                 data-testid="button-remove-logo"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3" />
               </Button>
             )}
           </div>
@@ -12966,50 +12969,50 @@ function SchoolForm({
             data-testid="input-logo-file"
           />
         </div>
-        <p className="text-xs text-muted-foreground">Upload your school logo to replace the default.</p>
+        <p className="text-[9px] text-muted-foreground">Upload your school logo to replace the default.</p>
       </div>
       
       <div className="border rounded-lg p-3 space-y-3">
-        <Label className="text-sm font-medium">School Schedule</Label>
+        <Label className="text-[10px] font-medium">School Schedule</Label>
         <div className="space-y-3">
           <div className="space-y-1">
-            <Label htmlFor="numberOfWeeks" className="text-xs">Number of School Weeks</Label>
+            <Label htmlFor="numberOfWeeks" className="text-[10px]">Number of School Weeks</Label>
             <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
-              <SelectTrigger className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-number-of-weeks">
+              <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-8" style={{ color: 'black' }} data-testid="select-number-of-weeks">
                 <SelectValue placeholder="Select weeks" />
               </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black">
+              <SelectContent className="bg-white [&_*]:!text-black text-[10px]">
                 {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                  <SelectItem key={w} value={String(w)} className="!text-black">{w} weeks</SelectItem>
+                  <SelectItem key={w} value={String(w)} className="!text-black text-[10px]">{w} weeks</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="week1StartDate" className="text-xs">Week 1, Day 1 Date</Label>
+            <Label htmlFor="week1StartDate" className="text-[10px]">Week 1, Day 1 Date</Label>
             <Input 
               id="week1StartDate"
               type="date"
               value={week1StartDate}
               onChange={(e) => setWeek1StartDate(e.target.value)}
-              className="!text-black"
+              className="!text-black text-[10px] h-8"
               data-testid="input-week1-start-date"
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="firstDayOfWeek" className="text-xs">First Day of School Week</Label>
+            <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
             <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
-              <SelectTrigger className="!text-black [&_*]:!text-black bg-white" style={{ color: 'black' }} data-testid="select-first-day-of-week">
+              <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-8" style={{ color: 'black' }} data-testid="select-first-day-of-week">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black">
+              <SelectContent className="bg-white [&_*]:!text-black text-[10px]">
                 {daysOfWeek.map(day => (
-                  <SelectItem key={day.value} value={day.value} className="!text-black">{day.label}</SelectItem>
+                  <SelectItem key={day.value} value={day.value} className="!text-black text-[10px]">{day.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <div className="text-xs text-muted-foreground pt-1">
+          <div className="text-[9px] text-muted-foreground pt-1">
             Semester ends: {semesterEnd}
           </div>
         </div>
@@ -13017,19 +13020,19 @@ function SchoolForm({
       
       {semesterSettings && (
         <div className="border rounded-lg p-3 space-y-3">
-          <Label className="text-sm font-medium">Courses</Label>
+          <Label className="text-[10px] font-medium">Courses</Label>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-green-500" />
-              <span className="text-sm font-medium">{semesterSettings.course1Code}</span>
-              <span className="text-sm text-muted-foreground">- {semesterSettings.course1Name}</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+              <span className="text-[10px] font-medium">{semesterSettings.course1Code}</span>
+              <span className="text-[10px] text-muted-foreground">- {semesterSettings.course1Name}</span>
               {semesterSettings.course1Professor && (
                 semesterSettings.course1ProfessorEmail ? (
                   <a 
                     href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course1ProfessorEmail)}&su=${encodeURIComponent(`${semesterSettings.course1Code} - `)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
+                    className="text-[9px] text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
                     data-testid="link-email-professor-1"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -13039,21 +13042,21 @@ function SchoolForm({
                     Prof. {semesterSettings.course1Professor}
                   </a>
                 ) : (
-                  <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course1Professor}</span>
+                  <span className="text-[9px] text-muted-foreground ml-auto">Prof. {semesterSettings.course1Professor}</span>
                 )
               )}
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-pink-500" />
-              <span className="text-sm font-medium">{semesterSettings.course2Code}</span>
-              <span className="text-sm text-muted-foreground">- {semesterSettings.course2Name}</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-pink-500" />
+              <span className="text-[10px] font-medium">{semesterSettings.course2Code}</span>
+              <span className="text-[10px] text-muted-foreground">- {semesterSettings.course2Name}</span>
               {semesterSettings.course2Professor && (
                 semesterSettings.course2ProfessorEmail ? (
                   <a 
                     href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course2ProfessorEmail)}&su=${encodeURIComponent(`${semesterSettings.course2Code} - `)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
+                    className="text-[9px] text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
                     data-testid="link-email-professor-2"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -13063,21 +13066,21 @@ function SchoolForm({
                     Prof. {semesterSettings.course2Professor}
                   </a>
                 ) : (
-                  <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course2Professor}</span>
+                  <span className="text-[9px] text-muted-foreground ml-auto">Prof. {semesterSettings.course2Professor}</span>
                 )
               )}
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-indigo-500" />
-              <span className="text-sm font-medium">{semesterSettings.course3Code}</span>
-              <span className="text-sm text-muted-foreground">- {semesterSettings.course3Name}</span>
+              <div className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+              <span className="text-[10px] font-medium">{semesterSettings.course3Code}</span>
+              <span className="text-[10px] text-muted-foreground">- {semesterSettings.course3Name}</span>
               {semesterSettings.course3Professor && (
                 semesterSettings.course3ProfessorEmail ? (
                   <a 
                     href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(semesterSettings.course3ProfessorEmail)}&su=${encodeURIComponent(`${semesterSettings.course3Code} - `)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
+                    className="text-[9px] text-blue-600 hover:text-blue-800 hover:underline ml-auto cursor-pointer"
                     data-testid="link-email-professor-3"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -13087,7 +13090,7 @@ function SchoolForm({
                     Prof. {semesterSettings.course3Professor}
                   </a>
                 ) : (
-                  <span className="text-xs text-muted-foreground ml-auto">Prof. {semesterSettings.course3Professor}</span>
+                  <span className="text-[9px] text-muted-foreground ml-auto">Prof. {semesterSettings.course3Professor}</span>
                 )
               )}
             </div>
@@ -13095,10 +13098,10 @@ function SchoolForm({
           
           {/* Professor Email Inputs */}
           <div className="mt-3 pt-3 border-t space-y-2">
-            <Label className="text-xs font-medium text-muted-foreground">Professor Emails (click name to send email)</Label>
+            <Label className="text-[9px] font-medium text-muted-foreground">Professor Emails (click name to send email)</Label>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-green-500 shrink-0" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0" />
                 <Input
                   type="email"
                   placeholder="Course 1 professor email"
@@ -13111,12 +13114,12 @@ function SchoolForm({
                       course3ProfessorEmail: semesterSettings.course3ProfessorEmail
                     }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
                   }}
-                  className="h-7 text-xs"
+                  className="h-7 text-[10px] !text-black"
                   data-testid="input-course1-email-edit"
                 />
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-pink-500 shrink-0" />
+                <div className="w-2.5 h-2.5 rounded-full bg-pink-500 shrink-0" />
                 <Input
                   type="email"
                   placeholder="Course 2 professor email"
@@ -13129,12 +13132,12 @@ function SchoolForm({
                       course3ProfessorEmail: semesterSettings.course3ProfessorEmail
                     }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
                   }}
-                  className="h-7 text-xs"
+                  className="h-7 text-[10px] !text-black"
                   data-testid="input-course2-email-edit"
                 />
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-indigo-500 shrink-0" />
+                <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 shrink-0" />
                 <Input
                   type="email"
                   placeholder="Course 3 professor email"
@@ -13147,13 +13150,13 @@ function SchoolForm({
                       course3ProfessorEmail: email || null
                     }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
                   }}
-                  className="h-7 text-xs"
+                  className="h-7 text-[10px] !text-black"
                   data-testid="input-course3-email-edit"
                 />
               </div>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">Course details are set when starting a new semester.</p>
+          <p className="text-[9px] text-muted-foreground">Course details are set when starting a new semester.</p>
         </div>
       )}
       
