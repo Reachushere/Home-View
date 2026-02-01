@@ -10702,7 +10702,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: '#160502',
+                background: colorSettings.headerBar,
                 padding: '6px 12px'
               }}
             >
@@ -10943,7 +10943,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: '#160502',
+                background: colorSettings.headerBar,
                 padding: '6px 12px'
               }}
             >
@@ -11111,7 +11111,7 @@ export default function Dashboard() {
           >
             <div 
               style={{ 
-                background: '#160502',
+                background: colorSettings.headerBar,
                 padding: '6px 12px'
               }}
             >
@@ -11529,7 +11529,7 @@ export default function Dashboard() {
                             <div 
                               className="px-2 py-0.5"
                               style={{ 
-                                background: '#160502'
+                                background: colorSettings.headerBar
                               }}
                             >
                               <div className="flex items-center justify-between gap-2">
