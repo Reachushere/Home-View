@@ -6376,8 +6376,7 @@ export default function Dashboard() {
                 position: 'absolute',
                 top: '3px',
                 left: '3px',
-                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)'
+                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)'
               }}
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
               data-testid="button-undo-complete"
