@@ -996,7 +996,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
       boxBackground: '#ffffff',
-      headerBar: '#000000',
+      headerBar: '#160502',
       mainBackground: '#1a1a2e',
       boxGlassEffect: true,
       boxTransparency: 35,
@@ -8357,7 +8357,7 @@ export default function Dashboard() {
                     
                     {/* Header Bar Colour */}
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Header & Menu Bar</Label>
+                      <Label className="text-xs">Header</Label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
                         <div className="relative">
