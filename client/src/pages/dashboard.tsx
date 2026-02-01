@@ -6367,14 +6367,16 @@ export default function Dashboard() {
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              background: 'linear-gradient(180deg, #FFE566 0%, #FF8C00 100%)',
-              padding: '3px'
+              backgroundColor: '#FFA365'
             }}
           >
             <div 
               className={`h-[38px] w-[38px] rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-200 ${completedTaskHistory.length > 0 ? "" : "opacity-50 pointer-events-none"}`}
               style={{ 
-                background: 'linear-gradient(0deg, #FFE566 0%, #FF8C00 100%)',
+                position: 'absolute',
+                top: '3px',
+                left: '3px',
+                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
                 boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2)'
               }}
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
@@ -10851,31 +10853,6 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
-              {/* TEST UNDO BUTTON CIRCLES - Delete when ready */}
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10px' }}>
-                <div style={{ position: 'relative', width: '44px', height: '44px' }}>
-                  {/* Bottom circle: 44px to match undo button outer, solid #FFA365 */}
-                  <div style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '50%',
-                    backgroundColor: '#FFA365'
-                  }} />
-                  {/* Top circle: 38px to match undo button inner, gradient #FFDD63 bottom to #FF6E3D top */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '3px',
-                    left: '3px',
-                    width: '38px',
-                    height: '38px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)'
-                  }} />
-                </div>
-              </div>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
