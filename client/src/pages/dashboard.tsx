@@ -10479,8 +10479,8 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: '0px', top: '1px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                {/* Progress bar - use measured position from row 1 */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '5px' }}>
+                {/* Progress bar - positioned same as row 1 */}
+                <div style={{ position: 'absolute', left: `${18 + testProgressBarLeft + 7}px`, top: '5px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
                 </div>
                 {/* Task title - use measured position from row 1 + 7px for inner margin */}
