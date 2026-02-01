@@ -9737,29 +9737,23 @@ export default function Dashboard() {
                   });
                   const currentWeekNum = currentWeekData?.weekNumber || selectedWeek;
                   
-                  // Sort weeks: incomplete weeks first (by number), completed weeks at the bottom
+                  // Sort weeks: current/future weeks first (by number), past weeks at the bottom
                   const sortedWeeks = [...FLYOUT_WEEKS].sort((a, b) => {
                     const aNum = parseInt(a.id.replace('week-', ''));
                     const bNum = parseInt(b.id.replace('week-', ''));
                     
-                    // Check if weeks are completed
-                    const aFiles = getFilesInFlyoutWeek(a.id);
-                    const bFiles = getFilesInFlyoutWeek(b.id);
-                    const aCompleted = aFiles.length > 0 && aFiles.every(f => f.listened);
-                    const bCompleted = bFiles.length > 0 && bFiles.every(f => f.listened);
+                    // Check if weeks are past (ended)
+                    const aWeekData = weeks.find(w => w.weekNumber === aNum);
+                    const bWeekData = weeks.find(w => w.weekNumber === bNum);
+                    const aPast = aWeekData ? new Date(aWeekData.endDate) < today : aNum < currentWeekNum;
+                    const bPast = bWeekData ? new Date(bWeekData.endDate) < today : bNum < currentWeekNum;
                     
-                    // Completed weeks go to the bottom
-                    if (aCompleted && !bCompleted) return 1;
-                    if (!aCompleted && bCompleted) return -1;
+                    // Past weeks go to the bottom
+                    if (aPast && !bPast) return 1;
+                    if (!aPast && bPast) return -1;
                     
-                    // Within same completion status, sort by week number (3-9 first, then 10-13, then 1-2)
-                    const getOrder = (num: number) => {
-                      if (num >= 3 && num <= 9) return num;
-                      if (num >= 10 && num <= 13) return num;
-                      return num + 13;
-                    };
-                    
-                    return getOrder(aNum) - getOrder(bNum);
+                    // Within same status, sort by week number
+                    return aNum - bNum;
                   });
                   
                   const renderWeekFolder = (week: typeof sortedWeeks[0]) => {
