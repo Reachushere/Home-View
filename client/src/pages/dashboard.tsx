@@ -8633,7 +8633,8 @@ export default function Dashboard() {
                   </p>
                   <div className="flex gap-2">
                     <div
-                      className="inline-flex items-center justify-center bg-transparent text-[#5979CC] border-2 border-[#5979CC] rounded-md px-3 py-1.5 text-sm cursor-pointer hover:bg-[#5979CC]/10 transition-colors"
+                      className="inline-flex items-center justify-center bg-transparent text-[#5979CC] border border-[#5979CC] rounded-md px-3 py-1.5 text-sm cursor-pointer hover:bg-[#5979CC]/10 transition-colors"
+                      style={{ boxShadow: 'none', outline: 'none', WebkitBoxShadow: 'none' }}
                       onClick={async () => {
                         try {
                           toast({ title: "Pushing...", description: "Sending data to production." });
