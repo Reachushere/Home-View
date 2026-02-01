@@ -10448,22 +10448,14 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 p-3 pb-5 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-              {/* Column headers row - 6px above task row, aligned with content */}
-              <div className="flex items-center" style={{ marginLeft: `${18 + testProgressBarLeft + 7 + 44 + testTextLeft + 7}px`, marginBottom: '6px' }}>
-                <span className="text-[8px] text-white/50 font-normal">Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseLeft + 7}px` }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseNameLeft + 7}px` }}>Course</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testDueDateLeft + 7}px` }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testDaysLeftLeft + 7}px` }}>Days</span>
-              </div>
-              {/* Task row */}
+              {/* Task row with labels above */}
               <div className="flex">
               {/* Blank checkbox */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '2px', marginRight: '4px' }}>
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '18px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Group 1: Left handle + progress bar - moves together with left handle drag */}
-              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testProgressBarLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '22px', marginLeft: `${testProgressBarLeft}px` }}>
                 {/* Left resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
@@ -10482,65 +10474,80 @@ export default function Dashboard() {
                   }}
                 />
               </div>
-              {/* Group 2: Right handle + text + end handle - moves together with right handle drag */}
-              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testTextLeft}px` }}>
-                {/* Right resize handle */}
-                <div 
-                  className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
-                  onMouseDown={handleTestTextResizeStart}
-                  title="Resize"
-                />
-                {/* Task title */}
-                <span style={{ fontSize: '10px', color: 'white' }}>Online ASL Class</span>
+              {/* Group 2: Right handle + text with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px` }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Task</span>
+                <div className="flex items-center">
+                  {/* Right resize handle */}
+                  <div 
+                    className="cursor-col-resize hover:bg-white/50"
+                    style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                    onMouseDown={handleTestTextResizeStart}
+                    title="Resize"
+                  />
+                  {/* Task title */}
+                  <span style={{ fontSize: '10px', color: 'white' }}>Online ASL Class</span>
+                </div>
               </div>
-              {/* Group 3: Third handle + course code - moves together with third handle drag */}
-              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testCourseLeft}px` }}>
-                {/* Third resize handle */}
-                <div 
-                  className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
-                  onMouseDown={handleTestCourseResizeStart}
-                  title="Resize"
-                />
-                {/* Course number */}
-                <span style={{ fontSize: '10px', color: '#9ca3af' }}>CASL 101</span>
+              {/* Group 3: Third handle + course code with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px` }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Code</span>
+                <div className="flex items-center">
+                  {/* Third resize handle */}
+                  <div 
+                    className="cursor-col-resize hover:bg-white/50"
+                    style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                    onMouseDown={handleTestCourseResizeStart}
+                    title="Resize"
+                  />
+                  {/* Course number */}
+                  <span style={{ fontSize: '10px', color: '#9ca3af' }}>CASL 101</span>
+                </div>
               </div>
-              {/* Group 4: Fourth handle + course name - moves together with fourth handle drag */}
-              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testCourseNameLeft}px` }}>
-                {/* Fourth resize handle */}
-                <div 
-                  className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
-                  onMouseDown={handleTestCourseNameResizeStart}
-                  title="Resize"
-                />
-                {/* Course name */}
-                <span style={{ fontSize: '10px', color: '#9ca3af' }}>American Sign Language</span>
+              {/* Group 4: Fourth handle + course name with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px` }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Course</span>
+                <div className="flex items-center">
+                  {/* Fourth resize handle */}
+                  <div 
+                    className="cursor-col-resize hover:bg-white/50"
+                    style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                    onMouseDown={handleTestCourseNameResizeStart}
+                    title="Resize"
+                  />
+                  {/* Course name */}
+                  <span style={{ fontSize: '10px', color: '#9ca3af' }}>American Sign Language</span>
+                </div>
               </div>
-              {/* Group 5: Fifth handle + due date - moves together with fifth handle drag */}
-              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testDueDateLeft}px` }}>
-                {/* Fifth resize handle */}
-                <div 
-                  className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
-                  onMouseDown={handleTestDueDateResizeStart}
-                  title="Resize"
-                />
-                {/* Due date */}
-                <span style={{ fontSize: '10px', color: 'white' }}>Thu 2/5</span>
+              {/* Group 5: Fifth handle + due date with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px` }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Due</span>
+                <div className="flex items-center">
+                  {/* Fifth resize handle */}
+                  <div 
+                    className="cursor-col-resize hover:bg-white/50"
+                    style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                    onMouseDown={handleTestDueDateResizeStart}
+                    title="Resize"
+                  />
+                  {/* Due date */}
+                  <span style={{ fontSize: '10px', color: 'white' }}>Thu 2/5</span>
+                </div>
               </div>
-              {/* Group 6: Sixth handle + days left - moves together with sixth handle drag */}
-              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testDaysLeftLeft}px` }}>
-                {/* Sixth resize handle */}
-                <div 
-                  className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
-                  onMouseDown={handleTestDaysLeftResizeStart}
-                  title="Resize"
-                />
-                {/* Days left */}
-                <span style={{ fontSize: '10px', color: '#4ade80' }}>5d</span>
+              {/* Group 6: Sixth handle + days left with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px` }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Days</span>
+                <div className="flex items-center">
+                  {/* Sixth resize handle */}
+                  <div 
+                    className="cursor-col-resize hover:bg-white/50"
+                    style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                    onMouseDown={handleTestDaysLeftResizeStart}
+                    title="Resize"
+                  />
+                  {/* Days left */}
+                  <span style={{ fontSize: '10px', color: '#4ade80' }}>5d</span>
+                </div>
               </div>
               </div>
               <div className="flex-1 flex flex-col">
