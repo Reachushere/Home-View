@@ -10387,7 +10387,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-11px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-12px' }}
                     onMouseDown={handleTestCourseResizeStart}
                     title="Resize"
                   />
@@ -10402,7 +10402,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-11px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-12px' }}
                     onMouseDown={handleTestCourseNameResizeStart}
                     title="Resize"
                   />
@@ -10417,7 +10417,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-11px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-12px' }}
                     onMouseDown={handleTestDueDateResizeStart}
                     title="Resize"
                   />
@@ -10432,7 +10432,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-11px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', position: 'relative', top: '-12px' }}
                     onMouseDown={handleTestDaysLeftResizeStart}
                     title="Resize"
                   />
