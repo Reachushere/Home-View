@@ -8293,7 +8293,7 @@ export default function Dashboard() {
               <div className="p-4">
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
-                <div className="space-y-4">
+                <div className="flex flex-col justify-between">
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Colour Settings</Label>
                   <p className="text-xs text-muted-foreground">
@@ -8505,7 +8505,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column */}
-                <div className="space-y-4">
+                <div className="flex flex-col justify-between">
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Blinking & Spacing</Label>
