@@ -10273,6 +10273,8 @@ export default function Dashboard() {
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
                   title="Resize"
                 />
+                {/* Fake task title */}
+                <span style={{ marginLeft: '4px', fontSize: '10px', color: 'white' }}>Online ASL Class</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
