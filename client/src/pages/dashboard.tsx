@@ -10368,7 +10368,7 @@ export default function Dashboard() {
               </div>
               {/* Group 2: Right handle + text with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '6px' }}>
-                <div className="flex items-center" style={{ marginBottom: '6px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
@@ -10383,7 +10383,7 @@ export default function Dashboard() {
               </div>
               {/* Group 3: Third handle + course code with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '6px' }}>
-                <div className="flex items-center" style={{ marginBottom: '6px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
@@ -10398,7 +10398,7 @@ export default function Dashboard() {
               </div>
               {/* Group 4: Fourth handle + course name with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '6px' }}>
-                <div className="flex items-center" style={{ marginBottom: '6px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
@@ -10413,7 +10413,7 @@ export default function Dashboard() {
               </div>
               {/* Group 5: Fifth handle + due date with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '6px' }}>
-                <div className="flex items-center" style={{ marginBottom: '6px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
@@ -10428,7 +10428,7 @@ export default function Dashboard() {
               </div>
               {/* Group 6: Sixth handle + days left with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px`, marginTop: '6px' }}>
-                <div className="flex items-center" style={{ marginBottom: '6px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
