@@ -6363,7 +6363,7 @@ export default function Dashboard() {
             className="relative"
             style={{ 
               marginTop: '4px',
-              zIndex: 50,
+              zIndex: 100,
               width: '44px',
               height: '44px',
               borderRadius: '50%',
