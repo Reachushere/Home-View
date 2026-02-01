@@ -10369,7 +10369,7 @@ export default function Dashboard() {
                 {isLoading ? (
                   <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
                 ) : dueTomorrowTasks.length === 0 ? (
-                  <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
+                  <div className="flex-1"></div>
                 ) : (
                   <div className="space-y-0.5">
                     {renderTaskColumnHeader()}
