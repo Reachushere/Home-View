@@ -8923,18 +8923,18 @@ export default function Dashboard() {
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '-10px', 
+              top: '-5px', 
               left: '-15px', 
               right: '-15px', 
-              bottom: '-20px', 
-              background: 'rgba(255, 255, 255, 0.25)',
+              bottom: '-25px', 
+              background: 'rgba(255, 255, 255, 0.3)',
               borderRadius: '31px',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)'
             }}
           />
           
-          <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px', marginTop: '5px' }}>
+          <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px', marginTop: '10px' }}>
             {/* Friday/Saturday divider line - dashed */}
             <div className="absolute top-0 bottom-0 w-[1.5px] z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundImage: 'repeating-linear-gradient(to bottom, black 0px, black 8px, transparent 8px, transparent 14px)' }} />
             
