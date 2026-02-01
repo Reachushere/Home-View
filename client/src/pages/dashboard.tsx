@@ -10337,7 +10337,7 @@ export default function Dashboard() {
             </div>
             <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {/* Task row with labels above */}
-              <div className="flex">
+              <div className="flex" style={{ position: 'relative' }}>
               {/* Blank checkbox */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '15px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -10426,10 +10426,10 @@ export default function Dashboard() {
                 {/* Due date */}
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
-              {/* Group 6: Sixth handle + days left with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: '13px', marginTop: '6px' }}>
+              {/* Group 6: Days left - absolutely positioned to stay fixed */}
+              <div className="flex flex-col" style={{ position: 'absolute', right: '0px', top: '6px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  {/* Resize handle on header line */}
+                  {/* Visual divider */}
                   <div 
                     style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
                   />
