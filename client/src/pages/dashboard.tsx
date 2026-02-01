@@ -10362,6 +10362,8 @@ export default function Dashboard() {
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
                   title="Resize"
                 />
+                {/* Course name */}
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '4px' }}>American Sign Language</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
