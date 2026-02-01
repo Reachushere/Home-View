@@ -8273,7 +8273,7 @@ export default function Dashboard() {
           
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent data-settings-dialog className="max-w-4xl max-h-[85vh] text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col">
+            <DialogContent data-settings-dialog className="max-w-4xl max-h-[92vh] text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col">
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
                 <div className="flex items-center gap-2">
@@ -8290,7 +8290,7 @@ export default function Dashboard() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="p-4 overflow-y-auto flex-1">
+              <div className="p-4 overflow-y-auto flex-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
                 <div className="space-y-4">
@@ -8403,11 +8403,17 @@ export default function Dashboard() {
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
                         <div className="relative">
                           <div 
-                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            className={`w-8 h-8 rounded border border-white/30 ${colorSettings.mainBackgroundOverlay ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
                             style={{ backgroundColor: colorSettings.mainBackground }}
-                            onClick={() => document.getElementById('color-main-background-input')?.click()}
+                            onClick={() => colorSettings.mainBackgroundOverlay && document.getElementById('color-main-background-input')?.click()}
                             data-testid="color-main-background"
                           />
+                          {/* Red X when disabled */}
+                          {!colorSettings.mainBackgroundOverlay && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                              <X className="w-6 h-6 text-red-500" strokeWidth={3} />
+                            </div>
+                          )}
                           <input
                             id="color-main-background-input"
                             type="color"
