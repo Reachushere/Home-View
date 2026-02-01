@@ -10266,6 +10266,7 @@ export default function Dashboard() {
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
                   style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
+                  onMouseDown={handleTestBarResizeStart}
                   title="Resize"
                 />
                 {/* Fake task title */}
