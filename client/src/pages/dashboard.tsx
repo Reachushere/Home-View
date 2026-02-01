@@ -6374,7 +6374,7 @@ export default function Dashboard() {
           {/* Undo Complete */}
           {completedTaskHistory.length > 0 ? (
             <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
-              {/* Bottom circle: 44px, solid #FF5C5C */}
+              {/* Bottom circle: 44px, solid #FF4545 */}
               <div style={{
                 position: 'absolute',
                 top: 0,
@@ -6382,7 +6382,7 @@ export default function Dashboard() {
                 width: '44px',
                 height: '44px',
                 borderRadius: '50%',
-                backgroundColor: '#FF5C5C'
+                backgroundColor: '#FF4545'
               }} />
               {/* Top circle: 38px, gradient #FF9494 bottom to #FF0000 top */}
               <div 
