@@ -10391,7 +10391,7 @@ export default function Dashboard() {
                     onMouseDown={handleTestCourseResizeStart}
                     title="Resize"
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Code</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '2px' }}>Code</span>
                 </div>
                 {/* Course number */}
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px' }}>CASL 101</span>
