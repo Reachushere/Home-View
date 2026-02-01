@@ -10461,7 +10461,7 @@ export default function Dashboard() {
               </div>
               {/* Group 6: Days left - absolutely positioned to stay fixed */}
               <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '0px', top: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px', marginLeft: '4px' }}>
                   {/* Visual divider */}
                   <div 
                     style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
@@ -10469,7 +10469,7 @@ export default function Dashboard() {
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
                 </div>
                 {/* Days left */}
-                <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '11px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
               {/* Second task row - only render after measurements are available */}
