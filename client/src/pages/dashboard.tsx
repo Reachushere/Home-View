@@ -10350,8 +10350,7 @@ export default function Dashboard() {
               marginLeft: boxOrder.indexOf('this-week') === 0 ? '0px' : '0px', 
               marginRight: boxOrder.indexOf('this-week') === 2 ? '0px' : '0px',
               paddingBottom: '5px',
-              height: thisWeekBoxHeight ? `${thisWeekBoxHeight}px` : '145px',
-              flex: 'none'
+              ...(thisWeekBoxHeight ? { height: `${thisWeekBoxHeight}px`, flex: 'none' } : {})
             }} 
             data-testid="section-due-this-week"
             onDragOver={(e) => handleBoxDragOver(e, 'this-week')}
