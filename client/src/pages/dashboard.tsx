@@ -10454,7 +10454,7 @@ export default function Dashboard() {
               <div className="flex-shrink-0 self-start" style={{ marginTop: '18px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
-              {/* Group 1: Left handle + progress bar - moves together with left handle drag */}
+              {/* Group 1: Left handle on header + progress bar on content line */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '6px', marginLeft: `${testProgressBarLeft}px` }}>
                 <div className="flex items-center" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
@@ -10465,7 +10465,7 @@ export default function Dashboard() {
                     title="Resize"
                   />
                 </div>
-                {/* Progress bar */}
+                {/* Progress bar - stays on content line */}
                 <div 
                   className="rounded-full"
                   style={{ 
@@ -10473,7 +10473,8 @@ export default function Dashboard() {
                     height: '3px', 
                     backgroundColor: '#22c55e',
                     opacity: 0.7,
-                    marginLeft: '7px'
+                    marginLeft: '7px',
+                    marginTop: '5px'
                   }}
                 />
               </div>
