@@ -6358,17 +6358,9 @@ export default function Dashboard() {
             </Button>
           </div>
 
-          {/* Undo Complete */}
-          <div 
-            style={{ 
-              position: 'relative',
-              marginTop: '4px',
-              zIndex: 100,
-              width: '44px',
-              height: '44px'
-            }}
-          >
-            {/* Bottom circle: 44px, solid #FFA365 - exact copy from Tomorrow box */}
+          {/* Undo Complete - exact copy from Tomorrow box */}
+          <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
+            {/* Bottom circle: 44px, solid #FFA365 */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -6378,25 +6370,19 @@ export default function Dashboard() {
               borderRadius: '50%',
               backgroundColor: '#FFA365'
             }} />
-            {/* Top circle: 38px, gradient #FFDD63 bottom to #FF6E3D top - exact copy from Tomorrow box */}
-            <div 
-              className={`cursor-pointer hover:opacity-80 transition-all duration-200 ${completedTaskHistory.length > 0 ? "" : "opacity-50 pointer-events-none"}`}
-              style={{
-                position: 'absolute',
-                top: '3px',
-                left: '3px',
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-              onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
-              data-testid="button-undo-complete"
-              title={completedTaskHistory.length > 0 ? `Undo last completion (${completedTaskHistory.length} available)` : "No task to undo"}
-            >
+            {/* Top circle: 38px, gradient #FFDD63 bottom to #FF6E3D top */}
+            <div style={{
+              position: 'absolute',
+              top: '3px',
+              left: '3px',
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
               <Undo2 className="h-[18px] w-[18px] text-white" />
             </div>
           </div>
