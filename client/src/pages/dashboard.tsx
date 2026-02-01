@@ -11107,28 +11107,28 @@ export default function Dashboard() {
               <div 
                 className="flex items-center justify-between px-6 py-3 bg-black/30 border-b border-white/20"
               >
+                <Button 
+                  variant="outline"
+                  className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
+                  style={{
+                    boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.boxShadow = '0 0 8px rgba(255,221,99,0.8), 0 0 16px rgba(255,163,101,0.6), 0 0 24px rgba(255,110,61,0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
+                  }}
+                  onClick={() => {
+                    setEditingProject(null);
+                    setProjectDialogOpen(true);
+                  }}
+                  data-testid="button-new-project-flyout"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  New Project
+                </Button>
                 <div className="flex items-center gap-3">
-                  <Button 
-                    variant="outline"
-                    className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
-                    style={{
-                      boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 8px rgba(255,221,99,0.8), 0 0 16px rgba(255,163,101,0.6), 0 0 24px rgba(255,110,61,0.5)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
-                    }}
-                    onClick={() => {
-                      setEditingProject(null);
-                      setProjectDialogOpen(true);
-                    }}
-                    data-testid="button-new-project-flyout"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    New Project
-                  </Button>
                   <div className="flex items-center gap-2">
                     <FolderOpen className="h-3 w-3 text-white" />
                     <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
@@ -11138,14 +11138,14 @@ export default function Dashboard() {
                       {allTasks.filter(t => t.projectId).length} tasks assigned
                     </span>
                   </div>
+                  <button 
+                    onClick={() => setIsProjectsFlyoutOpen(false)}
+                    className="text-white hover:text-white/80 transition-colors p-1"
+                    data-testid="button-close-projects-flyout"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-                <button 
-                  onClick={() => setIsProjectsFlyoutOpen(false)}
-                  className="text-white hover:text-white/80 transition-colors p-1"
-                  data-testid="button-close-projects-flyout"
-                >
-                  <X className="h-5 w-5" />
-                </button>
               </div>
               
               {/* Content */}
