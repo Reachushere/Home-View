@@ -6109,13 +6109,28 @@ export default function Dashboard() {
           </div>
 
           {/* Bell */}
-          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: isMuted ? 'transparent' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+          <div 
+            style={{ 
+              marginTop: '4px', 
+              width: '44px', 
+              height: '44px', 
+              borderRadius: '50%', 
+              background: isMuted ? '#FF4545' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', 
+              padding: '3px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
             <Button
               variant="ghost"
               size="icon"
               onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
-              className={`!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200 ${isMuted ? "!bg-red-500 hover:!bg-red-600" : ""}`}
-              style={isMuted ? {} : { background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              className="!h-[38px] !w-[38px] !min-h-[38px] !min-w-[38px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={isMuted 
+                ? { background: 'linear-gradient(0deg, #FF9494 0%, #FF0000 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.3)' }
+                : { background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }
+              }
               data-testid="button-mute-toggle"
               title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
             >
