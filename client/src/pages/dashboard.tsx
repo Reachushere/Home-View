@@ -10336,103 +10336,51 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '6px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-              {/* Task row with labels above */}
-              <div className="flex" style={{ position: 'relative' }}>
-              {/* Blank checkbox - hidden for class type tasks */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
-                <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+              {/* Header row with labels */}
+              <div className="flex" style={{ position: 'relative', marginBottom: '4px' }}>
+                {/* Checkbox placeholder */}
+                <div style={{ width: '18px', flexShrink: 0 }} />
+                {/* Progress bar placeholder */}
+                <div style={{ width: '44px', flexShrink: 0, marginLeft: `${testProgressBarLeft}px` }} />
+                {/* Task header */}
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testTextLeft}px` }}>Task</span>
+                {/* Code header */}
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseLeft}px` }}>Code</span>
+                {/* Course header */}
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testCourseNameLeft}px` }}>Course</span>
+                {/* Due header */}
+                <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: `${testDueDateLeft}px` }}>Due</span>
+                {/* Days header - absolutely positioned */}
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px' }}>Days</span>
               </div>
-              {/* Group 1: Left handle on header + progress bar on content line */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
-                <div className="flex items-center" style={{ marginBottom: '6px' }}>
-                  {/* Resize handle on header line */}
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', position: 'relative', top: '-14px' }}
-                    onMouseDown={handleTestBarResizeStart}
-                  />
-                </div>
-                {/* Progress bar - stays on content line */}
-                <div 
-                  className="rounded-full"
-                  style={{ 
-                    width: '44px', 
-                    height: '3px', 
-                    backgroundColor: '#22c55e',
-                    opacity: 0.7,
-                    marginLeft: '7px',
-                    marginTop: '3px'
-                  }}
-                />
-              </div>
-              {/* Group 2: Right handle + text with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  {/* Resize handle on header line */}
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestTextResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Task</span>
-                </div>
-                {/* Task title */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
-              </div>
-              {/* Group 3: Third handle + course code with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  {/* Resize handle on header line */}
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestCourseResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Code</span>
-                </div>
-                {/* Course number */}
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
-              </div>
-              {/* Group 4: Fourth handle + course name with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  {/* Resize handle on header line */}
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestCourseNameResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Course</span>
-                </div>
-                {/* Course name */}
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
-              </div>
-              {/* Group 5: Fifth handle + due date with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  {/* Resize handle on header line */}
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestDueDateResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Due</span>
-                </div>
-                {/* Due date */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
-              </div>
-              {/* Group 6: Days left - absolutely positioned to stay fixed */}
-              <div className="flex flex-col" style={{ position: 'absolute', right: '0px', top: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  {/* Visual divider */}
-                  <div 
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
-                </div>
-                {/* Days left */}
-                <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-              </div>
+              {/* Scrollable task list */}
+              <div className="flex-1 overflow-y-auto" style={{ maxHeight: '120px' }}>
+                {dueThisWeekTasks.length === 0 ? (
+                  <div className="text-white/60 text-xs">No tasks this week</div>
+                ) : (
+                  dueThisWeekTasks.map((task) => (
+                    <div key={task.id} className="flex items-center" style={{ position: 'relative', marginBottom: '2px' }}>
+                      {/* Checkbox - hidden for class type tasks */}
+                      <div style={{ width: '18px', flexShrink: 0, visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
+                        <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                      </div>
+                      {/* Progress bar */}
+                      <div style={{ marginLeft: `${testProgressBarLeft}px`, width: '44px', flexShrink: 0 }}>
+                        <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                      </div>
+                      {/* Task title */}
+                      <span style={{ fontSize: '10px', color: 'white', marginLeft: `${testTextLeft}px` }}>{task.title}</span>
+                      {/* Course code */}
+                      <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: `${testCourseLeft}px` }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                      {/* Course name */}
+                      <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: `${testCourseNameLeft}px` }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                      {/* Due date */}
+                      <span style={{ fontSize: '10px', color: 'white', marginLeft: `${testDueDateLeft}px` }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                      {/* Days left - absolutely positioned */}
+                      <span style={{ fontSize: '10px', color: '#4ade80', position: 'absolute', right: '0px' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                    </div>
+                  ))
+                )}
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
