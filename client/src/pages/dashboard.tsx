@@ -1666,11 +1666,33 @@ export default function Dashboard() {
   
   // OpenAI TTS for Fire tablets (no browser speechSynthesis)
   const openaiAudioRef = useRef<HTMLAudioElement | null>(null);
+  const openaiNextChunkRef = useRef<{ blob: Blob; index: number } | null>(null);
   const [isOpenAiTtsAvailable] = useState(() => !window.speechSynthesis);
   const [openaiVoice, setOpenaiVoice] = useState<"alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer">("nova");
   
+  // Pre-fetch the next chunk for seamless playback
+  const prefetchNextChunk = async (nextIndex: number, voice: typeof openaiVoice) => {
+    if (nextIndex >= ttsChunksRef.current.length) return;
+    const nextChunk = ttsChunksRef.current[nextIndex];
+    if (!nextChunk) return;
+    
+    try {
+      const response = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: nextChunk, voice }),
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        openaiNextChunkRef.current = { blob, index: nextIndex };
+      }
+    } catch (err) {
+      console.log('Prefetch failed, will fetch on demand');
+    }
+  };
+  
   // Play text using OpenAI TTS (for Fire tablets and other devices without browser TTS)
-  const playWithOpenAiTts = async (text: string, voice: typeof openaiVoice = openaiVoice) => {
+  const playWithOpenAiTts = async (text: string, voice: typeof openaiVoice = openaiVoice, chunkIndex?: number) => {
     try {
       // Stop any existing audio
       if (openaiAudioRef.current) {
@@ -1678,34 +1700,50 @@ export default function Dashboard() {
         openaiAudioRef.current = null;
       }
       
-      toast({ title: "Generating speech..." });
+      let audioBlob: Blob;
+      const currentIdx = chunkIndex ?? currentChunkIndexRef.current;
       
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, voice }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('TTS generation failed');
+      // Check if we have this chunk pre-fetched
+      if (openaiNextChunkRef.current && openaiNextChunkRef.current.index === currentIdx) {
+        audioBlob = openaiNextChunkRef.current.blob;
+        openaiNextChunkRef.current = null;
+      } else {
+        toast({ title: "Generating speech..." });
+        
+        const response = await fetch('/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, voice }),
+        });
+        
+        if (!response.ok) {
+          throw new Error('TTS generation failed');
+        }
+        
+        audioBlob = await response.blob();
       }
       
-      const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
       openaiAudioRef.current = audio;
       
+      // Start pre-fetching the next chunk immediately
+      if (currentIdx + 1 < ttsChunksRef.current.length) {
+        prefetchNextChunk(currentIdx + 1, voice);
+      }
+      
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
-        setIsPlaying(false);
         // Play next chunk if available
         if (shouldContinueRef.current && currentChunkIndexRef.current < ttsChunksRef.current.length - 1) {
           currentChunkIndexRef.current++;
           setCurrentChunkIndex(currentChunkIndexRef.current);
           const nextChunk = ttsChunksRef.current[currentChunkIndexRef.current];
           if (nextChunk) {
-            playWithOpenAiTts(nextChunk, voice);
+            playWithOpenAiTts(nextChunk, voice, currentChunkIndexRef.current);
           }
+        } else {
+          setIsPlaying(false);
         }
       };
       
@@ -2279,7 +2317,9 @@ export default function Dashboard() {
       cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
       // Clean up duplicate periods
       cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
-      const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
+      // Use larger chunks for OpenAI TTS (4000 chars) vs browser TTS (2000 chars)
+      const chunkSize = useBrowserTts ? 2000 : 4000;
+      const chunks = splitTextIntoChunks(cleanTextForTts, chunkSize);
       ttsChunksRef.current = chunks;
       setTtsChunks(chunks);
       setTotalChunks(chunks.length);
@@ -2394,7 +2434,9 @@ export default function Dashboard() {
         cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
         // Clean up duplicate periods
         cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
-        const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
+        // Use larger chunks for OpenAI TTS (4000 chars) vs browser TTS (2000 chars)
+        const chunkSize = useBrowserTts ? 2000 : 4000;
+        const chunks = splitTextIntoChunks(cleanTextForTts, chunkSize);
         
         ttsChunksRef.current = chunks;
         setTtsChunks(chunks);
