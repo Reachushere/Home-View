@@ -12782,7 +12782,8 @@ function ProfileForm({
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="Enter your first name"
-          className="!text-black text-[10px] h-8"
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
           data-testid="input-profile-firstname"
         />
       </div>
@@ -12793,7 +12794,8 @@ function ProfileForm({
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           placeholder="Enter your last name"
-          className="!text-black text-[10px] h-8"
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
           data-testid="input-profile-lastname"
         />
       </div>
@@ -12804,19 +12806,20 @@ function ProfileForm({
           type="date"
           value={birthdate}
           onChange={(e) => setBirthdate(e.target.value)}
-          className="!text-black text-[10px] h-8"
+          className="!text-black !text-[10px] h-8"
+          style={{ fontSize: '10px' }}
           data-testid="input-profile-birthdate"
         />
       </div>
       <div className="space-y-2">
         <Label htmlFor="timezone" className="text-[10px]">Home Time Zone</Label>
         <Select value={timezone} onValueChange={setTimezone}>
-          <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-8" style={{ color: 'black' }} data-testid="select-profile-timezone">
+          <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-profile-timezone">
             <SelectValue placeholder="Select time zone" />
           </SelectTrigger>
-          <SelectContent className="bg-white text-[10px]">
+          <SelectContent className="bg-white !text-[10px]">
             {timezones.map(tz => (
-              <SelectItem key={tz.value} value={tz.value} className="text-black text-[10px]">{tz.label}</SelectItem>
+              <SelectItem key={tz.value} value={tz.value} className="text-black !text-[10px]">{tz.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -12837,12 +12840,12 @@ function ProfileForm({
             <Label htmlFor="travelTimezone" className="text-[10px]">Travel Time Zone</Label>
             <p className="text-[9px] text-muted-foreground">Clock shows travel time. Tasks stay aligned with your home timezone.</p>
             <Select value={travelTimezone || timezone} onValueChange={setTravelTimezone}>
-              <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-8" style={{ color: 'black' }} data-testid="select-travel-timezone">
+              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-travel-timezone">
                 <SelectValue placeholder="Select travel time zone" />
               </SelectTrigger>
-              <SelectContent className="bg-white text-[10px]">
+              <SelectContent className="bg-white !text-[10px]">
                 {timezones.map(tz => (
-                  <SelectItem key={tz.value} value={tz.value} className="text-black text-[10px]">{tz.label}</SelectItem>
+                  <SelectItem key={tz.value} value={tz.value} className="text-black !text-[10px]">{tz.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -12908,12 +12911,12 @@ function SchoolForm({
           <div className="space-y-1">
             <Label htmlFor="numberOfWeeks" className="text-[10px]">Number of School Weeks</Label>
             <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
-              <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-8" style={{ color: 'black' }} data-testid="select-number-of-weeks">
+              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-number-of-weeks">
                 <SelectValue placeholder="Select weeks" />
               </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black text-[10px]">
+              <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
                 {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                  <SelectItem key={w} value={String(w)} className="!text-black text-[10px]">{w} weeks</SelectItem>
+                  <SelectItem key={w} value={String(w)} className="!text-black !text-[10px]">{w} weeks</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -12925,19 +12928,20 @@ function SchoolForm({
               type="date"
               value={week1StartDate}
               onChange={(e) => setWeek1StartDate(e.target.value)}
-              className="!text-black text-[10px] h-8"
+              className="!text-black !text-[10px] h-8"
+              style={{ fontSize: '10px' }}
               data-testid="input-week1-start-date"
             />
           </div>
           <div className="space-y-1">
             <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
             <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
-              <SelectTrigger className="!text-black [&_*]:!text-black bg-white text-[10px] h-8" style={{ color: 'black' }} data-testid="select-first-day-of-week">
+              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
                 <SelectValue placeholder="Select day" />
               </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black text-[10px]">
+              <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
                 {daysOfWeek.map(day => (
-                  <SelectItem key={day.value} value={day.value} className="!text-black text-[10px]">{day.label}</SelectItem>
+                  <SelectItem key={day.value} value={day.value} className="!text-black !text-[10px]">{day.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -13044,7 +13048,8 @@ function SchoolForm({
                       course3ProfessorEmail: semesterSettings.course3ProfessorEmail
                     }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
                   }}
-                  className="h-7 text-[10px] !text-black"
+                  className="h-7 !text-[10px] !text-black"
+                  style={{ fontSize: '10px' }}
                   data-testid="input-course1-email-edit"
                 />
               </div>
@@ -13062,7 +13067,8 @@ function SchoolForm({
                       course3ProfessorEmail: semesterSettings.course3ProfessorEmail
                     }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
                   }}
-                  className="h-7 text-[10px] !text-black"
+                  className="h-7 !text-[10px] !text-black"
+                  style={{ fontSize: '10px' }}
                   data-testid="input-course2-email-edit"
                 />
               </div>
@@ -13080,7 +13086,8 @@ function SchoolForm({
                       course3ProfessorEmail: email || null
                     }).then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
                   }}
-                  className="h-7 text-[10px] !text-black"
+                  className="h-7 !text-[10px] !text-black"
+                  style={{ fontSize: '10px' }}
                   data-testid="input-course3-email-edit"
                 />
               </div>
