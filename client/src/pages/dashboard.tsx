@@ -6361,9 +6361,9 @@ export default function Dashboard() {
           {/* Undo Complete */}
           <div 
             style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}
-            className={completedTaskHistory.length > 0 ? "" : "opacity-50 pointer-events-none"}
+            className={completedTaskHistory.length > 0 ? "" : "pointer-events-none"}
           >
-            {/* Bottom circle: 44px, solid #FFA365 */}
+            {/* Bottom circle: 44px - orange when active, grey when disabled */}
             <div style={{
               position: 'absolute',
               top: 0,
@@ -6371,9 +6371,9 @@ export default function Dashboard() {
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              backgroundColor: '#FFA365'
+              backgroundColor: completedTaskHistory.length > 0 ? '#FFA365' : '#6b6b6b'
             }} />
-            {/* Top circle: 38px, gradient #FFDD63 bottom to #FF6E3D top */}
+            {/* Top circle: 38px - gradient when active, grey gradient when disabled */}
             <div 
               style={{
                 position: 'absolute',
@@ -6382,13 +6382,15 @@ export default function Dashboard() {
                 width: '38px',
                 height: '38px',
                 borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                background: completedTaskHistory.length > 0 
+                  ? 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)' 
+                  : 'linear-gradient(0deg, #4a4a4a 0%, #3a3a3a 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer'
+                cursor: completedTaskHistory.length > 0 ? 'pointer' : 'default'
               }}
-              className="hover:opacity-80 transition-all duration-200"
+              className={completedTaskHistory.length > 0 ? "hover:opacity-80 transition-all duration-200" : "transition-all duration-200"}
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
               data-testid="button-undo-complete"
               title={completedTaskHistory.length > 0 ? `Undo last completion (${completedTaskHistory.length} available)` : "No task to undo"}
