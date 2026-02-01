@@ -8927,7 +8927,7 @@ export default function Dashboard() {
               left: '-15px', 
               right: '-15px', 
               bottom: '-25px', 
-              background: 'rgba(255, 255, 255, 0.28)',
+              background: 'rgba(255, 255, 255, 0.22)',
               borderRadius: '31px',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)'
