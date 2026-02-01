@@ -9656,18 +9656,34 @@ export default function Dashboard() {
               data-testid="weeks-flyout-resize-handle"
             />
             <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 flex flex-col text-white relative rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)]">
-              {/* Header with arrows and date */}
-              <div className="flex items-center justify-between px-2 bg-black/30 relative z-10" style={{ height: '41px' }}>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="h-7 px-2 text-xs text-white/80 hover:bg-white/20 rounded-md gap-1"
-                  onClick={() => setIsUploadDialogOpen(true)}
-                  data-testid="button-flyout-upload"
-                >
-                  <Upload className="h-3.5 w-3.5" />
-                  Upload
-                </Button>
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline"
+                    className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
+                    style={{
+                      boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 8px rgba(255,221,99,0.8), 0 0 16px rgba(255,163,101,0.6), 0 0 24px rgba(255,110,61,0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
+                    }}
+                    onClick={() => setIsUploadDialogOpen(true)}
+                    data-testid="button-upload-file"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Folder className="h-3 w-3 text-white" />
+                    <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                      FILES ({allFiles.length})
+                    </h2>
+                  </div>
+                </div>
                 <div className="flex items-center gap-1">
                   <Button 
                     variant="ghost" 
@@ -9692,32 +9708,14 @@ export default function Dashboard() {
                   >
                     <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
                   </Button>
+                  <button 
+                    onClick={() => setIsWeeksFlyoutOpen(false)}
+                    className="text-white hover:text-white/80 transition-colors p-1 ml-2"
+                    data-testid="button-close-weeks-flyout"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
                 </div>
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  onClick={() => setIsWeeksFlyoutOpen(false)}
-                  className="h-5 w-5 text-white/70 hover:text-white hover:bg-white/20"
-                  data-testid="button-close-weeks-flyout"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-              
-              {/* All Files Header with Upload Button */}
-              <div className="flex items-center gap-1.5 pl-2 pr-2 py-1 bg-black/30 border-b border-white/20">
-                <Folder className="h-3 w-3 text-blue-400 fill-blue-300" />
-                <span className="text-sm font-medium">All Files</span>
-                <Button
-                  size="sm"
-                  className="ml-auto h-7 px-3 text-[11px] font-medium bg-transparent hover:bg-[#5979CC]/10 text-white border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 rounded-md transition-all duration-200"
-                  style={{ marginTop: '-3px' }}
-                  onClick={() => setIsUploadDialogOpen(true)}
-                  data-testid="button-upload-file"
-                >
-                  <Upload className="h-3.5 w-3.5 mr-1.5 text-white" />
-                  Upload
-                </Button>
               </div>
               
               {/* Week Folders */}
