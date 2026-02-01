@@ -9856,7 +9856,7 @@ export default function Dashboard() {
           
           // Render column header with resize handles
           const renderTaskColumnHeader = () => (
-            <div style={{ display: 'grid', gridTemplateColumns: `16px 5px 1px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `16px 44px 1px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
               <div /> {/* Checkbox spacer */}
               <div /> {/* Progress bar spacer */}
               <div 
@@ -9930,7 +9930,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px 1px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 44px 1px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
