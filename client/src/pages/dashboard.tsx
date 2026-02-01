@@ -10565,6 +10565,36 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
+              {/* Fifth task row - fake task for layout testing */}
+              {row1Positions.due > 0 && (
+              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
+                {/* Checkbox - position 0 */}
+                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: 'visible' }}>
+                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                </div>
+                {/* Task name */}
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>Fake Task 5</span>
+                {/* Course code */}
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#22c55e' }}>TEST</span>
+                {/* Course name */}
+                <span style={{ 
+                  position: 'absolute', 
+                  left: `${row1Positions.course + 7}px`, 
+                  top: '1px', 
+                  fontSize: '10px', 
+                  color: 'white',
+                  maxWidth: `${row1Positions.due - row1Positions.course - 10}px`,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  display: 'inline-block'
+                }}>Test Course</span>
+                {/* Due date */}
+                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>Mon 2/10</span>
+                {/* Days left */}
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>9d</span>
+              </div>
+              )}
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
                   <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
