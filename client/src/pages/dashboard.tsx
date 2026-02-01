@@ -13139,8 +13139,8 @@ function CoursesForm({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <p className="text-xs text-muted-foreground">
+    <form onSubmit={handleSubmit} className="space-y-3 text-[10px]">
+      <p className="text-[9px] text-muted-foreground">
         Enter your course names, professor names, and select a color for each. Colors will be used throughout the app for tasks associated with each course.
       </p>
       
@@ -13152,21 +13152,23 @@ function CoursesForm({
               type="color"
               value={course.color}
               onChange={(e) => updateCourse(index, 'color', e.target.value)}
-              className="w-6 h-6 rounded cursor-pointer border-0 p-0"
+              className="w-5 h-5 rounded cursor-pointer border-0 p-0"
               data-testid={`input-course-color-${index}`}
             />
             <Input
               value={course.name}
               onChange={(e) => updateCourse(index, 'name', e.target.value)}
               placeholder={`Course name (e.g., MATH101 - Calculus)`}
-              className="w-64 text-xs h-8 !text-black"
+              className="w-64 !text-[10px] h-8 !text-black"
+              style={{ fontSize: '10px' }}
               data-testid={`input-course-name-${index}`}
             />
             <Input
               value={course.professor}
               onChange={(e) => updateCourse(index, 'professor', e.target.value)}
               placeholder={`Professor`}
-              className="flex-1 text-xs h-8 !text-black"
+              className="flex-1 !text-[10px] h-8 !text-black"
+              style={{ fontSize: '10px' }}
               data-testid={`input-course-professor-${index}`}
             />
           </div>
