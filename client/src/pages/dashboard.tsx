@@ -10431,10 +10431,7 @@ export default function Dashboard() {
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
-                    className="cursor-col-resize hover:bg-white/50"
                     style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestDaysLeftResizeStart}
-                    title="Resize"
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
                 </div>
