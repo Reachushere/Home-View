@@ -10499,8 +10499,8 @@ export default function Dashboard() {
                 }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days left - absolutely positioned at right (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', right: '7px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                {/* Days left - fixed position at right to match row 1 */}
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               <div className="flex-1 flex flex-col">
