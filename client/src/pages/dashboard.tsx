@@ -10475,7 +10475,7 @@ export default function Dashboard() {
                 />
               </div>
               {/* Group 2: Right handle + text with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '6px' }}>
                 <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Task</span>
                 <div className="flex items-center">
                   {/* Right resize handle */}
@@ -10490,7 +10490,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* Group 3: Third handle + course code with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '6px' }}>
                 <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Code</span>
                 <div className="flex items-center">
                   {/* Third resize handle */}
@@ -10505,7 +10505,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* Group 4: Fourth handle + course name with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '6px' }}>
                 <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Course</span>
                 <div className="flex items-center">
                   {/* Fourth resize handle */}
@@ -10520,7 +10520,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* Group 5: Fifth handle + due date with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '6px' }}>
                 <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Due</span>
                 <div className="flex items-center">
                   {/* Fifth resize handle */}
@@ -10535,7 +10535,7 @@ export default function Dashboard() {
                 </div>
               </div>
               {/* Group 6: Sixth handle + days left with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px`, marginTop: '6px' }}>
                 <span className="text-[8px] text-white/50 font-normal" style={{ marginLeft: '7px', marginBottom: '6px' }}>Days</span>
                 <div className="flex items-center">
                   {/* Sixth resize handle */}
