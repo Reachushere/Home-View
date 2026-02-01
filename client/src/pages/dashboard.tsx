@@ -10237,11 +10237,10 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 p-3 pb-5 flex" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-              {/* Left resize handle */}
+              {/* Left resize handle - currently does nothing, isolated */}
               <div 
                 className="cursor-col-resize hover:bg-white/50 flex-shrink-0 self-start"
                 style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '16px' }}
-                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
                 title="Resize"
               />
               {/* Blank checkbox */}
