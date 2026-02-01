@@ -9839,18 +9839,6 @@ export default function Dashboard() {
                   ) : (
                     <div className="h-3.5 w-3.5" />
                   )}
-                  {/* Urgency dot column - small circle */}
-                  <div 
-                    className="rounded-full flex-shrink-0"
-                    style={{ 
-                      width: '5px', 
-                      height: '5px', 
-                      backgroundColor: progressColor,
-                      boxShadow: `0 0 4px ${progressColor}`,
-                      marginLeft: '-2px'
-                    }}
-                    title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
-                  />
                   {/* Progress oval column - thinner bar */}
                   <div 
                     className="rounded-full transition-all duration-300 flex-shrink-0"
@@ -9859,7 +9847,7 @@ export default function Dashboard() {
                       height: '3px', 
                       backgroundColor: progressColor,
                       opacity: 0.7,
-                      marginLeft: '2px',
+                      marginLeft: '-2px',
                       marginRight: '2px'
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
