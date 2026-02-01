@@ -9964,7 +9964,7 @@ export default function Dashboard() {
                     <div className="w-3" />
                   )}
                   {/* Due date column */}
-                  <span className="text-[10px] text-white whitespace-nowrap">
+                  <span className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-2px' }}>
                     {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                   </span>
                   {/* Resize handle - due date */}
@@ -9977,7 +9977,7 @@ export default function Dashboard() {
                   {/* Days column */}
                   <span 
                     className="text-[10px] font-medium whitespace-nowrap"
-                    style={{ color: progressColor }}
+                    style={{ color: progressColor, marginLeft: '2px' }}
                   >
                     {daysUntil}d
                   </span>
