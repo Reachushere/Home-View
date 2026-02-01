@@ -564,18 +564,18 @@ export default function Dashboard() {
     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
   }, [blinkSettings]);
   
-  // TEST: Isolated progress bar width (completely separate from task columns)
-  const [testProgressBarWidth, setTestProgressBarWidth] = useState(44);
+  // TEST: Isolated progress bar position (completely separate from task columns)
+  const [testProgressBarLeft, setTestProgressBarLeft] = useState(0);
   const [resizingTestBar, setResizingTestBar] = useState(false);
   const testBarStartX = useRef(0);
-  const testBarStartWidth = useRef(0);
+  const testBarStartLeft = useRef(0);
   
   const handleTestBarResizeStart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setResizingTestBar(true);
     testBarStartX.current = e.clientX;
-    testBarStartWidth.current = testProgressBarWidth;
+    testBarStartLeft.current = testProgressBarLeft;
   };
   
   useEffect(() => {
@@ -583,8 +583,8 @@ export default function Dashboard() {
     
     const handleMouseMove = (e: MouseEvent) => {
       const diff = e.clientX - testBarStartX.current;
-      const newWidth = Math.max(20, Math.min(200, testBarStartWidth.current + diff));
-      setTestProgressBarWidth(newWidth);
+      const newLeft = Math.max(0, Math.min(200, testBarStartLeft.current + diff));
+      setTestProgressBarLeft(newLeft);
     };
     
     const handleMouseUp = () => {
@@ -10254,12 +10254,12 @@ export default function Dashboard() {
                 onMouseDown={handleTestBarResizeStart}
                 title="Resize"
               />
-              {/* Test progress bar - width controlled by testProgressBarWidth ONLY */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '20px', marginRight: '4px' }}>
+              {/* Test progress bar - position controlled by testProgressBarLeft ONLY */}
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '20px', marginRight: '4px', marginLeft: `${testProgressBarLeft}px` }}>
                 <div 
                   className="rounded-full"
                   style={{ 
-                    width: `${testProgressBarWidth}px`, 
+                    width: '44px', 
                     height: '3px', 
                     backgroundColor: '#22c55e',
                     opacity: 0.7
