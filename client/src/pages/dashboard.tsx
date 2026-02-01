@@ -9720,40 +9720,42 @@ export default function Dashboard() {
                     <Upload className="h-4 w-4 mr-2" />
                     Upload
                   </Button>
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7 hover:bg-white/20 rounded-md" 
+                      onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
+                      data-testid="button-weeks-flyout-prev-week"
+                    >
+                      <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+                    </Button>
+                    <div className="flex items-center gap-0.5 bg-white/10 rounded-md px-1.5 py-0.5 backdrop-blur-sm whitespace-nowrap">
+                      <span className="text-[10px] font-medium text-white">{format(weekStartDate, "MMMM d")}</span>
+                      <span className="text-[10px] text-white/50">—</span>
+                      <span className="text-[10px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7 hover:bg-white/20 rounded-md" 
+                      onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
+                      data-testid="button-weeks-flyout-next-week"
+                    >
+                      <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <Folder className="h-3 w-3 text-white" />
                     <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
                       FILES ({allFiles.length})
                     </h2>
                   </div>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-7 w-7 hover:bg-white/20 rounded-md" 
-                    onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
-                    data-testid="button-weeks-flyout-prev-week"
-                  >
-                    <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-                  </Button>
-                  <div className="flex items-center gap-0.5 bg-white/10 rounded-md px-1.5 py-0.5 backdrop-blur-sm whitespace-nowrap">
-                    <span className="text-[10px] font-medium text-white">{format(weekStartDate, "MMMM d")}</span>
-                    <span className="text-[10px] text-white/50">—</span>
-                    <span className="text-[10px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-7 w-7 hover:bg-white/20 rounded-md" 
-                    onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
-                    data-testid="button-weeks-flyout-next-week"
-                  >
-                    <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-                  </Button>
                   <button 
                     onClick={() => setIsWeeksFlyoutOpen(false)}
-                    className="text-white hover:text-white/80 transition-colors p-1 ml-2"
+                    className="text-white hover:text-white/80 transition-colors p-1"
                     data-testid="button-close-weeks-flyout"
                   >
                     <X className="h-5 w-5" />
