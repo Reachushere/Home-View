@@ -1827,6 +1827,197 @@ export async function registerRoutes(
   });
 
   // ============================================
+  // VOICE COMMAND ROUTES (Home Assistant / Alexa integration)
+  // ============================================
+
+  // POST /api/voice/add-task - Add a task via voice command
+  // Accepts natural language like "Read chapter 5 for CPPA122 due Friday"
+  app.post("/api/voice/add-task", async (req, res) => {
+    try {
+      const { text, course, due, type, week } = req.body;
+      
+      if (!text || typeof text !== "string") {
+        return res.status(400).json({ success: false, message: "Task description is required" });
+      }
+      
+      // Parse due date from natural language
+      let dueDate = new Date();
+      dueDate.setHours(23, 59, 0, 0); // Default to end of day
+      
+      const dueLower = (due || "").toLowerCase().trim();
+      const today = new Date();
+      
+      if (dueLower === "today") {
+        dueDate = new Date(today);
+        dueDate.setHours(23, 59, 0, 0);
+      } else if (dueLower === "tomorrow") {
+        dueDate = new Date(today);
+        dueDate.setDate(dueDate.getDate() + 1);
+        dueDate.setHours(23, 59, 0, 0);
+      } else if (dueLower.startsWith("next ")) {
+        const dayName = dueLower.replace("next ", "");
+        const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+        const targetDay = days.indexOf(dayName);
+        if (targetDay >= 0) {
+          dueDate = new Date(today);
+          const currentDay = dueDate.getDay();
+          let daysToAdd = targetDay - currentDay;
+          if (daysToAdd <= 0) daysToAdd += 7;
+          daysToAdd += 7; // "next" means the following week
+          dueDate.setDate(dueDate.getDate() + daysToAdd);
+          dueDate.setHours(23, 59, 0, 0);
+        }
+      } else if (["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"].includes(dueLower)) {
+        const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+        const targetDay = days.indexOf(dueLower);
+        dueDate = new Date(today);
+        const currentDay = dueDate.getDay();
+        let daysToAdd = targetDay - currentDay;
+        if (daysToAdd <= 0) daysToAdd += 7;
+        dueDate.setDate(dueDate.getDate() + daysToAdd);
+        dueDate.setHours(23, 59, 0, 0);
+      } else if (dueLower.includes("in ") && dueLower.includes(" day")) {
+        const match = dueLower.match(/in (\d+) day/);
+        if (match) {
+          dueDate = new Date(today);
+          dueDate.setDate(dueDate.getDate() + parseInt(match[1]));
+          dueDate.setHours(23, 59, 0, 0);
+        }
+      } else if (due) {
+        // Try to parse as a date string
+        const parsed = new Date(due);
+        if (!isNaN(parsed.getTime())) {
+          dueDate = parsed;
+          dueDate.setHours(23, 59, 0, 0);
+        }
+      }
+      
+      // Match course code
+      let courseName = "";
+      const courseUpper = (course || "").toUpperCase().trim();
+      const courses = ["CPPA122", "CFNF400", "CASL101"];
+      
+      // Check for exact match or partial match
+      for (const c of courses) {
+        if (courseUpper === c || courseUpper.includes(c) || c.includes(courseUpper)) {
+          courseName = c;
+          break;
+        }
+      }
+      
+      // Also check in the text itself for course codes
+      if (!courseName) {
+        const textUpper = text.toUpperCase();
+        for (const c of courses) {
+          if (textUpper.includes(c)) {
+            courseName = c;
+            break;
+          }
+        }
+      }
+      
+      // Determine task type
+      let taskType = type || "other";
+      const textLower = text.toLowerCase();
+      if (textLower.includes("read") || textLower.includes("chapter")) taskType = "reading";
+      else if (textLower.includes("module")) taskType = "module";
+      else if (textLower.includes("essay") || textLower.includes("paper") || textLower.includes("write")) taskType = "essay";
+      else if (textLower.includes("quiz")) taskType = "quiz";
+      else if (textLower.includes("exam") || textLower.includes("test")) taskType = "exam";
+      else if (textLower.includes("discuss")) taskType = "discussion";
+      else if (textLower.includes("project")) taskType = "project";
+      
+      // Get current week number
+      const activeSemester = await storage.getActiveSemesterSettings();
+      const semesterStart = activeSemester?.semesterStartDate 
+        ? new Date(activeSemester.semesterStartDate) 
+        : undefined;
+      const weekNumber = week || getWeekNumber(dueDate, semesterStart);
+      
+      // Create the task
+      const task = await storage.createTask({
+        title: text,
+        description: "",
+        weekNumber,
+        type: taskType as any,
+        dueDate,
+        isCompleted: false,
+        courseName: courseName || undefined,
+        repeatType: "none",
+      });
+      
+      // Auto-sync to Google Calendar
+      try {
+        const event = await createCalendarEvent({
+          id: task.id,
+          title: task.title,
+          description: task.description,
+          dueDate: task.dueDate,
+          courseName: task.courseName,
+        });
+        await storage.updateTask(task.id, {
+          calendarEventId: event.id,
+          calendarProvider: "google",
+        });
+      } catch (calErr) {
+        console.error("Calendar sync failed:", calErr);
+      }
+      
+      // Prepare response message
+      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const dueDateStr = `${dayNames[dueDate.getDay()]}, ${dueDate.toLocaleDateString()}`;
+      const courseStr = courseName ? ` for ${courseName}` : "";
+      
+      res.json({
+        success: true,
+        message: `Task added${courseStr}: "${text}" due ${dueDateStr}`,
+        task: {
+          id: task.id,
+          title: task.title,
+          dueDate: task.dueDate,
+          courseName: task.courseName,
+          type: task.type,
+          weekNumber: task.weekNumber,
+        },
+      });
+      
+    } catch (err) {
+      console.error("Voice add-task error:", err);
+      res.status(500).json({ success: false, message: "Failed to add task" });
+    }
+  });
+
+  // GET /api/voice/tasks-today - Get tasks due today (for voice query)
+  app.get("/api/voice/tasks-today", async (_req, res) => {
+    try {
+      const tasks = await storage.getTasks();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      
+      const todayTasks = tasks.filter(t => {
+        const due = new Date(t.dueDate);
+        return due >= today && due < tomorrow && !t.isCompleted;
+      });
+      
+      if (todayTasks.length === 0) {
+        return res.json({ success: true, message: "You have no tasks due today.", tasks: [] });
+      }
+      
+      const taskList = todayTasks.map(t => t.title).join(", ");
+      res.json({
+        success: true,
+        message: `You have ${todayTasks.length} task${todayTasks.length > 1 ? 's' : ''} due today: ${taskList}`,
+        tasks: todayTasks,
+      });
+    } catch (err) {
+      console.error("Voice tasks-today error:", err);
+      res.status(500).json({ success: false, message: "Failed to get tasks" });
+    }
+  });
+
+  // ============================================
   // TEXT-TO-SPEECH ROUTES (OpenAI TTS for Fire tablets)
   // ============================================
 
