@@ -567,12 +567,16 @@ export default function Dashboard() {
   // TEST: Isolated progress bar position (completely separate from task columns)
   const [testProgressBarLeft, setTestProgressBarLeft] = useState(0);
   const [testTextLeft, setTestTextLeft] = useState(0); // Separate state for text position
+  const [testCourseLeft, setTestCourseLeft] = useState(0); // Separate state for course position
   const [resizingTestBar, setResizingTestBar] = useState(false);
   const [resizingTestText, setResizingTestText] = useState(false); // Separate state for text resizing
+  const [resizingTestCourse, setResizingTestCourse] = useState(false); // Separate state for course resizing
   const testBarStartX = useRef(0);
   const testBarStartLeft = useRef(0);
   const testTextStartX = useRef(0);
   const testTextStartLeft = useRef(0);
+  const testCourseStartX = useRef(0);
+  const testCourseStartLeft = useRef(0);
   
   // Left handle: moves progress bar group
   const handleTestBarResizeStart = (e: React.MouseEvent) => {
@@ -590,6 +594,15 @@ export default function Dashboard() {
     setResizingTestText(true);
     testTextStartX.current = e.clientX;
     testTextStartLeft.current = testTextLeft;
+  };
+  
+  // Third handle: moves course only
+  const handleTestCourseResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingTestCourse(true);
+    testCourseStartX.current = e.clientX;
+    testCourseStartLeft.current = testCourseLeft;
   };
   
   useEffect(() => {
@@ -635,6 +648,28 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [resizingTestText]);
+  
+  useEffect(() => {
+    if (!resizingTestCourse) return;
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      const diff = e.clientX - testCourseStartX.current;
+      const newLeft = Math.max(0, Math.min(200, testCourseStartLeft.current + diff));
+      console.log('Third handle - course newLeft:', newLeft);
+      setTestCourseLeft(newLeft);
+    };
+    
+    const handleMouseUp = () => {
+      setResizingTestCourse(false);
+    };
+    
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizingTestCourse]);
 
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
@@ -10309,14 +10344,18 @@ export default function Dashboard() {
                 />
                 {/* Task title */}
                 <span style={{ fontSize: '10px', color: 'white' }}>Online ASL Class</span>
-                {/* End resize handle */}
+              </div>
+              {/* Group 3: Third handle + course - moves together with third handle drag */}
+              <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testCourseLeft}px` }}>
+                {/* Third resize handle */}
                 <div 
                   className="cursor-col-resize hover:bg-white/50"
-                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginLeft: '4px' }}
+                  style={{ width: '3px', height: '14px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                  onMouseDown={handleTestCourseResizeStart}
                   title="Resize"
                 />
                 {/* Course number */}
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '4px' }}>CASL 101</span>
+                <span style={{ fontSize: '10px', color: 'white' }}>CASL 101</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
