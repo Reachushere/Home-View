@@ -310,6 +310,19 @@ export default function Dashboard() {
   const [isResizingWeeksFlyout, setIsResizingWeeksFlyout] = useState(false);
   const [isTodoFlyoutOpen, setIsTodoFlyoutOpen] = useState(false);
   const [isProjectsFlyoutOpen, setIsProjectsFlyoutOpen] = useState(false);
+  const [flyoutZOrder, setFlyoutZOrder] = useState<string[]>(['files', 'projects', 'todo', 'addTask']);
+  
+  const bringFlyoutToFront = (flyoutId: string) => {
+    setFlyoutZOrder(prev => {
+      const filtered = prev.filter(id => id !== flyoutId);
+      return [...filtered, flyoutId];
+    });
+  };
+  
+  const getFlyoutZIndex = (flyoutId: string) => {
+    const index = flyoutZOrder.indexOf(flyoutId);
+    return 200 + (index >= 0 ? index : 0);
+  };
   const [projectStatusFilter, setProjectStatusFilter] = useState<string>("all");
   const [expandedProjects, setExpandedProjects] = useState<Set<number>>(new Set());
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
@@ -6429,13 +6442,13 @@ export default function Dashboard() {
             className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} 
             style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-5px', marginTop: '4px', zIndex: 10, position: 'relative' }} 
             data-testid="button-projects"
-            onClick={() => setIsProjectsFlyoutOpen(true)}
+            onClick={() => { bringFlyoutToFront('projects'); setIsProjectsFlyoutOpen(true); }}
           >
             + Projects
           </Button>
 
           {/* Quick Add Button */}
-          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-14px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); setIsAddDialogOpen(true); }}>+ Add Task</Button>
+          <Button variant="ghost" size="sm" className={`!h-[40px] !min-h-[40px] px-[16px] hover:opacity-80 text-white text-[12px] border-0 font-medium rounded-full !bg-transparent transition-all duration-200`} style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", backgroundImage: `url(${taskButtonBg})`, backgroundSize: 'cover', backgroundPosition: 'center', marginLeft: '-14px', marginTop: '4px', zIndex: 10, position: 'relative' }} data-testid="button-add-task" onClick={() => { triggerButtonGlow('addtask'); setNewTaskType("other"); bringFlyoutToFront('addTask'); setIsAddDialogOpen(true); }}>+ Add Task</Button>
 
                     </div>
         </div>
@@ -7840,7 +7853,7 @@ export default function Dashboard() {
           variant="ghost"
           className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
           style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-          onClick={() => setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen)}
+          onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
         >
           <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         </Button>
@@ -7925,7 +7938,7 @@ export default function Dashboard() {
           variant="ghost"
           className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
           style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-          onClick={() => setIsTodoFlyoutOpen(!isTodoFlyoutOpen)}
+          onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
         >
           <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         </Button>
@@ -8020,7 +8033,8 @@ export default function Dashboard() {
           }}>
             <DialogContent 
               className="flex flex-col p-0 overflow-hidden bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white data-[state=open]:animate-dialog-burst-from-top data-[state=closed]:animate-dialog-burst-to-top [&>button]:hidden"
-              style={{ width: '900px', maxWidth: '95vw', height: '85vh' }}
+              style={{ width: '900px', maxWidth: '95vw', height: '85vh', zIndex: getFlyoutZIndex('addTask') }}
+              onClick={() => bringFlyoutToFront('addTask')}
             >
               {/* Header bar matching other flyouts */}
               <div className="flex items-center justify-between px-4 py-2 bg-black/30 border-b border-white/20">
@@ -9291,6 +9305,7 @@ export default function Dashboard() {
                             setNewTaskType("other");
                             setInitialStartTime(`${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
                             setInitialEndTime(`${(hour + 1).toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
+                            bringFlyoutToFront('addTask');
                             setIsAddDialogOpen(true);
                           }}
                         >
@@ -9669,7 +9684,11 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
-          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-400 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{ width: '900px', height: '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'calc(50vw + 450px) 50%', transitionDuration: '400ms' }}>
+          <div 
+            className={`fixed ${isResizingWeeksFlyout ? '' : 'transition-all duration-400 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} 
+            style={{ width: '900px', height: '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'calc(50vw + 450px) 50%', transitionDuration: '400ms', zIndex: getFlyoutZIndex('files') }}
+            onClick={() => bringFlyoutToFront('files')}
+          >
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -11063,7 +11082,7 @@ export default function Dashboard() {
 
         {/* To Do Bottom Flyout - Burst from bottom */}
         <div 
-          className={`fixed z-[200] transition-all ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          className={`fixed transition-all ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
             width: '900px', 
             height: '85vh',
@@ -11071,8 +11090,10 @@ export default function Dashboard() {
             left: '50%',
             transform: isTodoFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
             transformOrigin: '50% calc(50vh + 42.5vh)',
-            transitionDuration: '400ms'
+            transitionDuration: '400ms',
+            zIndex: getFlyoutZIndex('todo')
           }}
+          onClick={() => bringFlyoutToFront('todo')}
         >
           {/* Flyout content */}
           <section 
@@ -11184,7 +11205,7 @@ export default function Dashboard() {
 
         {/* Projects Flyout - Burst from Left */}
         <div 
-          className={`fixed z-[200] transition-all ease-out ${isProjectsFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          className={`fixed transition-all ease-out ${isProjectsFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
             width: '900px', 
             height: '85vh',
@@ -11192,8 +11213,10 @@ export default function Dashboard() {
             left: '50%',
             transform: isProjectsFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
             transformOrigin: 'calc(-50vw + 450px) 50%',
-            transitionDuration: '400ms'
+            transitionDuration: '400ms',
+            zIndex: getFlyoutZIndex('projects')
           }}
+          onClick={() => bringFlyoutToFront('projects')}
         >
           {/* Flyout Panel */}
           <div 
