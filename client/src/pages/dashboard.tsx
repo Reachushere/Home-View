@@ -1208,24 +1208,6 @@ export default function Dashboard() {
   const row1ContainerRef = useRef<HTMLDivElement>(null);
   const [row1Positions, setRow1Positions] = useState({ task: 0, code: 0, course: 0, due: 0 });
   
-  // Measure first row positions after render
-  useEffect(() => {
-    const measurePositions = () => {
-      if (row1ContainerRef.current && row1TaskRef.current && row1CodeRef.current && row1CourseRef.current && row1DueRef.current) {
-        const containerLeft = row1ContainerRef.current.getBoundingClientRect().left;
-        setRow1Positions({
-          task: row1TaskRef.current.getBoundingClientRect().left - containerLeft,
-          code: row1CodeRef.current.getBoundingClientRect().left - containerLeft,
-          course: row1CourseRef.current.getBoundingClientRect().left - containerLeft,
-          due: row1DueRef.current.getBoundingClientRect().left - containerLeft
-        });
-      }
-    };
-    measurePositions();
-    window.addEventListener('resize', measurePositions);
-    return () => window.removeEventListener('resize', measurePositions);
-  }, [dueThisWeekTasks, testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft]);
-  
   // Save box order to localStorage
   useEffect(() => {
     localStorage.setItem('boxOrder', JSON.stringify(boxOrder));
@@ -3661,6 +3643,28 @@ export default function Dashboard() {
     endOfSchoolWeek.setHours(23, 59, 59, 999);
     return dueDateStart <= endOfSchoolWeek;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+  // Measure first row positions after render for second row alignment
+  useEffect(() => {
+    const measurePositions = () => {
+      if (row1ContainerRef.current && row1TaskRef.current && row1CodeRef.current && row1CourseRef.current && row1DueRef.current) {
+        const containerLeft = row1ContainerRef.current.getBoundingClientRect().left;
+        setRow1Positions({
+          task: row1TaskRef.current.getBoundingClientRect().left - containerLeft,
+          code: row1CodeRef.current.getBoundingClientRect().left - containerLeft,
+          course: row1CourseRef.current.getBoundingClientRect().left - containerLeft,
+          due: row1DueRef.current.getBoundingClientRect().left - containerLeft
+        });
+      }
+    };
+    // Delay measurement to ensure DOM is rendered
+    const timer = setTimeout(measurePositions, 100);
+    window.addEventListener('resize', measurePositions);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', measurePositions);
+    };
+  }, [dueThisWeekTasks, testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft]);
 
   // Track calendar wrapper position for course button alignment
   useEffect(() => {
