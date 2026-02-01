@@ -8811,36 +8811,36 @@ export default function Dashboard() {
           {/* Left Arrow - Previous Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ left: '-25px', marginTop: '12px' }}
+            style={{ left: '-20px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
             data-date-nav
           >
             <div 
-              className="rounded-l-full py-[6px] px-[4px] shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:-translate-x-2 group-active:scale-110 border border-white/30 border-r-0"
+              className="rounded-md py-[5px] px-[3px] transition-all duration-200 ease-out group-hover:scale-110 group-hover:-translate-x-1 group-active:scale-95"
               style={{ 
-                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+                background: 'linear-gradient(135deg, #FF6E3D 0%, #FFDD63 100%)',
+                boxShadow: '0 2px 8px rgba(255,110,61,0.4)'
               }}
             >
-              <ChevronLeft className="h-4 w-4 text-white" strokeWidth={3} />
+              <ChevronLeft className="h-4 w-4 text-white drop-shadow-sm" strokeWidth={2.5} />
             </div>
           </div>
           
           {/* Right Arrow - Next Week */}
           <div 
             className="absolute top-0 z-50 cursor-pointer group"
-            style={{ right: '-25px', marginTop: '12px' }}
+            style={{ right: '-20px', marginTop: '12px' }}
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
             data-date-nav
           >
             <div 
-              className="rounded-r-full py-[6px] px-[4px] shadow-lg transition-all duration-300 ease-out group-hover:scale-125 group-hover:translate-x-2 group-active:scale-110 border border-white/30 border-l-0"
+              className="rounded-md py-[5px] px-[3px] transition-all duration-200 ease-out group-hover:scale-110 group-hover:translate-x-1 group-active:scale-95"
               style={{ 
-                background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)'
+                background: 'linear-gradient(135deg, #FFDD63 0%, #FF6E3D 100%)',
+                boxShadow: '0 2px 8px rgba(255,110,61,0.4)'
               }}
             >
-              <ChevronRight className="h-4 w-4 text-white" strokeWidth={3} />
+              <ChevronRight className="h-4 w-4 text-white drop-shadow-sm" strokeWidth={2.5} />
             </div>
           </div>
           
