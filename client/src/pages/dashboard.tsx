@@ -8668,14 +8668,9 @@ export default function Dashboard() {
                     Push to or pull from the published app.
                   </p>
                   <div className="flex gap-2">
-                    <div
-                      className="inline-flex items-center justify-center bg-transparent text-[#5979CC] rounded-md px-3 py-1.5 text-sm cursor-pointer hover:bg-[#5979CC]/10 transition-colors"
-                      style={{ 
-                        boxShadow: 'none', 
-                        outline: 'none', 
-                        WebkitBoxShadow: 'none',
-                        border: '1px solid #5979CC'
-                      }}
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={async () => {
                         try {
                           toast({ title: "Pushing...", description: "Sending data to production." });
@@ -8714,7 +8709,7 @@ export default function Dashboard() {
                     >
                       <Upload className="h-4 w-4 mr-2" />
                       Push
-                    </div>
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
