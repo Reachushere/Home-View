@@ -6360,23 +6360,38 @@ export default function Dashboard() {
 
           {/* Undo Complete */}
           <div 
-            className="relative"
             style={{ 
+              position: 'relative',
               marginTop: '4px',
               zIndex: 100,
+              width: '44px',
+              height: '44px'
+            }}
+          >
+            {/* Bottom circle: 44px, solid #FFA365 - exact copy from Tomorrow box */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
               width: '44px',
               height: '44px',
               borderRadius: '50%',
               backgroundColor: '#FFA365'
-            }}
-          >
+            }} />
+            {/* Top circle: 38px, gradient #FFDD63 bottom to #FF6E3D top - exact copy from Tomorrow box */}
             <div 
-              className={`h-[38px] w-[38px] rounded-full flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-200 ${completedTaskHistory.length > 0 ? "" : "opacity-50 pointer-events-none"}`}
-              style={{ 
+              className={`cursor-pointer hover:opacity-80 transition-all duration-200 ${completedTaskHistory.length > 0 ? "" : "opacity-50 pointer-events-none"}`}
+              style={{
                 position: 'absolute',
                 top: '3px',
                 left: '3px',
-                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)'
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
               onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
               data-testid="button-undo-complete"
