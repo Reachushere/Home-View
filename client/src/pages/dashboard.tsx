@@ -10335,7 +10335,7 @@ export default function Dashboard() {
                 THIS WEEK ({dueThisWeekTasks.length})
               </h4>
             </div>
-            <div className="flex-1 px-3 pb-5 flex flex-col" style={{ paddingTop: '2px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+            <div className="flex-1 p-3 pb-5 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {/* Task row with labels above */}
               <div className="flex">
               {/* Blank checkbox */}
@@ -10348,7 +10348,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-8px' }}
+                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
                     onMouseDown={handleTestBarResizeStart}
                     title="Resize"
                   />
@@ -10372,7 +10372,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-8px' }}
+                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
                     onMouseDown={handleTestTextResizeStart}
                     title="Resize"
                   />
@@ -10387,7 +10387,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-8px' }}
+                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
                     onMouseDown={handleTestCourseResizeStart}
                     title="Resize"
                   />
@@ -10402,7 +10402,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-8px' }}
+                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
                     onMouseDown={handleTestCourseNameResizeStart}
                     title="Resize"
                   />
@@ -10417,7 +10417,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-8px' }}
+                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
                     onMouseDown={handleTestDueDateResizeStart}
                     title="Resize"
                   />
@@ -10432,7 +10432,7 @@ export default function Dashboard() {
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50"
-                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-8px' }}
+                    style={{ width: '3px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
                     onMouseDown={handleTestDaysLeftResizeStart}
                     title="Resize"
                   />
