@@ -10201,30 +10201,39 @@ export default function Dashboard() {
                 TOMORROW ({dueTomorrowTasks.length})
               </h4>
             </div>
-            <div className="flex-1 p-3 pb-5 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-              {isLoading ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
-              ) : dueTomorrowTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
-              ) : (
-                <div className="space-y-0.5">
-                  {renderTaskColumnHeader()}
-                  {dueTomorrowTasks.map((task, idx) => {
-                    const prevTask = idx > 0 ? dueTomorrowTasks[idx - 1] : null;
-                    const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
-                    return (
-                      <div key={task.id}>
-                        {showCourseHeader && (
-                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
-                            {task.courseName}
-                          </div>
-                        )}
-                        {renderTask(task, true, 'tomorrow')}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+            <div className="flex-1 p-3 pb-5 flex" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+              {/* Left resize handle */}
+              <div 
+                className="cursor-col-resize hover:bg-white/50 flex-shrink-0"
+                style={{ width: '3px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
+                title="Resize"
+              />
+              <div className="flex-1 flex flex-col">
+                {isLoading ? (
+                  <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
+                ) : dueTomorrowTasks.length === 0 ? (
+                  <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
+                ) : (
+                  <div className="space-y-0.5">
+                    {renderTaskColumnHeader()}
+                    {dueTomorrowTasks.map((task, idx) => {
+                      const prevTask = idx > 0 ? dueTomorrowTasks[idx - 1] : null;
+                      const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
+                      return (
+                        <div key={task.id}>
+                          {showCourseHeader && (
+                            <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
+                              {task.courseName}
+                            </div>
+                          )}
+                          {renderTask(task, true, 'tomorrow')}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </section>
         </div>
