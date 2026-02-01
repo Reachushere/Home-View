@@ -565,12 +565,31 @@ export default function Dashboard() {
   }, [blinkSettings]);
   
   // TEST: Isolated progress bar position (completely separate from task columns)
-  const [testProgressBarLeft, setTestProgressBarLeft] = useState(0);
-  const [testTextLeft, setTestTextLeft] = useState(0); // Separate state for text position
-  const [testCourseLeft, setTestCourseLeft] = useState(0); // Separate state for course position
-  const [testCourseNameLeft, setTestCourseNameLeft] = useState(0); // Separate state for course name position
-  const [testDueDateLeft, setTestDueDateLeft] = useState(0); // Separate state for due date position
-  const [testDaysLeftLeft, setTestDaysLeftLeft] = useState(0); // Separate state for days left position
+  // Load from localStorage on init
+  const [testProgressBarLeft, setTestProgressBarLeft] = useState(() => {
+    const saved = localStorage.getItem('testProgressBarLeft');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [testTextLeft, setTestTextLeft] = useState(() => {
+    const saved = localStorage.getItem('testTextLeft');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [testCourseLeft, setTestCourseLeft] = useState(() => {
+    const saved = localStorage.getItem('testCourseLeft');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [testCourseNameLeft, setTestCourseNameLeft] = useState(() => {
+    const saved = localStorage.getItem('testCourseNameLeft');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [testDueDateLeft, setTestDueDateLeft] = useState(() => {
+    const saved = localStorage.getItem('testDueDateLeft');
+    return saved ? parseInt(saved) : 0;
+  });
+  const [testDaysLeftLeft, setTestDaysLeftLeft] = useState(() => {
+    const saved = localStorage.getItem('testDaysLeftLeft');
+    return saved ? parseInt(saved) : 0;
+  });
   const [resizingTestBar, setResizingTestBar] = useState(false);
   const [resizingTestText, setResizingTestText] = useState(false); // Separate state for text resizing
   const [resizingTestCourse, setResizingTestCourse] = useState(false); // Separate state for course resizing
@@ -775,6 +794,21 @@ export default function Dashboard() {
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [resizingTestDaysLeft]);
+
+  // Save test positions to localStorage (only after user interaction, not on mount)
+  const testPositionsInitialized = useRef(false);
+  useEffect(() => {
+    if (!testPositionsInitialized.current) {
+      testPositionsInitialized.current = true;
+      return;
+    }
+    localStorage.setItem('testProgressBarLeft', testProgressBarLeft.toString());
+    localStorage.setItem('testTextLeft', testTextLeft.toString());
+    localStorage.setItem('testCourseLeft', testCourseLeft.toString());
+    localStorage.setItem('testCourseNameLeft', testCourseNameLeft.toString());
+    localStorage.setItem('testDueDateLeft', testDueDateLeft.toString());
+    localStorage.setItem('testDaysLeftLeft', testDaysLeftLeft.toString());
+  }, [testProgressBarLeft, testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft, testDaysLeftLeft]);
 
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
@@ -10415,7 +10449,7 @@ export default function Dashboard() {
             </div>
             <div className="flex-1 p-3 pb-5 flex" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
               {/* Blank checkbox */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '14px', marginRight: '4px' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Group 1: Left handle + progress bar - moves together with left handle drag */}
@@ -10460,7 +10494,7 @@ export default function Dashboard() {
                   title="Resize"
                 />
                 {/* Course number */}
-                <span style={{ fontSize: '10px', color: 'white' }}>CASL 101</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af' }}>CASL 101</span>
               </div>
               {/* Group 4: Fourth handle + course name - moves together with fourth handle drag */}
               <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testCourseNameLeft}px` }}>
@@ -10472,7 +10506,7 @@ export default function Dashboard() {
                   title="Resize"
                 />
                 {/* Course name */}
-                <span style={{ fontSize: '10px', color: 'white' }}>American Sign Language</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af' }}>American Sign Language</span>
               </div>
               {/* Group 5: Fifth handle + due date - moves together with fifth handle drag */}
               <div className="flex-shrink-0 self-start flex items-center" style={{ marginTop: '16px', marginLeft: `${testDueDateLeft}px` }}>
@@ -10496,7 +10530,7 @@ export default function Dashboard() {
                   title="Resize"
                 />
                 {/* Days left */}
-                <span style={{ fontSize: '10px', color: 'white' }}>5d</span>
+                <span style={{ fontSize: '10px', color: '#4ade80' }}>5d</span>
               </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
