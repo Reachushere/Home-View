@@ -185,3 +185,13 @@ All arrows connecting task boxes to calendar follow these exact specifications:
 
 ### Production vs Development Sync Issue
 - Production deployment not syncing with development version - ongoing issue
+
+## TODO / Reminders
+
+### Home Assistant Voice Integration (Incomplete)
+- Voice command API endpoints are ready: `/api/voice/add-task` and `/api/voice/tasks-today`
+- User needs to configure Home Assistant with:
+  1. REST commands in `configuration.yaml`
+  2. Custom sentences in `config/custom_sentences/en/calendar_tasks.yaml`
+  3. Intent scripts for voice responses
+- See conversation history for full YAML configuration examples
