@@ -8152,54 +8152,113 @@ export default function Dashboard() {
           
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
-            <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
-              <DialogHeader>
-                <DialogTitle className="text-white text-sm">Profile</DialogTitle>
-              </DialogHeader>
-              <ProfileForm 
-                profileData={profileData} 
-                timezones={timezones} 
-                onSave={saveProfile}
-                onCancel={() => setIsProfileDialogOpen(false)} 
-              />
+            <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+              {/* Header bar matching flyouts */}
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                <div className="flex items-center gap-2">
+                  <User className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    PROFILE
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setIsProfileDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-profile"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4">
+                <ProfileForm 
+                  profileData={profileData} 
+                  timezones={timezones} 
+                  onSave={saveProfile}
+                  onCancel={() => setIsProfileDialogOpen(false)} 
+                />
+              </div>
             </DialogContent>
           </Dialog>
           
           {/* School Dialog */}
           <Dialog open={isSchoolDialogOpen} onOpenChange={setIsSchoolDialogOpen}>
-            <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
-              <DialogHeader>
-                <DialogTitle className="text-white text-sm">School Settings</DialogTitle>
-              </DialogHeader>
-              <SchoolForm 
-                schoolData={schoolData}
-                semesterSettings={semesterSettings}
-                onSave={saveSchool}
-                onCancel={() => setIsSchoolDialogOpen(false)} 
-              />
+            <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+              {/* Header bar matching flyouts */}
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    SCHOOL SETTINGS
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setIsSchoolDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-school"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4">
+                <SchoolForm 
+                  schoolData={schoolData}
+                  semesterSettings={semesterSettings}
+                  onSave={saveSchool}
+                  onCancel={() => setIsSchoolDialogOpen(false)} 
+                />
+              </div>
             </DialogContent>
           </Dialog>
           
           {/* Courses Dialog */}
           <Dialog open={isCoursesDialogOpen} onOpenChange={setIsCoursesDialogOpen}>
-            <DialogContent className="max-w-xl text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white" style={{ top: '55%' }}>
-              <DialogHeader>
-                <DialogTitle className="text-white text-sm">Courses</DialogTitle>
-              </DialogHeader>
-              <CoursesForm 
-                coursesData={coursesData}
-                onSave={saveCourses}
-                onCancel={() => setIsCoursesDialogOpen(false)} 
-              />
+            <DialogContent className="max-w-xl text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+              {/* Header bar matching flyouts */}
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                <div className="flex items-center gap-2">
+                  <BookOpen className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    COURSES
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setIsCoursesDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-courses"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4">
+                <CoursesForm 
+                  coursesData={coursesData}
+                  onSave={saveCourses}
+                  onCancel={() => setIsCoursesDialogOpen(false)} 
+                />
+              </div>
             </DialogContent>
           </Dialog>
           
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent className="max-w-4xl text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px]" style={{ top: '55%' }}>
-              <DialogHeader>
-                <DialogTitle className="text-white text-base font-semibold">Settings</DialogTitle>
-              </DialogHeader>
+            <DialogContent className="max-w-4xl text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+              {/* Header bar matching flyouts */}
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    SETTINGS
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setIsSettingsDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-settings-dialog"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4">
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
                 <div className="space-y-4">
@@ -8618,6 +8677,7 @@ export default function Dashboard() {
                   Save Settings
                 </Button>
               </div>
+            </div>
             </DialogContent>
           </Dialog>
           
