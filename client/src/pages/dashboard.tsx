@@ -9863,7 +9863,7 @@ export default function Dashboard() {
                 className="cursor-col-resize hover:bg-white/70 transition-colors"
                 style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
                 onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
-                title="Drag to resize task column"
+                title="Drag right to expand task column"
               />
               <div className="text-[8px] text-white/50 font-normal">Task</div>
               <div 
@@ -9959,13 +9959,13 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  <div /> {/* Spacer for resize handle column (left of task name) */}
-                  {/* Task name column - left aligned, bold */}
+                  <div /> {/* Spacer for left resize handle column */}
+                  {/* Task name column - right aligned so it moves with left handle */}
                   <button 
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
                     data-testid={`task-link-${task.id}`}
-                    style={{ textAlign: 'left', marginLeft: '1px' }}
+                    style={{ textAlign: 'right', marginRight: '1px' }}
                   >
                     {task.title}
                   </button>
