@@ -10853,24 +10853,24 @@ export default function Dashboard() {
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {/* TEST UNDO BUTTON CIRCLES - Delete when ready */}
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10px' }}>
-                <div style={{ position: 'relative', width: '47px', height: '47px' }}>
-                  {/* Bottom circle: 0.485" = 47px, solid #FFA365 */}
+                <div style={{ position: 'relative', width: '44px', height: '44px' }}>
+                  {/* Bottom circle: 44px to match undo button outer, solid #FFA365 */}
                   <div style={{
                     position: 'absolute',
                     top: 0,
                     left: 0,
-                    width: '47px',
-                    height: '47px',
+                    width: '44px',
+                    height: '44px',
                     borderRadius: '50%',
                     backgroundColor: '#FFA365'
                   }} />
-                  {/* Top circle: 0.449" = 43px, gradient #FFDD63 bottom to #FF6E3D top */}
+                  {/* Top circle: 38px to match undo button inner, gradient #FFDD63 bottom to #FF6E3D top */}
                   <div style={{
                     position: 'absolute',
-                    top: '2px',
-                    left: '2px',
-                    width: '43px',
-                    height: '43px',
+                    top: '3px',
+                    left: '3px',
+                    width: '38px',
+                    height: '38px',
                     borderRadius: '50%',
                     background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)'
                   }} />
