@@ -9850,6 +9850,43 @@ export default function Dashboard() {
             });
           };
           
+          // Render column header with resize handles
+          const renderTaskColumnHeader = () => (
+            <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px', marginBottom: '4px' }}>
+              <div /> {/* Checkbox spacer */}
+              <div /> {/* Progress bar spacer */}
+              <div className="text-[8px] text-white/50 font-normal">Task</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/70 transition-colors"
+                style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
+                title="Drag to resize task column"
+              />
+              <div className="text-[8px] text-white/50 font-normal">Code</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/70 transition-colors"
+                style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseCode')}
+                title="Drag to resize course code column"
+              />
+              <div className="text-[8px] text-white/50 font-normal">Course</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/70 transition-colors"
+                style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')}
+                title="Drag to resize course name column"
+              />
+              <div className="text-[8px] text-white/50 font-normal">Due</div>
+              <div 
+                className="cursor-col-resize hover:bg-white/70 transition-colors"
+                style={{ width: '1px', minHeight: '12px', backgroundColor: 'rgba(255,255,255,0.4)' }}
+                onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
+                title="Drag to resize due date column"
+              />
+              <div className="text-[8px] text-white/50 font-normal">Days</div>
+            </div>
+          );
+
           // Render a single task row
           const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false, boxType: 'today' | 'tomorrow' | 'thisweek' = 'today') => {
             const attachments = parseAttachments(task.attachments);
@@ -9883,7 +9920,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 2px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9912,7 +9949,7 @@ export default function Dashboard() {
                     }}
                     title={`${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} left`}
                   />
-                  {/* Task name column - left aligned, bold, resizable */}
+                  {/* Task name column - left aligned, bold */}
                   <button 
                     className="text-[10px] text-white font-bold truncate hover:underline cursor-pointer"
                     onClick={() => setEditingTask(task)}
@@ -9921,46 +9958,22 @@ export default function Dashboard() {
                   >
                     {task.title}
                   </button>
-                  {/* Resize handle - task name */}
-                  <div 
-                    className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '1px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)' }}
-                    onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
-                    title="Drag to resize task column"
-                  />
+                  <div /> {/* Spacer for resize handle column */}
                   {/* Course code column - left aligned, white */}
                   <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
                     {courseCode}
                   </div>
-                  {/* Resize handle - course name (left side) */}
-                  <div 
-                    className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '2px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.4)' }}
-                    onMouseDown={(e) => handleTaskColumnResizeStart(e, 'courseName')}
-                    title="Drag to resize course name column"
-                  />
+                  <div /> {/* Spacer for resize handle column */}
                   {/* Course name column - left aligned, white */}
                   <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
                     {courseFullName}
                   </div>
-                  {/* Resize handle - due date (left side) */}
-                  <div 
-                    className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '1px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)', marginLeft: '-4px' }}
-                    onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
-                    title="Drag to resize due date column"
-                  />
+                  <div /> {/* Spacer for resize handle column */}
                   {/* Due date column */}
-                  <span className="text-[10px] text-white whitespace-nowrap" style={{ marginLeft: '-3px' }}>
+                  <span className="text-[10px] text-white whitespace-nowrap">
                     {showDaysUntil ? `${format(new Date(task.dueDate), 'EEE')} ${format(new Date(task.dueDate), 'M/d')}` : format(new Date(task.dueDate), 'M/d')}
                   </span>
-                  {/* Resize handle - due date */}
-                  <div 
-                    className="cursor-col-resize hover:bg-white/50 transition-colors"
-                    style={{ width: '1px', minHeight: '16px', backgroundColor: 'rgba(255,255,255,0.2)' }}
-                    onMouseDown={(e) => handleTaskColumnResizeStart(e, 'dueDate')}
-                    title="Drag to resize due date column"
-                  />
+                  <div /> {/* Spacer for resize handle column */}
                   {/* Days column */}
                   <span 
                     className="text-[10px] font-medium whitespace-nowrap"
@@ -10060,6 +10073,7 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No other tasks this week</div>
               ) : (
                 <div className="space-y-0.5">
+                  {renderTaskColumnHeader()}
                   {dueThisWeekTasks.map((task, idx) => (
                     <div key={task.id}>
                       {idx > 0 && (
@@ -10112,6 +10126,7 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks today</div>
               ) : (
                 <div className="space-y-0.5">
+                  {renderTaskColumnHeader()}
                   {dueTodayTasks.map((task, idx) => {
                     const prevTask = idx > 0 ? dueTodayTasks[idx - 1] : null;
                     const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
@@ -10170,6 +10185,7 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
               ) : (
                 <div className="space-y-0.5">
+                  {renderTaskColumnHeader()}
                   {dueTomorrowTasks.map((task, idx) => {
                     const prevTask = idx > 0 ? dueTomorrowTasks[idx - 1] : null;
                     const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;

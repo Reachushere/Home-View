@@ -2175,8 +2175,8 @@ export async function registerRoutes(
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
 
-  // POST /api/tts - Send text-to-speech to Home Assistant Echo device
-  app.post("/api/tts", async (req, res) => {
+  // POST /api/echo/tts - Send text-to-speech to Home Assistant Echo device
+  app.post("/api/echo/tts", async (req, res) => {
     try {
       const { message } = req.body;
       
