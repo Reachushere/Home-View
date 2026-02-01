@@ -989,13 +989,22 @@ export default function Dashboard() {
     boxBackground: string;
     headerBar: string;
     mainBackground: string;
+    boxGlassEffect: boolean;
+    boxTransparency: number;
   }>(() => {
     const saved = localStorage.getItem('colorSettings');
-    return saved ? JSON.parse(saved) : {
+    const defaults = {
       boxBackground: '#ffffff',
       headerBar: '#000000',
-      mainBackground: '#1a1a2e'
+      mainBackground: '#1a1a2e',
+      boxGlassEffect: true,
+      boxTransparency: 35
     };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { ...defaults, ...parsed };
+    }
+    return defaults;
   });
   
   // Store original settings when dialog opens (for cancel functionality)
@@ -8291,7 +8300,11 @@ export default function Dashboard() {
                         <div className="relative">
                           <div 
                             className="w-8 h-8 rounded cursor-pointer border border-white/30"
-                            style={{ backgroundColor: colorSettings.boxBackground }}
+                            style={{ 
+                              backgroundColor: colorSettings.boxGlassEffect 
+                                ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
+                                : colorSettings.boxBackground
+                            }}
                             onClick={() => document.getElementById('color-box-background-input')?.click()}
                             data-testid="color-box-background"
                           />
@@ -8305,6 +8318,37 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Glass Effect Toggle */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Glass Effect</Label>
+                      <div 
+                        className={`w-10 h-5 rounded-full cursor-pointer transition-colors ${colorSettings.boxGlassEffect ? 'bg-gradient-to-r from-[#4578B0] to-[#042550]' : 'bg-gray-500'}`}
+                        onClick={() => setColorSettings(prev => ({ ...prev, boxGlassEffect: !prev.boxGlassEffect }))}
+                        data-testid="toggle-glass-effect"
+                      >
+                        <div className={`w-4 h-4 bg-white rounded-full mt-0.5 transition-transform ${colorSettings.boxGlassEffect ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                      </div>
+                    </div>
+                    
+                    {/* Transparency Slider */}
+                    {colorSettings.boxGlassEffect && (
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <Label className="text-xs">Transparency</Label>
+                          <span className="text-xs text-muted-foreground">{colorSettings.boxTransparency}%</span>
+                        </div>
+                        <input
+                          type="range"
+                          min="10"
+                          max="90"
+                          value={colorSettings.boxTransparency}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, boxTransparency: parseInt(e.target.value) }))}
+                          className="w-3/4 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-b [&::-webkit-slider-thumb]:from-[#FF6E3D] [&::-webkit-slider-thumb]:to-[#FFDD63]"
+                          data-testid="slider-transparency"
+                        />
+                      </div>
+                    )}
                     
                     {/* Header Bar Colour */}
                     <div className="flex items-center justify-between">
@@ -10596,7 +10640,9 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 255, 255, 0.35)',
+              background: colorSettings.boxGlassEffect 
+                ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
+                : colorSettings.boxBackground,
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('this-week') + 1, 
@@ -10836,7 +10882,9 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'today' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 255, 255, 0.35)',
+              background: colorSettings.boxGlassEffect 
+                ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
+                : colorSettings.boxBackground,
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('today') + 1, 
@@ -11002,7 +11050,9 @@ export default function Dashboard() {
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'tomorrow' ? 'opacity-50' : ''}`} 
             style={{ 
-              background: 'rgba(255, 255, 255, 0.35)',
+              background: colorSettings.boxGlassEffect 
+                ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
+                : colorSettings.boxBackground,
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               order: boxOrder.indexOf('tomorrow') + 1, 
