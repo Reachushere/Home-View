@@ -8273,7 +8273,7 @@ export default function Dashboard() {
           
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-            <DialogContent data-settings-dialog className="max-w-4xl text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+            <DialogContent data-settings-dialog className="max-w-4xl text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden">
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
