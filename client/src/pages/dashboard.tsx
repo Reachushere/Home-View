@@ -8575,7 +8575,11 @@ export default function Dashboard() {
                   Cancel
                 </Button>
                 <Button 
-                  className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40"
+                  variant="outline"
+                  className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200"
+                  style={{
+                    boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+                  }}
                   onClick={() => {
                     localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
                     localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
@@ -13136,7 +13140,15 @@ function CoursesForm({
         <Button type="button" variant="outline" className="flex-1 text-xs h-8" onClick={onCancel} data-testid="button-cancel-courses">
           Cancel
         </Button>
-        <Button type="submit" className="flex-1 bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 text-xs h-8" data-testid="button-save-courses">
+        <Button 
+          type="submit" 
+          variant="outline"
+          className="flex-1 border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 text-xs h-8" 
+          style={{
+            boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+          }}
+          data-testid="button-save-courses"
+        >
           Save Courses
         </Button>
       </div>
