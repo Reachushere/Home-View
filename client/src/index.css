@@ -911,8 +911,8 @@
   color: black !important;
 }
 
-/* Blue checkboxes matching hamburger menu */
-input[type="checkbox"] {
+/* Blue checkboxes matching hamburger menu - only in settings dialog */
+[data-settings-dialog] input[type="checkbox"] {
   -webkit-appearance: none;
   appearance: none;
   width: 16px;
@@ -924,7 +924,7 @@ input[type="checkbox"] {
   position: relative;
 }
 
-input[type="checkbox"]:checked::after {
+[data-settings-dialog] input[type="checkbox"]:checked::after {
   content: '✓';
   position: absolute;
   top: 50%;
