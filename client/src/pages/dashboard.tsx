@@ -8919,6 +8919,21 @@ export default function Dashboard() {
           {/* Calendar wrapper - leaves space for honeycombs on right */}
           <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 65px)' }} className="relative overflow-visible">
           
+          {/* Glass effect backing box - 10px bigger than calendar */}
+          <div 
+            className="absolute pointer-events-none"
+            style={{ 
+              top: '-5px', 
+              left: '-5px', 
+              right: '-5px', 
+              bottom: '-5px', 
+              background: 'rgba(255, 255, 255, 0.5)',
+              borderRadius: '21px',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.4)'
+            }}
+          />
           
           <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line - dashed */}
