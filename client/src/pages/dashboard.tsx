@@ -10427,7 +10427,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
               {/* Group 6: Sixth handle + days left with label above */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: '13px', marginTop: '6px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: '11px', marginTop: '6px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
