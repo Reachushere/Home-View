@@ -10594,30 +10594,111 @@ export default function Dashboard() {
                 TODAY ({dueTodayTasks.length})
               </h4>
             </div>
-            <div className="flex-1 p-3 pb-5 flex flex-col" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden' }}>
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks today</div>
               ) : (
-                <div className="space-y-0.5">
-                  {renderTaskColumnHeader()}
-                  {dueTodayTasks.map((task, idx) => {
-                    const prevTask = idx > 0 ? dueTodayTasks[idx - 1] : null;
-                    const showCourseHeader = !prevTask || prevTask.courseName !== task.courseName;
-                    return (
-                      <div key={task.id}>
-                        {showCourseHeader && (
-                          <div className="text-[10px] text-white font-normal mb-1 mt-2 first:mt-0 pb-0.5 border-b border-white/30">
-                            {task.courseName}
-                          </div>
-                        )}
-                        {renderTask(task, true, 'today')}
-                      </div>
-                    );
-                  })}
+                <>
+              {/* Task row 1 with labels above */}
+              <div className="flex" style={{ position: 'relative' }}>
+              {/* Blank checkbox */}
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueTodayTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
+                <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+              </div>
+              {/* Progress bar with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testProgressBarLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Progress</span>
                 </div>
+                <div className="flex items-center">
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                </div>
+              </div>
+              {/* Task title with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Task</span>
+                </div>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueTodayTasks[0]?.title || ''}</span>
+              </div>
+              {/* Course code with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Code</span>
+                </div>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+              </div>
+              {/* Course name with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Course</span>
+                </div>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+              </div>
+              {/* Due date with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Due</span>
+                </div>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueTodayTasks[0]?.dueDate ? format(new Date(dueTodayTasks[0].dueDate), 'EEE M/d') : ''}</span>
+              </div>
+              {/* Days left - absolutely positioned */}
+              <div className="flex flex-col" style={{ position: 'absolute', right: '-4px', top: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueTodayTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                  {/* Working indicator */}
+                  <div className="w-2 h-2 rounded-full bg-orange-500" style={{ marginTop: '-3px' }} />
+                </div>
+              </div>
+              </div>
+              {/* Row 2 */}
+              {dueTodayTasks[1] && row1Positions.due > 0 && (
+              <div style={{ position: 'relative', height: '16px', marginTop: '-3px' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTodayTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
+                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                </div>
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                </div>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.dueDate ? format(new Date(dueTodayTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTodayTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <div className="w-2 h-2 rounded-full bg-orange-500" style={{ position: 'absolute', right: '0px', top: '2px' }} />
+              </div>
               )}
+              {/* Row 3 */}
+              {dueTodayTasks[2] && row1Positions.due > 0 && (
+              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTodayTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
+                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                </div>
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                </div>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
+                <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.dueDate ? format(new Date(dueTodayTasks[2].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTodayTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <div className="w-2 h-2 rounded-full bg-orange-500" style={{ position: 'absolute', right: '0px', top: '2px' }} />
+              </div>
+              )}
+                </>
+              )}
+              <div className="flex-1 flex flex-col" />
             </div>
           </section>
 
@@ -10653,8 +10734,111 @@ export default function Dashboard() {
                 TOMORROW ({dueTomorrowTasks.length})
               </h4>
             </div>
-            <div className="flex-1 p-3 pb-5 flex flex-col overflow-auto" style={{ backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}>
-              {/* Content cleared */}
+            <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
+              {isLoading ? (
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
+              ) : dueTomorrowTasks.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
+              ) : (
+                <>
+              {/* Task row 1 with labels above */}
+              <div className="flex" style={{ position: 'relative' }}>
+              {/* Blank checkbox */}
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueTomorrowTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
+                <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+              </div>
+              {/* Progress bar with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testProgressBarLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Progress</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                </div>
+              </div>
+              {/* Task title with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Task</span>
+                </div>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueTomorrowTasks[0]?.title || ''}</span>
+              </div>
+              {/* Course code with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Code</span>
+                </div>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+              </div>
+              {/* Course name with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Course</span>
+                </div>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+              </div>
+              {/* Due date with label above */}
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Due</span>
+                </div>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
+              </div>
+              {/* Days left - absolutely positioned */}
+              <div className="flex flex-col" style={{ position: 'absolute', right: '-4px', top: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueTomorrowTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                  {/* Working indicator */}
+                  <div className="w-2 h-2 rounded-full bg-yellow-500" style={{ marginTop: '-3px' }} />
+                </div>
+              </div>
+              </div>
+              {/* Row 2 */}
+              {dueTomorrowTasks[1] && row1Positions.due > 0 && (
+              <div style={{ position: 'relative', height: '16px', marginTop: '-3px' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTomorrowTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
+                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                </div>
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                </div>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTomorrowTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <div className="w-2 h-2 rounded-full bg-yellow-500" style={{ position: 'absolute', right: '0px', top: '2px' }} />
+              </div>
+              )}
+              {/* Row 3 */}
+              {dueTomorrowTasks[2] && row1Positions.due > 0 && (
+              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTomorrowTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
+                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+                </div>
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px' }}>
+                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: '#22c55e', opacity: 0.7 }} />
+                </div>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
+                <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTomorrowTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <div className="w-2 h-2 rounded-full bg-yellow-500" style={{ position: 'absolute', right: '0px', top: '2px' }} />
+              </div>
+              )}
+                </>
+              )}
+              <div className="flex-1 flex flex-col" />
             </div>
           </section>
         </div>
