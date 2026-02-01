@@ -10220,6 +10220,18 @@ export default function Dashboard() {
                 onMouseDown={(e) => handleTaskColumnResizeStart(e, 'taskName')}
                 title="Resize"
               />
+              {/* Fake progress bar - width controlled by taskName */}
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '16px', marginRight: '4px' }}>
+                <div 
+                  className="rounded-full"
+                  style={{ 
+                    width: `${taskColumnWidths.taskName}px`, 
+                    height: '3px', 
+                    backgroundColor: '#22c55e',
+                    opacity: 0.7
+                  }}
+                />
+              </div>
               <div className="flex-1 flex flex-col">
                 {isLoading ? (
                   <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
