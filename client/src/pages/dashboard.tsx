@@ -5995,10 +5995,10 @@ export default function Dashboard() {
           </div>
           
           {/* Done Button */}
-          <div className="flex justify-end p-4 mx-6 mb-2" style={{ marginTop: '-20px', marginRight: '35px' }}>
+          <div className="flex justify-end p-4 mx-6 mb-2" style={{ marginTop: '-20px', marginRight: '0px' }}>
             <Button
               variant="outline"
-              className="px-8 py-2 border !border-blue-500 text-white hover:text-white hover:!border-blue-400 hover:bg-transparent shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)] transition-all duration-200"
+              className="px-8 py-2 border !border-orange-500 bg-orange-500 text-white hover:text-white hover:!border-orange-400 hover:bg-orange-400 shadow-[0_0_8px_rgba(249,115,22,0.4)] hover:shadow-[0_0_12px_rgba(249,115,22,0.6)] transition-all duration-200"
               onClick={() => setPreviewFile(null)}
               data-testid="button-preview-done"
             >
