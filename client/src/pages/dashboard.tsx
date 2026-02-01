@@ -9659,7 +9659,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
-          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{ width: '900px', height: '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'calc(50vw + 450px) 50%' }}>
+          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-400 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{ width: '900px', height: '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'calc(50vw + 450px) 50%', transitionDuration: '400ms' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -11051,14 +11051,15 @@ export default function Dashboard() {
 
         {/* To Do Bottom Flyout - Burst from bottom */}
         <div 
-          className={`fixed z-[200] transition-all duration-300 ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          className={`fixed z-[200] transition-all ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
             width: '900px', 
             height: '250px',
             top: '50%',
             left: '50%',
             transform: isTodoFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
-            transformOrigin: '50% calc(50vh + 125px)'
+            transformOrigin: '50% calc(50vh + 125px)',
+            transitionDuration: '400ms'
           }}
         >
           {/* Flyout content */}
@@ -11161,14 +11162,15 @@ export default function Dashboard() {
 
         {/* Projects Flyout - Burst from Left */}
         <div 
-          className={`fixed z-[200] transition-all duration-300 ease-out ${isProjectsFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          className={`fixed z-[200] transition-all ease-out ${isProjectsFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
           style={{ 
             width: '500px', 
             height: '85vh',
             top: '50%',
             left: '50%',
             transform: isProjectsFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)',
-            transformOrigin: 'calc(-50vw + 250px) 50%'
+            transformOrigin: 'calc(-50vw + 250px) 50%',
+            transitionDuration: '400ms'
           }}
         >
           {/* Flyout Panel */}

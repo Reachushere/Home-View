@@ -123,12 +123,12 @@
 }
 
 .animate-burst-from-top {
-  animation: burst-from-top 0.3s ease-out forwards;
+  animation: burst-from-top 0.4s ease-out forwards;
   transform-origin: 50% calc(-50vh);
 }
 
 .animate-burst-to-top {
-  animation: burst-to-top 0.2s ease-in forwards;
+  animation: burst-to-top 0.25s ease-in forwards;
   transform-origin: 50% calc(-50vh);
 }
 
