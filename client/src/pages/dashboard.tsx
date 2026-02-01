@@ -8581,7 +8581,8 @@ export default function Dashboard() {
                   </p>
                   <div className="flex gap-2">
                     <Button
-                      className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] !shadow-none focus:!shadow-none focus-visible:!shadow-none !ring-0 focus:!ring-0 focus-visible:!ring-0 !outline-none"
+                      variant="ghost"
+                      className="bg-transparent hover:bg-transparent text-[#5979CC] border-2 border-[#5979CC] no-default-hover-elevate no-default-active-elevate"
                       size="sm"
                       style={{ boxShadow: 'none', outline: 'none' }}
                       onClick={async () => {
@@ -8675,10 +8676,10 @@ export default function Dashboard() {
                 </div>
                 </div>
               </div>
-              <div className="flex justify-end pt-4 border-t">
+              <div className="flex justify-end pt-4 border-t border-white/20">
                 <Button 
                   variant="outline"
-                  className="w-1/2 border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 text-xs h-8"
+                  className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 text-xs h-8 px-6"
                   style={{
                     boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
                   }}
