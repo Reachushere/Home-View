@@ -9626,7 +9626,7 @@ export default function Dashboard() {
           </div>
           
           {/* Weeks Flyout - centered panel for week folders */}
-          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-in-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100' : 'scale-0 opacity-0'}`} style={{ width: isWeeksFlyoutOpen ? '900px' : '0', height: isWeeksFlyoutOpen ? '85vh' : '0', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%)' : 'translate(-50%, -50%) scale(0)' }}>
+          <div className={`fixed z-[200] ${isResizingWeeksFlyout ? '' : 'transition-all duration-300 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{ width: '900px', height: '85vh', top: '50%', right: '20px', transform: isWeeksFlyoutOpen ? 'translateY(-50%) scale(1)' : 'translateY(-50%) scale(0)', transformOrigin: 'right center' }}>
             {/* Resize Handle */}
             <div
               className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize z-50 hover:bg-white/20 active:bg-white/30"
@@ -9656,7 +9656,7 @@ export default function Dashboard() {
               }}
               data-testid="weeks-flyout-resize-handle"
             />
-            <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 flex flex-col text-white relative rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+            <div className="h-full bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 flex flex-col text-white relative rounded-xl" style={{ boxShadow: '-10px 0 40px rgba(0,0,0,0.3)' }}>
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-3">
@@ -11016,17 +11016,24 @@ export default function Dashboard() {
           );
         })()}
 
-        {/* To Do Bottom Flyout */}
+        {/* To Do Bottom Flyout - Burst from bottom */}
         <div 
-          className="fixed left-[12px] z-[100] transition-all duration-300 ease-in-out"
-          style={{ bottom: isTodoFlyoutOpen ? '0' : '-180px', right: '14px' }}
+          className={`fixed z-[200] transition-all duration-300 ease-out ${isTodoFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          style={{ 
+            width: '900px', 
+            height: '250px',
+            bottom: '20px',
+            left: '50%',
+            transform: isTodoFlyoutOpen ? 'translateX(-50%) scale(1)' : 'translateX(-50%) scale(0)',
+            transformOrigin: 'bottom center'
+          }}
         >
           {/* Flyout content */}
           <section 
-            className="h-[180px] overflow-hidden flex flex-col rounded-t-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white" 
+            className="h-full overflow-hidden flex flex-col rounded-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white" 
             style={{
-              border: '1px solid rgba(255, 255, 255, 0.6)',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 -10px 40px rgba(0,0,0,0.3)'
             }}
             data-testid="section-todo"
           >
@@ -11047,13 +11054,18 @@ export default function Dashboard() {
                   e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
                 }}
                 onClick={() => {
-                  setNewTaskType("other");
-                  setIsAddDialogOpen(true);
+                  const newItems = [...todoItems];
+                  const emptyIdx = newItems.findIndex(item => !item.trim());
+                  if (emptyIdx !== -1) {
+                    // Focus the first empty field
+                    const inputEl = document.querySelector(`[data-todo-idx="${emptyIdx}"]`) as HTMLInputElement;
+                    if (inputEl) inputEl.focus();
+                  }
                 }}
-                data-testid="button-add-task-flyout"
+                data-testid="button-add-item-flyout"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Task
+                Add Item
               </Button>
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
@@ -11071,22 +11083,37 @@ export default function Dashboard() {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-4 flex-1 p-3">
+            <div className="grid grid-cols-4 gap-4 flex-1 p-3 overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
               {[0, 1, 2, 3].map(col => (
                 <div key={col} className="flex flex-col gap-1.5 overflow-hidden">
-                  {[0, 1, 2, 3, 4].map(row => {
-                    const idx = col * 5 + row;
+                  {[0, 1, 2, 3, 4, 5].map(row => {
+                    const idx = col * 6 + row;
                     return (
                       <div key={idx} className="flex items-center gap-1.5">
-                        <input type="checkbox" className="checkbox-black" />
                         <input 
-                          type="text" 
-                          className="flex-1 text-xs px-1.5 py-0.5 border border-gray-300 rounded bg-white text-black placeholder:text-gray-400" 
-                          placeholder="Task..." 
-                          value={todoItems[idx]} 
+                          type="checkbox" 
+                          className="w-4 h-4 rounded border-white/40 bg-transparent accent-green-500"
+                          checked={!!todoItems[idx]?.startsWith('✓')}
                           onChange={(e) => {
                             const newItems = [...todoItems];
-                            newItems[idx] = e.target.value;
+                            if (e.target.checked && newItems[idx] && !newItems[idx].startsWith('✓')) {
+                              newItems[idx] = '✓' + newItems[idx];
+                            } else if (!e.target.checked && newItems[idx]?.startsWith('✓')) {
+                              newItems[idx] = newItems[idx].slice(1);
+                            }
+                            setTodoItems(newItems);
+                          }}
+                        />
+                        <input 
+                          type="text" 
+                          data-todo-idx={idx}
+                          className={`flex-1 text-xs px-1.5 py-1 border border-white/20 rounded bg-white/10 text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none ${todoItems[idx]?.startsWith('✓') ? 'line-through text-white/50' : ''}`}
+                          placeholder="Item..." 
+                          value={todoItems[idx]?.replace(/^✓/, '') || ''} 
+                          onChange={(e) => {
+                            const newItems = [...todoItems];
+                            const wasChecked = newItems[idx]?.startsWith('✓');
+                            newItems[idx] = (wasChecked ? '✓' : '') + e.target.value;
                             setTodoItems(newItems);
                           }}
                         />
@@ -11099,20 +11126,25 @@ export default function Dashboard() {
           </section>
         </div>
 
-        </div>
-
-        {/* Projects Flyout - Slide from Left */}
+        {/* Projects Flyout - Burst from Left */}
         <div 
-          className={`fixed top-0 left-0 z-[200] h-full transition-transform duration-300 ease-in-out ${isProjectsFlyoutOpen ? 'translate-x-0' : '-translate-x-full'}`}
-          style={{ width: '500px' }}
+          className={`fixed z-[200] transition-all duration-300 ease-out ${isProjectsFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`}
+          style={{ 
+            width: '500px', 
+            height: '85vh',
+            top: '50%',
+            left: '20px',
+            transform: isProjectsFlyoutOpen ? 'translateY(-50%) scale(1)' : 'translateY(-50%) scale(0)',
+            transformOrigin: 'left center'
+          }}
         >
           {/* Flyout Panel */}
           <div 
-            className="h-full overflow-hidden flex flex-col bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.5)]"
+            className="h-full overflow-hidden flex flex-col rounded-xl bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 text-white"
             style={{
               fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif",
               border: '1px solid rgba(255, 255, 255, 0.2)',
-              borderLeft: 'none'
+              boxShadow: '10px 0 40px rgba(0,0,0,0.3)'
             }}
           >
               {/* Header */}
