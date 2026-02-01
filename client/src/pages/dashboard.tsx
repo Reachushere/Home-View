@@ -10210,20 +10210,13 @@ export default function Dashboard() {
             );
           };
 
-          // Helper to calculate progress bar width based on subtasks or time until due
+          // Helper to calculate progress bar width based on time until due
+          // Shows time remaining - more days = longer bar
           const getProgressBarWidth = (task: typeof dueTodayTasks[0] | undefined): number => {
             if (!task) return 0;
             if (task.isCompleted) return 44;
             
-            const subtaskCount = (task as any).subtaskCount || 0;
-            const completedSubtaskCount = (task as any).completedSubtaskCount || 0;
-            const hasSubtasks = subtaskCount > 0;
-            
-            if (hasSubtasks) {
-              return Math.round((completedSubtaskCount / subtaskCount) * 44);
-            }
-            
-            // For tasks without subtasks, show time remaining
+            // Always use time-based progress (days until due)
             // More days until due = longer bar (more time remaining)
             const daysUntil = differenceInDays(startOfDay(new Date(task.dueDate)), startOfDay(new Date()));
             const maxDays = 7;
