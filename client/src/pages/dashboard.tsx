@@ -6359,45 +6359,53 @@ export default function Dashboard() {
           </div>
 
           {/* Undo Complete */}
-          <div 
-            style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}
-            className={completedTaskHistory.length > 0 ? "" : "pointer-events-none"}
-          >
-            {/* Bottom circle: 44px - orange when active, grey when disabled */}
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '44px',
-              height: '44px',
-              borderRadius: '50%',
-              backgroundColor: completedTaskHistory.length > 0 ? '#FFA365' : '#6b6b6b'
-            }} />
-            {/* Top circle: 38px - gradient when active, grey gradient when disabled */}
-            <div 
-              style={{
+          {completedTaskHistory.length > 0 ? (
+            <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
+              {/* Bottom circle: 44px, solid #FFA365 */}
+              <div style={{
                 position: 'absolute',
-                top: '3px',
-                left: '3px',
-                width: '38px',
-                height: '38px',
+                top: 0,
+                left: 0,
+                width: '44px',
+                height: '44px',
                 borderRadius: '50%',
-                background: completedTaskHistory.length > 0 
-                  ? 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)' 
-                  : 'linear-gradient(0deg, #4a4a4a 0%, #3a3a3a 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: completedTaskHistory.length > 0 ? 'pointer' : 'default'
-              }}
-              className={completedTaskHistory.length > 0 ? "hover:opacity-80 transition-all duration-200" : "transition-all duration-200"}
-              onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
-              data-testid="button-undo-complete"
-              title={completedTaskHistory.length > 0 ? `Undo last completion (${completedTaskHistory.length} available)` : "No task to undo"}
-            >
-              <Undo2 className="h-[18px] w-[18px] text-white" />
+                backgroundColor: '#FFA365'
+              }} />
+              {/* Top circle: 38px, gradient #FFDD63 bottom to #FF6E3D top */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: '3px',
+                  left: '3px',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+                className="hover:opacity-80 transition-all duration-200"
+                onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
+                data-testid="button-undo-complete"
+                title={`Undo last completion (${completedTaskHistory.length} available)`}
+              >
+                <Undo2 className="h-[18px] w-[18px] text-white" />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px', zIndex: 100 }}>
+              <div 
+                className="!h-[42px] !w-[42px] rounded-full flex items-center justify-center"
+                style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+                data-testid="button-undo-complete"
+                title="No task to undo"
+              >
+                <Undo2 className="h-[18px] w-[18px] text-white" />
+              </div>
+            </div>
+          )}
 
           {/* Completed Tasks Checkbox */}
           <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
@@ -7419,7 +7427,7 @@ export default function Dashboard() {
                 justifyContent: 'center'
               }}
             >
-              <Library className="h-[18px] w-[18px] text-white" strokeWidth={2} />
+              <Library className="h-[18px] w-[18px] text-black" strokeWidth={2} />
             </div>
             {unreadModuleCount > 0 && (
               <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
