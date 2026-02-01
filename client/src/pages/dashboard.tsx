@@ -9883,7 +9883,7 @@ export default function Dashboard() {
                 onDrop={(e) => handleFileDropOnTask(e, task.id)}
                 data-testid={`droppable-task-${task.id}`}
               >
-                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 1px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 14px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `16px 5px ${taskColumnWidths.taskName}px 1px 1px ${taskColumnWidths.courseCode}px 1px ${taskColumnWidths.courseName}px 1px ${taskColumnWidths.dueDate}px 1px auto`, gap: '2px', alignItems: 'center', marginLeft: '-25px' }}>
                   {/* Checkbox column */}
                   {!isCASL101Task(task) ? (
                     <input
@@ -9950,12 +9950,6 @@ export default function Dashboard() {
                   <div className="text-[10px] text-white/60 font-normal whitespace-nowrap truncate">
                     {courseFullName}
                   </div>
-                  {/* Paperclip for attachments */}
-                  {attachments.length > 0 ? (
-                    <Paperclip className="h-3 w-3 text-white" strokeWidth={2.5} />
-                  ) : (
-                    <div className="w-3" />
-                  )}
                   {/* Resize handle - due date (left side) */}
                   <div 
                     className="cursor-col-resize hover:bg-white/50 transition-colors"
