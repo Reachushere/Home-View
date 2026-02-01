@@ -10426,9 +10426,16 @@ export default function Dashboard() {
                 {/* Due date */}
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
-              {/* Group 6: Days left - fixed position, no resize */}
+              {/* Group 6: Sixth handle + days left with label above */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px`, marginTop: '6px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  {/* Resize handle on header line */}
+                  <div 
+                    className="cursor-col-resize hover:bg-white/50"
+                    style={{ width: '1px', height: '10px', backgroundColor: 'rgba(255,255,255,0.3)', marginRight: '4px', marginTop: '-15px' }}
+                    onMouseDown={handleTestDaysLeftResizeStart}
+                    title="Resize"
+                  />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
                 </div>
                 {/* Days left */}
