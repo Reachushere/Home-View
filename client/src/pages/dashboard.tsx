@@ -8563,9 +8563,10 @@ export default function Dashboard() {
               top: `${note.positionY}px`,
               width: `${note.width}px`,
               height: note.isMinimized ? '28px' : `${note.height}px`,
-              zIndex: note.zIndex || 100,
+              zIndex: draggingStickyNote === note.id ? 10000 : (note.zIndex || 100),
               backgroundColor: colors.bg,
               border: `1px solid ${colors.border}`,
+              pointerEvents: 'auto',
             }}
             data-testid={`sticky-note-${note.id}`}
           >
@@ -9709,11 +9710,11 @@ export default function Dashboard() {
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
               );
               return (
-                <div key={idx} className="flex items-center justify-center w-full">
+                <div key={idx} className="border-l border-transparent">
                   {isToday && (
-                    <span className={`text-[9px] font-medium text-white tracking-wide text-center w-full ${todayHasTasks ? 'animate-pulse' : ''}`}>
+                    <div className={`text-[9px] font-medium text-white tracking-wide text-center ${todayHasTasks ? 'animate-pulse' : ''}`}>
                       BRYN: Read your today tasks
-                    </span>
+                    </div>
                   )}
                 </div>
               );
