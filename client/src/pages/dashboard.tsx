@@ -9723,7 +9723,12 @@ export default function Dashboard() {
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af'),
+                                  ...(hasPrepDays && prepDaysCount > 0 && {
+                                    borderTopLeftRadius: '0',
+                                    borderLeftWidth: '0',
+                                    borderLeftStyle: 'none'
+                                  })
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -9734,26 +9739,26 @@ export default function Dashboard() {
                                   const courseHex = colors?.hex || '#4ADE80';
                                   const rgb = hexToRgb(courseHex);
                                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                                  const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                                  const prepBorderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
                                   // Limit prep days to actual days available to the left in the week
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate width based on prep days - each day column is roughly equal width
-                                  const dayColumnWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 8px)`;
+                                  // Calculate width: actualPrepDays * (single column width) - small adjustment for alignment
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 6px)`;
                                   return (
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '1px',
+                                        top: '-1px',
                                         right: '100%',
-                                        width: dayColumnWidth,
-                                        height: '20px',
+                                        width: prepWidth,
+                                        height: `${taskHeight + 2}px`,
                                         borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
-                                        borderTop: `1px solid ${borderColor}`,
-                                        borderBottom: `1px solid ${borderColor}`,
-                                        borderLeft: `1px solid ${borderColor}`,
+                                        borderTop: `1px solid ${prepBorderColor}`,
+                                        borderBottom: `1px solid ${prepBorderColor}`,
+                                        borderLeft: `1px solid ${prepBorderColor}`,
                                         borderRight: 'none',
                                         zIndex: 40,
                                       }}
