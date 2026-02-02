@@ -203,6 +203,14 @@ All arrows connecting task boxes to calendar follow these exact specifications:
 
 ## TODO / Reminders
 
+### Email Reminders (Not Yet Set Up)
+- User wants email reminders sent to bryn.kai-hendricks@outlook.com
+- User also wants screen popup reminders
+- SendGrid integration was dismissed by user - will need to either:
+  1. Complete the SendGrid integration authorization flow later, OR
+  2. Provide SendGrid API key as a secret for manual integration
+- Alternative: Could use Nodemailer with another SMTP provider if user provides credentials
+
 ### Home Assistant Voice Integration (Incomplete)
 - Voice command API endpoints are ready: `/api/voice/add-task` and `/api/voice/tasks-today`
 - User needs to configure Home Assistant with:
