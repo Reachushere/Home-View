@@ -104,6 +104,8 @@ import {
   CheckCircle2,
   Check,
   ListTodo,
+  Upload,
+  Download,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType } from "@shared/schema";
@@ -1943,8 +1945,8 @@ export default function Dashboard() {
     createStickyNoteMutation.mutate({
       content: "",
       color: "yellow",
-      positionX: 150 + Math.random() * 100,
-      positionY: 150 + Math.random() * 100,
+      positionX: Math.floor(150 + Math.random() * 100),
+      positionY: Math.floor(150 + Math.random() * 100),
       width: 200,
       height: 150,
       zIndex: newZIndex,
@@ -8257,6 +8259,114 @@ export default function Dashboard() {
           title="Add Sticky Note"
         >
           <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+        </div>
+      </div>
+
+      {/* Push Button - Below sticky note button */}
+      <div 
+        className="absolute z-[60] pointer-events-auto"
+        style={{ 
+          width: '44px', 
+          height: '44px', 
+          top: '689px', 
+          right: '18px',
+        }}
+        data-testid="honeycomb-push"
+      >
+        {/* Back circle - solid #4CAF50 green */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: '#4CAF50',
+            boxShadow: 'none',
+          }}
+        />
+        {/* Front circle with gradient - 38px */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #81C784 0%, #4CAF50 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+          className="hover:opacity-80 transition-all duration-200"
+          onClick={() => {
+            fetch('/api/ha-push/test', { method: 'POST' })
+              .then(r => r.json())
+              .then(data => {
+                if (data.message?.includes('success')) {
+                  toast({ title: "Push sent!", description: "Notification sent to your phone" });
+                } else {
+                  toast({ title: "Push failed", description: data.message, variant: "destructive" });
+                }
+              });
+          }}
+          title="Send Push Notification"
+        >
+          <Upload style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        </div>
+      </div>
+
+      {/* Pull Button - Below push button */}
+      <div 
+        className="absolute z-[60] pointer-events-auto"
+        style={{ 
+          width: '44px', 
+          height: '44px', 
+          top: '741px', 
+          right: '18px',
+        }}
+        data-testid="honeycomb-pull"
+      >
+        {/* Back circle - solid #2196F3 blue */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: '#2196F3',
+            boxShadow: 'none',
+          }}
+        />
+        {/* Front circle with gradient - 38px */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #64B5F6 0%, #2196F3 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+          className="hover:opacity-80 transition-all duration-200"
+          onClick={() => {
+            queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["/api/calendar/events"] });
+            toast({ title: "Data refreshed!", description: "Latest data pulled from server" });
+          }}
+          title="Pull/Refresh Data"
+        >
+          <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         </div>
       </div>
 
