@@ -7716,134 +7716,51 @@ export default function Dashboard() {
       )}
       
       {/* Modules Course Buttons - Spring from modules button (331px) to course row positions */}
-      {/* CPPA122 - Course 1 */}
+      {/* Use filtered courses array matching the course rows */}
       {(() => {
-        const courseCode = coursesData.courses[0]?.name?.split(' - ')[0]?.toUpperCase() || 'CPPA122';
-        const courseHex = coursesData.courses[0]?.color || '#4ADE80';
-        const courseId = courseCode.toLowerCase();
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && f.listened).length;
-        return (
-          <div 
-            className={`absolute z-[100] cursor-pointer ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-            style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 28}px` : '331px',
-              right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
-              transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
-              transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)',
-              transitionDelay: '0ms'
-            }}
-            onClick={(e) => { 
-              e.stopPropagation();
-              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
-              if (moduleFile) setPreviewFile(moduleFile);
-              setModulesHoneycombOpen(null); 
-            }}
-            data-testid="honeycomb-cppa122"
-            data-course-button
-          >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
-              {unreadCount > 0 && (
-                <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
-                  {unreadCount}
-                </div>
-              )}
-              {completedCount > 0 && (
-                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
-                  {completedCount}
-                </div>
-              )}
+        const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
+        return filteredCourses.map((course, idx) => {
+          const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
+          const courseHex = course.color || '#4ADE80';
+          const courseId = courseCode.toLowerCase();
+          const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && !f.listened).length;
+          const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && f.listened).length;
+          return (
+            <div 
+              key={`module-btn-${courseId}`}
+              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+              style={{ 
+                top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * (idx + 0.5) + 28}px` : '331px',
+                right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
+                transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
+                transitionDelay: `${idx * 50}ms`
+              }}
+              onClick={(e) => { 
+                e.stopPropagation();
+                const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
+                if (moduleFile) setPreviewFile(moduleFile);
+                setModulesHoneycombOpen(null); 
+              }}
+              data-testid={`honeycomb-${courseId}`}
+              data-course-button
+            >
+              <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
+                {unreadCount > 0 && (
+                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
+                    {unreadCount}
+                  </div>
+                )}
+                {completedCount > 0 && (
+                  <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
+                    {completedCount}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })()}
-      
-      {/* CFNF400 - Course 2 */}
-      {(() => {
-        const courseCode = coursesData.courses[1]?.name?.split(' - ')[0]?.toUpperCase() || 'CFNF400';
-        const courseHex = coursesData.courses[1]?.color || '#F472B6';
-        const courseId = courseCode.toLowerCase();
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && f.listened).length;
-        return (
-          <div 
-            className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-            style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 28}px` : '331px',
-              right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
-              transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
-              transitionDelay: '50ms'
-            }}
-            onClick={(e) => { 
-              e.stopPropagation();
-              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
-              if (moduleFile) setPreviewFile(moduleFile);
-              setModulesHoneycombOpen(null); 
-            }}
-            data-testid="honeycomb-cfnf400"
-            data-course-button
-          >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
-              {unreadCount > 0 && (
-                <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
-                  {unreadCount}
-                </div>
-              )}
-              {completedCount > 0 && (
-                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
-                  {completedCount}
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })()}
-      
-      {/* CASL101 - Course 3 */}
-      {(() => {
-        const courseCode = coursesData.courses[2]?.name?.split(' - ')[0]?.toUpperCase() || 'CASL101';
-        const courseHex = coursesData.courses[2]?.color || '#6366F1';
-        const courseId = courseCode.toLowerCase();
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && f.listened).length;
-        return (
-          <div 
-            className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-            style={{ 
-              top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 28}px` : '331px',
-              right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
-              transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
-              transitionDelay: '100ms'
-            }}
-            onClick={(e) => { 
-              e.stopPropagation();
-              const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
-              if (moduleFile) setPreviewFile(moduleFile);
-              setModulesHoneycombOpen(null); 
-            }}
-            data-testid="honeycomb-casl101"
-            data-course-button
-          >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
-              {unreadCount > 0 && (
-                <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
-                  {unreadCount}
-                </div>
-              )}
-              {completedCount > 0 && (
-                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
-                  {completedCount}
-                </div>
-              )}
-            </div>
-          </div>
-        );
+          );
+        });
       })()}
       
       {/* Readings Button - Below modules button on tall pill */}
@@ -7922,133 +7839,51 @@ export default function Dashboard() {
       )}
       
       {/* Readings Course Buttons - Spring from readings button to SAME course row positions as modules */}
-      {/* Course 1 Reading */}
+      {/* Use filtered courses array matching the course rows */}
       {(() => {
-        const courseCode = coursesData.courses[0]?.name?.split(' - ')[0]?.toUpperCase() || 'CPPA122';
-        const courseHex = coursesData.courses[0]?.color || '#4ADE80';
-        const courseId = courseCode.toLowerCase();
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && f.listened).length;
-        return (
-          <div 
-            className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-            style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0.5 + 28}px` : '381px',
-              right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
-              transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
-              transitionDelay: '0ms'
-            }}
-            onClick={(e) => { 
-              e.stopPropagation();
-              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
-              if (readingFile) setPreviewFile(readingFile);
-              setModulesHoneycombOpen(null); 
-            }}
-            data-testid="honeycomb-readings-cppa122"
-            data-readings-course-button
-          >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
-              {unreadCount > 0 && (
-                <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
-                  {unreadCount}
-                </div>
-              )}
-              {completedCount > 0 && (
-                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
-                  {completedCount}
-                </div>
-              )}
+        const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
+        return filteredCourses.map((course, idx) => {
+          const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
+          const courseHex = course.color || '#4ADE80';
+          const courseId = courseCode.toLowerCase();
+          const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && !f.listened).length;
+          const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && f.listened).length;
+          return (
+            <div 
+              key={`reading-btn-${courseId}`}
+              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+              style={{ 
+                top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * (idx + 0.5) + 28}px` : '381px',
+                right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
+                transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
+                transitionDelay: `${idx * 50}ms`
+              }}
+              onClick={(e) => { 
+                e.stopPropagation();
+                const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
+                if (readingFile) setPreviewFile(readingFile);
+                setModulesHoneycombOpen(null); 
+              }}
+              data-testid={`honeycomb-readings-${courseId}`}
+              data-readings-course-button
+            >
+              <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
+                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
+                <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
+                {unreadCount > 0 && (
+                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
+                    {unreadCount}
+                  </div>
+                )}
+                {completedCount > 0 && (
+                  <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
+                    {completedCount}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        );
-      })()}
-      
-      {/* Course 2 Reading */}
-      {(() => {
-        const courseCode = coursesData.courses[1]?.name?.split(' - ')[0]?.toUpperCase() || 'CFNF400';
-        const courseHex = coursesData.courses[1]?.color || '#F472B6';
-        const courseId = courseCode.toLowerCase();
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && f.listened).length;
-        return (
-          <div 
-            className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-            style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1.5 + 28}px` : '381px',
-              right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
-              transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
-              transitionDelay: '50ms'
-            }}
-            onClick={(e) => { 
-              e.stopPropagation();
-              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
-              if (readingFile) setPreviewFile(readingFile);
-              setModulesHoneycombOpen(null); 
-            }}
-            data-testid="honeycomb-readings-cfnf400"
-            data-readings-course-button
-          >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
-              {unreadCount > 0 && (
-                <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
-                  {unreadCount}
-                </div>
-              )}
-              {completedCount > 0 && (
-                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
-                  {completedCount}
-                </div>
-              )}
-            </div>
-          </div>
-        );
-      })()}
-      
-      {/* Course 3 Reading */}
-      {(() => {
-        const courseCode = coursesData.courses[2]?.name?.split(' - ')[0]?.toUpperCase() || 'CASL101';
-        const courseHex = coursesData.courses[2]?.color || '#6366F1';
-        const courseId = courseCode.toLowerCase();
-        const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && !f.listened).length;
-        const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && f.listened).length;
-        return (
-          <div 
-            className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-            style={{ 
-              top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2.5 + 28}px` : '381px',
-              right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
-              transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
-              transitionDelay: '100ms'
-            }}
-            onClick={(e) => { 
-              e.stopPropagation();
-              const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
-              if (readingFile) setPreviewFile(readingFile);
-              setModulesHoneycombOpen(null); 
-            }}
-            data-testid="honeycomb-readings-casl101"
-            data-readings-course-button
-          >
-            <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
-              <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-              <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
-              {unreadCount > 0 && (
-                <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
-                  {unreadCount}
-                </div>
-              )}
-              {completedCount > 0 && (
-                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
-                  {completedCount}
-                </div>
-              )}
-            </div>
-          </div>
-        );
+          );
+        });
       })()}
       
       {/* Files Button - Below readings button on tall pill */}
