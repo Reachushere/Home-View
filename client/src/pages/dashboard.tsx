@@ -7716,12 +7716,12 @@ export default function Dashboard() {
               <Library className="h-[18px] w-[18px] text-white" strokeWidth={2} />
             </div>
             {unreadModuleCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
+              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
                 {unreadModuleCount}
               </div>
             )}
             {completedModuleCount > 0 && (
-              <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
+              <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
                 {completedModuleCount}
               </div>
             )}
@@ -7805,7 +7805,7 @@ export default function Dashboard() {
                 <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
                 <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
                 {unreadCount > 0 && (
-                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
+                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
                     {unreadCount}
                   </div>
                 )}
@@ -7843,12 +7843,12 @@ export default function Dashboard() {
               <BookOpenCheck className="h-[18px] w-[18px] text-white" strokeWidth={2} />
             </Button>
             {unreadReadingCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
+              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
                 {unreadReadingCount}
               </div>
             )}
             {completedReadingCount > 0 && (
-              <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
+              <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
                 {completedReadingCount}
               </div>
             )}
@@ -7932,7 +7932,7 @@ export default function Dashboard() {
                 <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
                 <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
                 {unreadCount > 0 && (
-                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
+                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
                     {unreadCount}
                   </div>
                 )}
@@ -7949,7 +7949,7 @@ export default function Dashboard() {
       
       {/* Files Button - Below readings button on tall pill */}
       <div 
-        className="absolute z-50 pointer-events-auto"
+        className="absolute z-50 pointer-events-auto flex items-center justify-center"
         style={{ 
           width: '44px', 
           height: '44px', 
@@ -7966,7 +7966,7 @@ export default function Dashboard() {
         <Button 
           size="icon"
           variant="ghost"
-          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          className="!h-[40px] !w-[40px] !min-h-[40px] !min-w-[40px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
           style={{ background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
           onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
         >
@@ -8036,7 +8036,7 @@ export default function Dashboard() {
       
       {/* Todo Button - Below files button on tall pill */}
       <div 
-        className="absolute z-50 pointer-events-auto"
+        className="absolute z-50 pointer-events-auto flex items-center justify-center"
         style={{ 
           width: '44px', 
           height: '44px', 
@@ -8051,7 +8051,7 @@ export default function Dashboard() {
         <Button 
           size="icon"
           variant="ghost"
-          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          className="!h-[40px] !w-[40px] !min-h-[40px] !min-w-[40px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
           style={{ background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
           onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
         >
