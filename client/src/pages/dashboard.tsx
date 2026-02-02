@@ -9723,8 +9723,7 @@ export default function Dashboard() {
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af'),
-                                  borderTopLeftRadius: (hasPrepDays && prepDaysCount > 0) ? '0' : undefined
+                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -9740,23 +9739,23 @@ export default function Dashboard() {
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate width based on prep days - each day column width
-                                  const prepBarWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7))`;
+                                  // Calculate width based on prep days - each day column is roughly equal width
+                                  const dayColumnWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 8px)`;
                                   return (
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '-1px',
-                                        right: 'calc(100% - 1px)',
-                                        width: prepBarWidth,
-                                        height: '22px',
-                                        borderRadius: '11px 0 0 11px',
+                                        top: '1px',
+                                        right: '100%',
+                                        width: dayColumnWidth,
+                                        height: '20px',
+                                        borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
-                                        borderLeft: `1px solid ${borderColor}`,
                                         borderBottom: `1px solid ${borderColor}`,
+                                        borderLeft: `1px solid ${borderColor}`,
                                         borderRight: 'none',
-                                        zIndex: 45,
+                                        zIndex: 40,
                                       }}
                                       title={`${actualPrepDays} prep days`}
                                     >
