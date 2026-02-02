@@ -8539,7 +8539,7 @@ export default function Dashboard() {
                   data-testid={`sticky-note-title-${note.id}`}
                 />
               </div>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 {/* Attachment indicator */}
                 {(note.taskId || note.projectId) && (
                   <span className="text-[8px] text-gray-600 truncate max-w-[60px]" title={
@@ -8557,7 +8557,7 @@ export default function Dashboard() {
                       className={`flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
                       title="Set reminder"
                     >
-                      <Bell className="h-4 w-4" />
+                      <Bell className="h-3.5 w-3.5" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
@@ -8626,7 +8626,7 @@ export default function Dashboard() {
                       className="flex items-center justify-center text-gray-600 hover:text-gray-800"
                       title="Attach to task or project"
                     >
-                      <Paperclip className="h-2.5 w-2.5" />
+                      <Paperclip className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="max-h-[300px] overflow-y-auto w-48">
@@ -8680,7 +8680,7 @@ export default function Dashboard() {
                   />
                   <label
                     htmlFor={`color-picker-${note.id}`}
-                    className="h-3 w-3 rounded-full border border-gray-400 hover:opacity-80 cursor-pointer block"
+                    className="h-3.5 w-3.5 rounded-full border border-gray-400 hover:opacity-80 cursor-pointer block"
                     style={{ backgroundColor: note.customColor || colors.header }}
                   />
                 </div>
