@@ -433,7 +433,7 @@
   }
 }
 
-/* Today column and current hour row shimmer effect - runs every 5 seconds */
+/* Today column and current hour row shimmer effect - runs every 8 seconds, silver */
 .today-hour-shimmer {
   position: relative;
   overflow: hidden;
@@ -449,13 +449,13 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(0, 0, 0, 0.25) 40%,
-    rgba(0, 0, 0, 0.4) 50%,
-    rgba(0, 0, 0, 0.25) 60%,
+    rgba(192, 192, 192, 0.3) 35%,
+    rgba(220, 220, 220, 0.5) 50%,
+    rgba(192, 192, 192, 0.3) 65%,
     transparent 100%
   );
   transform: translateX(-100%);
-  animation: today-hour-shimmer-sweep 5s ease-in-out infinite;
+  animation: today-hour-shimmer-sweep 8s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -467,11 +467,11 @@
   2% {
     opacity: 1;
   }
-  12% {
+  10% {
     transform: translateX(100%);
     opacity: 1;
   }
-  15% {
+  12% {
     opacity: 0;
   }
   100% {
