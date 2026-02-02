@@ -9727,20 +9727,22 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
-                                {/* Prep extension bar extending to the left */}
+                                {/* Prep extension bar extending to the left - spans prepDaysCount columns */}
                                 {hasPrepDays && prepDaysCount > 0 && (() => {
                                   const courseHex = colors?.hex || '#4ADE80';
                                   const rgb = hexToRgb(courseHex);
                                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
                                   const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                                  // Calculate width based on prep days - each day column is roughly equal width
+                                  const dayColumnWidth = `calc(${prepDaysCount} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7))`;
                                   return (
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '0',
+                                        top: '-1px',
                                         right: '100%',
-                                        width: '90px',
-                                        height: '22px',
+                                        width: dayColumnWidth,
+                                        height: '24px',
                                         borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
