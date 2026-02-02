@@ -2891,6 +2891,25 @@ export default function Dashboard() {
 
   const handleStopMedia = async () => {
     try {
+      // IMMEDIATE: Stop any OpenAI TTS audio first (for Fire tablets)
+      // This check comes first for faster response on Fire tablets
+      if (openaiAudioRef.current) {
+        shouldContinueRef.current = false; // Stop chunk chain immediately
+        openaiAudioRef.current.pause();
+        openaiAudioRef.current.currentTime = 0;
+        openaiAudioRef.current = null;
+        
+        // Save progress so user can resume later
+        if (previewFile && currentChunkIndexRef.current > 0) {
+          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex);
+        }
+        
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+        toast({ title: `Stopped at section ${currentChunkIndexRef.current + 1} of ${totalChunks}. Progress saved.` });
+        return;
+      }
+      
       // Stop browser TTS if active
       if (previewSpeaker === "browser_tts" && window.speechSynthesis) {
         shouldContinueRef.current = false; // Stop chunk chain
@@ -2907,32 +2926,52 @@ export default function Dashboard() {
         return;
       }
       
-      // Stop OpenAI TTS if active
-      if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
-        stopOpenAiTts();
-        
-        // Save progress so user can resume later
-        if (previewFile && currentChunkIndexRef.current > 0) {
-          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex);
-          toast({ title: `Paused at section ${currentChunkIndexRef.current + 1} of ${totalChunks}. Progress saved.` });
-        }
-        return;
-      }
-      
-      await fetch("/api/media/stop", {
+      // For Echo speakers - call API (non-blocking for responsiveness)
+      fetch("/api/media/stop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ entityId: previewSpeaker }),
-      });
+      }).catch(err => console.error("Stop API error:", err));
+      
       // Stop word highlighting when audio stops
       stopHighlighting();
+      setIsPlaying(false);
+      isPlayingRef.current = false;
     } catch (error) {
       console.error("Stop error:", error);
     }
   };
 
-  // Skip forward/back functions for browser TTS and Echo
+  // Skip forward/back functions for browser TTS, OpenAI TTS, and Echo
   const handleSkipForward = async () => {
+    // For OpenAI TTS on Fire tablets - skip to next chunk
+    if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
+      const chunks = ttsChunksRef.current;
+      if (chunks.length === 0) return;
+      
+      const nextChunk = Math.min(currentChunkIndexRef.current + 1, chunks.length - 1);
+      if (nextChunk === currentChunkIndexRef.current) {
+        toast({ title: "Already at last section" });
+        return;
+      }
+      
+      // Stop current audio and play next chunk
+      if (openaiAudioRef.current) {
+        openaiAudioRef.current.pause();
+        openaiAudioRef.current = null;
+      }
+      
+      currentChunkIndexRef.current = nextChunk;
+      setCurrentChunkIndex(nextChunk);
+      toast({ title: `Skipped to section ${nextChunk + 1} of ${chunks.length}` });
+      
+      if (isPlayingRef.current) {
+        shouldContinueRef.current = true;
+        await playWithOpenAiTts(chunks[nextChunk], openaiVoice, nextChunk);
+      }
+      return;
+    }
+    
     if (previewSpeaker !== "browser_tts") {
       // For Echo speakers - call seek API
       try {
@@ -3081,6 +3120,34 @@ export default function Dashboard() {
   };
 
   const handleSkipBack = async () => {
+    // For OpenAI TTS on Fire tablets - skip to previous chunk
+    if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
+      const chunks = ttsChunksRef.current;
+      if (chunks.length === 0) return;
+      
+      const prevChunk = Math.max(currentChunkIndexRef.current - 1, 0);
+      if (prevChunk === currentChunkIndexRef.current) {
+        toast({ title: "Already at first section" });
+        return;
+      }
+      
+      // Stop current audio and play previous chunk
+      if (openaiAudioRef.current) {
+        openaiAudioRef.current.pause();
+        openaiAudioRef.current = null;
+      }
+      
+      currentChunkIndexRef.current = prevChunk;
+      setCurrentChunkIndex(prevChunk);
+      toast({ title: `Skipped to section ${prevChunk + 1} of ${chunks.length}` });
+      
+      if (isPlayingRef.current) {
+        shouldContinueRef.current = true;
+        await playWithOpenAiTts(chunks[prevChunk], openaiVoice, prevChunk);
+      }
+      return;
+    }
+    
     if (previewSpeaker !== "browser_tts") {
       // For Echo speakers - call seek API
       try {
@@ -3149,6 +3216,20 @@ export default function Dashboard() {
           toast({ title: `Speech rate: ${Math.round(newRate * 100)}%` });
           return newRate;
         });
+        return;
+      }
+      
+      // For OpenAI TTS on Fire tablets - adjust audio element volume
+      if (previewSpeaker === "openai_tts" || (!window.speechSynthesis && openaiAudioRef.current)) {
+        if (openaiAudioRef.current) {
+          const currentVolume = openaiAudioRef.current.volume;
+          const newVolume = action === "up" 
+            ? Math.min(currentVolume + 0.1, 1) 
+            : Math.max(currentVolume - 0.1, 0);
+          openaiAudioRef.current.volume = newVolume;
+          setRadioVolume(Math.round(newVolume * 100));
+          toast({ title: `Volume: ${Math.round(newVolume * 100)}%` });
+        }
         return;
       }
       
