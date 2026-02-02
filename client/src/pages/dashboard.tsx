@@ -4368,7 +4368,8 @@ export default function Dashboard() {
       if (ext.task.id === taskId) continue;
       
       // Check if this day is within the prep extension range (not including due date)
-      if (dayIdx >= ext.prepStartDayIdx && dayIdx < ext.dueDayIdx) {
+      // OR if this is the due date (where the prep bar extends to the left)
+      if ((dayIdx >= ext.prepStartDayIdx && dayIdx < ext.dueDayIdx) || dayIdx === ext.dueDayIdx) {
         // Check if the hour matches
         if (hour === ext.hour) {
           return true;
@@ -9697,7 +9698,7 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
-                                {/* Prep extension bar extending to the left - matches task height */}
+                                {/* Prep extension bar extending to the left */}
                                 {hasPrepDays && prepDaysCount > 0 && (() => {
                                   const courseHex = colors?.hex || '#4ADE80';
                                   const rgb = hexToRgb(courseHex);
@@ -9710,7 +9711,7 @@ export default function Dashboard() {
                                         top: '0',
                                         right: '100%',
                                         width: '90px',
-                                        height: `${taskHeight}px`,
+                                        height: '22px',
                                         borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
