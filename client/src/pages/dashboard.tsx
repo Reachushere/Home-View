@@ -9740,8 +9740,9 @@ export default function Dashboard() {
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate width: actualPrepDays columns width minus padding
-                                  const dayColumnWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 4px)`;
+                                  // Calculate width: exactly actualPrepDays columns (each column = available width / 7)
+                                  const singleColumnWidth = `((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7)`;
+                                  const dayColumnWidth = `calc((${actualPrepDays} * ${singleColumnWidth}) - 8px)`;
                                   return (
                                     <div
                                       className="absolute flex items-center justify-center"
