@@ -9777,10 +9777,10 @@ export default function Dashboard() {
                                       className="absolute flex items-center justify-center"
                                       style={{
                                         top: '-1px',
-                                        right: '100%',
+                                        right: 'calc(100% - 1px)',
                                         width: prepWidth,
                                         height: '24px',
-                                        borderRadius: '12px 0 0 12px',
+                                        borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
                                         borderTop: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
                                         borderLeft: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
@@ -10026,7 +10026,8 @@ export default function Dashboard() {
                         backgroundColor: lightBg,
                         borderLeft: `1px solid ${borderColor}`,
                         borderTop: `1px solid ${borderColor}`,
-                        borderBottom: `1px solid ${borderColor}`
+                        borderBottom: `1px solid ${borderColor}`,
+                        borderRadius: '4px 0 0 4px'
                       }}
                       data-testid={`prep-extension-${task.id}`}
                     >
