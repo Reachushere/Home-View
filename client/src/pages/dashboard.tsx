@@ -6490,7 +6490,7 @@ export default function Dashboard() {
             <div className={`text-[13px] font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-            }`} data-testid="pomodoro-timer">
+            }`} style={{ fontFamily: "'Raleway', sans-serif", fontVariantNumeric: 'tabular-nums', fontFeatureSettings: "'tnum'" }} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
             <div className="flex items-center gap-3">
