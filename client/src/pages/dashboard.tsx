@@ -8515,7 +8515,7 @@ export default function Dashboard() {
               onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
             >
               <div className="flex items-center gap-1">
-                <Grip className="h-3 w-3 text-gray-600" />
+                <Grip className="h-2 w-2 text-gray-600" />
                 <input
                   type="text"
                   value={note.title || "Note"}
