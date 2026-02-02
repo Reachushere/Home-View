@@ -120,6 +120,23 @@ textarea,
   font-weight: 400 !important;
 }
 
+/* Force normal font weight for ALL dialog/flyout content */
+[data-task-form] *,
+[role="dialog"] *,
+[data-radix-popper-content-wrapper] *,
+[data-radix-select-content] *,
+[data-radix-select-trigger] *,
+[data-radix-select-viewport] * {
+  font-weight: 400 !important;
+}
+
+/* Specifically target select value display text */
+[data-radix-select-trigger] > span,
+[data-radix-select-trigger] [data-placeholder],
+button[role="combobox"] > span {
+  font-weight: 400 !important;
+}
+
 @keyframes burst-from-top {
   0% { 
     opacity: 0; 
