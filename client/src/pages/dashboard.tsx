@@ -9746,19 +9746,22 @@ export default function Dashboard() {
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '0',
-                                        right: 'calc(100% + 1px)',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        right: '100%',
                                         width: dayColumnWidth,
-                                        height: `${taskHeight}px`,
-                                        borderRadius: '4px 0 0 4px',
+                                        height: '22px',
+                                        borderRadius: '11px 0 0 11px',
                                         backgroundColor: lightBg,
-                                        border: `1px solid ${borderColor}`,
+                                        borderTop: `1px solid ${borderColor}`,
+                                        borderBottom: `1px solid ${borderColor}`,
+                                        borderLeft: `1px solid ${borderColor}`,
                                         borderRight: 'none',
                                         zIndex: 40,
                                       }}
                                       title={`${actualPrepDays} prep days`}
                                     >
-                                      <span className="text-[10px] text-gray-600 font-medium truncate px-1">
+                                      <span className="text-[10px] text-gray-600 font-medium truncate px-2">
                                         Prep days
                                       </span>
                                     </div>
