@@ -13687,7 +13687,7 @@ function TaskForm({
               placeholder="Assignment title"
               required
               data-testid="input-title"
-              className="bg-white h-8"
+              className="bg-white h-8 font-normal"
               style={{ color: 'black', fontSize: '11px' }}
             />
           </div>
@@ -13699,7 +13699,7 @@ function TaskForm({
                 value={formData.courseName}
                 onChange={(e) => setFormData(prev => ({ ...prev, courseName: e.target.value }))}
                 data-testid="select-course"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 font-normal ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 style={{ color: 'black', fontSize: '11px' }}
               >
                 <option value="">Select course</option>
@@ -13717,7 +13717,7 @@ function TaskForm({
                 value={formData.type}
                 onChange={(e) => setFormData(prev => ({ ...prev, type: e.target.value }))}
                 data-testid="select-type"
-                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex h-8 w-full rounded-md border border-input bg-white px-2 py-1 font-normal ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 style={{ color: 'black', fontSize: '11px' }}
               >
                 {TASK_TYPES.map(type => (
@@ -13761,7 +13761,7 @@ function TaskForm({
                       <select
                         value={tempHour}
                         onChange={(e) => setTempHour(e.target.value)}
-                        className="w-16 h-8 rounded-md border border-input bg-white px-2"
+                        className="w-16 h-8 rounded-md border border-input bg-white px-2 font-normal"
                         style={{ color: 'black', fontSize: '11px' }}
                       >
                         {Array.from({ length: 24 }, (_, i) => (
@@ -13774,7 +13774,7 @@ function TaskForm({
                       <select
                         value={tempMinute}
                         onChange={(e) => setTempMinute(e.target.value)}
-                        className="w-16 h-8 rounded-md border border-input bg-white px-2"
+                        className="w-16 h-8 rounded-md border border-input bg-white px-2 font-normal"
                         style={{ color: 'black', fontSize: '11px' }}
                       >
                         {['00', '15', '30', '45'].map((min) => (
@@ -13841,7 +13841,7 @@ function TaskForm({
                     }
                   }}
                   data-testid="input-start-time"
-                  className="bg-white h-8 flex-1"
+                  className="bg-white h-8 flex-1 font-normal"
                   style={{ color: 'black', fontSize: '11px' }}
                 />
                 <select
@@ -13854,7 +13854,7 @@ function TaskForm({
                     if (e.target.value === 'AM' && hour >= 12) hour -= 12;
                     setFormData(prev => ({ ...prev, eventStartTime: `${hour.toString().padStart(2, '0')}:${m}` }));
                   }}
-                  className="h-8 rounded-md border border-input bg-white px-1"
+                  className="h-8 rounded-md border border-input bg-white px-1 font-normal"
                   style={{ color: 'black', fontSize: '11px' }}
                 >
                   <option value="AM">AM</option>
@@ -13891,7 +13891,7 @@ function TaskForm({
                     }
                   }}
                   data-testid="input-end-time"
-                  className="bg-white h-8 flex-1"
+                  className="bg-white h-8 flex-1 font-normal"
                   style={{ color: 'black', fontSize: '11px' }}
                 />
                 <select
@@ -13904,7 +13904,7 @@ function TaskForm({
                     if (e.target.value === 'AM' && hour >= 12) hour -= 12;
                     setFormData(prev => ({ ...prev, eventEndTime: `${hour.toString().padStart(2, '0')}:${m}` }));
                   }}
-                  className="h-8 rounded-md border border-input bg-white px-1"
+                  className="h-8 rounded-md border border-input bg-white px-1 font-normal"
                   style={{ color: 'black', fontSize: '11px' }}
                 >
                   <option value="AM">AM</option>
@@ -13923,7 +13923,7 @@ function TaskForm({
                 onChange={(e) => setFormData(prev => ({ ...prev, prepDays: parseInt(e.target.value) || 0 }))}
                 placeholder="0"
                 data-testid="input-prepdays"
-                className="bg-white h-8"
+                className="bg-white h-8 font-normal"
                 style={{ color: 'black', fontSize: '11px' }}
               />
             </div>
@@ -14258,7 +14258,13 @@ function TaskForm({
 
       {!hideSubmitButton && (
         <div className="flex gap-2 pt-4">
-          <Button type="submit" disabled={createMutation.isPending} className="bg-transparent hover:bg-[#5979CC]/10 text-[#5979CC] border-2 border-[#5979CC] shadow-lg shadow-[#5979CC]/40 h-8" style={{ fontSize: '11px' }} data-testid="button-submit-task">
+          <Button 
+            type="submit" 
+            disabled={createMutation.isPending} 
+            className="bg-transparent hover:bg-[#FF8C00]/10 text-[#FF8C00] border-2 border-[#FF8C00] shadow-lg shadow-[#FF8C00]/40 h-8 px-4" 
+            style={{ fontSize: '11px' }} 
+            data-testid="button-submit-task"
+          >
             {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
           </Button>
         </div>
