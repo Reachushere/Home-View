@@ -10069,7 +10069,7 @@ export default function Dashboard() {
                                         className="absolute"
                                         style={{
                                           top: `${prepHeight - 2}px`,
-                                          left: `-${borderWidth}px`,
+                                          left: `-${borderWidth - 1}px`,
                                           width: `${borderWidth}px`,
                                           height: `${taskHeight - prepHeight - 1}px`,
                                           backgroundColor: prepBorderColor,
