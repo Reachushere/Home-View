@@ -1921,6 +1921,7 @@ export default function Dashboard() {
   const [draggingStickyNote, setDraggingStickyNote] = useState<number | null>(null);
   const [stickyNoteOffset, setStickyNoteOffset] = useState({ x: 0, y: 0 });
   const [maxStickyZIndex, setMaxStickyZIndex] = useState(100);
+  const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null);
   
   // Sticky note state for resizing
   const [resizingStickyNote, setResizingStickyNote] = useState<number | null>(null);
@@ -1994,6 +1995,8 @@ export default function Dashboard() {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
       });
+      // Initialize drag position from current note position
+      setDragPosition({ x: note.positionX, y: note.positionY });
     }
     // Bring to front
     const newZIndex = maxStickyZIndex + 1;
@@ -2003,18 +2006,16 @@ export default function Dashboard() {
 
   const handleStickyNoteMouseMove = useCallback((e: MouseEvent) => {
     if (draggingStickyNote !== null) {
-      const newX = e.clientX - stickyNoteOffset.x;
-      const newY = e.clientY - stickyNoteOffset.y;
-      updateStickyNoteMutation.mutate({ 
-        id: draggingStickyNote, 
-        updates: { positionX: Math.max(0, newX), positionY: Math.max(0, newY) } 
-      });
+      const newX = Math.max(0, e.clientX - stickyNoteOffset.x);
+      const newY = Math.max(0, e.clientY - stickyNoteOffset.y);
+      // Update local state only - no API call during drag
+      setDragPosition({ x: newX, y: newY });
     }
   }, [draggingStickyNote, stickyNoteOffset]);
 
   const handleStickyNoteMouseUp = useCallback((e: MouseEvent) => {
     // Mark the note as moved with current timestamp
-    if (draggingStickyNote !== null) {
+    if (draggingStickyNote !== null && dragPosition !== null) {
       // Check if dropped in all-day row area - snap to cell left of today
       if (allDayRowRef.current) {
         const allDayRect = allDayRowRef.current.getBoundingClientRect();
@@ -2059,18 +2060,25 @@ export default function Dashboard() {
               } 
             });
             setDraggingStickyNote(null);
+            setDragPosition(null);
             return;
           }
         }
       }
       
+      // Save final position to database
       updateStickyNoteMutation.mutate({ 
         id: draggingStickyNote, 
-        updates: { lastMovedAt: new Date() } 
+        updates: { 
+          positionX: dragPosition.x,
+          positionY: dragPosition.y,
+          lastMovedAt: new Date() 
+        } 
       });
     }
     setDraggingStickyNote(null);
-  }, [draggingStickyNote]);
+    setDragPosition(null);
+  }, [draggingStickyNote, dragPosition]);
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
@@ -8559,17 +8567,22 @@ export default function Dashboard() {
             }
           : (noteColors[note.color] || noteColors.yellow);
         
+        // Use local drag position during drag for smooth movement
+        const isDragging = draggingStickyNote === note.id;
+        const displayX = isDragging && dragPosition ? dragPosition.x : note.positionX;
+        const displayY = isDragging && dragPosition ? dragPosition.y : note.positionY;
+        
         return (
           <div
             key={note.id}
             data-sticky-note
             className="fixed shadow-lg rounded-md overflow-hidden"
             style={{
-              left: `${note.positionX}px`,
-              top: `${note.positionY}px`,
+              left: `${displayX}px`,
+              top: `${displayY}px`,
               width: `${note.width}px`,
               height: note.isMinimized ? '28px' : `${note.height}px`,
-              zIndex: draggingStickyNote === note.id ? 10000 : (note.zIndex || 100),
+              zIndex: isDragging ? 10000 : (note.zIndex || 100),
               backgroundColor: colors.bg,
               border: `1px solid ${colors.border}`,
               pointerEvents: 'auto',
