@@ -9760,7 +9760,8 @@ export default function Dashboard() {
                               >
                                 {/* Prep extension bar extending to the left - spans prepDaysCount columns */}
                                 {hasPrepDays && prepDaysCount > 0 && (() => {
-                                  const courseHex = colors?.hex || '#4ADE80';
+                                  // Use gray for unassigned tasks instead of green
+                                  const courseHex = colors?.hex || '#9CA3AF';
                                   const rgb = hexToRgb(courseHex);
                                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
                                   const prepBorderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
@@ -9992,7 +9993,8 @@ export default function Dashboard() {
                   const colors = dynamicCourseColors[courseCode];
                   
                   // Use light background with border (matching the example)
-                  const courseHex = colors?.hex || '#4ADE80';
+                  // Use gray for unassigned tasks instead of green
+                  const courseHex = colors?.hex || '#9CA3AF';
                   const rgb = hexToRgb(courseHex);
                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
                   const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
