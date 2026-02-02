@@ -6986,18 +6986,18 @@ export default function Dashboard() {
           
           {/* Clock */}
           <div className="flex items-center gap-1.5 rounded-full px-3.5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', left: '-2px' }} data-testid="digital-clock">
-            <span className="text-[13px] text-white" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 500, letterSpacing: '0.5px' }}>
+            <span className="text-[13px] text-white font-medium" style={{ fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.3px' }}>
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
             <div className="w-[1px] h-4 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-[14px] text-white tabular-nums" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 600 }}>
+              <span className="text-[14px] text-white font-semibold" style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-[12px] text-white tabular-nums" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 500 }}>
+              <span className="text-[12px] text-white font-medium" style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
-              <span className="text-[10px] text-white ml-0.5 uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 500 }}>
+              <span className="text-[10px] text-white font-medium ml-0.5 uppercase" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
