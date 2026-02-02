@@ -9705,7 +9705,7 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing border ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -9724,10 +9724,7 @@ export default function Dashboard() {
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  borderTop: `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
-                                  borderRight: `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
-                                  borderBottom: `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
-                                  borderLeft: hasPrepDays && prepDaysCount > 0 ? 'none' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`
+                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -9750,20 +9747,18 @@ export default function Dashboard() {
                                       className="absolute flex items-center justify-center"
                                       style={{
                                         top: '0',
-                                        right: '100%',
+                                        right: 'calc(100% + 1px)',
                                         width: dayColumnWidth,
-                                        height: '18px',
+                                        height: `${taskHeight}px`,
                                         borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
-                                        borderTop: `1px solid ${borderColor}`,
-                                        borderBottom: `1px solid ${borderColor}`,
-                                        borderLeft: `1px solid ${borderColor}`,
+                                        border: `1px solid ${borderColor}`,
                                         borderRight: 'none',
                                         zIndex: 40,
                                       }}
                                       title={`${actualPrepDays} prep days`}
                                     >
-                                      <span className="text-[10px] text-gray-700 font-medium truncate px-1">
+                                      <span className="text-[10px] text-gray-600 font-medium truncate px-1">
                                         Prep days
                                       </span>
                                     </div>
