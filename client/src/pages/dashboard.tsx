@@ -9975,8 +9975,8 @@ export default function Dashboard() {
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate width: actualPrepDays * (single column width) - balanced adjustment
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7) - 8px)`;
+                                  // Calculate width: actualPrepDays * (single column width) - adjustment to align with course row prep days (2px margin)
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7) - 10px)`;
                                   const prepHeight = 18; // Reduced height
                                   const borderWidth = selectedTaskId === task.id ? 2 : 1;
                                   return (

@@ -206,9 +206,12 @@ All arrows connecting task boxes to calendar follow these exact specifications:
 ### Email Reminders (Not Yet Set Up)
 - User wants email reminders sent to bryn.kai-hendricks@outlook.com
 - User also wants screen popup reminders
-- SendGrid integration was dismissed by user - will need to either:
-  1. Complete the SendGrid integration authorization flow later, OR
-  2. Provide SendGrid API key as a secret for manual integration
+- SendGrid integration was dismissed by user
+- Resend integration was also dismissed by user (February 2026)
+- User has set up DNS records for uni-call.app domain for Resend (DKIM, MX, SPF)
+- To proceed, user needs to either:
+  1. Complete the Resend integration authorization flow, OR
+  2. Provide RESEND_API_KEY as a secret for manual integration
 - Alternative: Could use Nodemailer with another SMTP provider if user provides credentials
 
 ### Home Assistant Voice Integration (Incomplete)
