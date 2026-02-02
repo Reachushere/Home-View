@@ -9633,7 +9633,7 @@ export default function Dashboard() {
                             
                             // If covered by prep extension, push task down below it
                             if (isCoveredByPrep) {
-                              topOffset += 20; // Push down by prep extension height
+                              topOffset += 24; // Push down by prep extension height (22px + 2px gap)
                             }
                             
                             if (task.eventStartTime && task.eventEndTime) {
@@ -9647,7 +9647,7 @@ export default function Dashboard() {
                                 ? Math.max(36, (durationMinutes / 60) * 44 - 8)
                                 : Math.max(40, (durationMinutes / 60) * 44 - 4);
                               // Offset for minutes past the hour, plus prep offset if covered
-                              topOffset = (startMin / 60) * 44 + (isCoveredByPrep ? 20 : 0);
+                              topOffset = (startMin / 60) * 44 + (isCoveredByPrep ? 24 : 0);
                             }
                             
                             return (
@@ -9697,35 +9697,6 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
-                                {/* Prep extension bar extending to the left */}
-                                {hasPrepDays && prepDaysCount > 0 && (() => {
-                                  const courseHex = colors?.hex || '#4ADE80';
-                                  const rgb = hexToRgb(courseHex);
-                                  const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                                  const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-                                  return (
-                                    <div
-                                      className="absolute flex items-center justify-center"
-                                      style={{
-                                        top: '2px',
-                                        right: '100%',
-                                        width: '60px',
-                                        height: '16px',
-                                        borderRadius: '4px 0 0 4px',
-                                        backgroundColor: lightBg,
-                                        borderTop: `1px solid ${borderColor}`,
-                                        borderBottom: `1px solid ${borderColor}`,
-                                        borderLeft: `1px solid ${borderColor}`,
-                                        zIndex: 40,
-                                      }}
-                                      title={`${prepDaysCount} prep days`}
-                                    >
-                                      <span className="text-[7px] text-gray-600 truncate px-0.5">
-                                        Prep days
-                                      </span>
-                                    </div>
-                                  );
-                                })()}
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
                                 <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   {!isCASL101Task(task) && (
@@ -9923,8 +9894,14 @@ export default function Dashboard() {
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                   const colors = dynamicCourseColors[courseCode];
                   
-                  // Prep extension is a short bar at the top (about 20px), not full height
-                  const prepBarHeight = 20;
+                  // Use light background with border (matching the example)
+                  const courseHex = colors?.hex || '#4ADE80';
+                  const rgb = hexToRgb(courseHex);
+                  const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                  const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                  
+                  // Prep extension is a short bar at the top (about 22px)
+                  const prepBarHeight = 22;
                   
                   // Find today's index in the weekDays array (not day-of-week)
                   const today = new Date();
@@ -9939,41 +9916,28 @@ export default function Dashboard() {
                   return (
                     <div
                       key={`prep-ext-${task.id}`}
-                      className="absolute border-l border-t border-b rounded-tl rounded-bl pointer-events-none silver-shimmer-task"
+                      className="absolute rounded-tl rounded-bl pointer-events-none"
                       style={{
-                        top: `${topPx - 2}px`,
+                        top: `${topPx}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
                         width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 1px)`,
                         height: `${prepBarHeight}px`,
                         zIndex: 35,
-                        backgroundColor: colors?.prepBg || '#f3f4f6',
-                        borderColor: colors?.border || '#9ca3af'
+                        backgroundColor: lightBg,
+                        borderLeft: `1px solid ${borderColor}`,
+                        borderTop: `1px solid ${borderColor}`,
+                        borderBottom: `1px solid ${borderColor}`
                       }}
                       data-testid={`prep-extension-${task.id}`}
                     >
-                      {/* Blinking overlay for today column portion - uses task background color */}
-                      {isTodayInPrepRange && (
-                        <div
-                          className="absolute inset-y-0 animate-pulse-task"
-                          style={{
-                            left: `calc(${todayOffsetInPrep} * (100% / ${prepDaysCount}))`,
-                            width: `calc(100% / ${prepDaysCount})`,
-                            borderRadius: todayOffsetInPrep === 0 ? '4px 0 0 4px' : '0',
-                            backgroundColor: colors?.bg || '#f3f4f6'
-                          }}
-                          data-prep-today-task-id={task.id}
-                        />
-                      )}
-                      {/* Prep Days text - centered on today column if in range, otherwise centered overall */}
+                      {/* Prep Days text - centered */}
                       <span 
-                        className="absolute text-[9px] text-gray-500 font-medium whitespace-nowrap"
+                        className="absolute text-[10px] text-gray-600 font-medium whitespace-nowrap"
                         style={{
-                          left: isTodayInPrepRange 
-                            ? `calc(${todayOffsetInPrep} * (100% / ${prepDaysCount}) + (100% / ${prepDaysCount}) / 2)`
-                            : '50%',
+                          left: '50%',
                           transform: 'translateX(-50%)',
                           top: '50%',
-                          marginTop: '-6px'
+                          marginTop: '-7px'
                         }}
                         data-prep-text-task-id={task.id}
                       >
