@@ -6985,7 +6985,7 @@ export default function Dashboard() {
           </div>
           
           {/* Clock */}
-          <div className="rounded-full h-[35px] overflow-hidden px-3.5" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
+          <div className="rounded-full h-[35px] overflow-hidden px-3.5" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', clipPath: 'inset(0 0 0 12px)' }} data-testid="digital-clock">
             <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
               <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
