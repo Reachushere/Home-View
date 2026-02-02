@@ -9968,14 +9968,16 @@ export default function Dashboard() {
                                   const courseHex = colors?.hex || '#9CA3AF';
                                   const rgb = hexToRgb(courseHex);
                                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                                  const prepBorderColor = selectedTaskId === task.id ? 'rgb(239, 68, 68)' : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                                  // Use solid border colour (no transparency) to match task box
                                   const taskBorderColor = task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af');
+                                  const prepBorderColor = selectedTaskId === task.id ? 'rgb(239, 68, 68)' : taskBorderColor;
                                   // Limit prep days to actual days available to the left in the week
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
                                   // Calculate width: actualPrepDays * (single column width) - larger adjustment to prevent overflow
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 60}px) / 7) - 8px)`;
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 80}px) / 7) - 12px)`;
+                                  const prepHeight = 18; // Reduced height
                                   return (
                                     <>
                                       {/* Prep extension bar */}
@@ -9985,8 +9987,8 @@ export default function Dashboard() {
                                           top: '-1px',
                                           right: 'calc(100% - 1px)',
                                           width: prepWidth,
-                                          height: '24px',
-                                          borderRadius: '4px 0 0 4px',
+                                          height: `${prepHeight}px`,
+                                          borderRadius: '3px 0 0 3px',
                                           backgroundColor: lightBg,
                                           borderTop: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
                                           borderLeft: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
@@ -9996,7 +9998,7 @@ export default function Dashboard() {
                                         }}
                                         title={`${actualPrepDays} prep days`}
                                       >
-                                        <span className="text-[10px] text-gray-600 !font-normal truncate px-2">
+                                        <span className="text-[9px] text-gray-600 !font-normal truncate px-1">
                                           Prep days
                                         </span>
                                       </div>
@@ -10004,11 +10006,11 @@ export default function Dashboard() {
                                       <div
                                         className="absolute"
                                         style={{
-                                          top: '22px',
+                                          top: `${prepHeight - 1}px`,
                                           left: selectedTaskId === task.id ? '-2px' : '-1px',
                                           width: selectedTaskId === task.id ? '2px' : '1px',
-                                          height: `${taskHeight - 22}px`,
-                                          backgroundColor: selectedTaskId === task.id ? 'rgb(239, 68, 68)' : taskBorderColor,
+                                          height: `${taskHeight - prepHeight + 2}px`,
+                                          backgroundColor: prepBorderColor,
                                           zIndex: 51,
                                         }}
                                       />
