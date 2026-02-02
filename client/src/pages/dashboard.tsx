@@ -9421,6 +9421,10 @@ export default function Dashboard() {
                           // Use button gradient from course color
                           const prepGradient = getButtonGradient(course.label);
                           
+                          // Create a lighter gradient for prep bars (lighter than button)
+                          const rgb = hexToRgb(course.label);
+                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 30)}, ${Math.min(255, rgb.g + 30)}, ${Math.min(255, rgb.b + 30)}) 0%, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 100%)`;
+                          
                           return (
                             <div
                               key={`prep-${task.id}-${idx}`}
@@ -9432,16 +9436,12 @@ export default function Dashboard() {
                                 top: '50%',
                                 transform: 'translateY(-50%)',
                                 borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
-                                background: prepGradient,
+                                background: lighterGradient,
                                 zIndex: 5,
-                                borderTop: '1px solid rgba(0,0,0,0.25)',
-                                borderBottom: '1px solid rgba(0,0,0,0.25)',
-                                borderLeft: isFirstPrepDay ? '1px solid rgba(0,0,0,0.25)' : 'none',
-                                borderRight: 'none',
                               }}
                               title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                             >
-                              <span className="text-[8px] text-black truncate px-0.5">
+                              <span className="text-[8px] text-white truncate px-0.5 drop-shadow-sm">
                                 Prep day
                               </span>
                             </div>
@@ -9450,8 +9450,9 @@ export default function Dashboard() {
                         {/* Render due tasks with checkbox */}
                         {dueTasks.length > 0 && dueTasks.map((task, idx) => {
                           const hasPrepDays = task.startDate != null;
-                          // Use button gradient from course color for connecting bar
-                          const dueGradient = getButtonGradient(course.label);
+                          // Use lighter gradient for connecting bar (matching prep bars)
+                          const rgb = hexToRgb(course.label);
+                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 30)}, ${Math.min(255, rgb.g + 30)}, ${Math.min(255, rgb.b + 30)}) 0%, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 100%)`;
                           return (
                             <div 
                               key={`due-${task.id}-${idx}`}
@@ -9469,11 +9470,8 @@ export default function Dashboard() {
                                     top: '50%',
                                     transform: 'translateY(-50%)',
                                     borderRadius: '0 4px 4px 0',
-                                    background: dueGradient,
+                                    background: lighterGradient,
                                     zIndex: 4,
-                                    borderTop: '1px solid rgba(0,0,0,0.25)',
-                                    borderBottom: '1px solid rgba(0,0,0,0.25)',
-                                    borderRight: '1px solid rgba(0,0,0,0.25)',
                                   }}
                                 />
                               )}
