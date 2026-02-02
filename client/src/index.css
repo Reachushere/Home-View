@@ -100,6 +100,26 @@
   --chart-5: 340 75% 55%;
 }
 
+/* Force normal font weight on all form elements */
+input,
+select,
+option,
+textarea,
+[role="combobox"],
+[role="listbox"],
+[role="option"] {
+  font-weight: 400 !important;
+}
+
+/* Force normal font weight on dialog form elements */
+[role="dialog"] input,
+[role="dialog"] select,
+[role="dialog"] option,
+[role="dialog"] textarea,
+[role="dialog"] [data-radix-collection-item] {
+  font-weight: 400 !important;
+}
+
 @keyframes burst-from-top {
   0% { 
     opacity: 0; 
