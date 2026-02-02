@@ -388,6 +388,7 @@
 .silver-shimmer-task {
   position: relative;
   overflow: hidden;
+  background: linear-gradient(90deg, #a8a8a8 0%, #c0c0c0 50%, #a8a8a8 100%);
 }
 
 .silver-shimmer-task::after {
@@ -448,7 +449,9 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(0, 0, 0, 0.25) 40%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.25) 60%,
     transparent 100%
   );
   transform: translateX(-100%);
@@ -464,11 +467,11 @@
   2% {
     opacity: 1;
   }
-  10% {
+  12% {
     transform: translateX(100%);
     opacity: 1;
   }
-  12% {
+  15% {
     opacity: 0;
   }
   100% {
