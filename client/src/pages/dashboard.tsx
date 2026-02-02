@@ -8058,7 +8058,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#FFA365',
+            background: '#EB9257',
             boxShadow: 'none',
           }}
         />
@@ -8163,7 +8163,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#FFA365',
+            background: '#EB9257',
             boxShadow: 'none',
           }}
         />
