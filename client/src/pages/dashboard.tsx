@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -104,6 +104,9 @@ import {
   CheckCircle2,
   Check,
   ListTodo,
+  Link2,
+  Mail,
+  Smartphone,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType } from "@shared/schema";
@@ -8453,6 +8456,135 @@ export default function Dashboard() {
                 <span className="text-[10px] text-gray-700 font-medium">Note</span>
               </div>
               <div className="flex items-center gap-1">
+                {/* Attachment indicator */}
+                {(note.taskId || note.projectId) && (
+                  <span className="text-[8px] text-gray-600 truncate max-w-[60px]" title={
+                    note.taskId 
+                      ? tasks.find(t => t.id === note.taskId)?.title || 'Task'
+                      : allProjects?.find(p => p.id === note.projectId)?.name || 'Project'
+                  }>
+                    <Link2 className="h-2.5 w-2.5 inline" />
+                  </span>
+                )}
+                {/* Reminder settings */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button 
+                      className={`h-4 w-4 flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
+                      title="Set reminder"
+                    >
+                      <Bell className="h-3 w-3" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenuLabel className="text-[10px] py-1">Reminder Settings</DropdownMenuLabel>
+                    <div className="space-y-2 p-1">
+                      <div className="space-y-1">
+                        <Label className="text-[10px]">Reminder Time</Label>
+                        <Input
+                          type="datetime-local"
+                          className="h-7 text-[10px]"
+                          value={note.reminderTime ? format(new Date(note.reminderTime), "yyyy-MM-dd'T'HH:mm") : ''}
+                          onChange={(e) => {
+                            const value = e.target.value ? new Date(e.target.value).toISOString() : null;
+                            updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderTime: value } });
+                          }}
+                        />
+                      </div>
+                      <DropdownMenuSeparator />
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          <Volume2 className="h-3 w-3" />
+                          <span className="text-[10px]">Alarm</span>
+                        </div>
+                        <Checkbox
+                          checked={note.reminderAlarm}
+                          onCheckedChange={(checked) => updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderAlarm: !!checked } })}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          <Mail className="h-3 w-3" />
+                          <span className="text-[10px]">Email</span>
+                        </div>
+                        <Checkbox
+                          checked={note.reminderEmail}
+                          onCheckedChange={(checked) => updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderEmail: !!checked } })}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          <Smartphone className="h-3 w-3" />
+                          <span className="text-[10px]">Push</span>
+                        </div>
+                        <Checkbox
+                          checked={note.reminderPush}
+                          onCheckedChange={(checked) => updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderPush: !!checked } })}
+                        />
+                      </div>
+                      {note.reminderTime && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full h-6 text-[10px] text-red-600 hover:text-red-700"
+                          onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderTime: null, reminderAlarm: false, reminderEmail: false, reminderPush: false } })}
+                        >
+                          Clear Reminder
+                        </Button>
+                      )}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                {/* Attach to task/project */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button 
+                      className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"
+                      title="Attach to task or project"
+                    >
+                      <Paperclip className="h-3 w-3" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="max-h-[300px] overflow-y-auto w-48">
+                    <DropdownMenuLabel className="text-[10px] py-1">Attach to Task</DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      className="text-[10px] py-1"
+                      onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { taskId: null } })}
+                    >
+                      <span className="text-gray-500">None</span>
+                    </DropdownMenuItem>
+                    {tasks.slice(0, 20).map((task) => (
+                      <DropdownMenuItem 
+                        key={task.id}
+                        className="text-[10px] py-1 truncate"
+                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { taskId: task.id, projectId: null } })}
+                      >
+                        <span className={note.taskId === task.id ? "font-semibold" : ""}>
+                          {task.title}
+                        </span>
+                      </DropdownMenuItem>
+                    ))}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuLabel className="text-[10px] py-1">Attach to Project</DropdownMenuLabel>
+                    <DropdownMenuItem 
+                      className="text-[10px] py-1"
+                      onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { projectId: null } })}
+                    >
+                      <span className="text-gray-500">None</span>
+                    </DropdownMenuItem>
+                    {allProjects?.map((project) => (
+                      <DropdownMenuItem 
+                        key={project.id}
+                        className="text-[10px] py-1 truncate"
+                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { projectId: project.id, taskId: null } })}
+                      >
+                        <span className={note.projectId === project.id ? "font-semibold" : ""}>
+                          {project.name}
+                        </span>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 {/* Color picker */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

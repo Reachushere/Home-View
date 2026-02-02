@@ -288,6 +288,12 @@ export const stickyNotes = pgTable("sticky_notes", {
   height: integer("height").notNull().default(150),
   zIndex: integer("z_index").notNull().default(100),
   isMinimized: boolean("is_minimized").notNull().default(false),
+  taskId: integer("task_id"),
+  projectId: integer("project_id"),
+  reminderTime: timestamp("reminder_time"),
+  reminderAlarm: boolean("reminder_alarm").notNull().default(false),
+  reminderEmail: boolean("reminder_email").notNull().default(false),
+  reminderPush: boolean("reminder_push").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
