@@ -6990,7 +6990,7 @@ export default function Dashboard() {
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
             <div className="w-[1px] h-4 bg-white/50" />
-            <div className="flex items-center">
+            <div className="flex items-center justify-end" style={{ width: '90px' }}>
               <span className="text-[14px] text-white font-bold leading-none" style={{ fontFamily: "'Raleway', sans-serif" }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
