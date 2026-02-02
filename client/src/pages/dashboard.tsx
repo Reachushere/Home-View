@@ -5616,6 +5616,54 @@ export default function Dashboard() {
               </>
             )}
             
+            {/* OpenAI Voice selector - shows for OpenAI TTS (Fire tablets) */}
+            {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
+              <div className="flex items-center gap-1">
+                <span className="text-[8px] text-gray-400">Voice:</span>
+                <Select 
+                  value={openaiVoice} 
+                  onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}
+                >
+                  <SelectTrigger className="w-[80px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="alloy" className="text-[10px]">Alloy</SelectItem>
+                    <SelectItem value="echo" className="text-[10px]">Echo</SelectItem>
+                    <SelectItem value="fable" className="text-[10px]">Fable</SelectItem>
+                    <SelectItem value="onyx" className="text-[10px]">Onyx</SelectItem>
+                    <SelectItem value="nova" className="text-[10px]">Nova</SelectItem>
+                    <SelectItem value="shimmer" className="text-[10px]">Shimmer</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  onClick={async () => {
+                    try {
+                      const response = await fetch("/api/tts", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ text: "Hello, this is a sample of my voice.", voice: openaiVoice }),
+                      });
+                      if (response.ok) {
+                        const blob = await response.blob();
+                        const audio = new Audio(URL.createObjectURL(blob));
+                        audio.play();
+                      }
+                    } catch (err) {
+                      console.error("Voice preview error:", err);
+                    }
+                  }}
+                  data-testid="button-preview-openai-voice"
+                  title="Preview voice"
+                >
+                  <Volume2 className="h-2.5 w-2.5" />
+                </Button>
+              </div>
+            )}
+            
             {/* Speed control - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && (
               <div className="flex items-center gap-1 bg-gray-800 rounded px-2 py-0.5">
