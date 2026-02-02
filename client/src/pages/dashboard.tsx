@@ -7900,7 +7900,7 @@ export default function Dashboard() {
       )}
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '342px', right: '6px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '329px', right: '6px', width: '70px' }}>
         <div 
           className="cursor-pointer hover:bg-white/20 rounded p-0.5"
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
@@ -7920,7 +7920,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '378px', right: '14px', width: '52px', height: '414px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '365px', right: '14px', width: '52px', height: '414px' }}>
         <div 
           style={{ 
             width: '100%', 
@@ -7944,7 +7944,7 @@ export default function Dashboard() {
               position: 'absolute',
               width: '44px', 
               height: '44px', 
-              top: '382px', 
+              top: '369px', 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
@@ -8086,7 +8086,7 @@ export default function Dashboard() {
             style={{ 
               width: '44px', 
               height: '44px', 
-              top: '432px', 
+              top: '419px', 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
@@ -8209,7 +8209,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '484px', 
+          top: '471px', 
           right: '18px',
         }}
         onMouseEnter={() => setDecorativeHoneycombHover('middle')}
@@ -8316,7 +8316,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '535px', 
+          top: '522px', 
           right: '18px',
         }}
         data-testid="honeycomb-todo-main"
@@ -8361,7 +8361,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '586px', 
+          top: '573px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8386,7 +8386,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '637px', 
+          top: '624px', 
           right: '18px',
         }}
         data-testid="honeycomb-sticky-note"
@@ -8433,7 +8433,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '689px', 
+          top: '676px', 
           right: '18px',
         }}
         data-testid="honeycomb-push"
@@ -8490,7 +8490,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '741px', 
+          top: '728px', 
           right: '18px',
         }}
         data-testid="honeycomb-pull"
