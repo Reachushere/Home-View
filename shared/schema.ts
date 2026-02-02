@@ -294,6 +294,9 @@ export const stickyNotes = pgTable("sticky_notes", {
   reminderAlarm: boolean("reminder_alarm").notNull().default(false),
   reminderEmail: boolean("reminder_email").notNull().default(false),
   reminderPush: boolean("reminder_push").notNull().default(false),
+  homePositionX: integer("home_position_x"),
+  homePositionY: integer("home_position_y"),
+  lastMovedAt: timestamp("last_moved_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

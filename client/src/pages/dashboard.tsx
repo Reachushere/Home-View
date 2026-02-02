@@ -1945,18 +1945,42 @@ export default function Dashboard() {
   });
 
   // Handle adding a new sticky note
+  // Calculate sticky note home position (all-day box on day before today column)
+  const getStickyNoteHomePosition = () => {
+    // The calendar starts at around x=400, each day column is ~150px wide
+    // Yesterday is 1 column before today, today column is typically around index 3-4
+    // All-day box is at the top of the calendar, around y=160
+    const calendarStartX = 430; // Approximate start of calendar
+    const dayColumnWidth = 150; // Width of each day column
+    const yesterdayColumnIndex = 2; // Yesterday is typically 2nd column (0-indexed)
+    const allDayBoxY = 170; // Top of all-day area
+    
+    return {
+      x: Math.floor(calendarStartX + (yesterdayColumnIndex * dayColumnWidth) + 10),
+      y: allDayBoxY
+    };
+  };
+
   const handleAddStickyNote = () => {
     const newZIndex = maxStickyZIndex + 1;
     setMaxStickyZIndex(newZIndex);
+    const homePos = getStickyNoteHomePosition();
+    // Offset each new note slightly to avoid stacking exactly
+    const existingCount = stickyNotes?.length || 0;
+    const offsetX = (existingCount % 3) * 15;
+    const offsetY = Math.floor(existingCount / 3) * 15;
+    
     createStickyNoteMutation.mutate({
       content: "",
       color: "yellow",
-      positionX: Math.floor(150 + Math.random() * 100),
-      positionY: Math.floor(150 + Math.random() * 100),
+      positionX: homePos.x + offsetX,
+      positionY: homePos.y + offsetY,
       width: 200,
       height: 150,
       zIndex: newZIndex,
       isMinimized: false,
+      homePositionX: homePos.x,
+      homePositionY: homePos.y,
     });
   };
 
@@ -1989,8 +2013,15 @@ export default function Dashboard() {
   }, [draggingStickyNote, stickyNoteOffset]);
 
   const handleStickyNoteMouseUp = useCallback(() => {
+    // Mark the note as moved with current timestamp
+    if (draggingStickyNote !== null) {
+      updateStickyNoteMutation.mutate({ 
+        id: draggingStickyNote, 
+        updates: { lastMovedAt: new Date().toISOString() } 
+      });
+    }
     setDraggingStickyNote(null);
-  }, []);
+  }, [draggingStickyNote]);
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
@@ -2002,6 +2033,38 @@ export default function Dashboard() {
       };
     }
   }, [draggingStickyNote, handleStickyNoteMouseMove, handleStickyNoteMouseUp]);
+
+  // Auto-return sticky notes to home position after 2 hours
+  useEffect(() => {
+    const checkAndReturnNotes = () => {
+      const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+      stickyNotes?.forEach((note) => {
+        if (note.lastMovedAt && note.homePositionX !== null && note.homePositionY !== null) {
+          const movedAt = new Date(note.lastMovedAt);
+          if (movedAt < twoHoursAgo) {
+            // Check if note is not at home position
+            if (note.positionX !== note.homePositionX || note.positionY !== note.homePositionY) {
+              updateStickyNoteMutation.mutate({
+                id: note.id,
+                updates: { 
+                  positionX: note.homePositionX, 
+                  positionY: note.homePositionY,
+                  lastMovedAt: null
+                }
+              });
+            }
+          }
+        }
+      });
+    };
+
+    // Check every minute
+    const interval = setInterval(checkAndReturnNotes, 60000);
+    // Also check on mount
+    checkAndReturnNotes();
+    
+    return () => clearInterval(interval);
+  }, [stickyNotes]);
 
   // Handle sticky note resize
   const handleStickyNoteResizeStart = (e: React.MouseEvent, noteId: number, note: StickyNoteType) => {
