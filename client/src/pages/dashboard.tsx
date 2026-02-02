@@ -252,6 +252,7 @@ export default function Dashboard() {
   const todayTaskCountRef = useRef(0);
   const calendarWrapperRef = useRef<HTMLDivElement>(null);
   const courseRowsRef = useRef<HTMLDivElement>(null);
+  const allDayRowRef = useRef<HTMLDivElement>(null);
   const [calendarTop, setCalendarTop] = useState(247); // Default offset
   const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
@@ -3832,6 +3833,13 @@ export default function Dashboard() {
         const rect = courseRowsRef.current.getBoundingClientRect();
         setCourseRowsTop(rect.top + window.scrollY);
       }
+      // Track all day row height and update gridSizes if it has grown
+      if (allDayRowRef.current) {
+        const actualHeight = allDayRowRef.current.offsetHeight;
+        if (actualHeight > gridSizes.allDayRowHeight) {
+          setGridSizes(prev => ({ ...prev, allDayRowHeight: actualHeight }));
+        }
+      }
     };
     updatePositions();
     // Use requestAnimationFrame for smoother updates
@@ -3850,6 +3858,9 @@ export default function Dashboard() {
     if (courseRowsRef.current) {
       observer.observe(courseRowsRef.current);
     }
+    if (allDayRowRef.current) {
+      observer.observe(allDayRowRef.current);
+    }
     // Also observe the parent container for height changes
     const taskBoxesContainer = document.querySelector('[data-task-boxes-container]');
     if (taskBoxesContainer) {
@@ -3860,7 +3871,7 @@ export default function Dashboard() {
       observer.disconnect();
       cancelAnimationFrame(rafId);
     };
-  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek]);
+  }, [dueTodayTasks.length, dueTomorrowTasks.length, dueThisWeekTasks.length, modulesHoneycombOpen, isResizingThisWeek, gridSizes.allDayRowHeight]);
   
   // Calculate shared row heights for consistent sizing between Urgent and Overdue boxes
   const cppa122Height = 18 + Math.max(1, todayTasks.filter(t => t.courseName?.startsWith("CPPA122")).length, missedTasks.filter(t => t.courseName?.startsWith("CPPA122")).length) * 64;
@@ -6318,8 +6329,8 @@ export default function Dashboard() {
               width: '44px', 
               height: '44px', 
               borderRadius: '50%', 
-              background: isMuted ? '#FF4545' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', 
-              padding: '3px',
+              background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', 
+              padding: '1px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
@@ -6329,9 +6340,9 @@ export default function Dashboard() {
               variant="ghost"
               size="icon"
               onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
-              className="!h-[38px] !w-[38px] !min-h-[38px] !min-w-[38px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
               style={isMuted 
-                ? { background: 'linear-gradient(0deg, #FF9494 0%, #FF0000 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.3)' }
+                ? { background: 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }
                 : { background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }
               }
               data-testid="button-mute-toggle"
@@ -7705,7 +7716,7 @@ export default function Dashboard() {
               <Library className="h-[18px] w-[18px] text-white" strokeWidth={2} />
             </div>
             {unreadModuleCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
+              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
                 {unreadModuleCount}
               </div>
             )}
@@ -7794,7 +7805,7 @@ export default function Dashboard() {
                 <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
                 <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
                 {unreadCount > 0 && (
-                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
+                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
                     {unreadCount}
                   </div>
                 )}
@@ -7832,7 +7843,7 @@ export default function Dashboard() {
               <BookOpenCheck className="h-[18px] w-[18px] text-white" strokeWidth={2} />
             </Button>
             {unreadReadingCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
+              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
                 {unreadReadingCount}
               </div>
             )}
@@ -7921,7 +7932,7 @@ export default function Dashboard() {
                 <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
                 <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
                 {unreadCount > 0 && (
-                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
+                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
                     {unreadCount}
                   </div>
                 )}
@@ -9038,7 +9049,7 @@ export default function Dashboard() {
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+            <div ref={allDayRowRef} className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
               <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
