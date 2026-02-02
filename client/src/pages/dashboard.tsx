@@ -9422,7 +9422,7 @@ export default function Dashboard() {
                           
                           // Create a lighter gradient for prep bars (lighter than button)
                           const rgb = hexToRgb(course.label);
-                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 50)}, ${Math.min(255, rgb.g + 50)}, ${Math.min(255, rgb.b + 50)}) 0%, rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)}) 100%)`;
+                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 0%, rgb(${Math.min(255, rgb.r + 140)}, ${Math.min(255, rgb.g + 140)}, ${Math.min(255, rgb.b + 140)}) 100%)`;
                           
                           return (
                             <div
@@ -9450,7 +9450,7 @@ export default function Dashboard() {
                           const hasPrepDays = task.startDate != null;
                           // Use lighter gradient for connecting bar (matching prep bars)
                           const rgb = hexToRgb(course.label);
-                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 50)}, ${Math.min(255, rgb.g + 50)}, ${Math.min(255, rgb.b + 50)}) 0%, rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)}) 100%)`;
+                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 0%, rgb(${Math.min(255, rgb.r + 140)}, ${Math.min(255, rgb.g + 140)}, ${Math.min(255, rgb.b + 140)}) 100%)`;
                           return (
                             <div 
                               key={`due-${task.id}-${idx}`}
@@ -9694,7 +9694,7 @@ export default function Dashboard() {
                                 {hasPrepDays && prepDaysCount > 0 && (() => {
                                   const courseHex = colors?.hex || '#4ADE80';
                                   const rgb = hexToRgb(courseHex);
-                                  const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 50)}, ${Math.min(255, rgb.g + 50)}, ${Math.min(255, rgb.b + 50)}) 0%, rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)}) 100%)`;
+                                  const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 0%, rgb(${Math.min(255, rgb.r + 140)}, ${Math.min(255, rgb.g + 140)}, ${Math.min(255, rgb.b + 140)}) 100%)`;
                                   return (
                                     <div
                                       className="absolute silver-shimmer-prep flex items-center justify-center"
