@@ -6973,9 +6973,9 @@ export default function Dashboard() {
               </Button>
               {/* Date display */}
               <div className="flex items-center justify-center gap-1 whitespace-nowrap relative" style={{ minWidth: '140px', top: '3px' }}>
-                <span className="text-[12px] font-medium text-white">{format(weekStartDate, "MMMM d")}</span>
-                <span className="text-[12px] text-white/50">—</span>
-                <span className="text-[12px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
+                <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMMM d")}</span>
+                <span className="text-[11px] text-white/50">—</span>
+                <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
               </div>
               {/* Right arrow */}
               <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week" data-date-nav>
