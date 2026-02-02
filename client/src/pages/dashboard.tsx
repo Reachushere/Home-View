@@ -9424,7 +9424,7 @@ export default function Dashboard() {
                           return (
                             <div
                               key={`prep-${task.id}-${idx}`}
-                              className="silver-shimmer-prep absolute flex items-center"
+                              className="silver-shimmer-prep absolute flex items-center justify-center"
                               style={{
                                 left: isFirstPrepDay ? '2px' : '-3px',
                                 right: isLastPrepDay ? '-3px' : '-3px',
@@ -9441,11 +9441,9 @@ export default function Dashboard() {
                               }}
                               title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                             >
-                              {isFirstPrepDay && (
-                                <span className="text-[7px] font-bold text-white whitespace-nowrap pl-1 drop-shadow-sm">
-                                  Prep
-                                </span>
-                              )}
+                              <span className="text-[8px] text-black truncate px-0.5">
+                                Prep day
+                              </span>
                             </div>
                           );
                         })}
