@@ -9420,27 +9420,31 @@ export default function Dashboard() {
                           // Use button gradient from course color
                           const prepGradient = getButtonGradient(course.label);
                           
-                          // Create a lighter gradient for prep bars (lighter than button)
+                          // Create a light background with border (matching the example)
                           const rgb = hexToRgb(course.label);
-                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 0%, rgb(${Math.min(255, rgb.r + 140)}, ${Math.min(255, rgb.g + 140)}, ${Math.min(255, rgb.b + 140)}) 100%)`;
+                          const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                          const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
                           
                           return (
                             <div
                               key={`prep-${task.id}-${idx}`}
-                              className="silver-shimmer-prep flex items-center justify-center"
+                              className="flex items-center justify-center"
                               style={{
                                 marginLeft: isFirstPrepDay ? '2px' : '-6px',
                                 marginRight: '-6px',
                                 height: '18px',
                                 borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
-                                background: lighterGradient,
+                                backgroundColor: lightBg,
+                                borderTop: `1px solid ${borderColor}`,
+                                borderBottom: `1px solid ${borderColor}`,
+                                borderLeft: isFirstPrepDay ? `1px solid ${borderColor}` : 'none',
                                 zIndex: 5,
                                 flex: 1,
                               }}
                               title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                             >
-                              <span className="text-[8px] text-white truncate px-0.5">
-                                Prep day
+                              <span className="text-[8px] text-gray-600 truncate px-0.5">
+                                Prep days
                               </span>
                             </div>
                           );
@@ -9448,9 +9452,10 @@ export default function Dashboard() {
                         {/* Render due tasks with checkbox */}
                         {dueTasks.length > 0 && dueTasks.map((task, idx) => {
                           const hasPrepDays = task.startDate != null;
-                          // Use lighter gradient for connecting bar (matching prep bars)
+                          // Use light background with border (matching prep bars)
                           const rgb = hexToRgb(course.label);
-                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 0%, rgb(${Math.min(255, rgb.r + 140)}, ${Math.min(255, rgb.g + 140)}, ${Math.min(255, rgb.b + 140)}) 100%)`;
+                          const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                          const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
                           return (
                             <div 
                               key={`due-${task.id}-${idx}`}
@@ -9458,10 +9463,12 @@ export default function Dashboard() {
                               style={{
                                 height: '18px',
                                 marginLeft: hasPrepDays ? '-6px' : '2px',
-                                paddingLeft: hasPrepDays ? '8px' : '0',
+                                paddingLeft: hasPrepDays ? '8px' : '2px',
                                 paddingRight: '2px',
-                                borderRadius: '0 4px 4px 0',
-                                background: hasPrepDays ? lighterGradient : 'transparent',
+                                borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px',
+                                backgroundColor: lightBg,
+                                border: `1px solid ${borderColor}`,
+                                borderLeft: hasPrepDays ? 'none' : `1px solid ${borderColor}`,
                                 flex: 1,
                               }}
                               title={task.title}
@@ -9694,23 +9701,27 @@ export default function Dashboard() {
                                 {hasPrepDays && prepDaysCount > 0 && (() => {
                                   const courseHex = colors?.hex || '#4ADE80';
                                   const rgb = hexToRgb(courseHex);
-                                  const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 0%, rgb(${Math.min(255, rgb.r + 140)}, ${Math.min(255, rgb.g + 140)}, ${Math.min(255, rgb.b + 140)}) 100%)`;
+                                  const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                                  const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
                                   return (
                                     <div
-                                      className="absolute silver-shimmer-prep flex items-center justify-center"
+                                      className="absolute flex items-center justify-center"
                                       style={{
                                         top: '2px',
                                         right: '100%',
                                         width: '60px',
                                         height: '16px',
                                         borderRadius: '4px 0 0 4px',
-                                        background: lighterGradient,
+                                        backgroundColor: lightBg,
+                                        borderTop: `1px solid ${borderColor}`,
+                                        borderBottom: `1px solid ${borderColor}`,
+                                        borderLeft: `1px solid ${borderColor}`,
                                         zIndex: 40,
                                       }}
                                       title={`${prepDaysCount} prep days`}
                                     >
-                                      <span className="text-[7px] text-white truncate px-0.5">
-                                        {prepDaysCount} prep days
+                                      <span className="text-[7px] text-gray-600 truncate px-0.5">
+                                        Prep days
                                       </span>
                                     </div>
                                   );
