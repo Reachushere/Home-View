@@ -8177,26 +8177,47 @@ export default function Dashboard() {
       <div 
         className="absolute z-[60] pointer-events-auto"
         style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: '636px', 
-          right: '18px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #FFFCBF 0%, #EAFF00 100%)',
-          padding: '1px'
+          width: '52px', 
+          height: '52px', 
+          top: '632px', 
+          right: '14px',
         }}
         data-testid="honeycomb-sticky-note"
       >
-        <Button 
-          size="icon"
-          variant="ghost"
-          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-          style={{ background: 'linear-gradient(180deg, #EAFF00 0%, #FFFCBF 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-          onClick={handleAddStickyNote}
-          title="Add Sticky Note"
+        {/* Back circle - solid #FAFF70 */}
+        <div
+          style={{
+            position: 'absolute',
+            width: '52px',
+            height: '52px',
+            borderRadius: '50%',
+            background: '#FAFF70',
+          }}
+        />
+        {/* Front circle with gradient */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '4px',
+            left: '4px',
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #FFFCBF 0%, #EAFF00 100%)',
+            padding: '1px',
+          }}
         >
-          <StickyNote style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-        </Button>
+          <Button 
+            size="icon"
+            variant="ghost"
+            className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+            style={{ background: 'linear-gradient(180deg, #EAFF00 0%, #FFFCBF 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+            onClick={handleAddStickyNote}
+            title="Add Sticky Note"
+          >
+            <StickyNote style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+          </Button>
+        </div>
       </div>
 
       {/* Render Sticky Notes */}
