@@ -8184,7 +8184,7 @@ export default function Dashboard() {
         }}
         data-testid="honeycomb-sticky-note"
       >
-        {/* Back circle - solid #FAFF70 */}
+        {/* Back circle - solid #F7FF0F */}
         <div
           style={{
             position: 'absolute',
@@ -8193,7 +8193,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#FAFF70',
+            background: '#F7FF0F',
             boxShadow: 'none',
           }}
         />
