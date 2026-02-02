@@ -2012,16 +2012,64 @@ export default function Dashboard() {
     }
   }, [draggingStickyNote, stickyNoteOffset]);
 
-  const handleStickyNoteMouseUp = useCallback(() => {
+  const handleStickyNoteMouseUp = useCallback((e: MouseEvent) => {
     // Mark the note as moved with current timestamp
     if (draggingStickyNote !== null) {
+      // Check if dropped in all-day row area - snap to cell left of today
+      if (allDayRowRef.current) {
+        const allDayRect = allDayRowRef.current.getBoundingClientRect();
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+        
+        // Check if mouse is within the all-day row area
+        if (mouseY >= allDayRect.top && mouseY <= allDayRect.bottom && 
+            mouseX >= allDayRect.left && mouseX <= allDayRect.right) {
+          
+          // Calculate which day column the mouse is in
+          const timeColumnWidth = gridSizes.timeColumnWidth;
+          const moduleColumnWidth = gridSizes.moduleColumnWidth;
+          const leftOffset = timeColumnWidth + moduleColumnWidth;
+          const availableWidth = allDayRect.width - leftOffset;
+          const columnWidth = availableWidth / 7;
+          
+          // Find today's column index (0-6)
+          const today = startOfDay(new Date());
+          const weekStart = startOfWeek(today, { weekStartsOn: 6 }); // Saturday start
+          const todayIdx = Math.floor((today.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24));
+          
+          // Target is day before today (or today if it's Saturday)
+          const targetIdx = Math.max(0, todayIdx - 1);
+          
+          // Calculate snap position and size
+          const snapX = allDayRect.left + leftOffset + (targetIdx * columnWidth) + 2;
+          const snapY = allDayRect.top + 2;
+          const snapWidth = columnWidth - 4;
+          const snapHeight = allDayRect.height - 4;
+          
+          updateStickyNoteMutation.mutate({ 
+            id: draggingStickyNote, 
+            updates: { 
+              positionX: Math.round(snapX),
+              positionY: Math.round(snapY),
+              width: Math.round(snapWidth),
+              height: Math.round(snapHeight),
+              lastMovedAt: new Date(),
+              homePositionX: Math.round(snapX),
+              homePositionY: Math.round(snapY)
+            } 
+          });
+          setDraggingStickyNote(null);
+          return;
+        }
+      }
+      
       updateStickyNoteMutation.mutate({ 
         id: draggingStickyNote, 
-        updates: { lastMovedAt: new Date().toISOString() } 
+        updates: { lastMovedAt: new Date() } 
       });
     }
     setDraggingStickyNote(null);
-  }, [draggingStickyNote]);
+  }, [draggingStickyNote, gridSizes]);
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
