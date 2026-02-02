@@ -9734,10 +9734,10 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing border ${
+                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
-                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
+                                  selectedTaskId === task.id && !(hasPrepDays && prepDaysCount > 0) ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
                                   isDueToday ? "task-blink-border" : ""
                                 } ${
@@ -9752,7 +9752,8 @@ export default function Dashboard() {
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                                  border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
+                                  borderLeftColor: (hasPrepDays && prepDaysCount > 0 && selectedTaskId === task.id) ? 'rgb(239, 68, 68)' : undefined
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -9764,32 +9765,32 @@ export default function Dashboard() {
                                   const courseHex = colors?.hex || '#9CA3AF';
                                   const rgb = hexToRgb(courseHex);
                                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                                  const prepBorderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                                  const prepBorderColor = selectedTaskId === task.id ? 'rgb(239, 68, 68)' : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
                                   // Limit prep days to actual days available to the left in the week
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
                                   // Calculate width: actualPrepDays * (single column width) - small adjustment for alignment
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 6px)`;
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 4px)`;
                                   return (
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '0',
-                                        right: 'calc(100% - 1px)',
+                                        top: '-1px',
+                                        right: '100%',
                                         width: prepWidth,
-                                        height: '22px',
-                                        borderRadius: '11px 0 0 11px',
+                                        height: '24px',
+                                        borderRadius: '12px 0 0 12px',
                                         backgroundColor: lightBg,
-                                        borderTop: `1px solid ${prepBorderColor}`,
-                                        borderLeft: `1px solid ${prepBorderColor}`,
-                                        borderBottom: `1px solid ${prepBorderColor}`,
+                                        borderTop: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
+                                        borderLeft: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
+                                        borderBottom: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
                                         borderRight: 'none',
                                         zIndex: 50,
                                       }}
                                       title={`${actualPrepDays} prep days`}
                                     >
-                                      <span className="text-[10px] text-gray-600 font-medium truncate px-2">
+                                      <span className="text-[10px] text-gray-600 !font-normal truncate px-2">
                                         Prep days
                                       </span>
                                     </div>
@@ -10031,7 +10032,7 @@ export default function Dashboard() {
                     >
                       {/* Prep Days text - centered */}
                       <span 
-                        className="absolute text-[10px] text-gray-700 font-medium whitespace-nowrap"
+                        className="absolute text-[10px] text-gray-700 !font-normal whitespace-nowrap"
                         style={{
                           left: '50%',
                           transform: 'translateX(-50%)',
