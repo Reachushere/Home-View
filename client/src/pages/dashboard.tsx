@@ -8549,7 +8549,7 @@ export default function Dashboard() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenuLabel className="text-[9px] py-1" style={{ marginLeft: '-3px' }}>Reminder Settings</DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-[9px] py-1" style={{ marginLeft: '-4px' }}>Reminder Settings</DropdownMenuLabel>
                     <div className="space-y-2 p-1">
                       <div className="space-y-1">
                         <Label className="text-[9px]">Reminder Time</Label>
