@@ -6990,14 +6990,14 @@ export default function Dashboard() {
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
             <div className="w-[1px] h-4 bg-white/50" />
-            <div className="flex items-center justify-end" style={{ width: '90px' }}>
-              <span className="text-[14px] text-white font-bold leading-none" style={{ fontFamily: "'Raleway', sans-serif" }}>
+            <div style={{ display: 'flex', alignItems: 'center', width: '84px' }}>
+              <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '14px', fontWeight: 'bold', color: 'white', width: '44px', textAlign: 'right', flexShrink: 0 }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-[10px] text-white font-bold leading-none" style={{ fontFamily: "'Raleway', sans-serif" }}>
+              <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '10px', fontWeight: 'bold', color: 'white', width: '22px', textAlign: 'center', flexShrink: 0 }}>
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
-              <span className="text-[10px] text-white font-bold ml-0.5 uppercase leading-none" style={{ fontFamily: "'Raleway', sans-serif" }}>
+              <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '10px', fontWeight: 'bold', color: 'white', width: '18px', textTransform: 'uppercase', flexShrink: 0 }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
