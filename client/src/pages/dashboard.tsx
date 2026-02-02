@@ -8490,7 +8490,19 @@ export default function Dashboard() {
           orange: { bg: '#FFE4CC', border: '#FF8C00', header: '#FFCC99' },
           purple: { bg: '#F0E0FF', border: '#9370DB', header: '#DDA0DD' },
         };
-        const colors = noteColors[note.color] || noteColors.yellow;
+        const hexToRgba = (hex: string, alpha: number) => {
+          const r = parseInt(hex.slice(1, 3), 16);
+          const g = parseInt(hex.slice(3, 5), 16);
+          const b = parseInt(hex.slice(5, 7), 16);
+          return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        };
+        const colors = note.customColor 
+          ? { 
+              bg: hexToRgba(note.customColor, 0.3), 
+              border: note.customColor, 
+              header: note.customColor 
+            }
+          : (noteColors[note.color] || noteColors.yellow);
         
         return (
           <div
@@ -8658,23 +8670,20 @@ export default function Dashboard() {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 {/* Color picker */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="h-3 w-3 rounded-full border border-gray-400 hover:opacity-80" style={{ backgroundColor: colors.header }} />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="min-w-0 p-1">
-                    <div className="flex gap-1">
-                      {Object.keys(noteColors).map((color) => (
-                        <button
-                          key={color}
-                          className="h-5 w-5 rounded-full border border-gray-300 hover:scale-110 transition-transform"
-                          style={{ backgroundColor: noteColors[color].header }}
-                          onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { color } })}
-                        />
-                      ))}
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <div className="relative">
+                  <input
+                    type="color"
+                    value={note.customColor || noteColors[note.color]?.header || '#FFFACD'}
+                    onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { customColor: e.target.value, color: 'custom' } })}
+                    className="absolute opacity-0 w-0 h-0"
+                    id={`color-picker-${note.id}`}
+                  />
+                  <label
+                    htmlFor={`color-picker-${note.id}`}
+                    className="h-3 w-3 rounded-full border border-gray-400 hover:opacity-80 cursor-pointer block"
+                    style={{ backgroundColor: note.customColor || colors.header }}
+                  />
+                </div>
                 {/* Minimize button */}
                 <button
                   className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"

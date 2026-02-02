@@ -283,6 +283,7 @@ export const stickyNotes = pgTable("sticky_notes", {
   title: text("title").notNull().default("Note"),
   content: text("content").notNull().default(""),
   color: text("color").notNull().default("yellow"),
+  customColor: text("custom_color"),
   positionX: integer("position_x").notNull().default(100),
   positionY: integer("position_y").notNull().default(100),
   width: integer("width").notNull().default(200),
