@@ -9367,13 +9367,24 @@ export default function Dashboard() {
                     // Use solid color for today's column, no transparency
                     const cellBgColor = course.bg;
                     
-                    // Find tasks for this course on this day
+                    // Find tasks for this course on this day (due date OR within prep days range)
                     const dayTasks = tasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
                       const taskDueDate = startOfDay(new Date(task.dueDate));
                       const cellDate = startOfDay(day);
-                      return isSameDay(taskDueDate, cellDate);
+                      
+                      // Check if this is the due date
+                      if (isSameDay(taskDueDate, cellDate)) return true;
+                      
+                      // Check if this day falls within prep days (startDate to dueDate)
+                      if (task.startDate) {
+                        const taskStartDate = startOfDay(new Date(task.startDate));
+                        // Day is within prep range if: startDate <= cellDate < dueDate
+                        if (cellDate >= taskStartDate && cellDate < taskDueDate) return true;
+                      }
+                      
+                      return false;
                     }) || [];
                     
                     // Get task summary for this cell (first task title, truncated)
