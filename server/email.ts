@@ -210,16 +210,20 @@ export async function sendTestSms(): Promise<{ success: boolean; error?: string 
 }
 
 // Home Assistant push notification functions
-const HA_URL = process.env.HOME_ASSISTANT_URL;
-const HA_TOKEN = process.env.HOME_ASSISTANT_TOKEN;
+const HA_URL = "https://ec8ebfanqrqlsnmnggrdl4yzq2i8koah.ui.nabu.casa";
+const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
+const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
+const HA_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
 
 export async function sendHaPushNotification(title: string, message: string): Promise<{ success: boolean; error?: string }> {
-  if (!HA_URL || !HA_TOKEN) {
-    return { success: false, error: 'Home Assistant URL or Token not configured' };
+  if (!HA_TOKEN) {
+    return { success: false, error: 'Home Assistant Token not configured' };
   }
 
+  const haUrl = HA_URL.replace(/\/$/, '');
+  
   try {
-    const response = await fetch(`${HA_URL}/api/services/notify/mobile_app_bryn_s_iphone`, {
+    const response = await fetch(`${haUrl}/api/services/notify/mobile_app_bryn_s_iphone`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${HA_TOKEN}`,
