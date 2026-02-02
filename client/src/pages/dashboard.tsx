@@ -9745,11 +9745,11 @@ export default function Dashboard() {
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '0',
-                                        right: 'calc(100% - 1px)',
+                                        top: '-1px',
+                                        right: '100%',
                                         width: dayColumnWidth,
-                                        height: '20px',
-                                        borderRadius: '10px 0 0 10px',
+                                        height: '22px',
+                                        borderRadius: '11px 0 0 11px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
                                         borderBottom: `1px solid ${borderColor}`,
