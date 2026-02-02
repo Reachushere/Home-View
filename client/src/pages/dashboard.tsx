@@ -9745,7 +9745,7 @@ export default function Dashboard() {
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '-1px',
+                                        top: '0',
                                         right: 'calc(100% - 1px)',
                                         width: prepWidth,
                                         height: '22px',
