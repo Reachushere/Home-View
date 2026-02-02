@@ -10007,10 +10007,10 @@ export default function Dashboard() {
                                       <div
                                         className="absolute"
                                         style={{
-                                          top: `${prepHeight - 1}px`,
+                                          top: `${prepHeight + 3}px`,
                                           left: `-${borderWidth}px`,
                                           width: `${borderWidth}px`,
-                                          height: `${taskHeight - prepHeight + 2}px`,
+                                          height: `${taskHeight - prepHeight - 2}px`,
                                           backgroundColor: prepBorderColor,
                                           zIndex: 51,
                                         }}
