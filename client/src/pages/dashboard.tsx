@@ -8177,11 +8177,10 @@ export default function Dashboard() {
       <div 
         className="absolute z-[60] pointer-events-auto"
         style={{ 
-          position: 'relative',
           width: '44px', 
           height: '44px', 
           top: '636px', 
-          right: '-18px',
+          right: '18px',
         }}
         data-testid="honeycomb-sticky-note"
       >
