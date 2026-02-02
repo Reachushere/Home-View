@@ -10031,7 +10031,7 @@ export default function Dashboard() {
                                           top: `${prepHeight - 2}px`,
                                           left: `-${borderWidth}px`,
                                           width: `${borderWidth}px`,
-                                          height: `${taskHeight - prepHeight}px`,
+                                          height: `${taskHeight - prepHeight - 1}px`,
                                           backgroundColor: prepBorderColor,
                                           zIndex: 51,
                                         }}
