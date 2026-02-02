@@ -9697,6 +9697,35 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
+                                {/* Prep extension bar extending to the left */}
+                                {hasPrepDays && prepDaysCount > 0 && (() => {
+                                  const courseHex = colors?.hex || '#4ADE80';
+                                  const rgb = hexToRgb(courseHex);
+                                  const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                                  const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                                  return (
+                                    <div
+                                      className="absolute flex items-center justify-center"
+                                      style={{
+                                        top: '0',
+                                        right: '100%',
+                                        width: '70px',
+                                        height: '22px',
+                                        borderRadius: '4px 0 0 4px',
+                                        backgroundColor: lightBg,
+                                        borderTop: `1px solid ${borderColor}`,
+                                        borderBottom: `1px solid ${borderColor}`,
+                                        borderLeft: `1px solid ${borderColor}`,
+                                        zIndex: 40,
+                                      }}
+                                      title={`${prepDaysCount} prep days`}
+                                    >
+                                      <span className="text-[10px] text-gray-600 truncate px-1">
+                                        Prep days
+                                      </span>
+                                    </div>
+                                  );
+                                })()}
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
                                 <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   {!isCASL101Task(task) && (
