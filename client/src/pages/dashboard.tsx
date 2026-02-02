@@ -9697,7 +9697,7 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
-                                {/* Prep extension bar extending to the left */}
+                                {/* Prep extension bar extending to the left - matches task height */}
                                 {hasPrepDays && prepDaysCount > 0 && (() => {
                                   const courseHex = colors?.hex || '#4ADE80';
                                   const rgb = hexToRgb(courseHex);
@@ -9709,8 +9709,8 @@ export default function Dashboard() {
                                       style={{
                                         top: '0',
                                         right: '100%',
-                                        width: '70px',
-                                        height: '22px',
+                                        width: '90px',
+                                        height: `${taskHeight}px`,
                                         borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
@@ -9720,7 +9720,7 @@ export default function Dashboard() {
                                       }}
                                       title={`${prepDaysCount} prep days`}
                                     >
-                                      <span className="text-[10px] text-gray-600 truncate px-1">
+                                      <span className="text-[11px] text-gray-600 truncate px-1">
                                         Prep days
                                       </span>
                                     </div>
