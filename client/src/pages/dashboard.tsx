@@ -9713,7 +9713,7 @@ export default function Dashboard() {
                                   isDueToday ? "task-blink-border" : ""
                                 } ${
                                   hasPrepDays && prepDaysCount > 0
-                                    ? "rounded-r rounded-bl overflow-visible" 
+                                    ? "rounded overflow-visible" 
                                     : "rounded overflow-hidden"
                                 }`}
                                 style={{
@@ -9722,7 +9722,6 @@ export default function Dashboard() {
                                   width: `calc(${columnWidth}% - 4px)`,
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
-                                  borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
                                   borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
                                 }}
@@ -9746,11 +9745,11 @@ export default function Dashboard() {
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '1px',
-                                        right: '100%',
+                                        top: '0',
+                                        right: 'calc(100% - 1px)',
                                         width: dayColumnWidth,
                                         height: '20px',
-                                        borderRadius: '4px 0 0 4px',
+                                        borderRadius: '10px 0 0 10px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
                                         borderBottom: `1px solid ${borderColor}`,
