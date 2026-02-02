@@ -9735,27 +9735,26 @@ export default function Dashboard() {
                                   const courseHex = colors?.hex || '#4ADE80';
                                   const rgb = hexToRgb(courseHex);
                                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                                  const prepBorderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                                  const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
                                   // Limit prep days to actual days available to the left in the week
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate width: exactly actualPrepDays columns (each column = available width / 7)
-                                  const singleColumnWidth = `((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7)`;
-                                  const dayColumnWidth = `calc((${actualPrepDays} * ${singleColumnWidth}) - 8px)`;
+                                  // Calculate width based on prep days - each day column width
+                                  const prepBarWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7))`;
                                   return (
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
                                         top: '-1px',
                                         right: 'calc(100% - 1px)',
-                                        width: dayColumnWidth,
-                                        height: '24px',
-                                        borderRadius: '12px 0 0 12px',
+                                        width: prepBarWidth,
+                                        height: '22px',
+                                        borderRadius: '11px 0 0 11px',
                                         backgroundColor: lightBg,
-                                        borderTop: `1px solid ${prepBorderColor}`,
-                                        borderLeft: `1px solid ${prepBorderColor}`,
-                                        borderBottom: `1px solid ${prepBorderColor}`,
+                                        borderTop: `1px solid ${borderColor}`,
+                                        borderLeft: `1px solid ${borderColor}`,
+                                        borderBottom: `1px solid ${borderColor}`,
                                         borderRight: 'none',
                                         zIndex: 45,
                                       }}
