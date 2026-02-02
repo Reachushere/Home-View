@@ -9392,10 +9392,9 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="border-l border-border/50 overflow-visible relative"
+                        className="border-l border-border/50 overflow-visible relative flex items-center"
                         style={{ 
                           backgroundColor: cellBgColor,
-                          minHeight: '22px',
                         }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -9428,16 +9427,15 @@ export default function Dashboard() {
                           return (
                             <div
                               key={`prep-${task.id}-${idx}`}
-                              className="silver-shimmer-prep absolute flex items-center justify-center"
+                              className="silver-shimmer-prep flex items-center justify-center"
                               style={{
-                                left: isFirstPrepDay ? '2px' : '-4px',
-                                right: '-4px',
+                                marginLeft: isFirstPrepDay ? '2px' : '-6px',
+                                marginRight: '-6px',
                                 height: '18px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
                                 borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
                                 background: lighterGradient,
                                 zIndex: 5,
+                                flex: 1,
                               }}
                               title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                             >
@@ -9456,31 +9454,18 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={`due-${task.id}-${idx}`}
-                              className="absolute text-[8px] text-black truncate px-0.5 flex items-center gap-1 z-10"
+                              className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative"
                               style={{
-                                left: '2px',
-                                right: '2px',
                                 height: '18px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
+                                marginLeft: hasPrepDays ? '-6px' : '2px',
+                                paddingLeft: hasPrepDays ? '8px' : '0',
+                                paddingRight: '2px',
+                                borderRadius: '0 4px 4px 0',
+                                background: hasPrepDays ? lighterGradient : 'transparent',
+                                flex: 1,
                               }}
                               title={task.title}
                             >
-                              {/* Connecting bar from prep days */}
-                              {hasPrepDays && (
-                                <div 
-                                  className="absolute silver-shimmer-prep"
-                                  style={{
-                                    left: '-12px',
-                                    right: '50%',
-                                    height: '18px',
-                                    top: '0',
-                                    borderRadius: '0 4px 4px 0',
-                                    background: lighterGradient,
-                                    zIndex: 4,
-                                  }}
-                                />
-                              )}
                               <Checkbox
                                 checked={task.isCompleted || false}
                                 onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
