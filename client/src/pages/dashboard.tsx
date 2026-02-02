@@ -7708,8 +7708,8 @@ export default function Dashboard() {
         );
       })()}
       
-      {/* Dotted lines from Modules button to course buttons */}
-      {modulesHoneycombOpen === 'modules' && (
+      {/* Dotted lines from Modules button to course buttons - always visible unless readings open */}
+      {modulesHoneycombOpen !== 'readings' && (
         <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
           {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width + 1px = 63px from right) */}
           <line 
@@ -7760,11 +7760,11 @@ export default function Dashboard() {
           return (
             <div 
               key={`module-btn-${courseId}`}
-              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
               style={{ 
-                top: modulesHoneycombOpen === 'modules' ? `${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px` : '331px',
-                right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
-                transform: modulesHoneycombOpen === 'modules' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
+                top: `${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
+                right: '103px',
+                transform: 'scale(1) translateY(-50%)',
                 transitionDelay: `${idx * 50}ms`
               }}
               onClick={(e) => { 
