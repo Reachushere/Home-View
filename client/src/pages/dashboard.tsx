@@ -8711,7 +8711,7 @@ export default function Dashboard() {
                   />
                   <label
                     htmlFor={`color-picker-${note.id}`}
-                    className="h-3.5 w-3.5 rounded-full border border-gray-400 hover:opacity-80 cursor-pointer block"
+                    className="h-3 w-3 rounded-full border border-gray-400 hover:opacity-80 cursor-pointer block"
                     style={{ backgroundColor: note.customColor || colors.header }}
                   />
                 </div>
