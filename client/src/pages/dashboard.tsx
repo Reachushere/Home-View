@@ -8615,7 +8615,7 @@ export default function Dashboard() {
                   onClick={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
                   className="text-[10px] text-gray-700 font-medium border-none outline-none w-20 cursor-text rounded px-0.5"
-                  style={{ background: 'none' }}
+                  style={{ backgroundColor: 'white' }}
                   placeholder="Note"
                   data-testid={`sticky-note-title-${note.id}`}
                 />
@@ -9700,27 +9700,27 @@ export default function Dashboard() {
             }}
           />
           
-          <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px', marginTop: '10px' }}>
+          {/* BRYN reminder - positioned above today column outside the card */}
+          <div className="grid w-full h-[14px]" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
+            <div /> {/* Time column spacer */}
+            {weekDays.map((day, idx) => {
+              const isToday = isSameDay(day, new Date());
+              return (
+                <div key={idx} className="flex items-center justify-center">
+                  {isToday && (
+                    <span className="text-[9px] font-medium text-white tracking-wide">
+                      BRYN: Read your today tasks
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line - dashed */}
             <div className="absolute top-0 bottom-0 w-[1.5px] z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundImage: 'repeating-linear-gradient(to bottom, black 0px, black 8px, transparent 8px, transparent 14px)' }} />
             
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
-            {/* BRYN reminder bar - positioned above today column */}
-            <div className="grid w-full flex-shrink-0 h-[14px]" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
-              <div /> {/* Time column spacer */}
-              {weekDays.map((day, idx) => {
-                const isToday = isSameDay(day, new Date());
-                return (
-                  <div key={idx} className="flex items-center justify-center">
-                    {isToday && (
-                      <span className="text-[9px] font-medium text-gray-600 tracking-wide">
-                        BRYN: Read your today tasks
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: selectedWeek === 4 ? '#160502' : colorSettings.headerBar }}>
