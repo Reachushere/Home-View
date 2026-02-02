@@ -9706,7 +9706,7 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing border ${
+                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -9714,8 +9714,8 @@ export default function Dashboard() {
                                   isDueToday ? "task-blink-border" : ""
                                 } ${
                                   hasPrepDays && prepDaysCount > 0
-                                    ? "rounded-r rounded-bl overflow-visible" 
-                                    : "rounded overflow-hidden"
+                                    ? "rounded-r rounded-bl overflow-visible border-t border-r border-b" 
+                                    : "rounded overflow-hidden border"
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -9743,20 +9743,21 @@ export default function Dashboard() {
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '-1px',
+                                        top: '0',
                                         right: '100%',
                                         width: dayColumnWidth,
-                                        height: '24px',
+                                        height: '18px',
                                         borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
                                         borderBottom: `1px solid ${borderColor}`,
                                         borderLeft: `1px solid ${borderColor}`,
+                                        borderRight: 'none',
                                         zIndex: 40,
                                       }}
                                       title={`${prepDaysCount} prep days`}
                                     >
-                                      <span className="text-[11px] text-gray-600 truncate px-1">
+                                      <span className="text-[10px] text-gray-600 truncate px-1">
                                         Prep days
                                       </span>
                                     </div>
