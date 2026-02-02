@@ -9557,7 +9557,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-hidden"
+                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible relative"
                         style={{ 
                           backgroundColor: cellBgColor
                         }}
@@ -9574,17 +9574,55 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        {taskSummary && (
-                          <div 
-                            className="text-[8px] text-black truncate px-0.5 flex items-center gap-0.5"
-                            title={dayTasks.map(t => t.title).join(', ')}
-                          >
-                            <span className="truncate">{taskSummary}</span>
-                            {hasMultipleTasks && (
-                              <span className="text-[7px] opacity-60">+{dayTasks.length - 1}</span>
-                            )}
+                        {/* Render prep extension bars for prep days */}
+                        {prepTasks.length > 0 && (
+                          <div className="w-full h-full absolute inset-0 flex items-center justify-center">
+                            {prepTasks.map((task, idx) => {
+                              // Determine position in prep period
+                              const taskStartDate = startOfDay(new Date(task.startDate!));
+                              const taskDueDate = startOfDay(new Date(task.dueDate));
+                              const isFirstPrepDay = isSameDay(cellDate, taskStartDate);
+                              const isLastPrepDay = isSameDay(addDays(cellDate, 1), taskDueDate);
+                              
+                              return (
+                                <div
+                                  key={`prep-${task.id}-${idx}`}
+                                  className="silver-shimmer-task absolute inset-x-0"
+                                  style={{
+                                    height: '16px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    borderRadius: isFirstPrepDay ? '8px 0 0 8px' : isLastPrepDay ? '0 8px 8px 0' : '0',
+                                    marginLeft: isFirstPrepDay ? '4px' : '0',
+                                    marginRight: isLastPrepDay ? '4px' : '0',
+                                  }}
+                                  title={`Prep: ${task.title}`}
+                                />
+                              );
+                            })}
                           </div>
                         )}
+                        {/* Render due tasks with checkbox */}
+                        {dueTasks.length > 0 && dueTasks.map((task, idx) => (
+                          <div 
+                            key={`due-${task.id}-${idx}`}
+                            className="text-[8px] text-black truncate px-0.5 flex items-center gap-1 z-10 relative"
+                            title={task.title}
+                          >
+                            <Checkbox
+                              checked={task.isCompleted || false}
+                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                              className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                              data-testid={`checkbox-course-row-${task.id}`}
+                            />
+                            <span 
+                              className="truncate cursor-pointer hover:opacity-80"
+                              onClick={() => setEditingTask(task)}
+                            >
+                              {task.title}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     );
                   })}
