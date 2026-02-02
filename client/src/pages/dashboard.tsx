@@ -8542,10 +8542,10 @@ export default function Dashboard() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button 
-                      className={`h-3 w-3 flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
+                      className={`h-2.5 w-2.5 flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
                       title="Set reminder"
                     >
-                      <Bell className="h-2.5 w-2.5" />
+                      <Bell className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
@@ -10138,7 +10138,7 @@ export default function Dashboard() {
                               }}
                               title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                             >
-                              <span className="text-[10px] text-gray-700 font-medium truncate px-0.5">
+                              <span className="text-[8px] text-gray-700 font-medium truncate px-0.5">
                                 Prep days
                               </span>
                             </div>
