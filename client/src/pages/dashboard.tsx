@@ -9704,15 +9704,16 @@ export default function Dashboard() {
           {/* BRYN reminder - positioned above today column outside the card */}
           <div className="grid w-full h-[14px]" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
             <div /> {/* Time column spacer */}
+            {gridSizes.moduleColumnWidth > 0 && <div />} {/* Module column spacer */}
             {weekDays.map((day, idx) => {
               const isToday = isSameDay(day, new Date());
               const todayHasTasks = isToday && allTasks.some(t => 
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
               );
               return (
-                <div key={idx} className="border-l border-transparent">
+                <div key={idx} className="flex items-center justify-center">
                   {isToday && (
-                    <div className={`text-[9px] font-medium text-white tracking-wide text-center ${todayHasTasks ? 'animate-pulse' : ''}`}>
+                    <div className={`text-[9px] font-medium text-white tracking-wide text-center w-full ${todayHasTasks ? 'animate-pulse' : ''}`}>
                       BRYN: Read your today tasks
                     </div>
                   )}
