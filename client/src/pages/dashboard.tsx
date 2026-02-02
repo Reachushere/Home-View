@@ -9717,7 +9717,7 @@ export default function Dashboard() {
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
               );
               return (
-                <div key={idx} style={{ minWidth: 0, width: '100%', ...(isToday ? { background: 'rgba(255,255,255,0.15)', borderRadius: '4px' } : {}) }} className={`text-[9px] font-medium text-white tracking-wide text-center leading-[14px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
+                <div key={idx} style={{ minWidth: 0, width: '100%', ...(isToday ? { background: 'rgba(255,255,255,0.15)', borderRadius: '4px', letterSpacing: '0.15em' } : {}) }} className={`text-[9px] font-medium text-white text-center leading-[14px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
                   {isToday ? 'BRYN: Read your today tasks' : ''}
                 </div>
               );
