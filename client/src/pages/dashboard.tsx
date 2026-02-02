@@ -9749,7 +9749,9 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {isToday && (
-                      <div className="text-[8px] font-medium text-white tracking-wide -mt-1">BRYN: Read your today tasks</div>
+                      <div className="absolute -top-[14px] left-1/2 -translate-x-1/2 text-[9px] font-medium text-gray-600 tracking-wide whitespace-nowrap z-50">
+                        BRYN: Read your today tasks
+                      </div>
                     )}
                     <div className="flex items-center gap-1.5">
                       <div className="text-2xl font-bold text-white">
