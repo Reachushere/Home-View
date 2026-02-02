@@ -9723,12 +9723,7 @@ export default function Dashboard() {
                                   height: `${taskHeight}px`,
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af'),
-                                  ...(hasPrepDays && prepDaysCount > 0 && {
-                                    borderTopLeftRadius: '0',
-                                    borderLeftWidth: '0',
-                                    borderLeftStyle: 'none'
-                                  })
+                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -9750,16 +9745,13 @@ export default function Dashboard() {
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '-1px',
-                                        right: '100%',
+                                        top: '0',
+                                        right: 'calc(100% + 4px)',
                                         width: prepWidth,
-                                        height: `${taskHeight + 2}px`,
-                                        borderRadius: '4px 0 0 4px',
+                                        height: '22px',
+                                        borderRadius: '11px',
                                         backgroundColor: lightBg,
-                                        borderTop: `1px solid ${prepBorderColor}`,
-                                        borderBottom: `1px solid ${prepBorderColor}`,
-                                        borderLeft: `1px solid ${prepBorderColor}`,
-                                        borderRight: 'none',
+                                        border: `1px solid ${prepBorderColor}`,
                                         zIndex: 40,
                                       }}
                                       title={`${actualPrepDays} prep days`}
