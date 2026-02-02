@@ -9752,7 +9752,7 @@ export default function Dashboard() {
                                         top: '0',
                                         right: '100%',
                                         width: dayColumnWidth,
-                                        height: '22px',
+                                        height: `${taskHeight}px`,
                                         borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
