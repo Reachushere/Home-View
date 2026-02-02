@@ -8328,7 +8328,7 @@ export default function Dashboard() {
         }}
         data-testid="honeycomb-pull"
       >
-        {/* Back circle - solid taupe */}
+        {/* Back circle - solid dark taupe */}
         <div
           style={{
             position: 'absolute',
@@ -8337,7 +8337,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#8B7355',
+            background: '#5C4A3D',
             boxShadow: 'none',
           }}
         />
