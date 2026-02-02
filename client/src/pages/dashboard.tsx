@@ -8246,7 +8246,7 @@ export default function Dashboard() {
             width: '38px',
             height: '38px',
             borderRadius: '50%',
-            background: 'linear-gradient(0deg, #FFFBB0 0%, #EDED00 100%)',
+            background: 'linear-gradient(0deg, #FFFBB0 0%, #DEF200 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
