@@ -8193,7 +8193,8 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            backgroundColor: '#FAFF70',
+            background: '#FAFF70',
+            boxShadow: 'none',
           }}
         />
         {/* Front circle with gradient - 38px */}
