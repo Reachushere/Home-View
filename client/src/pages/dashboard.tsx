@@ -9476,7 +9476,7 @@ export default function Dashboard() {
                               }}
                               title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                             >
-                              <span className="text-[10px] text-gray-900 font-semibold truncate px-0.5" style={{ WebkitFontSmoothing: 'antialiased' }}>
+                              <span className="text-[10px] text-gray-700 font-medium truncate px-0.5">
                                 Prep days
                               </span>
                             </div>
@@ -9763,7 +9763,7 @@ export default function Dashboard() {
                                       }}
                                       title={`${actualPrepDays} prep days`}
                                     >
-                                      <span className="text-[10px] text-gray-900 font-semibold truncate px-1" style={{ WebkitFontSmoothing: 'antialiased' }}>
+                                      <span className="text-[10px] text-gray-700 font-medium truncate px-1">
                                         Prep days
                                       </span>
                                     </div>
@@ -10004,13 +10004,12 @@ export default function Dashboard() {
                     >
                       {/* Prep Days text - centered */}
                       <span 
-                        className="absolute text-[10px] text-gray-900 font-semibold whitespace-nowrap"
+                        className="absolute text-[10px] text-gray-700 font-medium whitespace-nowrap"
                         style={{
                           left: '50%',
                           transform: 'translateX(-50%)',
                           top: '50%',
-                          marginTop: '-7px',
-                          WebkitFontSmoothing: 'antialiased'
+                          marginTop: '-7px'
                         }}
                         data-prep-text-task-id={task.id}
                       >
