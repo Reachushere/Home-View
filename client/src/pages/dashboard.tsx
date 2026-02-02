@@ -9411,56 +9411,85 @@ export default function Dashboard() {
                         }}
                       >
                         {/* Render prep extension bars for prep days */}
-                        {prepTasks.length > 0 && (
-                          <div className="w-full h-full absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 5 }}>
-                            {prepTasks.map((task, idx) => {
-                              // Determine position in prep period
-                              const taskStartDate = startOfDay(new Date(task.startDate!));
-                              const taskDueDate = startOfDay(new Date(task.dueDate));
-                              const isFirstPrepDay = isSameDay(cellDate, taskStartDate);
-                              const isLastPrepDay = isSameDay(addDays(cellDate, 1), taskDueDate);
-                              
-                              return (
-                                <div
-                                  key={`prep-${task.id}-${idx}`}
-                                  className="silver-shimmer-task"
+                        {prepTasks.length > 0 && prepTasks.map((task, idx) => {
+                          // Determine position in prep period
+                          const taskStartDate = startOfDay(new Date(task.startDate!));
+                          const taskDueDate = startOfDay(new Date(task.dueDate));
+                          const isFirstPrepDay = isSameDay(cellDate, taskStartDate);
+                          const isLastPrepDay = isSameDay(addDays(cellDate, 1), taskDueDate);
+                          const prepDaysTotal = Math.ceil((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
+                          
+                          return (
+                            <div
+                              key={`prep-${task.id}-${idx}`}
+                              className="silver-shimmer-task absolute flex items-center overflow-visible"
+                              style={{
+                                left: isFirstPrepDay ? '2px' : '-2px',
+                                right: isLastPrepDay ? '2px' : '-2px',
+                                height: '18px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                borderRadius: isFirstPrepDay ? '4px 0 0 4px' : isLastPrepDay ? '0 4px 4px 0' : '0',
+                                background: 'linear-gradient(90deg, #c0c0c0 0%, #d8d8d8 50%, #c0c0c0 100%)',
+                                zIndex: 5,
+                                borderTop: '1px solid #999',
+                                borderBottom: '1px solid #999',
+                                borderLeft: isFirstPrepDay ? '1px solid #999' : '0',
+                                borderRight: isLastPrepDay ? '1px solid #999' : '0',
+                              }}
+                              title={`Prep: ${task.title} (${prepDaysTotal} days)`}
+                            >
+                              {isFirstPrepDay && (
+                                <span className="text-[7px] font-medium text-gray-600 whitespace-nowrap pl-1">
+                                  Prep
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                        {/* Render due tasks with checkbox */}
+                        {dueTasks.length > 0 && dueTasks.map((task, idx) => {
+                          const hasPrepDays = task.startDate != null;
+                          return (
+                            <div 
+                              key={`due-${task.id}-${idx}`}
+                              className="text-[8px] text-black truncate px-0.5 flex items-center gap-1 z-10 relative"
+                              title={task.title}
+                            >
+                              {/* Connecting bar from prep days */}
+                              {hasPrepDays && (
+                                <div 
+                                  className="absolute silver-shimmer-task"
                                   style={{
-                                    position: 'absolute',
-                                    left: isFirstPrepDay ? '4px' : '0',
-                                    right: isLastPrepDay ? '4px' : '0',
-                                    height: '16px',
+                                    left: '-2px',
+                                    right: '50%',
+                                    height: '18px',
                                     top: '50%',
                                     transform: 'translateY(-50%)',
-                                    borderRadius: isFirstPrepDay ? '8px 0 0 8px' : isLastPrepDay ? '0 8px 8px 0' : '0',
-                                    background: 'linear-gradient(90deg, #a8a8a8 0%, #c0c0c0 50%, #a8a8a8 100%)',
+                                    borderRadius: '0 4px 4px 0',
+                                    background: 'linear-gradient(90deg, #c0c0c0 0%, #d8d8d8 50%, #c0c0c0 100%)',
+                                    zIndex: 4,
+                                    borderTop: '1px solid #999',
+                                    borderBottom: '1px solid #999',
+                                    borderRight: '1px solid #999',
                                   }}
-                                  title={`Prep: ${task.title}`}
                                 />
-                              );
-                            })}
-                          </div>
-                        )}
-                        {/* Render due tasks with checkbox */}
-                        {dueTasks.length > 0 && dueTasks.map((task, idx) => (
-                          <div 
-                            key={`due-${task.id}-${idx}`}
-                            className="text-[8px] text-black truncate px-0.5 flex items-center gap-1 z-10 relative"
-                            title={task.title}
-                          >
-                            <Checkbox
-                              checked={task.isCompleted || false}
-                              onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                              className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                              data-testid={`checkbox-course-row-${task.id}`}
-                            />
-                            <span 
-                              className="truncate cursor-pointer hover:opacity-80"
-                              onClick={() => setEditingTask(task)}
-                            >
-                              {task.title}
-                            </span>
-                          </div>
-                        ))}
+                              )}
+                              <Checkbox
+                                checked={task.isCompleted || false}
+                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black z-10"
+                                data-testid={`checkbox-course-row-${task.id}`}
+                              />
+                              <span 
+                                className="truncate cursor-pointer hover:opacity-80 z-10"
+                                onClick={() => setEditingTask(task)}
+                              >
+                                {task.title}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   })}
