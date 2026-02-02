@@ -4363,6 +4363,7 @@ export default function Dashboard() {
     const prepExtensions = getPrepExtensionsForWeek();
     const dayIdx = weekDays.findIndex(d => isSameDay(d, day));
     
+    // Check against formal prep extensions (timed tasks)
     for (const ext of prepExtensions) {
       // Don't check against itself
       if (ext.task.id === taskId) continue;
@@ -4376,6 +4377,31 @@ export default function Dashboard() {
         }
       }
     }
+    
+    // Also check for any task in the same hour cell that has prep days (even without eventStartTime)
+    // This handles cases where a task with prep days is due in this cell
+    const tasksInSameCell = allTasks.filter(t => {
+      if (t.id === taskId) return false;
+      if (t.isCompleted) return false;
+      if (!t.startDate) return false; // Must have prep days
+      
+      const taskDue = new Date(t.dueDate);
+      // Check if task is due on this day
+      if (!isSameDay(taskDue, day)) return false;
+      
+      // Check hour - use eventStartTime if available, otherwise extract from dueDate
+      const taskHour = t.eventStartTime 
+        ? parseInt(t.eventStartTime.split(':')[0]) 
+        : taskDue.getHours();
+      
+      return taskHour === hour;
+    });
+    
+    // If there's a task with prep days in this cell, push other tasks down
+    if (tasksInSameCell.length > 0) {
+      return true;
+    }
+    
     return false;
   };
   
@@ -9544,7 +9570,7 @@ export default function Dashboard() {
                   return (
                   <div 
                     key={hour} 
-                    className="grid border-b border-border/50 relative group/row"
+                    className={`grid border-b border-border/50 relative group/row ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'hidden', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                   >
                     <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#160502' : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
@@ -9557,8 +9583,8 @@ export default function Dashboard() {
                       const isToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
-                      // Apply shimmer to today column or current hour row (brownish/greyish cells), but not the blue intersection
-                      const shouldShimmer = (isToday && !isCurrentHour) || (!isToday && isCurrentHour);
+                      // Apply shimmer to today column only (current hour row shimmer is applied at row level)
+                      const shouldShimmer = isToday && !isCurrentHour;
                       return (
                         <div 
                           key={dayIdx} 

@@ -516,6 +516,53 @@
   }
 }
 
+/* Current hour row shimmer - one continuous shimmer across entire row */
+.current-hour-row-shimmer {
+  position: relative;
+}
+
+.current-hour-row-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(192, 192, 192, 0.3) 35%,
+    rgba(220, 220, 220, 0.5) 50%,
+    rgba(192, 192, 192, 0.3) 65%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: current-hour-row-shimmer-sweep 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes current-hour-row-shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  10% {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
 /* Task box border blink for due today */
 .task-blink-border {
   animation: task-border-blink 1.5s ease-in-out infinite;
