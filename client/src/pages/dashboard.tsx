@@ -9976,7 +9976,7 @@ export default function Dashboard() {
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
                                   // Calculate width: actualPrepDays * (single column width) - balanced adjustment
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7) - 6px)`;
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7) - 8px)`;
                                   const prepHeight = 18; // Reduced height
                                   const borderWidth = selectedTaskId === task.id ? 2 : 1;
                                   return (
@@ -9989,7 +9989,7 @@ export default function Dashboard() {
                                           right: 'calc(100% - 1px)',
                                           width: prepWidth,
                                           height: `${prepHeight}px`,
-                                          borderRadius: '3px 0 0 3px',
+                                          borderRadius: '4px 0 0 4px',
                                           backgroundColor: lightBg,
                                           borderTop: `${borderWidth}px solid ${prepBorderColor}`,
                                           borderLeft: `${borderWidth}px solid ${prepBorderColor}`,
@@ -10007,10 +10007,10 @@ export default function Dashboard() {
                                       <div
                                         className="absolute"
                                         style={{
-                                          top: `${prepHeight - 2}px`,
+                                          top: `${prepHeight - 1}px`,
                                           left: `-${borderWidth}px`,
                                           width: `${borderWidth}px`,
-                                          height: `${taskHeight - prepHeight + 3}px`,
+                                          height: `${taskHeight - prepHeight + 2}px`,
                                           backgroundColor: prepBorderColor,
                                           zIndex: 51,
                                         }}
