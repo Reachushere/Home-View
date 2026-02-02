@@ -6487,10 +6487,10 @@ export default function Dashboard() {
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '12px', zIndex: 100 }} />
           {/* Pomodoro Timer */}
           <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ marginLeft: '49px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className={`text-[13px] font-bold px-1.5 py-0.5 rounded ${
+            <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
               pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-            }`} style={{ fontFamily: "'Raleway', sans-serif", fontVariantNumeric: 'tabular-nums', fontFeatureSettings: "'tnum'" }} data-testid="pomodoro-timer">
+            }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px' }} data-testid="pomodoro-timer">
               {formatPomodoroTime(pomodoroTime)}
             </div>
             <div className="flex items-center gap-3">
