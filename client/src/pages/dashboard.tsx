@@ -9007,7 +9007,7 @@ export default function Dashboard() {
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {/* All-day tasks - simple rendering, no prep days here */}
+                    {/* All-day tasks */}
                     {allDayTasks.map(task => {
                       const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                       const colors = dynamicCourseColors[courseCode];
@@ -9690,6 +9690,31 @@ export default function Dashboard() {
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
+                                {/* Prep extension bar extending to the left */}
+                                {hasPrepDays && prepDaysCount > 0 && (() => {
+                                  const courseHex = colors?.hex || '#4ADE80';
+                                  const rgb = hexToRgb(courseHex);
+                                  const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 30)}, ${Math.min(255, rgb.g + 30)}, ${Math.min(255, rgb.b + 30)}) 0%, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 100%)`;
+                                  return (
+                                    <div
+                                      className="absolute silver-shimmer-prep flex items-center justify-center"
+                                      style={{
+                                        top: '2px',
+                                        right: '100%',
+                                        width: '60px',
+                                        height: '16px',
+                                        borderRadius: '4px 0 0 4px',
+                                        background: lighterGradient,
+                                        zIndex: -1,
+                                      }}
+                                      title={`${prepDaysCount} prep days`}
+                                    >
+                                      <span className="text-[7px] text-white truncate px-0.5">
+                                        {prepDaysCount} prep days
+                                      </span>
+                                    </div>
+                                  );
+                                })()}
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
                                 <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   {!isCASL101Task(task) && (
