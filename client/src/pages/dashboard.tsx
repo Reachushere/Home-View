@@ -9717,9 +9717,9 @@ export default function Dashboard() {
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
               );
               return (
-                <div key={idx} className="flex items-center justify-center">
+                <div key={idx} className="flex items-center justify-center w-full">
                   {isToday && (
-                    <div className={`text-[9px] font-medium text-white tracking-wide text-center w-full ${todayHasTasks ? 'animate-pulse' : ''}`}>
+                    <div className={`text-[9px] font-medium text-white tracking-wide text-center ${todayHasTasks ? 'animate-pulse' : ''}`} style={{ width: '100%' }}>
                       BRYN: Read your today tasks
                     </div>
                   )}
