@@ -7900,7 +7900,7 @@ export default function Dashboard() {
       )}
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '329px', right: '6px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '321px', right: '6px', width: '70px' }}>
         <div 
           className="cursor-pointer hover:bg-white/20 rounded p-0.5"
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
@@ -7920,7 +7920,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '365px', right: '14px', width: '52px', height: '414px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '357px', right: '14px', width: '52px', height: '414px' }}>
         <div 
           style={{ 
             width: '100%', 
@@ -7944,7 +7944,7 @@ export default function Dashboard() {
               position: 'absolute',
               width: '44px', 
               height: '44px', 
-              top: '369px', 
+              top: '361px', 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
@@ -7993,7 +7993,7 @@ export default function Dashboard() {
             {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width + 1px = 63px from right) */}
             <line 
               x1={`calc(100% - 63px)`} 
-              y1={`${369 + 22}px`}
+              y1={`${361 + 22}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8004,7 +8004,7 @@ export default function Dashboard() {
             {/* Line to CFNF */}
             <line 
               x1={`calc(100% - 63px)`} 
-              y1={`${369 + 22}px`}
+              y1={`${361 + 22}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8015,7 +8015,7 @@ export default function Dashboard() {
             {/* Line to CASL */}
             <line 
               x1={`calc(100% - 63px)`} 
-              y1={`${369 + 22}px`}
+              y1={`${361 + 22}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8086,7 +8086,7 @@ export default function Dashboard() {
             style={{ 
               width: '44px', 
               height: '44px', 
-              top: '419px', 
+              top: '411px', 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
@@ -8120,7 +8120,7 @@ export default function Dashboard() {
             {/* Line to CPPA */}
             <line 
               x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${420 + 15}px`}
+              y1={`${412 + 15}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8131,7 +8131,7 @@ export default function Dashboard() {
             {/* Line to CFNF */}
             <line 
               x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${420 + 23}px`}
+              y1={`${412 + 23}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8142,7 +8142,7 @@ export default function Dashboard() {
             {/* Line to CASL */}
             <line 
               x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${420 + 30}px`}
+              y1={`${412 + 30}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8209,7 +8209,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '471px', 
+          top: '463px', 
           right: '18px',
         }}
         onMouseEnter={() => setDecorativeHoneycombHover('middle')}
@@ -8316,7 +8316,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '522px', 
+          top: '514px', 
           right: '18px',
         }}
         data-testid="honeycomb-todo-main"
@@ -8361,7 +8361,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '573px', 
+          top: '565px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8386,7 +8386,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '624px', 
+          top: '616px', 
           right: '18px',
         }}
         data-testid="honeycomb-sticky-note"
@@ -8433,7 +8433,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '676px', 
+          top: '668px', 
           right: '18px',
         }}
         data-testid="honeycomb-push"
@@ -8490,7 +8490,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '728px', 
+          top: '720px', 
           right: '18px',
         }}
         data-testid="honeycomb-pull"
