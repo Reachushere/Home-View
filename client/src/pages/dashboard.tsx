@@ -8408,10 +8408,10 @@ export default function Dashboard() {
         <div
           style={{
             position: 'absolute',
-            top: '4px',
-            left: '4px',
-            width: '36px',
-            height: '36px',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
             borderRadius: '50%',
             background: 'linear-gradient(0deg, #FDFFBA 0%, #F2D338 100%)',
             display: 'flex',
