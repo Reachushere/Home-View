@@ -6985,8 +6985,9 @@ export default function Dashboard() {
           </div>
           
           {/* Clock */}
-          <div className="flex items-center gap-1 rounded-full h-[35px] overflow-hidden px-3.5" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
-            <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', marginLeft: '6px' }}>
+          <div className="rounded-full h-[35px] overflow-hidden px-3.5" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
+            <div className="flex items-center gap-1 h-full" style={{ marginLeft: '6px' }}>
+            <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
             <div className="w-[1px] h-4 bg-white/50" />
@@ -7004,6 +7005,7 @@ export default function Dashboard() {
             {profileData.travelTimezone && (
               <span className="text-[11px] text-orange-400 font-medium ml-1">Travel</span>
             )}
+            </div>
           </div>
         </div>
       </div>
