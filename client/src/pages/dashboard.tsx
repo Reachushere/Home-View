@@ -7920,7 +7920,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '357px', right: '14px', width: '52px', height: '413px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: '413px' }}>
         <div 
           style={{ 
             width: '100%', 
@@ -9709,15 +9709,15 @@ export default function Dashboard() {
           
           {/* BRYN reminder - positioned above today column outside the card */}
           <div className="grid w-full h-[14px]" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
-            <div /> {/* Time column spacer */}
-            {gridSizes.moduleColumnWidth > 0 && <div />} {/* Module column spacer */}
+            <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
+            {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />} {/* Module column spacer */}
             {weekDays.map((day, idx) => {
               const isToday = isSameDay(day, new Date());
               const todayHasTasks = isToday && allTasks.some(t => 
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
               );
               return (
-                <div key={idx} className={`text-[9px] font-medium text-white tracking-wide text-center leading-[14px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`} style={isToday ? { background: 'rgba(255,255,255,0.15)', borderRadius: '4px' } : {}}>
+                <div key={idx} style={{ minWidth: 0, width: '100%', ...(isToday ? { background: 'rgba(255,255,255,0.15)', borderRadius: '4px' } : {}) }} className={`text-[9px] font-medium text-white tracking-wide text-center leading-[14px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
                   {isToday ? 'BRYN: Read your today tasks' : ''}
                 </div>
               );
