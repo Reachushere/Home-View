@@ -6211,47 +6211,27 @@ export default function Dashboard() {
         height: '50px',
         marginTop: '7px'
       }}>
-        {/* Logo, Date Range, and Week Navigation - Fixed Left */}
+        {/* Logo and Timer - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '12px', zIndex: 100 }} />
-          {/* Week navigation with arrows around date, Today/Month stacked above */}
-          <div className="flex flex-col items-center gap-0.5" style={{ marginLeft: '49px' }}>
-            {/* Today/Month buttons - centered above date range */}
-            <div className="flex items-center justify-center gap-0.5" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", marginTop: '2px', width: '100%', marginLeft: '3px' }}>
-              <Button 
-                variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
-                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-                data-testid="button-today"
-              >
-                Today
-              </Button>
-              <div className="w-[1px] h-3 bg-white/50" />
-              <Button 
-                variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
-                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-                data-testid="button-month-view"
-              >
-                {calendarView === "month" ? "Week" : "Month"}
-              </Button>
+          {/* Pomodoro Timer */}
+          <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ marginLeft: '49px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className={`text-[13px] font-bold px-1.5 py-0.5 rounded ${
+              pomodoroMode === "work" ? "text-white" : 
+              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+            }`} data-testid="pomodoro-timer">
+              {formatPomodoroTime(pomodoroTime)}
             </div>
-            {/* Date display with arrows */}
-            <div className="flex items-center justify-center gap-1">
-              {/* Left arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week" data-date-nav>
-                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
-              {/* Date display */}
-              <div className="flex items-center justify-center gap-1 whitespace-nowrap relative" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", minWidth: '140px', top: '3px' }}>
-                <span className="text-[12px] font-medium text-white">{format(weekStartDate, "MMMM d")}</span>
-                <span className="text-[12px] text-white/50">—</span>
-                <span className="text-[12px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
-              </div>
-              {/* Right arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week" data-date-nav>
-                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
+            <div className="flex items-center gap-3">
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+                {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
+              </button>
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+                <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+              </button>
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+                <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+              </button>
             </div>
           </div>
         </div>
@@ -6690,26 +6670,46 @@ export default function Dashboard() {
                     </div>
         </div>
 
-        {/* Timer and Clock - Fixed Right, aligned with tall pill left edge */}
+        {/* Date Range and Clock - Fixed Right */}
         <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '2px' }}>
-          {/* Pomodoro Timer */}
-          <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ position: 'relative', left: '-8px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className={`text-[13px] font-bold px-1.5 py-0.5 rounded ${
-              pomodoroMode === "work" ? "text-white" : 
-              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-            }`} data-testid="pomodoro-timer">
-              {formatPomodoroTime(pomodoroTime)}
+          {/* Week navigation with arrows around date, Today/Month stacked above */}
+          <div className="flex flex-col items-center gap-0.5" style={{ position: 'relative', left: '-8px' }}>
+            {/* Today/Month buttons - centered above date range */}
+            <div className="flex items-center justify-center gap-0.5" style={{ marginTop: '2px', width: '100%' }}>
+              <Button 
+                variant="ghost"
+                className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
+                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
+                data-testid="button-today"
+              >
+                Today
+              </Button>
+              <div className="w-[1px] h-3 bg-white/50" />
+              <Button 
+                variant="ghost"
+                className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
+                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+                data-testid="button-month-view"
+              >
+                {calendarView === "month" ? "Week" : "Month"}
+              </Button>
             </div>
-            <div className="flex items-center gap-3">
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-                {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
-              </button>
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-                <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-              </button>
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-                <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-              </button>
+            {/* Date display with arrows */}
+            <div className="flex items-center justify-center gap-1">
+              {/* Left arrow */}
+              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week" data-date-nav>
+                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </Button>
+              {/* Date display */}
+              <div className="flex items-center justify-center gap-1 whitespace-nowrap relative" style={{ minWidth: '140px', top: '3px' }}>
+                <span className="text-[12px] font-medium text-white">{format(weekStartDate, "MMMM d")}</span>
+                <span className="text-[12px] text-white/50">—</span>
+                <span className="text-[12px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
+              </div>
+              {/* Right arrow */}
+              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week" data-date-nav>
+                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
+              </Button>
             </div>
           </div>
           
