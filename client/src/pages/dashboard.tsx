@@ -9526,10 +9526,12 @@ export default function Dashboard() {
                       const isToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
+                      // Apply shimmer to today column or current hour row (brownish/greyish cells), but not the blue intersection
+                      const shouldShimmer = (isToday && !isCurrentHour) || (!isToday && isCurrentHour);
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
                           style={{
                             backgroundColor: (isToday && isCurrentHour) ? '#C5D8EC' : isToday ? '#EAE4DE' : isCurrentHour ? '#E8E8E8' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined

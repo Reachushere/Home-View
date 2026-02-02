@@ -432,6 +432,51 @@
   }
 }
 
+/* Today column and current hour row shimmer effect - runs every 5 seconds */
+.today-hour-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.today-hour-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: today-hour-shimmer-sweep 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes today-hour-shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  10% {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
 /* Task box border blink for due today */
 .task-blink-border {
   animation: task-border-blink 1.5s ease-in-out infinite;
