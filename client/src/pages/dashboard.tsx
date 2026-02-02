@@ -1057,7 +1057,7 @@ export default function Dashboard() {
       moduleColumnWidth: 0,
       dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
       allDayRowHeight: 36,
-      courseRowHeight: 48,
+      courseRowHeight: 36,
       timeSlotHeight: 36,
       timeSlotHeights: defaultHeights
     };
@@ -8545,7 +8545,7 @@ export default function Dashboard() {
                       className={`flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
                       title="Set reminder"
                     >
-                      <Bell className="h-2.5 w-2.5" />
+                      <Bell className="h-3.5 w-3.5" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
@@ -8614,7 +8614,7 @@ export default function Dashboard() {
                       className="flex items-center justify-center text-gray-600 hover:text-gray-800"
                       title="Attach to task or project"
                     >
-                      <Paperclip className="h-2.5 w-2.5" />
+                      <Paperclip className="h-2 w-2" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="max-h-[300px] overflow-y-auto w-48">
@@ -8660,7 +8660,7 @@ export default function Dashboard() {
                 {/* Color picker */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="h-4 w-4 rounded-full border border-gray-400 hover:opacity-80" style={{ backgroundColor: colors.header }} />
+                    <button className="h-2.5 w-2.5 rounded-full border border-gray-400 hover:opacity-80" style={{ backgroundColor: colors.header }} />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="min-w-0 p-1">
                     <div className="flex gap-1">
