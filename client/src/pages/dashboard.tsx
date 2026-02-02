@@ -7966,7 +7966,7 @@ export default function Dashboard() {
         <Button 
           size="icon"
           variant="ghost"
-          className="!h-[40px] !w-[40px] !min-h-[40px] !min-w-[40px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
           style={{ background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
           onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
         >
@@ -8051,7 +8051,7 @@ export default function Dashboard() {
         <Button 
           size="icon"
           variant="ghost"
-          className="!h-[40px] !w-[40px] !min-h-[40px] !min-w-[40px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
           style={{ background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
           onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
         >
