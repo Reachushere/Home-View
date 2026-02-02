@@ -9456,7 +9456,14 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={`due-${task.id}-${idx}`}
-                              className="text-[8px] text-black truncate px-0.5 flex items-center gap-1 z-10 relative"
+                              className="absolute text-[8px] text-black truncate px-0.5 flex items-center gap-1 z-10"
+                              style={{
+                                left: '2px',
+                                right: '2px',
+                                height: '18px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                              }}
                               title={task.title}
                             >
                               {/* Connecting bar from prep days */}
@@ -9464,11 +9471,10 @@ export default function Dashboard() {
                                 <div 
                                   className="absolute silver-shimmer-prep"
                                   style={{
-                                    left: '-6px',
+                                    left: '-8px',
                                     right: '50%',
                                     height: '18px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
+                                    top: '0',
                                     borderRadius: '0 4px 4px 0',
                                     background: lighterGradient,
                                     zIndex: 4,
