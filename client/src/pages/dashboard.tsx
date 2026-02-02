@@ -9475,7 +9475,7 @@ export default function Dashboard() {
                               }}
                               title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                             >
-                              <span className="text-[8px] text-gray-600 truncate px-0.5">
+                              <span className="text-[8px] text-gray-800 font-medium truncate px-0.5">
                                 Prep days
                               </span>
                             </div>
@@ -9757,7 +9757,7 @@ export default function Dashboard() {
                                       }}
                                       title={`${prepDaysCount} prep days`}
                                     >
-                                      <span className="text-[10px] text-gray-600 truncate px-1">
+                                      <span className="text-[10px] text-gray-800 font-medium truncate px-1">
                                         Prep days
                                       </span>
                                     </div>
@@ -9998,7 +9998,7 @@ export default function Dashboard() {
                     >
                       {/* Prep Days text - centered */}
                       <span 
-                        className="absolute text-[10px] text-gray-600 font-medium whitespace-nowrap"
+                        className="absolute text-[10px] text-gray-800 font-medium whitespace-nowrap"
                         style={{
                           left: '50%',
                           transform: 'translateX(-50%)',
