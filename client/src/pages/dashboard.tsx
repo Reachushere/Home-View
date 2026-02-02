@@ -6991,13 +6991,13 @@ export default function Dashboard() {
             </span>
             <div className="w-[1px] h-4 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-[14px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
-                {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
+              <span className="text-[14px] text-white font-bold" style={{ fontFamily: "'Raleway', sans-serif", fontVariantNumeric: 'tabular-nums', fontFeatureSettings: "'tnum'" }}>
+                {new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-[12px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
+              <span className="text-[12px] text-white font-bold" style={{ fontFamily: "'Raleway', sans-serif", fontVariantNumeric: 'tabular-nums', fontFeatureSettings: "'tnum'" }}>
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
-              <span className="text-[10px] text-white font-normal ml-0.5 uppercase" style={{ fontFamily: "'Raleway', sans-serif" }}>
+              <span className="text-[10px] text-white font-bold ml-0.5 uppercase" style={{ fontFamily: "'Raleway', sans-serif" }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
