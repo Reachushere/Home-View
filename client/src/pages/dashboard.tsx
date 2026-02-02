@@ -6990,14 +6990,14 @@ export default function Dashboard() {
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
             <div className="w-[1px] h-4 bg-white/50" />
-            <div className="flex items-baseline">
-              <span className="text-[14px] text-white font-bold" style={{ fontFamily: "'Raleway', sans-serif" }}>
+            <div className="flex items-center">
+              <span className="text-[14px] text-white font-bold leading-none" style={{ fontFamily: "'Raleway', sans-serif" }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-[10px] text-white font-bold" style={{ fontFamily: "'Raleway', sans-serif" }}>
+              <span className="text-[10px] text-white font-bold leading-none" style={{ fontFamily: "'Raleway', sans-serif" }}>
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
-              <span className="text-[10px] text-white font-bold ml-0.5 uppercase" style={{ fontFamily: "'Raleway', sans-serif" }}>
+              <span className="text-[10px] text-white font-bold ml-0.5 uppercase leading-none" style={{ fontFamily: "'Raleway', sans-serif" }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
