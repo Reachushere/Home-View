@@ -8565,7 +8565,7 @@ export default function Dashboard() {
                   onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { title: e.target.value } })}
                   onClick={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
-                  className="text-[10px] text-gray-700 font-medium bg-white/40 border-none outline-none w-20 cursor-text hover:bg-white/50 focus:bg-white/60 rounded px-0.5"
+                  className="text-[10px] text-gray-700 font-medium bg-white/25 border-none outline-none w-20 cursor-text hover:bg-white/35 focus:bg-white/45 rounded px-0.5"
                   placeholder="Note"
                   data-testid={`sticky-note-title-${note.id}`}
                 />
