@@ -8328,7 +8328,7 @@ export default function Dashboard() {
         }}
         data-testid="honeycomb-pull"
       >
-        {/* Back circle - solid #2196F3 blue */}
+        {/* Back circle - solid taupe */}
         <div
           style={{
             position: 'absolute',
@@ -8337,7 +8337,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#2196F3',
+            background: '#8B7355',
             boxShadow: 'none',
           }}
         />
@@ -8350,7 +8350,7 @@ export default function Dashboard() {
             width: '38px',
             height: '38px',
             borderRadius: '50%',
-            background: 'linear-gradient(0deg, #64B5F6 0%, #2196F3 100%)',
+            background: 'linear-gradient(0deg, #D4C4B5 0%, #8B7355 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
