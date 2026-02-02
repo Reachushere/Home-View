@@ -8533,7 +8533,7 @@ export default function Dashboard() {
                       className="flex items-center justify-center text-gray-600 hover:text-gray-800"
                       onMouseDown={(e) => e.stopPropagation()}
                     >
-                      <Grip className="h-2 w-2" />
+                      <Grip className="h-2.5 w-2.5" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="min-w-0 p-2" onClick={(e) => e.stopPropagation()}>
