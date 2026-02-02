@@ -7993,7 +7993,7 @@ export default function Dashboard() {
             {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width + 1px = 63px from right) */}
             <line 
               x1={`calc(100% - 63px)`} 
-              y1={`${382 + 22}px`}
+              y1={`${369 + 22}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8004,7 +8004,7 @@ export default function Dashboard() {
             {/* Line to CFNF */}
             <line 
               x1={`calc(100% - 63px)`} 
-              y1={`${382 + 22}px`}
+              y1={`${369 + 22}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8015,7 +8015,7 @@ export default function Dashboard() {
             {/* Line to CASL */}
             <line 
               x1={`calc(100% - 63px)`} 
-              y1={`${382 + 22}px`}
+              y1={`${369 + 22}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8120,7 +8120,7 @@ export default function Dashboard() {
             {/* Line to CPPA */}
             <line 
               x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${433 + 15}px`}
+              y1={`${420 + 15}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8131,7 +8131,7 @@ export default function Dashboard() {
             {/* Line to CFNF */}
             <line 
               x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${433 + 23}px`}
+              y1={`${420 + 23}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
@@ -8142,7 +8142,7 @@ export default function Dashboard() {
             {/* Line to CASL */}
             <line 
               x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${433 + 30}px`}
+              y1={`${420 + 30}px`}
               x2={`calc(100% - ${103 + 21}px)`}
               y2={`${courseRowsY + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
               stroke="white" 
