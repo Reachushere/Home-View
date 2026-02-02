@@ -7730,7 +7730,7 @@ export default function Dashboard() {
               key={`module-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
               style={{ 
-                top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * (idx + 1.5) + gridSizes.courseRowHeight / 2 + 6}px` : '331px',
+                top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * (idx + 1.5) + gridSizes.courseRowHeight / 2}px` : '331px',
                 right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
                 transform: modulesHoneycombOpen === 'modules' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
@@ -7853,7 +7853,7 @@ export default function Dashboard() {
               key={`reading-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
               style={{ 
-                top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * (idx + 1.5) + gridSizes.courseRowHeight / 2 + 6}px` : '381px',
+                top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * (idx + 1.5) + gridSizes.courseRowHeight / 2}px` : '381px',
                 right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
                 transform: modulesHoneycombOpen === 'readings' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
