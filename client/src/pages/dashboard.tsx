@@ -8233,7 +8233,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#FFFB19',
+            background: '#F5F11E',
             boxShadow: 'none',
           }}
         />
