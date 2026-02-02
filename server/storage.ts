@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, getWeekNumber } from "@shared/schema";
+import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, getWeekNumber } from "@shared/schema";
 import { eq, and, gte, lte, desc, or } from "drizzle-orm";
 
 export interface IStorage {
@@ -51,6 +51,12 @@ export interface IStorage {
   updateProject(id: number, updates: Partial<InsertProject>): Promise<Project>;
   deleteProject(id: number): Promise<void>;
   getTasksByProject(projectId: number): Promise<Task[]>;
+  // Sticky Notes
+  getStickyNotes(): Promise<StickyNote[]>;
+  getStickyNote(id: number): Promise<StickyNote | undefined>;
+  createStickyNote(note: InsertStickyNote): Promise<StickyNote>;
+  updateStickyNote(id: number, updates: Partial<InsertStickyNote>): Promise<StickyNote>;
+  deleteStickyNote(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -391,6 +397,30 @@ export class DatabaseStorage implements IStorage {
 
   async getTasksByProject(projectId: number): Promise<Task[]> {
     return await db.select().from(tasks).where(eq(tasks.projectId, projectId)).orderBy(tasks.dueDate);
+  }
+
+  // Sticky Notes implementation
+  async getStickyNotes(): Promise<StickyNote[]> {
+    return await db.select().from(stickyNotes).orderBy(desc(stickyNotes.zIndex));
+  }
+
+  async getStickyNote(id: number): Promise<StickyNote | undefined> {
+    const [note] = await db.select().from(stickyNotes).where(eq(stickyNotes.id, id));
+    return note;
+  }
+
+  async createStickyNote(note: InsertStickyNote): Promise<StickyNote> {
+    const [created] = await db.insert(stickyNotes).values(note).returning();
+    return created;
+  }
+
+  async updateStickyNote(id: number, updates: Partial<InsertStickyNote>): Promise<StickyNote> {
+    const [updated] = await db.update(stickyNotes).set(updates).where(eq(stickyNotes.id, id)).returning();
+    return updated;
+  }
+
+  async deleteStickyNote(id: number): Promise<void> {
+    await db.delete(stickyNotes).where(eq(stickyNotes.id, id));
   }
 }
 

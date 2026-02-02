@@ -2180,6 +2180,54 @@ export async function registerRoutes(
     }
   });
 
+  // ========== Sticky Notes Routes ==========
+  
+  // GET /api/sticky-notes - Get all sticky notes
+  app.get("/api/sticky-notes", async (req, res) => {
+    try {
+      const notes = await storage.getStickyNotes();
+      res.json(notes);
+    } catch (err) {
+      console.error("Error fetching sticky notes:", err);
+      res.status(500).json({ message: "Failed to fetch sticky notes" });
+    }
+  });
+
+  // POST /api/sticky-notes - Create a new sticky note
+  app.post("/api/sticky-notes", async (req, res) => {
+    try {
+      const note = await storage.createStickyNote(req.body);
+      res.json(note);
+    } catch (err) {
+      console.error("Error creating sticky note:", err);
+      res.status(500).json({ message: "Failed to create sticky note" });
+    }
+  });
+
+  // PATCH /api/sticky-notes/:id - Update a sticky note
+  app.patch("/api/sticky-notes/:id", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const note = await storage.updateStickyNote(id, req.body);
+      res.json(note);
+    } catch (err) {
+      console.error("Error updating sticky note:", err);
+      res.status(500).json({ message: "Failed to update sticky note" });
+    }
+  });
+
+  // DELETE /api/sticky-notes/:id - Delete a sticky note
+  app.delete("/api/sticky-notes/:id", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      await storage.deleteStickyNote(id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting sticky note:", err);
+      res.status(500).json({ message: "Failed to delete sticky note" });
+    }
+  });
+
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
 

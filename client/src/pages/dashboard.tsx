@@ -98,13 +98,15 @@ import {
   TrendingUp,
   TrendingDown,
   Pencil,
+  StickyNote,
+  Grip,
   GripVertical,
   CheckCircle2,
   Check,
   ListTodo,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
-import type { Task, SemesterSettings, Subtask, Project } from "@shared/schema";
+import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, isBefore } from "date-fns";
 
@@ -1905,6 +1907,93 @@ export default function Dashboard() {
     queryKey: ["/api/projects"],
     queryFn: () => fetch("/api/projects").then(r => r.json()),
   });
+
+  // Fetch sticky notes
+  const { data: stickyNotes = [] } = useQuery<StickyNoteType[]>({
+    queryKey: ["/api/sticky-notes"],
+    queryFn: () => fetch("/api/sticky-notes").then(r => r.json()),
+  });
+
+  // Sticky note state for dragging
+  const [draggingStickyNote, setDraggingStickyNote] = useState<number | null>(null);
+  const [stickyNoteOffset, setStickyNoteOffset] = useState({ x: 0, y: 0 });
+  const [maxStickyZIndex, setMaxStickyZIndex] = useState(100);
+
+  // Sticky note mutations
+  const createStickyNoteMutation = useMutation({
+    mutationFn: (note: Partial<StickyNoteType>) => apiRequest("POST", "/api/sticky-notes", note),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/sticky-notes"] }),
+  });
+
+  const updateStickyNoteMutation = useMutation({
+    mutationFn: ({ id, updates }: { id: number; updates: Partial<StickyNoteType> }) => 
+      apiRequest("PATCH", `/api/sticky-notes/${id}`, updates),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/sticky-notes"] }),
+  });
+
+  const deleteStickyNoteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/sticky-notes/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/sticky-notes"] }),
+  });
+
+  // Handle adding a new sticky note
+  const handleAddStickyNote = () => {
+    const newZIndex = maxStickyZIndex + 1;
+    setMaxStickyZIndex(newZIndex);
+    createStickyNoteMutation.mutate({
+      content: "",
+      color: "yellow",
+      positionX: 150 + Math.random() * 100,
+      positionY: 150 + Math.random() * 100,
+      width: 200,
+      height: 150,
+      zIndex: newZIndex,
+      isMinimized: false,
+    });
+  };
+
+  // Handle sticky note drag
+  const handleStickyNoteMouseDown = (e: React.MouseEvent, noteId: number, note: StickyNoteType) => {
+    e.preventDefault();
+    setDraggingStickyNote(noteId);
+    const rect = (e.target as HTMLElement).closest('[data-sticky-note]')?.getBoundingClientRect();
+    if (rect) {
+      setStickyNoteOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    }
+    // Bring to front
+    const newZIndex = maxStickyZIndex + 1;
+    setMaxStickyZIndex(newZIndex);
+    updateStickyNoteMutation.mutate({ id: noteId, updates: { zIndex: newZIndex } });
+  };
+
+  const handleStickyNoteMouseMove = useCallback((e: MouseEvent) => {
+    if (draggingStickyNote !== null) {
+      const newX = e.clientX - stickyNoteOffset.x;
+      const newY = e.clientY - stickyNoteOffset.y;
+      updateStickyNoteMutation.mutate({ 
+        id: draggingStickyNote, 
+        updates: { positionX: Math.max(0, newX), positionY: Math.max(0, newY) } 
+      });
+    }
+  }, [draggingStickyNote, stickyNoteOffset]);
+
+  const handleStickyNoteMouseUp = useCallback(() => {
+    setDraggingStickyNote(null);
+  }, []);
+
+  useEffect(() => {
+    if (draggingStickyNote !== null) {
+      window.addEventListener('mousemove', handleStickyNoteMouseMove);
+      window.addEventListener('mouseup', handleStickyNoteMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleStickyNoteMouseMove);
+        window.removeEventListener('mouseup', handleStickyNoteMouseUp);
+      };
+    }
+  }, [draggingStickyNote, handleStickyNoteMouseMove, handleStickyNoteMouseUp]);
 
   // Files for weekly files flyout (moved up for allTaskFiles dependency)
   interface WeeklyFile {
@@ -8083,6 +8172,120 @@ export default function Dashboard() {
           <TrendingUp style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
         </Button>
       </div>
+
+      {/* Sticky Note Button - Below arrows toggle button */}
+      <div 
+        className="absolute z-[60] pointer-events-auto"
+        style={{ 
+          width: '44px', 
+          height: '44px', 
+          top: '640px', 
+          right: '18px',
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #FFE566 0%, #FFCC00 100%)',
+          padding: '1px'
+        }}
+        data-testid="honeycomb-sticky-note"
+      >
+        <Button 
+          size="icon"
+          variant="ghost"
+          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          style={{ background: 'linear-gradient(180deg, #FFCC00 0%, #FFE566 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)' }}
+          onClick={handleAddStickyNote}
+          title="Add Sticky Note"
+        >
+          <StickyNote style={{ color: '#333', strokeWidth: 2, height: '18px', width: '18px' }} />
+        </Button>
+      </div>
+
+      {/* Render Sticky Notes */}
+      {stickyNotes.map((note) => {
+        const noteColors: Record<string, { bg: string; border: string; header: string }> = {
+          yellow: { bg: '#FFFACD', border: '#E6D200', header: '#FFE566' },
+          pink: { bg: '#FFE4EC', border: '#FF69B4', header: '#FFB6C1' },
+          blue: { bg: '#E0F0FF', border: '#4DA6FF', header: '#87CEEB' },
+          green: { bg: '#E0FFE0', border: '#32CD32', header: '#98FB98' },
+          orange: { bg: '#FFE4CC', border: '#FF8C00', header: '#FFCC99' },
+          purple: { bg: '#F0E0FF', border: '#9370DB', header: '#DDA0DD' },
+        };
+        const colors = noteColors[note.color] || noteColors.yellow;
+        
+        return (
+          <div
+            key={note.id}
+            data-sticky-note
+            className="fixed shadow-lg rounded-md overflow-hidden"
+            style={{
+              left: `${note.positionX}px`,
+              top: `${note.positionY}px`,
+              width: `${note.width}px`,
+              height: note.isMinimized ? '28px' : `${note.height}px`,
+              zIndex: note.zIndex || 100,
+              backgroundColor: colors.bg,
+              border: `1px solid ${colors.border}`,
+            }}
+            data-testid={`sticky-note-${note.id}`}
+          >
+            {/* Header bar - draggable */}
+            <div
+              className="flex items-center justify-between px-2 py-1 cursor-move select-none"
+              style={{ backgroundColor: colors.header, borderBottom: `1px solid ${colors.border}` }}
+              onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
+            >
+              <div className="flex items-center gap-1">
+                <Grip className="h-3 w-3 text-gray-600" />
+                <span className="text-[10px] text-gray-700 font-medium">Note</span>
+              </div>
+              <div className="flex items-center gap-1">
+                {/* Color picker */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="h-4 w-4 rounded-full border border-gray-400 hover:opacity-80" style={{ backgroundColor: colors.header }} />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="min-w-0 p-1">
+                    <div className="flex gap-1">
+                      {Object.keys(noteColors).map((color) => (
+                        <button
+                          key={color}
+                          className="h-5 w-5 rounded-full border border-gray-300 hover:scale-110 transition-transform"
+                          style={{ backgroundColor: noteColors[color].header }}
+                          onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { color } })}
+                        />
+                      ))}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                {/* Minimize button */}
+                <button
+                  className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"
+                  onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { isMinimized: !note.isMinimized } })}
+                >
+                  {note.isMinimized ? <Plus className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
+                </button>
+                {/* Delete button */}
+                <button
+                  className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-red-600"
+                  onClick={() => deleteStickyNoteMutation.mutate(note.id)}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+            {/* Content area */}
+            {!note.isMinimized && (
+              <textarea
+                className="w-full h-[calc(100%-28px)] p-2 text-[11px] resize-none border-0 outline-none !font-normal"
+                style={{ backgroundColor: 'transparent', fontFamily: 'inherit' }}
+                value={note.content}
+                onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { content: e.target.value } })}
+                placeholder="Write your note here..."
+                data-testid={`sticky-note-content-${note.id}`}
+              />
+            )}
+          </div>
+        );
+      })}
 
       {/* Main Content - Full width, positioned below unified header */}
       <main className="flex-1 pt-2 pb-2 flex flex-col overflow-visible relative z-10 min-h-0" style={{ paddingLeft: '29px', paddingRight: '24px', marginTop: '63px' }}>

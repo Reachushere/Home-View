@@ -277,6 +277,24 @@ export type Task = typeof tasks.$inferSelect;
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type UpdateTaskRequest = Partial<InsertTask>;
 
+// Sticky notes table for post-it notes that can be placed anywhere on screen
+export const stickyNotes = pgTable("sticky_notes", {
+  id: serial("id").primaryKey(),
+  content: text("content").notNull().default(""),
+  color: text("color").notNull().default("yellow"),
+  positionX: integer("position_x").notNull().default(100),
+  positionY: integer("position_y").notNull().default(100),
+  width: integer("width").notNull().default(200),
+  height: integer("height").notNull().default(150),
+  zIndex: integer("z_index").notNull().default(100),
+  isMinimized: boolean("is_minimized").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertStickyNoteSchema = createInsertSchema(stickyNotes).omit({ id: true, createdAt: true });
+export type InsertStickyNote = z.infer<typeof insertStickyNoteSchema>;
+export type StickyNote = typeof stickyNotes.$inferSelect;
+
 // Week calculation helpers
 // Week 2 starts Saturday Jan 11, 2025 (today is Jan 17, 2025 - Friday of Week 2)
 // Weeks run Saturday to Friday
