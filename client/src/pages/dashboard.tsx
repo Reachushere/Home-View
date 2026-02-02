@@ -8049,7 +8049,7 @@ export default function Dashboard() {
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
         data-testid="honeycomb-files-main"
       >
-        {/* Back circle - solid #FF6E3D */}
+        {/* Back circle - solid #FFA365 */}
         <div
           style={{
             position: 'absolute',
@@ -8058,7 +8058,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#FF6E3D',
+            background: '#FFA365',
             boxShadow: 'none',
           }}
         />
@@ -8154,7 +8154,7 @@ export default function Dashboard() {
         }}
         data-testid="honeycomb-todo-main"
       >
-        {/* Back circle - solid #FF6E3D */}
+        {/* Back circle - solid #FFA365 */}
         <div
           style={{
             position: 'absolute',
@@ -8163,7 +8163,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#FF6E3D',
+            background: '#FFA365',
             boxShadow: 'none',
           }}
         />
