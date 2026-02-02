@@ -8516,7 +8516,16 @@ export default function Dashboard() {
             >
               <div className="flex items-center gap-1">
                 <Grip className="h-3 w-3 text-gray-600" />
-                <span className="text-[10px] text-gray-700 font-medium">Note</span>
+                <input
+                  type="text"
+                  value={note.title || "Note"}
+                  onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { title: e.target.value } })}
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className="text-[10px] text-gray-700 font-medium bg-transparent border-none outline-none w-20 cursor-text hover:bg-white/30 focus:bg-white/50 rounded px-0.5"
+                  placeholder="Note"
+                  data-testid={`sticky-note-title-${note.id}`}
+                />
               </div>
               <div className="flex items-center gap-1">
                 {/* Attachment indicator */}

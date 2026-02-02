@@ -280,6 +280,7 @@ export type UpdateTaskRequest = Partial<InsertTask>;
 // Sticky notes table for post-it notes that can be placed anywhere on screen
 export const stickyNotes = pgTable("sticky_notes", {
   id: serial("id").primaryKey(),
+  title: text("title").notNull().default("Note"),
   content: text("content").notNull().default(""),
   color: text("color").notNull().default("yellow"),
   positionX: integer("position_x").notNull().default(100),
