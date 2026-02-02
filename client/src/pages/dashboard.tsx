@@ -4309,21 +4309,21 @@ export default function Dashboard() {
     return allTasks.filter(t => {
       if (t.isCompleted) return false;
       if (!t.startDate) return false;
-      if (!t.eventStartTime) return false; // Only for time slot tasks
+      if (!t.eventStartTime) return false; // Only for timed tasks
       
       const dueDate = new Date(t.dueDate);
       const startDate = new Date(t.startDate);
       const prepDays = differenceInDays(dueDate, startDate);
-      if (prepDays <= 0 || prepDays > 2) return false;
+      if (prepDays <= 0) return false;
       
-      // Check if task's due date is in current week view
-      const isInWeek = weekDays.some(day => isSameDay(day, dueDate));
+      // Check if task's due date or any prep day is in current week view
+      const isInWeek = weekDays.some(day => isSameDay(day, dueDate) || (day >= startDate && day < dueDate));
       return isInWeek;
     }).map(t => {
       const dueDate = new Date(t.dueDate);
       const startDate = new Date(t.startDate!);
       const dueDayIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
-      const prepDaysCount = Math.min(2, differenceInDays(dueDate, startDate));
+      const prepDaysCount = differenceInDays(dueDate, startDate);
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime ? t.eventEndTime.split(':').map(Number) : [startHour + 1, 0];
       
@@ -9422,7 +9422,7 @@ export default function Dashboard() {
                           
                           // Create a lighter gradient for prep bars (lighter than button)
                           const rgb = hexToRgb(course.label);
-                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 30)}, ${Math.min(255, rgb.g + 30)}, ${Math.min(255, rgb.b + 30)}) 0%, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 100%)`;
+                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 50)}, ${Math.min(255, rgb.g + 50)}, ${Math.min(255, rgb.b + 50)}) 0%, rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)}) 100%)`;
                           
                           return (
                             <div
@@ -9450,7 +9450,7 @@ export default function Dashboard() {
                           const hasPrepDays = task.startDate != null;
                           // Use lighter gradient for connecting bar (matching prep bars)
                           const rgb = hexToRgb(course.label);
-                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 30)}, ${Math.min(255, rgb.g + 30)}, ${Math.min(255, rgb.b + 30)}) 0%, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 100%)`;
+                          const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 50)}, ${Math.min(255, rgb.g + 50)}, ${Math.min(255, rgb.b + 50)}) 0%, rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)}) 100%)`;
                           return (
                             <div 
                               key={`due-${task.id}-${idx}`}
@@ -9614,7 +9614,7 @@ export default function Dashboard() {
                             // Check for prep days
                             const hasPrepDays = !!task.startDate && !task.isCompleted;
                             const prepDaysCount = hasPrepDays && task.startDate
-                              ? Math.max(0, Math.min(2, differenceInDays(new Date(task.dueDate), new Date(task.startDate))))
+                              ? Math.max(0, differenceInDays(new Date(task.dueDate), new Date(task.startDate)))
                               : 0;
                             
                             // Check if this task is covered by a prep extension from another task
@@ -9694,7 +9694,7 @@ export default function Dashboard() {
                                 {hasPrepDays && prepDaysCount > 0 && (() => {
                                   const courseHex = colors?.hex || '#4ADE80';
                                   const rgb = hexToRgb(courseHex);
-                                  const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 30)}, ${Math.min(255, rgb.g + 30)}, ${Math.min(255, rgb.b + 30)}) 0%, rgb(${Math.min(255, rgb.r + 80)}, ${Math.min(255, rgb.g + 80)}, ${Math.min(255, rgb.b + 80)}) 100%)`;
+                                  const lighterGradient = `linear-gradient(180deg, rgb(${Math.min(255, rgb.r + 50)}, ${Math.min(255, rgb.g + 50)}, ${Math.min(255, rgb.b + 50)}) 0%, rgb(${Math.min(255, rgb.r + 100)}, ${Math.min(255, rgb.g + 100)}, ${Math.min(255, rgb.b + 100)}) 100%)`;
                                   return (
                                     <div
                                       className="absolute silver-shimmer-prep flex items-center justify-center"
@@ -9705,7 +9705,7 @@ export default function Dashboard() {
                                         height: '16px',
                                         borderRadius: '4px 0 0 4px',
                                         background: lighterGradient,
-                                        zIndex: -1,
+                                        zIndex: 40,
                                       }}
                                       title={`${prepDaysCount} prep days`}
                                     >
