@@ -6987,10 +6987,12 @@ export default function Dashboard() {
           {/* Clock */}
           <div className="rounded-full h-[35px] overflow-hidden px-3.5" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }} data-testid="digital-clock">
             <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
-            <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px', transform: 'translateX(7px)' }}>
-              {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
-            </span>
-            <div className="w-[1px] h-4 bg-white/50" />
+            <div className="flex items-center gap-1" style={{ transform: 'translateX(7px)' }}>
+              <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
+                {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
+              </span>
+              <div className="w-[1px] h-4 bg-white/50" />
+            </div>
             <div style={{ display: 'flex', alignItems: 'baseline', width: '95px' }}>
               <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '14px', fontWeight: 'bold', color: 'white', width: '44px', textAlign: 'right', flexShrink: 0 }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
