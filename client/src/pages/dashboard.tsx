@@ -8337,7 +8337,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#6B5A4A',
+            background: '#716050',
             boxShadow: 'none',
           }}
         />
