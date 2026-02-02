@@ -8293,7 +8293,7 @@ export default function Dashboard() {
             width: '38px',
             height: '38px',
             borderRadius: '50%',
-            background: 'linear-gradient(0deg, #81C784 0%, #4CAF50 100%)',
+            background: 'linear-gradient(0deg, #8DB5AF 0%, #2A6B61 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
