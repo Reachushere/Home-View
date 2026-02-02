@@ -8179,7 +8179,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '640px', 
+          top: '633px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
