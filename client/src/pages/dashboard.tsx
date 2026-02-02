@@ -6986,7 +6986,7 @@ export default function Dashboard() {
           
           {/* Clock - wrapper clips 9px from left */}
           <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
-            <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-10px', borderRadius: '9999px' }} data-testid="digital-clock">
+            <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-12px', borderRadius: '9999px' }} data-testid="digital-clock">
               <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
               <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
