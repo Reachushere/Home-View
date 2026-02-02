@@ -4418,7 +4418,8 @@ export default function Dashboard() {
       if (ext.hour !== hour) continue;
       
       // Check if any task exists in the prep extension's covered days at this hour
-      for (let dayIdx = ext.prepStartDayIdx; dayIdx < ext.dueDayIdx; dayIdx++) {
+      // Include due date column (where prep bar extends to the left and may cover other tasks)
+      for (let dayIdx = ext.prepStartDayIdx; dayIdx <= ext.dueDayIdx; dayIdx++) {
         const day = weekDays[dayIdx];
         
         // Check regular tasks
