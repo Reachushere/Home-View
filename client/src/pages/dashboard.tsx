@@ -8549,13 +8549,13 @@ export default function Dashboard() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenuLabel className="text-[10px] py-1">Reminder Settings</DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-[9px] py-1">Reminder Settings</DropdownMenuLabel>
                     <div className="space-y-2 p-1">
                       <div className="space-y-1">
-                        <Label className="text-[10px]">Reminder Time</Label>
+                        <Label className="text-[9px]">Reminder Time</Label>
                         <Input
                           type="datetime-local"
-                          className="h-7 text-[10px]"
+                          className="h-6 text-[8px] px-1"
                           value={note.reminderTime ? format(new Date(note.reminderTime), "yyyy-MM-dd'T'HH:mm") : ''}
                           onChange={(e) => {
                             const value = e.target.value ? new Date(e.target.value).toISOString() : null;
