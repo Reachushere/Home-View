@@ -8038,29 +8038,49 @@ export default function Dashboard() {
       
       {/* Files Button - Below readings button on tall pill */}
       <div 
-        className="absolute z-50 pointer-events-auto flex items-center justify-center"
+        className="absolute z-50 pointer-events-auto"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: '484px', 
           right: '18px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
-          padding: '1px'
         }}
         onMouseEnter={() => setDecorativeHoneycombHover('middle')}
         onMouseLeave={() => setDecorativeHoneycombHover(null)}
         data-testid="honeycomb-files-main"
       >
-        <Button 
-          size="icon"
-          variant="ghost"
-          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-          style={{ background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+        {/* Back circle - solid #FF6E3D */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: '#FF6E3D',
+            boxShadow: 'none',
+          }}
+        />
+        {/* Front circle with gradient - 38px */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
           onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
         >
           <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-        </Button>
+        </div>
       </div>
       {/* Spring out honeycombs for course readings - moved outside files button */}
       {/* CPPA122 */}
@@ -8125,27 +8145,47 @@ export default function Dashboard() {
       
       {/* Todo Button - Below files button on tall pill */}
       <div 
-        className="absolute z-50 pointer-events-auto flex items-center justify-center"
+        className="absolute z-50 pointer-events-auto"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: '535px', 
           right: '18px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
-          padding: '1px'
         }}
         data-testid="honeycomb-todo-main"
       >
-        <Button 
-          size="icon"
-          variant="ghost"
-          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-          style={{ background: 'linear-gradient(180deg, #FF6E3D 0%, #FFDD63 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+        {/* Back circle - solid #FF6E3D */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: '#FF6E3D',
+            boxShadow: 'none',
+          }}
+        />
+        {/* Front circle with gradient - 38px */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
           onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
         >
           <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-        </Button>
+        </div>
       </div>
 
       {/* Arrow Toggle Button - Below todo button on tall pill */}
