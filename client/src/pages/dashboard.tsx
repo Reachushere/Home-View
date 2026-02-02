@@ -8207,7 +8207,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
-              <div className="p-4 flex-1 overflow-y-auto [&_label]:text-white [&_span]:text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_svg]:text-white">
+              <div className="p-4 flex-1 overflow-y-auto [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal [&_span]:text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_svg]:text-white">
                 <TaskForm 
                   key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
                   weekNumber={selectedWeek}
@@ -12038,7 +12038,7 @@ export default function Dashboard() {
 
         {/* Edit Dialog */}
         <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
-          <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white">
+          <DialogContent className="max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_label]:text-white [&_label]:font-normal [&_input]:font-normal [&_select]:font-normal [&_option]:font-normal">
             <DialogHeader className="flex flex-row items-center justify-between gap-4">
               <DialogTitle className="text-white">Edit Task</DialogTitle>
               {editingTask && (
@@ -14260,9 +14260,19 @@ function TaskForm({
         <div className="flex gap-2 pt-4">
           <Button 
             type="submit" 
+            variant="outline"
             disabled={createMutation.isPending} 
-            className="bg-transparent hover:bg-[#FF8C00]/10 text-[#FF8C00] border-2 border-[#FF8C00] shadow-lg shadow-[#FF8C00]/40 h-8 px-4" 
-            style={{ fontSize: '11px' }} 
+            className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200" 
+            style={{ 
+              fontSize: '11px',
+              boxShadow: '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)'
+            }} 
+            onMouseEnter={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 8px rgba(255,221,99,0.8), 0 0 16px rgba(255,163,101,0.6), 0 0 24px rgba(255,110,61,0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 6px rgba(255,221,99,0.6), 0 0 12px rgba(255,163,101,0.5), 0 0 18px rgba(255,110,61,0.4)';
+            }}
             data-testid="button-submit-task"
           >
             {createMutation.isPending ? "Saving..." : task ? "Update Task" : "Add Task"}
