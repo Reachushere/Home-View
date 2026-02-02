@@ -2,7 +2,7 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = 'reminders@uni-call.app';
+const FROM_EMAIL = 'reminders@uni-cal.app';
 const TO_EMAIL = 'bryn.kai-hendricks@outlook.com';
 const SMS_EMAIL = '4168275455@fido.ca';
 
