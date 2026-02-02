@@ -8177,46 +8177,46 @@ export default function Dashboard() {
       <div 
         className="absolute z-[60] pointer-events-auto"
         style={{ 
-          width: '52px', 
-          height: '52px', 
-          top: '632px', 
-          right: '14px',
+          position: 'relative',
+          width: '44px', 
+          height: '44px', 
+          top: '636px', 
+          right: '-18px',
         }}
         data-testid="honeycomb-sticky-note"
       >
-        {/* Back circle - solid #FAFF70 */}
+        {/* Back circle - solid #FFA365 */}
         <div
           style={{
             position: 'absolute',
-            width: '52px',
-            height: '52px',
-            borderRadius: '50%',
-            background: '#FAFF70',
-          }}
-        />
-        {/* Front circle with gradient */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '4px',
-            left: '4px',
+            top: 0,
+            left: 0,
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: 'linear-gradient(0deg, #FFFCBF 0%, #EAFF00 100%)',
-            padding: '1px',
+            backgroundColor: '#FFA365',
           }}
+        />
+        {/* Front circle with gradient - 38px */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #FFFCBF 0%, #EAFF00 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+          className="hover:opacity-80 transition-all duration-200"
+          onClick={handleAddStickyNote}
+          title="Add Sticky Note"
         >
-          <Button 
-            size="icon"
-            variant="ghost"
-            className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-            style={{ background: 'linear-gradient(180deg, #EAFF00 0%, #FFFCBF 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-            onClick={handleAddStickyNote}
-            title="Add Sticky Note"
-          >
-            <StickyNote style={{ color: 'black', strokeWidth: 2, height: '18px', width: '18px' }} />
-          </Button>
+          <StickyNote style={{ color: 'black', strokeWidth: 2, height: '18px', width: '18px' }} />
         </div>
       </div>
 
