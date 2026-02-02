@@ -9705,7 +9705,7 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing border ${
+                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
                                   selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
@@ -9714,7 +9714,7 @@ export default function Dashboard() {
                                 } ${
                                   hasPrepDays && prepDaysCount > 0
                                     ? "rounded-r rounded-bl overflow-visible" 
-                                    : "rounded overflow-hidden"
+                                    : "rounded overflow-hidden border"
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -9724,7 +9724,11 @@ export default function Dashboard() {
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                                  borderTop: hasPrepDays && prepDaysCount > 0 ? `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}` : undefined,
+                                  borderRight: hasPrepDays && prepDaysCount > 0 ? `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}` : undefined,
+                                  borderBottom: hasPrepDays && prepDaysCount > 0 ? `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}` : undefined,
+                                  borderLeft: hasPrepDays && prepDaysCount > 0 ? 'none' : undefined,
+                                  borderColor: !(hasPrepDays && prepDaysCount > 0) ? (task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')) : undefined
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
@@ -9741,7 +9745,7 @@ export default function Dashboard() {
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
                                   // Calculate width based on prep days - each day column is roughly equal width
-                                  const dayColumnWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 4px)`;
+                                  const dayColumnWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 8px)`;
                                   return (
                                     <div
                                       className="absolute flex items-center justify-center"
