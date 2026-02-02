@@ -7987,7 +7987,7 @@ export default function Dashboard() {
       
       {/* Dotted lines from Modules button to course buttons - always visible unless readings open */}
       {modulesHoneycombOpen !== 'readings' && calendarTop > 100 && (() => {
-        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 3;
+        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 1;
         return (
           <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
             {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width + 1px = 63px from right) */}
@@ -8030,7 +8030,7 @@ export default function Dashboard() {
       {/* Modules Course Buttons - Spring from modules button (331px) to course row positions */}
       {/* Use filtered courses array matching the course rows */}
       {calendarTop > 100 && (() => {
-        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 3;
+        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 1;
         const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
         return filteredCourses.map((course, idx) => {
           const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
@@ -8114,7 +8114,7 @@ export default function Dashboard() {
       
       {/* Dotted lines from Readings button to course buttons */}
       {modulesHoneycombOpen === 'readings' && calendarTop > 100 && (() => {
-        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 3;
+        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 1;
         return (
           <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
             {/* Line to CPPA */}
@@ -8157,7 +8157,7 @@ export default function Dashboard() {
       {/* Readings Course Buttons - Spring from readings button to SAME course row positions as modules */}
       {/* Use filtered courses array matching the course rows */}
       {calendarTop > 100 && (() => {
-        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 3;
+        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 1;
         const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
         return filteredCourses.map((course, idx) => {
           const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
