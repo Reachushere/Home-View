@@ -251,7 +251,9 @@ export default function Dashboard() {
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
   const calendarWrapperRef = useRef<HTMLDivElement>(null);
+  const courseRowsRef = useRef<HTMLDivElement>(null);
   const [calendarTop, setCalendarTop] = useState(247); // Default offset
+  const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedFiles');
     return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -3816,29 +3818,37 @@ export default function Dashboard() {
     };
   }, [dueThisWeekTasks, testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft]);
 
-  // Track calendar wrapper position for course button alignment
+  // Track calendar wrapper and course rows positions for course button alignment
   useEffect(() => {
-    const updateCalendarTop = () => {
+    const updatePositions = () => {
       // Don't update during resize to prevent buttons from jumping
       if (isResizingThisWeek) return;
       if (calendarWrapperRef.current) {
         const rect = calendarWrapperRef.current.getBoundingClientRect();
         setCalendarTop(rect.top + window.scrollY);
       }
+      // Also track course rows container position directly
+      if (courseRowsRef.current) {
+        const rect = courseRowsRef.current.getBoundingClientRect();
+        setCourseRowsTop(rect.top + window.scrollY);
+      }
     };
-    updateCalendarTop();
+    updatePositions();
     // Use requestAnimationFrame for smoother updates
     let rafId: number;
-    const rafUpdateCalendarTop = () => {
+    const rafUpdatePositions = () => {
       if (isResizingThisWeek) return;
       rafId = requestAnimationFrame(() => {
-        updateCalendarTop();
+        updatePositions();
       });
     };
-    window.addEventListener('resize', rafUpdateCalendarTop);
-    const observer = new ResizeObserver(rafUpdateCalendarTop);
+    window.addEventListener('resize', rafUpdatePositions);
+    const observer = new ResizeObserver(rafUpdatePositions);
     if (calendarWrapperRef.current) {
       observer.observe(calendarWrapperRef.current);
+    }
+    if (courseRowsRef.current) {
+      observer.observe(courseRowsRef.current);
     }
     // Also observe the parent container for height changes
     const taskBoxesContainer = document.querySelector('[data-task-boxes-container]');
@@ -3846,7 +3856,7 @@ export default function Dashboard() {
       observer.observe(taskBoxesContainer);
     }
     return () => {
-      window.removeEventListener('resize', rafUpdateCalendarTop);
+      window.removeEventListener('resize', rafUpdatePositions);
       observer.disconnect();
       cancelAnimationFrame(rafId);
     };
@@ -7716,7 +7726,7 @@ export default function Dashboard() {
             x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${courseRowsTop + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7727,7 +7737,7 @@ export default function Dashboard() {
             x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${courseRowsTop + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7738,7 +7748,7 @@ export default function Dashboard() {
             x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${courseRowsTop + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7762,7 +7772,7 @@ export default function Dashboard() {
               key={`module-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
               style={{ 
-                top: `${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
+                top: `${courseRowsTop + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
                 right: '103px',
                 transform: 'scale(1) translateY(-50%)',
                 transitionDelay: `${idx * 50}ms`
@@ -7839,7 +7849,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${courseRowsTop + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7850,7 +7860,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${courseRowsTop + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7861,7 +7871,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${courseRowsTop + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7885,7 +7895,7 @@ export default function Dashboard() {
               key={`reading-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
               style={{ 
-                top: modulesHoneycombOpen === 'readings' ? `${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px` : '381px',
+                top: modulesHoneycombOpen === 'readings' ? `${courseRowsTop + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px` : '381px',
                 right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
                 transform: modulesHoneycombOpen === 'readings' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
@@ -9130,7 +9140,7 @@ export default function Dashboard() {
             
                           
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
-              <div data-testid="course-rows-container">
+              <div ref={courseRowsRef} data-testid="course-rows-container">
               {coursesData.courses.filter(c => c.name).slice(0, 3).map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
                 const rgb = hexToRgb(courseData.color);
