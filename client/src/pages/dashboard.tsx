@@ -8613,7 +8613,7 @@ export default function Dashboard() {
                   onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { title: e.target.value } })}
                   onClick={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
-                  className="text-[10px] text-gray-700 font-medium bg-white/15 border-none outline-none w-20 cursor-text hover:bg-white/25 focus:bg-white/35 rounded px-0.5"
+                  className="text-[10px] text-gray-700 font-medium bg-transparent border-none outline-none w-20 cursor-text hover:bg-white/15 focus:bg-white/25 rounded px-0.5"
                   placeholder="Note"
                   data-testid={`sticky-note-title-${note.id}`}
                 />
@@ -9740,12 +9740,15 @@ export default function Dashboard() {
                 return (
                   <div 
                     key={idx} 
-                    className={`border-l border-border flex items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ 
                       backgroundColor: isToday ? '#160502' : "black"
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
+                    {isToday && (
+                      <div className="text-[8px] font-medium text-white tracking-wide -mt-1">BRYN: Read your today tasks</div>
+                    )}
                     <div className="flex items-center gap-1.5">
                       <div className="text-2xl font-bold text-white">
                         {dayNum}
