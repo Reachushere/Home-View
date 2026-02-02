@@ -9512,11 +9512,11 @@ export default function Dashboard() {
                     const cellBgColor = course.bg;
                     
                     // Find tasks for this course on this day (due date OR within prep days range)
+                    const cellDate = startOfDay(day);
                     const dayTasks = tasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
                       const taskDueDate = startOfDay(new Date(task.dueDate));
-                      const cellDate = startOfDay(day);
                       
                       // Check if this is the due date
                       if (isSameDay(taskDueDate, cellDate)) return true;
@@ -9529,6 +9529,25 @@ export default function Dashboard() {
                       }
                       
                       return false;
+                    }) || [];
+                    
+                    // Find prep-only tasks for this cell (tasks where this is a prep day, NOT the due day)
+                    const prepTasks = tasks?.filter(task => {
+                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (task.isCompleted) return false;
+                      if (!task.startDate) return false;
+                      const taskDueDate = startOfDay(new Date(task.dueDate));
+                      const taskStartDate = startOfDay(new Date(task.startDate));
+                      // This is a prep day if: startDate <= cellDate < dueDate
+                      return cellDate >= taskStartDate && cellDate < taskDueDate;
+                    }) || [];
+                    
+                    // Find due tasks for this cell (tasks where this IS the due day)
+                    const dueTasks = tasks?.filter(task => {
+                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (task.isCompleted) return false;
+                      const taskDueDate = startOfDay(new Date(task.dueDate));
+                      return isSameDay(taskDueDate, cellDate);
                     }) || [];
                     
                     // Get task summary for this cell (first task title, truncated)
