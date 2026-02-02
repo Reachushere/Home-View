@@ -6985,18 +6985,18 @@ export default function Dashboard() {
           
           {/* Clock */}
           <div className="flex items-center gap-1.5 rounded-full px-3.5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', left: '-2px' }} data-testid="digital-clock">
-            <span className="text-[13px] text-white font-medium">
+            <span className="text-[13px] text-white" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 500, letterSpacing: '0.5px' }}>
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
             <div className="w-[1px] h-4 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-[13px] font-medium text-white tabular-nums">
+              <span className="text-[14px] text-white tabular-nums" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 600 }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-[11px] font-medium text-white tabular-nums">
+              <span className="text-[12px] text-white tabular-nums" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 500 }}>
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
-              <span className="text-[11px] font-medium text-white ml-0.5 uppercase">
+              <span className="text-[10px] text-white ml-0.5 uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 500 }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
@@ -8613,7 +8613,8 @@ export default function Dashboard() {
                   onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { title: e.target.value } })}
                   onClick={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
-                  className="text-[10px] text-gray-700 font-medium bg-transparent border-none outline-none w-20 cursor-text hover:bg-white/15 focus:bg-white/25 rounded px-0.5"
+                  className="text-[10px] text-gray-700 font-medium border-none outline-none w-20 cursor-text rounded px-0.5"
+                  style={{ background: 'none' }}
                   placeholder="Note"
                   data-testid={`sticky-note-title-${note.id}`}
                 />
