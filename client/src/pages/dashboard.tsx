@@ -9766,34 +9766,50 @@ export default function Dashboard() {
                                   const rgb = hexToRgb(courseHex);
                                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
                                   const prepBorderColor = selectedTaskId === task.id ? 'rgb(239, 68, 68)' : `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                                  const taskBorderColor = task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af');
                                   // Limit prep days to actual days available to the left in the week
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate width: actualPrepDays * (single column width) - small adjustment for alignment
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 4px)`;
+                                  // Calculate width: actualPrepDays * (single column width) - larger adjustment to prevent overflow
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 60}px) / 7) - 8px)`;
                                   return (
-                                    <div
-                                      className="absolute flex items-center justify-center"
-                                      style={{
-                                        top: '-1px',
-                                        right: 'calc(100% - 1px)',
-                                        width: prepWidth,
-                                        height: '24px',
-                                        borderRadius: '4px 0 0 4px',
-                                        backgroundColor: lightBg,
-                                        borderTop: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
-                                        borderLeft: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
-                                        borderBottom: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
-                                        borderRight: 'none',
-                                        zIndex: 50,
-                                      }}
-                                      title={`${actualPrepDays} prep days`}
-                                    >
-                                      <span className="text-[10px] text-gray-600 !font-normal truncate px-2">
-                                        Prep days
-                                      </span>
-                                    </div>
+                                    <>
+                                      {/* Prep extension bar */}
+                                      <div
+                                        className="absolute flex items-center justify-center"
+                                        style={{
+                                          top: '-1px',
+                                          right: 'calc(100% - 1px)',
+                                          width: prepWidth,
+                                          height: '24px',
+                                          borderRadius: '4px 0 0 4px',
+                                          backgroundColor: lightBg,
+                                          borderTop: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
+                                          borderLeft: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
+                                          borderBottom: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${prepBorderColor}`,
+                                          borderRight: 'none',
+                                          zIndex: 50,
+                                        }}
+                                        title={`${actualPrepDays} prep days`}
+                                      >
+                                        <span className="text-[10px] text-gray-600 !font-normal truncate px-2">
+                                          Prep days
+                                        </span>
+                                      </div>
+                                      {/* Border segment below prep extension to complete the task box border */}
+                                      <div
+                                        className="absolute"
+                                        style={{
+                                          top: '22px',
+                                          left: selectedTaskId === task.id ? '-2px' : '-1px',
+                                          width: selectedTaskId === task.id ? '2px' : '1px',
+                                          height: `${taskHeight - 22}px`,
+                                          backgroundColor: selectedTaskId === task.id ? 'rgb(239, 68, 68)' : taskBorderColor,
+                                          zIndex: 51,
+                                        }}
+                                      />
+                                    </>
                                   );
                                 })()}
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
