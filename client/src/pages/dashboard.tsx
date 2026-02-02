@@ -8611,10 +8611,10 @@ export default function Dashboard() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button 
-                      className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"
+                      className="flex items-center justify-center text-gray-600 hover:text-gray-800"
                       title="Attach to task or project"
                     >
-                      <Paperclip className="h-3 w-3" />
+                      <Paperclip className="h-2.5 w-2.5" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="max-h-[300px] overflow-y-auto w-48">
