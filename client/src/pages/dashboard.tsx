@@ -1918,6 +1918,11 @@ export default function Dashboard() {
   const [draggingStickyNote, setDraggingStickyNote] = useState<number | null>(null);
   const [stickyNoteOffset, setStickyNoteOffset] = useState({ x: 0, y: 0 });
   const [maxStickyZIndex, setMaxStickyZIndex] = useState(100);
+  
+  // Sticky note state for resizing
+  const [resizingStickyNote, setResizingStickyNote] = useState<number | null>(null);
+  const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
+  const [resizeStartSize, setResizeStartSize] = useState({ width: 0, height: 0 });
 
   // Sticky note mutations
   const createStickyNoteMutation = useMutation({
@@ -1994,6 +1999,47 @@ export default function Dashboard() {
       };
     }
   }, [draggingStickyNote, handleStickyNoteMouseMove, handleStickyNoteMouseUp]);
+
+  // Handle sticky note resize
+  const handleStickyNoteResizeStart = (e: React.MouseEvent, noteId: number, note: StickyNoteType) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizingStickyNote(noteId);
+    setResizeStartPos({ x: e.clientX, y: e.clientY });
+    setResizeStartSize({ width: note.width, height: note.height });
+    // Bring to front
+    const newZIndex = maxStickyZIndex + 1;
+    setMaxStickyZIndex(newZIndex);
+    updateStickyNoteMutation.mutate({ id: noteId, updates: { zIndex: newZIndex } });
+  };
+
+  const handleStickyNoteResizeMove = useCallback((e: MouseEvent) => {
+    if (resizingStickyNote !== null) {
+      const deltaX = e.clientX - resizeStartPos.x;
+      const deltaY = e.clientY - resizeStartPos.y;
+      const newWidth = Math.max(120, Math.floor(resizeStartSize.width + deltaX));
+      const newHeight = Math.max(80, Math.floor(resizeStartSize.height + deltaY));
+      updateStickyNoteMutation.mutate({ 
+        id: resizingStickyNote, 
+        updates: { width: newWidth, height: newHeight } 
+      });
+    }
+  }, [resizingStickyNote, resizeStartPos, resizeStartSize]);
+
+  const handleStickyNoteResizeEnd = useCallback(() => {
+    setResizingStickyNote(null);
+  }, []);
+
+  useEffect(() => {
+    if (resizingStickyNote !== null) {
+      window.addEventListener('mousemove', handleStickyNoteResizeMove);
+      window.addEventListener('mouseup', handleStickyNoteResizeEnd);
+      return () => {
+        window.removeEventListener('mousemove', handleStickyNoteResizeMove);
+        window.removeEventListener('mouseup', handleStickyNoteResizeEnd);
+      };
+    }
+  }, [resizingStickyNote, handleStickyNoteResizeMove, handleStickyNoteResizeEnd]);
 
   // Files for weekly files flyout (moved up for allTaskFiles dependency)
   interface WeeklyFile {
@@ -8443,14 +8489,25 @@ export default function Dashboard() {
             </div>
             {/* Content area */}
             {!note.isMinimized && (
-              <textarea
-                className="w-full h-[calc(100%-28px)] p-2 text-[11px] resize-none border-0 outline-none !font-normal"
-                style={{ backgroundColor: 'transparent', fontFamily: 'inherit' }}
-                value={note.content}
-                onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { content: e.target.value } })}
-                placeholder="Write your note here..."
-                data-testid={`sticky-note-content-${note.id}`}
-              />
+              <>
+                <textarea
+                  className="w-full h-[calc(100%-28px)] p-2 text-[11px] resize-none border-0 outline-none !font-normal"
+                  style={{ backgroundColor: 'transparent', fontFamily: 'inherit' }}
+                  value={note.content}
+                  onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { content: e.target.value } })}
+                  placeholder="Write your note here..."
+                  data-testid={`sticky-note-content-${note.id}`}
+                />
+                {/* Resize handle - bottom right corner */}
+                <div
+                  className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
+                  style={{
+                    background: `linear-gradient(135deg, transparent 50%, ${colors.header} 50%)`,
+                  }}
+                  onMouseDown={(e) => handleStickyNoteResizeStart(e, note.id, note)}
+                  data-testid={`sticky-note-resize-${note.id}`}
+                />
+              </>
             )}
           </div>
         );
