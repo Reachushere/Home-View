@@ -8146,7 +8146,7 @@ export default function Dashboard() {
                   </button>
                 </div>
               </div>
-              <div className="p-4 flex-1 overflow-y-auto [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_textarea]:text-white">
+              <div className="p-4 flex-1 overflow-y-auto [&_label]:text-white [&_span]:text-white [&_p]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white [&_svg]:text-white">
                 <TaskForm 
                   key={`add-task-form-${selectedDate?.getTime() || 0}-${initialStartTime}-${initialEndTime}-${newTaskType}`}
                   weekNumber={selectedWeek}
