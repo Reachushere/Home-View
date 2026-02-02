@@ -10,7 +10,7 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
-import { sendTestEmail, sendTaskReminder, sendDailyDigest, type TaskReminder } from "./email";
+import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, type TaskReminder } from "./email";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -2147,6 +2147,53 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error sending digest:", err);
       res.status(500).json({ message: "Failed to send digest" });
+    }
+  });
+
+  // POST /api/sms/test - Send a test SMS
+  app.post("/api/sms/test", async (_req, res) => {
+    try {
+      const result = await sendTestSms();
+      if (result.success) {
+        res.json({ message: "Test SMS sent successfully" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send test SMS" });
+      }
+    } catch (err) {
+      console.error("Error sending test SMS:", err);
+      res.status(500).json({ message: "Failed to send test SMS" });
+    }
+  });
+
+  // POST /api/sms/reminder - Send an SMS reminder for a specific task
+  app.post("/api/sms/reminder", async (req, res) => {
+    try {
+      const { taskId } = req.body;
+      if (!taskId) {
+        return res.status(400).json({ message: "taskId is required" });
+      }
+      
+      const task = await storage.getTask(Number(taskId));
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
+      const result = await sendSmsReminder({
+        id: task.id,
+        title: task.title,
+        dueDate: task.dueDate.toISOString(),
+        courseName: task.courseName,
+        type: task.type,
+      });
+      
+      if (result.success) {
+        res.json({ message: "SMS reminder sent successfully" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send SMS reminder" });
+      }
+    } catch (err) {
+      console.error("Error sending SMS reminder:", err);
+      res.status(500).json({ message: "Failed to send SMS reminder" });
     }
   });
 

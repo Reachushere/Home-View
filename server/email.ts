@@ -4,6 +4,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 const FROM_EMAIL = 'reminders@uni-call.app';
 const TO_EMAIL = 'bryn.kai-hendricks@outlook.com';
+const SMS_EMAIL = '4168275455@fido.ca';
 
 export interface TaskReminder {
   id: number;
@@ -150,6 +151,60 @@ export async function sendTestEmail(): Promise<{ success: boolean; error?: strin
     return { success: true };
   } catch (err) {
     console.error('Email send error:', err);
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function sendSmsReminder(task: TaskReminder): Promise<{ success: boolean; error?: string }> {
+  try {
+    const dueDate = new Date(task.dueDate);
+    const formattedDate = dueDate.toLocaleDateString('en-GB', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short'
+    });
+
+    // SMS messages should be short and plain text
+    const smsBody = `Uni-Cal Reminder: ${task.title}${task.courseName ? ` (${task.courseName})` : ''} - Due: ${formattedDate}`;
+
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: SMS_EMAIL,
+      subject: 'Task Reminder',
+      text: smsBody,
+    });
+
+    if (error) {
+      console.error('SMS send error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('SMS sent successfully:', data);
+    return { success: true };
+  } catch (err) {
+    console.error('SMS send error:', err);
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function sendTestSms(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: SMS_EMAIL,
+      subject: 'Test',
+      text: 'Uni-Cal SMS reminders are now set up!',
+    });
+
+    if (error) {
+      console.error('SMS send error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Test SMS sent successfully:', data);
+    return { success: true };
+  } catch (err) {
+    console.error('SMS send error:', err);
     return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
