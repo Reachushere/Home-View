@@ -2021,16 +2021,9 @@ export default function Dashboard() {
         const mouseX = e.clientX;
         const mouseY = e.clientY;
         
-        // Check if mouse is within the all-day row area
-        if (mouseY >= allDayRect.top && mouseY <= allDayRect.bottom && 
+        // Check if mouse is within the all-day row area (with some tolerance)
+        if (mouseY >= allDayRect.top - 20 && mouseY <= allDayRect.bottom + 20 && 
             mouseX >= allDayRect.left && mouseX <= allDayRect.right) {
-          
-          // Calculate which day column the mouse is in
-          const timeColumnWidth = gridSizes.timeColumnWidth;
-          const moduleColumnWidth = gridSizes.moduleColumnWidth;
-          const leftOffset = timeColumnWidth + moduleColumnWidth;
-          const availableWidth = allDayRect.width - leftOffset;
-          const columnWidth = availableWidth / 7;
           
           // Find today's column index (0-6)
           const today = startOfDay(new Date());
@@ -2040,26 +2033,34 @@ export default function Dashboard() {
           // Target is day before today (or today if it's Saturday)
           const targetIdx = Math.max(0, todayIdx - 1);
           
-          // Calculate snap position and size
-          const snapX = allDayRect.left + leftOffset + (targetIdx * columnWidth) + 2;
-          const snapY = allDayRect.top + 2;
-          const snapWidth = columnWidth - 4;
-          const snapHeight = allDayRect.height - 4;
+          // Find the target cell by looking for the all-day slot element
+          const targetDate = new Date(weekStart);
+          targetDate.setDate(targetDate.getDate() + targetIdx);
+          const dateStr = format(targetDate, "yyyy-MM-dd");
+          const targetCell = document.querySelector(`[data-testid="all-day-slot-${dateStr}"]`);
           
-          updateStickyNoteMutation.mutate({ 
-            id: draggingStickyNote, 
-            updates: { 
-              positionX: Math.round(snapX),
-              positionY: Math.round(snapY),
-              width: Math.round(snapWidth),
-              height: Math.round(snapHeight),
-              lastMovedAt: new Date(),
-              homePositionX: Math.round(snapX),
-              homePositionY: Math.round(snapY)
-            } 
-          });
-          setDraggingStickyNote(null);
-          return;
+          if (targetCell) {
+            const cellRect = targetCell.getBoundingClientRect();
+            const snapX = cellRect.left + 2;
+            const snapY = cellRect.top + 2;
+            const snapWidth = cellRect.width - 4;
+            const snapHeight = cellRect.height - 4;
+            
+            updateStickyNoteMutation.mutate({ 
+              id: draggingStickyNote, 
+              updates: { 
+                positionX: Math.round(snapX),
+                positionY: Math.round(snapY),
+                width: Math.round(snapWidth),
+                height: Math.round(snapHeight),
+                lastMovedAt: new Date(),
+                homePositionX: Math.round(snapX),
+                homePositionY: Math.round(snapY)
+              } 
+            });
+            setDraggingStickyNote(null);
+            return;
+          }
         }
       }
       
@@ -2069,7 +2070,7 @@ export default function Dashboard() {
       });
     }
     setDraggingStickyNote(null);
-  }, [draggingStickyNote, gridSizes]);
+  }, [draggingStickyNote]);
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
