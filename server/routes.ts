@@ -10,6 +10,7 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
+import { sendTestEmail, sendTaskReminder, sendDailyDigest, type TaskReminder } from "./email";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -2061,6 +2062,91 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error generating TTS:", err);
       res.status(500).json({ message: "Failed to generate speech" });
+    }
+  });
+
+  // ============================================
+  // EMAIL REMINDER ROUTES
+  // ============================================
+
+  // POST /api/email/test - Send a test email
+  app.post("/api/email/test", async (_req, res) => {
+    try {
+      const result = await sendTestEmail();
+      if (result.success) {
+        res.json({ message: "Test email sent successfully" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send test email" });
+      }
+    } catch (err) {
+      console.error("Error sending test email:", err);
+      res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
+  // POST /api/email/reminder - Send a reminder for a specific task
+  app.post("/api/email/reminder", async (req, res) => {
+    try {
+      const { taskId } = req.body;
+      if (!taskId) {
+        return res.status(400).json({ message: "taskId is required" });
+      }
+      
+      const task = await storage.getTask(Number(taskId));
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
+      const result = await sendTaskReminder({
+        id: task.id,
+        title: task.title,
+        dueDate: task.dueDate.toISOString(),
+        courseName: task.courseName,
+        type: task.type,
+      });
+      
+      if (result.success) {
+        res.json({ message: "Reminder sent successfully" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send reminder" });
+      }
+    } catch (err) {
+      console.error("Error sending reminder:", err);
+      res.status(500).json({ message: "Failed to send reminder" });
+    }
+  });
+
+  // POST /api/email/digest - Send a digest of upcoming tasks
+  app.post("/api/email/digest", async (_req, res) => {
+    try {
+      const now = new Date();
+      const threeDaysFromNow = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      
+      // Get all incomplete tasks due in the next 3 days
+      const allTasks = await storage.getTasks({ showCompleted: false });
+      const upcomingTasks = allTasks.filter(task => {
+        const dueDate = new Date(task.dueDate);
+        return dueDate >= now && dueDate <= threeDaysFromNow;
+      });
+      
+      const taskReminders: TaskReminder[] = upcomingTasks.map(task => ({
+        id: task.id,
+        title: task.title,
+        dueDate: task.dueDate.toISOString(),
+        courseName: task.courseName,
+        type: task.type,
+      }));
+      
+      const result = await sendDailyDigest(taskReminders);
+      
+      if (result.success) {
+        res.json({ message: `Digest sent with ${taskReminders.length} tasks` });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send digest" });
+      }
+    } catch (err) {
+      console.error("Error sending digest:", err);
+      res.status(500).json({ message: "Failed to send digest" });
     }
   });
 
