@@ -223,7 +223,7 @@ export async function sendHaPushNotification(title: string, message: string): Pr
   const haUrl = HA_URL.replace(/\/$/, '');
   
   try {
-    const response = await fetch(`${haUrl}/api/services/notify/mobile_app_bryn_s_iphone`, {
+    const response = await fetch(`${haUrl}/api/services/notify/mobile_app_iphone_10`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${HA_TOKEN}`,
