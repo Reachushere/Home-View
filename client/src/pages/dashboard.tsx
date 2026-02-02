@@ -6986,18 +6986,18 @@ export default function Dashboard() {
           
           {/* Clock */}
           <div className="flex items-center gap-1.5 rounded-full px-3.5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative', left: '-2px' }} data-testid="digital-clock">
-            <span className="text-[13px] text-white font-medium" style={{ fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.3px' }}>
+            <span className="text-[13px] text-white font-medium" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
               {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
             </span>
             <div className="w-[1px] h-4 bg-white/50" />
             <div className="flex items-baseline">
-              <span className="text-[14px] text-white font-semibold" style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+              <span className="text-[14px] text-white font-semibold" style={{ fontFamily: "'Raleway', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/\s?(AM|PM)$/i, '')}
               </span>
-              <span className="text-[12px] text-white font-medium" style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+              <span className="text-[12px] text-white font-medium" style={{ fontFamily: "'Raleway', sans-serif", fontVariantNumeric: 'tabular-nums' }}>
                 :{String(currentTime.getSeconds()).padStart(2, '0')}
               </span>
-              <span className="text-[10px] text-white font-medium ml-0.5 uppercase" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              <span className="text-[10px] text-white font-medium ml-0.5 uppercase" style={{ fontFamily: "'Raleway', sans-serif" }}>
                 {new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: true, timeZone: displayTimezone }).format(currentTime).replace(/^\d+\s*/, '')}
               </span>
             </div>
@@ -9705,10 +9705,13 @@ export default function Dashboard() {
             <div /> {/* Time column spacer */}
             {weekDays.map((day, idx) => {
               const isToday = isSameDay(day, new Date());
+              const todayHasTasks = isToday && allTasks.some(t => 
+                t.dueDate && isSameDay(new Date(t.dueDate), day)
+              );
               return (
                 <div key={idx} className="flex items-center justify-center">
                   {isToday && (
-                    <span className="text-[9px] font-medium text-white tracking-wide">
+                    <span className={`text-[9px] font-medium text-white tracking-wide ${todayHasTasks ? 'animate-pulse' : ''}`}>
                       BRYN: Read your today tasks
                     </span>
                   )}
