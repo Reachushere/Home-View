@@ -9708,7 +9708,7 @@ export default function Dashboard() {
           />
           
           {/* BRYN reminder - positioned above today column outside the card */}
-          <div className="grid w-full h-[15px]" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-3px' }}>
+          <div className="grid w-full h-[15px]" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px' }}>
             <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
             {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />} {/* Module column spacer */}
             {weekDays.map((day, idx) => {
