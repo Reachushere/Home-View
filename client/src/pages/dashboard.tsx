@@ -2356,6 +2356,14 @@ export default function Dashboard() {
       setPreviewText("");
       setCurrentWordIndex(0);
       setIsPlaying(false);
+      // CRITICAL: Clear TTS chunks when file changes to prevent "Invalid chunk" errors
+      // and wrong file content being played
+      ttsChunksRef.current = [];
+      setTtsChunks([]);
+      setTotalChunks(0);
+      setCurrentChunkIndex(0);
+      currentChunkIndexRef.current = 0;
+      shouldContinueRef.current = false;
       fetch(`/api/files/${previewFile.id}/text`)
         .then(res => res.json())
         .then(data => {
@@ -2371,6 +2379,13 @@ export default function Dashboard() {
       setPreviewText("");
       setCurrentWordIndex(0);
       setIsPlaying(false);
+      // Also clear TTS chunks when closing preview
+      ttsChunksRef.current = [];
+      setTtsChunks([]);
+      setTotalChunks(0);
+      setCurrentChunkIndex(0);
+      currentChunkIndexRef.current = 0;
+      shouldContinueRef.current = false;
       if (highlightIntervalRef.current) {
         clearInterval(highlightIntervalRef.current);
         highlightIntervalRef.current = null;
