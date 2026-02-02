@@ -7730,9 +7730,9 @@ export default function Dashboard() {
               key={`module-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
               style={{ 
-                top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * (idx + 0.5) + 28}px` : '331px',
+                top: modulesHoneycombOpen === 'modules' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2 + 6}px` : '331px',
                 right: modulesHoneycombOpen === 'modules' ? '103px' : '19px',
-                transform: modulesHoneycombOpen === 'modules' ? 'scale(1)' : 'scale(0.3)',
+                transform: modulesHoneycombOpen === 'modules' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
               }}
               onClick={(e) => { 
@@ -7853,9 +7853,9 @@ export default function Dashboard() {
               key={`reading-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
               style={{ 
-                top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * (idx + 0.5) + 28}px` : '381px',
+                top: modulesHoneycombOpen === 'readings' ? `${calendarTop + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2 + 6}px` : '381px',
                 right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
-                transform: modulesHoneycombOpen === 'readings' ? 'scale(1)' : 'scale(0.3)',
+                transform: modulesHoneycombOpen === 'readings' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
               }}
               onClick={(e) => { 
