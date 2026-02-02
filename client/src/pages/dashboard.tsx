@@ -9831,7 +9831,7 @@ export default function Dashboard() {
                   return (
                     <div
                       key={`prep-ext-${task.id}`}
-                      className="absolute border-l border-t border-b rounded-tl rounded-bl pointer-events-none"
+                      className="absolute border-l border-t border-b rounded-tl rounded-bl pointer-events-none silver-shimmer-task"
                       style={{
                         top: `${topPx - 2}px`,
                         left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
@@ -10555,7 +10555,7 @@ export default function Dashboard() {
             return (
               <div 
                 key={task.id} 
-                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${shouldBlinkInTodayBox ? 'animate-blink' : ''}`} 
+                className={`mb-1.5 rounded transition-colors ${draggedFile ? 'hover:bg-white/20 hover:ring-2 hover:ring-white/50' : ''} ${shouldBlinkInTodayBox ? 'animate-blink' : ''} ${(boxType === 'today' || boxType === 'tomorrow') ? 'silver-shimmer-task' : ''}`} 
                 data-box-task-id={task.id} 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 onDragOver={(e) => { if (draggedFile) { e.preventDefault(); e.stopPropagation(); } }}
