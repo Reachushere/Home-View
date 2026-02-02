@@ -8527,7 +8527,38 @@ export default function Dashboard() {
               onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
             >
               <div className="flex items-center gap-1">
-                <Grip className="h-2 w-2 text-gray-600" />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button 
+                      className="flex items-center justify-center text-gray-600 hover:text-gray-800"
+                      onMouseDown={(e) => e.stopPropagation()}
+                    >
+                      <Grip className="h-2 w-2" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="min-w-0 p-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-2">
+                      <button
+                        className="h-5 w-5 rounded-full border border-gray-300 hover:scale-110 transition-transform"
+                        style={{ backgroundColor: '#4ade80' }}
+                        title="CPPA122"
+                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { customColor: '#4ade80', color: 'custom' } })}
+                      />
+                      <button
+                        className="h-5 w-5 rounded-full border border-gray-300 hover:scale-110 transition-transform"
+                        style={{ backgroundColor: '#f472b6' }}
+                        title="CFNF400"
+                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { customColor: '#f472b6', color: 'custom' } })}
+                      />
+                      <button
+                        className="h-5 w-5 rounded-full border border-gray-300 hover:scale-110 transition-transform"
+                        style={{ backgroundColor: '#818cf8' }}
+                        title="CASL101"
+                        onClick={() => updateStickyNoteMutation.mutate({ id: note.id, updates: { customColor: '#818cf8', color: 'custom' } })}
+                      />
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <input
                   type="text"
                   value={note.title || "Note"}
@@ -8557,7 +8588,7 @@ export default function Dashboard() {
                       className={`flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
                       title="Set reminder"
                     >
-                      <Bell className="h-3.5 w-3.5" />
+                      <Bell className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
