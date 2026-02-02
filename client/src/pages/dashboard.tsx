@@ -104,8 +104,6 @@ import {
   CheckCircle2,
   Check,
   ListTodo,
-  Upload,
-  Download,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType } from "@shared/schema";
