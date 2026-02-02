@@ -8241,10 +8241,10 @@ export default function Dashboard() {
         <div
           style={{
             position: 'absolute',
-            top: '3px',
-            left: '3px',
-            width: '38px',
-            height: '38px',
+            top: '4px',
+            left: '4px',
+            width: '36px',
+            height: '36px',
             borderRadius: '50%',
             background: 'linear-gradient(0deg, #FFFACD 0%, #F1FF59 100%)',
             display: 'flex',
