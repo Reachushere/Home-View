@@ -9714,7 +9714,7 @@ export default function Dashboard() {
                                 } ${
                                   hasPrepDays && prepDaysCount > 0
                                     ? "rounded-r rounded-bl overflow-visible" 
-                                    : "rounded overflow-hidden border"
+                                    : "rounded overflow-hidden"
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -9724,11 +9724,10 @@ export default function Dashboard() {
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  borderTop: hasPrepDays && prepDaysCount > 0 ? `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}` : undefined,
-                                  borderRight: hasPrepDays && prepDaysCount > 0 ? `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}` : undefined,
-                                  borderBottom: hasPrepDays && prepDaysCount > 0 ? `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}` : undefined,
-                                  borderLeft: hasPrepDays && prepDaysCount > 0 ? 'none' : undefined,
-                                  borderColor: !(hasPrepDays && prepDaysCount > 0) ? (task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')) : undefined
+                                  borderTop: `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
+                                  borderRight: `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
+                                  borderBottom: `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
+                                  borderLeft: hasPrepDays && prepDaysCount > 0 ? 'none' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
