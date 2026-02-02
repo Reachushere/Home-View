@@ -9746,12 +9746,11 @@ export default function Dashboard() {
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
+                                        top: '0',
                                         right: '100%',
                                         width: dayColumnWidth,
                                         height: '22px',
-                                        borderRadius: '11px 0 0 11px',
+                                        borderRadius: '4px 0 0 4px',
                                         backgroundColor: lightBg,
                                         borderTop: `1px solid ${borderColor}`,
                                         borderBottom: `1px solid ${borderColor}`,
