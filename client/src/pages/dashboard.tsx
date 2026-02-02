@@ -9745,14 +9745,17 @@ export default function Dashboard() {
                                     <div
                                       className="absolute flex items-center justify-center"
                                       style={{
-                                        top: '0',
-                                        right: 'calc(100% + 4px)',
+                                        top: '-1px',
+                                        right: 'calc(100% - 1px)',
                                         width: prepWidth,
                                         height: '22px',
-                                        borderRadius: '11px',
+                                        borderRadius: '11px 0 0 11px',
                                         backgroundColor: lightBg,
-                                        border: `1px solid ${prepBorderColor}`,
-                                        zIndex: 40,
+                                        borderTop: `1px solid ${prepBorderColor}`,
+                                        borderLeft: `1px solid ${prepBorderColor}`,
+                                        borderBottom: `1px solid ${prepBorderColor}`,
+                                        borderRight: 'none',
+                                        zIndex: 50,
                                       }}
                                       title={`${actualPrepDays} prep days`}
                                     >
