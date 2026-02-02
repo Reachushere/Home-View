@@ -7719,47 +7719,51 @@ export default function Dashboard() {
       })()}
       
       {/* Dotted lines from Modules button to course buttons - always visible unless readings open */}
-      {modulesHoneycombOpen !== 'readings' && courseRowsTop > 100 && (
-        <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
-          {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width + 1px = 63px from right) */}
-          <line 
-            x1={`calc(100% - 63px)`} 
-            y1={`${382 + 22}px`}
-            x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${courseRowsTop + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
-            stroke="white" 
-            strokeWidth="1" 
-            strokeDasharray="2,2"
-            opacity="0.85"
-          />
-          {/* Line to CFNF */}
-          <line 
-            x1={`calc(100% - 63px)`} 
-            y1={`${382 + 22}px`}
-            x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${courseRowsTop + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
-            stroke="white" 
-            strokeWidth="1" 
-            strokeDasharray="2,2"
-            opacity="0.85"
-          />
-          {/* Line to CASL */}
-          <line 
-            x1={`calc(100% - 63px)`} 
-            y1={`${382 + 22}px`}
-            x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${courseRowsTop + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
-            stroke="white" 
-            strokeWidth="1" 
-            strokeDasharray="2,2"
-            opacity="0.85"
-          />
-        </svg>
-      )}
+      {modulesHoneycombOpen !== 'readings' && calendarTop > 100 && (() => {
+        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight;
+        return (
+          <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+            {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width + 1px = 63px from right) */}
+            <line 
+              x1={`calc(100% - 63px)`} 
+              y1={`${382 + 22}px`}
+              x2={`calc(100% - ${103 + 21}px)`}
+              y2={`${courseRowsY + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
+              stroke="white" 
+              strokeWidth="1" 
+              strokeDasharray="2,2"
+              opacity="0.85"
+            />
+            {/* Line to CFNF */}
+            <line 
+              x1={`calc(100% - 63px)`} 
+              y1={`${382 + 22}px`}
+              x2={`calc(100% - ${103 + 21}px)`}
+              y2={`${courseRowsY + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
+              stroke="white" 
+              strokeWidth="1" 
+              strokeDasharray="2,2"
+              opacity="0.85"
+            />
+            {/* Line to CASL */}
+            <line 
+              x1={`calc(100% - 63px)`} 
+              y1={`${382 + 22}px`}
+              x2={`calc(100% - ${103 + 21}px)`}
+              y2={`${courseRowsY + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
+              stroke="white" 
+              strokeWidth="1" 
+              strokeDasharray="2,2"
+              opacity="0.85"
+            />
+          </svg>
+        );
+      })()}
       
       {/* Modules Course Buttons - Spring from modules button (331px) to course row positions */}
       {/* Use filtered courses array matching the course rows */}
-      {courseRowsTop > 100 && (() => {
+      {calendarTop > 100 && (() => {
+        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight;
         const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
         return filteredCourses.map((course, idx) => {
           const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
@@ -7772,7 +7776,7 @@ export default function Dashboard() {
               key={`module-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
               style={{ 
-                top: `${courseRowsTop + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
+                top: `${courseRowsY + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
                 right: '103px',
                 transform: 'scale(1) translateY(-50%)',
                 transitionDelay: `${idx * 50}ms`
@@ -7842,47 +7846,51 @@ export default function Dashboard() {
       })()}
       
       {/* Dotted lines from Readings button to course buttons */}
-      {modulesHoneycombOpen === 'readings' && courseRowsTop > 100 && (
-        <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
-          {/* Line to CPPA */}
-          <line 
-            x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${433 + 15}px`}
-            x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${courseRowsTop + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
-            stroke="white" 
-            strokeWidth="1" 
-            strokeDasharray="2,2"
-            opacity="0.85"
-          />
-          {/* Line to CFNF */}
-          <line 
-            x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${433 + 23}px`}
-            x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${courseRowsTop + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
-            stroke="white" 
-            strokeWidth="1" 
-            strokeDasharray="2,2"
-            opacity="0.85"
-          />
-          {/* Line to CASL */}
-          <line 
-            x1={`calc(100% - ${19 + 45}px)`} 
-            y1={`${433 + 30}px`}
-            x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${courseRowsTop + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
-            stroke="white" 
-            strokeWidth="1" 
-            strokeDasharray="2,2"
-            opacity="0.85"
-          />
-        </svg>
-      )}
+      {modulesHoneycombOpen === 'readings' && calendarTop > 100 && (() => {
+        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight;
+        return (
+          <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+            {/* Line to CPPA */}
+            <line 
+              x1={`calc(100% - ${19 + 45}px)`} 
+              y1={`${433 + 15}px`}
+              x2={`calc(100% - ${103 + 21}px)`}
+              y2={`${courseRowsY + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
+              stroke="white" 
+              strokeWidth="1" 
+              strokeDasharray="2,2"
+              opacity="0.85"
+            />
+            {/* Line to CFNF */}
+            <line 
+              x1={`calc(100% - ${19 + 45}px)`} 
+              y1={`${433 + 23}px`}
+              x2={`calc(100% - ${103 + 21}px)`}
+              y2={`${courseRowsY + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
+              stroke="white" 
+              strokeWidth="1" 
+              strokeDasharray="2,2"
+              opacity="0.85"
+            />
+            {/* Line to CASL */}
+            <line 
+              x1={`calc(100% - ${19 + 45}px)`} 
+              y1={`${433 + 30}px`}
+              x2={`calc(100% - ${103 + 21}px)`}
+              y2={`${courseRowsY + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
+              stroke="white" 
+              strokeWidth="1" 
+              strokeDasharray="2,2"
+              opacity="0.85"
+            />
+          </svg>
+        );
+      })()}
       
       {/* Readings Course Buttons - Spring from readings button to SAME course row positions as modules */}
       {/* Use filtered courses array matching the course rows */}
-      {courseRowsTop > 100 && (() => {
+      {calendarTop > 100 && (() => {
+        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight;
         const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
         return filteredCourses.map((course, idx) => {
           const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
@@ -7895,7 +7903,7 @@ export default function Dashboard() {
               key={`reading-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
               style={{ 
-                top: modulesHoneycombOpen === 'readings' ? `${courseRowsTop + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px` : '381px',
+                top: modulesHoneycombOpen === 'readings' ? `${courseRowsY + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px` : '381px',
                 right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
                 transform: modulesHoneycombOpen === 'readings' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
