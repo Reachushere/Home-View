@@ -10,7 +10,7 @@ import { registerObjectStorageRoutes } from "./replit_integrations/object_storag
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
-import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, type TaskReminder } from "./email";
+import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, type TaskReminder } from "./email";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -2194,6 +2194,53 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error sending SMS reminder:", err);
       res.status(500).json({ message: "Failed to send SMS reminder" });
+    }
+  });
+
+  // POST /api/ha-push/test - Send a test push notification via Home Assistant
+  app.post("/api/ha-push/test", async (_req, res) => {
+    try {
+      const result = await sendTestHaPush();
+      if (result.success) {
+        res.json({ message: "Test push notification sent successfully via Home Assistant" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send test push notification" });
+      }
+    } catch (err) {
+      console.error("Error sending test HA push:", err);
+      res.status(500).json({ message: "Failed to send test push notification" });
+    }
+  });
+
+  // POST /api/ha-push/reminder - Send a push notification reminder for a specific task via Home Assistant
+  app.post("/api/ha-push/reminder", async (req, res) => {
+    try {
+      const { taskId } = req.body;
+      if (!taskId) {
+        return res.status(400).json({ message: "taskId is required" });
+      }
+      
+      const task = await storage.getTask(Number(taskId));
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      
+      const result = await sendHaTaskReminder({
+        id: task.id,
+        title: task.title,
+        dueDate: task.dueDate.toISOString(),
+        courseName: task.courseName,
+        type: task.type,
+      });
+      
+      if (result.success) {
+        res.json({ message: "Push notification reminder sent successfully" });
+      } else {
+        res.status(500).json({ message: result.error || "Failed to send push notification reminder" });
+      }
+    } catch (err) {
+      console.error("Error sending HA push reminder:", err);
+      res.status(500).json({ message: "Failed to send push notification reminder" });
     }
   });
 

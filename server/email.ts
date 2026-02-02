@@ -208,3 +208,57 @@ export async function sendTestSms(): Promise<{ success: boolean; error?: string 
     return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
+
+// Home Assistant push notification functions
+const HA_URL = process.env.HOME_ASSISTANT_URL;
+const HA_TOKEN = process.env.HOME_ASSISTANT_TOKEN;
+
+export async function sendHaPushNotification(title: string, message: string): Promise<{ success: boolean; error?: string }> {
+  if (!HA_URL || !HA_TOKEN) {
+    return { success: false, error: 'Home Assistant URL or Token not configured' };
+  }
+
+  try {
+    const response = await fetch(`${HA_URL}/api/services/notify/mobile_app_bryn_s_iphone`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${HA_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        title: title,
+        message: message,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('HA push notification error:', errorText);
+      return { success: false, error: `HA API error: ${response.status}` };
+    }
+
+    console.log('HA push notification sent successfully');
+    return { success: true };
+  } catch (err) {
+    console.error('HA push notification error:', err);
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function sendHaTaskReminder(task: TaskReminder): Promise<{ success: boolean; error?: string }> {
+  const dueDate = new Date(task.dueDate);
+  const formattedDate = dueDate.toLocaleDateString('en-GB', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short'
+  });
+
+  const title = `Uni-Cal Reminder`;
+  const message = `${task.title}${task.courseName ? ` (${task.courseName})` : ''} - Due: ${formattedDate}`;
+
+  return sendHaPushNotification(title, message);
+}
+
+export async function sendTestHaPush(): Promise<{ success: boolean; error?: string }> {
+  return sendHaPushNotification('Uni-Cal Test', 'Push notifications via Home Assistant are working!');
+}
