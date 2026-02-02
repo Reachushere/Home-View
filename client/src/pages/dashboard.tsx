@@ -9392,7 +9392,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible relative"
+                        className="border-l border-border/50 overflow-visible relative"
                         style={{ 
                           backgroundColor: cellBgColor,
                           minHeight: '22px',
@@ -9471,7 +9471,7 @@ export default function Dashboard() {
                                 <div 
                                   className="absolute silver-shimmer-prep"
                                   style={{
-                                    left: '-8px',
+                                    left: '-12px',
                                     right: '50%',
                                     height: '18px',
                                     top: '0',
