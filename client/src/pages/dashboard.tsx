@@ -9461,14 +9461,15 @@ export default function Dashboard() {
                               key={`prep-${task.id}-${idx}`}
                               className="flex items-center justify-center"
                               style={{
-                                marginLeft: isFirstPrepDay ? '2px' : '0',
-                                marginRight: '0',
+                                marginLeft: isFirstPrepDay ? '2px' : '-1px',
+                                marginRight: '-1px',
                                 height: '18px',
                                 borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
                                 backgroundColor: lightBg,
                                 borderTop: `1px solid ${borderColor}`,
                                 borderBottom: `1px solid ${borderColor}`,
                                 borderLeft: isFirstPrepDay ? `1px solid ${borderColor}` : 'none',
+                                borderRight: 'none',
                                 zIndex: 5,
                                 flex: 1,
                               }}
@@ -9493,12 +9494,15 @@ export default function Dashboard() {
                               className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative"
                               style={{
                                 height: '18px',
-                                marginLeft: '2px',
-                                paddingLeft: '2px',
+                                marginLeft: hasPrepDays ? '0' : '2px',
+                                paddingLeft: '4px',
                                 paddingRight: '2px',
-                                borderRadius: '4px',
+                                borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px',
                                 backgroundColor: lightBg,
-                                border: `1px solid ${borderColor}`,
+                                borderTop: `1px solid ${borderColor}`,
+                                borderBottom: `1px solid ${borderColor}`,
+                                borderRight: `1px solid ${borderColor}`,
+                                borderLeft: hasPrepDays ? 'none' : `1px solid ${borderColor}`,
                                 flex: 1,
                               }}
                               title={task.title}
