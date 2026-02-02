@@ -4378,16 +4378,20 @@ export default function Dashboard() {
       }
     }
     
-    // Also check for any task in the same hour cell that has prep days (even without eventStartTime)
-    // This handles cases where a task with prep days is due in this cell
-    const tasksInSameCell = allTasks.filter(t => {
+    // Also check for any task with prep days that COVERS this cell (even without eventStartTime)
+    // This handles prep extensions that span multiple days before the due date
+    const tasksCoveringThisCell = allTasks.filter(t => {
       if (t.id === taskId) return false;
       if (t.isCompleted) return false;
       if (!t.startDate) return false; // Must have prep days
       
       const taskDue = new Date(t.dueDate);
-      // Check if task is due on this day
-      if (!isSameDay(taskDue, day)) return false;
+      const taskStart = new Date(t.startDate);
+      
+      // Check if current day is within the prep range (startDate to dueDate inclusive)
+      const dayStart = startOfDay(day);
+      const isInPrepRange = dayStart >= startOfDay(taskStart) && dayStart <= startOfDay(taskDue);
+      if (!isInPrepRange) return false;
       
       // Check hour - use eventStartTime if available, otherwise extract from dueDate
       const taskHour = t.eventStartTime 
@@ -4397,8 +4401,8 @@ export default function Dashboard() {
       return taskHour === hour;
     });
     
-    // If there's a task with prep days in this cell, push other tasks down
-    if (tasksInSameCell.length > 0) {
+    // If there's a prep extension covering this cell, push other tasks down
+    if (tasksCoveringThisCell.length > 0) {
       return true;
     }
     
