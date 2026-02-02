@@ -7716,7 +7716,7 @@ export default function Dashboard() {
             x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7727,7 +7727,7 @@ export default function Dashboard() {
             x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7738,7 +7738,7 @@ export default function Dashboard() {
             x1={`calc(100% - 63px)`} 
             y1={`${382 + 22}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7762,7 +7762,7 @@ export default function Dashboard() {
               key={`module-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
               style={{ 
-                top: `${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
+                top: `${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
                 right: '103px',
                 transform: 'scale(1) translateY(-50%)',
                 transitionDelay: `${idx * 50}ms`
@@ -7839,7 +7839,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 15}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7850,7 +7850,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 23}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7861,7 +7861,7 @@ export default function Dashboard() {
             x1={`calc(100% - ${19 + 45}px)`} 
             y1={`${433 + 30}px`}
             x2={`calc(100% - ${103 + 21}px)`}
-            y2={`${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
+            y2={`${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
             stroke="white" 
             strokeWidth="1" 
             strokeDasharray="2,2"
@@ -7885,7 +7885,7 @@ export default function Dashboard() {
               key={`reading-btn-${courseId}`}
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
               style={{ 
-                top: modulesHoneycombOpen === 'readings' ? `${calendarTop + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px` : '381px',
+                top: modulesHoneycombOpen === 'readings' ? `${calendarTop + 10 + 41 + gridSizes.allDayRowHeight + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px` : '381px',
                 right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
                 transform: modulesHoneycombOpen === 'readings' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
