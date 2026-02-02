@@ -8542,10 +8542,10 @@ export default function Dashboard() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button 
-                      className={`h-4 w-4 flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
+                      className={`h-3 w-3 flex items-center justify-center ${note.reminderTime ? 'text-amber-600' : 'text-gray-600'} hover:text-gray-800`}
                       title="Set reminder"
                     >
-                      <Bell className="h-3 w-3" />
+                      <Bell className="h-2.5 w-2.5" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
