@@ -8280,7 +8280,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#4CAF50',
+            background: '#63968E',
             boxShadow: 'none',
           }}
         />
