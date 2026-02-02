@@ -9394,7 +9394,8 @@ export default function Dashboard() {
                         key={dayIdx} 
                         className="px-0.5 py-0.5 border-l border-border/50 flex flex-col gap-0.5 overflow-visible relative"
                         style={{ 
-                          backgroundColor: cellBgColor
+                          backgroundColor: cellBgColor,
+                          minHeight: '22px',
                         }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
@@ -9411,7 +9412,7 @@ export default function Dashboard() {
                       >
                         {/* Render prep extension bars for prep days */}
                         {prepTasks.length > 0 && (
-                          <div className="w-full h-full absolute inset-0 flex items-center justify-center">
+                          <div className="w-full h-full absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 5 }}>
                             {prepTasks.map((task, idx) => {
                               // Determine position in prep period
                               const taskStartDate = startOfDay(new Date(task.startDate!));
@@ -9422,14 +9423,16 @@ export default function Dashboard() {
                               return (
                                 <div
                                   key={`prep-${task.id}-${idx}`}
-                                  className="silver-shimmer-task absolute inset-x-0"
+                                  className="silver-shimmer-task"
                                   style={{
+                                    position: 'absolute',
+                                    left: isFirstPrepDay ? '4px' : '0',
+                                    right: isLastPrepDay ? '4px' : '0',
                                     height: '16px',
                                     top: '50%',
                                     transform: 'translateY(-50%)',
                                     borderRadius: isFirstPrepDay ? '8px 0 0 8px' : isLastPrepDay ? '0 8px 8px 0' : '0',
-                                    marginLeft: isFirstPrepDay ? '4px' : '0',
-                                    marginRight: isLastPrepDay ? '4px' : '0',
+                                    background: 'linear-gradient(90deg, #a8a8a8 0%, #c0c0c0 50%, #a8a8a8 100%)',
                                   }}
                                   title={`Prep: ${task.title}`}
                                 />
