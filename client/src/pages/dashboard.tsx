@@ -8182,7 +8182,7 @@ export default function Dashboard() {
           top: '640px', 
           right: '18px',
           borderRadius: '50%',
-          background: 'linear-gradient(0deg, #FFE566 0%, #FFCC00 100%)',
+          background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
           padding: '1px'
         }}
         data-testid="honeycomb-sticky-note"
@@ -8191,11 +8191,11 @@ export default function Dashboard() {
           size="icon"
           variant="ghost"
           className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-          style={{ background: 'linear-gradient(180deg, #FFCC00 0%, #FFE566 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.2), 0 2px 4px rgba(0,0,0,0.3)' }}
+          style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
           onClick={handleAddStickyNote}
           title="Add Sticky Note"
         >
-          <StickyNote style={{ color: '#333', strokeWidth: 2, height: '18px', width: '18px' }} />
+          <StickyNote style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         </Button>
       </div>
 
