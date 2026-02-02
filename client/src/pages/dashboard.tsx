@@ -9392,7 +9392,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="border-l border-border/50 overflow-visible relative flex items-center"
+                        className="border-l border-border/50 overflow-visible relative flex items-start pt-0.5"
                         style={{ 
                           backgroundColor: cellBgColor,
                         }}
