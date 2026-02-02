@@ -8215,7 +8215,7 @@ export default function Dashboard() {
           onClick={handleAddStickyNote}
           title="Add Sticky Note"
         >
-          <StickyNote style={{ color: 'black', strokeWidth: 2, height: '18px', width: '18px' }} />
+          <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
         </div>
       </div>
 
