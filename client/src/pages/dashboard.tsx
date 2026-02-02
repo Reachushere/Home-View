@@ -6984,9 +6984,10 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Clock */}
-          <div className="rounded-full h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-9px' }} data-testid="digital-clock">
-            <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
+          {/* Clock - wrapper clips 9px from left */}
+          <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
+            <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-9px', borderRadius: '9999px' }} data-testid="digital-clock">
+              <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
             <div className="flex items-center gap-1" style={{ transform: 'translateX(12px)' }}>
               <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
@@ -7008,6 +7009,7 @@ export default function Dashboard() {
               <span className="text-[11px] text-orange-400 font-medium ml-1">Travel</span>
             )}
             </div>
+          </div>
           </div>
         </div>
       </div>
