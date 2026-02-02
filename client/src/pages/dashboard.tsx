@@ -9418,29 +9418,31 @@ export default function Dashboard() {
                           const isFirstPrepDay = isSameDay(cellDate, taskStartDate);
                           const isLastPrepDay = isSameDay(addDays(cellDate, 1), taskDueDate);
                           const prepDaysTotal = Math.ceil((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
+                          // Use button gradient from course color
+                          const prepGradient = getButtonGradient(course.label);
                           
                           return (
                             <div
                               key={`prep-${task.id}-${idx}`}
-                              className="silver-shimmer-task absolute flex items-center overflow-visible"
+                              className="silver-shimmer-prep absolute flex items-center"
                               style={{
-                                left: isFirstPrepDay ? '2px' : '-2px',
-                                right: isLastPrepDay ? '2px' : '-2px',
+                                left: isFirstPrepDay ? '2px' : '-3px',
+                                right: isLastPrepDay ? '-3px' : '-3px',
                                 height: '18px',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
-                                borderRadius: isFirstPrepDay ? '4px 0 0 4px' : isLastPrepDay ? '0 4px 4px 0' : '0',
-                                background: 'linear-gradient(90deg, #c0c0c0 0%, #d8d8d8 50%, #c0c0c0 100%)',
+                                borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
+                                background: prepGradient,
                                 zIndex: 5,
-                                borderTop: '1px solid #999',
-                                borderBottom: '1px solid #999',
-                                borderLeft: isFirstPrepDay ? '1px solid #999' : '0',
-                                borderRight: isLastPrepDay ? '1px solid #999' : '0',
+                                borderTop: '1px solid rgba(0,0,0,0.25)',
+                                borderBottom: '1px solid rgba(0,0,0,0.25)',
+                                borderLeft: isFirstPrepDay ? '1px solid rgba(0,0,0,0.25)' : 'none',
+                                borderRight: 'none',
                               }}
                               title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                             >
                               {isFirstPrepDay && (
-                                <span className="text-[7px] font-medium text-gray-600 whitespace-nowrap pl-1">
+                                <span className="text-[7px] font-bold text-white whitespace-nowrap pl-1 drop-shadow-sm">
                                   Prep
                                 </span>
                               )}
@@ -9450,6 +9452,8 @@ export default function Dashboard() {
                         {/* Render due tasks with checkbox */}
                         {dueTasks.length > 0 && dueTasks.map((task, idx) => {
                           const hasPrepDays = task.startDate != null;
+                          // Use button gradient from course color for connecting bar
+                          const dueGradient = getButtonGradient(course.label);
                           return (
                             <div 
                               key={`due-${task.id}-${idx}`}
@@ -9459,19 +9463,19 @@ export default function Dashboard() {
                               {/* Connecting bar from prep days */}
                               {hasPrepDays && (
                                 <div 
-                                  className="absolute silver-shimmer-task"
+                                  className="absolute silver-shimmer-prep"
                                   style={{
-                                    left: '-2px',
+                                    left: '-3px',
                                     right: '50%',
                                     height: '18px',
                                     top: '50%',
                                     transform: 'translateY(-50%)',
                                     borderRadius: '0 4px 4px 0',
-                                    background: 'linear-gradient(90deg, #c0c0c0 0%, #d8d8d8 50%, #c0c0c0 100%)',
+                                    background: dueGradient,
                                     zIndex: 4,
-                                    borderTop: '1px solid #999',
-                                    borderBottom: '1px solid #999',
-                                    borderRight: '1px solid #999',
+                                    borderTop: '1px solid rgba(0,0,0,0.25)',
+                                    borderBottom: '1px solid rgba(0,0,0,0.25)',
+                                    borderRight: '1px solid rgba(0,0,0,0.25)',
                                   }}
                                 />
                               )}

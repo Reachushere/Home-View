@@ -433,6 +433,42 @@
   }
 }
 
+/* Prep bar shimmer - bright silver shimmer over course gradient background */
+.silver-shimmer-prep {
+  position: relative;
+  overflow: visible;
+}
+
+.silver-shimmer-prep::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 300%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.15) 60%,
+    transparent 70%,
+    transparent 100%
+  );
+  animation: prep-shimmer-sweep 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes prep-shimmer-sweep {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* Today column and current hour row shimmer effect - runs every 8 seconds, silver */
 .today-hour-shimmer {
   position: relative;
