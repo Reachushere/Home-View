@@ -9457,8 +9457,8 @@ export default function Dashboard() {
                               key={`prep-${task.id}-${idx}`}
                               className="flex items-center justify-center"
                               style={{
-                                marginLeft: isFirstPrepDay ? '2px' : '-6px',
-                                marginRight: '-6px',
+                                marginLeft: isFirstPrepDay ? '2px' : '0',
+                                marginRight: '0',
                                 height: '18px',
                                 borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
                                 backgroundColor: lightBg,
@@ -9489,13 +9489,12 @@ export default function Dashboard() {
                               className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative"
                               style={{
                                 height: '18px',
-                                marginLeft: hasPrepDays ? '-6px' : '2px',
-                                paddingLeft: hasPrepDays ? '8px' : '2px',
+                                marginLeft: '2px',
+                                paddingLeft: '2px',
                                 paddingRight: '2px',
-                                borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px',
+                                borderRadius: '4px',
                                 backgroundColor: lightBg,
                                 border: `1px solid ${borderColor}`,
-                                borderLeft: hasPrepDays ? 'none' : `1px solid ${borderColor}`,
                                 flex: 1,
                               }}
                               title={task.title}
