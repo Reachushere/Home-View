@@ -9663,7 +9663,7 @@ export default function Dashboard() {
                             const isCoveredByPrep = isTaskCoveredByPrepExtension(day, hour, task.id);
                             
                             // Calculate height based on duration for events with start/end times
-                            let taskHeight = hasPrepDays && prepDaysCount > 0 ? 36 : 40; // Slightly smaller for prep tasks
+                            let taskHeight = 40; // Same height for all tasks
                             let topOffset = 2; // Default top offset
                             
                             // If covered by prep extension, push task down below it
@@ -9677,10 +9677,8 @@ export default function Dashboard() {
                               const startMinutes = startHour * 60 + startMin;
                               const endMinutes = endHour * 60 + endMin;
                               const durationMinutes = endMinutes - startMinutes;
-                              // Single hour tasks only now
-                              taskHeight = hasPrepDays && prepDaysCount > 0 
-                                ? Math.max(36, (durationMinutes / 60) * 44 - 8)
-                                : Math.max(40, (durationMinutes / 60) * 44 - 4);
+                              // Single hour tasks only now - same height for all
+                              taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               // Offset for minutes past the hour, plus prep offset if covered
                               topOffset = (startMin / 60) * 44 + (isCoveredByPrep ? 24 : 0);
                             }
@@ -9741,8 +9739,12 @@ export default function Dashboard() {
                                   const rgb = hexToRgb(courseHex);
                                   const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
                                   const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                                  // Limit prep days to actual days available to the left in the week
+                                  const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
+                                  const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
+                                  if (actualPrepDays <= 0) return null;
                                   // Calculate width based on prep days - each day column is roughly equal width
-                                  const dayColumnWidth = `calc(${prepDaysCount} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7))`;
+                                  const dayColumnWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 40}px) / 7) - 4px)`;
                                   return (
                                     <div
                                       className="absolute flex items-center justify-center"
@@ -9759,7 +9761,7 @@ export default function Dashboard() {
                                         borderRight: 'none',
                                         zIndex: 40,
                                       }}
-                                      title={`${prepDaysCount} prep days`}
+                                      title={`${actualPrepDays} prep days`}
                                     >
                                       <span className="text-[10px] text-gray-900 font-semibold truncate px-1" style={{ WebkitFontSmoothing: 'antialiased' }}>
                                         Prep days
