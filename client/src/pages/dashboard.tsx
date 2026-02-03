@@ -11201,10 +11201,22 @@ export default function Dashboard() {
                     const taskSummary = dayTasks.length > 0 ? dayTasks[0].title : '';
                     const hasMultipleTasks = dayTasks.length > 1;
                     
+                    // Determine if this task should be on a second row (if there's a task on an adjacent day)
+                    // Check if previous day has a due task for this course
+                    const prevDay = dayIdx > 0 ? weekDays[dayIdx - 1] : null;
+                    const prevDayHasDueTask = prevDay && tasks?.some(task => {
+                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (task.isCompleted) return false;
+                      return isSameDay(startOfDay(new Date(task.dueDate)), startOfDay(prevDay));
+                    });
+                    
+                    // If previous day has a due task and this day has a due task, offset this one to row 2
+                    const shouldOffsetToRow2 = prevDayHasDueTask && dueTasks.length > 0;
+                    
                     return (
                       <div 
                         key={dayIdx} 
-                        className="border-l border-border/50 overflow-visible relative flex items-start pt-0.5"
+                        className="border-l border-border/50 overflow-visible relative flex flex-col pt-0.5"
                         style={{ 
                           backgroundColor: cellBgColor,
                         }}
@@ -11221,88 +11233,99 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        {/* Render prep extension bars for prep days */}
-                        {prepTasks.length > 0 && prepTasks.map((task, idx) => {
-                          // Determine position in prep period
-                          const taskStartDate = startOfDay(new Date(task.startDate!));
-                          const taskDueDate = startOfDay(new Date(task.dueDate));
-                          const isFirstPrepDay = isSameDay(cellDate, taskStartDate);
-                          const isLastPrepDay = isSameDay(addDays(cellDate, 1), taskDueDate);
-                          const prepDaysTotal = Math.ceil((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
-                          // Use button gradient from course color
-                          const prepGradient = getButtonGradient(course.label);
-                          
-                          // Create a light background with border (matching the example)
-                          const rgb = hexToRgb(course.label);
-                          const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                          const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-                          
-                          return (
-                            <div
-                              key={`prep-${task.id}-${idx}`}
-                              className="flex items-center justify-center"
-                              style={{
-                                marginLeft: isFirstPrepDay ? '2px' : '-1px',
-                                marginRight: '-1px',
-                                height: '18px',
-                                borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
-                                background: `linear-gradient(${lightBg}, ${lightBg}), white`,
-                                borderTop: `1px solid ${borderColor}`,
-                                borderBottom: `1px solid ${borderColor}`,
-                                borderLeft: isFirstPrepDay ? `1px solid ${borderColor}` : 'none',
-                                borderRight: 'none',
-                                zIndex: 5,
-                                flex: 1,
-                              }}
-                              title={`Prep: ${task.title} (${prepDaysTotal} days)`}
-                            >
-                              <span className="text-[8px] text-gray-700 font-medium truncate px-0.5">
-                                Prep days
-                              </span>
-                            </div>
-                          );
-                        })}
-                        {/* Render due tasks with checkbox */}
-                        {dueTasks.length > 0 && dueTasks.map((task, idx) => {
-                          const hasPrepDays = task.startDate != null;
-                          // Use light background with border (matching prep bars)
-                          const rgb = hexToRgb(course.label);
-                          const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                          const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-                          return (
-                            <div 
-                              key={`due-${task.id}-${idx}`}
-                              className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative"
-                              style={{
-                                height: '18px',
-                                marginLeft: hasPrepDays ? '0' : '2px',
-                                paddingLeft: '4px',
-                                paddingRight: '2px',
-                                borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px',
-                                backgroundColor: lightBg,
-                                borderTop: `1px solid ${borderColor}`,
-                                borderBottom: `1px solid ${borderColor}`,
-                                borderRight: `1px solid ${borderColor}`,
-                                borderLeft: hasPrepDays ? 'none' : `1px solid ${borderColor}`,
-                                flex: 1,
-                              }}
-                              title={task.title}
-                            >
-                              <Checkbox
-                                checked={task.isCompleted || false}
-                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black z-10"
-                                data-testid={`checkbox-course-row-${task.id}`}
-                              />
-                              <span 
-                                className="truncate cursor-pointer hover:opacity-80 z-10"
-                                onClick={() => setEditingTask(task)}
-                              >
-                                {task.title}
-                              </span>
-                            </div>
-                          );
-                        })}
+                        {/* Render prep extension bars for prep days - on first row */}
+                        {prepTasks.length > 0 && (
+                          <div className="flex items-start w-full">
+                            {prepTasks.map((task, idx) => {
+                              // Determine position in prep period
+                              const taskStartDate = startOfDay(new Date(task.startDate!));
+                              const taskDueDate = startOfDay(new Date(task.dueDate));
+                              const isFirstPrepDay = isSameDay(cellDate, taskStartDate);
+                              const isLastPrepDay = isSameDay(addDays(cellDate, 1), taskDueDate);
+                              const prepDaysTotal = Math.ceil((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
+                              // Use button gradient from course color
+                              const prepGradient = getButtonGradient(course.label);
+                              
+                              // Create a light background with border (matching the example)
+                              const rgb = hexToRgb(course.label);
+                              const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                              const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                              
+                              return (
+                                <div
+                                  key={`prep-${task.id}-${idx}`}
+                                  className="flex items-center justify-center"
+                                  style={{
+                                    marginLeft: isFirstPrepDay ? '2px' : '-1px',
+                                    marginRight: '-1px',
+                                    height: '18px',
+                                    borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
+                                    background: `linear-gradient(${lightBg}, ${lightBg}), white`,
+                                    borderTop: `1px solid ${borderColor}`,
+                                    borderBottom: `1px solid ${borderColor}`,
+                                    borderLeft: isFirstPrepDay ? `1px solid ${borderColor}` : 'none',
+                                    borderRight: 'none',
+                                    zIndex: 5,
+                                    flex: 1,
+                                  }}
+                                  title={`Prep: ${task.title} (${prepDaysTotal} days)`}
+                                >
+                                  <span className="text-[8px] text-gray-700 font-medium truncate px-0.5">
+                                    Prep days
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                        {/* Render due tasks with checkbox - offset to row 2 if previous day has a task */}
+                        {dueTasks.length > 0 && (
+                          <div 
+                            className="flex items-start w-full"
+                            style={{ marginTop: shouldOffsetToRow2 && prepTasks.length === 0 ? '18px' : '0' }}
+                          >
+                            {dueTasks.map((task, idx) => {
+                              const hasPrepDays = task.startDate != null;
+                              // Use light background with border (matching prep bars)
+                              const rgb = hexToRgb(course.label);
+                              const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                              const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                              return (
+                                <div 
+                                  key={`due-${task.id}-${idx}`}
+                                  className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative"
+                                  style={{
+                                    height: '18px',
+                                    marginLeft: hasPrepDays ? '0' : '2px',
+                                    paddingLeft: '4px',
+                                    paddingRight: '2px',
+                                    borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px',
+                                    backgroundColor: lightBg,
+                                    borderTop: `1px solid ${borderColor}`,
+                                    borderBottom: `1px solid ${borderColor}`,
+                                    borderRight: `1px solid ${borderColor}`,
+                                    borderLeft: hasPrepDays ? 'none' : `1px solid ${borderColor}`,
+                                    flex: 1,
+                                  }}
+                                  title={task.title}
+                                >
+                                  <Checkbox
+                                    checked={task.isCompleted || false}
+                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black z-10"
+                                    data-testid={`checkbox-course-row-${task.id}`}
+                                  />
+                                  <span 
+                                    className="truncate cursor-pointer hover:opacity-80 z-10"
+                                    onClick={() => setEditingTask(task)}
+                                  >
+                                    {task.title}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
