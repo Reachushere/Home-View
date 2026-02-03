@@ -2122,12 +2122,17 @@ export default function Dashboard() {
         }
       }
       
-      // Save final position to database
+      // Check if note was previously snapped (small size) and reset to default size
+      const currentNote = stickyNotes?.find(n => n.id === currentNoteId);
+      const wasSnapped = currentNote && (currentNote.width < 200 || currentNote.height < 200);
+      
+      // Save final position to database, resizing to default if it was snapped
       updateStickyNoteMutation.mutate({ 
         id: currentNoteId, 
         updates: { 
           positionX: currentDragPosition.x,
           positionY: currentDragPosition.y,
+          ...(wasSnapped ? { width: 271, height: 250 } : {}),
           lastMovedAt: new Date().toISOString() 
         } 
       });
@@ -2136,7 +2141,7 @@ export default function Dashboard() {
     draggingStickyNoteRef.current = null;
     setDragPosition(null);
     dragPositionRef.current = null;
-  }, [updateStickyNoteMutation]);
+  }, [updateStickyNoteMutation, stickyNotes]);
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
