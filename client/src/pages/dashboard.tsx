@@ -8766,7 +8766,7 @@ export default function Dashboard() {
       <div className="fixed pointer-events-none" style={{ top: '9px', left: '50%', transform: 'translateX(-50%) translateX(-58.5px)', zIndex: 1 }}>
         <div 
           style={{ 
-            width: `${505 + (blinkSettings.buttonSpacing * 10)}px`, 
+            width: `${511 + (blinkSettings.buttonSpacing * 10)}px`, 
             height: '50px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '25px',
@@ -13316,7 +13316,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 background: colorSettings.headerBar,
-                padding: '6px 15px'
+                padding: '6px 12px'
               }}
             >
               <h4 
