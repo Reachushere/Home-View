@@ -13360,7 +13360,7 @@ export default function Dashboard() {
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '0px' }}>Due</span>
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '3px', top: '0px' }}>Days</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', top: '0px' }}>Days</span>
               {/* Checkbox */}
               <div style={{ position: 'absolute', left: '0px', top: '11px', visibility: dueTomorrowTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -13379,7 +13379,7 @@ export default function Dashboard() {
               {/* Due */}
               <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '12px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
               {/* Days */}
-              <span style={{ position: 'absolute', right: '3px', top: '12px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
+              <span style={{ position: 'absolute', right: '0px', top: '12px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
               </div>
               {/* Row 2 */}
               {dueTomorrowTasks[1] && row1Positions.course > 0 && (
@@ -13395,7 +13395,7 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '3px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
               </div>
               )}
               {/* Row 3 */}
@@ -13412,7 +13412,7 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
                 <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '3px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
               </div>
               )}
                 </>
