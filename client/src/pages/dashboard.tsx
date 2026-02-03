@@ -10872,6 +10872,7 @@ export default function Dashboard() {
                       }}
                       onContextMenu={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         if (confirm('Delete this task?')) {
                           deleteMutation.mutate(task.id);
                           setSelectedTaskId(null);
