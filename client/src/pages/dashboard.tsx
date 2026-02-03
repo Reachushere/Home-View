@@ -2530,8 +2530,8 @@ export default function Dashboard() {
       const weekA = weekMatch(a.name);
       const weekB = weekMatch(b.name);
       
-      // Current week (week 5 based on semester schedule)
-      const currentWeek = 5;
+      // Current week (week 4 based on semester schedule)
+      const currentWeek = 4;
       
       // If both have week numbers, sort with past weeks at bottom
       if (weekA !== null && weekB !== null) {
