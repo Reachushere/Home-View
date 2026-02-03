@@ -107,8 +107,11 @@ import {
   Link2,
   Mail,
   Smartphone,
+  Share2,
+  Copy,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
+import { useAccessMode } from "@/components/access-gate";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
 import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, isBefore } from "date-fns";
@@ -283,6 +286,12 @@ export default function Dashboard() {
   });
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
+  
+  // Share link state
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareLink, setShareLink] = useState("");
+  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
+  const { isReadOnly, isAdmin } = useAccessMode();
   const [isCompletedTasksOpen, setIsCompletedTasksOpen] = useState(false);
   const [isRadioDialogOpen, setIsRadioDialogOpen] = useState(false);
   const [selectedSpeaker, setSelectedSpeaker] = useState("media_player.echo_lr_studio_white_am");
@@ -1418,6 +1427,30 @@ export default function Dashboard() {
     setTtsSettings(settings);
     localStorage.setItem('ttsSettings', JSON.stringify(settings));
     toast({ title: "TTS settings saved", description: "Your text-to-speech highlighting settings have been updated." });
+  };
+  
+  const generateShareLink = async () => {
+    setIsGeneratingLink(true);
+    try {
+      const response = await fetch('/api/access-tokens', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: `Share link ${new Date().toLocaleDateString()}` }),
+      });
+      const token = await response.json();
+      const link = `${window.location.origin}?access=${token.token}`;
+      setShareLink(link);
+      setIsShareDialogOpen(true);
+    } catch (err) {
+      toast({ title: "Error", description: "Failed to generate share link", variant: "destructive" });
+    } finally {
+      setIsGeneratingLink(false);
+    }
+  };
+  
+  const copyShareLink = () => {
+    navigator.clipboard.writeText(shareLink);
+    toast({ title: "Copied!", description: "Share link copied to clipboard" });
   };
   
   const getCourseColor = (courseName: string): string => {
@@ -6508,8 +6541,24 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Done Button */}
-          <div className="flex justify-end p-4 mx-6 mb-2" style={{ marginTop: '-20px', marginRight: '7px' }}>
+          {/* Share and Done Buttons */}
+          <div className="flex justify-between items-center p-4 mx-6 mb-2" style={{ marginTop: '-20px' }}>
+            {/* Share Button - Only for admin */}
+            {isAdmin ? (
+              <Button
+                variant="outline"
+                className="border !border-white/30 text-white hover:text-white hover:!border-white/50 hover:bg-white/10 transition-all duration-200 h-8 px-4"
+                style={{ fontSize: '12px' }}
+                onClick={generateShareLink}
+                disabled={isGeneratingLink}
+                data-testid="button-share-from-reader"
+              >
+                <Share2 className="h-3 w-3 mr-2" />
+                {isGeneratingLink ? "Generating..." : "Share"}
+              </Button>
+            ) : (
+              <div />
+            )}
             <Button
               variant="outline"
               className="border !border-[#FF6E3D] text-white hover:text-white hover:!border-[#FFDD63] hover:bg-transparent transition-all duration-200 h-8 px-6"
@@ -6903,6 +6952,50 @@ export default function Dashboard() {
                       mute
                     </button>
                   </div>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Share Link Dialog */}
+          <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+            <DialogContent className="max-w-[360px] text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden">
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                <div className="flex items-center gap-2">
+                  <Share2 className="h-3 w-3 text-white" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                    TEMPORARY SHARE LINK
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setIsShareDialogOpen(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-share"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4 space-y-4">
+                <p className="text-white/80 text-[10px]">
+                  This link will expire 1 hour after someone uses it. They can view but not make permanent changes.
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={shareLink}
+                    readOnly
+                    className="flex-1 px-2 py-1.5 text-[10px] bg-black/50 border border-white/30 rounded text-white"
+                    data-testid="input-share-link"
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="text-white border-white/30 hover:bg-white/10"
+                    onClick={copyShareLink}
+                    data-testid="button-copy-share-link"
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
                 </div>
               </div>
             </DialogContent>

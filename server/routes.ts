@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import type { Server } from "http";
+import crypto from "crypto";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
@@ -2405,6 +2406,88 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error deleting sticky note:", err);
       res.status(500).json({ message: "Failed to delete sticky note" });
+    }
+  });
+
+  // Access Token routes for time-limited sharing
+  app.get("/api/access-tokens", async (req, res) => {
+    try {
+      const tokens = await storage.getAccessTokens();
+      res.json(tokens);
+    } catch (err) {
+      console.error("Error getting access tokens:", err);
+      res.status(500).json({ message: "Failed to get access tokens" });
+    }
+  });
+
+  app.post("/api/access-tokens", async (req, res) => {
+    try {
+      const { name } = req.body;
+      const token = crypto.randomUUID();
+      const created = await storage.createAccessToken({ token, name: name || null, firstUsedAt: null, expiresAt: null, isRevoked: false });
+      res.json(created);
+    } catch (err) {
+      console.error("Error creating access token:", err);
+      res.status(500).json({ message: "Failed to create access token" });
+    }
+  });
+
+  app.post("/api/access-tokens/validate", async (req, res) => {
+    try {
+      const { token } = req.body;
+      if (!token) {
+        return res.status(400).json({ valid: false, message: "Token required" });
+      }
+      
+      const accessToken = await storage.getAccessToken(token);
+      if (!accessToken) {
+        return res.json({ valid: false, message: "Invalid token" });
+      }
+      
+      if (accessToken.isRevoked) {
+        return res.json({ valid: false, message: "Token has been revoked" });
+      }
+      
+      const now = new Date();
+      
+      // Check if token has expired
+      if (accessToken.expiresAt && new Date(accessToken.expiresAt) < now) {
+        return res.json({ valid: false, message: "Token has expired" });
+      }
+      
+      // If first use, set expiration to 1 hour from now
+      if (!accessToken.firstUsedAt) {
+        const expiresAt = new Date(now.getTime() + 60 * 60 * 1000); // 1 hour
+        await storage.updateAccessToken(accessToken.id, { firstUsedAt: now, expiresAt });
+        return res.json({ valid: true, message: "Access granted", expiresAt });
+      }
+      
+      return res.json({ valid: true, message: "Access granted", expiresAt: accessToken.expiresAt });
+    } catch (err) {
+      console.error("Error validating access token:", err);
+      res.status(500).json({ valid: false, message: "Failed to validate token" });
+    }
+  });
+
+  app.delete("/api/access-tokens/:id", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      await storage.deleteAccessToken(id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error("Error deleting access token:", err);
+      res.status(500).json({ message: "Failed to delete access token" });
+    }
+  });
+
+  app.patch("/api/access-tokens/:id/revoke", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const updated = await storage.updateAccessToken(id, { isRevoked: true });
+      res.json(updated);
+    } catch (err) {
+      console.error("Error revoking access token:", err);
+      res.status(500).json({ message: "Failed to revoke access token" });
     }
   });
 
