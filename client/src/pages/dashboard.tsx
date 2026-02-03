@@ -4552,34 +4552,9 @@ export default function Dashboard() {
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime!.split(':').map(Number);
       
-      // Calculate position using dynamic grid sizes with individual row heights
-      const startMinutes = startHour * 60 + startMin;
-      const endMinutes = endHour * 60 + endMin;
-      
-      // Calculate cumulative top position from hours 6 to startHour
-      let topPx = 0;
-      for (let h = 6; h < startHour; h++) {
-        topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-      }
-      // Add minute offset within the starting hour
-      const startHourHeight = gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight;
-      topPx += (startMin / 60) * startHourHeight;
-      
-      // Calculate height by summing heights of all hours the task spans
-      let heightPx = 0;
-      // Remaining minutes in starting hour
-      heightPx += ((60 - startMin) / 60) * startHourHeight;
-      // Full hours in between
-      for (let h = startHour + 1; h < endHour; h++) {
-        heightPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-      }
-      // Minutes in ending hour (if different from start hour)
-      if (endHour > startHour) {
-        const endHourHeight = gridSizes.timeSlotHeights[endHour] || gridSizes.timeSlotHeight;
-        heightPx += (endMin / 60) * endHourHeight;
-      }
-      
-      return { task: t, dayIdx, topPx, heightPx };
+      // Return task data - actual position will be calculated at render time
+      // to properly account for prep conflict heights
+      return { task: t, dayIdx, startHour, startMin, endHour, endMin };
     });
   };
   
@@ -4606,34 +4581,11 @@ export default function Dashboard() {
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime ? t.eventEndTime.split(':').map(Number) : [startHour + 1, 0];
       
-      // Calculate top position (where the prep bar should be) - must match task topOffset exactly
-      let topPx = 0;
-      for (let h = 6; h < startHour; h++) {
-        topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-      }
-      // Match the task's topOffset calculation exactly: (startMin / 60) * 44 + 2
-      topPx += (startMin / 60) * (gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight) + 2;
-      
-      // Calculate height to match the task height - same logic as getMultiHourTasksForWeek
-      let heightPx = 0;
-      const startHourHeight = gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight;
-      if (endHour > startHour) {
-        // Multi-hour task height calculation
-        heightPx += ((60 - startMin) / 60) * startHourHeight;
-        for (let h = startHour + 1; h < endHour; h++) {
-          heightPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-        }
-        const endHourHeight = gridSizes.timeSlotHeights[endHour] || gridSizes.timeSlotHeight;
-        heightPx += (endMin / 60) * endHourHeight;
-      } else {
-        // Single hour task - use standard height
-        heightPx = 40;
-      }
-      
       // Calculate the starting day index for the prep extension
       const prepStartDayIdx = Math.max(0, dueDayIdx - prepDaysCount);
       
-      return { task: t, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx, heightPx, hour: startHour };
+      // Return data - position will be calculated at render time
+      return { task: t, dueDayIdx, prepStartDayIdx, prepDaysCount, startHour, startMin, endHour, endMin, hour: startHour };
     });
   };
   
@@ -4722,6 +4674,16 @@ export default function Dashboard() {
     }
     return 0;
   };
+  
+  // Pre-calculate prep conflict heights for all hours to avoid circular dependencies
+  // This is computed once and used for positioning multi-hour tasks
+  const prepConflictHeights = useMemo(() => {
+    const heights: Record<number, number> = {};
+    for (let h = 6; h <= 24; h++) {
+      heights[h] = getTimeSlotPrepConflictHeight(h);
+    }
+    return heights;
+  }, [allTasks, weekDays]);
   
   // Check if a task with prep days has conflicts that require extending its height
   // Returns the extra height needed to match the bottom of pushed-down tasks
@@ -10370,7 +10332,7 @@ export default function Dashboard() {
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                   >
                     <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#160502' : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
-                      {hour === 0 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
+                      {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
@@ -10645,7 +10607,30 @@ export default function Dashboard() {
                 })}
                 
                 {/* Multi-hour tasks overlay - rendered as single absolute positioned elements */}
-                {getMultiHourTasksForWeek().map(({ task, dayIdx, topPx, heightPx }) => {
+                {getMultiHourTasksForWeek().map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
+                  // Calculate position at render time
+                  // Pre-calculate cumulative heights including prep conflict heights
+                  let topPx = 0;
+                  for (let h = 6; h < startHour; h++) {
+                    topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    // Add prep conflict height for this hour (calculated inline to avoid circular dependency)
+                    topPx += prepConflictHeights[h] || 0;
+                  }
+                  const startHourHeight = gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight;
+                  topPx += (startMin / 60) * startHourHeight;
+                  
+                  // Calculate height including prep conflict heights for spanned hours
+                  let heightPx = 0;
+                  heightPx += ((60 - startMin) / 60) * startHourHeight;
+                  for (let h = startHour + 1; h < endHour; h++) {
+                    heightPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    heightPx += prepConflictHeights[h] || 0;
+                  }
+                  if (endHour > startHour) {
+                    const endHourHeight = gridSizes.timeSlotHeights[endHour] || gridSizes.timeSlotHeight;
+                    heightPx += (endMin / 60) * endHourHeight;
+                  }
+                  
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                   const colors = dynamicCourseColors[courseCode];
                   const today = startOfDay(new Date());
@@ -10767,7 +10752,15 @@ export default function Dashboard() {
                 })}
                 
                 {/* Prep Extensions Overlay - rendered as separate elements spanning day columns */}
-                {getPrepExtensionsForWeek().map(({ task, dueDayIdx, prepStartDayIdx, prepDaysCount, topPx, heightPx }) => {
+                {getPrepExtensionsForWeek().map(({ task, dueDayIdx, prepStartDayIdx, prepDaysCount, startHour, startMin, endHour, endMin }) => {
+                  // Calculate position at render time to account for prep conflict heights
+                  let topPx = 0;
+                  for (let h = 6; h < startHour; h++) {
+                    topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    topPx += prepConflictHeights[h] || 0;
+                  }
+                  topPx += (startMin / 60) * (gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight) + 2;
+                  
                   const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
                   const colors = dynamicCourseColors[courseCode];
                   
