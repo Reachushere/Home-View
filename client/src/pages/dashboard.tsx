@@ -8760,7 +8760,7 @@ export default function Dashboard() {
                       className="flex items-center justify-center text-gray-600 hover:text-gray-800"
                       onMouseDown={(e) => e.stopPropagation()}
                     >
-                      <Palette className="h-2.5 w-2.5" />
+                      <Palette className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="min-w-0 p-2" onClick={(e) => e.stopPropagation()}>
