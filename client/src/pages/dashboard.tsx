@@ -2497,7 +2497,27 @@ export default function Dashboard() {
     },
   });
   
-  const oneDriveFolders = oneDriveItems.filter(item => item.type === "folder");
+  const oneDriveFolders = oneDriveItems
+    .filter(item => item.type === "folder")
+    .sort((a, b) => {
+      // Extract week numbers for chronological sorting
+      const weekMatch = (name: string) => {
+        const match = name.match(/week\s*(\d+)/i);
+        return match ? parseInt(match[1], 10) : null;
+      };
+      const weekA = weekMatch(a.name);
+      const weekB = weekMatch(b.name);
+      
+      // If both have week numbers, sort numerically
+      if (weekA !== null && weekB !== null) {
+        return weekA - weekB;
+      }
+      // If only one has a week number, put it first
+      if (weekA !== null) return -1;
+      if (weekB !== null) return 1;
+      // Otherwise sort alphabetically
+      return a.name.localeCompare(b.name);
+    });
   const oneDriveFiles = oneDriveItems.filter(item => item.type === "file");
   const oneDrivePdfFiles = oneDriveFiles.filter(item => item.mimeType?.includes("pdf"));
 
