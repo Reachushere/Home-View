@@ -11905,7 +11905,12 @@ export default function Dashboard() {
                   <Calendar className="h-3 w-3 text-white" />
                   THIS WEEK ({dueThisWeekTasks.length})
                 </span>
-                <GripHorizontal className="h-3 w-3 text-white/70" />
+                {/* 9-dot grip */}
+                <div className="grid grid-cols-3 gap-[2px]">
+                  {[...Array(9)].map((_, i) => (
+                    <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
+                  ))}
+                </div>
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
@@ -12149,7 +12154,12 @@ export default function Dashboard() {
                   <Calendar className="h-3 w-3 text-white" />
                   TODAY ({dueTodayTasks.length})
                 </span>
-                <GripHorizontal className="h-3 w-3 text-white/70" />
+                {/* 9-dot grip */}
+                <div className="grid grid-cols-3 gap-[2px]">
+                  {[...Array(9)].map((_, i) => (
+                    <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
+                  ))}
+                </div>
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden' }}>
@@ -12320,7 +12330,12 @@ export default function Dashboard() {
                   <Calendar className="h-3 w-3 text-white" />
                   TOMORROW ({dueTomorrowTasks.length})
                 </span>
-                <GripHorizontal className="h-3 w-3 text-white/70" />
+                {/* 9-dot grip */}
+                <div className="grid grid-cols-3 gap-[2px]">
+                  {[...Array(9)].map((_, i) => (
+                    <div key={i} className="w-[3px] h-[3px] rounded-full bg-white/70" />
+                  ))}
+                </div>
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
