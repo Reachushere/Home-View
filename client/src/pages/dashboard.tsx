@@ -2500,6 +2500,28 @@ export default function Dashboard() {
   const oneDriveFolders = oneDriveItems
     .filter(item => item.type === "folder")
     .sort((a, b) => {
+      // Course order to match calendar
+      const courseOrder = ['CPPA122', 'CFNF400', 'CASL101'];
+      
+      // Check if folders are course folders
+      const getCourseIndex = (name: string) => {
+        for (let i = 0; i < courseOrder.length; i++) {
+          if (name.includes(courseOrder[i])) return i;
+        }
+        return -1;
+      };
+      
+      const courseIdxA = getCourseIndex(a.name);
+      const courseIdxB = getCourseIndex(b.name);
+      
+      // If both are course folders, sort by course order
+      if (courseIdxA !== -1 && courseIdxB !== -1) {
+        return courseIdxA - courseIdxB;
+      }
+      // Course folders come first
+      if (courseIdxA !== -1) return -1;
+      if (courseIdxB !== -1) return 1;
+      
       // Extract week numbers for chronological sorting
       const weekMatch = (name: string) => {
         const match = name.match(/week\s*(\d+)/i);
@@ -2508,8 +2530,19 @@ export default function Dashboard() {
       const weekA = weekMatch(a.name);
       const weekB = weekMatch(b.name);
       
-      // If both have week numbers, sort numerically
+      // Current week (week 5 based on semester schedule)
+      const currentWeek = 5;
+      
+      // If both have week numbers, sort with past weeks at bottom
       if (weekA !== null && weekB !== null) {
+        const isPastA = weekA < currentWeek;
+        const isPastB = weekB < currentWeek;
+        
+        // If one is past and one is current/future, past goes last
+        if (isPastA && !isPastB) return 1;
+        if (!isPastA && isPastB) return -1;
+        
+        // If both are past or both are current/future, sort numerically
         return weekA - weekB;
       }
       // If only one has a week number, put it first
@@ -11737,21 +11770,40 @@ export default function Dashboard() {
                 ) : (
                   <div className="space-y-1">
                     {/* Folders */}
-                    {oneDriveFolders.map((folder) => (
-                      <div
-                        key={folder.id}
-                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors"
-                        onClick={() => {
-                          setOneDrivePathHistory([...oneDrivePathHistory, oneDrivePath]);
-                          setOneDrivePath(folder.path);
-                        }}
-                        data-testid={`onedrive-folder-${folder.id}`}
-                      >
-                        <Folder className="h-4 w-4 text-yellow-500 fill-yellow-400" />
-                        <span className="text-[13px] text-white/90 truncate flex-1">{folder.name}</span>
-                        <ChevronRight className="h-3 w-3 text-white/40" />
-                      </div>
-                    ))}
+                    {oneDriveFolders.map((folder) => {
+                      // Check if folder name matches a course - use hardcoded colors
+                      const courseColorMap: Record<string, string> = {
+                        'CPPA122': '#4ade80', // green
+                        'CFNF400': '#f472b6', // pink
+                        'CASL101': '#818cf8', // indigo
+                      };
+                      let folderColor: string | undefined;
+                      for (const [courseCode, color] of Object.entries(courseColorMap)) {
+                        if (folder.name.includes(courseCode)) {
+                          folderColor = color;
+                          break;
+                        }
+                      }
+                      
+                      return (
+                        <div
+                          key={folder.id}
+                          className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors"
+                          onClick={() => {
+                            setOneDrivePathHistory([...oneDrivePathHistory, oneDrivePath]);
+                            setOneDrivePath(folder.path);
+                          }}
+                          data-testid={`onedrive-folder-${folder.id}`}
+                        >
+                          <Folder 
+                            className={folderColor ? "h-4 w-4" : "h-4 w-4 text-yellow-500 fill-yellow-400"}
+                            style={folderColor ? { color: folderColor, fill: folderColor } : undefined}
+                          />
+                          <span className="text-[13px] text-white/90 truncate flex-1">{folder.name}</span>
+                          <ChevronRight className="h-3 w-3 text-white/40" />
+                        </div>
+                      );
+                    })}
                     
                     {/* PDF Files */}
                     {oneDrivePdfFiles.map((file) => (
