@@ -2892,8 +2892,12 @@ export default function Dashboard() {
   // Load PDF when file is selected
   useEffect(() => {
     if (previewFile && previewFile.objectPath) {
+      // Check if objectPath is a direct URL (OneDrive) or needs API fetch
+      const isDirectUrl = previewFile.objectPath.startsWith('http');
+      const fetchUrl = isDirectUrl ? previewFile.objectPath : `/api/files/${previewFile.id}/download`;
+      
       // Create blob URL for PDF
-      fetch(`/api/files/${previewFile.id}/download`)
+      fetch(fetchUrl)
         .then(res => res.blob())
         .then(blob => {
           const url = URL.createObjectURL(blob);
@@ -2907,7 +2911,7 @@ export default function Dashboard() {
         setPdfUrl(null);
       }
     };
-  }, [previewFile?.id]);
+  }, [previewFile?.id, previewFile?.objectPath]);
 
   // Function to filter out French text, links, and box content from content
   const removeFrenchText = (text: string): string => {
@@ -6869,7 +6873,10 @@ export default function Dashboard() {
               onClick={async () => {
                 if (!previewFile) return;
                 try {
-                  const response = await fetch(`/api/files/${previewFile.id}/download`);
+                  // Use direct URL for OneDrive files, otherwise use API
+                  const isDirectUrl = previewFile.objectPath?.startsWith('http');
+                  const fetchUrl = isDirectUrl ? previewFile.objectPath : `/api/files/${previewFile.id}/download`;
+                  const response = await fetch(fetchUrl);
                   if (!response.ok) throw new Error('Download failed');
                   const blob = await response.blob();
                   const url = window.URL.createObjectURL(blob);
