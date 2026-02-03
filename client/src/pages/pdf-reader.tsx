@@ -384,210 +384,219 @@ export default function PDFReaderPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-4">
-        {/* File selector dropdown for multiple reading files */}
-        {allFiles.length > 1 && (
-          <div className="bg-white rounded-xl shadow-lg p-3 mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <FileText className="h-4 w-4 text-amber-600" />
-              <span className="text-sm font-medium text-gray-700">Reading Files ({allFiles.length})</span>
-            </div>
-            <div className="flex flex-col gap-1 max-h-[200px] overflow-y-auto">
-              {allFiles.map((file, idx) => {
-                const isListened = listenedFiles.has(file.path);
-                const isCurrentFile = (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')) === file.downloadUrl;
-                let cleanName = file.name
-                  .replace(/^CPPA\s*122[-_\s.]*/i, '')
-                  .replace(/^CFNF\s*400[-_\s.]*/i, '')
-                  .replace(/^CASL\s*101[-_\s.]*/i, '')
-                  .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
-                  .replace(/\.pdf$/i, '')
-                  .trim();
-                while (cleanName.match(/^[.\s\-_:•·]/)) {
-                  cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
-                }
-                return (
-                  <div
-                    key={file.path || idx}
-                    onClick={() => switchToFile(file)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
-                      isCurrentFile 
-                        ? 'bg-amber-100 border border-amber-300' 
-                        : 'hover:bg-gray-100'
-                    }`}
-                    data-testid={`reading-file-${idx}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isListened}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        const newListened = new Set(listenedFiles);
-                        if (e.target.checked) {
-                          newListened.add(file.path);
-                        } else {
-                          newListened.delete(file.path);
-                        }
-                        setListenedFiles(newListened);
-                        localStorage.setItem('listenedOneDriveFiles', JSON.stringify(Array.from(newListened)));
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
-                    />
-                    <FileText className={`h-4 w-4 shrink-0 ${isCurrentFile ? 'text-amber-600' : 'text-red-400'}`} />
-                    <span className={`text-sm ${isListened ? 'text-gray-400 line-through' : 'text-gray-700'} ${isCurrentFile ? 'font-medium' : ''}`}>
-                      {cleanName || file.name}
-                    </span>
-                    {isCurrentFile && (
-                      <span className="ml-auto text-xs bg-amber-200 text-amber-700 px-2 py-0.5 rounded">Current</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-        
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
-          <div className="flex justify-center p-4 bg-gray-100 min-h-[400px] sm:min-h-[600px]">
-            {pdfUrl && (
-              <Document
-                file={pdfUrl}
-                onLoadSuccess={onDocumentLoadSuccess}
-                loading={
-                  <div className="flex items-center justify-center h-full">
-                    <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
-                  </div>
-                }
-              >
-                <Page
-                  pageNumber={currentPage}
-                  width={isMobile ? window.innerWidth - 48 : 600}
-                  renderTextLayer={true}
-                  renderAnnotationLayer={true}
-                />
-              </Document>
-            )}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Volume2 className="h-5 w-5 text-amber-600" />
-            <h2 className="font-semibold text-gray-800">Audio Reader</h2>
-            {isPlaying && (
-              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-                {currentChunk + 1} / {totalChunks}
-              </span>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Voice</label>
-              <Select value={voice} onValueChange={(v) => setVoice(v as Voice)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
-                  <SelectItem value="echo">Echo (Male)</SelectItem>
-                  <SelectItem value="fable">Fable (British)</SelectItem>
-                  <SelectItem value="onyx">Onyx (Deep)</SelectItem>
-                  <SelectItem value="nova">Nova (Female)</SelectItem>
-                  <SelectItem value="shimmer">Shimmer (Soft)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm text-gray-600 mb-1 block">Speed: {playbackSpeed}x</label>
-              <Slider
-                value={[playbackSpeed]}
-                onValueChange={([v]) => setPlaybackSpeed(v)}
-                min={0.5}
-                max={2}
-                step={0.25}
-                className="mt-2"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-3 sm:gap-4">
-            <Button
-              variant="outline"
-              size={isMobile ? "lg" : "default"}
-              onClick={skipBack}
-              disabled={!isPlaying || currentChunk === 0}
-              className="h-12 w-12 sm:h-14 sm:w-14 rounded-full"
-            >
-              <SkipBack className="h-5 w-5 sm:h-6 sm:w-6" />
-            </Button>
-
-            {!isPlaying ? (
-              <Button
-                size={isMobile ? "lg" : "default"}
-                onClick={startReading}
-                disabled={isLoading || numPages === 0}
-                className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-amber-500 hover:bg-amber-600"
-              >
-                {isLoading ? (
-                  <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin" />
-                ) : (
-                  <Play className="h-6 w-6 sm:h-8 sm:w-8 ml-1" />
-                )}
-              </Button>
-            ) : isPaused ? (
-              <Button
-                size={isMobile ? "lg" : "default"}
-                onClick={resumeReading}
-                className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-amber-500 hover:bg-amber-600"
-              >
-                <Play className="h-6 w-6 sm:h-8 sm:w-8 ml-1" />
-              </Button>
-            ) : (
-              <Button
-                size={isMobile ? "lg" : "default"}
-                onClick={pauseReading}
-                className="h-14 w-14 sm:h-16 sm:w-16 rounded-full bg-amber-500 hover:bg-amber-600"
-              >
-                <Pause className="h-6 w-6 sm:h-8 sm:w-8" />
-              </Button>
-            )}
-
-            <Button
-              variant="outline"
-              size={isMobile ? "lg" : "default"}
-              onClick={stopReading}
-              disabled={!isPlaying}
-              className="h-12 w-12 sm:h-14 sm:w-14 rounded-full"
-            >
-              <Square className="h-5 w-5 sm:h-6 sm:w-6" />
-            </Button>
-
-            <Button
-              variant="outline"
-              size={isMobile ? "lg" : "default"}
-              onClick={skipForward}
-              disabled={!isPlaying || currentChunk >= totalChunks - 1}
-              className="h-12 w-12 sm:h-14 sm:w-14 rounded-full"
-            >
-              <SkipForward className="h-5 w-5 sm:h-6 sm:w-6" />
-            </Button>
-          </div>
-
-          {isPlaying && (
-            <div className="mt-4">
-              <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-amber-500 h-full transition-all duration-300"
-                  style={{ width: `${((currentChunk + 1) / totalChunks) * 100}%` }}
-                />
+      <div className="flex-1 overflow-hidden">
+        {/* Side-by-side layout: PDF on left, TTS controls on right */}
+        <div className="flex flex-col lg:flex-row h-[calc(100vh-60px)]">
+          {/* Left side: PDF Viewer */}
+          <div className="flex-1 lg:w-1/2 overflow-auto bg-gray-100 p-4">
+            {/* File selector for multiple reading files */}
+            {allFiles.length > 1 && (
+              <div className="bg-white rounded-lg shadow p-3 mb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="h-4 w-4 text-amber-600" />
+                  <span className="text-sm font-medium text-gray-700">Reading Files ({allFiles.length})</span>
+                </div>
+                <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto">
+                  {allFiles.map((file, idx) => {
+                    const isListened = listenedFiles.has(file.path);
+                    const isCurrentFile = (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')) === file.downloadUrl;
+                    let cleanName = file.name
+                      .replace(/^CPPA\s*122[-_\s.]*/i, '')
+                      .replace(/^CFNF\s*400[-_\s.]*/i, '')
+                      .replace(/^CASL\s*101[-_\s.]*/i, '')
+                      .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
+                      .replace(/\.pdf$/i, '')
+                      .trim();
+                    while (cleanName.match(/^[.\s\-_:•·]/)) {
+                      cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
+                    }
+                    return (
+                      <div
+                        key={file.path || idx}
+                        onClick={() => switchToFile(file)}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                          isCurrentFile 
+                            ? 'bg-amber-100 border border-amber-300' 
+                            : 'hover:bg-gray-100'
+                        }`}
+                        data-testid={`reading-file-${idx}`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isListened}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            const newListened = new Set(listenedFiles);
+                            if (e.target.checked) {
+                              newListened.add(file.path);
+                            } else {
+                              newListened.delete(file.path);
+                            }
+                            setListenedFiles(newListened);
+                            localStorage.setItem('listenedOneDriveFiles', JSON.stringify(Array.from(newListened)));
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
+                        />
+                        <FileText className={`h-4 w-4 shrink-0 ${isCurrentFile ? 'text-amber-600' : 'text-red-400'}`} />
+                        <span className={`text-sm ${isListened ? 'text-gray-400 line-through' : 'text-gray-700'} ${isCurrentFile ? 'font-medium' : ''}`}>
+                          {cleanName || file.name}
+                        </span>
+                        {isCurrentFile && (
+                          <span className="ml-auto text-xs bg-amber-200 text-amber-700 px-2 py-0.5 rounded">Current</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <p className="text-xs text-gray-500 text-center mt-2">
-                Reading section {currentChunk + 1} of {totalChunks}
-              </p>
+            )}
+            
+            <div className="flex justify-center">
+              {pdfUrl && (
+                <Document
+                  file={pdfUrl}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  loading={
+                    <div className="flex items-center justify-center h-[400px]">
+                      <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+                    </div>
+                  }
+                >
+                  <Page
+                    pageNumber={currentPage}
+                    width={isMobile ? window.innerWidth - 32 : 500}
+                    renderTextLayer={true}
+                    renderAnnotationLayer={true}
+                  />
+                </Document>
+              )}
             </div>
-          )}
+          </div>
+          
+          {/* Right side: TTS Controls */}
+          <div className="lg:w-1/2 bg-white border-l border-gray-200 p-6 overflow-auto">
+            <div className="max-w-md mx-auto">
+              <div className="flex items-center gap-2 mb-6">
+                <Volume2 className="h-6 w-6 text-amber-600" />
+                <h2 className="text-xl font-semibold text-gray-800">OpenAI Text-to-Speech</h2>
+              </div>
+              
+              {isPlaying && (
+                <div className="mb-6 p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-green-700">Now Playing</span>
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                      Chunk {currentChunk + 1} of {totalChunks}
+                    </span>
+                  </div>
+                  <div className="bg-green-200 rounded-full h-2 overflow-hidden">
+                    <div
+                      className="bg-green-500 h-full transition-all duration-300"
+                      style={{ width: `${((currentChunk + 1) / totalChunks) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Voice</label>
+                  <Select value={voice} onValueChange={(v) => setVoice(v as Voice)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
+                      <SelectItem value="echo">Echo (Male)</SelectItem>
+                      <SelectItem value="fable">Fable (British)</SelectItem>
+                      <SelectItem value="onyx">Onyx (Deep)</SelectItem>
+                      <SelectItem value="nova">Nova (Female)</SelectItem>
+                      <SelectItem value="shimmer">Shimmer (Soft)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Speed: {playbackSpeed}x</label>
+                  <Slider
+                    value={[playbackSpeed]}
+                    onValueChange={([v]) => setPlaybackSpeed(v)}
+                    min={0.5}
+                    max={2}
+                    step={0.25}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={skipBack}
+                  disabled={!isPlaying || currentChunk === 0}
+                  className="h-12 w-12 rounded-full"
+                >
+                  <SkipBack className="h-5 w-5" />
+                </Button>
+
+                {!isPlaying ? (
+                  <Button
+                    size="icon"
+                    onClick={startReading}
+                    disabled={isLoading || numPages === 0}
+                    className="h-16 w-16 rounded-full bg-amber-500 hover:bg-amber-600"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-8 w-8 animate-spin" />
+                    ) : (
+                      <Play className="h-8 w-8 ml-1" />
+                    )}
+                  </Button>
+                ) : isPaused ? (
+                  <Button
+                    size="icon"
+                    onClick={resumeReading}
+                    className="h-16 w-16 rounded-full bg-amber-500 hover:bg-amber-600"
+                  >
+                    <Play className="h-8 w-8 ml-1" />
+                  </Button>
+                ) : (
+                  <Button
+                    size="icon"
+                    onClick={pauseReading}
+                    className="h-16 w-16 rounded-full bg-amber-500 hover:bg-amber-600"
+                  >
+                    <Pause className="h-8 w-8" />
+                  </Button>
+                )}
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={stopReading}
+                  disabled={!isPlaying}
+                  className="h-12 w-12 rounded-full"
+                >
+                  <Square className="h-5 w-5" />
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={skipForward}
+                  disabled={!isPlaying || currentChunk >= totalChunks - 1}
+                  className="h-12 w-12 rounded-full"
+                >
+                  <SkipForward className="h-5 w-5" />
+                </Button>
+              </div>
+
+              <div className="text-center text-sm text-gray-500">
+                <p>Powered by OpenAI TTS</p>
+                <p className="text-xs mt-1">Text is chunked for efficient streaming playback</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
