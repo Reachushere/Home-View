@@ -101,6 +101,7 @@ import {
   StickyNote,
   Grip,
   GripVertical,
+  GripHorizontal,
   CheckCircle2,
   Check,
   ListTodo,
@@ -2107,7 +2108,7 @@ export default function Dashboard() {
                 positionY: Math.round(snapY),
                 width: Math.round(snapWidth),
                 height: Math.round(snapHeight),
-                lastMovedAt: new Date(),
+                lastMovedAt: new Date().toISOString(),
                 homePositionX: Math.round(snapX),
                 homePositionY: Math.round(snapY)
               } 
@@ -2127,7 +2128,7 @@ export default function Dashboard() {
         updates: { 
           positionX: currentDragPosition.x,
           positionY: currentDragPosition.y,
-          lastMovedAt: new Date() 
+          lastMovedAt: new Date().toISOString() 
         } 
       });
     }
@@ -8743,18 +8744,25 @@ export default function Dashboard() {
           >
             {/* Header bar - draggable */}
             <div
-              className="flex items-center justify-between px-2 py-1 cursor-move select-none"
+              className="flex items-center justify-between px-1 py-1 select-none"
               style={{ backgroundColor: colors.header, borderBottom: `1px solid ${colors.border}` }}
-              onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
             >
-              <div className="flex items-center gap-1">
+              {/* Dedicated drag handle */}
+              <div 
+                className="flex items-center justify-center cursor-move px-1 py-0.5 hover:bg-black/10 rounded"
+                onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
+                title="Drag to move"
+              >
+                <GripVertical className="h-3 w-3 text-gray-600" />
+              </div>
+              <div className="flex items-center gap-1 flex-1">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button 
                       className="flex items-center justify-center text-gray-600 hover:text-gray-800"
                       onMouseDown={(e) => e.stopPropagation()}
                     >
-                      <Grip className="h-2.5 w-2.5" />
+                      <Palette className="h-2.5 w-2.5" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="min-w-0 p-2" onClick={(e) => e.stopPropagation()}>
@@ -11869,14 +11877,17 @@ export default function Dashboard() {
               }}
             >
               <h4 
-                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
+                className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('this-week')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <Calendar className="h-3 w-3 text-white" />
-                THIS WEEK ({dueThisWeekTasks.length})
+                <span className="flex items-center gap-2">
+                  <Calendar className="h-3 w-3 text-white" />
+                  THIS WEEK ({dueThisWeekTasks.length})
+                </span>
+                <GripHorizontal className="h-3 w-3 text-white/70" />
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
@@ -12110,14 +12121,17 @@ export default function Dashboard() {
               }}
             >
               <h4 
-                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
+                className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('today')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <Calendar className="h-3 w-3 text-white" />
-                TODAY ({dueTodayTasks.length})
+                <span className="flex items-center gap-2">
+                  <Calendar className="h-3 w-3 text-white" />
+                  TODAY ({dueTodayTasks.length})
+                </span>
+                <GripHorizontal className="h-3 w-3 text-white/70" />
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTodayTasks.length >= 6 ? 'auto' : 'hidden' }}>
@@ -12278,14 +12292,17 @@ export default function Dashboard() {
               }}
             >
               <h4 
-                className="text-xs font-normal flex items-center gap-2 text-white cursor-grab" 
+                className="text-xs font-normal flex items-center justify-between text-white cursor-grab" 
                 style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 draggable
                 onDragStart={() => handleBoxDragStart('tomorrow')}
                 onDragEnd={handleBoxDragEnd}
               >
-                <Calendar className="h-3 w-3 text-white" />
-                TOMORROW ({dueTomorrowTasks.length})
+                <span className="flex items-center gap-2">
+                  <Calendar className="h-3 w-3 text-white" />
+                  TOMORROW ({dueTomorrowTasks.length})
+                </span>
+                <GripHorizontal className="h-3 w-3 text-white/70" />
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueTomorrowTasks.length >= 6 ? 'auto' : 'hidden' }}>
