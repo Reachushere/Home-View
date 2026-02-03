@@ -11118,8 +11118,28 @@ export default function Dashboard() {
                   );
                 }
                 
+                // Calculate how many tasks this course has in the current week to set dynamic height
+                const courseTaskCount = tasks?.filter(task => {
+                  if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                  if (task.isCompleted) return false;
+                  // Check if task falls within the week (due date or prep days)
+                  const taskDueDate = startOfDay(new Date(task.dueDate));
+                  const weekStart = startOfDay(weekDays[0]);
+                  const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                  if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
+                  if (task.startDate) {
+                    const taskStartDate = startOfDay(new Date(task.startDate));
+                    // Check if any prep day falls in the week
+                    if (taskStartDate < weekEnd && taskDueDate > weekStart) return true;
+                  }
+                  return false;
+                }).length || 0;
+                
+                // Dynamic row height: base height or 20px per task row, whichever is larger
+                const dynamicRowHeight = Math.max(gridSizes.courseRowHeight, courseTaskCount * 20 + 4);
+                
                 return (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.courseRowHeight}px` }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${dynamicRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ backgroundColor: course.label }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
@@ -11201,6 +11221,14 @@ export default function Dashboard() {
                     const taskSummary = dayTasks.length > 0 ? dayTasks[0].title : '';
                     const hasMultipleTasks = dayTasks.length > 1;
                     
+                    // Check if any prep bar continues into this cell from the previous day (not first prep day)
+                    const hasContinuingPrepBar = prepTasks.some(task => {
+                      if (!task.startDate) return false;
+                      const taskStartDate = startOfDay(new Date(task.startDate));
+                      // It's a continuing prep bar if this is NOT the first prep day
+                      return !isSameDay(cellDate, taskStartDate);
+                    });
+                    
                     // Get all tasks for this course (not just this day) to assign row indices
                     const allCourseTasks = tasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
@@ -11239,7 +11267,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         key={dayIdx} 
-                        className="border-l border-border/50 overflow-visible relative flex flex-col pt-0.5"
+                        className={`overflow-visible relative flex flex-col pt-0.5 ${hasContinuingPrepBar ? '' : 'border-l border-border/50'}`}
                         style={{ 
                           backgroundColor: cellBgColor,
                         }}
