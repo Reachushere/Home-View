@@ -1922,6 +1922,7 @@ export default function Dashboard() {
   const [stickyNoteOffset, setStickyNoteOffset] = useState({ x: 0, y: 0 });
   const [maxStickyZIndex, setMaxStickyZIndex] = useState(100);
   const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null);
+  const dragPositionRef = useRef<{ x: number; y: number } | null>(null);
   
   // Sticky note state for resizing
   const [resizingStickyNote, setResizingStickyNote] = useState<number | null>(null);
@@ -1996,7 +1997,9 @@ export default function Dashboard() {
         y: e.clientY - rect.top,
       });
       // Initialize drag position from current note position
-      setDragPosition({ x: note.positionX, y: note.positionY });
+      const initialPos = { x: note.positionX, y: note.positionY };
+      setDragPosition(initialPos);
+      dragPositionRef.current = initialPos;
     }
     // Bring to front
     const newZIndex = maxStickyZIndex + 1;
@@ -2008,14 +2011,19 @@ export default function Dashboard() {
     if (draggingStickyNote !== null) {
       const newX = Math.max(0, e.clientX - stickyNoteOffset.x);
       const newY = Math.max(0, e.clientY - stickyNoteOffset.y);
-      // Update local state only - no API call during drag
-      setDragPosition({ x: newX, y: newY });
+      // Update both state and ref - ref used for mouseup to avoid stale closure
+      const newPos = { x: newX, y: newY };
+      setDragPosition(newPos);
+      dragPositionRef.current = newPos;
     }
   }, [draggingStickyNote, stickyNoteOffset]);
 
   const handleStickyNoteMouseUp = useCallback((e: MouseEvent) => {
+    // Use ref value to avoid stale closure issues
+    const currentDragPosition = dragPositionRef.current;
+    
     // Mark the note as moved with current timestamp
-    if (draggingStickyNote !== null && dragPosition !== null) {
+    if (draggingStickyNote !== null && currentDragPosition !== null) {
       // Check if dropped in all-day row area - snap to cell left of today
       if (allDayRowRef.current) {
         const allDayRect = allDayRowRef.current.getBoundingClientRect();
@@ -2061,6 +2069,7 @@ export default function Dashboard() {
             });
             setDraggingStickyNote(null);
             setDragPosition(null);
+            dragPositionRef.current = null;
             return;
           }
         }
@@ -2070,15 +2079,16 @@ export default function Dashboard() {
       updateStickyNoteMutation.mutate({ 
         id: draggingStickyNote, 
         updates: { 
-          positionX: dragPosition.x,
-          positionY: dragPosition.y,
+          positionX: currentDragPosition.x,
+          positionY: currentDragPosition.y,
           lastMovedAt: new Date() 
         } 
       });
     }
     setDraggingStickyNote(null);
     setDragPosition(null);
-  }, [draggingStickyNote, dragPosition]);
+    dragPositionRef.current = null;
+  }, [draggingStickyNote]);
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
