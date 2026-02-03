@@ -13365,7 +13365,7 @@ export default function Dashboard() {
               {dueTomorrowTasks[0] && row1Positions.course > 0 && (
               <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
                 {/* Checkbox */}
-                <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: dueTomorrowTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTomorrowTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
                 {/* Progress bar */}
