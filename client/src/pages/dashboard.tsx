@@ -8753,13 +8753,6 @@ export default function Dashboard() {
               style={{ backgroundColor: colors.header, borderBottom: `1px solid ${colors.border}` }}
               onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
             >
-              {/* Drag handle icon */}
-              <div 
-                className="flex items-center justify-center px-1 py-0.5"
-                title="Drag to move"
-              >
-                <GripVertical className="h-3 w-3 text-gray-600" />
-              </div>
               <div className="flex items-center gap-1 flex-1">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
