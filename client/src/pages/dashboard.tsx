@@ -12884,8 +12884,21 @@ export default function Dashboard() {
               </h4>
             </div>
             <div className="flex-1 px-3 flex flex-col" style={{ paddingTop: '6px', paddingBottom: '0px', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', overflowY: dueThisWeekTasks.length >= 6 ? 'auto' : 'hidden' }}>
-              {/* Mobile Layout */}
-              {isMobile ? (
+              {dueThisWeekTasks.length === 0 ? (
+                <div style={{ position: 'relative', minHeight: '80px' }}>
+                  {/* Headers row for empty state */}
+                  <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Progress</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', top: '0px' }}>Days</span>
+                  </div>
+                  {/* Empty state message - centered in body */}
+                  <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due this week</div>
+                </div>
+              ) : isMobile ? (
                 <div className="flex flex-col gap-2">
                   {dueThisWeekTasks.slice(0, 5).map((task) => (
                     <div key={task.id} className="flex items-center gap-3 py-2 px-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.1)' }}>
@@ -13284,7 +13297,19 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-white/60 text-xs">No tasks tomorrow</div>
+                <div style={{ position: 'relative', minHeight: '80px' }}>
+                  {/* Headers row for empty state */}
+                  <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Progress</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', top: '0px' }}>Days</span>
+                  </div>
+                  {/* Empty state message - centered in body */}
+                  <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due tomorrow</div>
+                </div>
               ) : isMobile ? (
                 <div className="flex flex-col gap-2">
                   {dueTomorrowTasks.slice(0, 5).map((task) => (
