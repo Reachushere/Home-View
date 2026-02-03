@@ -7159,7 +7159,7 @@ export default function Dashboard() {
                 width: '38px',
                 height: '38px',
                 borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FDFFBA 0%, #F2D338 100%)',
+                background: 'linear-gradient(0deg, #FDFFCC 0%, #F2D338 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
