@@ -10511,10 +10511,12 @@ export default function Dashboard() {
                     </div>
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
+                      const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
                       const isFriday = day.getDay() === 5;
                       const isToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
+                      const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
                       // Apply shimmer to today column only (current hour row shimmer is applied at row level)
                       const shouldShimmer = isToday && !isCurrentHour;
@@ -10551,10 +10553,10 @@ export default function Dashboard() {
                         >
                           {/* Background layer - sits below tasks so they don't get covered */}
                           <div 
-                            className={`absolute inset-0 z-0 ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
+                            className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
-                              // Remove current hour row background when there are tasks in this cell
-                              backgroundColor: isCurrentHour && totalItems > 0 
+                              // Remove current hour row background when there are tasks in this cell (including multi-hour tasks)
+                              backgroundColor: isCurrentHour && hasAnyTasks 
                                 ? undefined 
                                 : (isToday && isCurrentHour) ? '#C5D8EC' : isToday ? '#EAE4DE' : isCurrentHour ? '#E8E8E8' : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
