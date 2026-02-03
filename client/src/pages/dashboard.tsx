@@ -5723,19 +5723,25 @@ export default function Dashboard() {
                           })()}
                           
                           {/* Custom folders directly under week */}
-                          {customFolders.filter(f => f.parent === `week-${weekNum}`).map(folder => (
-                            <div 
-                              key={folder.id}
-                              className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === folder.id ? 'bg-[#094771]' : ''}`}
-                              onClick={() => setUploadTargetFolder(folder.id)}
-                              onContextMenu={(e) => handleFolderContextMenu(e, folder.id)}
-                              data-testid={`folder-custom-week-${folder.id}`}
-                            >
-                              <div className="w-4 h-4" />
-                              <Folder className="h-4 w-4 text-yellow-500 fill-yellow-400" />
-                              <span className="text-xs text-white/80">{folder.name}</span>
-                            </div>
-                          ))}
+                          {customFolders.filter(f => f.parent === `week-${weekNum}`).map(folder => {
+                            const folderColor = folder.name.toUpperCase() === 'CPPA122' ? 'text-green-500 fill-green-400' :
+                              folder.name.toUpperCase() === 'CFNF400' ? 'text-blue-500 fill-blue-400' :
+                              folder.name.toUpperCase() === 'CASL101' ? 'text-purple-500 fill-purple-400' :
+                              'text-yellow-500 fill-yellow-400';
+                            return (
+                              <div 
+                                key={folder.id}
+                                className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === folder.id ? 'bg-[#094771]' : ''}`}
+                                onClick={() => setUploadTargetFolder(folder.id)}
+                                onContextMenu={(e) => handleFolderContextMenu(e, folder.id)}
+                                data-testid={`folder-custom-week-${folder.id}`}
+                              >
+                                <div className="w-4 h-4" />
+                                <Folder className={`h-4 w-4 ${folderColor}`} />
+                                <span className="text-xs text-white/80">{folder.name}</span>
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
@@ -6036,10 +6042,9 @@ export default function Dashboard() {
             className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
             onClick={() => {
               const parentFolder = folderContextMenu.parentFolder;
-              const folderId = `${parentFolder}-custom-cppa122`;
-              if (!customFolders.find(f => f.id === folderId)) {
-                setCustomFolders(prev => [...prev, { id: folderId, name: 'CPPA122', parent: parentFolder }]);
-              }
+              const folderId = `${parentFolder}-subfolder-cppa122-${Date.now()}`;
+              setCustomFolders(prev => [...prev, { id: folderId, name: 'CPPA122', parent: parentFolder }]);
+              toast({ title: "Folder created", description: "CPPA122 folder added" });
               setFolderContextMenu(null);
             }}
             data-testid="button-new-folder-cppa122"
@@ -6051,10 +6056,9 @@ export default function Dashboard() {
             className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
             onClick={() => {
               const parentFolder = folderContextMenu.parentFolder;
-              const folderId = `${parentFolder}-custom-cfnf400`;
-              if (!customFolders.find(f => f.id === folderId)) {
-                setCustomFolders(prev => [...prev, { id: folderId, name: 'CFNF400', parent: parentFolder }]);
-              }
+              const folderId = `${parentFolder}-subfolder-cfnf400-${Date.now()}`;
+              setCustomFolders(prev => [...prev, { id: folderId, name: 'CFNF400', parent: parentFolder }]);
+              toast({ title: "Folder created", description: "CFNF400 folder added" });
               setFolderContextMenu(null);
             }}
             data-testid="button-new-folder-cfnf400"
@@ -6066,10 +6070,9 @@ export default function Dashboard() {
             className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
             onClick={() => {
               const parentFolder = folderContextMenu.parentFolder;
-              const folderId = `${parentFolder}-custom-casl101`;
-              if (!customFolders.find(f => f.id === folderId)) {
-                setCustomFolders(prev => [...prev, { id: folderId, name: 'CASL101', parent: parentFolder }]);
-              }
+              const folderId = `${parentFolder}-subfolder-casl101-${Date.now()}`;
+              setCustomFolders(prev => [...prev, { id: folderId, name: 'CASL101', parent: parentFolder }]);
+              toast({ title: "Folder created", description: "CASL101 folder added" });
               setFolderContextMenu(null);
             }}
             data-testid="button-new-folder-casl101"
