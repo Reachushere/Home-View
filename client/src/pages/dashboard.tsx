@@ -8751,82 +8751,18 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Sync Button - Below completed tasks on tall pill (swapped from header) */}
+      {/* Sticky Note Button - Below completed tasks on tall pill (swapped with sync) */}
       <div 
-        className="absolute z-50 pointer-events-auto cursor-pointer"
+        className="absolute z-[60] pointer-events-auto"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: '514px', 
           right: '18px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px',
-        }}
-        data-testid="button-sync-calendar"
-        onClick={() => { if (!syncAllCalendarMutation.isPending) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } }}
-      >
-        <div
-          className="hover:opacity-80 transition-all duration-200"
-          style={{
-            position: 'absolute',
-            top: '1px',
-            left: '1px',
-            width: '42px',
-            height: '42px',
-            borderRadius: '50%',
-            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {syncAllCalendarMutation.isPending ? (
-            <Loader2 className="h-[18px] w-[18px] text-white animate-spin" />
-          ) : (
-            <RefreshCw className="h-[18px] w-[18px] text-white" />
-          )}
-        </div>
-      </div>
-
-      {/* Arrow Toggle Button - Below todo button on tall pill */}
-      <div 
-        className="absolute z-[60] pointer-events-auto"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: '565px', 
-          right: '18px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px'
-        }}
-        data-testid="honeycomb-arrows-toggle"
-      >
-        <Button 
-          size="icon"
-          variant="ghost"
-          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-          style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-          onClick={() => setBlinkSettings(prev => ({ ...prev, showArrows: !prev.showArrows }))}
-        >
-          <TrendingUp style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
-        </Button>
-      </div>
-
-      {/* Sticky Note Button - Below arrows toggle button */}
-      <div 
-        className="absolute z-[60] pointer-events-auto"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: '616px', 
-          right: '18px',
         }}
         data-testid="honeycomb-sticky-note"
       >
-        {/* Back circle - solid #EFF700 */}
+        {/* Back circle - solid #E8E656 */}
         <div
           style={{
             position: 'absolute',
@@ -8859,6 +8795,70 @@ export default function Dashboard() {
           title="Add Sticky Note"
         >
           <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+        </div>
+      </div>
+
+      {/* Arrow Toggle Button - Below todo button on tall pill */}
+      <div 
+        className="absolute z-[60] pointer-events-auto"
+        style={{ 
+          width: '44px', 
+          height: '44px', 
+          top: '565px', 
+          right: '18px',
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px'
+        }}
+        data-testid="honeycomb-arrows-toggle"
+      >
+        <Button 
+          size="icon"
+          variant="ghost"
+          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+          style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+          onClick={() => setBlinkSettings(prev => ({ ...prev, showArrows: !prev.showArrows }))}
+        >
+          <TrendingUp style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
+        </Button>
+      </div>
+
+      {/* Sync Button - Below arrows toggle button (swapped with sticky note) */}
+      <div 
+        className="absolute z-50 pointer-events-auto cursor-pointer"
+        style={{ 
+          width: '44px', 
+          height: '44px', 
+          top: '616px', 
+          right: '18px',
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px',
+        }}
+        data-testid="button-sync-calendar"
+        onClick={() => { if (!syncAllCalendarMutation.isPending) { triggerButtonGlow('sync'); syncAllCalendarMutation.mutate(); } }}
+      >
+        <div
+          className="hover:opacity-80 transition-all duration-200"
+          style={{
+            position: 'absolute',
+            top: '1px',
+            left: '1px',
+            width: '42px',
+            height: '42px',
+            borderRadius: '50%',
+            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {syncAllCalendarMutation.isPending ? (
+            <Loader2 className="h-[18px] w-[18px] text-white animate-spin" />
+          ) : (
+            <RefreshCw className="h-[18px] w-[18px] text-white" />
+          )}
         </div>
       </div>
 
