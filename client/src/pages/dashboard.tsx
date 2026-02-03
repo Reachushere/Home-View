@@ -9780,6 +9780,105 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
+                {/* Layout Settings - in left column */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Layout Settings</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Adjust spacing and reset column widths.
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Header Button Spacing</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.buttonSpacing}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="40"
+                        step="2"
+                        value={blinkSettings.buttonSpacing}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-button-spacing"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Media Controls Spacing</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.mediaControlSpacing}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="4"
+                        max="40"
+                        step="2"
+                        value={blinkSettings.mediaControlSpacing}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, mediaControlSpacing: Number(e.target.value) }))}
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-media-control-spacing"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Tall Pill Button Spacing</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.tallPillButtonSpacing}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="-20"
+                        max="40"
+                        step="1"
+                        value={blinkSettings.tallPillButtonSpacing}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillButtonSpacing: Number(e.target.value) }))}
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-tall-pill-button-spacing"
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Tall Pill Height</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.tallPillHeight}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="-50"
+                        max="100"
+                        step="1"
+                        value={blinkSettings.tallPillHeight}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillHeight: Number(e.target.value) }))}
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-tall-pill-height"
+                      />
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const defaultWidths = {
+                          taskGap: 0,
+                          taskName: 48,
+                          courseCode: 100,
+                          courseName: 145,
+                          dueDate: 55
+                        };
+                        setTaskColumnWidths(defaultWidths);
+                        localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
+                        toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
+                      }}
+                      data-testid="button-reset-column-widths"
+                    >
+                      <RotateCcw className="h-4 w-4 mr-2" />
+                      Reset Column Spacing
+                    </Button>
+                  </div>
+                </div>
+                
                 </div>
                 
                 {/* Right Column */}
@@ -9905,114 +10004,7 @@ export default function Dashboard() {
                       </p>
                     </div>
                     
-                    <div className="space-y-1 pt-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Header Button Spacing</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.buttonSpacing}px</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="40"
-                        step="2"
-                        value={blinkSettings.buttonSpacing}
-                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
-                        data-testid="slider-button-spacing"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Space between hamburger and exam buttons
-                      </p>
                     </div>
-                    
-                    <div className="space-y-1 pt-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Media Controls Spacing</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.mediaControlSpacing}px</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="4"
-                        max="40"
-                        step="2"
-                        value={blinkSettings.mediaControlSpacing}
-                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, mediaControlSpacing: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
-                        data-testid="slider-media-control-spacing"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Space between PDF media control buttons
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-1 pt-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Tall Pill Button Spacing</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.tallPillButtonSpacing}px</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="-20"
-                        max="40"
-                        step="1"
-                        value={blinkSettings.tallPillButtonSpacing}
-                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillButtonSpacing: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
-                        data-testid="slider-tall-pill-button-spacing"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Space between buttons on the right tall pill
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-1 pt-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Tall Pill Height</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.tallPillHeight}px</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="-50"
-                        max="100"
-                        step="1"
-                        value={blinkSettings.tallPillHeight}
-                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillHeight: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
-                        data-testid="slider-tall-pill-height"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Height adjustment for the right tall pill
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Layout Settings */}
-                <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Layout Settings</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Reset column widths in the This Week box.
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const defaultWidths = {
-                        taskGap: 0,
-                        taskName: 48,
-                        courseCode: 100,
-                        courseName: 145,
-                        dueDate: 55
-                      };
-                      setTaskColumnWidths(defaultWidths);
-                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
-                      toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
-                    }}
-                    data-testid="button-reset-column-widths"
-                  >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Reset Column Spacing
-                  </Button>
                 </div>
                 
                 {/* Data Sync Section */}
