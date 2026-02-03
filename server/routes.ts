@@ -3558,6 +3558,7 @@ export async function registerRoutes(
       const files = await storage.getFiles();
       const semester = await storage.getActiveSemesterSettings();
       const deletedFolders = await storage.getDeletedFolders();
+      const customFolders = await storage.getCustomFolders();
       
       const exportData = {
         version: 1,
@@ -3566,6 +3567,7 @@ export async function registerRoutes(
         files,
         semester,
         deletedFolders,
+        customFolders,
       };
       
       res.json(exportData);
@@ -3587,9 +3589,9 @@ export async function registerRoutes(
     res.header("Access-Control-Allow-Origin", "*");
     
     try {
-      const { tasks, files, semester, deletedFolders } = req.body;
+      const { tasks, files, semester, deletedFolders, customFolders } = req.body;
       
-      let imported = { tasks: 0, files: 0, semester: false, deletedFolders: 0 };
+      let imported = { tasks: 0, files: 0, semester: false, deletedFolders: 0, customFolders: 0 };
       
       // Import semester settings
       if (semester) {
@@ -3659,6 +3661,29 @@ export async function registerRoutes(
             imported.deletedFolders++;
           } catch (err) {
             // Folder might already be marked as deleted
+          }
+        }
+      }
+      
+      // Import custom folders
+      if (customFolders && Array.isArray(customFolders)) {
+        // Get existing folders to check for duplicates
+        const existingFolders = await storage.getCustomFolders();
+        const existingByParentAndName = new Map(existingFolders.map(f => [`${f.parentFolderId}:${f.name}`, f]));
+        
+        for (const folder of customFolders) {
+          try {
+            const key = `${folder.parentFolderId}:${folder.name}`;
+            const existing = existingByParentAndName.get(key);
+            if (existing) {
+              // Already exists, skip or update name if different
+              await storage.updateCustomFolder(existing.id, folder.name);
+            } else {
+              await storage.createCustomFolder({ name: folder.name, parentFolderId: folder.parentFolderId });
+            }
+            imported.customFolders++;
+          } catch (err) {
+            console.error("Error importing custom folder:", err);
           }
         }
       }
