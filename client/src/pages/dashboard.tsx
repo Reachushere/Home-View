@@ -8694,17 +8694,10 @@ export default function Dashboard() {
           }}
           className="hover:opacity-80 transition-all duration-200"
           onClick={() => {
-            fetch('/api/ha-push/test', { method: 'POST' })
-              .then(r => r.json())
-              .then(data => {
-                if (data.message?.includes('success')) {
-                  toast({ title: "Push sent!", description: "Notification sent to your phone" });
-                } else {
-                  toast({ title: "Push failed", description: data.message, variant: "destructive" });
-                }
-              });
+            toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" });
+            syncAllCalendarMutation.mutate();
           }}
-          title="Send Push Notification"
+          title="Push tasks to Google Calendar"
         >
           <Upload style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         </div>
@@ -11034,73 +11027,7 @@ export default function Dashboard() {
                   );
                 })}
                 
-                {/* Prep Extensions Overlay - rendered as separate elements spanning day columns */}
-                {getPrepExtensionsForWeek().map(({ task, dueDayIdx, prepStartDayIdx, prepDaysCount, startHour, startMin, endHour, endMin }) => {
-                  // Calculate position at render time to account for prep conflict heights
-                  let topPx = 0;
-                  for (let h = 6; h < startHour; h++) {
-                    topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                    topPx += prepConflictHeights[h] || 0;
-                  }
-                  topPx += (startMin / 60) * (gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight) + 2;
-                  
-                  const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                  const colors = dynamicCourseColors[courseCode];
-                  
-                  // Use light background with border (matching the example)
-                  // Use gray for unassigned tasks instead of green
-                  const courseHex = colors?.hex || '#9CA3AF';
-                  const rgb = hexToRgb(courseHex);
-                  const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                  const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-                  
-                  // Prep extension is a short bar at the top (about 22px)
-                  const prepBarHeight = 22;
-                  
-                  // Find today's index in the weekDays array (not day-of-week)
-                  const today = new Date();
-                  const todayGridIdx = weekDays.findIndex(day => isSameDay(day, today));
-                  
-                  // Check if today falls within the prep days range (prepStartDayIdx to dueDayIdx-1)
-                  const isTodayInPrepRange = todayGridIdx >= 0 && todayGridIdx >= prepStartDayIdx && todayGridIdx < dueDayIdx;
-                  
-                  // Calculate the position of today within the prep range (0-indexed from prep start)
-                  const todayOffsetInPrep = isTodayInPrepRange ? todayGridIdx - prepStartDayIdx : -1;
-                  
-                  return (
-                    <div
-                      key={`prep-ext-${task.id}`}
-                      className="absolute pointer-events-none"
-                      style={{
-                        top: `${topPx}px`,
-                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${prepStartDayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
-                        width: `calc(${prepDaysCount} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 1px)`,
-                        height: `${prepBarHeight}px`,
-                        zIndex: 35,
-                        backgroundColor: lightBg,
-                        borderLeft: `1px solid ${borderColor}`,
-                        borderTop: `1px solid ${borderColor}`,
-                        borderBottom: `1px solid ${borderColor}`,
-                        borderRadius: '4px 0 0 4px'
-                      }}
-                      data-testid={`prep-extension-${task.id}`}
-                    >
-                      {/* Prep Days text - centered */}
-                      <span 
-                        className="absolute text-[10px] text-gray-700 !font-normal whitespace-nowrap"
-                        style={{
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          top: '50%',
-                          marginTop: '-7px'
-                        }}
-                        data-prep-text-task-id={task.id}
-                      >
-                        Prep days
-                      </span>
-                    </div>
-                  );
-                })}
+                {/* Prep Extensions Overlay - disabled to avoid duplicate with inline prep extension */}
                 
                 {/* Current time indicator line - rendered last to appear on top */}
                 {(() => {
