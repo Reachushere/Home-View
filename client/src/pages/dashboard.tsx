@@ -11915,7 +11915,20 @@ export default function Dashboard() {
                 className="flex-1 overflow-y-auto py-2 px-2" 
                 style={{ scrollbarWidth: 'none' }}
               >
-                {/* OneDrive Navigation */}
+                {/* Read-only mode header - show simplified navigation for share link users */}
+                {isReadOnly && (
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/20">
+                  <Eye className="h-3 w-3 text-white/50" />
+                  <span className="text-[11px] text-white/60">View Only Mode</span>
+                  <span className="text-white/30 mx-1">|</span>
+                  <span className="text-[11px] text-white/80 truncate flex-1">
+                    {oneDrivePath.split('/').filter(Boolean).pop() || 'Course Files'}
+                  </span>
+                </div>
+                )}
+                
+                {/* OneDrive Navigation - hidden for read-only share link users */}
+                {!isReadOnly && (
                 <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/20">
                   <Button
                     variant="ghost"
@@ -11961,6 +11974,7 @@ export default function Dashboard() {
                     <span className="truncate">{oneDrivePath === "/" ? "OneDrive" : oneDrivePath}</span>
                   </div>
                 </div>
+                )}
                 
                 {oneDriveLoading ? (
                   <div className="flex items-center justify-center py-8">
@@ -11968,8 +11982,19 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    {/* Folders */}
-                    {oneDriveFolders.map((folder) => {
+                    {/* Folders - filter for read-only users to only show week folders inside course folders */}
+                    {oneDriveFolders
+                      .filter((folder) => {
+                        // If admin, show all folders
+                        if (!isReadOnly) return true;
+                        // For read-only users, only show folders that match week pattern (e.g. "Week 1", "Week 2")
+                        // or are inside a week folder (Module, Reading subfolders)
+                        const isWeekFolder = /Week\s*\d+/i.test(folder.name);
+                        const isInsideWeekFolder = /Week\s*\d+/i.test(oneDrivePath);
+                        const isContentFolder = ['Module', 'Reading', 'Readings', 'Modules'].some(c => folder.name.includes(c));
+                        return isWeekFolder || (isInsideWeekFolder && isContentFolder) || isInsideWeekFolder;
+                      })
+                      .map((folder) => {
                       // Check if folder name or current path matches a course - use hardcoded colors
                       const courseColorMap: Record<string, string> = {
                         'CPPA122': '#4ade80', // green
@@ -12014,8 +12039,8 @@ export default function Dashboard() {
                       );
                     })}
                     
-                    {/* PDF Files */}
-                    {oneDrivePdfFiles.map((file) => (
+                    {/* PDF Files - only show for read-only users when inside a week folder */}
+                    {(!isReadOnly || /Week\s*\d+/i.test(oneDrivePath)) && oneDrivePdfFiles.map((file) => (
                       <div
                         key={file.id}
                         className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors group"
@@ -12034,8 +12059,8 @@ export default function Dashboard() {
                       </div>
                     ))}
                     
-                    {/* Other Files */}
-                    {oneDriveFiles.filter(f => !f.mimeType?.includes("pdf")).map((file) => (
+                    {/* Other Files - only show for read-only users when inside a week folder */}
+                    {(!isReadOnly || /Week\s*\d+/i.test(oneDrivePath)) && oneDriveFiles.filter(f => !f.mimeType?.includes("pdf")).map((file) => (
                       <div
                         key={file.id}
                         className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors"
@@ -12055,6 +12080,14 @@ export default function Dashboard() {
                       <div className="flex flex-col items-center justify-center py-8 text-white/40">
                         <Folder className="h-8 w-8 mb-2 opacity-50" />
                         <p className="text-[12px]">No files found</p>
+                      </div>
+                    )}
+                    
+                    {/* Message for read-only users when not in week folder and no visible folders */}
+                    {isReadOnly && !/Week\s*\d+/i.test(oneDrivePath) && oneDriveFolders.filter(f => /Week\s*\d+/i.test(f.name)).length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-8 text-white/40">
+                        <Lock className="h-6 w-6 mb-2 opacity-50" />
+                        <p className="text-[12px] text-center px-4">Navigate to a course folder to see week folders</p>
                       </div>
                     )}
                   </div>
