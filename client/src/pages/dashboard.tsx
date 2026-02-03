@@ -8922,7 +8922,7 @@ export default function Dashboard() {
             width: '44px',
             height: '44px',
             borderRadius: '50%',
-            background: '#63968E',
+            background: '#5E8D92',
             boxShadow: 'none',
           }}
         />
@@ -8935,7 +8935,7 @@ export default function Dashboard() {
             width: '38px',
             height: '38px',
             borderRadius: '50%',
-            background: 'linear-gradient(0deg, #8DB5AF 0%, #2A6B61 100%)',
+            background: 'linear-gradient(0deg, #8DAAB5 0%, #015170 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
