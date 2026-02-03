@@ -12897,6 +12897,8 @@ export default function Dashboard() {
               <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
+              {/* Progress header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${23 + testProgressBarLeft}px`, top: '0px' }}>Progress</span>
               {/* Group 1: Left handle on header + progress bar on content line */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
@@ -12905,7 +12907,7 @@ export default function Dashboard() {
                     style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestBarResizeStart}
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Progress</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Progress</span>
                 </div>
                 <div ref={row1ProgressBarRef} style={{ position: 'relative', width: '44px', marginLeft: '7px', marginTop: '3px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
