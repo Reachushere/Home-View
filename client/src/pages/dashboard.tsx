@@ -13096,7 +13096,7 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
-                <div className="flex items-center justify-center text-white/60 text-xs" style={{ minHeight: '60px' }}>No tasks today</div>
+                <div className="flex items-center justify-center text-white text-sm font-medium" style={{ minHeight: '80px' }}>No tasks due today</div>
               ) : isMobile ? (
                 <div className="flex flex-col gap-2">
                   {dueTodayTasks.slice(0, 5).map((task) => (
