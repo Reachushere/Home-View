@@ -7362,7 +7362,7 @@ export default function Dashboard() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Undo Complete - Swapped with Graduation Hat */}
+          {/* Undo Complete - top gradient #FF0D0D */}
           {completedTaskHistory.length > 0 ? (
             <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
               {/* Bottom circle: 44px, solid #FF4545 */}
@@ -7375,7 +7375,7 @@ export default function Dashboard() {
                 borderRadius: '50%',
                 backgroundColor: '#FF4545'
               }} />
-              {/* Top circle: 38px, gradient #FF9494 bottom to #FF0000 top */}
+              {/* Top circle: 38px, gradient bottom to #FF0D0D top */}
               <div 
                 style={{
                   position: 'absolute',
@@ -7384,7 +7384,7 @@ export default function Dashboard() {
                   width: '38px',
                   height: '38px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(0deg, #FF9494 0%, #FF0000 100%)',
+                  background: 'linear-gradient(0deg, #FF9494 0%, #FF0D0D 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
