@@ -12942,6 +12942,8 @@ export default function Dashboard() {
                 </div>
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
               </div>
+              {/* Course header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
               {/* Group 4: Course */}
               <div ref={row1CourseRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
@@ -12950,7 +12952,7 @@ export default function Dashboard() {
                     style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestCourseNameResizeStart}
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Course</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Course</span>
                 </div>
                 <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
               </div>
