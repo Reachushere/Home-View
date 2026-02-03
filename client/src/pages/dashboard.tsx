@@ -6976,37 +6976,17 @@ export default function Dashboard() {
           )}
 
           {/* Completed Tasks Button - Swapped from tall pill to header */}
-          <div 
-            style={{ 
-              marginTop: '4px', 
-              width: '44px', 
-              height: '44px', 
-              borderRadius: '50%', 
-              background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', 
-              padding: '1px',
-              cursor: 'pointer'
-            }}
-            data-testid="button-completed-tasks"
-            onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
-          >
-            <div
-              className="hover:opacity-80 transition-all duration-200"
-              style={{
-                position: 'absolute',
-                top: '1px',
-                left: '1px',
-                width: '42px',
-                height: '42px',
-                borderRadius: '50%',
-                background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              data-testid="button-completed-tasks"
+              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
             >
               <CheckSquare className="h-[18px] w-[18px] text-white" />
-            </div>
+            </Button>
           </div>
 
           {/* Sticky Note Button - Swapped from tall pill to header */}
