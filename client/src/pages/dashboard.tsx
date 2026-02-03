@@ -11552,7 +11552,7 @@ export default function Dashboard() {
                                   );
                                 })()}
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
-                                <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
+                                <div className={`flex items-center gap-1.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   {!isCASL101Task(task) && (
                                     <Checkbox
                                       checked={task.isCompleted || false}
@@ -11731,7 +11731,7 @@ export default function Dashboard() {
                       data-cal-date={format(taskDay, 'yyyy-MM-dd')}
                     >
                       {/* Silver shimmer header with checkbox and title for due today tasks */}
-                      <div className={`flex items-center gap-0.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
+                      <div className={`flex items-center gap-1.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                         {!isCASL101Task(task) && (
                           <Checkbox
                             checked={task.isCompleted || false}
