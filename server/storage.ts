@@ -53,10 +53,12 @@ export interface IStorage {
   getTasksByProject(projectId: number): Promise<Task[]>;
   // Sticky Notes
   getStickyNotes(): Promise<StickyNote[]>;
+  getDeletedStickyNotes(): Promise<StickyNote[]>;
   getStickyNote(id: number): Promise<StickyNote | undefined>;
   createStickyNote(note: InsertStickyNote): Promise<StickyNote>;
   updateStickyNote(id: number, updates: Partial<InsertStickyNote>): Promise<StickyNote>;
   deleteStickyNote(id: number): Promise<void>;
+  restoreStickyNote(id: number): Promise<StickyNote>;
   // Access Tokens
   getAccessTokens(): Promise<AccessToken[]>;
   getAccessToken(token: string): Promise<AccessToken | undefined>;
@@ -407,7 +409,11 @@ export class DatabaseStorage implements IStorage {
 
   // Sticky Notes implementation
   async getStickyNotes(): Promise<StickyNote[]> {
-    return await db.select().from(stickyNotes).orderBy(desc(stickyNotes.zIndex));
+    return await db.select().from(stickyNotes).where(eq(stickyNotes.isDeleted, false)).orderBy(desc(stickyNotes.zIndex));
+  }
+
+  async getDeletedStickyNotes(): Promise<StickyNote[]> {
+    return await db.select().from(stickyNotes).where(eq(stickyNotes.isDeleted, true)).orderBy(desc(stickyNotes.deletedAt));
   }
 
   async getStickyNote(id: number): Promise<StickyNote | undefined> {
@@ -426,7 +432,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteStickyNote(id: number): Promise<void> {
-    await db.delete(stickyNotes).where(eq(stickyNotes.id, id));
+    await db.update(stickyNotes).set({ isDeleted: true, deletedAt: new Date() }).where(eq(stickyNotes.id, id));
+  }
+
+  async restoreStickyNote(id: number): Promise<StickyNote> {
+    const [restored] = await db.update(stickyNotes).set({ isDeleted: false, deletedAt: null }).where(eq(stickyNotes.id, id)).returning();
+    return restored;
   }
 
   // Access Tokens implementation

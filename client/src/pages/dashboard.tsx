@@ -9943,6 +9943,34 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
+                {/* Layout Settings */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Layout Settings</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Reset column widths in the This Week box.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const defaultWidths = {
+                        taskGap: 0,
+                        taskName: 48,
+                        courseCode: 100,
+                        courseName: 145,
+                        dueDate: 55
+                      };
+                      setTaskColumnWidths(defaultWidths);
+                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
+                      toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
+                    }}
+                    data-testid="button-reset-column-widths"
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset Column Spacing
+                  </Button>
+                </div>
+                
                 {/* Data Sync Section */}
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Data Sync</Label>

@@ -299,6 +299,8 @@ export const stickyNotes = pgTable("sticky_notes", {
   homePositionX: integer("home_position_x"),
   homePositionY: integer("home_position_y"),
   lastMovedAt: timestamp("last_moved_at"),
+  isDeleted: boolean("is_deleted").notNull().default(false),
+  deletedAt: timestamp("deleted_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
