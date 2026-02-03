@@ -9200,47 +9200,36 @@ export default function Dashboard() {
       
       {/* Push Button - Below readings button on tall pill (moved above radio) */}
       <div 
-        className="absolute z-[60] pointer-events-auto"
+        className="absolute z-[60] pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: `${463 + blinkSettings.tallPillButtonSpacing * 2}px`, 
           right: '18px',
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px',
         }}
         data-testid="honeycomb-push"
+        onClick={() => {
+          toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" });
+          syncAllCalendarMutation.mutate();
+        }}
       >
-        {/* Back circle - solid teal */}
         <div
+          className="hover:opacity-80 transition-all duration-200"
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '44px',
-            height: '44px',
+            top: '1px',
+            left: '1px',
+            width: '42px',
+            height: '42px',
             borderRadius: '50%',
-            background: '#5E8D92',
-            boxShadow: 'none',
-          }}
-        />
-        {/* Front circle with gradient - 38px */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '3px',
-            left: '3px',
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: 'linear-gradient(0deg, #8DAAB5 0%, #015170 100%)',
+            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-          className="hover:opacity-80 transition-all duration-200"
-          onClick={() => {
-            toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" });
-            syncAllCalendarMutation.mutate();
           }}
           title="Push tasks to Google Calendar"
         >
@@ -9250,55 +9239,44 @@ export default function Dashboard() {
 
       {/* Pull Button - Below push button (moved above radio) */}
       <div 
-        className="absolute z-[60] pointer-events-auto"
+        className="absolute z-[60] pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: `${514 + blinkSettings.tallPillButtonSpacing * 3}px`, 
           right: '18px',
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px',
         }}
         data-testid="honeycomb-pull"
+        onClick={async () => {
+          toast({ title: "Pulling...", description: "Fetching events from Google Calendar" });
+          try {
+            const res = await fetch('/api/calendar/pull', { method: 'POST' });
+            if (res.ok) {
+              toast({ title: "Pull complete", description: "Calendar events synced" });
+              queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+            }
+          } catch (error) {
+            toast({ title: "Pull failed", variant: "destructive" });
+          }
+        }}
       >
-        {/* Back circle - solid dark taupe */}
         <div
+          className="hover:opacity-80 transition-all duration-200"
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '44px',
-            height: '44px',
+            top: '1px',
+            left: '1px',
+            width: '42px',
+            height: '42px',
             borderRadius: '50%',
-            background: '#8A4E4E',
-            boxShadow: 'none',
-          }}
-        />
-        {/* Front circle with gradient - 38px */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '3px',
-            left: '3px',
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: 'linear-gradient(0deg, #C4A4A4 0%, #6B3A3A 100%)',
+            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-          className="hover:opacity-80 transition-all duration-200"
-          onClick={async () => {
-            toast({ title: "Pulling...", description: "Fetching events from Google Calendar" });
-            try {
-              const res = await fetch('/api/calendar/pull', { method: 'POST' });
-              if (res.ok) {
-                toast({ title: "Pull complete", description: "Calendar events synced" });
-                queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
-              }
-            } catch (error) {
-              toast({ title: "Pull failed", variant: "destructive" });
-            }
           }}
           title="Pull events from Google Calendar"
         >
