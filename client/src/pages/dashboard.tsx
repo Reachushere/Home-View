@@ -303,6 +303,11 @@ export default function Dashboard() {
   const [isFiles2FlyoutOpen, setIsFiles2FlyoutOpen] = useState(true);
   const [lastOpenedFlyout, setLastOpenedFlyout] = useState<'files1' | 'files2'>('files1'); // Track which flyout was opened last
   const [readingsPopupCourse, setReadingsPopupCourse] = useState<string | null>(null);
+  const [oneDriveReadingFiles, setOneDriveReadingFiles] = useState<any[]>([]);
+  const [listenedOneDriveFiles, setListenedOneDriveFiles] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('listenedOneDriveFiles');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
   const [isWeekReadingsOpen, setIsWeekReadingsOpen] = useState(false);
   const [weekReadingSelectedFile, setWeekReadingSelectedFile] = useState<any | null>(null);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
@@ -5419,7 +5424,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Readings Popup Dialog */}
+      {/* Readings Popup Dialog - OneDrive Files */}
       <Dialog open={!!readingsPopupCourse} onOpenChange={(open) => !open && setReadingsPopupCourse(null)}>
         <DialogContent className="max-w-[420px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
           <DialogHeader>
@@ -5433,57 +5438,67 @@ export default function Dashboard() {
           </DialogHeader>
           <div className="text-xs text-white/60 mb-2">Week {selectedWeek} Readings</div>
           <div className="flex flex-col gap-1 max-h-[250px] overflow-y-auto">
-            {allFiles
-              .filter(f => f.folder?.includes(`week-${selectedWeek}-${readingsPopupCourse}`) && f.folder?.includes('reading'))
-              .map(file => {
-                const fullName = file.displayName || file.originalName;
-                let cleanName = fullName
-                  .replace(/^CPPA\s*122[-_\s.]*/i, '')
-                  .replace(/^CFNF\s*400[-_\s.]*/i, '')
-                  .replace(/^CASL\s*101[-_\s.]*/i, '')
-                  .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
-                  .replace(/Local\s*Politics[-_:\s.]*/gi, '')
-                  .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
-                  .replace(/Sign\s*Language[-_:\s.]*/gi, '')
-                  .replace(/\.pdf$/i, '')
-                  .trim();
-                while (cleanName.match(/^[.\s\-_:•·]/)) {
-                  cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
-                }
-                return (
-                  <div
-                    key={file.id}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer"
-                    data-testid={`reading-file-${file.id}`}
-                    onClick={() => {
-                      setPreviewFile(file);
+            {oneDriveReadingFiles.map(file => {
+              const fullName = file.name || '';
+              let cleanName = fullName
+                .replace(/^CPPA\s*122[-_\s.]*/i, '')
+                .replace(/^CFNF\s*400[-_\s.]*/i, '')
+                .replace(/^CASL\s*101[-_\s.]*/i, '')
+                .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
+                .replace(/Local\s*Politics[-_:\s.]*/gi, '')
+                .replace(/Human\s*Sexuality[-_:\s.]*/gi, '')
+                .replace(/Sign\s*Language[-_:\s.]*/gi, '')
+                .replace(/\.pdf$/i, '')
+                .trim();
+              while (cleanName.match(/^[.\s\-_:•·]/)) {
+                cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
+              }
+              const fileKey = file.path || file.id;
+              const isListened = listenedOneDriveFiles.has(fileKey);
+              
+              return (
+                <div
+                  key={file.id}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer"
+                  data-testid={`reading-file-onedrive-${file.id}`}
+                  onClick={() => {
+                    if (file.downloadUrl) {
+                      // Mark as listened and open in PDF reader
+                      const newListened = new Set(listenedOneDriveFiles);
+                      newListened.add(fileKey);
+                      setListenedOneDriveFiles(newListened);
+                      localStorage.setItem('listenedOneDriveFiles', JSON.stringify([...newListened]));
                       setReadingsPopupCourse(null);
+                      window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(file.downloadUrl)}&name=${encodeURIComponent(file.name)}`;
+                    }
+                  }}
+                >
+                  <Checkbox
+                    checked={isListened}
+                    onCheckedChange={(checked) => {
+                      const newListened = new Set(listenedOneDriveFiles);
+                      if (checked) {
+                        newListened.add(fileKey);
+                      } else {
+                        newListened.delete(fileKey);
+                      }
+                      setListenedOneDriveFiles(newListened);
+                      localStorage.setItem('listenedOneDriveFiles', JSON.stringify([...newListened]));
                     }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
+                    data-testid={`checkbox-reading-onedrive-${file.id}`}
+                  />
+                  <FileText className="h-3.5 w-3.5 text-red-400 shrink-0" />
+                  <span 
+                    className={`text-[11px] ${isListened ? 'text-white/40 line-through' : 'text-white'}`}
                   >
-                    <Checkbox
-                      checked={file.listened || false}
-                      onCheckedChange={async (checked) => {
-                        try {
-                          await apiRequest("PATCH", `/api/files/${file.id}`, { listened: checked });
-                          queryClient.invalidateQueries({ queryKey: ["/api/files"] });
-                        } catch (error) {
-                          console.error("Failed to update file listened status:", error);
-                        }
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
-                      data-testid={`checkbox-reading-${file.id}`}
-                    />
-                    <FileText className="h-3.5 w-3.5 text-red-400 shrink-0" />
-                    <span 
-                      className={`text-[11px] ${file.listened ? 'text-white/40 line-through' : 'text-white'}`}
-                    >
-                      {cleanName || fullName}
-                    </span>
-                  </div>
-                );
-              })}
-            {allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${readingsPopupCourse}`) && f.folder?.includes('reading')).length === 0 && (
+                    {cleanName || fullName}
+                  </span>
+                </div>
+              );
+            })}
+            {oneDriveReadingFiles.length === 0 && (
               <div className="text-xs text-white/40 text-center py-4">No reading files for this week</div>
             )}
           </div>
@@ -9055,38 +9070,37 @@ export default function Dashboard() {
                       const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
                       const readingFiles = await readingResponse.json();
                       
-                      // Find first PDF file
-                      const pdfFile = readingFiles.find((f: any) => 
+                      // Filter to only PDF files and store them
+                      const pdfFiles = readingFiles.filter((f: any) => 
                         f.type === 'file' && f.mimeType?.includes('pdf')
                       );
                       
-                      if (pdfFile && pdfFile.downloadUrl) {
-                        // Open in PDF reader
-                        window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(pdfFile.downloadUrl)}&name=${encodeURIComponent(pdfFile.name)}`;
+                      if (pdfFiles.length > 0) {
+                        setOneDriveReadingFiles(pdfFiles);
+                        setReadingsPopupCourse(courseId);
                         return;
                       }
                     }
                     
                     // If no reading folder, check for PDF files directly in week folder
-                    const directPdf = weekContents.find((f: any) => 
+                    const directPdfs = weekContents.filter((f: any) => 
                       f.type === 'file' && f.mimeType?.includes('pdf') && f.name.toLowerCase().includes('reading')
                     );
                     
-                    if (directPdf && directPdf.downloadUrl) {
-                      window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(directPdf.downloadUrl)}&name=${encodeURIComponent(directPdf.name)}`;
+                    if (directPdfs.length > 0) {
+                      setOneDriveReadingFiles(directPdfs);
+                      setReadingsPopupCourse(courseId);
                       return;
                     }
                   }
                   
-                  // Fallback: open the files flyout to the course folder
-                  setOneDrivePath(coursePath);
-                  setOneDrivePathHistory(["/School/1. TMU/Courses/2026/Winter"]);
-                  setIsFilesFlyoutOpen(true);
+                  // No reading files found - show empty popup
+                  setOneDriveReadingFiles([]);
+                  setReadingsPopupCourse(courseId);
                 } catch (error) {
                   console.error('Error fetching OneDrive files:', error);
-                  setOneDrivePath(coursePath);
-                  setOneDrivePathHistory(["/School/1. TMU/Courses/2026/Winter"]);
-                  setIsFilesFlyoutOpen(true);
+                  setOneDriveReadingFiles([]);
+                  setReadingsPopupCourse(courseId);
                 }
               }}
               data-testid={`honeycomb-readings-${courseId}`}
