@@ -115,7 +115,7 @@ import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
 import type { Task, SemesterSettings, Subtask, Project, StickyNote as StickyNoteType } from "@shared/schema";
 import { TASK_TYPES, COURSES, getWeekNumber, REMINDER_OPTIONS, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, REPEAT_TYPES, REPEAT_INTERVAL_UNITS, LAST_WEEK } from "@shared/schema";
-import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, isBefore } from "date-fns";
+import { format, addDays, subDays, addWeeks, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, isSameMonth, startOfWeek, endOfWeek, isWithinInterval, parseISO, startOfDay, endOfDay, differenceInDays, differenceInCalendarDays, isBefore } from "date-fns";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   reading: BookOpen,
@@ -4713,7 +4713,7 @@ export default function Dashboard() {
       
       const dueDate = new Date(t.dueDate);
       const startDate = new Date(t.startDate);
-      const prepDays = differenceInDays(dueDate, startDate);
+      const prepDays = differenceInCalendarDays(dueDate, startDate);
       if (prepDays <= 0) return false;
       
       // Check if task's due date or any prep day is in current week view
@@ -4723,7 +4723,7 @@ export default function Dashboard() {
       const dueDate = new Date(t.dueDate);
       const startDate = new Date(t.startDate!);
       const dueDayIdx = weekDays.findIndex(day => isSameDay(day, dueDate));
-      const prepDaysCount = differenceInDays(dueDate, startDate);
+      const prepDaysCount = differenceInCalendarDays(dueDate, startDate);
       const [startHour, startMin] = t.eventStartTime!.split(':').map(Number);
       const [endHour, endMin] = t.eventEndTime ? t.eventEndTime.split(':').map(Number) : [startHour + 1, 0];
       
@@ -10666,7 +10666,7 @@ export default function Dashboard() {
                             // Check for prep days
                             const hasPrepDays = !!task.startDate && !task.isCompleted;
                             const prepDaysCount = hasPrepDays && task.startDate
-                              ? Math.max(0, differenceInDays(new Date(task.dueDate), new Date(task.startDate)))
+                              ? Math.max(0, differenceInCalendarDays(new Date(task.dueDate), new Date(task.startDate)))
                               : 0;
                             
                             // Check if this task is covered by a prep extension from another task
@@ -10766,16 +10766,8 @@ export default function Dashboard() {
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate prep width based on grid cell widths
-                                  // Each day cell is 1fr of 7 in the grid (time + module + 7 days)
-                                  // The task is inside a cell, so we need to calculate the cell width
-                                  // Cell width ≈ (viewportWidth - timeCol - moduleCol - scrollbar/padding) / 7
-                                  // Use a CSS variable or calculate based on known container width
-                                  // For simplicity, use percentage of viewport minus fixed columns
-                                  const scrollbarAndPadding = 50; // Account for scrollbar and container padding
-                                  const totalOffset = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + scrollbarAndPadding;
-                                  // Width = actualPrepDays × single day column width - margin
-                                  const prepWidth = `calc((${actualPrepDays} / 7) * (100vw - ${totalOffset}px) - 4px)`;
+                                  // Calculate width: actualPrepDays * (single column width) - adjustment to align with course row prep days (2px margin)
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7) - 10px)`;
                                   const prepHeight = 18;
                                   const borderWidth = selectedTaskId === task.id ? 2 : 1;
                                   return (
@@ -10922,7 +10914,7 @@ export default function Dashboard() {
                   // Check for prep days
                   const hasPrepDays = !!task.startDate && !task.isCompleted;
                   const prepDaysCount = hasPrepDays && task.startDate
-                    ? Math.max(0, Math.min(2, differenceInDays(new Date(task.dueDate), new Date(task.startDate))))
+                    ? Math.max(0, Math.min(2, differenceInCalendarDays(new Date(task.dueDate), new Date(task.startDate))))
                     : 0;
                   
                   // Check if this task is covered by a prep extension from another task
