@@ -10001,6 +10001,12 @@ export default function Dashboard() {
                           key={task.id}
                           className="relative w-full min-w-0"
                           data-testid={`all-day-task-${task.id}`}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            if (confirm('Delete this task?')) {
+                              deleteMutation.mutate(task.id);
+                            }
+                          }}
                         >
                           <div
                             className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 ${
