@@ -11274,15 +11274,15 @@ export default function Dashboard() {
                           return (
                             <div 
                               key={`chain-${task.id}-${chainIdx}`}
-                              className="flex items-center w-full absolute"
+                              className="flex items-center absolute"
                               style={{ 
                                 height: '18px',
                                 top: `${rowOffset}px`,
-                                left: 0,
-                                right: 0,
+                                left: isFirstPrepDay ? '0' : '-1px',
+                                right: chain.isDue ? '0' : '-1px',
                               }}
                             >
-                              {/* Prep bar segment - extends to cell edge for seamless connection */}
+                              {/* Prep bar segment - extends past cell edge for seamless connection */}
                               {chain.isPrep && !chain.isDue && (
                                 <div
                                   className="flex items-center justify-center h-full"
@@ -11290,12 +11290,13 @@ export default function Dashboard() {
                                     marginLeft: isFirstPrepDay ? '2px' : '0',
                                     marginRight: '0',
                                     borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
-                                    background: lightBg,
+                                    background: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.08)`,
                                     borderTop: `1px solid ${borderColor}`,
                                     borderBottom: `1px solid ${borderColor}`,
                                     borderLeft: isFirstPrepDay ? `1px solid ${borderColor}` : 'none',
                                     borderRight: 'none',
                                     flex: 1,
+                                    zIndex: 5,
                                   }}
                                   title={`Prep: ${task.title} (${prepDaysTotal} days)`}
                                 >
@@ -11309,17 +11310,18 @@ export default function Dashboard() {
                                 <div 
                                   className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative h-full"
                                   style={{
-                                    marginLeft: task.startDate ? '0' : '2px',
+                                    marginLeft: task.startDate ? '-1px' : '2px',
                                     marginRight: '2px',
                                     paddingLeft: '4px',
                                     paddingRight: '2px',
                                     borderRadius: task.startDate ? '0 4px 4px 0' : '4px',
-                                    backgroundColor: lightBg,
+                                    backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`,
                                     borderTop: `1px solid ${borderColor}`,
                                     borderBottom: `1px solid ${borderColor}`,
                                     borderRight: `1px solid ${borderColor}`,
                                     borderLeft: task.startDate ? 'none' : `1px solid ${borderColor}`,
                                     flex: 1,
+                                    zIndex: 6,
                                   }}
                                   title={task.title}
                                 >
