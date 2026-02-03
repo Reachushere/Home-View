@@ -9804,6 +9804,27 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
+                {/* Save Settings Button */}
+                <div className="flex justify-start">
+                  <Button 
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
+                    style={{
+                      boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                      fontSize: '12px'
+                    }}
+                    onClick={() => {
+                      localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
+                      localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
+                      toast({ title: "Settings saved", description: "Your settings have been applied." });
+                      setIsSettingsDialogOpen(false);
+                    }}
+                    data-testid="button-save-settings"
+                  >
+                    Save Settings
+                  </Button>
+                </div>
+                
                 </div>
                 
                 {/* Right Column */}
@@ -10076,26 +10097,7 @@ export default function Dashboard() {
                 </div>
                 </div>
               </div>
-              <div className="flex justify-end pt-4 border-t border-white/20">
-                <Button 
-                  variant="outline"
-                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6"
-                  style={{
-                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                    fontSize: '12px'
-                  }}
-                  onClick={() => {
-                    localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
-                    localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
-                    toast({ title: "Settings saved", description: "Your settings have been applied." });
-                    setIsSettingsDialogOpen(false);
-                  }}
-                  data-testid="button-save-settings"
-                >
-                  Save Settings
-                </Button>
               </div>
-            </div>
             </DialogContent>
           </Dialog>
           
