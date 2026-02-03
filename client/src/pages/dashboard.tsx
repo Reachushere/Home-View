@@ -7016,17 +7016,17 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Completed Tasks Button - Swapped with sticky note */}
+          {/* Graduation Hat - Swapped with Completed Tasks */}
           <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
             <Button 
               size="icon"
               variant="ghost"
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
               style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-              data-testid="button-completed-tasks"
-              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
+              data-testid="button-settings-panel"
+              onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
             >
-              <CheckSquare className="h-[18px] w-[18px] text-white" />
+              <GraduationCap className="text-white" style={{ height: '18px', width: '18px' }} />
             </Button>
           </div>
 
@@ -7298,17 +7298,17 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {/* Graduation Hat - Swapped with Undo Complete */}
+          {/* Completed Tasks Button - Swapped with Graduation Hat */}
           <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
             <Button 
               size="icon"
               variant="ghost"
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
               style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-              data-testid="button-settings-panel"
-              onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
+              data-testid="button-completed-tasks"
+              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
             >
-              <GraduationCap className="text-white" style={{ height: '18px', width: '18px' }} />
+              <CheckSquare className="h-[18px] w-[18px] text-white" />
             </Button>
           </div>
 
@@ -8774,13 +8774,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Radio Button - Below pull button (moved down) */}
+      {/* Radio Button - Swapped with sync, now at bottom */}
       <div 
         className="absolute z-[60] pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '565px', 
+          top: '720px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8935,13 +8935,13 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {/* Sync Button - Moved down after arrow toggle */}
+      {/* Sync Button - Swapped with radio, now after pull */}
       <div 
         className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '720px', 
+          top: '565px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
