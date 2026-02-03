@@ -10766,12 +10766,11 @@ export default function Dashboard() {
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate single day column width based on calendar grid
-                                  // The cell is inside a 7-column grid, each cell is (100% - time/module cols) / 7
-                                  // But the task is positioned inside a sub-container, so we need the parent grid width
-                                  // Use the same calculation as multi-hour tasks
-                                  const dayColWidth = `calc((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7)`;
-                                  const prepWidth = `calc(${actualPrepDays} * ${dayColWidth} - 2px)`;
+                                  // Calculate prep width - match multi-hour task calculation
+                                  // Use 100% of parent container width like multi-hour tasks do
+                                  const totalOffset = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
+                                  // Width = actualPrepDays × single day column width
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${totalOffset}px) / 7) - 2px)`;
                                   const prepHeight = 18;
                                   const borderWidth = selectedTaskId === task.id ? 2 : 1;
                                   return (
