@@ -11918,16 +11918,41 @@ export default function Dashboard() {
                 style={{ scrollbarWidth: 'none' }}
               >
                 {/* Read-only mode header - show simplified navigation for share link users */}
-                {isReadOnly && (
+                {isReadOnly && (() => {
+                  const defaultPath = "/School/1. TMU/Courses/2026/Winter";
+                  const isAtDefaultPath = oneDrivePath === defaultPath;
+                  const canGoBack = oneDrivePathHistory.length > 0 && !isAtDefaultPath;
+                  
+                  return (
                 <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/20">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 hover:bg-white/20"
+                    onClick={() => {
+                      if (canGoBack) {
+                        const previousPath = oneDrivePathHistory[oneDrivePathHistory.length - 1];
+                        // Don't go above the default path
+                        if (previousPath.startsWith(defaultPath) || previousPath === defaultPath) {
+                          setOneDrivePathHistory(oneDrivePathHistory.slice(0, -1));
+                          setOneDrivePath(previousPath);
+                        }
+                      }
+                    }}
+                    disabled={!canGoBack}
+                    data-testid="button-onedrive-back-readonly"
+                  >
+                    <ArrowLeft className="h-3 w-3 text-white" />
+                  </Button>
                   <Eye className="h-3 w-3 text-white/50" />
-                  <span className="text-[11px] text-white/60">View Only Mode</span>
+                  <span className="text-[11px] text-white/60">View Only</span>
                   <span className="text-white/30 mx-1">|</span>
                   <span className="text-[11px] text-white/80 truncate flex-1">
                     {oneDrivePath.split('/').filter(Boolean).pop() || 'Course Files'}
                   </span>
                 </div>
-                )}
+                  );
+                })()}
                 
                 {/* OneDrive Navigation - hidden for read-only share link users */}
                 {!isReadOnly && (
