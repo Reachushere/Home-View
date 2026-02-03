@@ -638,6 +638,8 @@ export default function Dashboard() {
     buttonSpacing: number;
     mediaControlSpacing: number;
     showArrows: boolean;
+    tallPillButtonSpacing: number;
+    tallPillHeight: number;
   }>(() => {
     const saved = localStorage.getItem('blinkSettings');
     const parsed = saved ? JSON.parse(saved) : {};
@@ -650,7 +652,9 @@ export default function Dashboard() {
       taskBoxFilesBlinkSpeed: parsed.taskBoxFilesBlinkSpeed ?? parsed.blinkSpeed ?? 0.6,
       buttonSpacing: parsed.buttonSpacing ?? 0,
       mediaControlSpacing: parsed.mediaControlSpacing ?? 16,
-      showArrows: parsed.showArrows ?? true
+      showArrows: parsed.showArrows ?? true,
+      tallPillButtonSpacing: parsed.tallPillButtonSpacing ?? 0,
+      tallPillHeight: parsed.tallPillHeight ?? 0
     };
   });
   
@@ -8460,7 +8464,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: '361px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: `${361 + blinkSettings.tallPillHeight + (blinkSettings.tallPillButtonSpacing * 7)}px` }}>
         <div 
           style={{ 
             width: '100%', 
@@ -8484,7 +8488,7 @@ export default function Dashboard() {
               position: 'absolute',
               width: '44px', 
               height: '44px', 
-              top: '361px', 
+              top: `${361}px`, 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
@@ -8626,7 +8630,7 @@ export default function Dashboard() {
             style={{ 
               width: '44px', 
               height: '44px', 
-              top: '411px', 
+              top: `${411 + blinkSettings.tallPillButtonSpacing}px`, 
               right: '18px',
               borderRadius: '50%',
               background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
@@ -8749,7 +8753,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '463px', 
+          top: `${463 + blinkSettings.tallPillButtonSpacing * 2}px`, 
           right: '18px',
         }}
         data-testid="honeycomb-push"
@@ -8799,7 +8803,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '514px', 
+          top: `${514 + blinkSettings.tallPillButtonSpacing * 3}px`, 
           right: '18px',
         }}
         data-testid="honeycomb-pull"
@@ -8857,7 +8861,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '616px', 
+          top: `${616 + blinkSettings.tallPillButtonSpacing * 5}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8953,7 +8957,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '668px', 
+          top: `${668 + blinkSettings.tallPillButtonSpacing * 6}px`, 
           right: '18px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8994,7 +8998,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '565px', 
+          top: `${565 + blinkSettings.tallPillButtonSpacing * 4}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9938,6 +9942,46 @@ export default function Dashboard() {
                       />
                       <p className="text-xs text-muted-foreground">
                         Space between PDF media control buttons
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-1 pt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Tall Pill Button Spacing</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.tallPillButtonSpacing}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="-20"
+                        max="40"
+                        step="1"
+                        value={blinkSettings.tallPillButtonSpacing}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillButtonSpacing: Number(e.target.value) }))}
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-tall-pill-button-spacing"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Space between buttons on the right tall pill
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-1 pt-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Tall Pill Height</Label>
+                        <span className="text-xs text-muted-foreground">{blinkSettings.tallPillHeight}px</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="-50"
+                        max="100"
+                        step="1"
+                        value={blinkSettings.tallPillHeight}
+                        onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillHeight: Number(e.target.value) }))}
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="slider-tall-pill-height"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Height adjustment for the right tall pill
                       </p>
                     </div>
                   </div>
