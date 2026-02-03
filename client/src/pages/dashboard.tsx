@@ -11765,7 +11765,7 @@ export default function Dashboard() {
                         }}
                         data-testid={`onedrive-file-${file.id}`}
                       >
-                        <File className="h-4 w-4 text-white/60" />
+                        <FileText className="h-4 w-4 text-white/60" />
                         <span className="text-[13px] text-white/70 truncate flex-1">{file.name}</span>
                       </div>
                     ))}

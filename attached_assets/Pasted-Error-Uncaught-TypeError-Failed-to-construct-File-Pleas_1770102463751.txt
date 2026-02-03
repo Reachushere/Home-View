@@ -1,0 +1,264 @@
+Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 11596, Col: 26
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at renderWithHooks (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:11596:26)
+    at mountIndeterminateComponent (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:14974:21)
+    at beginWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:15962:22)
+    at HTMLUnknownElement.callCallback2 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3680:22)
+    at Object.invokeGuardedCallbackDev (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3705:24)
+    at invokeGuardedCallback (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:3739:39)
+    at beginWork$1 (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19818:15)
+    at performUnitOfWork (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19251:20)
+    at workLoopSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19190:13)
+    at renderRootSync (https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834:19169:15)Error: Uncaught TypeError: Failed to construct 'File': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+Source: https://a0c66905-cda9-4d99-8753-e071287d758d-00-2dwx3zdd04dyo.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-IEWVK4NL.js?v=def49834
+Line: 9176, Col: 15
+TypeError: Please use the 'new' operator, this DOM object constructor cannot be called as a function
