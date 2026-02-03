@@ -7869,17 +7869,17 @@ export default function Dashboard() {
             {/* Date display with arrows */}
             <div className="flex items-center justify-center gap-1">
               {/* Left arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week" data-date-nav>
+              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week" data-date-nav>
                 <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
               </Button>
               {/* Date display */}
-              <div className="flex items-center justify-center gap-1 whitespace-nowrap relative" style={{ minWidth: '140px', top: '3px' }}>
+              <div className="flex items-center justify-center gap-1 whitespace-nowrap" style={{ minWidth: '140px' }}>
                 <span className="text-[11px] font-medium text-white">{format(weekStartDate, "MMMM d")}</span>
                 <span className="text-[11px] text-white/50">—</span>
                 <span className="text-[11px] font-medium text-white">{format(weekEndDate, "MMMM d")}</span>
               </div>
               {/* Right arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md relative" style={{ top: '-8px' }} onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week" data-date-nav>
+              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week" data-date-nav>
                 <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
               </Button>
             </div>
