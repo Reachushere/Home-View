@@ -12397,7 +12397,7 @@ export default function Dashboard() {
               ) : (
               <>
               {/* Desktop Layout - Task row with labels above */}
-              <div ref={row1ContainerRef} className="flex" style={{ position: 'relative' }}>
+              <div ref={row1ContainerRef} className="flex" style={{ position: 'relative', width: '100%' }}>
               {/* Blank checkbox - hidden for class type tasks */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
@@ -12873,8 +12873,8 @@ export default function Dashboard() {
               ) : (
                 <>
               {/* Desktop Layout - Task row 1 with labels above */}
-              <div className="flex" style={{ position: 'relative' }}>
-              {/* Blank checkbox */}
+              <div className="flex" style={{ position: 'relative', width: '100%' }}>
+              {/* Blank checkbox - hidden for class type tasks */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueTomorrowTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
