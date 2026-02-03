@@ -2294,7 +2294,7 @@ export default function Dashboard() {
                 positionY: Math.round(snapY),
                 width: Math.round(snapWidth),
                 height: Math.round(snapHeight),
-                lastMovedAt: new Date().toISOString(),
+                lastMovedAt: new Date(),
                 homePositionX: Math.round(snapX),
                 homePositionY: Math.round(snapY)
               } 
@@ -2319,7 +2319,7 @@ export default function Dashboard() {
           positionX: currentDragPosition.x,
           positionY: currentDragPosition.y,
           ...(wasSnapped ? { width: 271, height: 250 } : {}),
-          lastMovedAt: new Date().toISOString() 
+          lastMovedAt: new Date() 
         } 
       });
     }
@@ -2783,7 +2783,7 @@ export default function Dashboard() {
   };
   
   // Save/load TTS progress for each file
-  const getTtsProgress = (fileId: number): { chunkIndex: number; wordIndex: number } | null => {
+  const getTtsProgress = (fileId: number): { chunkIndex: number; wordIndex: number; charPosition?: number } | null => {
     try {
       const saved = localStorage.getItem(`tts-progress-${fileId}`);
       return saved ? JSON.parse(saved) : null;
@@ -5467,7 +5467,7 @@ export default function Dashboard() {
                       const newListened = new Set(listenedOneDriveFiles);
                       newListened.add(fileKey);
                       setListenedOneDriveFiles(newListened);
-                      localStorage.setItem('listenedOneDriveFiles', JSON.stringify([...newListened]));
+                      localStorage.setItem('listenedOneDriveFiles', JSON.stringify(Array.from(newListened)));
                       setReadingsPopupCourse(null);
                       window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(file.downloadUrl)}&name=${encodeURIComponent(file.name)}`;
                     }
@@ -5483,7 +5483,7 @@ export default function Dashboard() {
                         newListened.delete(fileKey);
                       }
                       setListenedOneDriveFiles(newListened);
-                      localStorage.setItem('listenedOneDriveFiles', JSON.stringify([...newListened]));
+                      localStorage.setItem('listenedOneDriveFiles', JSON.stringify(Array.from(newListened)));
                     }}
                     onClick={(e) => e.stopPropagation()}
                     className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-green-500 data-[state=checked]:border-green-500"
@@ -9555,7 +9555,7 @@ export default function Dashboard() {
                           className="h-6 text-[8px] px-1"
                           value={note.reminderTime ? format(new Date(note.reminderTime), "yyyy-MM-dd'T'HH:mm") : ''}
                           onChange={(e) => {
-                            const value = e.target.value ? new Date(e.target.value).toISOString() : null;
+                            const value = e.target.value ? new Date(e.target.value) : null;
                             updateStickyNoteMutation.mutate({ id: note.id, updates: { reminderTime: value } });
                           }}
                         />
