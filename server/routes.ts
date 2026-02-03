@@ -1106,6 +1106,56 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/extract-text-from-url - Extract text from a PDF at a given URL (for OneDrive files)
+  app.post("/api/extract-text-from-url", async (req, res) => {
+    try {
+      const { url } = req.body;
+      if (!url) {
+        return res.status(400).json({ error: "URL is required" });
+      }
+
+      // Fetch the PDF from the URL
+      const response = await fetch(url);
+      if (!response.ok) {
+        return res.status(400).json({ error: "Failed to fetch file from URL" });
+      }
+
+      const buffer = Buffer.from(await response.arrayBuffer());
+      
+      // Extract text using pdf-parse
+      const pdfParse = (await import("pdf-parse")).default;
+      const pdfText = await pdfParse(buffer);
+
+      // Use PAGE_BREAK_MARKER for page breaks
+      const PAGE_BREAK_MARKER = '\n\n--- PAGE BREAK ---\n\n';
+      let textContent = '';
+      
+      if (pdfText.numpages && pdfText.text) {
+        textContent = pdfText.text;
+      } else if (Array.isArray(pdfText.pages)) {
+        textContent = pdfText.pages.map((page: any) => page.text || '').join(PAGE_BREAK_MARKER);
+      } else if (Array.isArray(pdfText)) {
+        textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(PAGE_BREAK_MARKER);
+      } else if (pdfText.text) {
+        textContent = pdfText.text;
+      }
+
+      // Clean up text
+      textContent = textContent
+        .replace(/\r\n/g, '\n')
+        .replace(/\s+\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .replace(/\t/g, ' ')
+        .replace(/ {2,}/g, ' ')
+        .trim();
+
+      res.json({ text: textContent });
+    } catch (err) {
+      console.error("Error extracting text from URL:", err);
+      res.status(500).json({ error: "Failed to extract text from URL" });
+    }
+  });
+
   // PATCH /api/files/:id - Update file (rename, change folder, or mark listened)
   app.patch("/api/files/:id", async (req, res) => {
     try {
