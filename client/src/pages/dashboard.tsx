@@ -11201,17 +11201,40 @@ export default function Dashboard() {
                     const taskSummary = dayTasks.length > 0 ? dayTasks[0].title : '';
                     const hasMultipleTasks = dayTasks.length > 1;
                     
-                    // Determine if this task should be on a second row (if there's a task on an adjacent day)
-                    // Check if previous day has a due task for this course
-                    const prevDay = dayIdx > 0 ? weekDays[dayIdx - 1] : null;
-                    const prevDayHasDueTask = prevDay && tasks?.some(task => {
+                    // Get all tasks for this course (not just this day) to assign row indices
+                    const allCourseTasks = tasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
-                      return isSameDay(startOfDay(new Date(task.dueDate)), startOfDay(prevDay));
+                      return true;
+                    }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()) || [];
+                    
+                    // Create a map of task ID to row index (sorted by due date)
+                    const taskRowMap = new Map<number, number>();
+                    allCourseTasks.forEach((task, idx) => {
+                      taskRowMap.set(task.id, idx);
                     });
                     
-                    // If previous day has a due task and this day has a due task, offset this one to row 2
-                    const shouldOffsetToRow2 = prevDayHasDueTask && dueTasks.length > 0;
+                    // Combine prep and due tasks with their row assignments
+                    const taskChains: { task: typeof dayTasks[0], isPrep: boolean, isDue: boolean, rowIdx: number }[] = [];
+                    
+                    prepTasks.forEach(task => {
+                      const rowIdx = taskRowMap.get(task.id) ?? 0;
+                      taskChains.push({ task, isPrep: true, isDue: false, rowIdx });
+                    });
+                    
+                    dueTasks.forEach(task => {
+                      const rowIdx = taskRowMap.get(task.id) ?? 0;
+                      // Check if this task already has a prep entry
+                      const existingIdx = taskChains.findIndex(tc => tc.task.id === task.id);
+                      if (existingIdx >= 0) {
+                        taskChains[existingIdx].isDue = true;
+                      } else {
+                        taskChains.push({ task, isPrep: false, isDue: true, rowIdx });
+                      }
+                    });
+                    
+                    // Sort by row index
+                    taskChains.sort((a, b) => a.rowIdx - b.rowIdx);
                     
                     return (
                       <div 
@@ -11233,39 +11256,45 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        {/* Render prep extension bars for prep days - on first row */}
-                        {prepTasks.length > 0 && (
-                          <div className="flex items-start w-full">
-                            {prepTasks.map((task, idx) => {
-                              // Determine position in prep period
-                              const taskStartDate = startOfDay(new Date(task.startDate!));
-                              const taskDueDate = startOfDay(new Date(task.dueDate));
-                              const isFirstPrepDay = isSameDay(cellDate, taskStartDate);
-                              const isLastPrepDay = isSameDay(addDays(cellDate, 1), taskDueDate);
-                              const prepDaysTotal = Math.ceil((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24));
-                              // Use button gradient from course color
-                              const prepGradient = getButtonGradient(course.label);
-                              
-                              // Create a light background with border (matching the example)
-                              const rgb = hexToRgb(course.label);
-                              const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                              const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-                              
-                              return (
+                        {/* Render each task chain on its own row, using absolute positioning to maintain alignment */}
+                        {taskChains.map((chain, chainIdx) => {
+                          const task = chain.task;
+                          const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
+                          const taskDueDate = startOfDay(new Date(task.dueDate));
+                          const isFirstPrepDay = taskStartDate && isSameDay(cellDate, taskStartDate);
+                          const prepDaysTotal = taskStartDate ? Math.ceil((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+                          
+                          const rgb = hexToRgb(course.label);
+                          const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+                          const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
+                          
+                          // Use rowIdx for consistent positioning across all cells
+                          const rowOffset = chain.rowIdx * 20; // 18px height + 2px gap
+                          
+                          return (
+                            <div 
+                              key={`chain-${task.id}-${chainIdx}`}
+                              className="flex items-center w-full absolute"
+                              style={{ 
+                                height: '18px',
+                                top: `${rowOffset}px`,
+                                left: 0,
+                                right: 0,
+                              }}
+                            >
+                              {/* Prep bar segment - extends to cell edge for seamless connection */}
+                              {chain.isPrep && !chain.isDue && (
                                 <div
-                                  key={`prep-${task.id}-${idx}`}
-                                  className="flex items-center justify-center"
+                                  className="flex items-center justify-center h-full"
                                   style={{
-                                    marginLeft: isFirstPrepDay ? '2px' : '-1px',
-                                    marginRight: '-1px',
-                                    height: '18px',
+                                    marginLeft: isFirstPrepDay ? '2px' : '0',
+                                    marginRight: '0',
                                     borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
-                                    background: `linear-gradient(${lightBg}, ${lightBg}), white`,
+                                    background: lightBg,
                                     borderTop: `1px solid ${borderColor}`,
                                     borderBottom: `1px solid ${borderColor}`,
                                     borderLeft: isFirstPrepDay ? `1px solid ${borderColor}` : 'none',
                                     borderRight: 'none',
-                                    zIndex: 5,
                                     flex: 1,
                                   }}
                                   title={`Prep: ${task.title} (${prepDaysTotal} days)`}
@@ -11274,37 +11303,22 @@ export default function Dashboard() {
                                     Prep days
                                   </span>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                        {/* Render due tasks with checkbox - offset to row 2 if previous day has a task */}
-                        {dueTasks.length > 0 && (
-                          <div 
-                            className="flex items-start w-full"
-                            style={{ marginTop: shouldOffsetToRow2 && prepTasks.length === 0 ? '18px' : '0' }}
-                          >
-                            {dueTasks.map((task, idx) => {
-                              const hasPrepDays = task.startDate != null;
-                              // Use light background with border (matching prep bars)
-                              const rgb = hexToRgb(course.label);
-                              const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                              const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-                              return (
+                              )}
+                              {/* Due task segment - left side open if has prep days for seamless connection */}
+                              {chain.isDue && (
                                 <div 
-                                  key={`due-${task.id}-${idx}`}
-                                  className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative"
+                                  className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative h-full"
                                   style={{
-                                    height: '18px',
-                                    marginLeft: hasPrepDays ? '0' : '2px',
+                                    marginLeft: task.startDate ? '0' : '2px',
+                                    marginRight: '2px',
                                     paddingLeft: '4px',
                                     paddingRight: '2px',
-                                    borderRadius: hasPrepDays ? '0 4px 4px 0' : '4px',
+                                    borderRadius: task.startDate ? '0 4px 4px 0' : '4px',
                                     backgroundColor: lightBg,
                                     borderTop: `1px solid ${borderColor}`,
                                     borderBottom: `1px solid ${borderColor}`,
                                     borderRight: `1px solid ${borderColor}`,
-                                    borderLeft: hasPrepDays ? 'none' : `1px solid ${borderColor}`,
+                                    borderLeft: task.startDate ? 'none' : `1px solid ${borderColor}`,
                                     flex: 1,
                                   }}
                                   title={task.title}
@@ -11322,10 +11336,10 @@ export default function Dashboard() {
                                     {task.title}
                                   </span>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        )}
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     );
                   })}
