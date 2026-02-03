@@ -2080,7 +2080,9 @@ export default function Dashboard() {
   
   // Local state for sticky note content to prevent cursor jumping
   const [localStickyNoteContent, setLocalStickyNoteContent] = useState<Record<number, string>>({});
+  const [localStickyNoteTitle, setLocalStickyNoteTitle] = useState<Record<number, string>>({});
   const stickyNoteContentTimeouts = useRef<Record<number, NodeJS.Timeout>>({});
+  const stickyNoteTitleTimeouts = useRef<Record<number, NodeJS.Timeout>>({});
 
   // Sticky note mutations
   const createStickyNoteMutation = useMutation({
@@ -2362,6 +2364,29 @@ export default function Dashboard() {
       ? localStickyNoteContent[note.id] 
       : note.content;
   }, [localStickyNoteContent]);
+
+  // Handle sticky note title change with debounce to prevent cursor jumping
+  const handleStickyNoteTitleChange = useCallback((noteId: number, newTitle: string) => {
+    // Update local state immediately for responsive typing
+    setLocalStickyNoteTitle(prev => ({ ...prev, [noteId]: newTitle }));
+    
+    // Clear any existing timeout for this note
+    if (stickyNoteTitleTimeouts.current[noteId]) {
+      clearTimeout(stickyNoteTitleTimeouts.current[noteId]);
+    }
+    
+    // Debounce the save to server (500ms after user stops typing)
+    stickyNoteTitleTimeouts.current[noteId] = setTimeout(() => {
+      updateStickyNoteMutation.mutate({ id: noteId, updates: { title: newTitle } });
+    }, 500);
+  }, [updateStickyNoteMutation]);
+
+  // Get the title to display for a sticky note (local state takes precedence)
+  const getStickyNoteTitle = useCallback((note: StickyNoteType) => {
+    return localStickyNoteTitle[note.id] !== undefined 
+      ? localStickyNoteTitle[note.id] 
+      : (note.title || "Note Name");
+  }, [localStickyNoteTitle]);
 
   // Files for weekly files flyout (moved up for allTaskFiles dependency)
   interface WeeklyFile {
@@ -9113,8 +9138,8 @@ export default function Dashboard() {
                 </DropdownMenu>
                 <input
                   type="text"
-                  value={note.title || "Note Name"}
-                  onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { title: e.target.value } })}
+                  value={getStickyNoteTitle(note)}
+                  onChange={(e) => handleStickyNoteTitleChange(note.id, e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
                   className="text-[10px] text-gray-700 font-medium border-none outline-none w-20 cursor-text rounded px-0.5"
