@@ -8774,13 +8774,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Radio Button - Swapped with sync, now at bottom */}
+      {/* Radio Button - Swapped with Bell */}
       <div 
         className="absolute z-[60] pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '720px', 
+          top: '668px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8870,13 +8870,13 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Bell Button - Swapped with Arrow Toggle */}
+      {/* Bell Button - Swapped with Radio */}
       <div 
         className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '668px', 
+          top: '720px', 
           right: '18px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
