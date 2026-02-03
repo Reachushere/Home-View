@@ -10001,20 +10001,21 @@ export default function Dashboard() {
                           key={task.id}
                           className="relative w-full min-w-0"
                           data-testid={`all-day-task-${task.id}`}
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                            if (confirm('Delete this task?')) {
-                              deleteMutation.mutate(task.id);
-                            }
-                          }}
                         >
                           <div
-                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 ${
+                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
                               isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                             } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
                               backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
                               borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                            }}
+                            onContextMenu={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              if (confirm('Delete this task?')) {
+                                deleteMutation.mutate(task.id);
+                              }
                             }}
                           >
                             {!isCASL101Task(task) && (
