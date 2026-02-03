@@ -1122,23 +1122,32 @@ export async function registerRoutes(
 
       const buffer = Buffer.from(await response.arrayBuffer());
       
-      // Extract text using pdf-parse
-      const pdfParse = await getPdfParser();
-      const pdfText = await pdfParse(buffer);
+      // Extract text using pdf-parse (same pattern as file extraction)
+      const PdfParser = await getPdfParser();
+      const parser = new PdfParser({ data: new Uint8Array(buffer) });
+      await parser.load();
+      const pdfText = await parser.getText();
 
       // Use PAGE_BREAK_MARKER for page breaks
-      const PAGE_BREAK_MARKER = '\n\n--- PAGE BREAK ---\n\n';
+      const PAGE_BREAK_MARKER = '\n\n---PAGE---\n\n';
       let textContent = '';
       
-      if (pdfText.numpages && pdfText.text) {
-        textContent = pdfText.text;
-      } else if (Array.isArray(pdfText.pages)) {
-        textContent = pdfText.pages.map((page: any) => page.text || '').join(PAGE_BREAK_MARKER);
-      } else if (Array.isArray(pdfText)) {
-        textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(PAGE_BREAK_MARKER);
-      } else if (pdfText.text) {
-        textContent = pdfText.text;
+      if (pdfText && typeof pdfText === 'object') {
+        if (pdfText.pages && Array.isArray(pdfText.pages)) {
+          textContent = pdfText.pages.map((page: any) => page.text || '').join(PAGE_BREAK_MARKER);
+        } else if (Array.isArray(pdfText)) {
+          textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(PAGE_BREAK_MARKER);
+        } else if (pdfText.text) {
+          textContent = pdfText.text;
+        } else {
+          textContent = Object.values(pdfText).filter(v => typeof v === 'string').join(PAGE_BREAK_MARKER);
+        }
+      } else if (typeof pdfText === 'string') {
+        textContent = pdfText;
+      } else {
+        textContent = String(pdfText || '');
       }
+      await parser.destroy();
 
       // Clean up text
       textContent = textContent
