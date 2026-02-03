@@ -12030,8 +12030,8 @@ export default function Dashboard() {
                       );
                     })}
                     
-                    {/* PDF Files - only show for read-only users when inside a week folder */}
-                    {(!isReadOnly || /Week\s*\d+/i.test(oneDrivePath)) && oneDrivePdfFiles.map((file) => (
+                    {/* PDF Files - hidden for read-only share link users */}
+                    {!isReadOnly && oneDrivePdfFiles.map((file) => (
                       <div
                         key={file.id}
                         className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors group"
@@ -12050,8 +12050,8 @@ export default function Dashboard() {
                       </div>
                     ))}
                     
-                    {/* Other Files - only show for read-only users when inside a week folder */}
-                    {(!isReadOnly || /Week\s*\d+/i.test(oneDrivePath)) && oneDriveFiles.filter(f => !f.mimeType?.includes("pdf")).map((file) => (
+                    {/* Other Files - hidden for read-only share link users */}
+                    {!isReadOnly && oneDriveFiles.filter(f => !f.mimeType?.includes("pdf")).map((file) => (
                       <div
                         key={file.id}
                         className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors"
@@ -12074,13 +12074,6 @@ export default function Dashboard() {
                       </div>
                     )}
                     
-                    {/* Message for read-only users when not in week folder and no visible folders */}
-                    {isReadOnly && !/Week\s*\d+/i.test(oneDrivePath) && oneDriveFolders.filter(f => /Week\s*\d+/i.test(f.name)).length === 0 && (
-                      <div className="flex flex-col items-center justify-center py-8 text-white/40">
-                        <Lock className="h-6 w-6 mb-2 opacity-50" />
-                        <p className="text-[12px] text-center px-4">Navigate to a course folder to see week folders</p>
-                      </div>
-                    )}
                   </div>
                 )}
                 
