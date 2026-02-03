@@ -11532,7 +11532,7 @@ export default function Dashboard() {
                                         }}
                                         title={`${actualPrepDays} prep days`}
                                       >
-                                        <span className="text-[9px] text-gray-600 !font-normal truncate px-1">
+                                        <span className="text-[8px] text-gray-700 font-medium truncate px-0.5">
                                           Prep days
                                         </span>
                                       </div>
