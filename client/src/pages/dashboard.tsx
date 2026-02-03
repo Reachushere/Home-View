@@ -3008,17 +3008,39 @@ export default function Dashboard() {
       setCurrentChunkIndex(0);
       currentChunkIndexRef.current = 0;
       shouldContinueRef.current = false;
-      fetch(`/api/files/${previewFile.id}/text`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.text) {
-            // Filter out French text before setting
-            const filteredText = removeFrenchText(data.text);
-            setPreviewText(filteredText);
-          }
+      
+      // Check if objectPath is a direct URL (OneDrive) or needs API fetch
+      const isDirectUrl = previewFile.objectPath?.startsWith('http');
+      
+      if (isDirectUrl) {
+        // Use the URL-based text extraction endpoint for OneDrive files
+        fetch('/api/extract-text-from-url', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: previewFile.objectPath })
         })
-        .catch(err => console.error("Error fetching text:", err))
-        .finally(() => setIsLoadingText(false));
+          .then(res => res.json())
+          .then(data => {
+            if (data.text) {
+              const filteredText = removeFrenchText(data.text);
+              setPreviewText(filteredText);
+            }
+          })
+          .catch(err => console.error("Error fetching text from URL:", err))
+          .finally(() => setIsLoadingText(false));
+      } else {
+        // Use the standard file ID endpoint for local files
+        fetch(`/api/files/${previewFile.id}/text`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.text) {
+              const filteredText = removeFrenchText(data.text);
+              setPreviewText(filteredText);
+            }
+          })
+          .catch(err => console.error("Error fetching text:", err))
+          .finally(() => setIsLoadingText(false));
+      }
     } else {
       setPreviewText("");
       setCurrentWordIndex(0);

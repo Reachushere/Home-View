@@ -1123,7 +1123,7 @@ export async function registerRoutes(
       const buffer = Buffer.from(await response.arrayBuffer());
       
       // Extract text using pdf-parse
-      const pdfParse = (await import("pdf-parse")).default;
+      const pdfParse = await getPdfParser();
       const pdfText = await pdfParse(buffer);
 
       // Use PAGE_BREAK_MARKER for page breaks
