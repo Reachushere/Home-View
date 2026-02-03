@@ -8841,85 +8841,18 @@ export default function Dashboard() {
           return (
             <div 
               key={`module-btn-${courseId}`}
-              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
               style={{ 
                 top: `${courseRowsY + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
                 right: '103px',
                 transform: 'scale(1) translateY(-50%)',
                 transitionDelay: `${idx * 50}ms`
               }}
-              onClick={async (e) => { 
+              onClick={(e) => { 
                 e.stopPropagation();
-                setModulesHoneycombOpen(null);
-                
-                // Map course code to OneDrive folder name
-                const oneDriveFolderMap: Record<string, string> = {
-                  'cppa122': 'CPPA122 - Local Politics',
-                  'cfnf400': 'CFNF400 - Human Sexuality', 
-                  'casl101': 'CASL101 - American Sign Language'
-                };
-                const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
-                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
-                
-                try {
-                  // First get folders in the course to find the week folder
-                  const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-                  const courseFolders = await courseResponse.json();
-                  
-                  // Find the week folder that matches selectedWeek (e.g., "Week 4 - Jan 31-Feb 6")
-                  const weekFolder = courseFolders.find((f: any) => 
-                    f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-                  );
-                  
-                  if (weekFolder) {
-                    // Get files inside the week folder
-                    const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                    const weekContents = await weekResponse.json();
-                    
-                    // Look for Module folder first
-                    const moduleFolder = weekContents.find((f: any) => 
-                      f.type === 'folder' && f.name.toLowerCase().includes('module')
-                    );
-                    
-                    if (moduleFolder) {
-                      // Get files from the Module folder
-                      const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
-                      const moduleFiles = await moduleResponse.json();
-                      
-                      // Find first PDF file
-                      const pdfFile = moduleFiles.find((f: any) => 
-                        f.type === 'file' && f.mimeType?.includes('pdf')
-                      );
-                      
-                      if (pdfFile && pdfFile.downloadUrl) {
-                        // Open in PDF reader
-                        window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(pdfFile.downloadUrl)}&name=${encodeURIComponent(pdfFile.name)}`;
-                        return;
-                      }
-                    }
-                    
-                    // If no module folder, check for PDF files directly in week folder
-                    const directPdf = weekContents.find((f: any) => 
-                      f.type === 'file' && f.mimeType?.includes('pdf') && f.name.toLowerCase().includes('module')
-                    );
-                    
-                    if (directPdf && directPdf.downloadUrl) {
-                      window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(directPdf.downloadUrl)}&name=${encodeURIComponent(directPdf.name)}`;
-                      return;
-                    }
-                  }
-                  
-                  // Fallback: open the files flyout to the course folder
-                  setOneDrivePath(coursePath);
-                  setOneDrivePathHistory(["/School/1. TMU/Courses/2026/Winter"]);
-                  setIsFilesFlyoutOpen(true);
-                } catch (error) {
-                  console.error('Error fetching OneDrive files:', error);
-                  // Fallback to opening files flyout
-                  setOneDrivePath(coursePath);
-                  setOneDrivePathHistory(["/School/1. TMU/Courses/2026/Winter"]);
-                  setIsFilesFlyoutOpen(true);
-                }
+                const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
+                if (moduleFile) setPreviewFile(moduleFile);
+                setModulesHoneycombOpen(null); 
               }}
               data-testid={`honeycomb-${courseId}`}
               data-course-button
@@ -9042,84 +8975,11 @@ export default function Dashboard() {
                 transform: modulesHoneycombOpen === 'readings' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
               }}
-              onClick={async (e) => { 
+              onClick={(e) => { 
                 e.stopPropagation();
-                setModulesHoneycombOpen(null);
-                
-                // Map course code to OneDrive folder name
-                const oneDriveFolderMap: Record<string, string> = {
-                  'cppa122': 'CPPA122 - Local Politics',
-                  'cfnf400': 'CFNF400 - Human Sexuality', 
-                  'casl101': 'CASL101 - American Sign Language'
-                };
-                const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
-                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
-                
-                try {
-                  // First get folders in the course to find the week folder
-                  const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-                  const courseFolders = await courseResponse.json();
-                  
-                  // Find the week folder that matches selectedWeek
-                  const weekFolder = courseFolders.find((f: any) => 
-                    f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-                  );
-                  
-                  if (weekFolder) {
-                    // Get files inside the week folder
-                    const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                    const weekContents = await weekResponse.json();
-                    
-                    // Look for Reading folder first
-                    const readingFolder = weekContents.find((f: any) => 
-                      f.type === 'folder' && f.name.toLowerCase().includes('reading')
-                    );
-                    
-                    if (readingFolder) {
-                      // Get files from the Reading folder
-                      const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
-                      const readingFiles = await readingResponse.json();
-                      
-                      // Filter to only PDF files
-                      const pdfFiles = readingFiles.filter((f: any) => 
-                        f.type === 'file' && f.mimeType?.includes('pdf')
-                      );
-                      
-                      if (pdfFiles.length > 0) {
-                        // Open PDF player with first file and pass all files for dropdown
-                        const firstPdf = pdfFiles[0];
-                        const allFilesParam = encodeURIComponent(JSON.stringify(pdfFiles.map((f: any) => ({
-                          name: f.name,
-                          downloadUrl: f.downloadUrl,
-                          path: f.path
-                        }))));
-                        window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(firstPdf.downloadUrl)}&name=${encodeURIComponent(firstPdf.name)}&files=${allFilesParam}&course=${courseId}`;
-                        return;
-                      }
-                    }
-                    
-                    // If no reading folder, check for PDF files directly in week folder
-                    const directPdfs = weekContents.filter((f: any) => 
-                      f.type === 'file' && f.mimeType?.includes('pdf') && f.name.toLowerCase().includes('reading')
-                    );
-                    
-                    if (directPdfs.length > 0) {
-                      const firstPdf = directPdfs[0];
-                      const allFilesParam = encodeURIComponent(JSON.stringify(directPdfs.map((f: any) => ({
-                        name: f.name,
-                        downloadUrl: f.downloadUrl,
-                        path: f.path
-                      }))));
-                      window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(firstPdf.downloadUrl)}&name=${encodeURIComponent(firstPdf.name)}&files=${allFilesParam}&course=${courseId}`;
-                      return;
-                    }
-                  }
-                  
-                  // No reading files found - show toast
-                  console.log('No reading files found for this week');
-                } catch (error) {
-                  console.error('Error fetching OneDrive files:', error);
-                }
+                const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
+                if (readingFile) setPreviewFile(readingFile);
+                setModulesHoneycombOpen(null); 
               }}
               data-testid={`honeycomb-readings-${courseId}`}
               data-readings-course-button
