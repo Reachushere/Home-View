@@ -73,6 +73,7 @@ import {
   Trash2,
   Sun,
   Home,
+  Cloud,
   Repeat2,
   Settings,
   Timer,
@@ -2467,6 +2468,37 @@ export default function Dashboard() {
   const { data: weeklyFiles = [] } = useQuery<WeeklyFile[]>({
     queryKey: ["/api/files"],
   });
+
+  // OneDrive files for files flyout
+  interface OneDriveItem {
+    id: string;
+    name: string;
+    type: "folder" | "file";
+    mimeType?: string;
+    size?: number;
+    lastModified?: string;
+    downloadUrl?: string;
+    path: string;
+  }
+  
+  const [oneDrivePath, setOneDrivePath] = useState("/");
+  const [oneDrivePathHistory, setOneDrivePathHistory] = useState<string[]>([]);
+  
+  const { data: oneDriveItems = [], isLoading: oneDriveLoading } = useQuery<OneDriveItem[]>({
+    queryKey: ["/api/onedrive/files", oneDrivePath],
+    queryFn: async () => {
+      const response = await fetch(`/api/onedrive/files?path=${encodeURIComponent(oneDrivePath)}`);
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to load files");
+      }
+      return response.json();
+    },
+  });
+  
+  const oneDriveFolders = oneDriveItems.filter(item => item.type === "folder");
+  const oneDriveFiles = oneDriveItems.filter(item => item.type === "file");
+  const oneDrivePdfFiles = oneDriveFiles.filter(item => item.mimeType?.includes("pdf"));
 
   // Extract all unique files from tasks for the FILES row
   const allTaskFiles = useMemo(() => {
@@ -11636,16 +11668,118 @@ export default function Dashboard() {
                 </div>
               </div>
               
-              {/* Week Folders */}
+              {/* OneDrive Files */}
               <div 
                 className="flex-1 overflow-y-auto py-2 px-2" 
                 style={{ scrollbarWidth: 'none' }}
-                onDragOver={(e) => {
-                  e.preventDefault();
-                  e.dataTransfer.dropEffect = 'move';
-                }}
               >
-                {(() => {
+                {/* OneDrive Navigation */}
+                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-white/20">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 hover:bg-white/20"
+                    onClick={() => {
+                      if (oneDrivePathHistory.length > 0) {
+                        const previousPath = oneDrivePathHistory[oneDrivePathHistory.length - 1];
+                        setOneDrivePathHistory(oneDrivePathHistory.slice(0, -1));
+                        setOneDrivePath(previousPath);
+                      }
+                    }}
+                    disabled={oneDrivePathHistory.length === 0}
+                    data-testid="button-onedrive-back"
+                  >
+                    <ArrowLeft className="h-4 w-4 text-white" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 hover:bg-white/20"
+                    onClick={() => {
+                      setOneDrivePathHistory([]);
+                      setOneDrivePath("/");
+                    }}
+                    data-testid="button-onedrive-home"
+                  >
+                    <Home className="h-4 w-4 text-white" />
+                  </Button>
+                  <div className="flex items-center gap-1 text-[11px] text-white/60 flex-1 truncate">
+                    <Cloud className="h-3 w-3" />
+                    <span className="truncate">{oneDrivePath === "/" ? "OneDrive" : oneDrivePath}</span>
+                  </div>
+                </div>
+                
+                {oneDriveLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-white/50" />
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {/* Folders */}
+                    {oneDriveFolders.map((folder) => (
+                      <div
+                        key={folder.id}
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors"
+                        onClick={() => {
+                          setOneDrivePathHistory([...oneDrivePathHistory, oneDrivePath]);
+                          setOneDrivePath(folder.path);
+                        }}
+                        data-testid={`onedrive-folder-${folder.id}`}
+                      >
+                        <Folder className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                        <span className="text-[13px] text-white/90 truncate flex-1">{folder.name}</span>
+                        <ChevronRight className="h-3 w-3 text-white/40" />
+                      </div>
+                    ))}
+                    
+                    {/* PDF Files */}
+                    {oneDrivePdfFiles.map((file) => (
+                      <div
+                        key={file.id}
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors group"
+                        onClick={() => {
+                          if (file.downloadUrl) {
+                            const encodedUrl = encodeURIComponent(file.downloadUrl);
+                            const encodedName = encodeURIComponent(file.name);
+                            window.location.href = `/pdf-reader/onedrive?url=${encodedUrl}&name=${encodedName}`;
+                          }
+                        }}
+                        data-testid={`onedrive-file-${file.id}`}
+                      >
+                        <FileText className="h-4 w-4 text-red-400" />
+                        <span className="text-[13px] text-white/90 truncate flex-1">{file.name}</span>
+                        <Play className="h-3 w-3 text-white/40 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    ))}
+                    
+                    {/* Other Files */}
+                    {oneDriveFiles.filter(f => !f.mimeType?.includes("pdf")).map((file) => (
+                      <div
+                        key={file.id}
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-white/10 cursor-pointer rounded transition-colors"
+                        onClick={() => {
+                          if (file.downloadUrl) {
+                            window.open(file.downloadUrl, "_blank");
+                          }
+                        }}
+                        data-testid={`onedrive-file-${file.id}`}
+                      >
+                        <File className="h-4 w-4 text-white/60" />
+                        <span className="text-[13px] text-white/70 truncate flex-1">{file.name}</span>
+                      </div>
+                    ))}
+                    
+                    {oneDriveItems.length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-8 text-white/40">
+                        <Folder className="h-8 w-8 mb-2 opacity-50" />
+                        <p className="text-[12px]">No files found</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Legacy week folders hidden - using OneDrive now */}
+                {false && (() => {
                   // Get current week number based on today's date
                   const today = new Date();
                   const currentWeekData = weeks.find(w => {
