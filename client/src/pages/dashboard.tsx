@@ -8841,7 +8841,7 @@ export default function Dashboard() {
           return (
             <div 
               key={`module-btn-${courseId}`}
-              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
+              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'modules' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
               style={{ 
                 top: `${courseRowsY + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
                 right: '103px',
