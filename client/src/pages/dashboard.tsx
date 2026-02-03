@@ -10521,9 +10521,8 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 overflow-visible ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20 ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 overflow-visible ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
                           style={{
-                            backgroundColor: (isToday && isCurrentHour) ? '#C5D8EC' : isToday ? '#EAE4DE' : isCurrentHour ? '#E8E8E8' : undefined,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
@@ -10550,6 +10549,14 @@ export default function Dashboard() {
                             setIsAddDialogOpen(true);
                           }}
                         >
+                          {/* Background layer - sits below tasks so they don't get covered */}
+                          <div 
+                            className={`absolute inset-0 z-0 ${totalItems > 0 && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
+                            style={{
+                              backgroundColor: (isToday && isCurrentHour) ? '#C5D8EC' : isToday ? '#EAE4DE' : isCurrentHour ? '#E8E8E8' : undefined,
+                              borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
+                            }}
+                          />
                           {/* Half-hour dotted line - positioned in middle of task area (after any conflict offset) */}
                           <div 
                             className="absolute left-0 right-0 border-t border-dotted border-gray-300/50 dark:border-gray-600/50 z-0" 
@@ -10593,7 +10600,7 @@ export default function Dashboard() {
                             
                             // If covered by prep extension, push task down below it
                             if (isCoveredByPrep) {
-                              topOffset += 24; // Push down by prep extension height (22px + 2px gap)
+                              topOffset += 22; // Push down by prep extension height (22px, tight against bottom)
                             }
                             
                             if (task.eventStartTime && task.eventEndTime) {
@@ -10605,7 +10612,7 @@ export default function Dashboard() {
                               // Single hour tasks only now - same height for all
                               taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
                               // Offset for minutes past the hour, plus prep offset if covered
-                              topOffset = (startMin / 60) * 44 + (isCoveredByPrep ? 24 : 0);
+                              topOffset = (startMin / 60) * 44 + (isCoveredByPrep ? 22 : 0);
                             }
                             
                             return (
@@ -10825,7 +10832,7 @@ export default function Dashboard() {
                   const isCoveredByPrep = isTaskCoveredByPrepExtension(taskDay, taskHour, task.id);
                   
                   // Adjust topPx if covered by prep extension - push down by 24px (height of prep bar)
-                  const adjustedTopPx = isCoveredByPrep ? topPx + 24 : topPx;
+                  const adjustedTopPx = isCoveredByPrep ? topPx + 22 : topPx;
                   
                   // For tasks with prep days, check if they need extra height to match pushed-down tasks
                   const prepStartDayIdx = hasPrepDays && prepDaysCount > 0 ? Math.max(0, dayIdx - prepDaysCount) : dayIdx;
