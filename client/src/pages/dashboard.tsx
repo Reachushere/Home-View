@@ -10495,37 +10495,6 @@ export default function Dashboard() {
               
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px' }}>
-                {/* Current time indicator line */}
-                {(() => {
-                  const now = new Date();
-                  const currentHour = now.getHours();
-                  const currentMinutes = now.getMinutes();
-                  const startHour = 6;
-                  const endHour = 24;
-                  
-                  // Only show if current time is within calendar range
-                  if (currentHour < startHour || currentHour > endHour) return null;
-                  
-                  // Calculate position
-                  let topPosition = 0;
-                  for (let h = startHour; h < currentHour; h++) {
-                    topPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                  }
-                  const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
-                  topPosition += (currentMinutes / 60) * currentRowHeight;
-                  
-                  return (
-                    <div 
-                      className="absolute left-0 right-0 z-10 pointer-events-none"
-                      style={{ top: `${topPosition}px` }}
-                    >
-                      <div 
-                        className="w-full border-t border-dashed"
-                        style={{ borderColor: 'rgba(0, 0, 0, 0.3)' }}
-                      />
-                    </div>
-                  );
-                })()}
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
@@ -11024,6 +10993,38 @@ export default function Dashboard() {
                     </div>
                   );
                 })}
+                
+                {/* Current time indicator line - rendered last to appear on top */}
+                {(() => {
+                  const now = new Date();
+                  const currentHour = now.getHours();
+                  const currentMinutes = now.getMinutes();
+                  const startHour = 6;
+                  const endHour = 24;
+                  
+                  // Only show if current time is within calendar range
+                  if (currentHour < startHour || currentHour > endHour) return null;
+                  
+                  // Calculate position
+                  let topPosition = 0;
+                  for (let h = startHour; h < currentHour; h++) {
+                    topPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                  }
+                  const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
+                  topPosition += (currentMinutes / 60) * currentRowHeight;
+                  
+                  return (
+                    <div 
+                      className="absolute left-0 right-0 z-[5] pointer-events-none"
+                      style={{ top: `${topPosition}px` }}
+                    >
+                      <div 
+                        className="w-full border-t border-dashed"
+                        style={{ borderColor: 'rgba(0, 0, 0, 0.3)' }}
+                      />
+                    </div>
+                  );
+                })()}
             </div>
                       </CardContent>
           {/* Calendar Height Resize Handle */}
