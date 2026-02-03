@@ -6024,11 +6024,60 @@ export default function Dashboard() {
       {/* Folder Context Menu */}
       {folderContextMenu && (
         <div 
-          className="fixed z-[9999] bg-[#1e1e1e] border border-white/20 rounded-md shadow-lg py-1 min-w-[160px]"
+          className="fixed z-[9999] bg-[#1e1e1e] border border-white/20 rounded-md shadow-lg py-1 min-w-[180px]"
           style={{ top: folderContextMenu.y, left: folderContextMenu.x }}
           onClick={(e) => e.stopPropagation()}
           data-testid="folder-context-menu"
         >
+          <div className="px-3 py-1.5 text-xs text-white/50 border-b border-white/10">
+            Create Course Folder
+          </div>
+          <button
+            className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
+            onClick={() => {
+              const parentFolder = folderContextMenu.parentFolder;
+              const folderId = `${parentFolder}-custom-cppa122`;
+              if (!customFolders.find(f => f.id === folderId)) {
+                setCustomFolders(prev => [...prev, { id: folderId, name: 'CPPA122', parent: parentFolder }]);
+              }
+              setFolderContextMenu(null);
+            }}
+            data-testid="button-new-folder-cppa122"
+          >
+            <Folder className="h-4 w-4 text-green-500" />
+            CPPA122
+          </button>
+          <button
+            className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
+            onClick={() => {
+              const parentFolder = folderContextMenu.parentFolder;
+              const folderId = `${parentFolder}-custom-cfnf400`;
+              if (!customFolders.find(f => f.id === folderId)) {
+                setCustomFolders(prev => [...prev, { id: folderId, name: 'CFNF400', parent: parentFolder }]);
+              }
+              setFolderContextMenu(null);
+            }}
+            data-testid="button-new-folder-cfnf400"
+          >
+            <Folder className="h-4 w-4 text-blue-500" />
+            CFNF400
+          </button>
+          <button
+            className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
+            onClick={() => {
+              const parentFolder = folderContextMenu.parentFolder;
+              const folderId = `${parentFolder}-custom-casl101`;
+              if (!customFolders.find(f => f.id === folderId)) {
+                setCustomFolders(prev => [...prev, { id: folderId, name: 'CASL101', parent: parentFolder }]);
+              }
+              setFolderContextMenu(null);
+            }}
+            data-testid="button-new-folder-casl101"
+          >
+            <Folder className="h-4 w-4 text-purple-500" />
+            CASL101
+          </button>
+          <div className="border-t border-white/10 my-1" />
           <button
             className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
             onClick={() => {
@@ -6037,10 +6086,10 @@ export default function Dashboard() {
               setNewFolderDialogOpen(true);
               setFolderContextMenu(null);
             }}
-            data-testid="button-new-folder"
+            data-testid="button-new-folder-custom"
           >
             <FolderPlus className="h-4 w-4" />
-            New Folder
+            Custom Folder...
           </button>
         </div>
       )}
