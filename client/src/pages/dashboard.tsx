@@ -11765,6 +11765,17 @@ export default function Dashboard() {
                   >
                     <Home className="h-4 w-4 text-white" />
                   </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 hover:bg-white/20"
+                    onClick={() => {
+                      queryClient.invalidateQueries({ queryKey: ["/api/onedrive/files", oneDrivePath] });
+                    }}
+                    data-testid="button-onedrive-sync"
+                  >
+                    <RefreshCw className={`h-4 w-4 text-white ${oneDriveLoading ? 'animate-spin' : ''}`} />
+                  </Button>
                   <div className="flex items-center gap-1 text-[11px] text-white/60 flex-1 truncate">
                     <Cloud className="h-3 w-3" />
                     <span className="truncate">{oneDrivePath === "/" ? "OneDrive" : oneDrivePath}</span>
