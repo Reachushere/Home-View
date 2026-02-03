@@ -1061,7 +1061,7 @@ export default function Dashboard() {
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
   
-  // Pre-fetch OneDrive file counts for the selected week
+  // Pre-fetch OneDrive file counts for the selected week - run in parallel for speed
   useEffect(() => {
     const fetchOneDriveFileCounts = async () => {
       const oneDriveFolderMap: Record<string, string> = {
@@ -1072,7 +1072,8 @@ export default function Dashboard() {
       
       const counts: Record<string, number> = {};
       
-      for (const [courseId, courseFolder] of Object.entries(oneDriveFolderMap)) {
+      // Fetch all courses in parallel
+      const coursePromises = Object.entries(oneDriveFolderMap).map(async ([courseId, courseFolder]) => {
         const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
         try {
           const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
@@ -1085,33 +1086,41 @@ export default function Dashboard() {
             const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
             const weekContents = await weekResponse.json();
             
-            // Check for module folder
+            // Fetch module and reading folders in parallel
+            const folderPromises: Promise<void>[] = [];
+            
             const moduleFolder = weekContents.find((f: any) => 
               f.type === 'folder' && f.name.toLowerCase().includes('module')
             );
             if (moduleFolder) {
-              const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
-              const moduleFiles = await moduleResponse.json();
-              const pdfCount = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf')).length;
-              counts[`week-${selectedWeek}-${courseId}-module`] = pdfCount;
+              folderPromises.push((async () => {
+                const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
+                const moduleFiles = await moduleResponse.json();
+                const pdfCount = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf')).length;
+                counts[`week-${selectedWeek}-${courseId}-module`] = pdfCount;
+              })());
             }
             
-            // Check for reading folder
             const readingFolder = weekContents.find((f: any) => 
               f.type === 'folder' && f.name.toLowerCase().includes('reading')
             );
             if (readingFolder) {
-              const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
-              const readingFiles = await readingResponse.json();
-              const pdfCount = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf')).length;
-              counts[`week-${selectedWeek}-${courseId}-reading`] = pdfCount;
+              folderPromises.push((async () => {
+                const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
+                const readingFiles = await readingResponse.json();
+                const pdfCount = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf')).length;
+                counts[`week-${selectedWeek}-${courseId}-reading`] = pdfCount;
+              })());
             }
+            
+            await Promise.all(folderPromises);
           }
         } catch (error) {
           console.error(`Error fetching OneDrive counts for ${courseId}:`, error);
         }
-      }
+      });
       
+      await Promise.all(coursePromises);
       setOneDriveFileCounts(prev => ({ ...prev, ...counts }));
     };
     
