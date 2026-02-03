@@ -8852,9 +8852,14 @@ export default function Dashboard() {
                 e.stopPropagation();
                 setModulesHoneycombOpen(null);
                 
-                // Fetch OneDrive files for course folder to find the current week
-                const courseFullName = course.name || '';
-                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFullName}`;
+                // Map course code to OneDrive folder name
+                const oneDriveFolderMap: Record<string, string> = {
+                  'cppa122': 'CPPA122 - Local Politics',
+                  'cfnf400': 'CFNF400 - Human Sexuality', 
+                  'casl101': 'CASL101 - American Sign Language'
+                };
+                const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
+                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
                 
                 try {
                   // First get folders in the course to find the week folder
@@ -9041,9 +9046,14 @@ export default function Dashboard() {
                 e.stopPropagation();
                 setModulesHoneycombOpen(null);
                 
-                // Fetch OneDrive files for course folder to find the current week's reading
-                const courseFullName = course.name || '';
-                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFullName}`;
+                // Map course code to OneDrive folder name
+                const oneDriveFolderMap: Record<string, string> = {
+                  'cppa122': 'CPPA122 - Local Politics',
+                  'cfnf400': 'CFNF400 - Human Sexuality', 
+                  'casl101': 'CASL101 - American Sign Language'
+                };
+                const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
+                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
                 
                 try {
                   // First get folders in the course to find the week folder
@@ -9070,14 +9080,20 @@ export default function Dashboard() {
                       const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
                       const readingFiles = await readingResponse.json();
                       
-                      // Filter to only PDF files and store them
+                      // Filter to only PDF files
                       const pdfFiles = readingFiles.filter((f: any) => 
                         f.type === 'file' && f.mimeType?.includes('pdf')
                       );
                       
                       if (pdfFiles.length > 0) {
-                        setOneDriveReadingFiles(pdfFiles);
-                        setReadingsPopupCourse(courseId);
+                        // Open PDF player with first file and pass all files for dropdown
+                        const firstPdf = pdfFiles[0];
+                        const allFilesParam = encodeURIComponent(JSON.stringify(pdfFiles.map((f: any) => ({
+                          name: f.name,
+                          downloadUrl: f.downloadUrl,
+                          path: f.path
+                        }))));
+                        window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(firstPdf.downloadUrl)}&name=${encodeURIComponent(firstPdf.name)}&files=${allFilesParam}&course=${courseId}`;
                         return;
                       }
                     }
@@ -9088,19 +9104,21 @@ export default function Dashboard() {
                     );
                     
                     if (directPdfs.length > 0) {
-                      setOneDriveReadingFiles(directPdfs);
-                      setReadingsPopupCourse(courseId);
+                      const firstPdf = directPdfs[0];
+                      const allFilesParam = encodeURIComponent(JSON.stringify(directPdfs.map((f: any) => ({
+                        name: f.name,
+                        downloadUrl: f.downloadUrl,
+                        path: f.path
+                      }))));
+                      window.location.href = `/pdf-reader/onedrive?url=${encodeURIComponent(firstPdf.downloadUrl)}&name=${encodeURIComponent(firstPdf.name)}&files=${allFilesParam}&course=${courseId}`;
                       return;
                     }
                   }
                   
-                  // No reading files found - show empty popup
-                  setOneDriveReadingFiles([]);
-                  setReadingsPopupCourse(courseId);
+                  // No reading files found - show toast
+                  console.log('No reading files found for this week');
                 } catch (error) {
                   console.error('Error fetching OneDrive files:', error);
-                  setOneDriveReadingFiles([]);
-                  setReadingsPopupCourse(courseId);
                 }
               }}
               data-testid={`honeycomb-readings-${courseId}`}

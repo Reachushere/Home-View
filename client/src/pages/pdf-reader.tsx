@@ -33,7 +33,29 @@ export default function PDFReaderPage() {
   const urlParams = new URLSearchParams(window.location.search);
   const oneDriveUrl = urlParams.get("url");
   const oneDriveName = urlParams.get("name");
+  const filesParam = urlParams.get("files");
+  const courseParam = urlParams.get("course");
   
+  // Parse files list for dropdown
+  const [allFiles, setAllFiles] = useState<Array<{name: string; downloadUrl: string; path: string}>>([]);
+  const [currentFileUrl, setCurrentFileUrl] = useState<string>(oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '');
+  const [currentFileName, setCurrentFileName] = useState<string>(oneDriveName ? decodeURIComponent(oneDriveName) : '');
+  const [listenedFiles, setListenedFiles] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('listenedOneDriveFiles');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+  
+  useEffect(() => {
+    if (filesParam) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(filesParam));
+        setAllFiles(parsed);
+      } catch (e) {
+        console.error('Failed to parse files param:', e);
+      }
+    }
+  }, [filesParam]);
+
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [extractedText, setExtractedText] = useState<string>("");
@@ -68,8 +90,37 @@ export default function PDFReaderPage() {
   });
   
   const isOneDrive = isOneDriveRoute && oneDriveUrl;
-  const pdfUrl = isOneDrive ? decodeURIComponent(oneDriveUrl) : file?.objectPath;
-  const fileName = isOneDrive ? (oneDriveName ? decodeURIComponent(oneDriveName) : "OneDrive PDF") : file?.displayName;
+  const pdfUrl = isOneDrive ? (currentFileUrl || decodeURIComponent(oneDriveUrl)) : file?.objectPath;
+  const fileName = isOneDrive ? (currentFileName || (oneDriveName ? decodeURIComponent(oneDriveName) : "OneDrive PDF")) : file?.displayName;
+  
+  // Mark current file as listened when playing
+  const markCurrentFileListened = () => {
+    if (currentFileUrl || oneDriveUrl) {
+      const fileKey = currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '');
+      const currentFile = allFiles.find(f => f.downloadUrl === fileKey);
+      if (currentFile?.path) {
+        const newListened = new Set(listenedFiles);
+        newListened.add(currentFile.path);
+        setListenedFiles(newListened);
+        localStorage.setItem('listenedOneDriveFiles', JSON.stringify(Array.from(newListened)));
+      }
+    }
+  };
+  
+  // Switch to a different file
+  const switchToFile = (file: {name: string; downloadUrl: string; path: string}) => {
+    setCurrentFileUrl(file.downloadUrl);
+    setCurrentFileName(file.name);
+    setCurrentPage(1);
+    setNumPages(0);
+    setExtractedText('');
+    setIsPlaying(false);
+    setIsPaused(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+  };
 
   const onDocumentLoadSuccess = ({ numPages: pages }: { numPages: number }) => {
     setNumPages(pages);
@@ -158,6 +209,9 @@ export default function PDFReaderPage() {
   };
 
   const startReading = async () => {
+    // Mark this file as listened when playback starts
+    markCurrentFileListened();
+    
     let textToRead = extractedText;
     
     if (!textToRead) {
@@ -331,6 +385,69 @@ export default function PDFReaderPage() {
       </div>
 
       <div className="max-w-6xl mx-auto p-4">
+        {/* File selector dropdown for multiple reading files */}
+        {allFiles.length > 1 && (
+          <div className="bg-white rounded-xl shadow-lg p-3 mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className="h-4 w-4 text-amber-600" />
+              <span className="text-sm font-medium text-gray-700">Reading Files ({allFiles.length})</span>
+            </div>
+            <div className="flex flex-col gap-1 max-h-[200px] overflow-y-auto">
+              {allFiles.map((file, idx) => {
+                const isListened = listenedFiles.has(file.path);
+                const isCurrentFile = (currentFileUrl || (oneDriveUrl ? decodeURIComponent(oneDriveUrl) : '')) === file.downloadUrl;
+                let cleanName = file.name
+                  .replace(/^CPPA\s*122[-_\s.]*/i, '')
+                  .replace(/^CFNF\s*400[-_\s.]*/i, '')
+                  .replace(/^CASL\s*101[-_\s.]*/i, '')
+                  .replace(/Reading\s*\d*[-_:\s.]*/gi, '')
+                  .replace(/\.pdf$/i, '')
+                  .trim();
+                while (cleanName.match(/^[.\s\-_:•·]/)) {
+                  cleanName = cleanName.replace(/^[.\s\-_:•·]+/, '').trim();
+                }
+                return (
+                  <div
+                    key={file.path || idx}
+                    onClick={() => switchToFile(file)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                      isCurrentFile 
+                        ? 'bg-amber-100 border border-amber-300' 
+                        : 'hover:bg-gray-100'
+                    }`}
+                    data-testid={`reading-file-${idx}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isListened}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        const newListened = new Set(listenedFiles);
+                        if (e.target.checked) {
+                          newListened.add(file.path);
+                        } else {
+                          newListened.delete(file.path);
+                        }
+                        setListenedFiles(newListened);
+                        localStorage.setItem('listenedOneDriveFiles', JSON.stringify(Array.from(newListened)));
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      className="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
+                    />
+                    <FileText className={`h-4 w-4 shrink-0 ${isCurrentFile ? 'text-amber-600' : 'text-red-400'}`} />
+                    <span className={`text-sm ${isListened ? 'text-gray-400 line-through' : 'text-gray-700'} ${isCurrentFile ? 'font-medium' : ''}`}>
+                      {cleanName || file.name}
+                    </span>
+                    {isCurrentFile && (
+                      <span className="ml-auto text-xs bg-amber-200 text-amber-700 px-2 py-0.5 rounded">Current</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+        
         <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
           <div className="flex justify-center p-4 bg-gray-100 min-h-[400px] sm:min-h-[600px]">
             {pdfUrl && (
