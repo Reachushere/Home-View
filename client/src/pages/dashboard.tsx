@@ -2685,9 +2685,9 @@ export default function Dashboard() {
     } catch { return null; }
   };
   
-  const saveTtsProgress = (fileId: number, chunkIndex: number, wordIndex: number) => {
+  const saveTtsProgress = (fileId: number, chunkIndex: number, wordIndex: number, charPosition?: number) => {
     try {
-      localStorage.setItem(`tts-progress-${fileId}`, JSON.stringify({ chunkIndex, wordIndex }));
+      localStorage.setItem(`tts-progress-${fileId}`, JSON.stringify({ chunkIndex, wordIndex, charPosition: charPosition || 0 }));
     } catch {}
   };
   
@@ -3137,9 +3137,14 @@ export default function Dashboard() {
       if (event.name === 'word') {
         setCurrentWordIndex(wordOffset + localWordIndex);
         localWordIndex++;
-        // Save progress periodically
+        // Save progress periodically with character position
         if (previewFile && localWordIndex % 10 === 0) {
-          saveTtsProgress(previewFile.id, chunkIndex, localWordIndex);
+          // Calculate character position from previous chunks
+          let charPosition = 0;
+          for (let i = 0; i < chunkIndex; i++) {
+            charPosition += chunks[i].length;
+          }
+          saveTtsProgress(previewFile.id, chunkIndex, localWordIndex, charPosition);
         }
       }
     };
@@ -3166,7 +3171,12 @@ export default function Dashboard() {
       if (event.error !== 'interrupted') {
         toast({ title: `Speech paused at chunk ${chunkIndex + 1}. Tap play to resume.`, variant: "default" });
         if (previewFile) {
-          saveTtsProgress(previewFile.id, chunkIndex, localWordIndex);
+          // Calculate character position from previous chunks
+          let charPosition = 0;
+          for (let i = 0; i < chunkIndex; i++) {
+            charPosition += chunks[i].length;
+          }
+          saveTtsProgress(previewFile.id, chunkIndex, localWordIndex, charPosition);
         }
       }
       setIsPlaying(false);
@@ -3373,7 +3383,23 @@ export default function Dashboard() {
         if (resumeFromProgress && previewFile) {
           const progress = getTtsProgress(previewFile.id);
           if (progress) {
-            startChunk = progress.chunkIndex;
+            // Use character position if available (works across different chunk sizes)
+            if (progress.charPosition && progress.charPosition > 0) {
+              // Find which chunk contains this character position
+              let charCount = 0;
+              for (let i = 0; i < chunks.length; i++) {
+                charCount += chunks[i].length;
+                if (charCount >= progress.charPosition) {
+                  startChunk = i;
+                  break;
+                }
+              }
+              // Clamp to valid range
+              startChunk = Math.min(startChunk, chunks.length - 1);
+            } else {
+              // Fallback to chunk index (clamp to valid range)
+              startChunk = Math.min(progress.chunkIndex, chunks.length - 1);
+            }
             // Calculate word offset from previous chunks
             for (let i = 0; i < startChunk; i++) {
               startWordOffset += chunks[i].split(/\s+/).length;
@@ -3442,7 +3468,13 @@ export default function Dashboard() {
         
         // Save progress so user can resume later
         if (previewFile && currentChunkIndexRef.current > 0) {
-          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex);
+          // Calculate character position from previous chunks
+          let charPosition = 0;
+          const chunks = ttsChunksRef.current;
+          for (let i = 0; i < currentChunkIndexRef.current; i++) {
+            charPosition += chunks[i]?.length || 0;
+          }
+          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex, charPosition);
         }
         
         setIsPlaying(false);
@@ -3458,7 +3490,13 @@ export default function Dashboard() {
         
         // Save progress so user can resume later
         if (previewFile && currentChunkIndexRef.current > 0) {
-          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex);
+          // Calculate character position from previous chunks
+          let charPosition = 0;
+          const chunks = ttsChunksRef.current;
+          for (let i = 0; i < currentChunkIndexRef.current; i++) {
+            charPosition += chunks[i]?.length || 0;
+          }
+          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex, charPosition);
           toast({ title: `Paused at section ${currentChunkIndexRef.current + 1} of ${totalChunks}. Progress saved.` });
         }
         
