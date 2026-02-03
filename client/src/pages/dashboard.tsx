@@ -2482,7 +2482,7 @@ export default function Dashboard() {
     path: string;
   }
   
-  const [oneDrivePath, setOneDrivePath] = useState("/");
+  const [oneDrivePath, setOneDrivePath] = useState("/School/1. TMU/Courses/2026/Winter");
   const [oneDrivePathHistory, setOneDrivePathHistory] = useState<string[]>([]);
   
   const { data: oneDriveItems = [], isLoading: oneDriveLoading } = useQuery<OneDriveItem[]>({
