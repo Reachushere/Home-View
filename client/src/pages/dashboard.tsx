@@ -8460,7 +8460,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: '413px' }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: '361px' }}>
         <div 
           style={{ 
             width: '100%', 
@@ -8851,13 +8851,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Radio Button - Swapped with Bell */}
+      {/* Radio Button - Moved up after removing arrows toggle */}
       <div 
         className="absolute z-[60] pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '668px', 
+          top: '616px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8947,13 +8947,13 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Bell Button - Swapped with Radio */}
+      {/* Bell Button - Moved up after removing arrows toggle */}
       <div 
         className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '720px', 
+          top: '668px', 
           right: '18px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8987,31 +8987,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Arrow Toggle Button - Swapped with Bell */}
-      <div 
-        className="absolute z-[60] pointer-events-auto"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: '616px', 
-          right: '18px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px'
-        }}
-        data-testid="honeycomb-arrows-toggle"
-      >
-        <Button 
-          size="icon"
-          variant="ghost"
-          className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-          style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-          onClick={() => setBlinkSettings(prev => ({ ...prev, showArrows: !prev.showArrows }))}
-        >
-          <TrendingUp style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px', opacity: blinkSettings.showArrows ? 1 : 0.4, transform: 'rotate(45deg)' }} />
-        </Button>
-      </div>
-
+      
       {/* Sync Button - Swapped with radio, now after pull */}
       <div 
         className="absolute z-50 pointer-events-auto cursor-pointer"
