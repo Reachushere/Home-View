@@ -9880,38 +9880,6 @@ export default function Dashboard() {
                       )}
                     </div>
                     
-                    {/* Task Box Files Blink */}
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs font-medium">Task Box Files Blink</Label>
-                        <input
-                          type="checkbox"
-                          checked={blinkSettings.taskBoxFilesBlink}
-                          onChange={(e) => setBlinkSettings(prev => ({ ...prev, taskBoxFilesBlink: e.target.checked }))}
-                          className="h-4 w-4 rounded border-gray-300"
-                          data-testid="toggle-taskbox-files-blink"
-                        />
-                      </div>
-                      {blinkSettings.taskBoxFilesBlink && (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-[10px] text-muted-foreground">Speed</Label>
-                            <span className="text-[10px] text-muted-foreground">{blinkSettings.taskBoxFilesBlinkSpeed}s</span>
-                          </div>
-                          <input
-                            type="range"
-                            min="0.2"
-                            max="2"
-                            step="0.1"
-                            value={blinkSettings.taskBoxFilesBlinkSpeed}
-                            onChange={(e) => setBlinkSettings(prev => ({ ...prev, taskBoxFilesBlinkSpeed: Number(e.target.value) }))}
-                            className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
-                            data-testid="slider-taskbox-files-speed"
-                          />
-                        </div>
-                      )}
-                    </div>
-                    
                     {/* Show Arrows Toggle */}
                     <div>
                       <div className="flex items-center justify-between">
