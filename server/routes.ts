@@ -12,6 +12,7 @@ import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEven
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, type TaskReminder } from "./email";
+import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles } from "./onedrive";
 
 // Helper function to generate repeated task due dates
 function generateRepeatDates(
@@ -1351,6 +1352,49 @@ export async function registerRoutes(
   });
 
   // ============= END CUSTOM FOLDERS ROUTES =============
+
+  // ============= ONEDRIVE ROUTES =============
+  
+  // GET /api/onedrive/files - List files in a OneDrive folder
+  app.get("/api/onedrive/files", async (req, res) => {
+    try {
+      const path = (req.query.path as string) || '/';
+      const items = await listOneDriveItems(path);
+      res.json(items);
+    } catch (err: any) {
+      console.error("Error listing OneDrive files:", err);
+      res.status(500).json({ error: err.message || "Failed to list OneDrive files" });
+    }
+  });
+
+  // GET /api/onedrive/file/:id - Get file details and download URL
+  app.get("/api/onedrive/file/:id", async (req, res) => {
+    try {
+      const itemId = req.params.id;
+      const file = await getOneDriveFile(itemId);
+      res.json(file);
+    } catch (err: any) {
+      console.error("Error getting OneDrive file:", err);
+      res.status(500).json({ error: err.message || "Failed to get OneDrive file" });
+    }
+  });
+
+  // GET /api/onedrive/search - Search for files
+  app.get("/api/onedrive/search", async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query) {
+        return res.status(400).json({ error: "Search query is required" });
+      }
+      const items = await searchOneDriveFiles(query);
+      res.json(items);
+    } catch (err: any) {
+      console.error("Error searching OneDrive:", err);
+      res.status(500).json({ error: err.message || "Failed to search OneDrive" });
+    }
+  });
+
+  // ============= END ONEDRIVE ROUTES =============
 
   // GET /api/calendar/list - List all available Google calendars for selection
   app.get("/api/calendar/list", async (_req, res) => {
