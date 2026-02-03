@@ -11313,7 +11313,7 @@ export default function Dashboard() {
                               {/* Prep bar segment - extends past cell edge for seamless connection */}
                               {chain.isPrep && !chain.isDue && (
                                 <div
-                                  className="flex items-center justify-center h-full"
+                                  className="flex items-center justify-center h-full animate-prep-shimmer"
                                   style={{
                                     marginLeft: isFirstPrepDay ? '2px' : '0',
                                     marginRight: '0',
