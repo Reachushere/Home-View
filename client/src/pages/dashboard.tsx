@@ -12775,9 +12775,8 @@ export default function Dashboard() {
                         <div className="text-sm text-white truncate">{task.title}</div>
                         <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
                       </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <span className="text-xs text-green-400">{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                        <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                      <div className="text-xs text-green-400 flex-shrink-0">
+                        {task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}
                       </div>
                     </div>
                   ))}
