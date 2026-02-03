@@ -8409,7 +8409,7 @@ export default function Dashboard() {
       <div className="fixed pointer-events-none" style={{ top: '9px', left: '50%', transform: 'translateX(-50%) translateX(-58.5px)', zIndex: 1 }}>
         <div 
           style={{ 
-            width: `${529 + (blinkSettings.buttonSpacing * 10)}px`, 
+            width: `${505 + (blinkSettings.buttonSpacing * 10)}px`, 
             height: '50px', 
             background: 'rgba(255, 255, 255, 0.35)',
             borderRadius: '25px',
@@ -9817,7 +9817,7 @@ export default function Dashboard() {
                   
                   <div className="space-y-4">
                     {/* Today Column Blink */}
-                    <div className="border rounded p-2 space-y-2">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs font-medium">Today Column Blink</Label>
                         <input
@@ -9849,7 +9849,7 @@ export default function Dashboard() {
                     </div>
                     
                     {/* All Day Files Blink */}
-                    <div className="border rounded p-2 space-y-2">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs font-medium">All Day Files Blink</Label>
                         <input
@@ -9881,7 +9881,7 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Task Box Files Blink */}
-                    <div className="border rounded p-2 space-y-2">
+                    <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label className="text-xs font-medium">Task Box Files Blink</Label>
                         <input
@@ -9913,7 +9913,7 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Show Arrows Toggle */}
-                    <div className="border rounded p-2">
+                    <div>
                       <div className="flex items-center justify-between">
                         <Label className="text-xs font-medium">Show Connection Arrows</Label>
                         <input
