@@ -13085,7 +13085,7 @@ export default function Dashboard() {
                   <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Days</span>
                 </div>
-                <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ fontSize: '10px', color: getProgressColor(dueThisWeekTasks[0]), marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
               {/* Second task row - only render after measurements are available */}
@@ -13117,7 +13117,7 @@ export default function Dashboard() {
                 {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueThisWeekTasks[1]) }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Third task row - same settings as row 2 */}
@@ -13149,7 +13149,7 @@ export default function Dashboard() {
                 {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[2]?.dueDate ? format(new Date(dueThisWeekTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueThisWeekTasks[2]) }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               </>
@@ -13270,7 +13270,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[0]?.dueDate ? format(new Date(dueTodayTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTodayTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[0], 'today') }}>{dueTodayTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Task Row 2 */}
@@ -13294,7 +13294,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.dueDate ? format(new Date(dueTodayTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTodayTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[1], 'today') }}>{dueTodayTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Task Row 3 */}
@@ -13318,7 +13318,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.dueDate ? format(new Date(dueTodayTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTodayTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[2], 'today') }}>{dueTodayTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
                 </>
@@ -13440,7 +13440,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTomorrowTasks[0], 'tomorrow') }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
               </div>
               )}
               {/* Task Row 2 */}
@@ -13464,7 +13464,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTomorrowTasks[1], 'tomorrow') }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
               </div>
               )}
               {/* Task Row 3 */}
@@ -13488,7 +13488,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTomorrowTasks[2], 'tomorrow') }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
               </div>
               )}
                 </>
