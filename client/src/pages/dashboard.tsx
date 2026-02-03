@@ -12991,8 +12991,8 @@ export default function Dashboard() {
                 {/* Due date */}
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
-              {/* Group 6: Days left - absolutely positioned to stay fixed */}
-              <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '-4px', top: '2px' }}>
+              {/* Group 6: Days left - fixed spacing from Due column */}
+              <div ref={row1DaysRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDaysLeftLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Visual divider */}
                   <div 
