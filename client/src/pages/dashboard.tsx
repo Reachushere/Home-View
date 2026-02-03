@@ -9568,7 +9568,7 @@ export default function Dashboard() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="p-4 overflow-y-auto flex-1">
+              <div className="px-4 pb-4 pt-1 overflow-y-auto flex-1">
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
                 <div className="flex flex-col gap-4">
