@@ -12888,7 +12888,7 @@ export default function Dashboard() {
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Progress</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Remaining</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
@@ -12929,7 +12929,7 @@ export default function Dashboard() {
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Progress header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${23 + testProgressBarLeft}px`, top: '0px' }}>Progress</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${23 + testProgressBarLeft}px`, top: '0px' }}>Remaining</span>
               {/* Group 1: Left handle on header + progress bar on content line */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
@@ -12938,7 +12938,7 @@ export default function Dashboard() {
                     style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestBarResizeStart}
                   />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Progress</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Remaining</span>
                 </div>
                 <div ref={row1ProgressBarRef} style={{ position: 'relative', width: '44px', marginLeft: '7px', marginTop: '3px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
@@ -13130,7 +13130,7 @@ export default function Dashboard() {
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Progress</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Remaining</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
@@ -13166,7 +13166,7 @@ export default function Dashboard() {
                 <>
               {/* Desktop Layout - Headers row */}
               <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Progress</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Remaining</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
@@ -13300,7 +13300,7 @@ export default function Dashboard() {
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Progress</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Remaining</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
@@ -13336,7 +13336,7 @@ export default function Dashboard() {
                 <>
               {/* Desktop Layout - Headers row */}
               <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Progress</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '0px' }}>Remaining</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
@@ -13793,7 +13793,7 @@ export default function Dashboard() {
 
                               <div className="mt-auto space-y-1">
                                 <div className="flex items-center justify-between text-[10px] text-white/70">
-                                  <span>Progress</span>
+                                  <span>Remaining</span>
                                   <span className="font-medium">{completedTasks.length}/{projectTasks.length} tasks</span>
                                 </div>
                                 <div className="h-2 bg-white/20 rounded-full overflow-hidden">
