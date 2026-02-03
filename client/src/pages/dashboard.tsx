@@ -6970,23 +6970,49 @@ export default function Dashboard() {
             </Button>
           </div>
 
+          {/* Sticky Note Button - Swapped from tall pill to header */}
+          <div 
+            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}
+            data-testid="honeycomb-sticky-note"
+          >
+            {/* Back circle - solid #E8E656 */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: '#E8E656',
+                boxShadow: 'none',
+              }}
+            />
+            {/* Front circle with gradient - 38px */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '3px',
+                left: '3px',
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'linear-gradient(0deg, #FDFFBA 0%, #F2D338 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+              className="hover:opacity-80 transition-all duration-200"
+              onClick={handleAddStickyNote}
+              title="Add Sticky Note"
+            >
+              <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+            </div>
+          </div>
+
           {/* Radio Dialog */}
           <Dialog open={isRadioDialogOpen} onOpenChange={setIsRadioDialogOpen}>
-            <DialogTrigger asChild>
-              <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px', cursor: 'pointer' }}>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-                  style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-                  data-testid="button-radio-dialog"
-                  title="Radio Controls"
-                  onClick={() => triggerButtonGlow('radio')}
-                >
-                  <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
-                </Button>
-              </div>
-            </DialogTrigger>
             <DialogContent className="max-w-[260px] text-[10px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
@@ -8656,50 +8682,39 @@ export default function Dashboard() {
         });
       })()}
       
-      {/* Sticky Note Button - Below readings button on tall pill (swapped with completed tasks) */}
+      {/* Radio Button - Below readings button on tall pill (swapped with sticky note) */}
       <div 
-        className="absolute z-[60] pointer-events-auto"
+        className="absolute z-[60] pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: '463px', 
           right: '18px',
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px',
         }}
-        data-testid="honeycomb-sticky-note"
+        data-testid="button-radio-dialog"
+        onClick={() => { triggerButtonGlow('radio'); setIsRadioDialogOpen(true); }}
       >
-        {/* Back circle - solid #E8E656 */}
         <div
+          className="hover:opacity-80 transition-all duration-200"
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '44px',
-            height: '44px',
+            top: '1px',
+            left: '1px',
+            width: '42px',
+            height: '42px',
             borderRadius: '50%',
-            background: '#E8E656',
-            boxShadow: 'none',
-          }}
-        />
-        {/* Front circle with gradient - 38px */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '3px',
-            left: '3px',
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: 'linear-gradient(0deg, #FDFFBA 0%, #F2D338 100%)',
+            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
           }}
-          className="hover:opacity-80 transition-all duration-200"
-          onClick={handleAddStickyNote}
-          title="Add Sticky Note"
+          title="Radio Controls"
         >
-          <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+          <Radio className="text-white" style={{ height: '16px', width: '16px' }} />
         </div>
       </div>
       {/* Spring out honeycombs for course readings - moved outside files button */}
