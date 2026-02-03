@@ -13346,6 +13346,18 @@ export default function Dashboard() {
                 <>
               {/* Desktop Layout - Task row 1 with labels above */}
               <div className="flex" style={{ position: 'relative', width: '100%' }}>
+              {/* Progress header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${23 + testProgressBarLeft}px`, top: '0px' }}>Progress</span>
+              {/* Task header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
+              {/* Code header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
+              {/* Course header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
+              {/* Due header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
+              {/* Days header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 5}px`, top: '0px' }}>Days</span>
               {/* Blank checkbox - hidden for class type tasks */}
               <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueTomorrowTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
