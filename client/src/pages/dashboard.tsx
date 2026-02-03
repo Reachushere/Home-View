@@ -12637,9 +12637,8 @@ export default function Dashboard() {
                         <div className="text-sm text-white truncate">{task.title}</div>
                         <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
                       </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <span className="text-xs text-green-400">{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                        <div className="w-2 h-2 rounded-full bg-orange-500" />
+                      <div className="text-xs text-green-400 flex-shrink-0">
+                        {task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}
                       </div>
                     </div>
                   ))}
@@ -12704,11 +12703,7 @@ export default function Dashboard() {
                   <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueTodayTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                  {/* Working indicator */}
-                  <div className="w-2 h-2 rounded-full bg-orange-500" style={{ marginTop: '-3px' }} />
-                </div>
+                <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueTodayTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
               {/* Row 2 */}
@@ -12726,7 +12721,6 @@ export default function Dashboard() {
                 <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.dueDate ? format(new Date(dueTodayTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTodayTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                <div className="w-2 h-2 rounded-full bg-orange-500" style={{ position: 'absolute', right: '0px', top: '2px' }} />
               </div>
               )}
               {/* Row 3 */}
@@ -12744,7 +12738,6 @@ export default function Dashboard() {
                 <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.dueDate ? format(new Date(dueTodayTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTodayTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                <div className="w-2 h-2 rounded-full bg-orange-500" style={{ position: 'absolute', right: '0px', top: '2px' }} />
               </div>
               )}
                 </>
@@ -12879,11 +12872,7 @@ export default function Dashboard() {
                   <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueTomorrowTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                  {/* Working indicator */}
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" style={{ marginTop: '-3px' }} />
-                </div>
+                <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueTomorrowTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
               {/* Row 2 */}
@@ -12901,7 +12890,6 @@ export default function Dashboard() {
                 <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTomorrowTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                <div className="w-2 h-2 rounded-full bg-yellow-500" style={{ position: 'absolute', right: '0px', top: '2px' }} />
               </div>
               )}
               {/* Row 3 */}
@@ -12919,7 +12907,6 @@ export default function Dashboard() {
                 <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTomorrowTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-                <div className="w-2 h-2 rounded-full bg-yellow-500" style={{ position: 'absolute', right: '0px', top: '2px' }} />
               </div>
               )}
                 </>
