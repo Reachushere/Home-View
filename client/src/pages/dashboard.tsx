@@ -8870,13 +8870,13 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Bell Button - Moved down after radio */}
+      {/* Bell Button - Swapped with Arrow Toggle */}
       <div 
         className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '616px', 
+          top: '668px', 
           right: '18px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8910,13 +8910,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Arrow Toggle Button - Moved down after bell */}
+      {/* Arrow Toggle Button - Swapped with Bell */}
       <div 
         className="absolute z-[60] pointer-events-auto"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '668px', 
+          top: '616px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
