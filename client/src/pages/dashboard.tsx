@@ -7262,7 +7262,7 @@ export default function Dashboard() {
             </div>
             
             {/* Weeks */}
-            <div className="space-y-3 mt-6">
+            <div className="space-y-1.5 mt-6">
               {[...weeks].sort((a, b) => {
                 const aFinished = parseISO(a.endDate) < new Date();
                 const bFinished = parseISO(b.endDate) < new Date();
