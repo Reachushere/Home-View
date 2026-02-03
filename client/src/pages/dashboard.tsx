@@ -12404,13 +12404,14 @@ export default function Dashboard() {
               </div>
               {/* Group 1: Left handle on header + progress bar on content line */}
               <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
-                <div className="flex items-center" style={{ marginBottom: '6px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   {/* Resize handle on header line */}
                   <div 
                     className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', position: 'relative', top: '-14px' }}
+                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
                     onMouseDown={handleTestBarResizeStart}
                   />
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Progress</span>
                 </div>
                 {/* Progress bar - stays on content line */}
                 <div style={{ position: 'relative', width: '44px', marginLeft: '7px', marginTop: '3px' }}>
