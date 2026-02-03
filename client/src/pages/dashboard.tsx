@@ -1155,6 +1155,43 @@ export default function Dashboard() {
     taskTitle: string;
   } | null>(null);
   
+  // Long-press timer for touch devices
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const longPressTouchRef = useRef<{ x: number; y: number; taskId: number; taskTitle: string } | null>(null);
+  
+  const handleTouchStart = (e: React.TouchEvent, taskId: number, taskTitle: string) => {
+    const touch = e.touches[0];
+    longPressTouchRef.current = { x: touch.clientX, y: touch.clientY, taskId, taskTitle };
+    longPressTimerRef.current = setTimeout(() => {
+      if (longPressTouchRef.current) {
+        setContextMenu({
+          x: longPressTouchRef.current.x,
+          y: longPressTouchRef.current.y,
+          taskId: longPressTouchRef.current.taskId,
+          taskTitle: longPressTouchRef.current.taskTitle
+        });
+        longPressTouchRef.current = null;
+      }
+    }, 500); // 500ms long press
+  };
+  
+  const handleTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    longPressTouchRef.current = null;
+  };
+  
+  const handleTouchMove = () => {
+    // Cancel long press if user moves finger
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    longPressTouchRef.current = null;
+  };
+  
   // Close context menu when clicking elsewhere
   useEffect(() => {
     const handleClickOutside = () => setContextMenu(null);
@@ -10026,7 +10063,7 @@ export default function Dashboard() {
                           data-testid={`all-day-task-${task.id}`}
                         >
                           <div
-                            className={`flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
+                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
                               isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
                             } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
                             style={{
@@ -10043,6 +10080,9 @@ export default function Dashboard() {
                                 taskTitle: task.title
                               });
                             }}
+                            onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
+                            onTouchEnd={handleTouchEnd}
+                            onTouchMove={handleTouchMove}
                           >
                             {!isCASL101Task(task) && (
                               <Checkbox
@@ -10058,6 +10098,20 @@ export default function Dashboard() {
                             >
                               {task.title}
                             </span>
+                            {/* Delete button - always visible */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm('Delete this task?')) {
+                                  deleteMutation.mutate(task.id);
+                                }
+                              }}
+                              className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500"
+                              title="Delete task"
+                              data-testid={`button-delete-allday-${task.id}`}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
                           </div>
                         </div>
                       );
@@ -10671,10 +10725,16 @@ export default function Dashboard() {
                                 onContextMenu={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
-                                  if (confirm('Delete this task?')) {
-                                    deleteMutation.mutate(task.id);
-                                  }
+                                  setContextMenu({
+                                    x: e.clientX,
+                                    y: e.clientY,
+                                    taskId: task.id,
+                                    taskTitle: task.title
+                                  });
                                 }}
+                                onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
+                                onTouchEnd={handleTouchEnd}
+                                onTouchMove={handleTouchMove}
                                 className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
