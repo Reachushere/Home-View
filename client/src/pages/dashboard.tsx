@@ -1147,6 +1147,27 @@ export default function Dashboard() {
     startHeight: number;
   } | null>(null);
   
+  // Context menu state for right-click delete
+  const [contextMenu, setContextMenu] = useState<{
+    x: number;
+    y: number;
+    taskId: number;
+    taskTitle: string;
+  } | null>(null);
+  
+  // Close context menu when clicking elsewhere
+  useEffect(() => {
+    const handleClickOutside = () => setContextMenu(null);
+    if (contextMenu) {
+      document.addEventListener('click', handleClickOutside);
+      document.addEventListener('contextmenu', handleClickOutside);
+      return () => {
+        document.removeEventListener('click', handleClickOutside);
+        document.removeEventListener('contextmenu', handleClickOutside);
+      };
+    }
+  }, [contextMenu]);
+  
   // Handle column resize
   const handleColumnResizeStart = (e: React.MouseEvent, columnIndex: number) => {
     e.preventDefault();
@@ -1611,8 +1632,10 @@ export default function Dashboard() {
           return;
         }
         e.preventDefault();
-        deleteMutation.mutate(selectedTaskId);
-        setSelectedTaskId(null);
+        if (confirm('Delete this task?')) {
+          deleteMutation.mutate(selectedTaskId);
+          setSelectedTaskId(null);
+        }
       }
       // Escape to deselect
       if (e.key === 'Escape') {
@@ -10013,9 +10036,12 @@ export default function Dashboard() {
                             onContextMenu={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              if (confirm('Delete this task?')) {
-                                deleteMutation.mutate(task.id);
-                              }
+                              setContextMenu({
+                                x: e.clientX,
+                                y: e.clientY,
+                                taskId: task.id,
+                                taskTitle: task.title
+                              });
                             }}
                           >
                             {!isCASL101Task(task) && (
@@ -10873,10 +10899,12 @@ export default function Dashboard() {
                       onContextMenu={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        if (confirm('Delete this task?')) {
-                          deleteMutation.mutate(task.id);
-                          setSelectedTaskId(null);
-                        }
+                        setContextMenu({
+                          x: e.clientX,
+                          y: e.clientY,
+                          taskId: task.id,
+                          taskTitle: task.title
+                        });
                       }}
                       className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                         draggedTask?.id === task.id ? "opacity-50" : ""
@@ -10919,7 +10947,7 @@ export default function Dashboard() {
                         )}
                         <span 
                           onClick={() => setEditingTask(task)}
-                          className={`text-[9px] leading-tight font-bold line-clamp-2 cursor-pointer ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
+                          className={`text-[9px] leading-tight font-bold line-clamp-2 cursor-pointer flex-1 ${task.isCompleted ? "line-through text-muted-foreground" : "text-black"}`}
                         >
                           {task.title}
                         </span>
@@ -13044,6 +13072,30 @@ export default function Dashboard() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Task Context Menu for right-click delete */}
+        {contextMenu && (
+          <div
+            className="fixed bg-gray-900/95 border border-white/20 rounded-lg shadow-xl py-1 z-[9999]"
+            style={{
+              left: contextMenu.x,
+              top: contextMenu.y,
+              minWidth: '120px'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-red-500/20 flex items-center gap-2"
+              onClick={() => {
+                deleteMutation.mutate(contextMenu.taskId);
+                setContextMenu(null);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Task
+            </button>
+          </div>
+        )}
 
         {/* Reschedule Dialog */}
         <Dialog open={!!rescheduleTask} onOpenChange={(open) => !open && setRescheduleTask(null)}>
