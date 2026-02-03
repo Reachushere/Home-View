@@ -4172,8 +4172,8 @@ export default function Dashboard() {
     weekDays = rawWeekDays;
   }
   
-  // Time slots for the day view (7am-11pm)
-  const timeSlots = Array.from({ length: 17 }, (_, i) => i + 7); // 7am-11pm
+  // Time slots for the day view (6am-midnight)
+  const timeSlots = Array.from({ length: 19 }, (_, i) => i + 6); // 6am-midnight (6-24)
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to current time by default
@@ -4185,7 +4185,7 @@ export default function Dashboard() {
       
       const now = new Date();
       const currentHour = now.getHours();
-      const startHour = 7; // calendar starts at 7am
+      const startHour = 6; // calendar starts at 6am
       
       // Calculate scroll position to show the entire current hour row at the top
       let scrollPosition = 0;
@@ -4556,9 +4556,9 @@ export default function Dashboard() {
       const startMinutes = startHour * 60 + startMin;
       const endMinutes = endHour * 60 + endMin;
       
-      // Calculate cumulative top position from hours 7 to startHour
+      // Calculate cumulative top position from hours 6 to startHour
       let topPx = 0;
-      for (let h = 7; h < startHour; h++) {
+      for (let h = 6; h < startHour; h++) {
         topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
       }
       // Add minute offset within the starting hour
@@ -4608,7 +4608,7 @@ export default function Dashboard() {
       
       // Calculate top position (where the prep bar should be) - must match task topOffset exactly
       let topPx = 0;
-      for (let h = 7; h < startHour; h++) {
+      for (let h = 6; h < startHour; h++) {
         topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
       }
       // Match the task's topOffset calculation exactly: (startMin / 60) * 44 + 2
@@ -10332,8 +10332,8 @@ export default function Dashboard() {
                   const now = new Date();
                   const currentHour = now.getHours();
                   const currentMinutes = now.getMinutes();
-                  const startHour = 7;
-                  const endHour = 23;
+                  const startHour = 6;
+                  const endHour = 24;
                   
                   // Only show if current time is within calendar range
                   if (currentHour < startHour || currentHour > endHour) return null;
