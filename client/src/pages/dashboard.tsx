@@ -6926,19 +6926,54 @@ export default function Dashboard() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Graduation Hat - Opens Settings Panel */}
-          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-              data-testid="button-settings-panel"
-              onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
-            >
-              <GraduationCap className="text-white" style={{ height: '18px', width: '18px' }} />
-            </Button>
-          </div>
+          {/* Undo Complete - Swapped with Graduation Hat */}
+          {completedTaskHistory.length > 0 ? (
+            <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
+              {/* Bottom circle: 44px, solid #FF4545 */}
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                backgroundColor: '#FF4545'
+              }} />
+              {/* Top circle: 38px, gradient #FF9494 bottom to #FF0000 top */}
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: '3px',
+                  left: '3px',
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(0deg, #FF9494 0%, #FF0000 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer'
+                }}
+                className="hover:opacity-80 transition-all duration-200"
+                onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
+                data-testid="button-undo-complete"
+                title={`Undo last completion (${completedTaskHistory.length} available)`}
+              >
+                <Undo2 className="h-[18px] w-[18px] text-white" />
+              </div>
+            </div>
+          ) : (
+            <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px', zIndex: 100 }}>
+              <div 
+                className="!h-[42px] !w-[42px] rounded-full flex items-center justify-center"
+                style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+                data-testid="button-undo-complete"
+                title="No task to undo"
+              >
+                <Undo2 className="h-[18px] w-[18px] text-white" />
+              </div>
+            </div>
+          )}
 
           {/* Bell */}
           <div 
@@ -7279,54 +7314,19 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {/* Undo Complete */}
-          {completedTaskHistory.length > 0 ? (
-            <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
-              {/* Bottom circle: 44px, solid #FF4545 */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                backgroundColor: '#FF4545'
-              }} />
-              {/* Top circle: 38px, gradient #FF9494 bottom to #FF0000 top */}
-              <div 
-                style={{
-                  position: 'absolute',
-                  top: '3px',
-                  left: '3px',
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(0deg, #FF9494 0%, #FF0000 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer'
-                }}
-                className="hover:opacity-80 transition-all duration-200"
-                onClick={() => { triggerButtonGlow('undo'); handleUndoComplete(); }}
-                data-testid="button-undo-complete"
-                title={`Undo last completion (${completedTaskHistory.length} available)`}
-              >
-                <Undo2 className="h-[18px] w-[18px] text-white" />
-              </div>
-            </div>
-          ) : (
-            <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px', zIndex: 100 }}>
-              <div 
-                className="!h-[42px] !w-[42px] rounded-full flex items-center justify-center"
-                style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-                data-testid="button-undo-complete"
-                title="No task to undo"
-              >
-                <Undo2 className="h-[18px] w-[18px] text-white" />
-              </div>
-            </div>
-          )}
+          {/* Graduation Hat - Swapped with Undo Complete */}
+          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
+            <Button 
+              size="icon"
+              variant="ghost"
+              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
+              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+              data-testid="button-settings-panel"
+              onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
+            >
+              <GraduationCap className="text-white" style={{ height: '18px', width: '18px' }} />
+            </Button>
+          </div>
 
           {/* Todo Button (swapped from tall pill) */}
           <div 
