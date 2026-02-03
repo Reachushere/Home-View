@@ -13385,37 +13385,51 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
               </div>
               )}
-              {/* Row 2 */}
+              {/* Task Row 2 */}
               {dueTomorrowTasks[1] && row1Positions.course > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '-3px' }}>
-                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTomorrowTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
+              <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
+                {/* Checkbox */}
+                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTomorrowTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
+                {/* Progress bar */}
                 <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[1], 'tomorrow'), opacity: 0.9 }} />
                 </div>
+                {/* Task */}
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.title || ''}</span>
+                {/* Code */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
-                <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                {/* Course */}
+                <span style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                {/* Days */}
                 <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
               </div>
               )}
-              {/* Row 3 */}
+              {/* Task Row 3 */}
               {dueTomorrowTasks[2] && row1Positions.course > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
-                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTomorrowTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
+              <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
+                {/* Checkbox */}
+                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTomorrowTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
+                {/* Progress bar */}
                 <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[2], 'tomorrow'), opacity: 0.9 }} />
                 </div>
+                {/* Task */}
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.title || ''}</span>
+                {/* Code */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
-                <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
+                {/* Course */}
+                <span style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
+                {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
+                {/* Days */}
                 <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
               </div>
               )}
