@@ -7321,18 +7321,42 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Completed Tasks Checkbox */}
-          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
-              data-testid="button-completed-tasks"
-              onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
+          {/* Files Button (swapped from tall pill) */}
+          <div 
+            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}
+            onMouseEnter={() => setDecorativeHoneycombHover('middle')}
+            onMouseLeave={() => setDecorativeHoneycombHover(null)}
+            data-testid="honeycomb-files-header"
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: '#FFA365',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                top: '3px',
+                left: '3px',
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+              onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
             >
-              <CheckSquare className="h-[18px] w-[18px] text-white" />
-            </Button>
+              <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+            </div>
           </div>
 
           {/* Projects Button */}
@@ -8615,50 +8639,38 @@ export default function Dashboard() {
         });
       })()}
       
-      {/* Files Button - Below readings button on tall pill */}
+      {/* Completed Tasks Button - Below readings button on tall pill (swapped from header) */}
       <div 
-        className="absolute z-50 pointer-events-auto"
+        className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: '463px', 
           right: '18px',
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px',
         }}
-        onMouseEnter={() => setDecorativeHoneycombHover('middle')}
-        onMouseLeave={() => setDecorativeHoneycombHover(null)}
-        data-testid="honeycomb-files-main"
+        data-testid="button-completed-tasks"
+        onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
       >
-        {/* Back circle - solid #FFA365 */}
         <div
+          className="hover:opacity-80 transition-all duration-200"
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '44px',
-            height: '44px',
+            top: '1px',
+            left: '1px',
+            width: '42px',
+            height: '42px',
             borderRadius: '50%',
-            background: '#FFA365',
-            boxShadow: 'none',
-          }}
-        />
-        {/* Front circle with gradient - 38px */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '3px',
-            left: '3px',
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
           }}
-          onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
         >
-          <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+          <CheckSquare className="h-[18px] w-[18px] text-white" />
         </div>
       </div>
       {/* Spring out honeycombs for course readings - moved outside files button */}
