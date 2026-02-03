@@ -10766,9 +10766,13 @@ export default function Dashboard() {
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate width: actualPrepDays * (single column width) - adjustment to align with course row prep days (2px margin)
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7) - 10px)`;
-                                  const prepHeight = 18; // Reduced height
+                                  // Calculate single day column width based on calendar grid
+                                  // The cell is inside a 7-column grid, each cell is (100% - time/module cols) / 7
+                                  // But the task is positioned inside a sub-container, so we need the parent grid width
+                                  // Use the same calculation as multi-hour tasks
+                                  const dayColWidth = `calc((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7)`;
+                                  const prepWidth = `calc(${actualPrepDays} * ${dayColWidth} - 2px)`;
+                                  const prepHeight = 18;
                                   const borderWidth = selectedTaskId === task.id ? 2 : 1;
                                   return (
                                     <>
@@ -11040,10 +11044,11 @@ export default function Dashboard() {
                   // Only show if current time is within calendar range
                   if (currentHour < startHour || currentHour > endHour) return null;
                   
-                  // Calculate position
+                  // Calculate position - include prep conflict heights
                   let topPosition = 0;
                   for (let h = startHour; h < currentHour; h++) {
                     topPosition += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
+                    topPosition += prepConflictHeights[h] || 0;
                   }
                   const currentRowHeight = gridSizes.timeSlotHeights[currentHour] || gridSizes.timeSlotHeight;
                   topPosition += (currentMinutes / 60) * currentRowHeight;
