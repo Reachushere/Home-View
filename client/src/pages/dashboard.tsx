@@ -4641,10 +4641,12 @@ export default function Dashboard() {
   };
   
   // Check if a time slot hour has any prep conflicts that require extra height
+  // This must match the logic in isTaskCoveredByPrepExtension
   const getTimeSlotPrepConflictHeight = (hour: number) => {
     const prepExtensions = getPrepExtensionsForWeek();
     const multiHourTasks = getMultiHourTasksForWeek();
     
+    // Method 1: Check formal prep extensions (timed tasks)
     for (const ext of prepExtensions) {
       if (ext.hour !== hour) continue;
       
@@ -4672,6 +4674,54 @@ export default function Dashboard() {
         }
       }
     }
+    
+    // Method 2: Check tasks with prep days (startDate) that cover cells at this hour
+    // This matches the second check in isTaskCoveredByPrepExtension
+    const tasksWithPrepDays = allTasks.filter(t => {
+      if (t.isCompleted) return false;
+      if (isCASL101Finished(t)) return false;
+      if (!t.startDate) return false; // Must have prep days
+      
+      const taskDue = new Date(t.dueDate);
+      const taskHour = t.eventStartTime 
+        ? parseInt(t.eventStartTime.split(':')[0]) 
+        : taskDue.getHours();
+      
+      return taskHour === hour;
+    });
+    
+    // For each task with prep days at this hour, check if there are other tasks in its prep range
+    for (const prepTask of tasksWithPrepDays) {
+      const prepTaskDue = new Date(prepTask.dueDate);
+      const prepTaskStart = new Date(prepTask.startDate!);
+      
+      // Check each day in the prep range
+      for (const day of weekDays) {
+        const dayStart = startOfDay(day);
+        const isInPrepRange = dayStart >= startOfDay(prepTaskStart) && dayStart <= startOfDay(prepTaskDue);
+        if (!isInPrepRange) continue;
+        
+        // Check if there are other tasks at this hour on this day
+        const tasksInSlot = getTasksForHour(day, hour);
+        const hasConflict = tasksInSlot.some(t => t.id !== prepTask.id);
+        if (hasConflict) {
+          return 24;
+        }
+        
+        // Check multi-hour tasks
+        const dayIdx = weekDays.findIndex(d => isSameDay(d, day));
+        const hasMultiHourConflict = multiHourTasks.some(({ task: t, dayIdx: tDayIdx }) => {
+          if (t.id === prepTask.id) return false;
+          if (tDayIdx !== dayIdx) return false;
+          const tHour = t.eventStartTime ? parseInt(t.eventStartTime.split(':')[0]) : 0;
+          return tHour === hour;
+        });
+        if (hasMultiHourConflict) {
+          return 24;
+        }
+      }
+    }
+    
     return 0;
   };
   
@@ -8758,8 +8808,11 @@ export default function Dashboard() {
                 <button
                   className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-red-600"
                   onClick={() => deleteStickyNoteMutation.mutate(note.id)}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  title="Delete note"
+                  data-testid={`sticky-note-delete-${note.id}`}
                 >
-                  <X className="h-3 w-3" />
+                  <Trash2 className="h-3 w-3" />
                 </button>
               </div>
             </div>
