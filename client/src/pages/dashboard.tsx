@@ -12970,11 +12970,13 @@ export default function Dashboard() {
                 </div>
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
+              {/* Days header - absolute positioned */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 5}px`, top: '0px' }}>Days</span>
               {/* Group 6: Days - absolutely positioned */}
               <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '-4px', top: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Days</span>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Days</span>
                 </div>
                 <span style={{ fontSize: '10px', color: '#4ade80', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
