@@ -7786,7 +7786,7 @@ export default function Dashboard() {
 
           {/* Files Button (swapped from tall pill) */}
           <div 
-            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}
+            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative', touchAction: 'manipulation' }}
             onMouseEnter={() => setDecorativeHoneycombHover('middle')}
             onMouseLeave={() => setDecorativeHoneycombHover(null)}
             data-testid="honeycomb-files-header"
@@ -7815,8 +7815,10 @@ export default function Dashboard() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
+                touchAction: 'manipulation',
               }}
               onClick={() => { if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
+              onTouchEnd={(e) => { e.preventDefault(); if (!isWeeksFlyoutOpen) bringFlyoutToFront('files'); setIsWeeksFlyoutOpen(!isWeeksFlyoutOpen); }}
             >
               <Folder style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
             </div>
@@ -11815,7 +11817,7 @@ export default function Dashboard() {
           {/* Weeks Flyout - centered panel for week folders */}
           <div 
             className={`fixed ${isResizingWeeksFlyout ? '' : 'transition-all duration-400 ease-out'} overflow-hidden ${isWeeksFlyoutOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} 
-            style={{ width: '900px', height: '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'calc(50vw + 450px) 50%', transitionDuration: '400ms', zIndex: getFlyoutZIndex('files') }}
+            style={{ width: isMobile ? '95vw' : '900px', maxWidth: '900px', height: isMobile ? '90vh' : '85vh', top: '50%', left: '50%', transform: isWeeksFlyoutOpen ? 'translate(-50%, -50%) scale(1)' : 'translate(-50%, -50%) scale(0)', transformOrigin: 'center center', transitionDuration: '400ms', zIndex: getFlyoutZIndex('files') }}
             onClick={() => bringFlyoutToFront('files')}
           >
             {/* Resize Handle */}
