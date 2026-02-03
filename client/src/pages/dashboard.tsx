@@ -2135,7 +2135,7 @@ export default function Dashboard() {
     draggingStickyNoteRef.current = null;
     setDragPosition(null);
     dragPositionRef.current = null;
-  }, []);
+  }, [updateStickyNoteMutation]);
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
@@ -2146,7 +2146,7 @@ export default function Dashboard() {
         window.removeEventListener('mouseup', handleStickyNoteMouseUp);
       };
     }
-  }, [draggingStickyNote]);
+  }, [draggingStickyNote, handleStickyNoteMouseMove, handleStickyNoteMouseUp]);
 
   // Auto-return sticky notes to home position after 2 hours
   useEffect(() => {
