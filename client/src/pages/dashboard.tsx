@@ -6975,34 +6975,38 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Bell */}
+          {/* Completed Tasks Button - Swapped from tall pill to header */}
           <div 
             style={{ 
               marginTop: '4px', 
               width: '44px', 
               height: '44px', 
               borderRadius: '50%', 
-              background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', 
+              background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', 
               padding: '1px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
+              cursor: 'pointer'
             }}
+            data-testid="button-completed-tasks"
+            onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-              style={isMuted 
-                ? { background: 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }
-                : { background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }
-              }
-              data-testid="button-mute-toggle"
-              title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
+            <div
+              className="hover:opacity-80 transition-all duration-200"
+              style={{
+                position: 'absolute',
+                top: '1px',
+                left: '1px',
+                width: '42px',
+                height: '42px',
+                borderRadius: '50%',
+                background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
-            </Button>
+              <CheckSquare className="h-[18px] w-[18px] text-white" />
+            </div>
           </div>
 
           {/* Sticky Note Button - Swapped from tall pill to header */}
@@ -8778,7 +8782,7 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Completed Tasks Button - Below sticky note on tall pill (swapped with sticky note) */}
+      {/* Bell Button - Swapped from header to tall pill */}
       <div 
         className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
@@ -8787,11 +8791,12 @@ export default function Dashboard() {
           top: '514px', 
           right: '18px',
           borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           padding: '1px',
         }}
-        data-testid="button-completed-tasks"
-        onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
+        data-testid="button-mute-toggle"
+        onClick={() => { triggerButtonGlow('bell'); toggleMute(); }}
+        title={isMuted ? `Muted for ${Math.ceil((muteUntil! - Date.now()) / 60000)} min` : "Mute for 30 min"}
       >
         <div
           className="hover:opacity-80 transition-all duration-200"
@@ -8802,14 +8807,18 @@ export default function Dashboard() {
             width: '42px',
             height: '42px',
             borderRadius: '50%',
-            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+            background: isMuted 
+              ? 'linear-gradient(180deg, #FF9494 0%, #FF0000 100%)' 
+              : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+            boxShadow: isMuted 
+              ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)'
+              : 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <CheckSquare className="h-[18px] w-[18px] text-white" />
+          {isMuted ? <BellOff className="h-[18px] w-[18px] text-white" /> : <Bell className="h-[18px] w-[18px] text-white" />}
         </div>
       </div>
 
