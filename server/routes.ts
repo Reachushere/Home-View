@@ -1109,16 +1109,22 @@ export async function registerRoutes(
   // POST /api/extract-text-from-url - Extract text from a PDF at a given URL (for OneDrive files)
   app.post("/api/extract-text-from-url", async (req, res) => {
     try {
-      const { url } = req.body;
+      let { url } = req.body;
       if (!url) {
         return res.status(400).json({ error: "URL is required" });
       }
 
+      // Decode HTML entities in URL (OneDrive returns &amp; instead of &)
+      url = url.replace(/&amp;/g, '&');
+      console.log("Extracting text from URL:", url.substring(0, 100) + "...");
+
       // Fetch the PDF from the URL
       const response = await fetch(url);
       if (!response.ok) {
-        return res.status(400).json({ error: "Failed to fetch file from URL" });
+        console.error("Failed to fetch file, status:", response.status, response.statusText);
+        return res.status(400).json({ error: `Failed to fetch file from URL: ${response.status}` });
       }
+      console.log("Successfully fetched PDF, extracting text...");
 
       const buffer = Buffer.from(await response.arrayBuffer());
       
@@ -1158,6 +1164,7 @@ export async function registerRoutes(
         .replace(/ {2,}/g, ' ')
         .trim();
 
+      console.log("Text extraction complete. Length:", textContent.length, "chars, first 100:", textContent.substring(0, 100));
       res.json({ text: textContent });
     } catch (err) {
       console.error("Error extracting text from URL:", err);
