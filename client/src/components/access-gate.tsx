@@ -36,36 +36,46 @@ export function AccessGate({ children }: AccessGateProps) {
   }, []);
 
   const checkAccess = async () => {
-    // In development mode, auto-enable admin access
-    const isDev = import.meta.env.DEV || window.location.hostname === "localhost" || window.location.hostname.includes("replit");
-    if (isDev) {
+    // Check URL for access token FIRST - this takes priority over admin mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("access");
+    
+    // If URL has access token, validate it and use read-only mode (never auto-admin)
+    if (urlToken) {
+      await validateToken(urlToken);
+      // Clean up URL after validation
+      window.history.replaceState({}, "", window.location.pathname);
+      return;
+    }
+
+    // Only auto-enable admin for truly local development (localhost only, not replit.app)
+    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    const isDevMode = import.meta.env.DEV && isLocalhost;
+    if (isDevMode) {
       localStorage.setItem(ADMIN_KEY, "true");
       setIsAdmin(true);
       setIsAuthorized(true);
       return;
     }
 
-    // Check if admin mode
+    // Check if admin mode is stored (user clicked "I'm the owner")
     if (localStorage.getItem(ADMIN_KEY) === "true") {
       setIsAdmin(true);
       setIsAuthorized(true);
       return;
     }
 
-    // Check URL for token
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlToken = urlParams.get("access");
-
     // Check localStorage for token
     const storedToken = localStorage.getItem(ACCESS_TOKEN_KEY);
     const storedExpiry = localStorage.getItem(EXPIRES_AT_KEY);
 
-    // If stored token exists and not expired, use it
+    // If stored token exists and not expired, use it (for returning share link users)
     if (storedToken && storedExpiry) {
       const expiryDate = new Date(storedExpiry);
       if (expiryDate > new Date()) {
         setExpiresAt(expiryDate);
         setIsAuthorized(true);
+        // Note: isAdmin stays false, so this is read-only mode
         return;
       } else {
         // Clear expired token
@@ -74,15 +84,7 @@ export function AccessGate({ children }: AccessGateProps) {
       }
     }
 
-    // If URL has token, validate it
-    if (urlToken) {
-      await validateToken(urlToken);
-      // Clean up URL
-      window.history.replaceState({}, "", window.location.pathname);
-      return;
-    }
-
-    // No valid access
+    // No valid access - show login screen
     setIsAuthorized(false);
   };
 
