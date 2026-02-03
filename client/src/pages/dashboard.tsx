@@ -12644,6 +12644,24 @@ export default function Dashboard() {
             return daysUntil <= 3 ? '#eab308' : '#22c55e';
           };
 
+          // Helper to format days display for Tomorrow box
+          // Shows "1(X)d" for prep tasks where X is the actual due date days
+          const getTomorrowDaysDisplay = (task: typeof dueTodayTasks[0] | undefined): string => {
+            if (!task?.dueDate) return '';
+            const daysUntilDue = Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            
+            // If task is actually due tomorrow (1 day), just show "1d"
+            if (daysUntilDue <= 1) return '1d';
+            
+            // If task has a startDate and is in prep period, show "1(X)d" format
+            if (task.startDate) {
+              return `1(${daysUntilDue})d`;
+            }
+            
+            // Fallback to regular days display
+            return `${daysUntilDue}d`;
+          };
+
           // Render a single task row
           const renderTask = (task: typeof dueTodayTasks[0], showDaysUntil = false, boxType: 'today' | 'tomorrow' | 'thisweek' = 'today') => {
             const attachments = parseAttachments(task.attachments);
@@ -13324,7 +13342,7 @@ export default function Dashboard() {
                         <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
                       </div>
                       <div className="text-xs text-green-400 flex-shrink-0">
-                        {task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}
+                        {getTomorrowDaysDisplay(task)}
                       </div>
                     </div>
                   ))}
@@ -13361,7 +13379,7 @@ export default function Dashboard() {
               {/* Due */}
               <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '12px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
               {/* Days */}
-              <span style={{ position: 'absolute', right: '0px', top: '12px', fontSize: '10px', color: '#4ade80' }}>{dueTomorrowTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+              <span style={{ position: 'absolute', right: '0px', top: '12px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
               </div>
               {/* Row 2 */}
               {dueTomorrowTasks[1] && row1Positions.course > 0 && (
@@ -13377,7 +13395,7 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTomorrowTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
               </div>
               )}
               {/* Row 3 */}
@@ -13394,7 +13412,7 @@ export default function Dashboard() {
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
                 <span className="truncate" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
-                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{dueTomorrowTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTomorrowTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: '#4ade80' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
               </div>
               )}
                 </>
