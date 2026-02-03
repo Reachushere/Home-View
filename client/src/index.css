@@ -506,7 +506,7 @@ button[role="combobox"] > span {
   }
 }
 
-/* Today column and current hour row shimmer effect - runs every 8 seconds, silver */
+/* Today column and current hour row shimmer effect - runs every 16 seconds, silver */
 .today-hour-shimmer {
   position: relative;
   overflow: hidden;
@@ -528,7 +528,7 @@ button[role="combobox"] > span {
     transparent 100%
   );
   transform: translateX(-100%);
-  animation: today-hour-shimmer-sweep 8s ease-in-out infinite;
+  animation: today-hour-shimmer-sweep 16s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -537,14 +537,14 @@ button[role="combobox"] > span {
     transform: translateX(-100%);
     opacity: 0;
   }
-  2% {
+  1% {
     opacity: 1;
   }
-  10% {
+  5% {
     transform: translateX(100%);
     opacity: 1;
   }
-  12% {
+  6% {
     opacity: 0;
   }
   100% {
@@ -574,7 +574,7 @@ button[role="combobox"] > span {
     transparent 100%
   );
   transform: translateX(-100%);
-  animation: current-hour-row-shimmer-sweep 8s ease-in-out infinite;
+  animation: current-hour-row-shimmer-sweep 16s ease-in-out infinite;
   pointer-events: none;
   z-index: 1;
 }
@@ -584,14 +584,14 @@ button[role="combobox"] > span {
     transform: translateX(-100%);
     opacity: 0;
   }
-  2% {
+  1% {
     opacity: 1;
   }
-  10% {
+  5% {
     transform: translateX(100%);
     opacity: 1;
   }
-  12% {
+  6% {
     opacity: 0;
   }
   100% {
