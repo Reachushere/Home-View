@@ -9571,7 +9571,7 @@ export default function Dashboard() {
               <div className="p-4 overflow-y-auto flex-1">
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
-                <div className="flex flex-col justify-between">
+                <div className="flex flex-col gap-4">
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Colour Settings</Label>
                   <p className="text-xs text-muted-foreground">
@@ -9705,81 +9705,6 @@ export default function Dashboard() {
                   </div>
                 </div>
                 
-                {/* TTS Highlighting Settings */}
-                <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
-                  <p className="text-xs text-muted-foreground">
-                    Fine-tune word highlighting to sync with your Home Assistant TTS voice.
-                  </p>
-                  
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Start Delay</Label>
-                        <span className="text-xs text-muted-foreground">{ttsSettings.startDelay}s</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="5"
-                        max="60"
-                        step="1"
-                        value={ttsSettings.startDelay}
-                        onChange={(e) => setTtsSettings(prev => ({ ...prev, startDelay: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
-                        data-testid="input-tts-start-delay"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Time before highlighting begins (network + TTS processing)
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Speech Rate</Label>
-                        <span className="text-xs text-muted-foreground">{ttsSettings.wordsPerMinute} WPM</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="60"
-                        max="200"
-                        step="5"
-                        value={ttsSettings.wordsPerMinute}
-                        onChange={(e) => setTtsSettings(prev => ({ ...prev, wordsPerMinute: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
-                        data-testid="input-tts-wpm"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Words per minute - match your TTS voice speed
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label className="text-xs">Smart Timing</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Adjust for word length (longer words = longer highlight)
-                        </p>
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={ttsSettings.useSmartTiming}
-                        onChange={(e) => setTtsSettings(prev => ({ ...prev, useSmartTiming: e.target.checked }))}
-                        className="h-4 w-4 rounded border-gray-300"
-                        data-testid="input-tts-smart-timing"
-                      />
-                    </div>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => saveTtsSettings(ttsSettings)}
-                      data-testid="button-save-tts-settings"
-                    >
-                      Save TTS Settings
-                    </Button>
-                  </div>
-                </div>
-                
                 {/* Layout Settings - in left column */}
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Layout Settings</Label>
@@ -9882,7 +9807,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column */}
-                <div className="flex flex-col justify-between">
+                <div className="flex flex-col gap-4">
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Blinking & Spacing</Label>
@@ -10005,6 +9930,81 @@ export default function Dashboard() {
                     </div>
                     
                     </div>
+                </div>
+                
+                {/* TTS Highlighting Settings */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Fine-tune word highlighting to sync with your Home Assistant TTS voice.
+                  </p>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Start Delay</Label>
+                        <span className="text-xs text-muted-foreground">{ttsSettings.startDelay}s</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="5"
+                        max="60"
+                        step="1"
+                        value={ttsSettings.startDelay}
+                        onChange={(e) => setTtsSettings(prev => ({ ...prev, startDelay: Number(e.target.value) }))}
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="input-tts-start-delay"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Time before highlighting begins (network + TTS processing)
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Speech Rate</Label>
+                        <span className="text-xs text-muted-foreground">{ttsSettings.wordsPerMinute} WPM</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="60"
+                        max="200"
+                        step="5"
+                        value={ttsSettings.wordsPerMinute}
+                        onChange={(e) => setTtsSettings(prev => ({ ...prev, wordsPerMinute: Number(e.target.value) }))}
+                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        data-testid="input-tts-wpm"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Words per minute - match your TTS voice speed
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <Label className="text-xs">Smart Timing</Label>
+                        <p className="text-xs text-muted-foreground">
+                          Adjust for word length (longer words = longer highlight)
+                        </p>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={ttsSettings.useSmartTiming}
+                        onChange={(e) => setTtsSettings(prev => ({ ...prev, useSmartTiming: e.target.checked }))}
+                        className="h-4 w-4 rounded border-gray-300"
+                        data-testid="input-tts-smart-timing"
+                      />
+                    </div>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => saveTtsSettings(ttsSettings)}
+                      data-testid="button-save-tts-settings"
+                    >
+                      Save TTS Settings
+                    </Button>
+                  </div>
                 </div>
                 
                 {/* Data Sync Section */}
