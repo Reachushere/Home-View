@@ -2389,7 +2389,16 @@ export async function registerRoutes(
   app.patch("/api/sticky-notes/:id", async (req, res) => {
     try {
       const id = Number(req.params.id);
-      const note = await storage.updateStickyNote(id, req.body);
+      const updates = { ...req.body };
+      // Convert lastMovedAt from string to Date if provided
+      if (updates.lastMovedAt && typeof updates.lastMovedAt === 'string') {
+        updates.lastMovedAt = new Date(updates.lastMovedAt);
+      }
+      // Convert reminderTime from string to Date if provided
+      if (updates.reminderTime && typeof updates.reminderTime === 'string') {
+        updates.reminderTime = new Date(updates.reminderTime);
+      }
+      const note = await storage.updateStickyNote(id, updates);
       res.json(note);
     } catch (err) {
       console.error("Error updating sticky note:", err);
