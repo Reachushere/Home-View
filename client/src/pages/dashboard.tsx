@@ -13096,7 +13096,19 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
-                <div className="flex items-center justify-center text-white text-sm font-medium" style={{ minHeight: '80px' }}>No tasks due today</div>
+                <div style={{ position: 'relative', minHeight: '80px' }}>
+                  {/* Headers row for empty state */}
+                  <div className="flex" style={{ position: 'relative', marginBottom: '8px' }}>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${23 + testProgressBarLeft}px`, top: '0px' }}>Progress</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 5}px`, top: '0px' }}>Days</span>
+                  </div>
+                  {/* Empty state message */}
+                  <div className="flex items-center justify-center text-white/60 text-xs" style={{ marginTop: '30px' }}>No tasks due today</div>
+                </div>
               ) : isMobile ? (
                 <div className="flex flex-col gap-2">
                   {dueTodayTasks.slice(0, 5).map((task) => (
