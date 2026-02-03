@@ -11771,17 +11771,27 @@ export default function Dashboard() {
                   <div className="space-y-1">
                     {/* Folders */}
                     {oneDriveFolders.map((folder) => {
-                      // Check if folder name matches a course - use hardcoded colors
+                      // Check if folder name or current path matches a course - use hardcoded colors
                       const courseColorMap: Record<string, string> = {
                         'CPPA122': '#4ade80', // green
                         'CFNF400': '#f472b6', // pink
                         'CASL101': '#818cf8', // indigo
                       };
                       let folderColor: string | undefined;
+                      // First check if we're inside a course folder (path contains course code)
                       for (const [courseCode, color] of Object.entries(courseColorMap)) {
-                        if (folder.name.includes(courseCode)) {
+                        if (oneDrivePath.includes(courseCode)) {
                           folderColor = color;
                           break;
+                        }
+                      }
+                      // If not inside a course folder, check if folder name itself is a course
+                      if (!folderColor) {
+                        for (const [courseCode, color] of Object.entries(courseColorMap)) {
+                          if (folder.name.includes(courseCode)) {
+                            folderColor = color;
+                            break;
+                          }
                         }
                       }
                       
