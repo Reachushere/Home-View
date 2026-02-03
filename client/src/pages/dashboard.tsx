@@ -9569,7 +9569,7 @@ export default function Dashboard() {
                 </button>
               </div>
               <div className="px-4 pb-4 pt-0 overflow-y-auto flex-1">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4" style={{ marginTop: '-2px' }}>
                 {/* Left Column */}
                 <div className="flex flex-col gap-4">
                 <div className="border rounded-lg p-3 space-y-3">
