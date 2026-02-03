@@ -12990,7 +12990,7 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTomorrowTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                <div style={{ position: 'absolute', left: `${testProgressBarLeft + 7}px`, top: '6px', width: '44px' }}>
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[1], 'tomorrow'), opacity: 0.9 }} />
                 </div>
@@ -13007,7 +13007,7 @@ export default function Dashboard() {
                 <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueTomorrowTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                <div style={{ position: 'absolute', left: `${testProgressBarLeft + 7}px`, top: '6px', width: '44px' }}>
+                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[2], 'tomorrow'), opacity: 0.9 }} />
                 </div>
