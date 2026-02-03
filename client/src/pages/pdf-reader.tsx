@@ -27,7 +27,12 @@ type Voice = "alloy" | "echo" | "fable" | "onyx" | "nova" | "shimmer";
 
 export default function PDFReaderPage() {
   const [, params] = useRoute("/pdf-reader/:fileId");
-  const fileId = params?.fileId ? parseInt(params.fileId) : null;
+  const [isOneDriveRoute] = useRoute("/pdf-reader/onedrive");
+  const fileId = params?.fileId && params.fileId !== "onedrive" ? parseInt(params.fileId) : null;
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const oneDriveUrl = urlParams.get("url");
+  const oneDriveName = urlParams.get("name");
   
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -59,8 +64,12 @@ export default function PDFReaderPage() {
       if (!response.ok) throw new Error("Failed to fetch file");
       return response.json();
     },
-    enabled: !!fileId,
+    enabled: !!fileId && !isOneDriveRoute,
   });
+  
+  const isOneDrive = isOneDriveRoute && oneDriveUrl;
+  const pdfUrl = isOneDrive ? decodeURIComponent(oneDriveUrl) : file?.objectPath;
+  const fileName = isOneDrive ? (oneDriveName ? decodeURIComponent(oneDriveName) : "OneDrive PDF") : file?.displayName;
 
   const onDocumentLoadSuccess = ({ numPages: pages }: { numPages: number }) => {
     setNumPages(pages);
@@ -68,13 +77,13 @@ export default function PDFReaderPage() {
   };
 
   const extractAllText = async (): Promise<string> => {
-    if (!file?.objectPath || numPages === 0) return "";
+    if (!pdfUrl || numPages === 0) return "";
     
     setIsLoading(true);
     let fullText = "";
     
     try {
-      const loadingTask = pdfjs.getDocument(file.objectPath);
+      const loadingTask = pdfjs.getDocument(pdfUrl);
       const pdf = await loadingTask.promise;
       
       for (let i = 1; i <= numPages; i++) {
@@ -253,7 +262,7 @@ export default function PDFReaderPage() {
     }
   }, [playbackSpeed]);
 
-  if (fileLoading) {
+  if (fileLoading && !isOneDrive) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
@@ -261,7 +270,7 @@ export default function PDFReaderPage() {
     );
   }
 
-  if (!file) {
+  if (!file && !isOneDrive) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100 p-4">
         <div className="max-w-4xl mx-auto">
@@ -294,7 +303,7 @@ export default function PDFReaderPage() {
               </Button>
             </Link>
             <div className="truncate">
-              <h1 className="font-semibold text-gray-800 truncate">{file.displayName || file.originalName}</h1>
+              <h1 className="font-semibold text-gray-800 truncate">{fileName || "PDF Document"}</h1>
               <p className="text-xs text-gray-500">Page {currentPage} of {numPages}</p>
             </div>
           </div>
@@ -324,9 +333,9 @@ export default function PDFReaderPage() {
       <div className="max-w-6xl mx-auto p-4">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-4">
           <div className="flex justify-center p-4 bg-gray-100 min-h-[400px] sm:min-h-[600px]">
-            {file.objectPath && (
+            {pdfUrl && (
               <Document
-                file={file.objectPath}
+                file={pdfUrl}
                 onLoadSuccess={onDocumentLoadSuccess}
                 loading={
                   <div className="flex items-center justify-center h-full">

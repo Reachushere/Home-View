@@ -9,13 +9,16 @@ import Dashboard from "@/pages/dashboard";
 import FilesPage from "@/pages/files";
 import ProjectsPage from "@/pages/projects";
 import PDFReaderPage from "@/pages/pdf-reader";
+import OneDrivePage from "@/pages/onedrive";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
-      <Route path="/files" component={FilesPage} />
+      <Route path="/files" component={OneDrivePage} />
+      <Route path="/files-local" component={FilesPage} />
       <Route path="/projects" component={ProjectsPage} />
+      <Route path="/pdf-reader/onedrive" component={PDFReaderPage} />
       <Route path="/pdf-reader/:fileId" component={PDFReaderPage} />
       <Route component={NotFound} />
     </Switch>
