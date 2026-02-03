@@ -1920,6 +1920,8 @@ export default function Dashboard() {
   // Sticky note state for dragging
   const [draggingStickyNote, setDraggingStickyNote] = useState<number | null>(null);
   const [stickyNoteOffset, setStickyNoteOffset] = useState({ x: 0, y: 0 });
+  const stickyNoteOffsetRef = useRef({ x: 0, y: 0 });
+  const draggingStickyNoteRef = useRef<number | null>(null);
   const [maxStickyZIndex, setMaxStickyZIndex] = useState(100);
   const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null);
   const dragPositionRef = useRef<{ x: number; y: number } | null>(null);
@@ -1993,13 +1995,16 @@ export default function Dashboard() {
   // Handle sticky note drag
   const handleStickyNoteMouseDown = (e: React.MouseEvent, noteId: number, note: StickyNoteType) => {
     e.preventDefault();
+    // Update both state and refs for reliable access in callbacks
     setDraggingStickyNote(noteId);
+    draggingStickyNoteRef.current = noteId;
+    
     const rect = (e.target as HTMLElement).closest('[data-sticky-note]')?.getBoundingClientRect();
     if (rect) {
-      setStickyNoteOffset({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
+      const offset = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      setStickyNoteOffset(offset);
+      stickyNoteOffsetRef.current = offset;
+      
       // Initialize drag position from current note position
       const initialPos = { x: note.positionX, y: note.positionY };
       setDragPosition(initialPos);
@@ -2012,22 +2017,25 @@ export default function Dashboard() {
   };
 
   const handleStickyNoteMouseMove = useCallback((e: MouseEvent) => {
-    if (draggingStickyNote !== null) {
-      const newX = Math.max(0, e.clientX - stickyNoteOffset.x);
-      const newY = Math.max(0, e.clientY - stickyNoteOffset.y);
+    // Use refs for reliable access to current values
+    if (draggingStickyNoteRef.current !== null) {
+      const offset = stickyNoteOffsetRef.current;
+      const newX = Math.max(0, e.clientX - offset.x);
+      const newY = Math.max(0, e.clientY - offset.y);
       // Update both state and ref - ref used for mouseup to avoid stale closure
       const newPos = { x: newX, y: newY };
       setDragPosition(newPos);
       dragPositionRef.current = newPos;
     }
-  }, [draggingStickyNote, stickyNoteOffset]);
+  }, []);
 
   const handleStickyNoteMouseUp = useCallback((e: MouseEvent) => {
-    // Use ref value to avoid stale closure issues
+    // Use refs for reliable access to current values
     const currentDragPosition = dragPositionRef.current;
+    const currentNoteId = draggingStickyNoteRef.current;
     
     // Mark the note as moved with current timestamp
-    if (draggingStickyNote !== null && currentDragPosition !== null) {
+    if (currentNoteId !== null && currentDragPosition !== null) {
       // Check if dropped in all-day row area - snap to cell left of today
       if (allDayRowRef.current) {
         const allDayRect = allDayRowRef.current.getBoundingClientRect();
@@ -2060,7 +2068,7 @@ export default function Dashboard() {
             const snapHeight = cellRect.height - 4;
             
             updateStickyNoteMutation.mutate({ 
-              id: draggingStickyNote, 
+              id: currentNoteId, 
               updates: { 
                 positionX: Math.round(snapX),
                 positionY: Math.round(snapY),
@@ -2072,6 +2080,7 @@ export default function Dashboard() {
               } 
             });
             setDraggingStickyNote(null);
+            draggingStickyNoteRef.current = null;
             setDragPosition(null);
             dragPositionRef.current = null;
             return;
@@ -2081,7 +2090,7 @@ export default function Dashboard() {
       
       // Save final position to database
       updateStickyNoteMutation.mutate({ 
-        id: draggingStickyNote, 
+        id: currentNoteId, 
         updates: { 
           positionX: currentDragPosition.x,
           positionY: currentDragPosition.y,
@@ -2090,9 +2099,10 @@ export default function Dashboard() {
       });
     }
     setDraggingStickyNote(null);
+    draggingStickyNoteRef.current = null;
     setDragPosition(null);
     dragPositionRef.current = null;
-  }, [draggingStickyNote]);
+  }, []);
 
   useEffect(() => {
     if (draggingStickyNote !== null) {
@@ -2103,7 +2113,7 @@ export default function Dashboard() {
         window.removeEventListener('mouseup', handleStickyNoteMouseUp);
       };
     }
-  }, [draggingStickyNote, handleStickyNoteMouseMove, handleStickyNoteMouseUp]);
+  }, [draggingStickyNote]);
 
   // Auto-return sticky notes to home position after 2 hours
   useEffect(() => {
