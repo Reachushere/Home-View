@@ -13316,7 +13316,7 @@ export default function Dashboard() {
             <div 
               style={{ 
                 background: colorSettings.headerBar,
-                padding: '6px 12px'
+                padding: '6px 15px'
               }}
             >
               <h4 
