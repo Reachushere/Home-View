@@ -1059,6 +1059,63 @@ export default function Dashboard() {
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
   
+  // Pre-fetch OneDrive file counts for the selected week
+  useEffect(() => {
+    const fetchOneDriveFileCounts = async () => {
+      const oneDriveFolderMap: Record<string, string> = {
+        'cppa122': 'CPPA122 - Local Politics',
+        'cfnf400': 'CFNF400 - Human Sexuality', 
+        'casl101': 'CASL101 - American Sign Language'
+      };
+      
+      const counts: Record<string, number> = {};
+      
+      for (const [courseId, courseFolder] of Object.entries(oneDriveFolderMap)) {
+        const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
+        try {
+          const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+          const courseFolders = await courseResponse.json();
+          const weekFolder = courseFolders.find((f: any) => 
+            f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
+          );
+          
+          if (weekFolder) {
+            const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+            const weekContents = await weekResponse.json();
+            
+            // Check for module folder
+            const moduleFolder = weekContents.find((f: any) => 
+              f.type === 'folder' && f.name.toLowerCase().includes('module')
+            );
+            if (moduleFolder) {
+              const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
+              const moduleFiles = await moduleResponse.json();
+              const pdfCount = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf')).length;
+              counts[`week-${selectedWeek}-${courseId}-module`] = pdfCount;
+            }
+            
+            // Check for reading folder
+            const readingFolder = weekContents.find((f: any) => 
+              f.type === 'folder' && f.name.toLowerCase().includes('reading')
+            );
+            if (readingFolder) {
+              const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
+              const readingFiles = await readingResponse.json();
+              const pdfCount = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf')).length;
+              counts[`week-${selectedWeek}-${courseId}-reading`] = pdfCount;
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching OneDrive counts for ${courseId}:`, error);
+        }
+      }
+      
+      setOneDriveFileCounts(prev => ({ ...prev, ...counts }));
+    };
+    
+    fetchOneDriveFileCounts();
+  }, [selectedWeek]);
+  
   // Close modules/readings honeycomb when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -2641,6 +2698,9 @@ export default function Dashboard() {
 
   // File preview dialog state
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
+  const [oneDrivePreviewFiles, setOneDrivePreviewFiles] = useState<FileItem[]>([]);
+  // Cache for OneDrive file counts by folder (e.g., "week-4-cppa122-module": 3)
+  const [oneDriveFileCounts, setOneDriveFileCounts] = useState<Record<string, number>>({});
   const [fileSelectorGlow, setFileSelectorGlow] = useState(false);
   const fileSelectorGlowTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [clickedButton, setClickedButton] = useState<string | null>(null);
@@ -6453,7 +6513,7 @@ export default function Dashboard() {
       </Dialog>
 
       {/* File Preview Dialog with Media Controls */}
-      <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
+      <Dialog open={!!previewFile} onOpenChange={(open) => { if (!open) { setPreviewFile(null); setOneDrivePreviewFiles([]); } }}>
         <DialogContent className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white">
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
@@ -6488,10 +6548,14 @@ export default function Dashboard() {
               const courseCode = folderParts[2];
               const isReading = previewFile?.folder?.includes('reading');
               const isModule = previewFile?.folder?.includes('module');
-              const relatedFiles = (isReading || isModule) ? allFiles.filter(f => 
-                f.folder?.includes(`week-${weekNum}-${courseCode}`) && 
-                (isReading ? f.folder?.includes('reading') : f.folder?.includes('module'))
-              ) : [];
+              
+              // Use OneDrive files if available, otherwise filter from allFiles
+              const relatedFiles = oneDrivePreviewFiles.length > 0 
+                ? oneDrivePreviewFiles
+                : (isReading || isModule) ? allFiles.filter(f => 
+                    f.folder?.includes(`week-${weekNum}-${courseCode}`) && 
+                    (isReading ? f.folder?.includes('reading') : f.folder?.includes('module'))
+                  ) : [];
               
               const currentIndex = relatedFiles.findIndex(f => f.id === previewFile?.id);
               const canGoPrev = currentIndex > 0;
@@ -8869,8 +8933,11 @@ export default function Dashboard() {
           const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
           const courseHex = course.color || '#4ADE80';
           const courseId = courseCode.toLowerCase();
-          const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && !f.listened).length;
-          const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module') && f.listened).length;
+          // Use OneDrive file counts - all files are "unread" since we don't track listened state in OneDrive
+          const folderKey = `week-${selectedWeek}-${courseId}-module`;
+          const oneDriveCount = oneDriveFileCounts[folderKey] || 0;
+          const unreadCount = oneDriveCount;
+          const completedCount = 0; // No listened tracking for OneDrive files yet
           return (
             <div 
               key={`module-btn-${courseId}`}
@@ -8914,16 +8981,17 @@ export default function Dashboard() {
                       const pdfFiles = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
                       
                       if (pdfFiles.length > 0) {
-                        const firstPdf = pdfFiles[0];
-                        // Create FileItem-compatible object for preview dialog
-                        setPreviewFile({
-                          id: Date.now(),
-                          originalName: firstPdf.name,
-                          displayName: firstPdf.name,
-                          objectPath: firstPdf.downloadUrl,
+                        // Create FileItem-compatible objects for all PDFs
+                        const fileItems: FileItem[] = pdfFiles.map((pdf: any, idx: number) => ({
+                          id: Date.now() + idx,
+                          originalName: pdf.name,
+                          displayName: pdf.name,
+                          objectPath: pdf.downloadUrl,
                           folder: `week-${selectedWeek}-${courseId}-module`,
                           listened: false
-                        });
+                        }));
+                        setOneDrivePreviewFiles(fileItems);
+                        setPreviewFile(fileItems[0]);
                         return;
                       }
                     }
@@ -9041,8 +9109,11 @@ export default function Dashboard() {
           const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
           const courseHex = course.color || '#4ADE80';
           const courseId = courseCode.toLowerCase();
-          const unreadCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && !f.listened).length;
-          const completedCount = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading') && f.listened).length;
+          // Use OneDrive file counts - all files are "unread" since we don't track listened state in OneDrive
+          const folderKey = `week-${selectedWeek}-${courseId}-reading`;
+          const oneDriveCount = oneDriveFileCounts[folderKey] || 0;
+          const unreadCount = oneDriveCount;
+          const completedCount = 0; // No listened tracking for OneDrive files yet
           return (
             <div 
               key={`reading-btn-${courseId}`}
@@ -9086,16 +9157,17 @@ export default function Dashboard() {
                       const pdfFiles = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
                       
                       if (pdfFiles.length > 0) {
-                        const firstPdf = pdfFiles[0];
-                        // Create FileItem-compatible object for preview dialog
-                        setPreviewFile({
-                          id: Date.now(),
-                          originalName: firstPdf.name,
-                          displayName: firstPdf.name,
-                          objectPath: firstPdf.downloadUrl,
+                        // Create FileItem-compatible objects for all PDFs
+                        const fileItems: FileItem[] = pdfFiles.map((pdf: any, idx: number) => ({
+                          id: Date.now() + idx,
+                          originalName: pdf.name,
+                          displayName: pdf.name,
+                          objectPath: pdf.downloadUrl,
                           folder: `week-${selectedWeek}-${courseId}-reading`,
                           listened: false
-                        });
+                        }));
+                        setOneDrivePreviewFiles(fileItems);
+                        setPreviewFile(fileItems[0]);
                         return;
                       }
                     }
