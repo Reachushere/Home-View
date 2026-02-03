@@ -1,6 +1,6 @@
 import { db } from "./db";
-import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, getWeekNumber } from "@shared/schema";
-import { eq, and, gte, lte, desc, or } from "drizzle-orm";
+import { tasks, files, semesterSettings, secondGoogleAccount, deletedFolders, customFolders, subtasks, taskLinks, projects, stickyNotes, accessTokens, type Task, type InsertTask, type UpdateTaskRequest, type FileRecord, type InsertFile, type SemesterSettings, type InsertSemesterSettings, type SecondGoogleAccount, type InsertSecondGoogleAccount, type DeletedFolder, type CustomFolder, type InsertCustomFolder, type Subtask, type InsertSubtask, type TaskLink, type InsertTaskLink, type Project, type InsertProject, type StickyNote, type InsertStickyNote, type AccessToken, type InsertAccessToken, getWeekNumber } from "@shared/schema";
+import { eq, and, gte, lte, desc, or, isNull } from "drizzle-orm";
 
 export interface IStorage {
   getTasks(filters?: { weekNumber?: number; type?: string; showCompleted?: boolean }): Promise<Task[]>;
@@ -57,6 +57,12 @@ export interface IStorage {
   createStickyNote(note: InsertStickyNote): Promise<StickyNote>;
   updateStickyNote(id: number, updates: Partial<InsertStickyNote>): Promise<StickyNote>;
   deleteStickyNote(id: number): Promise<void>;
+  // Access Tokens
+  getAccessTokens(): Promise<AccessToken[]>;
+  getAccessToken(token: string): Promise<AccessToken | undefined>;
+  createAccessToken(token: InsertAccessToken): Promise<AccessToken>;
+  updateAccessToken(id: number, updates: Partial<InsertAccessToken>): Promise<AccessToken>;
+  deleteAccessToken(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -421,6 +427,30 @@ export class DatabaseStorage implements IStorage {
 
   async deleteStickyNote(id: number): Promise<void> {
     await db.delete(stickyNotes).where(eq(stickyNotes.id, id));
+  }
+
+  // Access Tokens implementation
+  async getAccessTokens(): Promise<AccessToken[]> {
+    return await db.select().from(accessTokens).orderBy(desc(accessTokens.createdAt));
+  }
+
+  async getAccessToken(token: string): Promise<AccessToken | undefined> {
+    const [found] = await db.select().from(accessTokens).where(eq(accessTokens.token, token));
+    return found;
+  }
+
+  async createAccessToken(token: InsertAccessToken): Promise<AccessToken> {
+    const [created] = await db.insert(accessTokens).values(token).returning();
+    return created;
+  }
+
+  async updateAccessToken(id: number, updates: Partial<InsertAccessToken>): Promise<AccessToken> {
+    const [updated] = await db.update(accessTokens).set(updates).where(eq(accessTokens.id, id)).returning();
+    return updated;
+  }
+
+  async deleteAccessToken(id: number): Promise<void> {
+    await db.delete(accessTokens).where(eq(accessTokens.id, id));
   }
 }
 

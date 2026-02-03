@@ -306,6 +306,21 @@ export const insertStickyNoteSchema = createInsertSchema(stickyNotes).omit({ id:
 export type InsertStickyNote = z.infer<typeof insertStickyNoteSchema>;
 export type StickyNote = typeof stickyNotes.$inferSelect;
 
+// Temporary access tokens for time-limited sharing
+export const accessTokens = pgTable("access_tokens", {
+  id: serial("id").primaryKey(),
+  token: text("token").notNull().unique(),
+  name: text("name"), // Optional name/description for the token
+  firstUsedAt: timestamp("first_used_at"), // When someone first accessed with this token
+  expiresAt: timestamp("expires_at"), // Set to 1 hour after first use
+  isRevoked: boolean("is_revoked").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAccessTokenSchema = createInsertSchema(accessTokens).omit({ id: true, createdAt: true });
+export type InsertAccessToken = z.infer<typeof insertAccessTokenSchema>;
+export type AccessToken = typeof accessTokens.$inferSelect;
+
 // Week calculation helpers
 // Week 2 starts Saturday Jan 11, 2025 (today is Jan 17, 2025 - Friday of Week 2)
 // Weeks run Saturday to Friday

@@ -2323,7 +2323,7 @@ export default function Dashboard() {
       setClickedButton(null);
     }, 1000);
   };
-  const [previewSpeaker, setPreviewSpeaker] = useState<string>("media_player.echo_cat_left_am");
+  const [previewSpeaker, setPreviewSpeaker] = useState<string>("browser_tts");
   const [previewText, setPreviewText] = useState<string>("");
   const [isLoadingText, setIsLoadingText] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
