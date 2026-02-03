@@ -347,6 +347,59 @@ export default function Dashboard() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [flyoutExpandedFolders, setFlyoutExpandedFolders] = useState<Set<string>>(new Set());
   
+  // Folder context menu state
+  const [folderContextMenu, setFolderContextMenu] = useState<{
+    x: number;
+    y: number;
+    parentFolder: string;
+  } | null>(null);
+  const [newFolderDialogOpen, setNewFolderDialogOpen] = useState(false);
+  const [newFolderParent, setNewFolderParent] = useState('');
+  const [customFolders, setCustomFolders] = useState<{ id: string; name: string; parent: string }[]>(() => {
+    const saved = localStorage.getItem('customFolders');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  // Save custom folders to localStorage
+  useEffect(() => {
+    localStorage.setItem('customFolders', JSON.stringify(customFolders));
+  }, [customFolders]);
+  
+  // Handle folder right-click context menu
+  const handleFolderContextMenu = (e: React.MouseEvent, parentFolder: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setFolderContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      parentFolder
+    });
+  };
+  
+  // Create new folder
+  const handleCreateFolder = () => {
+    if (newFolderName.trim() && newFolderParent) {
+      const folderId = `${newFolderParent}-custom-${newFolderName.toLowerCase().replace(/\s+/g, '-')}`;
+      setCustomFolders(prev => [...prev, {
+        id: folderId,
+        name: newFolderName.trim(),
+        parent: newFolderParent
+      }]);
+      setNewFolderName('');
+      setNewFolderDialogOpen(false);
+      toast({ title: `Folder "${newFolderName}" created` });
+    }
+  };
+  
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClick = () => setFolderContextMenu(null);
+    if (folderContextMenu) {
+      document.addEventListener('click', handleClick);
+      return () => document.removeEventListener('click', handleClick);
+    }
+  }, [folderContextMenu]);
+  
   const toggleFlyoutFolder = (folderId: string) => {
     setFlyoutExpandedFolders(prev => {
       const newSet = new Set(prev);
@@ -5456,6 +5509,8 @@ export default function Dashboard() {
                       <div 
                         className="flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer"
                         onClick={() => toggleFlyoutFolder(weekId)}
+                        onContextMenu={(e) => handleFolderContextMenu(e, `week-${weekNum}`)}
+                        data-testid={`folder-week-${weekNum}`}
                       >
                         <div className="w-4 h-4 flex items-center justify-center">
                           {isWeekExpanded ? (
@@ -5484,6 +5539,8 @@ export default function Dashboard() {
                                 <div 
                                   className="flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer"
                                   onClick={() => toggleFlyoutFolder(courseId)}
+                                  onContextMenu={(e) => handleFolderContextMenu(e, `week-${weekNum}-cppa122`)}
+                                  data-testid={`folder-week-${weekNum}-cppa122`}
                                 >
                                   <div className="w-4 h-4 flex items-center justify-center">
                                     {isCourseExpanded ? (
@@ -5517,6 +5574,20 @@ export default function Dashboard() {
                                       <Folder className="h-4 w-4 text-green-500 fill-green-400" />
                                       <span className="text-xs text-white/80">Module</span>
                                     </div>
+                                    {/* Custom folders for this course */}
+                                    {customFolders.filter(f => f.parent === `week-${weekNum}-cppa122`).map(folder => (
+                                      <div 
+                                        key={folder.id}
+                                        className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === folder.id ? 'bg-[#094771]' : ''}`}
+                                        onClick={() => setUploadTargetFolder(folder.id)}
+                                        onContextMenu={(e) => handleFolderContextMenu(e, folder.id)}
+                                        data-testid={`folder-custom-${folder.id}`}
+                                      >
+                                        <div className="w-4 h-4" />
+                                        <Folder className="h-4 w-4 text-green-500 fill-green-400" />
+                                        <span className="text-xs text-white/80">{folder.name}</span>
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
                               </div>
@@ -5532,6 +5603,8 @@ export default function Dashboard() {
                                 <div 
                                   className="flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer"
                                   onClick={() => toggleFlyoutFolder(courseId)}
+                                  onContextMenu={(e) => handleFolderContextMenu(e, `week-${weekNum}-cfnf400`)}
+                                  data-testid={`folder-week-${weekNum}-cfnf400`}
                                 >
                                   <div className="w-4 h-4 flex items-center justify-center">
                                     {isCourseExpanded ? (
@@ -5565,6 +5638,20 @@ export default function Dashboard() {
                                       <Folder className="h-4 w-4 text-pink-500 fill-pink-400" />
                                       <span className="text-xs text-white/80">Module</span>
                                     </div>
+                                    {/* Custom folders for this course */}
+                                    {customFolders.filter(f => f.parent === `week-${weekNum}-cfnf400`).map(folder => (
+                                      <div 
+                                        key={folder.id}
+                                        className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === folder.id ? 'bg-[#094771]' : ''}`}
+                                        onClick={() => setUploadTargetFolder(folder.id)}
+                                        onContextMenu={(e) => handleFolderContextMenu(e, folder.id)}
+                                        data-testid={`folder-custom-${folder.id}`}
+                                      >
+                                        <div className="w-4 h-4" />
+                                        <Folder className="h-4 w-4 text-pink-500 fill-pink-400" />
+                                        <span className="text-xs text-white/80">{folder.name}</span>
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
                               </div>
@@ -5580,6 +5667,8 @@ export default function Dashboard() {
                                 <div 
                                   className="flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer"
                                   onClick={() => toggleFlyoutFolder(courseId)}
+                                  onContextMenu={(e) => handleFolderContextMenu(e, `week-${weekNum}-casl101`)}
+                                  data-testid={`folder-week-${weekNum}-casl101`}
                                 >
                                   <div className="w-4 h-4 flex items-center justify-center">
                                     {isCourseExpanded ? (
@@ -5613,11 +5702,40 @@ export default function Dashboard() {
                                       <Folder className="h-4 w-4 text-indigo-500 fill-indigo-400" />
                                       <span className="text-xs text-white/80">Module</span>
                                     </div>
+                                    {/* Custom folders for this course */}
+                                    {customFolders.filter(f => f.parent === `week-${weekNum}-casl101`).map(folder => (
+                                      <div 
+                                        key={folder.id}
+                                        className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === folder.id ? 'bg-[#094771]' : ''}`}
+                                        onClick={() => setUploadTargetFolder(folder.id)}
+                                        onContextMenu={(e) => handleFolderContextMenu(e, folder.id)}
+                                        data-testid={`folder-custom-${folder.id}`}
+                                      >
+                                        <div className="w-4 h-4" />
+                                        <Folder className="h-4 w-4 text-indigo-500 fill-indigo-400" />
+                                        <span className="text-xs text-white/80">{folder.name}</span>
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
                               </div>
                             );
                           })()}
+                          
+                          {/* Custom folders directly under week */}
+                          {customFolders.filter(f => f.parent === `week-${weekNum}`).map(folder => (
+                            <div 
+                              key={folder.id}
+                              className={`flex items-center gap-1 py-0.5 px-1 hover:bg-[#2a2d2e] rounded cursor-pointer ${uploadTargetFolder === folder.id ? 'bg-[#094771]' : ''}`}
+                              onClick={() => setUploadTargetFolder(folder.id)}
+                              onContextMenu={(e) => handleFolderContextMenu(e, folder.id)}
+                              data-testid={`folder-custom-week-${folder.id}`}
+                            >
+                              <div className="w-4 h-4" />
+                              <Folder className="h-4 w-4 text-yellow-500 fill-yellow-400" />
+                              <span className="text-xs text-white/80">{folder.name}</span>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
@@ -5898,6 +6016,74 @@ export default function Dashboard() {
               className="text-white/70 hover:text-white hover:bg-white/10"
             >
               Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Folder Context Menu */}
+      {folderContextMenu && (
+        <div 
+          className="fixed z-[9999] bg-[#1e1e1e] border border-white/20 rounded-md shadow-lg py-1 min-w-[160px]"
+          style={{ top: folderContextMenu.y, left: folderContextMenu.x }}
+          onClick={(e) => e.stopPropagation()}
+          data-testid="folder-context-menu"
+        >
+          <button
+            className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
+            onClick={() => {
+              setNewFolderParent(folderContextMenu.parentFolder);
+              setNewFolderName('');
+              setNewFolderDialogOpen(true);
+              setFolderContextMenu(null);
+            }}
+            data-testid="button-new-folder"
+          >
+            <FolderPlus className="h-4 w-4" />
+            New Folder
+          </button>
+        </div>
+      )}
+
+      {/* New Folder Dialog */}
+      <Dialog open={newFolderDialogOpen} onOpenChange={setNewFolderDialogOpen}>
+        <DialogContent className="bg-[#1e1e1e] border-white/20 text-white [&>button]:text-white">
+          <DialogHeader>
+            <DialogTitle>Create New Folder</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-white/60">
+              Creating folder in: <span className="text-white/90 font-medium">{newFolderParent}</span>
+            </p>
+            <div>
+              <Label htmlFor="folderName" className="text-white/80">Folder Name</Label>
+              <Input
+                id="folderName"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+                placeholder="Enter folder name"
+                className="bg-[#2a2d2e] border-white/20 text-white mt-1"
+                onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
+                autoFocus
+                data-testid="input-new-folder-name"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setNewFolderDialogOpen(false)}
+              className="text-white/70 hover:text-white hover:bg-white/10"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateFolder}
+              disabled={!newFolderName.trim()}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              data-testid="button-create-folder"
+            >
+              Create
             </Button>
           </div>
         </DialogContent>
@@ -11228,6 +11414,8 @@ export default function Dashboard() {
                         <div 
                           className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded transition-colors ${shouldBlink ? 'animate-week-blink' : ''} ${draggedFileForMove ? 'border border-dashed border-blue-400/50' : 'border-0'}`}
                           onClick={() => toggleFlyoutFolder(week.id)}
+                          onContextMenu={(e) => handleFolderContextMenu(e, week.id)}
+                          data-testid={`flyout-${week.id}`}
                           onDragOver={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -11287,6 +11475,8 @@ export default function Dashboard() {
                                   <div
                                     className={`flex items-center gap-1.5 pr-2 py-1 hover:bg-white/10 cursor-pointer rounded transition-colors ${draggedFileForMove ? 'border border-dashed border-blue-400/50' : ''}`}
                                     onClick={() => toggleFlyoutFolder(courseFolderId)}
+                                    onContextMenu={(e) => handleFolderContextMenu(e, courseFolderId)}
+                                    data-testid={`flyout-folder-${courseFolderId}`}
                                     onDragOver={(e) => {
                                       e.preventDefault();
                                       e.stopPropagation();
