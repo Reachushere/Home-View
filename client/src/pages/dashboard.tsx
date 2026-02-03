@@ -12898,7 +12898,7 @@ export default function Dashboard() {
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
               {/* Group 1: Left handle on header + progress bar on content line */}
-              <div ref={row1ProgressBarRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   <div 
                     className="cursor-col-resize"
@@ -12907,7 +12907,7 @@ export default function Dashboard() {
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px' }}>Progress</span>
                 </div>
-                <div style={{ position: 'relative', width: '44px', marginLeft: '7px', marginTop: '3px' }}>
+                <div ref={row1ProgressBarRef} style={{ position: 'relative', width: '44px', marginLeft: '7px', marginTop: '3px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[0]), opacity: 0.9 }} />
                 </div>
