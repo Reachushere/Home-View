@@ -8790,13 +8790,13 @@ export default function Dashboard() {
                 </DropdownMenu>
                 <input
                   type="text"
-                  value={note.title || "Note"}
+                  value={note.title || "Note Name"}
                   onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { title: e.target.value } })}
                   onClick={(e) => e.stopPropagation()}
                   onMouseDown={(e) => e.stopPropagation()}
                   className="text-[10px] text-gray-700 font-medium border-none outline-none w-20 cursor-text rounded px-0.5"
-                  style={{ backgroundColor: 'white' }}
-                  placeholder="Note"
+                  style={{ backgroundColor: 'white', marginRight: '-8px' }}
+                  placeholder="Note Name"
                   data-testid={`sticky-note-title-${note.id}`}
                 />
               </div>
