@@ -8742,15 +8742,15 @@ export default function Dashboard() {
             }}
             data-testid={`sticky-note-${note.id}`}
           >
-            {/* Header bar - draggable */}
+            {/* Header bar - draggable from anywhere */}
             <div
-              className="flex items-center justify-between px-1 py-1 select-none"
+              className="flex items-center justify-between px-1 py-1 select-none cursor-move"
               style={{ backgroundColor: colors.header, borderBottom: `1px solid ${colors.border}` }}
+              onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
             >
-              {/* Dedicated drag handle */}
+              {/* Drag handle icon */}
               <div 
-                className="flex items-center justify-center cursor-move px-1 py-0.5 hover:bg-black/10 rounded"
-                onMouseDown={(e) => handleStickyNoteMouseDown(e, note.id, note)}
+                className="flex items-center justify-center px-1 py-0.5"
                 title="Drag to move"
               >
                 <GripVertical className="h-3 w-3 text-gray-600" />
