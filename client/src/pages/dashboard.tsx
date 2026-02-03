@@ -8276,7 +8276,10 @@ export default function Dashboard() {
               }}
               onClick={(e) => { 
                 e.stopPropagation();
-                const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
+                console.log('Module button clicked:', { courseCode, courseId, selectedWeek, searchPattern: `week-${selectedWeek}-${courseId}` });
+                const matchingFiles = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
+                console.log('Matching files:', matchingFiles.map(f => ({ id: f.id, folder: f.folder, name: f.originalName })));
+                const moduleFile = matchingFiles[0];
                 if (moduleFile) setPreviewFile(moduleFile);
                 setModulesHoneycombOpen(null); 
               }}
