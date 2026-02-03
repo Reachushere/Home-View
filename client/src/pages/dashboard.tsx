@@ -8464,7 +8464,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: `${361 + blinkSettings.tallPillHeight + (blinkSettings.tallPillButtonSpacing * 7)}px` }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: `${361 + blinkSettings.tallPillHeight + (blinkSettings.tallPillButtonSpacing * 6)}px` }}>
         <div 
           style={{ 
             width: '100%', 
