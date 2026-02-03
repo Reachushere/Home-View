@@ -8666,13 +8666,121 @@ export default function Dashboard() {
         });
       })()}
       
-      {/* Radio Button - Below readings button on tall pill (swapped with sticky note) */}
+      {/* Push Button - Below readings button on tall pill (moved above radio) */}
+      <div 
+        className="absolute z-[60] pointer-events-auto"
+        style={{ 
+          width: '44px', 
+          height: '44px', 
+          top: '463px', 
+          right: '18px',
+        }}
+        data-testid="honeycomb-push"
+      >
+        {/* Back circle - solid teal */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: '#63968E',
+            boxShadow: 'none',
+          }}
+        />
+        {/* Front circle with gradient - 38px */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #8DB5AF 0%, #2A6B61 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+          className="hover:opacity-80 transition-all duration-200"
+          onClick={() => {
+            toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" });
+            syncAllCalendarMutation.mutate();
+          }}
+          title="Push tasks to Google Calendar"
+        >
+          <Upload style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        </div>
+      </div>
+
+      {/* Pull Button - Below push button (moved above radio) */}
+      <div 
+        className="absolute z-[60] pointer-events-auto"
+        style={{ 
+          width: '44px', 
+          height: '44px', 
+          top: '514px', 
+          right: '18px',
+        }}
+        data-testid="honeycomb-pull"
+      >
+        {/* Back circle - solid dark taupe */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            background: '#8A4E4E',
+            boxShadow: 'none',
+          }}
+        />
+        {/* Front circle with gradient - 38px */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #C4A4A4 0%, #6B3A3A 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+          }}
+          className="hover:opacity-80 transition-all duration-200"
+          onClick={async () => {
+            toast({ title: "Pulling...", description: "Fetching events from Google Calendar" });
+            try {
+              const res = await fetch('/api/calendar/pull', { method: 'POST' });
+              if (res.ok) {
+                toast({ title: "Pull complete", description: "Calendar events synced" });
+                queryClient.invalidateQueries({ queryKey: ['/api/tasks'] });
+              }
+            } catch (error) {
+              toast({ title: "Pull failed", variant: "destructive" });
+            }
+          }}
+          title="Pull events from Google Calendar"
+        >
+          <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+        </div>
+      </div>
+
+      {/* Radio Button - Below pull button (moved down) */}
       <div 
         className="absolute z-[60] pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '463px', 
+          top: '565px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8762,13 +8870,13 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Bell Button - Swapped from header to tall pill */}
+      {/* Bell Button - Moved down after radio */}
       <div 
         className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '514px', 
+          top: '616px', 
           right: '18px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8802,13 +8910,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Arrow Toggle Button - Below todo button on tall pill */}
+      {/* Arrow Toggle Button - Moved down after bell */}
       <div 
         className="absolute z-[60] pointer-events-auto"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '565px', 
+          top: '668px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8827,13 +8935,13 @@ export default function Dashboard() {
         </Button>
       </div>
 
-      {/* Sync Button - Below arrows toggle button (swapped with sticky note) */}
+      {/* Sync Button - Moved down after arrow toggle */}
       <div 
         className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: '616px', 
+          top: '720px', 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -8863,107 +8971,6 @@ export default function Dashboard() {
           ) : (
             <RefreshCw className="h-[18px] w-[18px] text-white" />
           )}
-        </div>
-      </div>
-
-      {/* Push Button - Below sticky note button */}
-      <div 
-        className="absolute z-[60] pointer-events-auto"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: '668px', 
-          right: '18px',
-        }}
-        data-testid="honeycomb-push"
-      >
-        {/* Back circle - solid #4CAF50 green */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '44px',
-            height: '44px',
-            borderRadius: '50%',
-            background: '#63968E',
-            boxShadow: 'none',
-          }}
-        />
-        {/* Front circle with gradient - 38px */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '3px',
-            left: '3px',
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: 'linear-gradient(0deg, #8DB5AF 0%, #2A6B61 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-          className="hover:opacity-80 transition-all duration-200"
-          onClick={() => {
-            toast({ title: "Pushing...", description: "Syncing tasks to Google Calendar" });
-            syncAllCalendarMutation.mutate();
-          }}
-          title="Push tasks to Google Calendar"
-        >
-          <Upload style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-        </div>
-      </div>
-
-      {/* Pull Button - Below push button */}
-      <div 
-        className="absolute z-[60] pointer-events-auto"
-        style={{ 
-          width: '44px', 
-          height: '44px', 
-          top: '720px', 
-          right: '18px',
-        }}
-        data-testid="honeycomb-pull"
-      >
-        {/* Back circle - solid dark taupe */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '44px',
-            height: '44px',
-            borderRadius: '50%',
-            background: '#8A4E4E',
-            boxShadow: 'none',
-          }}
-        />
-        {/* Front circle with gradient - 38px */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '3px',
-            left: '3px',
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: 'linear-gradient(0deg, #B5938D 0%, #521E15 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-          }}
-          className="hover:opacity-80 transition-all duration-200"
-          onClick={() => {
-            queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
-            queryClient.invalidateQueries({ queryKey: ["/api/calendar/events"] });
-            toast({ title: "Data refreshed!", description: "Latest data pulled from server" });
-          }}
-          title="Pull/Refresh Data"
-        >
-          <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         </div>
       </div>
 
