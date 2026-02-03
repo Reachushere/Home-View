@@ -412,28 +412,42 @@ export default function Dashboard() {
     });
   };
   
-  // Create new folder
+  // Create new folder - saves to database first, then updates local state
   const handleCreateFolder = async () => {
     if (newFolderName.trim() && newFolderParent) {
-      const folderId = `${newFolderParent}-custom-${newFolderName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
-      setCustomFolders(prev => [...prev, {
-        id: folderId,
-        name: newFolderName.trim(),
-        parent: newFolderParent
-      }]);
-      // Save to database
       try {
-        await fetch('/api/custom-folders', {
+        // Save to database first
+        const response = await fetch('/api/custom-folders', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: newFolderName.trim(), parentFolderId: newFolderParent })
         });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Failed to save folder to database:', response.status, errorText);
+          toast({ title: "Error", description: "Failed to save folder", variant: "destructive" });
+          return;
+        }
+        
+        const savedFolder = await response.json();
+        console.log('Folder saved to database:', savedFolder);
+        
+        // Update local state with the database ID
+        const folderId = `${newFolderParent}-subfolder-${newFolderName.toLowerCase()}-${savedFolder.id}`;
+        setCustomFolders(prev => [...prev, {
+          id: folderId,
+          name: newFolderName.trim(),
+          parent: newFolderParent
+        }]);
+        
+        setNewFolderName('');
+        setNewFolderDialogOpen(false);
+        toast({ title: `Folder "${newFolderName}" created` });
       } catch (err) {
         console.error('Failed to save folder to database:', err);
+        toast({ title: "Error", description: "Failed to create folder", variant: "destructive" });
       }
-      setNewFolderName('');
-      setNewFolderDialogOpen(false);
-      toast({ title: `Folder "${newFolderName}" created` });
     }
   };
   
@@ -6161,19 +6175,26 @@ export default function Dashboard() {
             className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
             onClick={async () => {
               const parentFolder = folderContextMenu.parentFolder;
-              const folderId = `${parentFolder}-subfolder-cppa122-${Date.now()}`;
-              setCustomFolders(prev => [...prev, { id: folderId, name: 'CPPA122', parent: parentFolder }]);
-              // Save to database
               try {
-                await fetch('/api/custom-folders', {
+                const response = await fetch('/api/custom-folders', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ name: 'CPPA122', parentFolderId: parentFolder })
                 });
+                if (!response.ok) {
+                  console.error('Failed to save folder:', response.status);
+                  toast({ title: "Error", description: "Failed to save folder", variant: "destructive" });
+                  return;
+                }
+                const savedFolder = await response.json();
+                console.log('Folder saved:', savedFolder);
+                const folderId = `${parentFolder}-subfolder-cppa122-${savedFolder.id}`;
+                setCustomFolders(prev => [...prev, { id: folderId, name: 'CPPA122', parent: parentFolder }]);
+                toast({ title: "Folder created", description: "CPPA122 folder added" });
               } catch (err) {
                 console.error('Failed to save folder to database:', err);
+                toast({ title: "Error", description: "Failed to create folder", variant: "destructive" });
               }
-              toast({ title: "Folder created", description: "CPPA122 folder added" });
               setFolderContextMenu(null);
             }}
             data-testid="button-new-folder-cppa122"
@@ -6185,19 +6206,26 @@ export default function Dashboard() {
             className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
             onClick={async () => {
               const parentFolder = folderContextMenu.parentFolder;
-              const folderId = `${parentFolder}-subfolder-cfnf400-${Date.now()}`;
-              setCustomFolders(prev => [...prev, { id: folderId, name: 'CFNF400', parent: parentFolder }]);
-              // Save to database
               try {
-                await fetch('/api/custom-folders', {
+                const response = await fetch('/api/custom-folders', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ name: 'CFNF400', parentFolderId: parentFolder })
                 });
+                if (!response.ok) {
+                  console.error('Failed to save folder:', response.status);
+                  toast({ title: "Error", description: "Failed to save folder", variant: "destructive" });
+                  return;
+                }
+                const savedFolder = await response.json();
+                console.log('Folder saved:', savedFolder);
+                const folderId = `${parentFolder}-subfolder-cfnf400-${savedFolder.id}`;
+                setCustomFolders(prev => [...prev, { id: folderId, name: 'CFNF400', parent: parentFolder }]);
+                toast({ title: "Folder created", description: "CFNF400 folder added" });
               } catch (err) {
                 console.error('Failed to save folder to database:', err);
+                toast({ title: "Error", description: "Failed to create folder", variant: "destructive" });
               }
-              toast({ title: "Folder created", description: "CFNF400 folder added" });
               setFolderContextMenu(null);
             }}
             data-testid="button-new-folder-cfnf400"
@@ -6209,19 +6237,26 @@ export default function Dashboard() {
             className="w-full px-3 py-2 text-left text-sm text-white/90 hover:bg-white/10 flex items-center gap-2"
             onClick={async () => {
               const parentFolder = folderContextMenu.parentFolder;
-              const folderId = `${parentFolder}-subfolder-casl101-${Date.now()}`;
-              setCustomFolders(prev => [...prev, { id: folderId, name: 'CASL101', parent: parentFolder }]);
-              // Save to database
               try {
-                await fetch('/api/custom-folders', {
+                const response = await fetch('/api/custom-folders', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ name: 'CASL101', parentFolderId: parentFolder })
                 });
+                if (!response.ok) {
+                  console.error('Failed to save folder:', response.status);
+                  toast({ title: "Error", description: "Failed to save folder", variant: "destructive" });
+                  return;
+                }
+                const savedFolder = await response.json();
+                console.log('Folder saved:', savedFolder);
+                const folderId = `${parentFolder}-subfolder-casl101-${savedFolder.id}`;
+                setCustomFolders(prev => [...prev, { id: folderId, name: 'CASL101', parent: parentFolder }]);
+                toast({ title: "Folder created", description: "CASL101 folder added" });
               } catch (err) {
                 console.error('Failed to save folder to database:', err);
+                toast({ title: "Error", description: "Failed to create folder", variant: "destructive" });
               }
-              toast({ title: "Folder created", description: "CASL101 folder added" });
               setFolderContextMenu(null);
             }}
             data-testid="button-new-folder-casl101"
