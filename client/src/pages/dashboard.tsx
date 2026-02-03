@@ -3245,9 +3245,15 @@ export default function Dashboard() {
     }
     
     const chunks = ttsChunksRef.current;
-    if (chunkIndex >= chunks.length) {
-      toast({ title: "Invalid chunk index", variant: "destructive" });
+    if (chunks.length === 0) {
+      toast({ title: "No chunks available", variant: "destructive" });
       return;
+    }
+    // Clamp chunk index to valid range instead of erroring
+    let validChunkIndex = chunkIndex;
+    if (chunkIndex >= chunks.length) {
+      validChunkIndex = Math.max(0, chunks.length - 1);
+      toast({ title: `Adjusted to section ${validChunkIndex + 1} of ${chunks.length}` });
     }
     
     // Cancel any current speech
@@ -3260,13 +3266,13 @@ export default function Dashboard() {
     await new Promise(r => setTimeout(r, 100));
     
     // Start playing from this chunk
-    setCurrentChunkIndex(chunkIndex);
-    currentChunkIndexRef.current = chunkIndex;
+    setCurrentChunkIndex(validChunkIndex);
+    currentChunkIndexRef.current = validChunkIndex;
     shouldContinueRef.current = true;
     setIsPlaying(true);
     isPlayingRef.current = true;
     
-    toast({ title: `Playing from section ${chunkIndex + 1} of ${chunks.length}` });
+    toast({ title: `Playing from section ${validChunkIndex + 1} of ${chunks.length}` });
     
     if (useBrowserTts) {
       // Wait for voices
@@ -3278,14 +3284,14 @@ export default function Dashboard() {
       
       // Calculate word offset for highlighting
       let wordOffset = 0;
-      for (let i = 0; i < chunkIndex; i++) {
+      for (let i = 0; i < validChunkIndex; i++) {
         wordOffset += chunks[i].split(/\s+/).length;
       }
       
-      speakChunk(chunkIndex, chunks, voices, wordOffset);
+      speakChunk(validChunkIndex, chunks, voices, wordOffset);
     } else {
       // Use OpenAI TTS for Fire tablets and devices without browser TTS
-      const chunk = chunks[chunkIndex];
+      const chunk = chunks[validChunkIndex];
       await playWithOpenAiTts(chunk, openaiVoice);
     }
   };
