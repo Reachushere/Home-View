@@ -8656,38 +8656,50 @@ export default function Dashboard() {
         });
       })()}
       
-      {/* Completed Tasks Button - Below readings button on tall pill (swapped from header) */}
+      {/* Sticky Note Button - Below readings button on tall pill (swapped with completed tasks) */}
       <div 
-        className="absolute z-50 pointer-events-auto cursor-pointer"
+        className="absolute z-[60] pointer-events-auto"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: '463px', 
           right: '18px',
-          borderRadius: '50%',
-          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-          padding: '1px',
         }}
-        data-testid="button-completed-tasks"
-        onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
+        data-testid="honeycomb-sticky-note"
       >
+        {/* Back circle - solid #E8E656 */}
         <div
-          className="hover:opacity-80 transition-all duration-200"
           style={{
             position: 'absolute',
-            top: '1px',
-            left: '1px',
-            width: '42px',
-            height: '42px',
+            top: 0,
+            left: 0,
+            width: '44px',
+            height: '44px',
             borderRadius: '50%',
-            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
-            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+            background: '#E8E656',
+            boxShadow: 'none',
+          }}
+        />
+        {/* Front circle with gradient - 38px */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '3px',
+            left: '3px',
+            width: '38px',
+            height: '38px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #FDFFBA 0%, #F2D338 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            cursor: 'pointer',
           }}
+          className="hover:opacity-80 transition-all duration-200"
+          onClick={handleAddStickyNote}
+          title="Add Sticky Note"
         >
-          <CheckSquare className="h-[18px] w-[18px] text-white" />
+          <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
         </div>
       </div>
       {/* Spring out honeycombs for course readings - moved outside files button */}
@@ -8751,50 +8763,38 @@ export default function Dashboard() {
         </div>
       </div>
       
-      {/* Sticky Note Button - Below completed tasks on tall pill (swapped with sync) */}
+      {/* Completed Tasks Button - Below sticky note on tall pill (swapped with sticky note) */}
       <div 
-        className="absolute z-[60] pointer-events-auto"
+        className="absolute z-50 pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
           top: '514px', 
           right: '18px',
+          borderRadius: '50%',
+          background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px',
         }}
-        data-testid="honeycomb-sticky-note"
+        data-testid="button-completed-tasks"
+        onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
       >
-        {/* Back circle - solid #E8E656 */}
         <div
+          className="hover:opacity-80 transition-all duration-200"
           style={{
             position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '44px',
-            height: '44px',
+            top: '1px',
+            left: '1px',
+            width: '42px',
+            height: '42px',
             borderRadius: '50%',
-            background: '#E8E656',
-            boxShadow: 'none',
-          }}
-        />
-        {/* Front circle with gradient - 38px */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '3px',
-            left: '3px',
-            width: '38px',
-            height: '38px',
-            borderRadius: '50%',
-            background: 'linear-gradient(0deg, #FDFFBA 0%, #F2D338 100%)',
+            background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+            boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            cursor: 'pointer',
           }}
-          className="hover:opacity-80 transition-all duration-200"
-          onClick={handleAddStickyNote}
-          title="Add Sticky Note"
         >
-          <StickyNote style={{ color: 'black', strokeWidth: 1.5, height: '18px', width: '18px' }} />
+          <CheckSquare className="h-[18px] w-[18px] text-white" />
         </div>
       </div>
 
