@@ -7253,42 +7253,6 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
 
-          {/* Todo Button (swapped from tall pill) */}
-          <div 
-            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}
-            data-testid="honeycomb-todo-header"
-          >
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '44px',
-                height: '44px',
-                borderRadius: '50%',
-                background: '#FFA365',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                top: '3px',
-                left: '3px',
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-              onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
-            >
-              <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
-            </div>
-          </div>
-
           {/* Undo Complete */}
           {completedTaskHistory.length > 0 ? (
             <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
@@ -7337,6 +7301,42 @@ export default function Dashboard() {
               </div>
             </div>
           )}
+
+          {/* Todo Button (swapped from tall pill) */}
+          <div 
+            style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}
+            data-testid="honeycomb-todo-header"
+          >
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '44px',
+                height: '44px',
+                borderRadius: '50%',
+                background: '#FFA365',
+              }}
+            />
+            <div
+              style={{
+                position: 'absolute',
+                top: '3px',
+                left: '3px',
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+              onClick={() => { if (!isTodoFlyoutOpen) bringFlyoutToFront('todo'); setIsTodoFlyoutOpen(!isTodoFlyoutOpen); }}
+            >
+              <ListChecks style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
+            </div>
+          </div>
 
           {/* Files Button (swapped from tall pill) */}
           <div 
