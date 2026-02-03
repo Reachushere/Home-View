@@ -10642,6 +10642,13 @@ export default function Dashboard() {
                                     setSelectedTaskId(null);
                                   }
                                 }}
+                                onContextMenu={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  if (confirm('Delete this task?')) {
+                                    deleteMutation.mutate(task.id);
+                                  }
+                                }}
                                 className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
