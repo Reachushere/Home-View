@@ -11984,19 +11984,8 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    {/* Folders - filter for read-only users to only show week folders inside course folders */}
-                    {oneDriveFolders
-                      .filter((folder) => {
-                        // If admin, show all folders
-                        if (!isReadOnly) return true;
-                        // For read-only users, only show folders that match week pattern (e.g. "Week 1", "Week 2")
-                        // or are inside a week folder (Module, Reading subfolders)
-                        const isWeekFolder = /Week\s*\d+/i.test(folder.name);
-                        const isInsideWeekFolder = /Week\s*\d+/i.test(oneDrivePath);
-                        const isContentFolder = ['Module', 'Reading', 'Readings', 'Modules'].some(c => folder.name.includes(c));
-                        return isWeekFolder || (isInsideWeekFolder && isContentFolder) || isInsideWeekFolder;
-                      })
-                      .map((folder) => {
+                    {/* Folders - show all folders for read-only users (they can navigate freely) */}
+                    {oneDriveFolders.map((folder) => {
                       // Check if folder name or current path matches a course - use hardcoded colors
                       const courseColorMap: Record<string, string> = {
                         'CPPA122': '#4ade80', // green
