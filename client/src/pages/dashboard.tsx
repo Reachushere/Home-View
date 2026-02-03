@@ -10766,11 +10766,16 @@ export default function Dashboard() {
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
-                                  // Calculate prep width - match multi-hour task calculation
-                                  // Use 100% of parent container width like multi-hour tasks do
-                                  const totalOffset = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth;
-                                  // Width = actualPrepDays × single day column width
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${totalOffset}px) / 7) - 2px)`;
+                                  // Calculate prep width based on grid cell widths
+                                  // Each day cell is 1fr of 7 in the grid (time + module + 7 days)
+                                  // The task is inside a cell, so we need to calculate the cell width
+                                  // Cell width ≈ (viewportWidth - timeCol - moduleCol - scrollbar/padding) / 7
+                                  // Use a CSS variable or calculate based on known container width
+                                  // For simplicity, use percentage of viewport minus fixed columns
+                                  const scrollbarAndPadding = 50; // Account for scrollbar and container padding
+                                  const totalOffset = gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + scrollbarAndPadding;
+                                  // Width = actualPrepDays × single day column width - margin
+                                  const prepWidth = `calc((${actualPrepDays} / 7) * (100vw - ${totalOffset}px) - 4px)`;
                                   const prepHeight = 18;
                                   const borderWidth = selectedTaskId === task.id ? 2 : 1;
                                   return (
