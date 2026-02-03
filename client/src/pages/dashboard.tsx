@@ -614,23 +614,23 @@ export default function Dashboard() {
   });
   const [testTextLeft, setTestTextLeft] = useState(() => {
     const saved = localStorage.getItem('testTextLeft');
-    return saved ? parseInt(saved) : 0;
+    return saved ? parseInt(saved) : 8;
   });
   const [testCourseLeft, setTestCourseLeft] = useState(() => {
     const saved = localStorage.getItem('testCourseLeft');
-    return saved ? parseInt(saved) : 0;
+    return saved ? parseInt(saved) : 12;
   });
   const [testCourseNameLeft, setTestCourseNameLeft] = useState(() => {
     const saved = localStorage.getItem('testCourseNameLeft');
-    return saved ? parseInt(saved) : 0;
+    return saved ? parseInt(saved) : 8;
   });
   const [testDueDateLeft, setTestDueDateLeft] = useState(() => {
     const saved = localStorage.getItem('testDueDateLeft');
-    return saved ? parseInt(saved) : 0;
+    return saved ? parseInt(saved) : 8;
   });
   const [testDaysLeftLeft, setTestDaysLeftLeft] = useState(() => {
     const saved = localStorage.getItem('testDaysLeftLeft');
-    return saved ? parseInt(saved) : 0;
+    return saved ? parseInt(saved) : 8;
   });
   const [resizingTestBar, setResizingTestBar] = useState(false);
   const [resizingTestText, setResizingTestText] = useState(false); // Separate state for text resizing
@@ -8276,10 +8276,7 @@ export default function Dashboard() {
               }}
               onClick={(e) => { 
                 e.stopPropagation();
-                console.log('Module button clicked:', { courseCode, courseId, selectedWeek, searchPattern: `week-${selectedWeek}-${courseId}` });
-                const matchingFiles = allFiles.filter(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
-                console.log('Matching files:', matchingFiles.map(f => ({ id: f.id, folder: f.folder, name: f.originalName })));
-                const moduleFile = matchingFiles[0];
+                const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
                 if (moduleFile) setPreviewFile(moduleFile);
                 setModulesHoneycombOpen(null); 
               }}
