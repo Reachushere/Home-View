@@ -74,6 +74,7 @@ import {
   Sun,
   Home,
   Cloud,
+  ArrowLeft,
   Repeat2,
   Settings,
   Timer,
