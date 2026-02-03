@@ -8835,8 +8835,12 @@ export default function Dashboard() {
               }}
               onClick={(e) => { 
                 e.stopPropagation();
-                const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
-                if (moduleFile) setPreviewFile(moduleFile);
+                // Navigate to OneDrive course folder
+                const courseFullName = course.name || '';
+                const oneDriveCoursePath = `/School/1. TMU/Courses/2026/Winter/${courseFullName}`;
+                setOneDrivePath(oneDriveCoursePath);
+                setOneDrivePathHistory(["/School/1. TMU/Courses/2026/Winter"]);
+                setIsFilesFlyoutOpen(true);
                 setModulesHoneycombOpen(null); 
               }}
               data-testid={`honeycomb-${courseId}`}
@@ -8962,8 +8966,12 @@ export default function Dashboard() {
               }}
               onClick={(e) => { 
                 e.stopPropagation();
-                const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
-                if (readingFile) setPreviewFile(readingFile);
+                // Navigate to OneDrive course folder
+                const courseFullName = course.name || '';
+                const oneDriveCoursePath = `/School/1. TMU/Courses/2026/Winter/${courseFullName}`;
+                setOneDrivePath(oneDriveCoursePath);
+                setOneDrivePathHistory(["/School/1. TMU/Courses/2026/Winter"]);
+                setIsFilesFlyoutOpen(true);
                 setModulesHoneycombOpen(null); 
               }}
               data-testid={`honeycomb-readings-${courseId}`}
