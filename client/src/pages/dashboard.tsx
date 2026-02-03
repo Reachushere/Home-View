@@ -9571,6 +9571,7 @@ export default function Dashboard() {
               <div className="px-4 pb-4 pt-0 overflow-y-auto flex-1">
               <div className="grid grid-cols-2 gap-4">
                 {/* Left Column */}
+                <div className="flex flex-col gap-4 justify-between">
                 <div className="flex flex-col gap-4">
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-sm font-medium">Colour Settings</Label>
@@ -9802,6 +9803,7 @@ export default function Dashboard() {
                       Reset Column Spacing
                     </Button>
                   </div>
+                </div>
                 </div>
                 
                 {/* Save Settings Button */}
