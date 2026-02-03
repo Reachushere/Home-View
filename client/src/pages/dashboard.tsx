@@ -6428,7 +6428,7 @@ export default function Dashboard() {
 
       {/* File Preview Dialog with Media Controls */}
       <Dialog open={!!previewFile} onOpenChange={(open) => !open && setPreviewFile(null)}>
-        <DialogContent className="w-[900px] max-w-[95vw] h-[85vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white">
+        <DialogContent className="w-[1100px] max-w-[98vw] h-[90vh] flex flex-col p-0 overflow-hidden border border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&>button]:text-white">
           {(() => {
             // Extract course code from folder path (e.g., "week-1-cppa122-module" -> "CPPA122")
             const folderParts = previewFile?.folder?.split('-') || [];
@@ -6570,18 +6570,19 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Bottom Media Controls Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-2 p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
+          {/* Voice & Speed Controls Bar */}
+          <div className="flex items-center justify-between gap-4 p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             {/* Voice selector - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && availableVoices.length > 0 && (
-              <>
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] text-white/60">Voice:</span>
                 <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-                  <SelectTrigger className="w-[110px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
+                  <SelectTrigger className="w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-voice">
                     <SelectValue placeholder="Select Voice" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[300px]">
                     {availableVoices.map(voice => (
-                      <SelectItem key={voice.name} value={voice.name} className="text-[9px]">
+                      <SelectItem key={voice.name} value={voice.name} className="text-[10px]">
                         {voice.name.replace('Microsoft ', '').replace(' Online (Natural)', '')}
                       </SelectItem>
                     ))}
@@ -6590,7 +6591,7 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  className="h-6 w-6 text-white hover:bg-gray-700"
                   onClick={() => {
                     if (!window.speechSynthesis) return;
                     window.speechSynthesis.cancel();
@@ -6603,20 +6604,20 @@ export default function Dashboard() {
                   data-testid="button-preview-voice"
                   title="Preview voice"
                 >
-                  <Volume2 className="h-2.5 w-2.5" />
+                  <Volume2 className="h-3 w-3" />
                 </Button>
-              </>
+              </div>
             )}
             
             {/* OpenAI Voice selector - shows for OpenAI TTS (Fire tablets) */}
             {(previewSpeaker === "openai_tts" || !window.speechSynthesis) && (
-              <div className="flex items-center gap-1">
-                <span className="text-[8px] text-gray-400">Voice:</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[9px] text-white/60">Voice:</span>
                 <Select 
                   value={openaiVoice} 
                   onValueChange={(v) => setOpenaiVoice(v as typeof openaiVoice)}
                 >
-                  <SelectTrigger className="w-[80px] h-5 text-[9px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
+                  <SelectTrigger className="w-[120px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-openai-voice">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -6631,7 +6632,7 @@ export default function Dashboard() {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-5 w-5 text-white hover:bg-gray-700"
+                  className="h-6 w-6 text-white hover:bg-gray-700"
                   onClick={async () => {
                     try {
                       const response = await fetch("/api/tts", {
@@ -6651,40 +6652,43 @@ export default function Dashboard() {
                   data-testid="button-preview-openai-voice"
                   title="Preview voice"
                 >
-                  <Volume2 className="h-2.5 w-2.5" />
+                  <Volume2 className="h-3 w-3" />
                 </Button>
               </div>
             )}
             
             {/* Speed control - shows for browser TTS */}
             {previewSpeaker === "browser_tts" && (
-              <div className="flex items-center gap-1 bg-gray-800 rounded px-2 py-0.5">
-                <Gauge className="h-2.5 w-2.5 text-gray-400" />
-                <span className="text-[8px] text-gray-400 mr-0.5">Speed</span>
+              <div className="flex items-center gap-2 bg-gray-800/50 rounded-lg px-3 py-1">
+                <Gauge className="h-3 w-3 text-gray-400" />
+                <span className="text-[9px] text-white/60">Speed</span>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-4 w-4 text-white hover:bg-gray-700"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
                   onClick={() => setBrowserTtsRate(r => Math.max(0.5, r - 0.05))}
                   title="Slow down"
                   data-testid="button-speed-down"
                 >
-                  <MinusCircle className="h-2.5 w-2.5" />
+                  <MinusCircle className="h-3 w-3" />
                 </Button>
-                <span className="text-[8px] text-white font-medium w-6 text-center">{Math.round(browserTtsRate * 100)}%</span>
+                <span className="text-[10px] text-white font-medium w-8 text-center">{Math.round(browserTtsRate * 100)}%</span>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-4 w-4 text-white hover:bg-gray-700"
+                  className="h-5 w-5 text-white hover:bg-gray-700"
                   onClick={() => setBrowserTtsRate(r => Math.min(2, r + 0.05))}
                   title="Speed up"
                   data-testid="button-speed-up"
                 >
-                  <PlusCircle className="h-2.5 w-2.5" />
+                  <PlusCircle className="h-3 w-3" />
                 </Button>
               </div>
             )}
-            
+          </div>
+          
+          {/* Playback Controls Bar */}
+          <div className="flex items-center justify-center gap-4 p-1.5 px-4 mx-6 mt-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
             <Button
               size="icon"
               variant="outline"
@@ -8848,11 +8852,56 @@ export default function Dashboard() {
                 transform: 'scale(1) translateY(-50%)',
                 transitionDelay: `${idx * 50}ms`
               }}
-              onClick={(e) => { 
+              onClick={async (e) => { 
                 e.stopPropagation();
-                const moduleFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('module'));
-                if (moduleFile) setPreviewFile(moduleFile);
-                setModulesHoneycombOpen(null); 
+                setModulesHoneycombOpen(null);
+                
+                // Fetch module files from OneDrive
+                const oneDriveFolderMap: Record<string, string> = {
+                  'cppa122': 'CPPA122 - Local Politics',
+                  'cfnf400': 'CFNF400 - Human Sexuality', 
+                  'casl101': 'CASL101 - American Sign Language'
+                };
+                const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
+                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
+                
+                try {
+                  const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+                  const courseFolders = await courseResponse.json();
+                  const weekFolder = courseFolders.find((f: any) => 
+                    f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
+                  );
+                  
+                  if (weekFolder) {
+                    const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                    const weekContents = await weekResponse.json();
+                    const moduleFolder = weekContents.find((f: any) => 
+                      f.type === 'folder' && f.name.toLowerCase().includes('module')
+                    );
+                    
+                    if (moduleFolder) {
+                      const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
+                      const moduleFiles = await moduleResponse.json();
+                      const pdfFiles = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                      
+                      if (pdfFiles.length > 0) {
+                        const firstPdf = pdfFiles[0];
+                        // Create FileItem-compatible object for preview dialog
+                        setPreviewFile({
+                          id: Date.now(),
+                          originalName: firstPdf.name,
+                          displayName: firstPdf.name,
+                          objectPath: firstPdf.downloadUrl,
+                          folder: `week-${selectedWeek}-${courseId}-module`,
+                          listened: false
+                        });
+                        return;
+                      }
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error fetching OneDrive module files:', error);
+                }
               }}
               data-testid={`honeycomb-${courseId}`}
               data-course-button
@@ -8975,11 +9024,56 @@ export default function Dashboard() {
                 transform: modulesHoneycombOpen === 'readings' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
                 transitionDelay: `${idx * 50}ms`
               }}
-              onClick={(e) => { 
+              onClick={async (e) => { 
                 e.stopPropagation();
-                const readingFile = allFiles.find(f => f.folder?.includes(`week-${selectedWeek}-${courseId}`) && f.folder?.includes('reading'));
-                if (readingFile) setPreviewFile(readingFile);
-                setModulesHoneycombOpen(null); 
+                setModulesHoneycombOpen(null);
+                
+                // Fetch reading files from OneDrive
+                const oneDriveFolderMap: Record<string, string> = {
+                  'cppa122': 'CPPA122 - Local Politics',
+                  'cfnf400': 'CFNF400 - Human Sexuality', 
+                  'casl101': 'CASL101 - American Sign Language'
+                };
+                const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
+                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
+                
+                try {
+                  const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+                  const courseFolders = await courseResponse.json();
+                  const weekFolder = courseFolders.find((f: any) => 
+                    f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
+                  );
+                  
+                  if (weekFolder) {
+                    const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                    const weekContents = await weekResponse.json();
+                    const readingFolder = weekContents.find((f: any) => 
+                      f.type === 'folder' && f.name.toLowerCase().includes('reading')
+                    );
+                    
+                    if (readingFolder) {
+                      const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
+                      const readingFiles = await readingResponse.json();
+                      const pdfFiles = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                      
+                      if (pdfFiles.length > 0) {
+                        const firstPdf = pdfFiles[0];
+                        // Create FileItem-compatible object for preview dialog
+                        setPreviewFile({
+                          id: Date.now(),
+                          originalName: firstPdf.name,
+                          displayName: firstPdf.name,
+                          objectPath: firstPdf.downloadUrl,
+                          folder: `week-${selectedWeek}-${courseId}-reading`,
+                          listened: false
+                        });
+                        return;
+                      }
+                    }
+                  }
+                } catch (error) {
+                  console.error('Error fetching OneDrive reading files:', error);
+                }
               }}
               data-testid={`honeycomb-readings-${courseId}`}
               data-readings-course-button
