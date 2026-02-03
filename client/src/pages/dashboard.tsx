@@ -1928,6 +1928,10 @@ export default function Dashboard() {
   const [resizingStickyNote, setResizingStickyNote] = useState<number | null>(null);
   const [resizeStartPos, setResizeStartPos] = useState({ x: 0, y: 0 });
   const [resizeStartSize, setResizeStartSize] = useState({ width: 0, height: 0 });
+  
+  // Local state for sticky note content to prevent cursor jumping
+  const [localStickyNoteContent, setLocalStickyNoteContent] = useState<Record<number, string>>({});
+  const stickyNoteContentTimeouts = useRef<Record<number, NodeJS.Timeout>>({});
 
   // Sticky note mutations
   const createStickyNoteMutation = useMutation({
@@ -2173,6 +2177,29 @@ export default function Dashboard() {
       };
     }
   }, [resizingStickyNote, handleStickyNoteResizeMove, handleStickyNoteResizeEnd]);
+
+  // Handle sticky note content change with debounce to prevent cursor jumping
+  const handleStickyNoteContentChange = useCallback((noteId: number, newContent: string) => {
+    // Update local state immediately for responsive typing
+    setLocalStickyNoteContent(prev => ({ ...prev, [noteId]: newContent }));
+    
+    // Clear any existing timeout for this note
+    if (stickyNoteContentTimeouts.current[noteId]) {
+      clearTimeout(stickyNoteContentTimeouts.current[noteId]);
+    }
+    
+    // Debounce the save to server (500ms after user stops typing)
+    stickyNoteContentTimeouts.current[noteId] = setTimeout(() => {
+      updateStickyNoteMutation.mutate({ id: noteId, updates: { content: newContent } });
+    }, 500);
+  }, [updateStickyNoteMutation]);
+
+  // Get the content to display for a sticky note (local state takes precedence)
+  const getStickyNoteContent = useCallback((note: StickyNoteType) => {
+    return localStickyNoteContent[note.id] !== undefined 
+      ? localStickyNoteContent[note.id] 
+      : note.content;
+  }, [localStickyNoteContent]);
 
   // Files for weekly files flyout (moved up for allTaskFiles dependency)
   interface WeeklyFile {
@@ -8832,8 +8859,8 @@ export default function Dashboard() {
                 <textarea
                   className="w-full h-[calc(100%-28px)] p-2 text-[11px] resize-none border-0 outline-none !font-normal"
                   style={{ backgroundColor: 'transparent', fontFamily: 'inherit' }}
-                  value={note.content}
-                  onChange={(e) => updateStickyNoteMutation.mutate({ id: note.id, updates: { content: e.target.value } })}
+                  value={getStickyNoteContent(note)}
+                  onChange={(e) => handleStickyNoteContentChange(note.id, e.target.value)}
                   placeholder="Write your note here..."
                   data-testid={`sticky-note-content-${note.id}`}
                 />
