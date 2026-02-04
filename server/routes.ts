@@ -83,7 +83,7 @@ const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
 const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
 const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
-const PARTNER_PHONE_ENTITY = "device_tracker.y_s_iphone";
+const PARTNER_PHONE_ENTITY = "device_tracker.y_phone_app";
 
 // Track TTS reading session for resume functionality
 interface TTSSession {
@@ -3225,6 +3225,44 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Error checking partner status:", error);
       res.status(500).json({ error: "Failed to check partner status", details: error.message });
+    }
+  });
+
+  // GET /api/ha/device-trackers - List all device trackers to find correct entity IDs
+  app.get("/api/ha/device-trackers", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      const response = await fetch(`${haUrl}/api/states`, {
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to get states: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      // Filter to device_tracker and person entities
+      const trackers = data.filter((entity: any) => 
+        entity.entity_id.startsWith('device_tracker.') || 
+        entity.entity_id.startsWith('person.')
+      ).map((entity: any) => ({
+        entity_id: entity.entity_id,
+        state: entity.state,
+        friendly_name: entity.attributes?.friendly_name
+      }));
+      
+      res.json(trackers);
+    } catch (error: any) {
+      console.error("Error listing device trackers:", error);
+      res.status(500).json({ error: "Failed to list device trackers", details: error.message });
     }
   });
 
