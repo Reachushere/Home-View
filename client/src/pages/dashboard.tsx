@@ -9107,7 +9107,7 @@ export default function Dashboard() {
               >
               <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25 beam-up"
-                  style={{ color: 'white', marginTop: '1px', marginBottom: '-2px' }}
+                  style={{ color: 'white', marginTop: '1px', marginBottom: '-2px', fontFamily: 'Raleway, sans-serif' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9166,7 +9166,7 @@ export default function Dashboard() {
                 </div>
                 <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25 beam-down"
-                  style={{ color: 'white' }}
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
