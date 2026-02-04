@@ -9116,7 +9116,7 @@ export default function Dashboard() {
                     width: '75px', 
                     height: '75px', 
                     background: `linear-gradient(135deg, ${courseHex}bb, ${courseHex}99), linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.4))`,
-                    borderRadius: '12px',
+                    borderRadius: '8px',
                     boxShadow: `inset 0 0 0 5px ${courseHex}, inset 0 0 0 5.5px white`,
                     padding: '10px'
                   }}
@@ -9185,7 +9185,7 @@ export default function Dashboard() {
                     width: '75px', 
                     height: '75px', 
                     background: `linear-gradient(135deg, ${courseHex}bb, ${courseHex}99), linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.4))`,
-                    borderRadius: '12px',
+                    borderRadius: '8px',
                     boxShadow: `inset 0 0 0 5px ${courseHex}, inset 0 0 0 5.5px white`,
                     padding: '10px'
                   }}
