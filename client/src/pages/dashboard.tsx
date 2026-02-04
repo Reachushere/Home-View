@@ -9154,11 +9154,11 @@ export default function Dashboard() {
                   }}
                 >
                   {moduleCount > 0 ? (
-                    <span className="bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {moduleCount}
                     </span>
                   ) : moduleListenedCount > 0 ? (
-                    <span className="bg-gray-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-gray-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {moduleListenedCount}
                     </span>
                   ) : null}
@@ -9213,11 +9213,11 @@ export default function Dashboard() {
                   }}
                 >
                   {readingCount > 0 ? (
-                    <span className="bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {readingCount}
                     </span>
                   ) : readingListenedCount > 0 ? (
-                    <span className="bg-gray-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-gray-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {readingListenedCount}
                     </span>
                   ) : null}
