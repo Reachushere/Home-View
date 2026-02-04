@@ -9048,19 +9048,37 @@ export default function Dashboard() {
         return (
           <div
             key={`course-wrapper-${courseId}`}
+            className="absolute z-50"
+            style={{ 
+              top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0)}px`, 
+              right: '18px',
+            }}
             onMouseEnter={() => setOpenCourseDropdown(courseId)}
             onMouseLeave={() => setOpenCourseDropdown(null)}
           >
+            {/* Expanding black box behind everything */}
             <div 
-              className="absolute z-50 cursor-pointer"
+              className="absolute transition-all duration-300 ease-out"
+              style={{ 
+                top: '0px',
+                right: '0px',
+                height: '44px',
+                width: openCourseDropdown === courseId ? '124px' : '44px',
+                borderRadius: openCourseDropdown === courseId ? '22px' : '50%',
+                background: 'rgba(0,0,0,0.9)',
+                zIndex: 1
+              }}
+            />
+            {/* Course button */}
+            <div 
+              className="relative cursor-pointer"
               style={{ 
                 width: '44px', 
                 height: '44px', 
-                top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0)}px`, 
-                right: '18px',
                 borderRadius: '50%',
                 background: getBorderGradient(courseHex),
-                padding: '1px'
+                padding: '1px',
+                zIndex: 3
               }}
               data-testid={`pill-course-${courseId}`}
             >
@@ -9095,21 +9113,21 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-            {openCourseDropdown === courseId && (
+            {/* Menu items inside expanded area */}
+            <div 
+              className="absolute flex flex-col justify-center transition-opacity duration-300"
+              style={{ 
+                top: '0px',
+                right: '48px',
+                height: '44px',
+                opacity: openCourseDropdown === courseId ? 1 : 0,
+                pointerEvents: openCourseDropdown === courseId ? 'auto' : 'none',
+                zIndex: 2
+              }}
+            >
               <div 
-                className="absolute z-[100] flex flex-col gap-0 overflow-visible"
-                style={{ 
-                  top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 5}px`, 
-                  right: '69px',
-                  transformOrigin: 'center center',
-                  alignItems: 'flex-start',
-                  display: 'flex',
-                  flexDirection: 'column'
-                }}
-              >
-              <div 
-                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm animate-fade-in bg-black/90 hover:bg-white/25"
-                  style={{ color: 'white', marginTop: '4px', marginBottom: '0px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '0px', height: '20px', fontSize: '9px', letterSpacing: '0.8px', fontWeight: 400, position: 'relative' }}
+                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25"
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '70px', height: '20px', fontSize: '9px', letterSpacing: '0.8px', fontWeight: 400, position: 'relative' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9169,8 +9187,8 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div 
-                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm animate-fade-in bg-black/90 hover:bg-white/25"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '0px', marginTop: '1px', height: '20px', fontSize: '9px', letterSpacing: '0.8px', fontWeight: 400 }}
+                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25"
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '70px', height: '20px', fontSize: '9px', letterSpacing: '0.8px', fontWeight: 400 }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9229,8 +9247,7 @@ export default function Dashboard() {
                     ) : null}
                   </span>
                 </div>
-              </div>
-            )}
+            </div>
           </div>
         );
       })}
