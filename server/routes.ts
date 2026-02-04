@@ -2641,59 +2641,72 @@ export async function registerRoutes(
   // In-memory storage for playback progress (persists until server restart)
   const playbackProgress: Record<string, { chunkIndex: number; totalChunks: number; lastPlayed: Date }> = {};
   
-  // GET /api/shower/next-reading - Get next unread module/reading for current week
+  // GET /api/shower/next-reading - Get next unlistened module/reading file for current week
   app.get("/api/shower/next-reading", async (req, res) => {
     try {
-      const today = new Date();
-      const allTasks = await storage.getTasks();
+      const allFiles = await storage.getFiles();
       
-      // Calculate current week boundaries (Sunday to Saturday)
-      const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay());
-      startOfWeek.setHours(0, 0, 0, 0);
+      // Get current week number from semester settings
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
       
-      const endOfWeek = new Date(startOfWeek);
-      endOfWeek.setDate(startOfWeek.getDate() + 6);
-      endOfWeek.setHours(23, 59, 59, 999);
+      if (semesterSettings?.startDate) {
+        const startDate = new Date(semesterSettings.startDate);
+        const today = new Date();
+        const diffTime = today.getTime() - startDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      }
       
-      // Get tasks for this week that are readings or modules
-      const weekTasks = allTasks.filter(t => {
-        const dueDate = new Date(t.dueDate);
-        return dueDate >= startOfWeek && dueDate <= endOfWeek;
+      // Filter for unlistened files from current week
+      const unlistenedFiles = allFiles.filter(f => {
+        if (f.listened) return false;
+        
+        // Extract week number from folder name (e.g., "week-4-cppa122-module")
+        const weekMatch = f.folder?.match(/week-(\d+)/i);
+        if (weekMatch) {
+          const fileWeek = parseInt(weekMatch[1], 10);
+          return fileWeek === currentWeekNumber;
+        }
+        return false;
       });
       
-      // Find unfinished module tasks first, then readings
-      const moduleTasks = weekTasks.filter(t => 
-        t.title.toLowerCase().includes('module') && !t.isCompleted
+      // Separate modules and readings by folder name
+      const moduleFiles = unlistenedFiles.filter(f => 
+        f.folder?.toLowerCase().includes('module') || 
+        f.originalName?.toLowerCase().includes('module')
       );
-      const readingTasks = weekTasks.filter(t => 
-        (t.title.toLowerCase().includes('reading') || t.title.toLowerCase().includes('read')) && !t.isCompleted
+      const readingFiles = unlistenedFiles.filter(f => 
+        f.folder?.toLowerCase().includes('reading') || 
+        f.originalName?.toLowerCase().includes('reading')
       );
       
       // Priority: modules first, then readings
-      const orderedTasks = [...moduleTasks, ...readingTasks];
+      const orderedFiles = [...moduleFiles, ...readingFiles];
       
-      if (orderedTasks.length === 0) {
+      if (orderedFiles.length === 0) {
         return res.json({ 
-          message: "All modules and readings completed for this week!", 
+          message: `All modules and readings for week ${currentWeekNumber} have been listened to!`, 
           nextFile: null,
-          allComplete: true 
+          allComplete: true,
+          currentWeek: currentWeekNumber
         });
       }
       
-      const nextTask = orderedTasks[0];
+      const nextFile = orderedFiles[0];
       
-      // Check if we have progress for this task
-      const progressKey = `task-${nextTask.id}`;
+      // Check if we have progress for this file
+      const progressKey = `file-${nextFile.id}`;
       const progress = playbackProgress[progressKey];
       
       res.json({
-        task: {
-          id: nextTask.id,
-          title: nextTask.title,
-          courseName: nextTask.courseName,
-          dueDate: nextTask.dueDate
+        file: {
+          id: nextFile.id,
+          name: nextFile.displayName || nextFile.originalName,
+          folder: nextFile.folder,
+          objectPath: nextFile.objectPath
         },
+        currentWeek: currentWeekNumber,
         progress: progress || { chunkIndex: 0, totalChunks: 0 },
         resuming: !!progress
       });
