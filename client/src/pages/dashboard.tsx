@@ -9098,9 +9098,9 @@ export default function Dashboard() {
                 className="absolute z-[100] flex flex-col gap-0 overflow-visible"
                 style={{ 
                   top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 14}px`, 
-                  right: '63px',
+                  right: '66px',
                   transformOrigin: 'center center',
-                  alignItems: 'flex-end',
+                  alignItems: 'flex-start',
                   display: 'flex',
                   flexDirection: 'column'
                 }}
@@ -9158,7 +9158,7 @@ export default function Dashboard() {
                       {moduleCount}
                     </span>
                   ) : moduleListenedCount > 0 ? (
-                    <span className="bg-gray-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {moduleListenedCount}
                     </span>
                   ) : null}
@@ -9217,7 +9217,7 @@ export default function Dashboard() {
                       {readingCount}
                     </span>
                   ) : readingListenedCount > 0 ? (
-                    <span className="bg-gray-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {readingListenedCount}
                     </span>
                   ) : null}
