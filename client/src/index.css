@@ -974,11 +974,11 @@ button[role="combobox"] > span {
     content: '';
     position: absolute;
     left: 3.5px;
-    top: 1px;
-    width: 2.5px;
-    height: 5px;
+    top: 1.5px;
+    width: 2px;
+    height: 4px;
     border: solid white;
-    border-width: 0 1px 1px 0;
+    border-width: 0 0.75px 0.75px 0;
     transform: rotate(45deg);
   }
   
@@ -1234,8 +1234,8 @@ button[role="combobox"] > span {
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 10px;
-  font-weight: 400;
+  font-size: 8px;
+  font-weight: 300;
 }
 
 /* Orange gradient slider thumbs */
@@ -1332,8 +1332,8 @@ input[type="checkbox"]:checked::after {
   position: absolute;
   left: 1px;
   top: -2px;
-  font-size: 10px;
-  font-weight: 400;
+  font-size: 8px;
+  font-weight: 300;
   color: white;
   line-height: 1;
 }
