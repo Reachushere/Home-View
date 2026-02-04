@@ -9106,7 +9106,7 @@ export default function Dashboard() {
                 }}
               >
               <div 
-                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-up border border-white/50"
+                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm bg-white/5 hover:bg-white/25 beam-up border border-white/50"
                   style={{ color: 'white', marginTop: '4px', marginBottom: '-2px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
@@ -9167,7 +9167,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div 
-                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-down border border-white/50"
+                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm bg-white/5 hover:bg-white/25 beam-down border border-white/50"
                   style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '3px' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
