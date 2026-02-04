@@ -2754,12 +2754,17 @@ export async function registerRoutes(
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       
+      console.log("Shower trigger: semesterSettings =", JSON.stringify(semesterSettings));
+      
       if (semesterSettings?.semesterStartDate) {
         const startDate = new Date(semesterSettings.semesterStartDate);
         const today = new Date();
         const diffTime = today.getTime() - startDate.getTime();
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         currentWeekNumber = Math.floor(diffDays / 7) + 1;
+        console.log(`Shower trigger: startDate=${startDate.toISOString()}, today=${today.toISOString()}, diffDays=${diffDays}, week=${currentWeekNumber}`);
+      } else {
+        console.log("Shower trigger: No semester settings found, defaulting to week 1");
       }
       
       // Sync OneDrive files for current week (inline version)
