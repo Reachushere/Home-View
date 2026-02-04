@@ -10185,7 +10185,7 @@ export default function Dashboard() {
                     
                     {/* Main Background Overlay Toggle */}
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Background Colour Overlay</Label>
+                      <Label className="text-xs">Main Background Colour Overlay</Label>
                       <div className="flex items-center gap-2">
                         <div 
                           className={`w-7 h-3.5 rounded-full cursor-pointer transition-colors ${colorSettings.mainBackgroundOverlay ? 'bg-gradient-to-r from-[#4578B0] to-[#042550]' : 'bg-gray-500'}`}
