@@ -10272,7 +10272,7 @@ export default function Dashboard() {
                     
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <Label className="text-xs">Tall Pill Button Spacing</Label>
+                        <Label className="text-xs">Menu Background Button Spacing</Label>
                         <span className="text-xs text-muted-foreground">{blinkSettings.tallPillButtonSpacing}px</span>
                       </div>
                       <input
@@ -10289,7 +10289,7 @@ export default function Dashboard() {
                     
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <Label className="text-xs">Tall Pill Height</Label>
+                        <Label className="text-xs">Menu Background Height</Label>
                         <span className="text-xs text-muted-foreground">{blinkSettings.tallPillHeight}px</span>
                       </div>
                       <input
