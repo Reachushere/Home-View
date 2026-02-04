@@ -9098,7 +9098,7 @@ export default function Dashboard() {
             >
               <DropdownMenuItem 
                 variant="transparent"
-                className="text-[11px] py-1.5 cursor-pointer"
+                className="text-[11px] py-1.5 cursor-pointer mt-1"
                 data-testid={`pill-course-${courseId}-module`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
