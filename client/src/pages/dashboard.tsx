@@ -2815,6 +2815,7 @@ export default function Dashboard() {
   // File preview dialog state
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
   const [oneDrivePreviewFiles, setOneDrivePreviewFiles] = useState<FileItem[]>([]);
+  const [isLoadingOneDriveFiles, setIsLoadingOneDriveFiles] = useState(false);
   // Cache for file counts by folder with listened breakdown (e.g., "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 })
   const [fileCounts, setFileCounts] = useState<Record<string, { total: number; listened: number; unlistened: number }>>({});
   // Legacy: for backward compatibility with OneDrive-only counts
@@ -5599,6 +5600,15 @@ export default function Dashboard() {
             zIndex: 1
           }}
         />
+      )}
+      {/* Loading overlay for OneDrive file fetching */}
+      {isLoadingOneDriveFiles && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-lg p-6 flex items-center gap-3 shadow-xl">
+            <div className="animate-spin rounded-full h-6 w-6 border-2 border-amber-600 border-t-transparent" />
+            <span className="text-gray-700 font-medium">Loading files from OneDrive...</span>
+          </div>
+        </div>
       )}
       {/* Dynamic CSS for blink speed */}
       <style>{`
@@ -9131,6 +9141,8 @@ export default function Dashboard() {
                   }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
+                    setIsLoadingOneDriveFiles(true);
+                    setOpenCourseDropdown(null);
                     const oneDriveFolderMap: Record<string, string> = {
                       'cppa122': 'CPPA122 - Local Politics',
                       'cfnf400': 'CFNF400 - Human Sexuality', 
@@ -9165,12 +9177,13 @@ export default function Dashboard() {
                             }));
                             setOneDrivePreviewFiles(fileItems);
                             setPreviewFile(fileItems[0]);
-                            setOpenCourseDropdown(null);
                           }
                         }
                       }
                     } catch (error) {
                       console.error('Error fetching module files:', error);
+                    } finally {
+                      setIsLoadingOneDriveFiles(false);
                     }
                   }}
                 >
@@ -9209,6 +9222,8 @@ export default function Dashboard() {
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
+                    setIsLoadingOneDriveFiles(true);
+                    setOpenCourseDropdown(null);
                     const oneDriveFolderMap: Record<string, string> = {
                       'cppa122': 'CPPA122 - Local Politics',
                       'cfnf400': 'CFNF400 - Human Sexuality', 
@@ -9243,12 +9258,13 @@ export default function Dashboard() {
                             }));
                             setOneDrivePreviewFiles(fileItems);
                             setPreviewFile(fileItems[0]);
-                            setOpenCourseDropdown(null);
                           }
                         }
                       }
                     } catch (error) {
                       console.error('Error fetching reading files:', error);
+                    } finally {
+                      setIsLoadingOneDriveFiles(false);
                     }
                   }}
                 >
