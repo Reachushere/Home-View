@@ -11583,7 +11583,7 @@ export default function Dashboard() {
               </div>
               
                           {/* Time Slots - Scrollable area */}
-            <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px' }}>
+            <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative bg-[#faf8f5] dark:bg-zinc-900" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px' }}>
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
