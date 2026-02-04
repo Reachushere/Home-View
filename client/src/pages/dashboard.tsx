@@ -10093,7 +10093,7 @@ export default function Dashboard() {
                     
                     {/* Header Bar Colour */}
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Forecast Box Headers</Label>
+                      <Label className="text-xs">Summary Box Headers</Label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
                         <div className="relative">
