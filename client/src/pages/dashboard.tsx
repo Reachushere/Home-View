@@ -13509,7 +13509,7 @@ export default function Dashboard() {
                 {/* Course */}
                 <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 19}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
               </div>
@@ -13533,7 +13533,7 @@ export default function Dashboard() {
                 {/* Course */}
                 <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 19}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
               </div>
@@ -13557,7 +13557,7 @@ export default function Dashboard() {
                 {/* Course */}
                 <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 19}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
               </div>
