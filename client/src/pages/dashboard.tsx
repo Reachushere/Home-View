@@ -9044,8 +9044,9 @@ export default function Dashboard() {
         const completedCount = (fileCounts[moduleFolderKey]?.listened || 0) + (fileCounts[readingFolderKey]?.listened || 0);
         
         return (
-          <div key={`course-pill-${courseId}`} className="relative">
+          <>
             <div 
+              key={`course-pill-${courseId}`}
               className="absolute z-50 cursor-pointer"
               style={{ 
                 width: '44px', 
@@ -9092,7 +9093,7 @@ export default function Dashboard() {
             </div>
             {openCourseDropdown === courseId && (
               <div 
-                className="absolute z-[100] flex flex-col gap-0.5 animate-in fade-in-0 duration-200"
+                className="absolute z-[100] flex flex-col gap-0.5 animate-in fade-in-0 zoom-in-95 slide-in-from-right-2 duration-200"
                 style={{ 
                   top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4}px`, 
                   right: '70px'
@@ -9212,7 +9213,7 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-          </div>
+          </>
         );
       })}
       
