@@ -2640,6 +2640,34 @@ export async function registerRoutes(
   // SHOWER AUTOMATION - Auto-play PDFs on motion
   // ============================================
   
+  // POST /api/debug/setup-semester - Set up semester settings on production
+  app.post("/api/debug/setup-semester", async (req, res) => {
+    try {
+      // Check if settings already exist
+      const existing = await storage.getActiveSemesterSettings();
+      if (existing) {
+        return res.json({ message: "Semester settings already exist", settings: existing });
+      }
+      
+      // Create Winter 2026 settings (Jan 12, 2026 start)
+      const newSettings = await storage.createSemesterSettings({
+        semesterName: "Winter 2026",
+        semesterStartDate: new Date("2026-01-12T00:00:00.000Z"),
+        course1Code: "CPPA122",
+        course1Name: "Local Politics",
+        course2Code: "CFNF400", 
+        course2Name: "Human Sexuality",
+        course3Code: "CASL101",
+        course3Name: "American Sign Language",
+        isActive: true
+      });
+      
+      return res.json({ message: "Semester settings created", settings: newSettings });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
+  });
+
   // GET /api/debug/week - Debug endpoint to check current week calculation
   app.get("/api/debug/week", async (req, res) => {
     try {
