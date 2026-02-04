@@ -9046,9 +9046,12 @@ export default function Dashboard() {
         const completedCount = moduleListenedCount + readingListenedCount;
         
         return (
-          <>
+          <div
+            key={`course-wrapper-${courseId}`}
+            onMouseEnter={() => setOpenCourseDropdown(courseId)}
+            onMouseLeave={() => setOpenCourseDropdown(null)}
+          >
             <div 
-              key={`course-pill-${courseId}`}
               className="absolute z-50 cursor-pointer"
               style={{ 
                 width: '44px', 
@@ -9060,7 +9063,6 @@ export default function Dashboard() {
                 padding: '1px'
               }}
               data-testid={`pill-course-${courseId}`}
-              onClick={() => setOpenCourseDropdown(openCourseDropdown === courseId ? null : courseId)}
             >
               <div 
                 className="hover:opacity-80 transition-all duration-200"
@@ -9229,7 +9231,7 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
-          </>
+          </div>
         );
       })}
       
