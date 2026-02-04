@@ -1303,14 +1303,13 @@ input[type="checkbox"]:checked {
 }
 
 input[type="checkbox"]:checked::after {
-  content: '';
+  content: '✓';
   position: absolute;
-  left: 2px;
-  top: 1px;
-  width: 4px;
-  height: 6px;
-  border: solid white;
-  border-width: 0 1.5px 1.5px 0;
-  transform: rotate(45deg);
+  left: 1px;
+  top: -2px;
+  font-size: 10px;
+  font-weight: 400;
+  color: white;
+  line-height: 1;
 }
 
