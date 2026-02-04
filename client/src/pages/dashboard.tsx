@@ -9468,44 +9468,48 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Kitchen Stop Button - Shows when playback is active */}
-      {isKitchenPlaying && (
-        <div 
-          className="absolute z-[60] pointer-events-auto cursor-pointer"
-          style={{ 
-            width: '44px', 
-            height: '44px', 
-            top: `${616 + blinkSettings.tallPillButtonSpacing * 4}px`, 
-            right: '18px',
+      {/* Kitchen Stop Button - Always visible above radio button */}
+      <div 
+        className="absolute z-[60] pointer-events-auto cursor-pointer"
+        style={{ 
+          width: '44px', 
+          height: '44px', 
+          top: `${616 + blinkSettings.tallPillButtonSpacing * 4}px`, 
+          right: '18px',
+          borderRadius: '50%',
+          background: isKitchenPlaying 
+            ? 'linear-gradient(0deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)'
+            : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+          padding: '1px',
+          animation: isKitchenPlaying ? 'pulse 2s infinite' : 'none',
+        }}
+        data-testid="button-kitchen-stop"
+        onClick={handleKitchenStop}
+      >
+        <div
+          className="hover:opacity-80 transition-all duration-200"
+          style={{
+            position: 'absolute',
+            top: '1px',
+            left: '1px',
+            width: '42px',
+            height: '42px',
             borderRadius: '50%',
-            background: 'linear-gradient(0deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)',
-            padding: '1px',
-            animation: 'pulse 2s infinite',
+            background: isKitchenPlaying
+              ? 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)'
+              : 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
+            boxShadow: isKitchenPlaying
+              ? 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)'
+              : 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-          data-testid="button-kitchen-stop"
-          onClick={handleKitchenStop}
+          title="Stop Kitchen Reading"
         >
-          <div
-            className="hover:opacity-80 transition-all duration-200"
-            style={{
-              position: 'absolute',
-              top: '1px',
-              left: '1px',
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              background: 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)',
-              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            title="Stop Kitchen Reading"
-          >
-            <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
-          </div>
+          <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
         </div>
-      )}
+      </div>
 
       {/* Radio Button - Moved up after removing arrows toggle */}
       <div 
