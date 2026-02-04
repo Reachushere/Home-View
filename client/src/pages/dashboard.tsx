@@ -9115,9 +9115,9 @@ export default function Dashboard() {
                   style={{ 
                     width: '100px', 
                     height: '100px', 
-                    background: `linear-gradient(135deg, color-mix(in srgb, ${courseHex} 85%, black), color-mix(in srgb, ${courseHex} 70%, black))`,
+                    background: `linear-gradient(135deg, ${courseHex}cc, ${courseHex}aa)`,
                     borderRadius: '12px',
-                    boxShadow: `inset 0 0 0 5px color-mix(in srgb, ${courseHex} 85%, black), inset 0 0 0 5.5px white`,
+                    boxShadow: `inset 0 0 0 5px ${courseHex}cc, inset 0 0 0 5.5px white`,
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
@@ -9184,9 +9184,9 @@ export default function Dashboard() {
                   style={{ 
                     width: '100px', 
                     height: '100px', 
-                    background: `linear-gradient(135deg, color-mix(in srgb, ${courseHex} 85%, black), color-mix(in srgb, ${courseHex} 70%, black))`,
+                    background: `linear-gradient(135deg, ${courseHex}cc, ${courseHex}aa)`,
                     borderRadius: '12px',
-                    boxShadow: `inset 0 0 0 5px color-mix(in srgb, ${courseHex} 85%, black), inset 0 0 0 5.5px white`,
+                    boxShadow: `inset 0 0 0 5px ${courseHex}cc, inset 0 0 0 5.5px white`,
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
