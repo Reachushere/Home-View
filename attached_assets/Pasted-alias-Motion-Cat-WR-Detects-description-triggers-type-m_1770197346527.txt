@@ -1,0 +1,87 @@
+alias: Motion - Cat WR Detects
+description: ""
+triggers:
+  - type: motion
+    device_id: 027b30785abb18efee5e9d2804ed3c82
+    entity_id: 0be4c0701448260bc3df21d77fb4859b
+    domain: binary_sensor
+    trigger: device
+  - type: motion
+    device_id: fb4553e7f382c6854255fd2730b3d4f6
+    entity_id: 1ce97c9ca41e09826ac376f311997d8b
+    domain: binary_sensor
+    trigger: device
+  - type: motion
+    device_id: 2c73871d69722f7316ef217879b2837d
+    entity_id: 99fa93fd9e3c440526063e00f0f24212
+    domain: binary_sensor
+    trigger: device
+  - type: opened
+    device_id: 79ab955f8b63ac356cc9233edd57d5bd
+    entity_id: 0374376ab709f8935bba78018af67a5c
+    domain: binary_sensor
+    trigger: device
+conditions:
+  - condition: device
+    type: is_off
+    device_id: e96478d38383c1fd7bbc7a987510deb1
+    entity_id: 0ba6ccc29c6b911c0463fca3c0a03d68
+    domain: light
+  - condition: device
+    type: is_off
+    device_id: bc98add946fd6c035ac417990a98faa9
+    entity_id: 2fcbe5483a5a68628de1e89572909199
+    domain: light
+actions:
+  - data: {}
+    target:
+      entity_id: light.cat_lights
+    action: light.turn_on
+  - metadata: {}
+    action: scene.turn_on
+    data: {}
+    enabled: false
+  - type: turn_on
+    device_id: 3956ea816f827821863e7c79f5e16415
+    entity_id: acaaee25b550f53f16259b58b6987521
+    domain: switch
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 8
+      milliseconds: 0
+  - type: turn_off
+    device_id: 3956ea816f827821863e7c79f5e16415
+    entity_id: acaaee25b550f53f16259b58b6987521
+    domain: switch
+  - device_id: 935e462bb030745ac11e2c65b5fda4e7
+    domain: select
+    entity_id: c16752f1a7c89b6e68fa7c0d321e7bed
+    type: select_option
+    option: "On"
+    enabled: false
+  - device_id: 935e462bb030745ac11e2c65b5fda4e7
+    domain: number
+    entity_id: 566eabad576d6685dae2633329f5a76e
+    type: set_value
+    value: 9
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 8
+      milliseconds: 0
+    enabled: false
+  - action: automation.trigger
+    metadata: {}
+    data:
+      skip_condition: true
+    target:
+      entity_id: automation.bed_occupied_turns_down_cat_volume
+    enabled: true
+  - device_id: cf2ee997aed66d06e8733a0d366849f2
+    domain: number
+    entity_id: ff70e5caa5866c90d22a0fd9188f99e1
+    type: set_value
+    value: 10
+mode: parallel
+max: 100

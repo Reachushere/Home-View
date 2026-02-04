@@ -2809,6 +2809,185 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/shower/sync-onedrive - Auto-sync module files from OneDrive for current week
+  app.post("/api/shower/sync-onedrive", async (req, res) => {
+    try {
+      // Get current week number
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
+      
+      if (semesterSettings?.semesterStartDate) {
+        const startDate = new Date(semesterSettings.semesterStartDate);
+        const today = new Date();
+        const diffTime = today.getTime() - startDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      }
+      
+      const { listOneDriveItems } = await import("./onedrive");
+      const { ObjectStorageService, objectStorageClient } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+      
+      // Course configurations
+      const courses = [
+        { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics' },
+        { code: 'CFNF400', path: '/School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality' }
+      ];
+      
+      const syncedFiles: any[] = [];
+      const errors: any[] = [];
+      
+      for (const course of courses) {
+        try {
+          // List all week folders for this course
+          const weekFolders = await listOneDriveItems(course.path);
+          
+          // Find the current week folder (e.g., "Week 4 - Jan 31-Feb 6")
+          const currentWeekFolder = weekFolders.find((f: any) => {
+            if (f.type !== 'folder') return false;
+            const weekMatch = f.name.match(/Week\s+(\d+)/i);
+            if (weekMatch) {
+              return parseInt(weekMatch[1], 10) === currentWeekNumber;
+            }
+            return false;
+          });
+          
+          if (!currentWeekFolder) {
+            console.log(`No week ${currentWeekNumber} folder found for ${course.code}`);
+            continue;
+          }
+          
+          // List contents of the week folder
+          const weekContents = await listOneDriveItems(currentWeekFolder.path);
+          
+          // Find Module folder
+          const moduleFolder = weekContents.find((f: any) => 
+            f.type === 'folder' && f.name.toLowerCase() === 'module'
+          );
+          
+          if (moduleFolder) {
+            // List module files
+            const moduleFiles = await listOneDriveItems(moduleFolder.path);
+            
+            for (const file of moduleFiles) {
+              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+              
+              // Check if already in files table
+              const existingFiles = await storage.getFiles();
+              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-module`;
+              const alreadyExists = existingFiles.some(
+                (f: any) => f.originalName === file.name && f.folder === folderName
+              );
+              
+              if (alreadyExists) {
+                console.log(`File ${file.name} already synced`);
+                continue;
+              }
+              
+              // Download file from OneDrive
+              const downloadResponse = await fetch(file.downloadUrl);
+              if (!downloadResponse.ok) {
+                errors.push({ file: file.name, error: 'Download failed' });
+                continue;
+              }
+              
+              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+              
+              // Upload to object storage
+              const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+              const uploadResponse = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: fileBuffer,
+                headers: { 'Content-Type': 'application/pdf' }
+              });
+              
+              if (!uploadResponse.ok) {
+                errors.push({ file: file.name, error: 'Upload to storage failed' });
+                continue;
+              }
+              
+              // Get the normalized object path
+              const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+              
+              // Add to files table
+              await storage.createFile({
+                originalName: file.name,
+                displayName: file.name,
+                objectPath: objectPath,
+                contentType: 'application/pdf',
+                size: file.size,
+                folder: folderName,
+                listened: false
+              });
+              
+              syncedFiles.push({ name: file.name, folder: folderName, course: course.code });
+            }
+          }
+          
+          // Also check for Reading folder
+          const readingFolder = weekContents.find((f: any) => 
+            f.type === 'folder' && f.name.toLowerCase() === 'reading'
+          );
+          
+          if (readingFolder) {
+            const readingFiles = await listOneDriveItems(readingFolder.path);
+            
+            for (const file of readingFiles) {
+              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+              
+              const existingFiles = await storage.getFiles();
+              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-reading`;
+              const alreadyExists = existingFiles.some(
+                (f: any) => f.originalName === file.name && f.folder === folderName
+              );
+              
+              if (alreadyExists) continue;
+              
+              const downloadResponse = await fetch(file.downloadUrl);
+              if (!downloadResponse.ok) continue;
+              
+              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+              const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+              const uploadResponse = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: fileBuffer,
+                headers: { 'Content-Type': 'application/pdf' }
+              });
+              
+              if (!uploadResponse.ok) continue;
+              
+              const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+              
+              await storage.createFile({
+                originalName: file.name,
+                displayName: file.name,
+                objectPath: objectPath,
+                contentType: 'application/pdf',
+                size: file.size,
+                folder: folderName,
+                listened: false
+              });
+              
+              syncedFiles.push({ name: file.name, folder: folderName, course: course.code });
+            }
+          }
+        } catch (courseError: any) {
+          errors.push({ course: course.code, error: courseError.message });
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        currentWeek: currentWeekNumber,
+        synced: syncedFiles,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error: any) {
+      console.error("Error syncing OneDrive files:", error);
+      res.status(500).json({ error: "Failed to sync OneDrive files", details: error.message });
+    }
+  });
+
   // POST /api/echo/tts - Send text-to-speech to Home Assistant Echo device
   app.post("/api/echo/tts", async (req, res) => {
     try {
