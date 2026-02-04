@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { db } from "./db";
 import { sql } from "drizzle-orm";
-import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, type RepeatType, type RepeatIntervalUnit, type InsertTask } from "@shared/schema";
+import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, type RepeatType, type RepeatIntervalUnit, type InsertTask, type FileRecord } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
@@ -3183,6 +3183,82 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/files/generate-all-tts - Pre-generate TTS audio for all module files
+  app.post("/api/files/generate-all-tts", async (req, res) => {
+    try {
+      const { weekNumber } = req.body;
+      
+      // Get all module files for the specified week (or all weeks if not specified)
+      const allFiles = await storage.getFiles();
+      const moduleFiles = allFiles.filter((f: FileRecord) => {
+        const isModule = f.folder?.includes('-module');
+        const matchesWeek = weekNumber ? f.folder?.includes(`week-${weekNumber}-`) : true;
+        const needsGeneration = !f.ttsAudioUrl;
+        return isModule && matchesWeek && needsGeneration;
+      });
+      
+      console.log(`Pre-generating TTS for ${moduleFiles.length} module files...`);
+      
+      const results: { fileId: number; name: string; status: string; audioUrl?: string; error?: string }[] = [];
+      
+      for (const file of moduleFiles) {
+        try {
+          console.log(`Generating TTS for: ${file.displayName}`);
+          
+          // Download the PDF from OneDrive
+          const objectPath = file.objectPath;
+          const content = await getOneDriveFile(objectPath);
+          
+          if (!content) {
+            results.push({ fileId: file.id, name: file.displayName, status: 'error', error: 'Empty file' });
+            continue;
+          }
+          
+          // Extract text from PDF
+          let textContent = '';
+          if (file.contentType?.includes('pdf') || file.originalName.endsWith('.pdf')) {
+            const PdfParser = await getPdfParser();
+            const parsed = await PdfParser(content);
+            textContent = parsed.text;
+          } else if (Buffer.isBuffer(content)) {
+            textContent = content.toString('utf-8');
+          }
+          
+          if (!textContent.trim()) {
+            results.push({ fileId: file.id, name: file.displayName, status: 'error', error: 'No text content' });
+            continue;
+          }
+          
+          // Generate OpenAI TTS audio and save to object storage
+          const audioUrl = await generateAndSaveTTSAudio(textContent, `module-${file.id}`);
+          
+          // Update file record with audio URL
+          await storage.updateFile(file.id, { 
+            ttsAudioUrl: audioUrl,
+            ttsGeneratedAt: new Date()
+          });
+          
+          results.push({ fileId: file.id, name: file.displayName, status: 'success', audioUrl });
+          console.log(`TTS generated for: ${file.displayName}`);
+          
+        } catch (error: any) {
+          console.error(`Error generating TTS for ${file.displayName}:`, error);
+          results.push({ fileId: file.id, name: file.displayName, status: 'error', error: error.message });
+        }
+      }
+      
+      res.json({
+        success: true,
+        totalFiles: moduleFiles.length,
+        results
+      });
+      
+    } catch (error: any) {
+      console.error("Error generating TTS files:", error);
+      res.status(500).json({ error: "Failed to generate TTS files", details: error.message });
+    }
+  });
+
   // POST /api/shower/mark-listened - Mark a file as listened
   app.post("/api/shower/mark-listened", async (req, res) => {
     try {
@@ -3656,12 +3732,11 @@ export async function registerRoutes(
             
             // Save progress after each chunk starts
             playbackProgress[progressKey] = {
+              chunkIndex: i,
               lastCompletedChunk: i,
               totalChunks: chunks.length,
               lastPlayed: new Date(),
-              fileId: nextFile.id,
-              fileName: fileName,
-              folder: nextFile.folder
+              fileId: nextFile.id
             };
             
             // IMPORTANT: Alexa TTS takes time to process before speaking
