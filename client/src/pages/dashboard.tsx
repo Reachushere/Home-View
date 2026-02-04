@@ -10083,11 +10083,8 @@ export default function Dashboard() {
                     
                     {/* Transparency Slider */}
                     {colorSettings.boxGlassEffect && (
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-xs">Transparency</Label>
-                          <span className="text-xs text-muted-foreground">{colorSettings.boxTransparency}%</span>
-                        </div>
+                      <div className="flex items-center gap-3">
+                        <Label className="text-xs whitespace-nowrap flex-1">Transparency</Label>
                         <input
                           type="range"
                           min="10"
@@ -10097,6 +10094,7 @@ export default function Dashboard() {
                           className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                           data-testid="slider-transparency"
                         />
+                        <span className="text-xs text-muted-foreground w-10 text-right">{colorSettings.boxTransparency}%</span>
                       </div>
                     )}
                     
@@ -10230,11 +10228,8 @@ export default function Dashboard() {
                   </div>
                   
                   <div className="space-y-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Header Button Spacing</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.buttonSpacing}px</span>
-                      </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Header Button Spacing</Label>
                       <input
                         type="range"
                         min="0"
@@ -10245,13 +10240,11 @@ export default function Dashboard() {
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-button-spacing"
                       />
+                      <span className="text-xs text-muted-foreground w-10 text-right">{blinkSettings.buttonSpacing}px</span>
                     </div>
                     
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Media Controls Spacing</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.mediaControlSpacing}px</span>
-                      </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Media Controls Spacing</Label>
                       <input
                         type="range"
                         min="4"
@@ -10262,13 +10255,11 @@ export default function Dashboard() {
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-media-control-spacing"
                       />
+                      <span className="text-xs text-muted-foreground w-10 text-right">{blinkSettings.mediaControlSpacing}px</span>
                     </div>
                     
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Menu Background Button Spacing</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.tallPillButtonSpacing}px</span>
-                      </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Menu Background Button Spacing</Label>
                       <input
                         type="range"
                         min="-20"
@@ -10279,13 +10270,11 @@ export default function Dashboard() {
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-tall-pill-button-spacing"
                       />
+                      <span className="text-xs text-muted-foreground w-10 text-right">{blinkSettings.tallPillButtonSpacing}px</span>
                     </div>
                     
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Menu Background Height</Label>
-                        <span className="text-xs text-muted-foreground">{blinkSettings.tallPillHeight}px</span>
-                      </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Menu Background Height</Label>
                       <input
                         type="range"
                         min="-50"
@@ -10296,6 +10285,7 @@ export default function Dashboard() {
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-tall-pill-height"
                       />
+                      <span className="text-xs text-muted-foreground w-10 text-right">{blinkSettings.tallPillHeight}px</span>
                     </div>
                     
                   </div>
@@ -10357,11 +10347,8 @@ export default function Dashboard() {
                         />
                       </div>
                       {blinkSettings.todayColumnBlink && (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-[10px] text-muted-foreground">Speed</Label>
-                            <span className="text-[10px] text-muted-foreground">{blinkSettings.todayColumnBlinkSpeed}s</span>
-                          </div>
+                        <div className="flex items-center gap-3">
+                          <Label className="text-[10px] text-muted-foreground flex-1">Speed</Label>
                           <input
                             type="range"
                             min="0.2"
@@ -10372,6 +10359,7 @@ export default function Dashboard() {
                             className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                             data-testid="slider-today-column-speed"
                           />
+                          <span className="text-[10px] text-muted-foreground w-8 text-right">{blinkSettings.todayColumnBlinkSpeed}s</span>
                         </div>
                       )}
                     </div>
@@ -10389,11 +10377,8 @@ export default function Dashboard() {
                         />
                       </div>
                       {blinkSettings.allDayFilesBlink && (
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <Label className="text-[10px] text-muted-foreground">Speed</Label>
-                            <span className="text-[10px] text-muted-foreground">{blinkSettings.allDayFilesBlinkSpeed}s</span>
-                          </div>
+                        <div className="flex items-center gap-3">
+                          <Label className="text-[10px] text-muted-foreground flex-1">Speed</Label>
                           <input
                             type="range"
                             min="0.2"
@@ -10404,6 +10389,7 @@ export default function Dashboard() {
                             className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                             data-testid="slider-allday-files-speed"
                           />
+                          <span className="text-[10px] text-muted-foreground w-8 text-right">{blinkSettings.allDayFilesBlinkSpeed}s</span>
                         </div>
                       )}
                     </div>
@@ -10437,40 +10423,40 @@ export default function Dashboard() {
                   
                   <div className="space-y-4">
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Start Delay</Label>
-                        <span className="text-xs text-muted-foreground">{ttsSettings.startDelay}s</span>
+                      <div className="flex items-center gap-3">
+                        <Label className="text-xs whitespace-nowrap flex-1">Start Delay</Label>
+                        <input
+                          type="range"
+                          min="5"
+                          max="60"
+                          step="1"
+                          value={ttsSettings.startDelay}
+                          onChange={(e) => setTtsSettings(prev => ({ ...prev, startDelay: Number(e.target.value) }))}
+                          className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                          data-testid="input-tts-start-delay"
+                        />
+                        <span className="text-xs text-muted-foreground w-10 text-right">{ttsSettings.startDelay}s</span>
                       </div>
-                      <input
-                        type="range"
-                        min="5"
-                        max="60"
-                        step="1"
-                        value={ttsSettings.startDelay}
-                        onChange={(e) => setTtsSettings(prev => ({ ...prev, startDelay: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
-                        data-testid="input-tts-start-delay"
-                      />
                       <p className="text-xs text-muted-foreground">
                         Time before highlighting begins (network + TTS processing)
                       </p>
                     </div>
                     
                     <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Speech Rate</Label>
-                        <span className="text-xs text-muted-foreground">{ttsSettings.wordsPerMinute} WPM</span>
+                      <div className="flex items-center gap-3">
+                        <Label className="text-xs whitespace-nowrap flex-1">Speech Rate</Label>
+                        <input
+                          type="range"
+                          min="60"
+                          max="200"
+                          step="5"
+                          value={ttsSettings.wordsPerMinute}
+                          onChange={(e) => setTtsSettings(prev => ({ ...prev, wordsPerMinute: Number(e.target.value) }))}
+                          className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                          data-testid="input-tts-wpm"
+                        />
+                        <span className="text-xs text-muted-foreground w-14 text-right">{ttsSettings.wordsPerMinute} WPM</span>
                       </div>
-                      <input
-                        type="range"
-                        min="60"
-                        max="200"
-                        step="5"
-                        value={ttsSettings.wordsPerMinute}
-                        onChange={(e) => setTtsSettings(prev => ({ ...prev, wordsPerMinute: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
-                        data-testid="input-tts-wpm"
-                      />
                       <p className="text-xs text-muted-foreground">
                         Words per minute - match your TTS voice speed
                       </p>
