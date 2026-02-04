@@ -9107,7 +9107,7 @@ export default function Dashboard() {
               >
               <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-up"
-                  style={{ color: 'white', marginTop: '1px', marginBottom: '-2px', fontFamily: 'Raleway, sans-serif', minWidth: '75px' }}
+                  style={{ color: 'white', marginTop: '1px', marginBottom: '-2px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9155,18 +9155,18 @@ export default function Dashboard() {
                 >
                   Module
                   {moduleCount > 0 ? (
-                    <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                    <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white" style={{ marginRight: '-2px' }}>
                       {moduleCount}
                     </span>
                   ) : moduleListenedCount > 0 ? (
-                    <span className="bg-gray-400 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                    <span className="bg-gray-400 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white" style={{ marginRight: '-2px' }}>
                       {moduleListenedCount}
                     </span>
                   ) : null}
                 </div>
                 <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-down"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px' }}
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9214,11 +9214,11 @@ export default function Dashboard() {
                 >
                   Reading
                   {readingCount > 0 ? (
-                    <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                    <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white" style={{ marginRight: '-2px' }}>
                       {readingCount}
                     </span>
                   ) : readingListenedCount > 0 ? (
-                    <span className="bg-gray-400 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                    <span className="bg-gray-400 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white" style={{ marginRight: '-2px' }}>
                       {readingListenedCount}
                     </span>
                   ) : null}
