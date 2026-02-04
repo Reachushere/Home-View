@@ -9093,7 +9093,7 @@ export default function Dashboard() {
             </div>
             {openCourseDropdown === courseId && (
               <div 
-                className="absolute z-[100] flex flex-col gap-0 speckle-open"
+                className="absolute z-[100] flex flex-col gap-0"
                 style={{ 
                   top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 14}px`, 
                   right: '70px',
@@ -9101,7 +9101,7 @@ export default function Dashboard() {
                 }}
               >
               <div 
-                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25"
+                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25 beam-up"
                   style={{ color: 'white', marginTop: '3px' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
@@ -9157,7 +9157,7 @@ export default function Dashboard() {
                   )}
                 </div>
                 <div 
-                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25"
+                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25 beam-down"
                   style={{ color: 'white' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {

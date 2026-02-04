@@ -1348,32 +1348,32 @@ input[type="checkbox"]:checked::after {
   color: white !important;
 }
 
-/* Star Trek transporter beam-in animation */
-@keyframes beam-in {
+/* Star Trek transporter beam-in animation - upward (for Module) */
+@keyframes beam-up {
   0% {
     opacity: 0;
     filter: brightness(3) blur(4px);
-    clip-path: inset(0 100% 0 0);
+    clip-path: inset(100% 0 0 0);
   }
   20% {
     opacity: 0.4;
     filter: brightness(2.5) blur(3px);
-    clip-path: inset(0 70% 0 0);
+    clip-path: inset(70% 0 0 0);
   }
   40% {
     opacity: 0.6;
     filter: brightness(2) blur(2px);
-    clip-path: inset(0 40% 0 0);
+    clip-path: inset(40% 0 0 0);
   }
   60% {
     opacity: 0.8;
     filter: brightness(1.5) blur(1px);
-    clip-path: inset(0 20% 0 0);
+    clip-path: inset(20% 0 0 0);
   }
   80% {
     opacity: 0.9;
     filter: brightness(1.2) blur(0.5px);
-    clip-path: inset(0 5% 0 0);
+    clip-path: inset(5% 0 0 0);
   }
   100% {
     opacity: 1;
@@ -1382,7 +1382,45 @@ input[type="checkbox"]:checked::after {
   }
 }
 
-.speckle-open {
-  animation: beam-in 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+/* Star Trek transporter beam-in animation - downward (for Reading) */
+@keyframes beam-down {
+  0% {
+    opacity: 0;
+    filter: brightness(3) blur(4px);
+    clip-path: inset(0 0 100% 0);
+  }
+  20% {
+    opacity: 0.4;
+    filter: brightness(2.5) blur(3px);
+    clip-path: inset(0 0 70% 0);
+  }
+  40% {
+    opacity: 0.6;
+    filter: brightness(2) blur(2px);
+    clip-path: inset(0 0 40% 0);
+  }
+  60% {
+    opacity: 0.8;
+    filter: brightness(1.5) blur(1px);
+    clip-path: inset(0 0 20% 0);
+  }
+  80% {
+    opacity: 0.9;
+    filter: brightness(1.2) blur(0.5px);
+    clip-path: inset(0 0 5% 0);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1) blur(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.beam-up {
+  animation: beam-up 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.beam-down {
+  animation: beam-down 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
