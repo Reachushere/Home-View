@@ -7991,7 +7991,7 @@ export default function Dashboard() {
                 width: '44px',
                 height: '44px',
                 borderRadius: '50%',
-                background: '#FFA365',
+                background: 'linear-gradient(0deg, #FF5900 0%, #FFBF9C 100%)',
               }}
             />
             <div
@@ -8002,7 +8002,7 @@ export default function Dashboard() {
                 width: '38px',
                 height: '38px',
                 borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                background: 'linear-gradient(0deg, #FFBF9C 0%, #FF5900 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -8029,7 +8029,7 @@ export default function Dashboard() {
                 width: '44px',
                 height: '44px',
                 borderRadius: '50%',
-                background: '#FFA365',
+                background: 'linear-gradient(0deg, #FF5900 0%, #FFBF9C 100%)',
               }}
             />
             <div
@@ -8040,7 +8040,7 @@ export default function Dashboard() {
                 width: '38px',
                 height: '38px',
                 borderRadius: '50%',
-                background: 'linear-gradient(0deg, #FFDD63 0%, #FF6E3D 100%)',
+                background: 'linear-gradient(0deg, #FFBF9C 0%, #FF5900 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
