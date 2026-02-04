@@ -4812,22 +4812,24 @@ export default function Dashboard() {
   const rawWeekDays = eachDayOfInterval({ start: weekStartDate, end: weekEndDate });
   
   let weekDays: Date[];
-  if (rawWeekDays.length === 7) {
+  if (rawWeekDays.length >= 7) {
+    // Ensure we only use first 7 days to avoid timezone edge cases
+    const sevenDays = rawWeekDays.slice(0, 7);
     // rawWeekDays[0] = Saturday (start of school week), rawWeekDays[1-6] = Sun-Fri
     if (isTodaySaturday) {
       // On Saturday: Show the full school week starting today (Sat, Sun, Mon, Tue, Wed, Thu, Fri)
       // rawWeekDays already has [Sat, Sun, Mon, Tue, Wed, Thu, Fri] - just reorder to put Sat at end for display
-      const saturdayDate = rawWeekDays[0]; // Current Saturday (today)
-      const sunToFri = rawWeekDays.slice(1); // Sun through Fri of THIS week
+      const saturdayDate = sevenDays[0]; // Current Saturday (today)
+      const sunToFri = sevenDays.slice(1); // Sun through Fri of THIS week
       weekDays = [...sunToFri, saturdayDate];
     } else {
       // On Sunday-Friday: Show current week with UPCOMING Saturday at end
       // Saturday should be the UPCOMING Saturday (Friday + 1 day)
-      const upcomingSaturday = addDays(rawWeekDays[6], 1); // Friday + 1 = Saturday
-      weekDays = [...rawWeekDays.slice(1), upcomingSaturday];
+      const upcomingSaturday = addDays(sevenDays[6], 1); // Friday + 1 = Saturday
+      weekDays = [...sevenDays.slice(1), upcomingSaturday];
     }
   } else {
-    weekDays = rawWeekDays;
+    weekDays = rawWeekDays.slice(0, 7); // Safety limit
   }
   
   // Time slots for the day view (6am-midnight)
