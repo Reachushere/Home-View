@@ -11707,6 +11707,10 @@ export default function Dashboard() {
                     // Add prep conflict height for this hour (calculated inline to avoid circular dependency)
                     topPx += prepConflictHeights[h] || 0;
                   }
+                  // Add prep conflict height for the start hour itself (task starts after prep area)
+                  const startHourPrepConflict = prepConflictHeights[startHour] || 0;
+                  topPx += startHourPrepConflict;
+                  
                   const startHourHeight = gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight;
                   topPx += (startMin / 60) * startHourHeight;
                   
@@ -11735,13 +11739,9 @@ export default function Dashboard() {
                     ? Math.max(0, Math.min(2, differenceInCalendarDays(new Date(task.dueDate), new Date(task.startDate))))
                     : 0;
                   
-                  // Check if this task is covered by a prep extension from another task
+                  // The prep conflict height is already added to topPx above, so no additional adjustment needed
                   const taskDay = weekDays[dayIdx];
-                  const taskHour = task.eventStartTime ? parseInt(task.eventStartTime.split(':')[0]) : 0;
-                  const isCoveredByPrep = isTaskCoveredByPrepExtension(taskDay, taskHour, task.id);
-                  
-                  // Adjust topPx if covered by prep extension - push down by 24px (height of prep bar)
-                  const adjustedTopPx = isCoveredByPrep ? topPx + 22 : topPx;
+                  const adjustedTopPx = topPx;
                   
                   // For tasks with prep days, check if they need extra height to match pushed-down tasks
                   const prepStartDayIdx = hasPrepDays && prepDaysCount > 0 ? Math.max(0, dayIdx - prepDaysCount) : dayIdx;
