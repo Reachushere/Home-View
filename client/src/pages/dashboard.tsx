@@ -5660,7 +5660,9 @@ export default function Dashboard() {
       )}
 
       {/* Partner Away Popup - Kitchen Reading Prompt */}
-      <Dialog open={showPartnerAwayPopup} onOpenChange={setShowPartnerAwayPopup}>
+      <Dialog open={showPartnerAwayPopup} onOpenChange={(open) => {
+        if (!open) handleDismissPartnerPopup(); // Any close action dismisses for 4 hours
+      }}>
         <DialogContent className="max-w-[340px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-base text-white">
