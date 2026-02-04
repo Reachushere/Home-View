@@ -10029,7 +10029,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div>
                     <Label className="text-sm font-medium">Colour Settings</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
+                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
                       Customise colours for the app.
                     </p>
                   </div>
@@ -10234,7 +10234,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div>
                     <Label className="text-sm font-medium">Layout Settings</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
+                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
                       Adjust spacing and reset column widths.
                     </p>
                   </div>
@@ -10315,7 +10315,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div>
                     <Label className="text-sm font-medium">Column Spacing</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
+                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
                       Reset the column widths in the summary boxes.
                     </p>
                   </div>
@@ -10372,7 +10372,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div>
                     <Label className="text-sm font-medium">Blinking & Spacing</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
+                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
                       Control blinking animations and button spacing.
                     </p>
                   </div>
@@ -10466,7 +10466,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div>
                     <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
+                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
                       Fine-tune word highlighting to sync with your Home Assistant TTS voice.
                     </p>
                   </div>
@@ -10544,7 +10544,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div>
                     <Label className="text-sm font-medium">Data Sync</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
+                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
                       Push to or pull from the published app.
                     </p>
                   </div>
@@ -10660,7 +10660,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-2">
                   <div>
                     <Label className="text-sm font-medium">Second Google Account</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
+                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
                       Connect a second Google account to sync tasks to both accounts. Events from both accounts that conflict with your tasks will show in the calendar.
                     </p>
                   </div>
@@ -10706,7 +10706,7 @@ export default function Dashboard() {
                 <div>
                   <div>
                     <Label className="text-sm font-medium">Secondary Calendar (same account)</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
+                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
                       Select a secondary calendar within your primary account to sync tasks to.
                     </p>
                   </div>
