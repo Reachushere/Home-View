@@ -9090,9 +9090,9 @@ export default function Dashboard() {
                 )}
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" side="left" className="text-[11px] min-w-0">
+            <DropdownMenuContent align="end" side="left" className="text-[11px] min-w-0 bg-transparent border-none shadow-none text-white animate-in fade-in-0 duration-300">
               <DropdownMenuItem 
-                className="text-[11px] py-1 px-2"
+                className="text-[11px] py-1 px-2 text-white hover:bg-white/20 focus:bg-white/20 focus:text-white"
                 data-testid={`pill-course-${courseId}-module`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
@@ -9146,7 +9146,7 @@ export default function Dashboard() {
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem 
-                className="text-[11px] py-1 px-2"
+                className="text-[11px] py-1 px-2 text-white hover:bg-white/20 focus:bg-white/20 focus:text-white"
                 data-testid={`pill-course-${courseId}-reading`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
