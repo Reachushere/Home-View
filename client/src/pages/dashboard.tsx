@@ -9102,7 +9102,10 @@ export default function Dashboard() {
                   transformOrigin: 'center center',
                   alignItems: 'flex-start',
                   display: 'flex',
-                  flexDirection: 'column'
+                  flexDirection: 'column',
+                  border: '1px solid rgba(255, 255, 255, 0.5)',
+                  borderRadius: '4px',
+                  padding: '2px'
                 }}
               >
               <div 
