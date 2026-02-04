@@ -11613,7 +11613,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 overflow-visible bg-[#faf8f5] dark:bg-zinc-900 ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 overflow-visible ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
                           style={{
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
