@@ -7225,8 +7225,8 @@ export default function Dashboard() {
           
           {/* Split View: PDF on left, Highlighted Text on right */}
           <div className="flex-1 flex gap-4 min-h-0 mx-6 mb-4 mt-4 overflow-hidden">
-            {/* PDF Viewer */}
-            <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col">
+            {/* PDF Viewer - 8.5x11 aspect ratio */}
+            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col" style={{ aspectRatio: '8.5 / 11', height: '100%' }}>
               <div className="flex items-center justify-between p-2 bg-gray-200 dark:bg-gray-700">
                 <span className="text-xs text-muted-foreground">
                   {numPages || '?'} pages
