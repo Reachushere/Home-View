@@ -10043,10 +10043,10 @@ export default function Dashboard() {
                   
                   <div className="space-y-4">
                     {/* Box Background Colour */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Task Boxes Background</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.boxBackground}</span>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Task Boxes Background</Label>
+                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.boxBackground}</span>
+                      <div className="w-14 flex justify-end">
                         <div className="relative">
                           <div 
                             className="w-5 h-5 rounded cursor-pointer border border-white/30"
@@ -10099,10 +10099,10 @@ export default function Dashboard() {
                     )}
                     
                     {/* Header Bar Colour */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Summary Box Headers</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Summary Box Headers</Label>
+                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.headerBar}</span>
+                      <div className="w-14 flex justify-end">
                         <div className="relative">
                           <div 
                             className="w-5 h-5 rounded cursor-pointer border border-white/30"
@@ -10122,56 +10122,50 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Today Column Cell Background */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Today Column</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCellBackground}</span>
-                        <div className="relative">
-                          <input
-                            type="color"
-                            value={colorSettings.todayCellBackground}
-                            onChange={(e) => setColorSettings(prev => ({ ...prev, todayCellBackground: e.target.value }))}
-                            className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
-                            style={{ WebkitAppearance: 'none' }}
-                            data-testid="color-today-cell"
-                          />
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Today Column</Label>
+                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.todayCellBackground}</span>
+                      <div className="w-14 flex justify-end">
+                        <input
+                          type="color"
+                          value={colorSettings.todayCellBackground}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, todayCellBackground: e.target.value }))}
+                          className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
+                          style={{ WebkitAppearance: 'none' }}
+                          data-testid="color-today-cell"
+                        />
                       </div>
                     </div>
                     
                     {/* Current Time Row Background */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Current Time Row</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.currentHourRowBackground}</span>
-                        <div className="relative">
-                          <input
-                            type="color"
-                            value={colorSettings.currentHourRowBackground}
-                            onChange={(e) => setColorSettings(prev => ({ ...prev, currentHourRowBackground: e.target.value }))}
-                            className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
-                            style={{ WebkitAppearance: 'none' }}
-                            data-testid="color-current-hour-row"
-                          />
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Current Time Row</Label>
+                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.currentHourRowBackground}</span>
+                      <div className="w-14 flex justify-end">
+                        <input
+                          type="color"
+                          value={colorSettings.currentHourRowBackground}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, currentHourRowBackground: e.target.value }))}
+                          className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
+                          style={{ WebkitAppearance: 'none' }}
+                          data-testid="color-current-hour-row"
+                        />
                       </div>
                     </div>
                     
                     {/* Today Date & Current Hour Cell Background */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Today Date & Current Hour</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCurrentHourCellBackground}</span>
-                        <div className="relative">
-                          <input
-                            type="color"
-                            value={colorSettings.todayCurrentHourCellBackground}
-                            onChange={(e) => setColorSettings(prev => ({ ...prev, todayCurrentHourCellBackground: e.target.value }))}
-                            className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
-                            style={{ WebkitAppearance: 'none' }}
-                            data-testid="color-today-current-hour-cell"
-                          />
-                        </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Today Date & Current Hour</Label>
+                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.todayCurrentHourCellBackground}</span>
+                      <div className="w-14 flex justify-end">
+                        <input
+                          type="color"
+                          value={colorSettings.todayCurrentHourCellBackground}
+                          onChange={(e) => setColorSettings(prev => ({ ...prev, todayCurrentHourCellBackground: e.target.value }))}
+                          className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
+                          style={{ WebkitAppearance: 'none' }}
+                          data-testid="color-today-current-hour-cell"
+                        />
                       </div>
                     </div>
                     
@@ -10190,10 +10184,10 @@ export default function Dashboard() {
                     </div>
                     
                     {/* Main Background Colour - always visible */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Main Background Colour <span className="text-[10px] italic text-muted-foreground">(Overlay toggle must be on)</span></Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap flex-1">Main Background Colour <span className="text-[10px] italic text-muted-foreground">(Overlay toggle must be on)</span></Label>
+                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.mainBackground}</span>
+                      <div className="w-14 flex justify-end">
                         <div className="relative w-5 h-5">
                           <div 
                             className={`w-5 h-5 rounded border border-white/30 ${colorSettings.mainBackgroundOverlay ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
