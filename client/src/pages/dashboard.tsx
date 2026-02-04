@@ -9092,7 +9092,7 @@ export default function Dashboard() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" side="left" className="text-[11px] min-w-0 border-none shadow-none animate-in fade-in-0 duration-300" style={{ backgroundColor: 'transparent', color: 'white' }}>
               <DropdownMenuItem 
-                className="text-[11px] py-1 px-2 hover:bg-white/20 focus:bg-white/20"
+                className="text-[11px] py-1 px-2 hover:!bg-white/30 focus:!bg-white/30 cursor-pointer"
                 style={{ color: 'white' }}
                 data-testid={`pill-course-${courseId}-module`}
                 onClick={async () => {
@@ -9147,7 +9147,7 @@ export default function Dashboard() {
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem 
-                className="text-[11px] py-1 px-2 hover:bg-white/20 focus:bg-white/20"
+                className="text-[11px] py-1 px-2 hover:!bg-white/30 focus:!bg-white/30 cursor-pointer"
                 style={{ color: 'white' }}
                 data-testid={`pill-course-${courseId}-reading`}
                 onClick={async () => {
