@@ -6781,7 +6781,7 @@ export default function Dashboard() {
                           <SelectItem 
                             key={file.id} 
                             value={file.id.toString()} 
-                            className={`text-[10px] ${file.listened ? 'text-gray-500 line-through' : ''}`}
+                            className={`text-[10px] ${file.listened ? 'text-white/50 line-through' : ''}`}
                           >
                             {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
                           </SelectItem>
@@ -6821,7 +6821,7 @@ export default function Dashboard() {
                           <SelectItem 
                             key={file.id} 
                             value={file.id.toString()} 
-                            className={`text-[10px] ${file.listened ? 'text-gray-500 line-through' : ''}`}
+                            className={`text-[10px] ${file.listened ? 'text-white/50 line-through' : ''}`}
                           >
                             {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
                           </SelectItem>
