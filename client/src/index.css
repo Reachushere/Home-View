@@ -974,11 +974,11 @@ button[role="combobox"] > span {
     content: '';
     position: absolute;
     left: 3px;
-    top: 0px;
-    width: 4px;
-    height: 8px;
+    top: 1px;
+    width: 3px;
+    height: 6px;
     border: solid white;
-    border-width: 0 2px 2px 0;
+    border-width: 0 1.5px 1.5px 0;
     transform: rotate(45deg);
   }
   
