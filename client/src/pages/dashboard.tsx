@@ -9098,19 +9098,16 @@ export default function Dashboard() {
                 className="absolute z-[100] flex flex-col gap-0 overflow-visible"
                 style={{ 
                   top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 14}px`, 
-                  right: '66px',
+                  right: '69px',
                   transformOrigin: 'center center',
                   alignItems: 'flex-start',
                   display: 'flex',
-                  flexDirection: 'column',
-                  border: '1px solid rgba(255, 255, 255, 0.5)',
-                  borderRadius: '4px',
-                  padding: '2px'
+                  flexDirection: 'column'
                 }}
               >
               <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-up"
-                  style={{ color: 'white', marginTop: '4px', marginBottom: '-2px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px' }}
+                  style={{ color: 'white', marginTop: '4px', marginBottom: '-2px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', border: '1px solid rgba(255, 255, 255, 0.5)', borderRadius: '4px' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9171,7 +9168,7 @@ export default function Dashboard() {
                 </div>
                 <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-down"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '3px' }}
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '3px', border: '1px solid rgba(255, 255, 255, 0.5)', borderRadius: '4px' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
