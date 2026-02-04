@@ -13060,7 +13060,7 @@ export default function Dashboard() {
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 5}px`, top: '0px' }}>Days</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due this week</div>
@@ -13169,14 +13169,14 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
               {/* Days header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px' }}>Days</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
               {/* Group 6: Days - absolutely positioned */}
               <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '-4px', top: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
                   <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Days</span>
                 </div>
-                <span style={{ fontSize: '10px', color: getProgressColor(dueThisWeekTasks[0]), marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ fontSize: '10px', color: getProgressColor(dueThisWeekTasks[0]), marginLeft: '7px', marginTop: '-3px', width: '22px', textAlign: 'right', display: 'inline-block' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
               {/* Second task row - only render after measurements are available */}
@@ -13208,7 +13208,7 @@ export default function Dashboard() {
                 {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueThisWeekTasks[1]) }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueThisWeekTasks[1]), width: '22px', textAlign: 'right' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Third task row - same settings as row 2 */}
@@ -13240,7 +13240,7 @@ export default function Dashboard() {
                 {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[2]?.dueDate ? format(new Date(dueThisWeekTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueThisWeekTasks[2]) }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueThisWeekTasks[2]), width: '22px', textAlign: 'right' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               </>
@@ -13298,11 +13298,11 @@ export default function Dashboard() {
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 5}px`, top: '0px' }}>Days</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due today</div>
@@ -13338,7 +13338,7 @@ export default function Dashboard() {
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 5}px`, top: '0px' }}>Days</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
               </div>
               {/* Task Row 1 */}
               {dueTodayTasks[0] && row1Positions.course > 0 && (
@@ -13361,7 +13361,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[0]?.dueDate ? format(new Date(dueTodayTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[0], 'today') }}>{dueTodayTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[0], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Task Row 2 */}
@@ -13385,7 +13385,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.dueDate ? format(new Date(dueTodayTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[1], 'today') }}>{dueTodayTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[1], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
               {/* Task Row 3 */}
@@ -13409,7 +13409,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.dueDate ? format(new Date(dueTodayTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[2], 'today') }}>{dueTodayTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[2], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               )}
                 </>
@@ -13468,11 +13468,11 @@ export default function Dashboard() {
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
                     <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 5}px`, top: '0px' }}>Days</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due tomorrow</div>
@@ -13508,7 +13508,7 @@ export default function Dashboard() {
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 5}px`, top: '0px' }}>Days</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
               </div>
               {/* Task Row 1 */}
               {dueTomorrowTasks[0] && row1Positions.course > 0 && (
@@ -13531,7 +13531,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
               </div>
               )}
               {/* Task Row 2 */}
@@ -13555,7 +13555,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
               </div>
               )}
               {/* Task Row 3 */}
@@ -13579,7 +13579,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
               </div>
               )}
                 </>
