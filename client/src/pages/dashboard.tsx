@@ -9138,7 +9138,7 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <Library className="h-2.5 w-2.5 mr-2 ml-[5px]" />
+                <Library className="h-2.5 w-2.5" style={{ marginRight: '8px', marginLeft: '5px' }} />
                 Module
                 {moduleCount > 0 && (
                   <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1" style={{ color: 'white' }}>
@@ -9193,7 +9193,7 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <BookOpenCheck className="h-2.5 w-2.5 mr-2 ml-[5px]" />
+                <BookOpenCheck className="h-2.5 w-2.5" style={{ marginRight: '8px', marginLeft: '5px' }} />
                 Reading
                 {readingCount > 0 && (
                   <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1" style={{ color: 'white' }}>
