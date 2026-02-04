@@ -11671,7 +11671,7 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className={`grid relative group/row ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: '#faf8f5', boxShadow: '0 1px 0 0 #faf8f5' }}
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: '#faf8f5', marginBottom: '-1px', boxShadow: '0 2px 0 0 #faf8f5, inset 0 -1px 0 0 #faf8f5' }}
                   >
                     <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
