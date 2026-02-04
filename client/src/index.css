@@ -1291,7 +1291,5 @@ input[type="checkbox"] {
   accent-color: #3b82f6;
   border-radius: 2px;
   cursor: pointer;
-  transform: scale(0.9);
-  opacity: 0.85;
 }
 
