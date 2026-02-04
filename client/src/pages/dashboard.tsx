@@ -11399,10 +11399,10 @@ export default function Dashboard() {
                                     marginLeft: isFirstPrepDay ? '2px' : '0',
                                     marginRight: '0',
                                     borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
-                                    background: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.08)`,
-                                    borderTop: `1px solid ${borderColor}`,
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    borderLeft: isFirstPrepDay ? `1px solid ${borderColor}` : 'none',
+                                    background: 'rgba(156, 163, 175, 0.15)',
+                                    borderTop: '1px solid rgba(156, 163, 175, 0.5)',
+                                    borderBottom: '1px solid rgba(156, 163, 175, 0.5)',
+                                    borderLeft: isFirstPrepDay ? '1px solid rgba(156, 163, 175, 0.5)' : 'none',
                                     borderRight: 'none',
                                     flex: 1,
                                     zIndex: 5,
@@ -11652,13 +11652,10 @@ export default function Dashboard() {
                               >
                                 {/* Prep extension bar extending to the left - spans prepDaysCount columns */}
                                 {hasPrepDays && prepDaysCount > 0 && (() => {
-                                  // Use gray for unassigned tasks instead of green
-                                  const courseHex = colors?.hex || '#9CA3AF';
-                                  const rgb = hexToRgb(courseHex);
-                                  const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                                  // Use solid border colour (no transparency) to match task box
-                                  const taskBorderColor = task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af');
-                                  const prepBorderColor = selectedTaskId === task.id ? 'rgb(239, 68, 68)' : taskBorderColor;
+                                  // Always use light grey for prep days
+                                  const lightBg = 'rgba(156, 163, 175, 0.15)';
+                                  // Use grey border for prep days, red if selected
+                                  const prepBorderColor = selectedTaskId === task.id ? 'rgb(239, 68, 68)' : 'rgba(156, 163, 175, 0.7)';
                                   // Limit prep days to actual days available to the left in the week
                                   const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
