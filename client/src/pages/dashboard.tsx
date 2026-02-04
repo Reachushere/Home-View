@@ -9154,7 +9154,6 @@ export default function Dashboard() {
                   }}
                 >
                   <span style={{ marginLeft: '3px' }}>Module</span>
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '0px', borderBottom: '1px dashed rgba(255,255,255,0.4)' }} />
                   <span style={{ minWidth: '18px', display: 'flex', justifyContent: 'flex-end', marginRight: '-2px' }}>
                     {moduleCount > 0 ? (
                       <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
@@ -9169,7 +9168,7 @@ export default function Dashboard() {
                 </div>
                 <div 
                   className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm animate-fade-in bg-black/90 hover:bg-white/25"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '0px', marginTop: '0px', height: '20px', fontSize: '9px', letterSpacing: '0.8px', fontWeight: 400 }}
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '0px', marginTop: '1px', height: '20px', fontSize: '9px', letterSpacing: '0.8px', fontWeight: 400 }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
