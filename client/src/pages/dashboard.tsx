@@ -528,6 +528,8 @@ export default function Dashboard() {
     return saved ? JSON.parse(saved) : [];
   });
   const celebrationAudioRef = useRef<HTMLAudioElement | null>(null);
+  // Shared AudioContext ref - only created by user interaction, reused for alarms
+  const sharedAudioContextRef = useRef<AudioContext | null>(null);
   
   // Arrow connections from task boxes to calendar
   const [arrowConnections, setArrowConnections] = useState<Array<{
@@ -575,7 +577,11 @@ export default function Dashboard() {
       // Play clapping sound pattern using Web Audio API
       const playClapping = () => {
         try {
-          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+          // Initialize or reuse shared AudioContext for future alarm sounds
+          if (!sharedAudioContextRef.current) {
+            sharedAudioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+          }
+          const audioContext = sharedAudioContextRef.current;
           const now = audioContext.currentTime;
           
           // Create a rhythmic clapping pattern (8 claps over 2 seconds)
@@ -1992,10 +1998,17 @@ export default function Dashboard() {
   const allCoursesChecked = ['PPA101', 'PPA102', 'PPA125', 'ELECTIVE1', 'ELECTIVE2', 'LIBERAL', 'OPEN1', 'OPEN2']
     .every(id => checkedCourses[id]);
 
-  // Create jiggle sound using Web Audio API
+  // Create jiggle sound using Web Audio API - only if Bluetooth/audio already connected
   const playJiggleSound = useCallback(() => {
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Don't create new AudioContext - only play if one already exists and is running
+      // This prevents initiating Bluetooth connections for today task alarms
+      if (!sharedAudioContextRef.current || sharedAudioContextRef.current.state !== 'running') {
+        console.log('Audio context not running - skipping alarm sound to avoid Bluetooth initiation');
+        return;
+      }
+      
+      const audioContext = sharedAudioContextRef.current;
       const gainNode = audioContext.createGain();
       gainNode.connect(audioContext.destination);
       
