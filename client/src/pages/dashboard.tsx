@@ -13343,13 +13343,13 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[0], 'today'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[0]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[0]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[0]?.dueDate ? format(new Date(dueTodayTasks[0].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[0]?.dueDate ? format(new Date(dueTodayTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[0], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[0]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
@@ -13367,13 +13367,13 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[1], 'today'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[1]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[1]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.dueDate ? format(new Date(dueTodayTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.dueDate ? format(new Date(dueTodayTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[1], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[1]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
@@ -13391,13 +13391,13 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[2], 'today'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[2]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[2]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.dueDate ? format(new Date(dueTodayTasks[2].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.dueDate ? format(new Date(dueTodayTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[2], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[2]?.dueDate ? `${Math.ceil((new Date(dueTodayTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
@@ -13503,13 +13503,13 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[0], 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
               </div>
@@ -13527,13 +13527,13 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[1], 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
               </div>
@@ -13551,13 +13551,13 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[2], 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '1px', fontSize: '10px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
                 <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
               </div>
