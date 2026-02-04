@@ -9153,6 +9153,7 @@ export default function Dashboard() {
                     }
                   }}
                 >
+                  Module
                   {moduleCount > 0 ? (
                     <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {moduleCount}
@@ -9162,7 +9163,6 @@ export default function Dashboard() {
                       {moduleListenedCount}
                     </span>
                   ) : null}
-                  Module
                 </div>
                 <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25 beam-down"
@@ -9212,6 +9212,7 @@ export default function Dashboard() {
                     }
                   }}
                 >
+                  Reading
                   {readingCount > 0 ? (
                     <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {readingCount}
@@ -9221,7 +9222,6 @@ export default function Dashboard() {
                       {readingListenedCount}
                     </span>
                   ) : null}
-                  Reading
                 </div>
               </div>
             )}
