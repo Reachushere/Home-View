@@ -1230,9 +1230,16 @@ export default function Dashboard() {
       if (parsed.headerBar === '#000000' || !parsed.headerBar) {
         parsed.headerBar = '#160502';
       }
+      // Migrate old property name to new name
+      if (parsed.currentHourCellBackground && !parsed.currentHourRowBackground) {
+        parsed.currentHourRowBackground = parsed.currentHourCellBackground;
+      }
+      // Clean up old property names
+      delete parsed.currentHourCellBackground;
       // Save the corrected settings
-      localStorage.setItem('colorSettings', JSON.stringify({ ...defaults, ...parsed }));
-      return { ...defaults, ...parsed };
+      const merged = { ...defaults, ...parsed };
+      localStorage.setItem('colorSettings', JSON.stringify(merged));
+      return merged;
     }
     return defaults;
   });
