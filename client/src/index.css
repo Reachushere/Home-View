@@ -1305,10 +1305,10 @@ input[type="checkbox"]:checked {
 input[type="checkbox"]:checked::after {
   content: '';
   position: absolute;
-  left: 3px;
+  left: 4px;
   top: 1px;
   width: 3px;
-  height: 6px;
+  height: 5px;
   border: solid white;
   border-width: 0 1px 1px 0;
   transform: rotate(45deg);
