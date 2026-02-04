@@ -6695,7 +6695,7 @@ export default function Dashboard() {
           
           {/* Top Menu Bar - File Selector and Speaker */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-1.5 px-2 sm:px-4 mx-2 sm:mx-6 mt-2 sm:mt-4 gap-2 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 rounded-lg shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-            {/* File Selector with Navigation Arrows */}
+            {/* Module and Reading File Selectors */}
             {(() => {
               const folderParts = previewFile?.folder?.split('-') || [];
               const weekNum = folderParts[1];
@@ -6703,13 +6703,22 @@ export default function Dashboard() {
               const isReading = previewFile?.folder?.includes('reading');
               const isModule = previewFile?.folder?.includes('module');
               
-              // Use OneDrive files if available, otherwise filter from allFiles
+              // Get module files for this week/course
+              const moduleFiles = allFiles.filter(f => 
+                f.folder?.includes(`week-${weekNum}-${courseCode}`) && 
+                f.folder?.includes('module')
+              );
+              
+              // Get reading files for this week/course  
+              const readingFiles = allFiles.filter(f => 
+                f.folder?.includes(`week-${weekNum}-${courseCode}`) && 
+                f.folder?.includes('reading')
+              );
+              
+              // Current file list based on active type
               const relatedFiles = oneDrivePreviewFiles.length > 0 
                 ? oneDrivePreviewFiles
-                : (isReading || isModule) ? allFiles.filter(f => 
-                    f.folder?.includes(`week-${weekNum}-${courseCode}`) && 
-                    (isReading ? f.folder?.includes('reading') : f.folder?.includes('module'))
-                  ) : [];
+                : isReading ? readingFiles : moduleFiles;
               
               const currentIndex = relatedFiles.findIndex(f => f.id === previewFile?.id);
               const canGoPrev = currentIndex > 0;
@@ -6728,70 +6737,105 @@ export default function Dashboard() {
               };
               
               return (
-                <div className="flex items-center gap-2 flex-1 sm:flex-initial">
-                  <span className="text-[9px] text-white/60 hidden sm:inline">File:</span>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-white hover:bg-gray-700 disabled:opacity-30"
-                    onClick={goToPrevFile}
-                    disabled={!canGoPrev}
-                    data-testid="button-prev-file"
-                    title="Previous file"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Select 
-                    value={previewFile?.id?.toString() || ''} 
-                    onValueChange={(val) => {
-                      const file = relatedFiles.find(f => f.id.toString() === val);
-                      if (file) setPreviewFile(file);
-                    }}
-                    onOpenChange={(open) => {
-                      if (open) {
-                        if (fileSelectorGlowTimeoutRef.current) {
-                          clearTimeout(fileSelectorGlowTimeoutRef.current);
-                        }
-                        setFileSelectorGlow(true);
-                      } else {
-                        fileSelectorGlowTimeoutRef.current = setTimeout(() => {
-                          setFileSelectorGlow(false);
-                        }, 1000);
-                      }
-                    }}
-                  >
-                    <SelectTrigger 
-                      className={`w-full sm:w-[320px] h-6 text-[10px] bg-gray-800 border !border-blue-500 text-white transition-all duration-200 ${
-                        fileSelectorGlow 
-                          ? 'ring-2 ring-blue-500' 
-                          : 'shadow-[0_0_8px_rgba(59,130,246,0.4)] hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]'
-                      }`}
-                      data-testid="select-reading-file">
-                      <SelectValue placeholder="Select File" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[300px] min-w-[450px]">
-                      {relatedFiles.map(file => (
-                        <SelectItem 
-                          key={file.id} 
-                          value={file.id.toString()} 
-                          className={`text-[10px] ${file.listened ? 'text-gray-500 line-through' : ''}`}
-                        >
-                          {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-6 w-6 text-white hover:bg-gray-700 disabled:opacity-30"
-                    onClick={goToNextFile}
-                    disabled={!canGoNext}
-                    data-testid="button-next-file"
-                    title="Next file"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-center gap-3 flex-1 sm:flex-initial flex-wrap">
+                  {/* Module Files Dropdown */}
+                  <div className="flex items-center gap-1">
+                    <span className="text-[9px] text-white/60 hidden sm:inline">Module:</span>
+                    <Select 
+                      value={isModule ? (previewFile?.id?.toString() || '') : ''} 
+                      onValueChange={(val) => {
+                        const file = moduleFiles.find(f => f.id.toString() === val);
+                        if (file) setPreviewFile(file);
+                      }}
+                    >
+                      <SelectTrigger 
+                        className={`w-[180px] h-6 text-[10px] bg-gray-800 text-white transition-all duration-200 ${
+                          isModule 
+                            ? 'border !border-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]' 
+                            : 'border-gray-600 hover:border-green-500/50'
+                        }`}
+                        data-testid="select-module-file">
+                        <SelectValue placeholder={moduleFiles.length > 0 ? `${moduleFiles.length} module${moduleFiles.length > 1 ? 's' : ''}` : 'No modules'} />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px] min-w-[350px]">
+                        {moduleFiles.length === 0 ? (
+                          <SelectItem value="none" disabled className="text-[10px] text-gray-500">No module files</SelectItem>
+                        ) : moduleFiles.map(file => (
+                          <SelectItem 
+                            key={file.id} 
+                            value={file.id.toString()} 
+                            className={`text-[10px] ${file.listened ? 'text-gray-500 line-through' : ''}`}
+                          >
+                            {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Reading Files Dropdown */}
+                  <div className="flex items-center gap-1">
+                    <span className="text-[9px] text-white/60 hidden sm:inline">Reading:</span>
+                    <Select 
+                      value={isReading ? (previewFile?.id?.toString() || '') : ''} 
+                      onValueChange={(val) => {
+                        const file = readingFiles.find(f => f.id.toString() === val);
+                        if (file) setPreviewFile(file);
+                      }}
+                    >
+                      <SelectTrigger 
+                        className={`w-[180px] h-6 text-[10px] bg-gray-800 text-white transition-all duration-200 ${
+                          isReading 
+                            ? 'border !border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]' 
+                            : 'border-gray-600 hover:border-blue-500/50'
+                        }`}
+                        data-testid="select-reading-file">
+                        <SelectValue placeholder={readingFiles.length > 0 ? `${readingFiles.length} reading${readingFiles.length > 1 ? 's' : ''}` : 'No readings'} />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px] min-w-[350px]">
+                        {readingFiles.length === 0 ? (
+                          <SelectItem value="none" disabled className="text-[10px] text-gray-500">No reading files</SelectItem>
+                        ) : readingFiles.map(file => (
+                          <SelectItem 
+                            key={file.id} 
+                            value={file.id.toString()} 
+                            className={`text-[10px] ${file.listened ? 'text-gray-500 line-through' : ''}`}
+                          >
+                            {(file.displayName || file.originalName).replace(/\.pdf$/i, '')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Navigation Arrows */}
+                  <div className="flex items-center gap-1">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 text-white hover:bg-gray-700 disabled:opacity-30"
+                      onClick={goToPrevFile}
+                      disabled={!canGoPrev}
+                      data-testid="button-prev-file"
+                      title="Previous file"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <span className="text-[9px] text-white/60 min-w-[40px] text-center">
+                      {currentIndex >= 0 ? `${currentIndex + 1}/${relatedFiles.length}` : '-'}
+                    </span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 text-white hover:bg-gray-700 disabled:opacity-30"
+                      onClick={goToNextFile}
+                      disabled={!canGoNext}
+                      data-testid="button-next-file"
+                      title="Next file"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               );
             })()}
