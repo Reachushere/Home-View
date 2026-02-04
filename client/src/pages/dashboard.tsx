@@ -9095,10 +9095,12 @@ export default function Dashboard() {
               side="left" 
               variant="transparent"
               className="min-w-0 p-1"
+              style={{ background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }}
             >
               <DropdownMenuItem 
                 variant="transparent"
                 className="text-[11px] py-1.5 cursor-pointer mt-1"
+                style={{ color: 'white', backgroundColor: 'transparent' }}
                 data-testid={`pill-course-${courseId}-module`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
@@ -9154,6 +9156,7 @@ export default function Dashboard() {
               <DropdownMenuItem 
                 variant="transparent"
                 className="text-[11px] py-1.5 cursor-pointer"
+                style={{ color: 'white', backgroundColor: 'transparent' }}
                 data-testid={`pill-course-${courseId}-reading`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
