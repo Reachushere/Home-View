@@ -9155,11 +9155,11 @@ export default function Dashboard() {
                 >
                   Module
                   {moduleCount > 0 ? (
-                    <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                       {moduleCount}
                     </span>
                   ) : moduleListenedCount > 0 ? (
-                    <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-gray-400 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                       {moduleListenedCount}
                     </span>
                   ) : null}
@@ -9214,11 +9214,11 @@ export default function Dashboard() {
                 >
                   Reading
                   {readingCount > 0 ? (
-                    <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                       {readingCount}
                     </span>
                   ) : readingListenedCount > 0 ? (
-                    <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-gray-400 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                       {readingListenedCount}
                     </span>
                   ) : null}
