@@ -9137,7 +9137,7 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <Library className="h-3 w-3 mr-2" />
+                <Library className="h-2.5 w-2.5 mr-2 ml-1" />
                 Module
                 {moduleCount > 0 && (
                   <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
@@ -9191,7 +9191,7 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <BookOpenCheck className="h-3 w-3 mr-2" />
+                <BookOpenCheck className="h-2.5 w-2.5 mr-2 ml-1" />
                 Reading
                 {readingCount > 0 && (
                   <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
