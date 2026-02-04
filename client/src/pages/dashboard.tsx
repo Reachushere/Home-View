@@ -9166,7 +9166,7 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex items-center gap-1">
-                    <span className="text-white text-[9px] font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.5px' }}>Module</span>
+                    <span className="text-white text-[9px] font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>Module</span>
                     {moduleCount > 0 ? (
                       <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
                         {moduleCount}
@@ -9235,7 +9235,7 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex items-center gap-1">
-                    <span className="text-white text-[9px] font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.5px' }}>Reading</span>
+                    <span className="text-white text-[9px] font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>Reading</span>
                     {readingCount > 0 ? (
                       <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
                         {readingCount}
