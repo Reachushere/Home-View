@@ -3426,12 +3426,11 @@ export async function registerRoutes(
       // Chunk the text (~450 chars per chunk for TTS)
       let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
       const chunks = cleanedContent.match(/.{1,450}[.!?]?\s*/g) || [cleanedContent];
-      const chunk = chunks[resumeFromChunk] || chunks[0];
       
       // Announce what we're about to read
       const announcement = resumeFromChunk > 0 
-        ? `Resuming ${courseName}, ${contentType}: ${fileName.replace('.pdf', '')}. Section ${resumeFromChunk + 1} of ${chunks.length}.`
-        : `Now reading ${courseName}, ${contentType}: ${fileName.replace('.pdf', '')}. Section 1 of ${chunks.length}.`;
+        ? `Resuming ${courseName}, ${contentType}: ${fileName.replace('.pdf', '')}. Starting from section ${resumeFromChunk + 1} of ${chunks.length}.`
+        : `Now reading ${courseName}, ${contentType}: ${fileName.replace('.pdf', '')}. ${chunks.length} sections total.`;
       
       await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
@@ -3446,28 +3445,46 @@ export async function registerRoutes(
         }),
       });
       
-      // Wait a moment then start the content
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // Wait a moment then start playing ALL chunks sequentially
+      await new Promise(resolve => setTimeout(resolve, 4000));
       
-      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: chunk,
-          target: KITCHEN_ECHO_ENTITY,
-          data: { type: "tts" }
-        }),
-      });
+      // Play all remaining chunks
+      for (let i = resumeFromChunk; i < chunks.length; i++) {
+        const chunk = chunks[i];
+        console.log(`Kitchen trigger: Playing chunk ${i + 1} of ${chunks.length}`);
+        
+        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: chunk,
+            target: KITCHEN_ECHO_ENTITY,
+            data: { type: "tts" }
+          }),
+        });
+        
+        // Save progress after each chunk
+        playbackProgress[progressKey] = {
+          chunkIndex: i,
+          totalChunks: chunks.length,
+          lastPlayed: new Date()
+        };
+        
+        // Estimate TTS duration: ~80 chars per second at normal speed
+        // Wait for TTS to finish before playing next chunk
+        const estimatedDuration = Math.max(3000, (chunk.length / 80) * 1000 + 2000);
+        await new Promise(resolve => setTimeout(resolve, estimatedDuration));
+      }
       
-      // Save progress
-      playbackProgress[progressKey] = {
-        chunkIndex: resumeFromChunk,
-        totalChunks: chunks.length,
-        lastPlayed: new Date()
-      };
+      // All chunks complete - mark file as listened
+      console.log(`Kitchen trigger: All ${chunks.length} chunks complete, marking file ${nextFile.id} as listened`);
+      await storage.updateFile(nextFile.id, { listened: true });
+      
+      // Clear progress since file is complete
+      delete playbackProgress[progressKey];
       
       res.json({
         action: "reading",
@@ -3477,10 +3494,9 @@ export async function registerRoutes(
           folder: nextFile.folder
         },
         currentWeek: currentWeekNumber,
-        chunkIndex: resumeFromChunk,
         totalChunks: chunks.length,
-        resuming: resumeFromChunk > 0,
-        remainingFiles: orderedFiles.length
+        completed: true,
+        remainingFiles: orderedFiles.length - 1
       });
       
     } catch (error: any) {

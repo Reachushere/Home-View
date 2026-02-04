@@ -325,6 +325,16 @@ export default function Dashboard() {
     const saved = localStorage.getItem('partnerAwayDismissedUntil');
     return saved ? parseInt(saved, 10) : null;
   });
+  const [isInitialized, setIsInitialized] = useState(false);
+  
+  // Initialize from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('partnerAwayDismissedUntil');
+    if (saved) {
+      setPartnerAwayDismissedUntil(parseInt(saved, 10));
+    }
+    setIsInitialized(true);
+  }, []);
   const [isKitchenReadingLoading, setIsKitchenReadingLoading] = useState(false);
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
   const [moveFileId, setMoveFileId] = useState<number | null>(null);
@@ -431,7 +441,9 @@ export default function Dashboard() {
           // Show popup if partner is away and we haven't dismissed it recently
           if (data.isAway) {
             const now = Date.now();
-            if (!partnerAwayDismissedUntil || now > partnerAwayDismissedUntil) {
+            const savedDismiss = localStorage.getItem('partnerAwayDismissedUntil');
+            const dismissedUntil = savedDismiss ? parseInt(savedDismiss, 10) : 0;
+            if (!dismissedUntil || now > dismissedUntil) {
               setShowPartnerAwayPopup(true);
             }
           }
@@ -441,11 +453,14 @@ export default function Dashboard() {
       }
     };
     
+    // Only start checking after initialization completes
+    if (!isInitialized) return;
+    
     // Check immediately, then every 60 seconds
     checkPartnerStatus();
     const interval = setInterval(checkPartnerStatus, 60000);
     return () => clearInterval(interval);
-  }, [partnerAwayDismissedUntil]);
+  }, [isInitialized]);
   
   // Handle kitchen reading trigger
   const handleKitchenReadingTrigger = async () => {
