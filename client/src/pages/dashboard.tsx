@@ -9095,7 +9095,7 @@ export default function Dashboard() {
               <div 
                 className="absolute z-[100] flex flex-col gap-0.5 animate-in fade-in-0 zoom-in-50 duration-500"
                 style={{ 
-                  top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 8}px`, 
+                  top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 14}px`, 
                   right: '70px',
                   transformOrigin: 'center center'
                 }}
