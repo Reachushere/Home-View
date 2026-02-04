@@ -10213,7 +10213,7 @@ export default function Dashboard() {
                     
                     {/* Main Background Colour - always visible */}
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Main Background Colour</Label>
+                      <Label className="text-xs">Main Background Colour <span className="text-[10px] italic text-muted-foreground">(Overlay toggle must be on)</span></Label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
                         <div className="relative w-5 h-5">
