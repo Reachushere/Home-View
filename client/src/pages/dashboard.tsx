@@ -9138,10 +9138,10 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <Library className="h-2.5 w-2.5 mr-2 ml-1" />
+                <Library className="h-2.5 w-2.5 mr-2 ml-[5px]" />
                 Module
                 {moduleCount > 0 && (
-                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
+                  <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1" style={{ color: 'white' }}>
                     {moduleCount}
                   </span>
                 )}
@@ -9193,10 +9193,10 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <BookOpenCheck className="h-2.5 w-2.5 mr-2 ml-1" />
+                <BookOpenCheck className="h-2.5 w-2.5 mr-2 ml-[5px]" />
                 Reading
                 {readingCount > 0 && (
-                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
+                  <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1" style={{ color: 'white' }}>
                     {readingCount}
                   </span>
                 )}
