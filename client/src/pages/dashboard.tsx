@@ -1236,6 +1236,10 @@ export default function Dashboard() {
       }
       // Clean up old property names
       delete parsed.currentHourCellBackground;
+      // Force reset todayCurrentHourCellBackground to brown if it was changed
+      if (parsed.todayCurrentHourCellBackground !== '#160502') {
+        parsed.todayCurrentHourCellBackground = '#160502';
+      }
       // Save the corrected settings
       const merged = { ...defaults, ...parsed };
       localStorage.setItem('colorSettings', JSON.stringify(merged));
