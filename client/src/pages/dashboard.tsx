@@ -9117,8 +9117,8 @@ export default function Dashboard() {
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
                     borderRadius: '12px',
-                    border: '1px solid white',
-                    padding: '8px'
+                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 6px white',
+                    padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
@@ -9166,13 +9166,13 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex items-center gap-1">
-                    <span className="text-white text-[9px] font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>Module</span>
+                    <span className="text-white text-[10px] font-medium tracking-wide">Module</span>
                     {moduleCount > 0 ? (
-                      <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
+                      <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                         {moduleCount}
                       </span>
                     ) : moduleListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
+                      <span className="bg-gray-400 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                         {moduleListenedCount}
                       </span>
                     ) : null}
@@ -9186,8 +9186,8 @@ export default function Dashboard() {
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
                     borderRadius: '12px',
-                    border: '1px solid white',
-                    padding: '8px'
+                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 6px white',
+                    padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
@@ -9235,13 +9235,13 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex items-center gap-1">
-                    <span className="text-white text-[9px] font-normal" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>Reading</span>
+                    <span className="text-white text-[10px] font-medium tracking-wide">Reading</span>
                     {readingCount > 0 ? (
-                      <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
+                      <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                         {readingCount}
                       </span>
                     ) : readingListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
+                      <span className="bg-gray-400 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                         {readingListenedCount}
                       </span>
                     ) : null}
