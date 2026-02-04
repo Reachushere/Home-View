@@ -2154,8 +2154,29 @@ export async function registerRoutes(
       const validVoices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"] as const;
       const selectedVoice = validVoices.includes(voice) ? voice : "alloy";
       
+      // Normalize text to prevent voice changes on citations/special content
+      let normalizedText = text
+        // Remove URLs
+        .replace(/https?:\/\/[^\s]+/gi, '')
+        // Remove DOIs
+        .replace(/doi:[^\s]+/gi, '')
+        // Remove citation brackets like [1], [2,3], (Smith, 2020)
+        .replace(/\[\d+(?:,\s*\d+)*\]/g, '')
+        .replace(/\([A-Z][a-z]+(?:\s+(?:&|and)\s+[A-Z][a-z]+)*,?\s*\d{4}[a-z]?\)/g, '')
+        // Remove page numbers like pp. 123-456 or p. 123
+        .replace(/pp?\.\s*\d+(?:\s*[-–]\s*\d+)?/gi, '')
+        // Remove excessive parentheses content (often citations)
+        .replace(/\([^)]{50,}\)/g, '')
+        // Normalize dashes and special characters
+        .replace(/[–—]/g, ', ')
+        .replace(/[""]/g, '"')
+        .replace(/['']/g, "'")
+        // Remove multiple spaces
+        .replace(/\s+/g, ' ')
+        .trim();
+      
       // Limit text length to avoid excessive API costs
-      const trimmedText = text.slice(0, 4096);
+      const trimmedText = normalizedText.slice(0, 4096);
       
       console.log(`TTS request: ${trimmedText.length} chars, voice: ${selectedVoice}`);
       
