@@ -12797,20 +12797,31 @@ export default function Dashboard() {
 
           // Helper to format days display for Tomorrow box
           // Shows "1(X)d" for prep tasks where X is the actual due date days
-          const getTomorrowDaysDisplay = (task: typeof dueTodayTasks[0] | undefined): string => {
+          // Returns JSX with proper coloring: "1" in progress bar color, "(X)d" in green if X >= 4
+          const getTomorrowDaysDisplay = (task: typeof dueTodayTasks[0] | undefined, progressColor?: string): React.ReactNode => {
             if (!task?.dueDate) return '';
             const daysUntilDue = Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            const barColor = progressColor || getProgressColor(task, 'tomorrow');
             
-            // If task is actually due tomorrow (1 day), just show "1d"
-            if (daysUntilDue <= 1) return '1d';
+            // If task is actually due tomorrow (1 day), just show "1d" in progress bar color
+            if (daysUntilDue <= 1) {
+              return <span style={{ color: barColor }}>1d</span>;
+            }
             
             // If task has a startDate and is in prep period, show "1(X)d" format
             if (task.startDate) {
-              return `1(${daysUntilDue})d`;
+              // Green color for (X)d if X >= 4, otherwise use a medium green
+              const bracketColor = daysUntilDue >= 4 ? '#22c55e' : '#86efac';
+              return (
+                <>
+                  <span style={{ color: barColor }}>1</span>
+                  <span style={{ color: bracketColor }}>({daysUntilDue})d</span>
+                </>
+              );
             }
             
-            // Fallback to regular days display
-            return `${daysUntilDue}d`;
+            // Fallback to regular days display in progress bar color
+            return <span style={{ color: barColor }}>{daysUntilDue}d</span>;
           };
 
           // Render a single task row
@@ -13474,7 +13485,7 @@ export default function Dashboard() {
                         <div className="text-sm text-white truncate">{task.title}</div>
                         <div className="text-xs text-white/60">{task.courseName?.split(' - ')[0]} • {task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</div>
                       </div>
-                      <div className="text-xs text-green-400 flex-shrink-0">
+                      <div className="text-xs flex-shrink-0">
                         {getTomorrowDaysDisplay(task)}
                       </div>
                     </div>
@@ -13515,7 +13526,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTomorrowTasks[0], 'tomorrow') }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
               </div>
               )}
               {/* Task Row 2 */}
@@ -13539,7 +13550,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTomorrowTasks[1], 'tomorrow') }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
               </div>
               )}
               {/* Task Row 3 */}
@@ -13563,7 +13574,7 @@ export default function Dashboard() {
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
-                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px', color: getProgressColor(dueTomorrowTasks[2], 'tomorrow') }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
+                <span style={{ position: 'absolute', right: '-6px', top: '1px', fontSize: '10px' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
               </div>
               )}
                 </>
