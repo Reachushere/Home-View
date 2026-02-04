@@ -11519,12 +11519,10 @@ export default function Dashboard() {
                         >
                           {/* Background layer - sits below tasks so they don't get covered */}
                           <div 
-                            className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
+                            className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
-                              // Remove current hour row background when there are tasks in this cell (including multi-hour tasks)
-                              backgroundColor: isCurrentHour && hasAnyTasks 
-                                ? undefined 
-                                : (isToday && isCurrentHour) ? colorSettings.todayCurrentHourCellBackground : isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourCellBackground : undefined,
+                              // Always show current hour/today background - task boxes have their own backgrounds
+                              backgroundColor: (isToday && isCurrentHour) ? colorSettings.todayCurrentHourCellBackground : isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourCellBackground : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
@@ -12797,7 +12795,7 @@ export default function Dashboard() {
 
           // Helper to format days display for Tomorrow box
           // Shows "1(X)d" for prep tasks where X is the actual due date days
-          // Returns JSX with proper coloring: "1" in progress bar color, "(X)d" in green if X >= 4
+          // Returns JSX with proper coloring: "1" and "d" in progress bar color, "(X)" in green if X >= 4
           const getTomorrowDaysDisplay = (task: typeof dueTodayTasks[0] | undefined, progressColor?: string): React.ReactNode => {
             if (!task?.dueDate) return '';
             const daysUntilDue = Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
@@ -12810,12 +12808,13 @@ export default function Dashboard() {
             
             // If task has a startDate and is in prep period, show "1(X)d" format
             if (task.startDate) {
-              // Green color for (X)d if X >= 4, otherwise use a medium green
+              // Green color for (X) if X >= 4, otherwise use a medium green
               const bracketColor = daysUntilDue >= 4 ? '#22c55e' : '#86efac';
               return (
                 <>
                   <span style={{ color: barColor }}>1</span>
-                  <span style={{ color: bracketColor }}>({daysUntilDue})d</span>
+                  <span style={{ color: bracketColor }}>({daysUntilDue})</span>
+                  <span style={{ color: barColor }}>d</span>
                 </>
               );
             }
