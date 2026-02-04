@@ -7162,9 +7162,16 @@ export default function Dashboard() {
             
             <div className="w-px h-6 bg-white/30" />
             
-            {isPlaying && totalChunks > 1 && (
-              <div className="flex items-center gap-1 text-[11px] text-green-400">
-                <span>Section {currentChunkIndex + 1}/{totalChunks}</span>
+            {/* Progress Bar */}
+            {totalChunks > 0 && (
+              <div className="flex items-center gap-2">
+                <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-green-500 transition-all duration-300 rounded-full"
+                    style={{ width: `${((currentChunkIndex + 1) / totalChunks) * 100}%` }}
+                  />
+                </div>
+                <span className="text-[9px] text-white/70">{currentChunkIndex + 1}/{totalChunks}</span>
               </div>
             )}
             
