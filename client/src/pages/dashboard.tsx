@@ -7031,7 +7031,7 @@ export default function Dashboard() {
               className="h-6 w-6 border !border-green-500 text-white hover:text-white hover:!border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] focus:ring-2 focus:ring-green-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
               onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
               data-testid="button-preview-resume"
-              title={`Resume from section ${(getTtsProgress(previewFile?.id)?.chunkIndex || 0) + 1}`}
+              title={`Resume from section ${(previewFile?.id ? getTtsProgress(previewFile.id)?.chunkIndex || 0 : 0) + 1}`}
             >
               <RotateCcw className="h-4 w-4 text-white stroke-white" />
             </Button>
@@ -9203,17 +9203,28 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <div className="flex items-center gap-1">
-                    <span className={`text-[9px] font-normal ${courseId === 'cppa122' || courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
-                    {moduleCount > 0 ? (
-                      <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
-                        {moduleCount}
-                      </span>
-                    ) : moduleListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
-                        {moduleListenedCount}
-                      </span>
-                    ) : null}
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex items-center gap-1">
+                      <span className={`text-[9px] font-normal ${courseId === 'cppa122' || courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
+                      {moduleCount > 0 ? (
+                        <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                          {moduleCount}
+                        </span>
+                      ) : moduleListenedCount > 0 ? (
+                        <span className="bg-gray-400 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                          {moduleListenedCount}
+                        </span>
+                      ) : null}
+                    </div>
+                    {/* Progress bar */}
+                    {(moduleCount + moduleListenedCount) > 0 && (
+                      <div className="w-full h-1 bg-black/30 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-green-400 transition-all duration-300 rounded-full"
+                          style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 {/* Reading square */}
@@ -9284,17 +9295,28 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <div className="flex items-center gap-1">
-                    <span className={`text-[9px] font-normal ${courseId === 'cppa122' || courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
-                    {readingCount > 0 ? (
-                      <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
-                        {readingCount}
-                      </span>
-                    ) : readingListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
-                        {readingListenedCount}
-                      </span>
-                    ) : null}
+                  <div className="flex flex-col gap-1 w-full">
+                    <div className="flex items-center gap-1">
+                      <span className={`text-[9px] font-normal ${courseId === 'cppa122' || courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
+                      {readingCount > 0 ? (
+                        <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                          {readingCount}
+                        </span>
+                      ) : readingListenedCount > 0 ? (
+                        <span className="bg-gray-400 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                          {readingListenedCount}
+                        </span>
+                      ) : null}
+                    </div>
+                    {/* Progress bar */}
+                    {(readingCount + readingListenedCount) > 0 && (
+                      <div className="w-full h-1 bg-black/30 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-blue-400 transition-all duration-300 rounded-full"
+                          style={{ width: `${(readingListenedCount / (readingCount + readingListenedCount)) * 100}%` }}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
