@@ -8977,7 +8977,7 @@ export default function Dashboard() {
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
               style={{ 
                 top: `${courseRowsY + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
-                right: '99px',
+                right: '96px',
                 transform: 'scale(1) translateY(-50%)',
                 transitionDelay: `${idx * 50}ms`
               }}
@@ -10045,7 +10045,7 @@ export default function Dashboard() {
                     {/* Box Background Colour */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Task Boxes Background</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.boxBackground}</span>
+                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.boxBackground}</span>
                       <div className="w-14 flex justify-end">
                         <div className="relative">
                           <div 
@@ -10101,7 +10101,7 @@ export default function Dashboard() {
                     {/* Header Bar Colour */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Summary Box Headers</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.headerBar}</span>
+                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.headerBar}</span>
                       <div className="w-14 flex justify-end">
                         <div className="relative">
                           <div 
@@ -10124,7 +10124,7 @@ export default function Dashboard() {
                     {/* Today Column Cell Background */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Today Column</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.todayCellBackground}</span>
+                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.todayCellBackground}</span>
                       <div className="w-14 flex justify-end">
                         <input
                           type="color"
@@ -10140,7 +10140,7 @@ export default function Dashboard() {
                     {/* Current Time Row Background */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Current Time Row</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.currentHourRowBackground}</span>
+                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.currentHourRowBackground}</span>
                       <div className="w-14 flex justify-end">
                         <input
                           type="color"
@@ -10156,7 +10156,7 @@ export default function Dashboard() {
                     {/* Today Date & Current Hour Cell Background */}
                     <div className="flex items-center gap-3">
                       <Label className="text-xs whitespace-nowrap flex-1">Today Date & Current Hour</Label>
-                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.todayCurrentHourCellBackground}</span>
+                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.todayCurrentHourCellBackground}</span>
                       <div className="w-14 flex justify-end">
                         <input
                           type="color"
@@ -10185,9 +10185,9 @@ export default function Dashboard() {
                     
                     {/* Main Background Colour - always visible */}
                     <div className="flex items-center gap-3">
-                      <Label className="text-xs flex-1 whitespace-nowrap">Main Background Colour <span className="text-[10px] italic text-muted-foreground">(Overlay toggle must be on)</span></Label>
-                      <span className="text-xs text-muted-foreground font-mono w-1/3 text-right">{colorSettings.mainBackground}</span>
-                      <div className="w-14 flex justify-end">
+                      <Label className="text-xs whitespace-nowrap flex-1">Main Background Colour <span className="text-[10px] italic text-muted-foreground whitespace-nowrap">(Overlay toggle must be on)</span></Label>
+                      <span className="text-xs text-muted-foreground font-mono w-[52px] text-right flex-shrink-0">{colorSettings.mainBackground}</span>
+                      <div className="w-14 flex justify-end flex-shrink-0">
                         <div className="relative w-5 h-5">
                           <div 
                             className={`w-5 h-5 rounded border border-white/30 ${colorSettings.mainBackgroundOverlay ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
