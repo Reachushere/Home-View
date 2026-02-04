@@ -9093,7 +9093,7 @@ export default function Dashboard() {
             </div>
             {openCourseDropdown === courseId && (
               <div 
-                className="absolute z-[100] flex flex-col gap-0"
+                className="absolute z-[100] flex flex-col gap-0 backdrop-blur-sm bg-black/20 rounded-md px-1 py-0.5"
                 style={{ 
                   top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 14}px`, 
                   right: '67px',
