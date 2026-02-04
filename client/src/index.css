@@ -318,8 +318,8 @@ button[role="combobox"] > span {
   );
   border-radius: inherit;
   pointer-events: none;
-  animation: prep-shimmer-sweep 4s ease-in-out infinite;
-  animation-delay: 2s; /* Offset by half to be opposite */
+  animation: prep-shimmer-sweep 10s ease-in-out infinite;
+  animation-delay: 5s; /* Offset by half to be opposite */
   transform: translateX(-100%);
 }
 
@@ -328,14 +328,14 @@ button[role="combobox"] > span {
     transform: translateX(-100%);
     opacity: 0;
   }
-  3% {
+  1% {
     opacity: 1;
   }
-  12% {
+  4% {
     transform: translateX(100%);
     opacity: 1;
   }
-  15% {
+  5% {
     opacity: 0;
   }
   100% {
