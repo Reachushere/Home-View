@@ -7965,17 +7965,38 @@ export default function Dashboard() {
           </Dialog>
 
           {/* Completed Tasks Button - Swapped with Graduation Hat */}
-          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', padding: '1px' }}>
-            <Button 
-              size="icon"
-              variant="ghost"
-              className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
-              style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
+          <div style={{ marginTop: '4px', width: '44px', height: '44px', borderRadius: '50%', position: 'relative' }}>
+            {/* Back circle: gradient opposite of front */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '44px',
+              height: '44px',
+              borderRadius: '50%',
+              background: 'linear-gradient(0deg, #0F5004 0%, #47B045 100%)'
+            }} />
+            {/* Front circle: lighter bottom, darker top */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '3px',
+                left: '3px',
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                background: 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+              className="hover:opacity-80 transition-all duration-200"
               data-testid="button-completed-tasks"
               onClick={() => { triggerButtonGlow('completed'); setIsCompletedTasksOpen(true); }}
             >
               <CheckSquare className="h-[18px] w-[18px] text-white" />
-            </Button>
+            </div>
           </div>
 
           {/* Todo Button (swapped from tall pill) */}
