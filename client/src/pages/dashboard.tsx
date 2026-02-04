@@ -6749,7 +6749,13 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span className="text-[9px] text-white/60 hidden sm:inline">Module:</span>
                     <Select 
-                      value={isModule ? (previewFile?.id?.toString() || '') : ''} 
+                      value={(() => {
+                        if (isModule && previewFile) return previewFile.id.toString();
+                        // Default to first unlistened module, or first module if all listened
+                        const unlistenedFile = moduleFiles.find(f => !f.listened);
+                        const defaultFile = unlistenedFile || moduleFiles[0];
+                        return defaultFile?.id?.toString() || '';
+                      })()} 
                       onValueChange={(val) => {
                         const file = moduleFiles.find(f => f.id.toString() === val);
                         if (file) setPreviewFile(file);
@@ -6763,13 +6769,7 @@ export default function Dashboard() {
                         }`}
                         style={{ color: 'white' }}
                         data-testid="select-module-file">
-                        <SelectValue placeholder={(() => {
-                          if (moduleFiles.length === 0) return 'No modules';
-                          // Show first unlistened file, or first listened file if all listened
-                          const unlistenedFile = moduleFiles.find(f => !f.listened);
-                          const fileToShow = unlistenedFile || moduleFiles[0];
-                          return (fileToShow.displayName || fileToShow.originalName).replace(/\.pdf$/i, '');
-                        })()} />
+                        <SelectValue placeholder="No modules" />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {moduleFiles.length === 0 ? (
@@ -6791,7 +6791,11 @@ export default function Dashboard() {
                   <div className="flex items-center gap-1">
                     <span className="text-[9px] text-white/60 hidden sm:inline">Reading:</span>
                     <Select 
-                      value={isReading ? (previewFile?.id?.toString() || '') : ''} 
+                      value={(() => {
+                        if (isReading && previewFile) return previewFile.id.toString();
+                        // Default to first reading file
+                        return readingFiles[0]?.id?.toString() || '';
+                      })()} 
                       onValueChange={(val) => {
                         const file = readingFiles.find(f => f.id.toString() === val);
                         if (file) setPreviewFile(file);
@@ -6805,12 +6809,7 @@ export default function Dashboard() {
                         }`}
                         style={{ color: 'white' }}
                         data-testid="select-reading-file">
-                        <SelectValue placeholder={(() => {
-                          if (readingFiles.length === 0) return 'No readings';
-                          // Show first reading file name
-                          const firstFile = readingFiles[0];
-                          return (firstFile.displayName || firstFile.originalName).replace(/\.pdf$/i, '');
-                        })()} />
+                        <SelectValue placeholder="No readings" />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {readingFiles.length === 0 ? (
