@@ -3382,10 +3382,13 @@ export async function registerRoutes(
       
       console.log(`Kitchen trigger: Playing ${fileName}`);
       
-      // Check for existing progress
+      // Check for existing progress - resume from next unplayed chunk
       const progressKey = `file-${nextFile.id}`;
       const existingProgress = playbackProgress[progressKey];
-      const resumeFromChunk = existingProgress?.chunkIndex || 0;
+      // If we have progress, resume from the NEXT chunk after the last completed one
+      const resumeFromChunk = existingProgress?.lastCompletedChunk !== undefined 
+        ? existingProgress.lastCompletedChunk + 1 
+        : 0;
       
       // Extract text from the file
       const { ObjectStorageService } = await import("./replit_integrations/object_storage");
@@ -3466,11 +3469,14 @@ export async function registerRoutes(
           }),
         });
         
-        // Save progress after each chunk
+        // Save progress after each chunk completes
         playbackProgress[progressKey] = {
-          chunkIndex: i,
+          lastCompletedChunk: i,
           totalChunks: chunks.length,
-          lastPlayed: new Date()
+          lastPlayed: new Date(),
+          fileId: nextFile.id,
+          fileName: fileName,
+          folder: nextFile.folder
         };
         
         // Estimate TTS duration: ~80 chars per second at normal speed
