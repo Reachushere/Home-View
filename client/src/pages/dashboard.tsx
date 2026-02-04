@@ -6762,7 +6762,15 @@ export default function Dashboard() {
                             : 'border-gray-600 hover:border-green-500/50'
                         }`}
                         data-testid="select-module-file">
-                        <SelectValue className="!text-white" placeholder={moduleFiles.length > 0 ? `${moduleFiles.length} module${moduleFiles.length > 1 ? 's' : ''}` : 'No modules'} />
+                        <SelectValue className="!text-white" placeholder={(() => {
+                          if (moduleFiles.length === 0) return 'No modules';
+                          // Show listened file name if available
+                          const listenedFile = moduleFiles.find(f => f.listened);
+                          if (listenedFile) {
+                            return (listenedFile.displayName || listenedFile.originalName).replace(/\.pdf$/i, '');
+                          }
+                          return `${moduleFiles.length} module${moduleFiles.length > 1 ? 's' : ''}`;
+                        })()} />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {moduleFiles.length === 0 ? (
