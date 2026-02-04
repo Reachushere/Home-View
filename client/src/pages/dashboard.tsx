@@ -10064,11 +10064,11 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Header Glass Effect</Label>
                       <div 
-                        className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors ${colorSettings.boxGlassEffect ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
+                        className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors flex items-center ${colorSettings.boxGlassEffect ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
                         onClick={() => setColorSettings(prev => ({ ...prev, boxGlassEffect: !prev.boxGlassEffect }))}
                         data-testid="toggle-glass-effect"
                       >
-                        <div className={`w-2 h-2 bg-white rounded-full transition-transform ${colorSettings.boxGlassEffect ? 'translate-x-2.5' : 'translate-x-0.5'}`} />
+                        <div className={`w-1.5 h-1.5 bg-white rounded-full transition-transform ${colorSettings.boxGlassEffect ? 'translate-x-3' : 'translate-x-0.5'}`} />
                       </div>
                     </div>
                     
@@ -10188,11 +10188,11 @@ export default function Dashboard() {
                       <Label className="text-xs">Main Background Colour Overlay</Label>
                       <div className="flex items-center gap-2">
                         <div 
-                          className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors ${colorSettings.mainBackgroundOverlay ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
+                          className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors flex items-center ${colorSettings.mainBackgroundOverlay ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
                           onClick={() => setColorSettings(prev => ({ ...prev, mainBackgroundOverlay: !prev.mainBackgroundOverlay }))}
                           data-testid="toggle-background-overlay"
                         >
-                          <div className={`w-2 h-2 bg-white rounded-full transition-transform ${colorSettings.mainBackgroundOverlay ? 'translate-x-2.5' : 'translate-x-0.5'}`} />
+                          <div className={`w-1.5 h-1.5 bg-white rounded-full transition-transform ${colorSettings.mainBackgroundOverlay ? 'translate-x-3' : 'translate-x-0.5'}`} />
                         </div>
                       </div>
                     </div>
