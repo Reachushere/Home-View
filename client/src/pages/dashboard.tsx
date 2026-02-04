@@ -9104,7 +9104,7 @@ export default function Dashboard() {
               <div 
                 className="absolute flex flex-col gap-1 animate-fade-in"
                 style={{ 
-                  top: '-62px',
+                  top: '-55px',
                   right: '91px',
                   zIndex: 2
                 }}
