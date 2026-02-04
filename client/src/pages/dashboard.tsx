@@ -10304,26 +10304,6 @@ export default function Dashboard() {
                       />
                     </div>
                     
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const defaultWidths = {
-                          taskGap: 0,
-                          taskName: 48,
-                          courseCode: 100,
-                          courseName: 145,
-                          dueDate: 55
-                        };
-                        setTaskColumnWidths(defaultWidths);
-                        localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
-                        toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
-                      }}
-                      data-testid="button-reset-column-widths"
-                    >
-                      <RotateCcw className="h-4 w-4 mr-2" />
-                      Reset Column Spacing
-                    </Button>
                   </div>
                 </div>
                 </div>
@@ -10618,6 +10598,34 @@ export default function Dashboard() {
                       Pull
                     </Button>
                   </div>
+                </div>
+                
+                {/* Reset Column Spacing */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-sm font-medium">Column Spacing</Label>
+                  <p className="text-xs text-muted-foreground">
+                    Reset the column widths in the summary boxes if they appear squished.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const defaultWidths = {
+                        taskGap: 0,
+                        taskName: 48,
+                        courseCode: 100,
+                        courseName: 145,
+                        dueDate: 55
+                      };
+                      setTaskColumnWidths(defaultWidths);
+                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
+                      toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
+                    }}
+                    data-testid="button-reset-column-widths"
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Reset Column Spacing
+                  </Button>
                 </div>
                 </div>
               </div>
