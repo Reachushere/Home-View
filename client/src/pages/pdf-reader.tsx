@@ -676,10 +676,10 @@ export default function PDFReaderPage() {
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-2 block">Voice</label>
                   <Select value={voice} onValueChange={(v) => setVoice(v as Voice)}>
-                    <SelectTrigger className="w-full" style={{ fontFamily: "'Raleway', sans-serif" }}>
+                    <SelectTrigger className="w-full bg-gray-800 text-white border-gray-600" style={{ fontFamily: "'Raleway', sans-serif" }}>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent position="popper" sideOffset={4} className="max-h-[300px] overflow-y-auto" style={{ fontFamily: "'Raleway', sans-serif" }}>
+                    <SelectContent position="popper" sideOffset={4} className="max-h-[300px] overflow-y-auto bg-gray-800 text-white border-gray-600" style={{ fontFamily: "'Raleway', sans-serif" }}>
                       <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
                       <SelectItem value="echo">Echo (Male)</SelectItem>
                       <SelectItem value="fable">Fable (British)</SelectItem>
