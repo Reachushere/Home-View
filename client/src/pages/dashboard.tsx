@@ -10355,7 +10355,7 @@ export default function Dashboard() {
                           type="checkbox"
                           checked={blinkSettings.todayColumnBlink}
                           onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlink: e.target.checked }))}
-                          className="h-4 w-4 rounded border-gray-300"
+                          className="h-3 w-3 rounded border-gray-300"
                           data-testid="toggle-today-column-blink"
                         />
                       </div>
@@ -10387,7 +10387,7 @@ export default function Dashboard() {
                           type="checkbox"
                           checked={blinkSettings.allDayFilesBlink}
                           onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlink: e.target.checked }))}
-                          className="h-4 w-4 rounded border-gray-300"
+                          className="h-3 w-3 rounded border-gray-300"
                           data-testid="toggle-allday-files-blink"
                         />
                       </div>
@@ -10419,7 +10419,7 @@ export default function Dashboard() {
                           type="checkbox"
                           checked={blinkSettings.showArrows}
                           onChange={(e) => setBlinkSettings(prev => ({ ...prev, showArrows: e.target.checked }))}
-                          className="h-4 w-4 rounded border-gray-300"
+                          className="h-3 w-3 rounded border-gray-300"
                           data-testid="toggle-show-arrows"
                         />
                       </div>
@@ -10492,7 +10492,7 @@ export default function Dashboard() {
                         type="checkbox"
                         checked={ttsSettings.useSmartTiming}
                         onChange={(e) => setTtsSettings(prev => ({ ...prev, useSmartTiming: e.target.checked }))}
-                        className="h-4 w-4 rounded border-gray-300"
+                        className="h-3 w-3 rounded border-gray-300"
                         data-testid="input-tts-smart-timing"
                       />
                     </div>
