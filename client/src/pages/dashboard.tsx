@@ -9096,7 +9096,7 @@ export default function Dashboard() {
                 className="absolute z-[100] flex flex-col gap-0 overflow-visible"
                 style={{ 
                   top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 14}px`, 
-                  right: '67px',
+                  right: '50px',
                   transformOrigin: 'center center'
                 }}
               >
@@ -9148,13 +9148,12 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <Library className="h-3 w-3 text-white" />
-                  Module
                   {moduleCount > 0 && (
-                    <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {moduleCount}
                     </span>
                   )}
+                  Module
                 </div>
                 <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25 beam-down"
@@ -9204,13 +9203,12 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <BookOpenCheck className="h-3 w-3 text-white" />
-                  Reading
                   {readingCount > 0 && (
-                    <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                    <span className="bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {readingCount}
                     </span>
                   )}
+                  Reading
                 </div>
               </div>
             )}
