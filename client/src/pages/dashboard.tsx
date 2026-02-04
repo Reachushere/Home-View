@@ -10029,7 +10029,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Colour Settings</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;customise colours for the app</span>
+                    <span className="text-sm text-muted-foreground">|</span><span className="text-xs text-muted-foreground italic">&nbsp;customise colours for the app</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -10232,7 +10232,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Layout Settings</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;adjust spacing and reset column widths</span>
+                    <span className="text-sm text-muted-foreground">|</span><span className="text-xs text-muted-foreground italic">&nbsp;adjust spacing and reset column widths</span>
                   </div>
                   
                   <div className="space-y-3">
@@ -10311,7 +10311,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-2">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Column Spacing</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;reset the column widths in the summary boxes</span>
+                    <span className="text-sm text-muted-foreground">|</span><span className="text-xs text-muted-foreground italic">&nbsp;reset the column widths in the summary boxes</span>
                   </div>
                   <Button
                     variant="outline"
@@ -10346,7 +10346,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Blinking & Spacing</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;control blinking animations and button spacing</span>
+                    <span className="text-sm text-muted-foreground">|</span><span className="text-xs text-muted-foreground italic">&nbsp;control blinking animations and button spacing</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -10438,7 +10438,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;Fine-tune word highlighting</span>
+                    <span className="text-sm text-muted-foreground">|</span><span className="text-xs text-muted-foreground italic">&nbsp;Fine-tune word highlighting</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -10514,7 +10514,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Data Sync</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;push to or pull from the published app</span>
+                    <span className="text-sm text-muted-foreground">|</span><span className="text-xs text-muted-foreground italic">&nbsp;push to or pull from the published app</span>
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -10650,7 +10650,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-2">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Second Google Account</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;connect a second Google account to sync tasks to both accounts</span>
+                    <span className="text-sm text-muted-foreground">|</span><span className="text-xs text-muted-foreground italic">&nbsp;connect a second Google account to sync tasks to both accounts</span>
                   </div>
                   {secondAccountStatus?.connected ? (
                     <div className="flex items-center justify-between gap-2">
@@ -10694,7 +10694,7 @@ export default function Dashboard() {
                 <div>
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Secondary Calendar</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;select a secondary calendar to sync tasks to</span>
+                    <span className="text-sm text-muted-foreground">|</span><span className="text-xs text-muted-foreground italic">&nbsp;select a secondary calendar to sync tasks to</span>
                   </div>
                   <Select
                     value={selectedSecondaryCalendar}
