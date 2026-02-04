@@ -9084,7 +9084,7 @@ export default function Dashboard() {
                   </div>
                 )}
                 {completedCount > 0 && (
-                  <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
+                  <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-6px' }}>
                     {completedCount}
                   </div>
                 )}
