@@ -10027,11 +10027,9 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-4 justify-between">
                 <div className="flex flex-col gap-4">
                 <div className="border rounded-lg p-3 space-y-3">
-                  <div>
+                  <div className="border-b-2 border-white/30 pb-2">
                     <Label className="text-sm font-medium">Colour Settings</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
-                      Customise colours for the app.
-                    </p>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Customise colours for the app.</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -10232,11 +10230,9 @@ export default function Dashboard() {
                 
                 {/* Layout Settings - in left column */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <div>
+                  <div className="border-b-2 border-white/30 pb-2">
                     <Label className="text-sm font-medium">Layout Settings</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
-                      Adjust spacing and reset column widths.
-                    </p>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Adjust spacing and reset column widths.</span>
                   </div>
                   
                   <div className="space-y-3">
@@ -10313,11 +10309,9 @@ export default function Dashboard() {
                 
                 {/* Column Spacing */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <div>
+                  <div className="border-b-2 border-white/30 pb-2">
                     <Label className="text-sm font-medium">Column Spacing</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
-                      Reset the column widths in the summary boxes.
-                    </p>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Reset the column widths in the summary boxes.</span>
                   </div>
                   <Button
                     variant="outline"
@@ -10370,11 +10364,9 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-4">
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <div>
+                  <div className="border-b-2 border-white/30 pb-2">
                     <Label className="text-sm font-medium">Blinking & Spacing</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
-                      Control blinking animations and button spacing.
-                    </p>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Control blinking animations and button spacing.</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -10464,11 +10456,9 @@ export default function Dashboard() {
                 
                 {/* TTS Highlighting Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <div>
+                  <div className="border-b-2 border-white/30 pb-2">
                     <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
-                      Fine-tune word highlighting to sync with your Home Assistant TTS voice.
-                    </p>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Fine-tune word highlighting to sync with your Home Assistant TTS voice.</span>
                   </div>
                   
                   <div className="space-y-4">
@@ -10542,11 +10532,9 @@ export default function Dashboard() {
                 
                 {/* Data Sync Section */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <div>
+                  <div className="border-b-2 border-white/30 pb-2">
                     <Label className="text-sm font-medium">Data Sync</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
-                      Push to or pull from the published app.
-                    </p>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Push to or pull from the published app.</span>
                   </div>
                   <div className="flex gap-2">
                     <Button
@@ -10658,11 +10646,9 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {/* Second Google Account Connection */}
                 <div className="border rounded-lg p-3 space-y-2">
-                  <div>
+                  <div className="border-b-2 border-white/30 pb-2">
                     <Label className="text-sm font-medium">Second Google Account</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
-                      Connect a second Google account to sync tasks to both accounts. Events from both accounts that conflict with your tasks will show in the calendar.
-                    </p>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Connect a second Google account to sync tasks to both accounts.</span>
                   </div>
                   {secondAccountStatus?.connected ? (
                     <div className="flex items-center justify-between gap-2">
@@ -10704,11 +10690,9 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <div>
-                    <Label className="text-sm font-medium">Secondary Calendar (same account)</Label>
-                    <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5 mt-3">
-                      Select a secondary calendar within your primary account to sync tasks to.
-                    </p>
+                  <div className="border-b-2 border-white/30 pb-2">
+                    <Label className="text-sm font-medium">Secondary Calendar</Label>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Select a secondary calendar to sync tasks to.</span>
                   </div>
                   <Select
                     value={selectedSecondaryCalendar}
