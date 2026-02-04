@@ -3286,15 +3286,16 @@ export async function registerRoutes(
         console.log("OneDrive sync skipped:", syncErr);
       }
       
-      // Get current week number from semester info
-      const semesterInfo = await storage.getSemesterInfo();
+      // Get current week number from semester settings
+      const semesterSettings = await storage.getActiveSemesterSettings();
       const today = new Date();
       let currentWeekNumber = 1;
       
-      if (semesterInfo?.startDate) {
-        const semesterStart = startOfWeek(new Date(semesterInfo.startDate), { weekStartsOn: 6 });
-        const currentWeekStart = startOfWeek(today, { weekStartsOn: 6 });
-        currentWeekNumber = Math.max(1, Math.floor((currentWeekStart.getTime() - semesterStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1);
+      if (semesterSettings?.semesterStartDate) {
+        const startDate = new Date(semesterSettings.semesterStartDate);
+        const diffTime = today.getTime() - startDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        currentWeekNumber = Math.floor(diffDays / 7) + 1;
       }
       
       console.log(`Kitchen trigger: Current week is ${currentWeekNumber}`);
