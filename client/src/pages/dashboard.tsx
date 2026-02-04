@@ -6765,17 +6765,10 @@ export default function Dashboard() {
                         data-testid="select-module-file">
                         <SelectValue placeholder={(() => {
                           if (moduleFiles.length === 0) return 'No modules';
-                          // Check for unlistened files first
-                          const unlistenedFiles = moduleFiles.filter(f => !f.listened);
-                          if (unlistenedFiles.length > 0) {
-                            return `${moduleFiles.length} module${moduleFiles.length > 1 ? 's' : ''}`;
-                          }
-                          // All files are listened - show the first listened file name
-                          const listenedFile = moduleFiles.find(f => f.listened);
-                          if (listenedFile) {
-                            return (listenedFile.displayName || listenedFile.originalName).replace(/\.pdf$/i, '');
-                          }
-                          return `${moduleFiles.length} module${moduleFiles.length > 1 ? 's' : ''}`;
+                          // Show first unlistened file, or first listened file if all listened
+                          const unlistenedFile = moduleFiles.find(f => !f.listened);
+                          const fileToShow = unlistenedFile || moduleFiles[0];
+                          return (fileToShow.displayName || fileToShow.originalName).replace(/\.pdf$/i, '');
                         })()} />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
@@ -6812,7 +6805,12 @@ export default function Dashboard() {
                         }`}
                         style={{ color: 'white' }}
                         data-testid="select-reading-file">
-                        <SelectValue placeholder={readingFiles.length > 0 ? `${readingFiles.length} reading${readingFiles.length > 1 ? 's' : ''}` : 'No readings'} />
+                        <SelectValue placeholder={(() => {
+                          if (readingFiles.length === 0) return 'No readings';
+                          // Show first reading file name
+                          const firstFile = readingFiles[0];
+                          return (firstFile.displayName || firstFile.originalName).replace(/\.pdf$/i, '');
+                        })()} />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {readingFiles.length === 0 ? (
