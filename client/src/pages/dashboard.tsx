@@ -8977,7 +8977,7 @@ export default function Dashboard() {
               className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
               style={{ 
                 top: `${courseRowsY + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
-                right: '103px',
+                right: '99px',
                 transform: 'scale(1) translateY(-50%)',
                 transitionDelay: `${idx * 50}ms`
               }}
