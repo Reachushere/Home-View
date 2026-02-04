@@ -13322,6 +13322,8 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <>
+              {/* Spacing for headers row */}
+              <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}></div>
               {/* Task Row 1 */}
               {dueTodayTasks[0] && row1Positions.course > 0 && (
               <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
@@ -13474,6 +13476,8 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <>
+              {/* Spacing for headers row */}
+              <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}></div>
               {/* Task Row 1 */}
               {dueTomorrowTasks[0] && row1Positions.course > 0 && (
               <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
