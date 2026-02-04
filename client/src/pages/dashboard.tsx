@@ -9474,7 +9474,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${616 + blinkSettings.tallPillButtonSpacing * 4}px`, 
+          top: `${565 + blinkSettings.tallPillButtonSpacing * 4}px`, 
           right: '18px',
           borderRadius: '50%',
           background: isKitchenPlaying 
