@@ -570,7 +570,7 @@ export default function PDFReaderPage() {
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent position="popper" sideOffset={4} className="max-h-[300px] overflow-y-auto">
                       <SelectItem value="alloy">Alloy (Neutral)</SelectItem>
                       <SelectItem value="echo">Echo (Male)</SelectItem>
                       <SelectItem value="fable">Fable (British)</SelectItem>
