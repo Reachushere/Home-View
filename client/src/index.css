@@ -973,12 +973,12 @@ button[role="combobox"] > span {
   .checkbox-black:checked::after {
     content: '';
     position: absolute;
-    left: 3px;
+    left: 3.5px;
     top: 1px;
-    width: 3px;
-    height: 6px;
+    width: 2.5px;
+    height: 5px;
     border: solid white;
-    border-width: 0 1.5px 1.5px 0;
+    border-width: 0 1px 1px 0;
     transform: rotate(45deg);
   }
   
