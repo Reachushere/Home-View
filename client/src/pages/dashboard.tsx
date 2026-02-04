@@ -9165,16 +9165,18 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <span className="text-white text-[9px] font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.5px' }}>Module</span>
-                  {moduleCount > 0 ? (
-                    <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
-                      {moduleCount}
-                    </span>
-                  ) : moduleListenedCount > 0 ? (
-                    <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
-                      {moduleListenedCount}
-                    </span>
-                  ) : null}
+                  <div className="flex items-center gap-1">
+                    <span className="text-white text-[9px] font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.5px' }}>Module</span>
+                    {moduleCount > 0 ? (
+                      <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
+                        {moduleCount}
+                      </span>
+                    ) : moduleListenedCount > 0 ? (
+                      <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
+                        {moduleListenedCount}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
                 {/* Reading square */}
                 <div 
@@ -9232,16 +9234,18 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <span className="text-white text-[9px] font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.5px' }}>Reading</span>
-                  {readingCount > 0 ? (
-                    <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
-                      {readingCount}
-                    </span>
-                  ) : readingListenedCount > 0 ? (
-                    <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
-                      {readingListenedCount}
-                    </span>
-                  ) : null}
+                  <div className="flex items-center gap-1">
+                    <span className="text-white text-[9px] font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.5px' }}>Reading</span>
+                    {readingCount > 0 ? (
+                      <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
+                        {readingCount}
+                      </span>
+                    ) : readingListenedCount > 0 ? (
+                      <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white">
+                        {readingListenedCount}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             )}
