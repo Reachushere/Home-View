@@ -10340,6 +10340,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column */}
+                <div className="flex flex-col gap-4 justify-between">
                 <div className="flex flex-col gap-4">
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
@@ -10612,6 +10613,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Save Settings Button */}
+                </div>
                 <div className="flex justify-end">
                   <Button 
                     variant="outline"
