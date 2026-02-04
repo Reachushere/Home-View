@@ -9090,10 +9090,10 @@ export default function Dashboard() {
                 )}
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" side="left" className="text-[11px] min-w-0 border-none shadow-none animate-in fade-in-0 duration-300" style={{ backgroundColor: 'transparent', color: 'white' }}>
-              <DropdownMenuItem 
-                className="text-[11px] py-1 px-2 hover:!bg-white/30 focus:!bg-white/30 cursor-pointer"
-                style={{ color: 'white' }}
+            <DropdownMenuContent align="end" side="left" className="text-[11px] min-w-0 border-none shadow-none animate-in fade-in-0 duration-300 !bg-transparent !p-0">
+              <div 
+                className="text-[11px] py-1 px-2 hover:bg-white/30 cursor-pointer flex items-center rounded-sm"
+                style={{ color: 'white', backgroundColor: 'transparent' }}
                 data-testid={`pill-course-${courseId}-module`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
@@ -9138,17 +9138,17 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <Library className="h-2.5 w-2.5" style={{ marginRight: '8px', marginLeft: '5px' }} />
-                Module
+                <Library className="h-2.5 w-2.5" style={{ marginRight: '8px', marginLeft: '5px', color: 'white' }} />
+                <span style={{ color: 'white' }}>Module</span>
                 {moduleCount > 0 && (
                   <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1" style={{ color: 'white' }}>
                     {moduleCount}
                   </span>
                 )}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="text-[11px] py-1 px-2 hover:!bg-white/30 focus:!bg-white/30 cursor-pointer"
-                style={{ color: 'white' }}
+              </div>
+              <div 
+                className="text-[11px] py-1 px-2 hover:bg-white/30 cursor-pointer flex items-center rounded-sm"
+                style={{ color: 'white', backgroundColor: 'transparent' }}
                 data-testid={`pill-course-${courseId}-reading`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
@@ -9193,14 +9193,14 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <BookOpenCheck className="h-2.5 w-2.5" style={{ marginRight: '8px', marginLeft: '5px' }} />
-                Reading
+                <BookOpenCheck className="h-2.5 w-2.5" style={{ marginRight: '8px', marginLeft: '5px', color: 'white' }} />
+                <span style={{ color: 'white' }}>Reading</span>
                 {readingCount > 0 && (
                   <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1" style={{ color: 'white' }}>
                     {readingCount}
                   </span>
                 )}
-              </DropdownMenuItem>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
         );
