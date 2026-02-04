@@ -9090,8 +9090,9 @@ export default function Dashboard() {
                 )}
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" side="left">
+            <DropdownMenuContent align="end" side="left" className="text-[11px] min-w-0">
               <DropdownMenuItem 
+                className="text-[11px] py-1 px-2"
                 data-testid={`pill-course-${courseId}-module`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
@@ -9136,7 +9137,7 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <Library className="h-4 w-4 mr-2" />
+                <Library className="h-3 w-3 mr-2" />
                 Module
                 {moduleCount > 0 && (
                   <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
@@ -9145,6 +9146,7 @@ export default function Dashboard() {
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem 
+                className="text-[11px] py-1 px-2"
                 data-testid={`pill-course-${courseId}-reading`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
@@ -9189,7 +9191,7 @@ export default function Dashboard() {
                   }
                 }}
               >
-                <BookOpenCheck className="h-4 w-4 mr-2" />
+                <BookOpenCheck className="h-3 w-3 mr-2" />
                 Reading
                 {readingCount > 0 && (
                   <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
