@@ -10144,29 +10144,6 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    {/* Today Date & Current Hour Cell Background */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Today Date & Current Hour</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCurrentHourCellBackground}</span>
-                        <div className="relative">
-                          <div 
-                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
-                            style={{ backgroundColor: colorSettings.todayCurrentHourCellBackground }}
-                            onClick={() => document.getElementById('color-today-current-hour-cell-input')?.click()}
-                            data-testid="color-today-current-hour-cell"
-                          />
-                          <input
-                            id="color-today-current-hour-cell-input"
-                            type="color"
-                            value={colorSettings.todayCurrentHourCellBackground}
-                            onChange={(e) => setColorSettings(prev => ({ ...prev, todayCurrentHourCellBackground: e.target.value }))}
-                            className="absolute opacity-0 w-0 h-0"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
                     {/* Current Time Row Background */}
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Current Time Row</Label>
@@ -10184,6 +10161,29 @@ export default function Dashboard() {
                             type="color"
                             value={colorSettings.currentHourRowBackground}
                             onChange={(e) => setColorSettings(prev => ({ ...prev, currentHourRowBackground: e.target.value }))}
+                            className="absolute opacity-0 w-0 h-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Today Date & Current Hour Cell Background */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Today Date & Current Hour</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCurrentHourCellBackground}</span>
+                        <div className="relative">
+                          <div 
+                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
+                            style={{ backgroundColor: colorSettings.todayCurrentHourCellBackground }}
+                            onClick={() => document.getElementById('color-today-current-hour-cell-input')?.click()}
+                            data-testid="color-today-current-hour-cell"
+                          />
+                          <input
+                            id="color-today-current-hour-cell-input"
+                            type="color"
+                            value={colorSettings.todayCurrentHourCellBackground}
+                            onChange={(e) => setColorSettings(prev => ({ ...prev, todayCurrentHourCellBackground: e.target.value }))}
                             className="absolute opacity-0 w-0 h-0"
                           />
                         </div>
