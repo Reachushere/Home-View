@@ -9154,7 +9154,7 @@ export default function Dashboard() {
                   }}
                 >
                   <span style={{ marginLeft: '3px' }}>Module</span>
-                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: '16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.50)' }} />
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: '16px', height: '1px', backgroundColor: 'rgba(255,255,255,0.40)' }} />
                   <span style={{ minWidth: '18px', display: 'flex', justifyContent: 'flex-end', marginRight: '-2px' }}>
                     {moduleCount > 0 ? (
                       <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
