@@ -11824,7 +11824,7 @@ export default function Dashboard() {
                   // For tasks with prep days, check if they need extra height to match pushed-down tasks
                   const prepStartDayIdx = hasPrepDays && prepDaysCount > 0 ? Math.max(0, dayIdx - prepDaysCount) : dayIdx;
                   const heightExtension = hasPrepDays && prepDaysCount > 0 
-                    ? getPrepTaskHeightExtension(task.id, taskHour, prepStartDayIdx, dayIdx) 
+                    ? getPrepTaskHeightExtension(task.id, startHour, prepStartDayIdx, dayIdx) 
                     : 0;
                   const adjustedHeightPx = heightPx + heightExtension;
                   
