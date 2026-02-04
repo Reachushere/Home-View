@@ -2644,30 +2644,22 @@ export async function registerRoutes(
   // GET /api/shower/next-reading - Get next unread module/reading for current week
   app.get("/api/shower/next-reading", async (req, res) => {
     try {
-      // Get current week info
       const today = new Date();
-      const tasks = await storage.getAllTasks();
-      const weeks = await storage.getWeeks();
+      const allTasks = await storage.getTasks();
       
-      // Find current week
-      const currentWeek = weeks.find(w => {
-        const start = new Date(w.startDate);
-        const end = new Date(start);
-        end.setDate(end.getDate() + 6);
-        return today >= start && today <= end;
-      });
+      // Calculate current week boundaries (Sunday to Saturday)
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
       
-      if (!currentWeek) {
-        return res.json({ message: "No current week found", nextFile: null });
-      }
+      const endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+      endOfWeek.setHours(23, 59, 59, 999);
       
       // Get tasks for this week that are readings or modules
-      const weekTasks = tasks.filter(t => {
+      const weekTasks = allTasks.filter(t => {
         const dueDate = new Date(t.dueDate);
-        const weekStart = new Date(currentWeek.startDate);
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekEnd.getDate() + 6);
-        return dueDate >= weekStart && dueDate <= weekEnd;
+        return dueDate >= startOfWeek && dueDate <= endOfWeek;
       });
       
       // Find unfinished module tasks first, then readings
