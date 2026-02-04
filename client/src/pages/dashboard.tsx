@@ -9096,7 +9096,7 @@ export default function Dashboard() {
                 className="absolute z-[100] flex flex-col gap-0"
                 style={{ 
                   top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 14}px`, 
-                  right: '70px',
+                  right: '67px',
                   transformOrigin: 'center center'
                 }}
               >
