@@ -9107,7 +9107,7 @@ export default function Dashboard() {
               >
               <div 
                   className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm animate-fade-in bg-black/90 hover:bg-white/25"
-                  style={{ color: 'white', marginTop: '4px', marginBottom: '0px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 400, position: 'relative' }}
+                  style={{ color: 'white', marginTop: '4px', marginBottom: '0px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '0px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 400, position: 'relative' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9169,7 +9169,7 @@ export default function Dashboard() {
                 </div>
                 <div 
                   className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm animate-fade-in bg-black/90 hover:bg-white/25"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '0px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 400 }}
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '0px', marginTop: '0px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 400 }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9658,7 +9658,7 @@ export default function Dashboard() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56 p-2" onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenuLabel className="text-[9px] py-1" style={{ marginLeft: '-2px' }}>Reminder Settings</DropdownMenuLabel>
+                    <DropdownMenuLabel className="text-[9px] py-1" style={{ marginLeft: '0px' }}>Reminder Settings</DropdownMenuLabel>
                     <div className="space-y-2 p-1">
                       <div className="space-y-1">
                         <Label className="text-[9px]">Reminder Time</Label>
