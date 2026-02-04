@@ -9079,7 +9079,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 {totalUnread > 0 && (
-                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
+                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-2px' }}>
                     {totalUnread}
                   </div>
                 )}
