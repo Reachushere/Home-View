@@ -9106,7 +9106,7 @@ export default function Dashboard() {
                 }}
               >
               <div 
-                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/25 hover:bg-white/25 beam-up border border-white/35"
+                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/30 hover:bg-white/25 animate-fade-in border border-white/35"
                   style={{ color: 'white', marginTop: '4px', marginBottom: '-1px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', height: '20px', fontSize: '9px', letterSpacing: '0.3px' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
@@ -9167,7 +9167,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div 
-                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/25 hover:bg-white/25 beam-down border border-white/35"
+                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/30 hover:bg-white/25 animate-fade-in border border-white/35"
                   style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '-1px', height: '20px', fontSize: '9px', letterSpacing: '0.3px' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
