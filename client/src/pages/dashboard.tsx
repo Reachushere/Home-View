@@ -9106,8 +9106,8 @@ export default function Dashboard() {
                 }}
               >
               <div 
-                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/15 hover:bg-white/25 animate-fade-in"
-                  style={{ color: 'white', marginTop: '4px', marginBottom: '0px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 375, position: 'relative' }}
+                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm animate-fade-in"
+                  style={{ color: 'white', marginTop: '4px', marginBottom: '0px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 375, position: 'relative', backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9168,8 +9168,8 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div 
-                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/15 hover:bg-white/25 animate-fade-in"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '0px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 375 }}
+                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm animate-fade-in"
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '0px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 375, backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
