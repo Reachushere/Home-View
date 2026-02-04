@@ -10095,7 +10095,7 @@ export default function Dashboard() {
                     
                     {/* Header Bar Colour */}
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Header</Label>
+                      <Label className="text-xs">Forecast Box Headers</Label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
                         <div className="relative">
@@ -10310,6 +10310,37 @@ export default function Dashboard() {
                     
                   </div>
                 </div>
+                
+                {/* Column Spacing */}
+                <div className="border rounded-lg p-3 space-y-3">
+                  <div>
+                    <Label className="text-sm font-medium">Column Spacing</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Reset the column widths in the summary boxes if they appear squished.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs px-2"
+                    onClick={() => {
+                      const defaultWidths = {
+                        taskGap: 0,
+                        taskName: 48,
+                        courseCode: 100,
+                        courseName: 145,
+                        dueDate: 55
+                      };
+                      setTaskColumnWidths(defaultWidths);
+                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
+                      toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
+                    }}
+                    data-testid="button-reset-column-widths"
+                  >
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    Reset
+                  </Button>
+                </div>
                 </div>
                 
                 {/* Save Settings Button */}
@@ -10500,10 +10531,11 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
+                      className="h-7 text-xs px-2"
                       onClick={() => saveTtsSettings(ttsSettings)}
                       data-testid="button-save-tts-settings"
                     >
-                      Save TTS Settings
+                      Save TTS
                     </Button>
                   </div>
                 </div>
@@ -10520,6 +10552,7 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
+                      className="h-7 text-xs px-2"
                       onClick={async () => {
                         try {
                           toast({ title: "Pushing...", description: "Sending data to production." });
@@ -10556,12 +10589,13 @@ export default function Dashboard() {
                       }}
                       data-testid="button-push-production"
                     >
-                      <Upload className="h-4 w-4 mr-2" />
+                      <Upload className="h-3 w-3 mr-1" />
                       Push
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
+                      className="h-7 text-xs px-2"
                       onClick={async () => {
                         try {
                           toast({ title: "Pulling...", description: "Getting data from production." });
@@ -10604,40 +10638,10 @@ export default function Dashboard() {
                       }}
                       data-testid="button-pull-production"
                     >
-                      <Download className="h-4 w-4 mr-2" />
+                      <Download className="h-3 w-3 mr-1" />
                       Pull
                     </Button>
                   </div>
-                </div>
-                
-                {/* Reset Column Spacing */}
-                <div className="border rounded-lg p-3 space-y-3">
-                  <div>
-                    <Label className="text-sm font-medium">Column Spacing</Label>
-                    <p className="text-xs text-muted-foreground italic">
-                      Reset the column widths in the summary boxes if they appear squished.
-                    </p>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const defaultWidths = {
-                        taskGap: 0,
-                        taskName: 48,
-                        courseCode: 100,
-                        courseName: 145,
-                        dueDate: 55
-                      };
-                      setTaskColumnWidths(defaultWidths);
-                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
-                      toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
-                    }}
-                    data-testid="button-reset-column-widths"
-                  >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Reset Column Spacing
-                  </Button>
                 </div>
                 </div>
               </div>
