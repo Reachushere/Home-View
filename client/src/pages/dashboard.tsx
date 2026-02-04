@@ -239,6 +239,7 @@ export default function Dashboard() {
   }, []);
   
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
+  const [openCourseDropdown, setOpenCourseDropdown] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 17)); // January 2026
   const [calendarView, setCalendarView] = useState<"week" | "month">("week");
@@ -9043,174 +9044,175 @@ export default function Dashboard() {
         const completedCount = (fileCounts[moduleFolderKey]?.listened || 0) + (fileCounts[readingFolderKey]?.listened || 0);
         
         return (
-          <DropdownMenu key={`course-pill-${courseId}`}>
-            <DropdownMenuTrigger asChild>
+          <div key={`course-pill-${courseId}`} className="relative">
+            <div 
+              className="absolute z-50 cursor-pointer"
+              style={{ 
+                width: '44px', 
+                height: '44px', 
+                top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0)}px`, 
+                right: '18px',
+                borderRadius: '50%',
+                background: getBorderGradient(courseHex),
+                padding: '1px'
+              }}
+              data-testid={`pill-course-${courseId}`}
+              onClick={() => setOpenCourseDropdown(openCourseDropdown === courseId ? null : courseId)}
+            >
               <div 
-                className="absolute z-50 cursor-pointer"
-                style={{ 
-                  width: '44px', 
-                  height: '44px', 
-                  top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0)}px`, 
-                  right: '18px',
+                className="hover:opacity-80 transition-all duration-200"
+                style={{
+                  position: 'absolute',
+                  top: '1px',
+                  left: '1px',
+                  width: '42px',
+                  height: '42px',
                   borderRadius: '50%',
-                  background: getBorderGradient(courseHex),
-                  padding: '1px'
+                  background: getButtonGradient(courseHex),
+                  boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}
-                data-testid={`pill-course-${courseId}`}
               >
-                <div 
-                  className="hover:opacity-80 transition-all duration-200"
-                  style={{
-                    position: 'absolute',
-                    top: '1px',
-                    left: '1px',
-                    width: '42px',
-                    height: '42px',
-                    borderRadius: '50%',
-                    background: getButtonGradient(courseHex),
-                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
+                <span className="text-[9px] font-medium text-white" style={{ WebkitFontSmoothing: 'antialiased' }}>
+                  {courseCode.slice(0, 4)}
+                </span>
+              </div>
+              {totalUnread > 0 && (
+                <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-6px' }}>
+                  {totalUnread}
+                </div>
+              )}
+              {completedCount > 0 && (
+                <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '19px', right: '-6px' }}>
+                  {completedCount}
+                </div>
+              )}
+            </div>
+            {openCourseDropdown === courseId && (
+              <div 
+                className="absolute z-[100] flex flex-col gap-0.5 animate-in fade-in-0 duration-200"
+                style={{ 
+                  top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4}px`, 
+                  right: '70px'
+                }}
+              >
+              <div 
+                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25"
+                  style={{ color: 'white' }}
+                  data-testid={`pill-course-${courseId}-module`}
+                  onClick={async () => {
+                    setOpenCourseDropdown(null);
+                    const oneDriveFolderMap: Record<string, string> = {
+                      'cppa122': 'CPPA122 - Local Politics',
+                      'cfnf400': 'CFNF400 - Human Sexuality', 
+                      'casl101': 'CASL101 - American Sign Language'
+                    };
+                    const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
+                    const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
+                    try {
+                      const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+                      const courseFolders = await courseResponse.json();
+                      const weekFolder = courseFolders.find((f: any) => 
+                        f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
+                      );
+                      if (weekFolder) {
+                        const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                        const weekContents = await weekResponse.json();
+                        const moduleFolder = weekContents.find((f: any) => 
+                          f.type === 'folder' && f.name.toLowerCase().includes('module')
+                        );
+                        if (moduleFolder) {
+                          const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
+                          const moduleFiles = await moduleResponse.json();
+                          const pdfFiles = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                          if (pdfFiles.length > 0) {
+                            const fileItems: FileItem[] = pdfFiles.map((pdf: any, i: number) => ({
+                              id: Date.now() + i,
+                              originalName: pdf.name,
+                              displayName: pdf.name,
+                              objectPath: pdf.downloadUrl,
+                              folder: `week-${selectedWeek}-${courseId}-module`,
+                              listened: false
+                            }));
+                            setOneDrivePreviewFiles(fileItems);
+                            setPreviewFile(fileItems[0]);
+                          }
+                        }
+                      }
+                    } catch (error) {
+                      console.error('Error fetching module files:', error);
+                    }
                   }}
                 >
-                  <span className="text-[9px] font-medium text-white" style={{ WebkitFontSmoothing: 'antialiased' }}>
-                    {courseCode.slice(0, 4)}
-                  </span>
+                  <Library className="h-3 w-3 text-white" />
+                  Module
+                  {moduleCount > 0 && (
+                    <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                      {moduleCount}
+                    </span>
+                  )}
                 </div>
-                {totalUnread > 0 && (
-                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-6px' }}>
-                    {totalUnread}
-                  </div>
-                )}
-                {completedCount > 0 && (
-                  <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '19px', right: '-6px' }}>
-                    {completedCount}
-                  </div>
-                )}
+                <div 
+                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25"
+                  style={{ color: 'white' }}
+                  data-testid={`pill-course-${courseId}-reading`}
+                  onClick={async () => {
+                    setOpenCourseDropdown(null);
+                    const oneDriveFolderMap: Record<string, string> = {
+                      'cppa122': 'CPPA122 - Local Politics',
+                      'cfnf400': 'CFNF400 - Human Sexuality', 
+                      'casl101': 'CASL101 - American Sign Language'
+                    };
+                    const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
+                    const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
+                    try {
+                      const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+                      const courseFolders = await courseResponse.json();
+                      const weekFolder = courseFolders.find((f: any) => 
+                        f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
+                      );
+                      if (weekFolder) {
+                        const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                        const weekContents = await weekResponse.json();
+                        const readingFolder = weekContents.find((f: any) => 
+                          f.type === 'folder' && f.name.toLowerCase().includes('reading')
+                        );
+                        if (readingFolder) {
+                          const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
+                          const readingFiles = await readingResponse.json();
+                          const pdfFiles = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                          if (pdfFiles.length > 0) {
+                            const fileItems: FileItem[] = pdfFiles.map((pdf: any, i: number) => ({
+                              id: Date.now() + i,
+                              originalName: pdf.name,
+                              displayName: pdf.name,
+                              objectPath: pdf.downloadUrl,
+                              folder: `week-${selectedWeek}-${courseId}-reading`,
+                              listened: false
+                            }));
+                            setOneDrivePreviewFiles(fileItems);
+                            setPreviewFile(fileItems[0]);
+                          }
+                        }
+                      }
+                    } catch (error) {
+                      console.error('Error fetching reading files:', error);
+                    }
+                  }}
+                >
+                  <BookOpenCheck className="h-3 w-3 text-white" />
+                  Reading
+                  {readingCount > 0 && (
+                    <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                      {readingCount}
+                    </span>
+                  )}
+                </div>
               </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent 
-              align="end" 
-              side="left" 
-              variant="transparent"
-              className="min-w-0 p-1"
-              style={{ background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }}
-            >
-              <DropdownMenuItem 
-                variant="transparent"
-                className="text-[11px] py-1.5 cursor-pointer mt-1"
-                style={{ color: 'white', backgroundColor: 'transparent' }}
-                data-testid={`pill-course-${courseId}-module`}
-                onClick={async () => {
-                  const oneDriveFolderMap: Record<string, string> = {
-                    'cppa122': 'CPPA122 - Local Politics',
-                    'cfnf400': 'CFNF400 - Human Sexuality', 
-                    'casl101': 'CASL101 - American Sign Language'
-                  };
-                  const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
-                  const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
-                  try {
-                    const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-                    const courseFolders = await courseResponse.json();
-                    const weekFolder = courseFolders.find((f: any) => 
-                      f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-                    );
-                    if (weekFolder) {
-                      const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                      const weekContents = await weekResponse.json();
-                      const moduleFolder = weekContents.find((f: any) => 
-                        f.type === 'folder' && f.name.toLowerCase().includes('module')
-                      );
-                      if (moduleFolder) {
-                        const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
-                        const moduleFiles = await moduleResponse.json();
-                        const pdfFiles = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
-                        if (pdfFiles.length > 0) {
-                          const fileItems: FileItem[] = pdfFiles.map((pdf: any, i: number) => ({
-                            id: Date.now() + i,
-                            originalName: pdf.name,
-                            displayName: pdf.name,
-                            objectPath: pdf.downloadUrl,
-                            folder: `week-${selectedWeek}-${courseId}-module`,
-                            listened: false
-                          }));
-                          setOneDrivePreviewFiles(fileItems);
-                          setPreviewFile(fileItems[0]);
-                        }
-                      }
-                    }
-                  } catch (error) {
-                    console.error('Error fetching module files:', error);
-                  }
-                }}
-              >
-                <Library className="h-3 w-3" style={{ marginLeft: '5px' }} />
-                Module
-                {moduleCount > 0 && (
-                  <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 !text-white">
-                    {moduleCount}
-                  </span>
-                )}
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                variant="transparent"
-                className="text-[11px] py-1.5 cursor-pointer"
-                style={{ color: 'white', backgroundColor: 'transparent' }}
-                data-testid={`pill-course-${courseId}-reading`}
-                onClick={async () => {
-                  const oneDriveFolderMap: Record<string, string> = {
-                    'cppa122': 'CPPA122 - Local Politics',
-                    'cfnf400': 'CFNF400 - Human Sexuality', 
-                    'casl101': 'CASL101 - American Sign Language'
-                  };
-                  const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
-                  const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
-                  try {
-                    const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-                    const courseFolders = await courseResponse.json();
-                    const weekFolder = courseFolders.find((f: any) => 
-                      f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-                    );
-                    if (weekFolder) {
-                      const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                      const weekContents = await weekResponse.json();
-                      const readingFolder = weekContents.find((f: any) => 
-                        f.type === 'folder' && f.name.toLowerCase().includes('reading')
-                      );
-                      if (readingFolder) {
-                        const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
-                        const readingFiles = await readingResponse.json();
-                        const pdfFiles = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
-                        if (pdfFiles.length > 0) {
-                          const fileItems: FileItem[] = pdfFiles.map((pdf: any, i: number) => ({
-                            id: Date.now() + i,
-                            originalName: pdf.name,
-                            displayName: pdf.name,
-                            objectPath: pdf.downloadUrl,
-                            folder: `week-${selectedWeek}-${courseId}-reading`,
-                            listened: false
-                          }));
-                          setOneDrivePreviewFiles(fileItems);
-                          setPreviewFile(fileItems[0]);
-                        }
-                      }
-                    }
-                  } catch (error) {
-                    console.error('Error fetching reading files:', error);
-                  }
-                }}
-              >
-                <BookOpenCheck className="h-3 w-3" style={{ marginLeft: '5px' }} />
-                Reading
-                {readingCount > 0 && (
-                  <span className="ml-auto bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 !text-white">
-                    {readingCount}
-                  </span>
-                )}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            )}
+          </div>
         );
       })}
       
