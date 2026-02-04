@@ -8,6 +8,7 @@ import { sql } from "drizzle-orm";
 import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1, DEFAULT_REMINDER_2, type RepeatType, type RepeatIntervalUnit, type InsertTask } from "@shared/schema";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
 import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
@@ -100,6 +101,64 @@ let currentTTSSession: TTSSession | null = null;
 // But we want to send next chunk BEFORE current finishes, so use higher value
 const CHARS_PER_SECOND = 18; // Send next chunk early to avoid gaps
 const CHUNK_SIZE = 2000; // Characters per TTS chunk
+
+// Helper to generate OpenAI TTS audio and save to object storage for playback
+async function generateAndSaveTTSAudio(text: string, fileId: string): Promise<string> {
+  const publicPath = process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split(',')[0]?.trim();
+  if (!publicPath) {
+    throw new Error("PUBLIC_OBJECT_SEARCH_PATHS not configured");
+  }
+  
+  // Normalize text for TTS
+  let normalizedText = text
+    .replace(/https?:\/\/[^\s]+/gi, '')
+    .replace(/doi:[^\s]+/gi, '')
+    .replace(/\[\d+(?:,\s*\d+)*\]/g, '')
+    .replace(/\([A-Z][a-z]+(?:\s+(?:&|and)\s+[A-Z][a-z]+)*,?\s*\d{4}[a-z]?\)/g, '')
+    .replace(/pp?\.\s*\d+(?:\s*[-–]\s*\d+)?/gi, '')
+    .replace(/\([^)]{50,}\)/g, '')
+    .replace(/[–—]/g, ', ')
+    .replace(/[""]/g, '"')
+    .replace(/['']/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 4096); // OpenAI limit
+  
+  console.log(`Generating OpenAI TTS for ${normalizedText.length} chars, file: ${fileId}`);
+  
+  // Generate audio using OpenAI TTS
+  const audioBuffer = await textToSpeech(normalizedText, "nova", "mp3");
+  
+  // Save to object storage
+  const audioFileName = `tts-audio/${fileId}-${Date.now()}.mp3`;
+  const { bucketName, objectName } = parsePublicObjectPath(`${publicPath}/${audioFileName}`);
+  
+  const bucket = objectStorageClient.bucket(bucketName);
+  const file = bucket.file(objectName);
+  
+  await file.save(audioBuffer, {
+    contentType: 'audio/mpeg',
+    metadata: {
+      cacheControl: 'public, max-age=3600',
+    },
+  });
+  
+  // Make file publicly accessible
+  await file.makePublic();
+  
+  // Return the public URL
+  const publicUrl = `https://storage.googleapis.com/${bucketName}/${objectName}`;
+  console.log(`TTS audio saved to: ${publicUrl}`);
+  return publicUrl;
+}
+
+// Parse public object path to bucket/object name
+function parsePublicObjectPath(path: string): { bucketName: string; objectName: string } {
+  if (!path.startsWith("/")) path = `/${path}`;
+  const parts = path.split("/").filter(Boolean);
+  if (parts.length < 2) throw new Error("Invalid path");
+  return { bucketName: parts[0], objectName: parts.slice(1).join("/") };
+}
 
 // Clean text for TTS - remove special characters that cause errors
 function cleanTextForTTS(text: string): string {
@@ -3050,9 +3109,9 @@ export async function registerRoutes(
         return res.status(400).json({ error: "File is empty or not readable" });
       }
       
-      // Clean and chunk the text for TTS (max ~500 chars per chunk for Echo)
+      // Clean and chunk the text for TTS (larger chunks for OpenAI - up to 4096 chars)
       let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
-      const chunks = cleanedContent.match(/.{1,450}[.!?]?\s*/g) || [cleanedContent];
+      const chunks = cleanedContent.match(/.{1,3500}[.!?]?\s*/g) || [cleanedContent];
       
       // Start from resume point
       const chunk = chunks[resumeFromChunk] || chunks[0];
@@ -3065,35 +3124,36 @@ export async function registerRoutes(
         ? `Resuming ${courseName} reading, chunk ${resumeFromChunk + 1} of ${chunks.length}.`
         : `Now reading ${courseName} ${isModule(nextFile) ? 'module' : 'reading'}: ${fileName.replace('.pdf', '')}. ${chunks.length} sections total.`;
       
-      // Send TTS to Echo
-      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+      // Combine announcement with content for a single audio file
+      const fullTextForTTS = `${announcement} ... ${chunk}`;
+      
+      console.log(`Shower trigger: Generating OpenAI TTS for chunk ${resumeFromChunk + 1}/${chunks.length}`);
+      
+      // Generate OpenAI TTS audio and save to object storage
+      const audioUrl = await generateAndSaveTTSAudio(fullTextForTTS, `shower-${nextFile.id}-chunk-${resumeFromChunk}`);
+      
+      console.log(`Shower trigger: Playing audio on Echo: ${audioUrl}`);
+      
+      // Play the audio on the Echo via Home Assistant media_player
+      const playResponse = await fetch(`${haUrl}/api/services/media_player/play_media`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: announcement,
-          target: targetEntity,
-          data: { type: "tts" }
+          entity_id: targetEntity,
+          media_content_id: audioUrl,
+          media_content_type: "audio/mp3"
         }),
       });
       
-      // Wait a moment then start the content
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: chunk,
-          target: targetEntity,
-          data: { type: "tts" }
-        }),
-      });
+      if (!playResponse.ok) {
+        const errorText = await playResponse.text();
+        console.error(`Shower trigger: Failed to play audio: ${playResponse.status} - ${errorText}`);
+      } else {
+        console.log(`Shower trigger: Audio playback started successfully`);
+      }
       
       // Save progress
       playbackProgress[progressKey] = {
@@ -3113,7 +3173,8 @@ export async function registerRoutes(
         chunkIndex: resumeFromChunk,
         totalChunks: chunks.length,
         resuming: resumeFromChunk > 0,
-        remainingFiles: orderedFiles.length
+        remainingFiles: orderedFiles.length,
+        audioUrl: audioUrl
       });
       
     } catch (error: any) {
