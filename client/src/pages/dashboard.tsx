@@ -1218,36 +1218,9 @@ export default function Dashboard() {
       currentHourRowBackground: '#EAE4DE',
       todayCurrentHourCellBackground: '#160502'
     };
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      // Force reset boxBackground to white - migration to new glass effect system
-      if (parsed.boxGlassEffect === undefined || parsed.boxBackground === '#01a0af') {
-        parsed.boxBackground = '#ffffff';
-        parsed.boxGlassEffect = true;
-        parsed.boxTransparency = 35;
-      }
-      // Force reset headerBar to brown if it has old default value
-      if (parsed.headerBar === '#000000' || !parsed.headerBar) {
-        parsed.headerBar = '#160502';
-      }
-      // Migrate old property name to new name
-      if (parsed.currentHourCellBackground && !parsed.currentHourRowBackground) {
-        parsed.currentHourRowBackground = parsed.currentHourCellBackground;
-      }
-      // Clean up old property names
-      delete parsed.currentHourCellBackground;
-      // Force reset todayCurrentHourCellBackground to brown if it was changed
-      if (parsed.todayCurrentHourCellBackground !== '#160502') {
-        parsed.todayCurrentHourCellBackground = '#160502';
-      }
-      // Force reset today column and current hour row to taupe
-      parsed.todayCellBackground = '#EAE4DE';
-      parsed.currentHourRowBackground = '#EAE4DE';
-      // Save the corrected settings
-      const merged = { ...defaults, ...parsed };
-      localStorage.setItem('colorSettings', JSON.stringify(merged));
-      return merged;
-    }
+    // Force clear and reset colorSettings to ensure correct values
+    localStorage.removeItem('colorSettings');
+    localStorage.setItem('colorSettings', JSON.stringify(defaults));
     return defaults;
   });
   
