@@ -10064,11 +10064,11 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Header Glass Effect</Label>
                       <div 
-                        className={`w-7 h-3.5 rounded-full cursor-pointer transition-colors ${colorSettings.boxGlassEffect ? 'bg-gradient-to-r from-[#4578B0] to-[#042550]' : 'bg-gray-500'}`}
+                        className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors ${colorSettings.boxGlassEffect ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
                         onClick={() => setColorSettings(prev => ({ ...prev, boxGlassEffect: !prev.boxGlassEffect }))}
                         data-testid="toggle-glass-effect"
                       >
-                        <div className={`w-2.5 h-2.5 bg-white rounded-full mt-0.5 transition-transform ${colorSettings.boxGlassEffect ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                        <div className={`w-2 h-2 bg-white rounded-full transition-transform ${colorSettings.boxGlassEffect ? 'translate-x-2.5' : 'translate-x-0.5'}`} />
                       </div>
                     </div>
                     
@@ -10188,11 +10188,11 @@ export default function Dashboard() {
                       <Label className="text-xs">Main Background Colour Overlay</Label>
                       <div className="flex items-center gap-2">
                         <div 
-                          className={`w-7 h-3.5 rounded-full cursor-pointer transition-colors ${colorSettings.mainBackgroundOverlay ? 'bg-gradient-to-r from-[#4578B0] to-[#042550]' : 'bg-gray-500'}`}
+                          className={`w-5 h-2.5 rounded-full cursor-pointer transition-colors ${colorSettings.mainBackgroundOverlay ? 'bg-[#3b82f6]' : 'bg-gray-400'}`}
                           onClick={() => setColorSettings(prev => ({ ...prev, mainBackgroundOverlay: !prev.mainBackgroundOverlay }))}
                           data-testid="toggle-background-overlay"
                         >
-                          <div className={`w-2.5 h-2.5 bg-white rounded-full mt-0.5 transition-transform ${colorSettings.mainBackgroundOverlay ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                          <div className={`w-2 h-2 bg-white rounded-full transition-transform ${colorSettings.mainBackgroundOverlay ? 'translate-x-2.5' : 'translate-x-0.5'}`} />
                         </div>
                       </div>
                     </div>
@@ -10358,7 +10358,7 @@ export default function Dashboard() {
                           type="checkbox"
                           checked={blinkSettings.todayColumnBlink}
                           onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlink: e.target.checked }))}
-                          className="h-2 w-2 rounded border-gray-300 accent-[#3b82f6]"
+                          className="h-1.5 w-1.5 rounded border-gray-300 accent-[#3b82f6]"
                           data-testid="toggle-today-column-blink"
                         />
                       </div>
@@ -10390,7 +10390,7 @@ export default function Dashboard() {
                           type="checkbox"
                           checked={blinkSettings.allDayFilesBlink}
                           onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlink: e.target.checked }))}
-                          className="h-2 w-2 rounded border-gray-300 accent-[#3b82f6]"
+                          className="h-1.5 w-1.5 rounded border-gray-300 accent-[#3b82f6]"
                           data-testid="toggle-allday-files-blink"
                         />
                       </div>
@@ -10422,7 +10422,7 @@ export default function Dashboard() {
                           type="checkbox"
                           checked={blinkSettings.showArrows}
                           onChange={(e) => setBlinkSettings(prev => ({ ...prev, showArrows: e.target.checked }))}
-                          className="h-2 w-2 rounded border-gray-300 accent-[#3b82f6]"
+                          className="h-1.5 w-1.5 rounded border-gray-300 accent-[#3b82f6]"
                           data-testid="toggle-show-arrows"
                         />
                       </div>
@@ -10493,7 +10493,7 @@ export default function Dashboard() {
                         type="checkbox"
                         checked={ttsSettings.useSmartTiming}
                         onChange={(e) => setTtsSettings(prev => ({ ...prev, useSmartTiming: e.target.checked }))}
-                        className="h-2 w-2 rounded border-gray-300 accent-[#3b82f6]"
+                        className="h-1.5 w-1.5 rounded border-gray-300 accent-[#3b82f6]"
                         data-testid="input-tts-smart-timing"
                       />
                     </div>
