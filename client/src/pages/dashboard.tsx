@@ -10087,7 +10087,7 @@ export default function Dashboard() {
                           max="90"
                           value={colorSettings.boxTransparency}
                           onChange={(e) => setColorSettings(prev => ({ ...prev, boxTransparency: parseInt(e.target.value) }))}
-                          className="w-3/4 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-b [&::-webkit-slider-thumb]:from-[#FF6E3D] [&::-webkit-slider-thumb]:to-[#FFDD63]"
+                          className="w-1/2 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-b [&::-webkit-slider-thumb]:from-[#FF6E3D] [&::-webkit-slider-thumb]:to-[#FFDD63]"
                           data-testid="slider-transparency"
                         />
                       </div>
@@ -10252,7 +10252,7 @@ export default function Dashboard() {
                         step="2"
                         value={blinkSettings.buttonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-1/2 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="slider-button-spacing"
                       />
                     </div>
@@ -10269,7 +10269,7 @@ export default function Dashboard() {
                         step="2"
                         value={blinkSettings.mediaControlSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, mediaControlSpacing: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-1/2 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="slider-media-control-spacing"
                       />
                     </div>
@@ -10286,7 +10286,7 @@ export default function Dashboard() {
                         step="1"
                         value={blinkSettings.tallPillButtonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillButtonSpacing: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-1/2 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="slider-tall-pill-button-spacing"
                       />
                     </div>
@@ -10303,7 +10303,7 @@ export default function Dashboard() {
                         step="1"
                         value={blinkSettings.tallPillHeight}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillHeight: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-1/2 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="slider-tall-pill-height"
                       />
                     </div>
@@ -10372,7 +10372,7 @@ export default function Dashboard() {
                             step="0.1"
                             value={blinkSettings.todayColumnBlinkSpeed}
                             onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlinkSpeed: Number(e.target.value) }))}
-                            className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                            className="w-1/2 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                             data-testid="slider-today-column-speed"
                           />
                         </div>
@@ -10404,7 +10404,7 @@ export default function Dashboard() {
                             step="0.1"
                             value={blinkSettings.allDayFilesBlinkSpeed}
                             onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlinkSpeed: Number(e.target.value) }))}
-                            className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                            className="w-1/2 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                             data-testid="slider-allday-files-speed"
                           />
                         </div>
@@ -10453,7 +10453,7 @@ export default function Dashboard() {
                         step="1"
                         value={ttsSettings.startDelay}
                         onChange={(e) => setTtsSettings(prev => ({ ...prev, startDelay: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-1/2 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="input-tts-start-delay"
                       />
                       <p className="text-xs text-muted-foreground">
@@ -10473,7 +10473,7 @@ export default function Dashboard() {
                         step="5"
                         value={ttsSettings.wordsPerMinute}
                         onChange={(e) => setTtsSettings(prev => ({ ...prev, wordsPerMinute: Number(e.target.value) }))}
-                        className="w-3/4 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
+                        className="w-1/2 h-1 bg-muted rounded-lg appearance-none cursor-pointer"
                         data-testid="input-tts-wpm"
                       />
                       <p className="text-xs text-muted-foreground">
