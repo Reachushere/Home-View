@@ -9093,10 +9093,12 @@ export default function Dashboard() {
             <DropdownMenuContent 
               align="end" 
               side="left" 
-              className="min-w-0 p-1 [&]:!bg-transparent [&]:!border-none [&]:!shadow-none animate-in fade-in-0 duration-200"
+              variant="transparent"
+              className="min-w-0 p-1"
             >
               <DropdownMenuItem 
-                className="text-[11px] py-1.5 gap-2 cursor-pointer [&]:!bg-transparent [&]:hover:!bg-white/25 [&]:focus:!bg-white/25 [&]:!text-white [&_svg]:!text-white"
+                variant="transparent"
+                className="text-[11px] py-1.5 cursor-pointer"
                 data-testid={`pill-course-${courseId}-module`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
@@ -9150,7 +9152,8 @@ export default function Dashboard() {
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem 
-                className="text-[11px] py-1.5 gap-2 cursor-pointer [&]:!bg-transparent [&]:hover:!bg-white/25 [&]:focus:!bg-white/25 [&]:!text-white [&_svg]:!text-white"
+                variant="transparent"
+                className="text-[11px] py-1.5 cursor-pointer"
                 data-testid={`pill-course-${courseId}-reading`}
                 onClick={async () => {
                   const oneDriveFolderMap: Record<string, string> = {
