@@ -1203,7 +1203,7 @@ export default function Dashboard() {
     boxTransparency: number;
     mainBackgroundOverlay: boolean;
     todayCellBackground: string;
-    currentHourCellBackground: string;
+    currentHourRowBackground: string;
     todayCurrentHourCellBackground: string;
   }>(() => {
     const saved = localStorage.getItem('colorSettings');
@@ -1215,8 +1215,8 @@ export default function Dashboard() {
       boxTransparency: 35,
       mainBackgroundOverlay: false,
       todayCellBackground: '#EAE4DE',
-      currentHourCellBackground: '#E8E8E8',
-      todayCurrentHourCellBackground: '#C5D8EC'
+      currentHourRowBackground: '#EAE4DE',
+      todayCurrentHourCellBackground: '#160502'
     };
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -10160,6 +10160,29 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
+                    {/* Current Time Row Background */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Current Time Row</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.currentHourRowBackground}</span>
+                        <div className="relative">
+                          <div 
+                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
+                            style={{ backgroundColor: colorSettings.currentHourRowBackground }}
+                            onClick={() => document.getElementById('color-current-hour-row-input')?.click()}
+                            data-testid="color-current-hour-row"
+                          />
+                          <input
+                            id="color-current-hour-row-input"
+                            type="color"
+                            value={colorSettings.currentHourRowBackground}
+                            onChange={(e) => setColorSettings(prev => ({ ...prev, currentHourRowBackground: e.target.value }))}
+                            className="absolute opacity-0 w-0 h-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
                     {/* Main Background Overlay Toggle */}
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Main Background Colour Overlay</Label>
@@ -10816,7 +10839,7 @@ export default function Dashboard() {
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
                     style={{ 
-                      backgroundColor: isToday ? '#160502' : "black"
+                      backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black"
                     }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -11468,7 +11491,7 @@ export default function Dashboard() {
                     className={`grid border-b border-border/50 relative group/row ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                   >
-                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? '#160502' : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
+                    <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {weekDays.map((day, dayIdx) => {
@@ -11518,7 +11541,7 @@ export default function Dashboard() {
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
                               // Always show current hour/today background - task boxes have their own backgrounds
-                              backgroundColor: (isToday && isCurrentHour) ? colorSettings.todayCurrentHourCellBackground : isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourCellBackground : undefined,
+                              backgroundColor: isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourRowBackground : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
