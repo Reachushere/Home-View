@@ -163,7 +163,7 @@ export class DatabaseStorage implements IStorage {
     return file;
   }
 
-  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean }): Promise<FileRecord> {
+  async updateFile(id: number, updates: { displayName?: string; folder?: string | null; listened?: boolean; lastChunkIndex?: number; totalChunks?: number }): Promise<FileRecord> {
     const setData: Record<string, unknown> = {};
     if (updates.displayName !== undefined) {
       setData.displayName = updates.displayName;
@@ -173,6 +173,12 @@ export class DatabaseStorage implements IStorage {
     }
     if (updates.listened !== undefined) {
       setData.listened = updates.listened;
+    }
+    if (updates.lastChunkIndex !== undefined) {
+      setData.lastChunkIndex = updates.lastChunkIndex;
+    }
+    if (updates.totalChunks !== undefined) {
+      setData.totalChunks = updates.totalChunks;
     }
     const [updated] = await db
       .update(files)

@@ -17,7 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
-  Loader2
+  Loader2,
+  RotateCcw
 } from "lucide-react";
 import type { FileRecord } from "@shared/schema";
 
@@ -368,14 +369,70 @@ export default function PDFReaderPage() {
     setIsPaused(false);
   };
 
-  const stopReading = () => {
+  const stopReading = async () => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
+    
+    // Save progress to database if this is a stored file (not OneDrive)
+    if (fileId && currentChunk > 0) {
+      try {
+        await fetch(`/api/files/${fileId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            lastChunkIndex: currentChunk,
+            totalChunks: totalChunks
+          })
+        });
+      } catch (e) {
+        console.error('Failed to save progress:', e);
+      }
+    }
+    
     setIsPlaying(false);
     setIsPaused(false);
     setCurrentChunk(0);
+  };
+  
+  const resumeFromLast = async () => {
+    if (!file?.lastChunkIndex || file.lastChunkIndex === 0) {
+      startReading();
+      return;
+    }
+    
+    setIsLoading(true);
+    setIsPlaying(true);
+    setIsPaused(false);
+    
+    // Extract text if not already done - use startReading which handles extraction
+    if (chunksRef.current.length === 0) {
+      // Text not extracted yet, let startReading handle it then we'll skip to saved position
+      await new Promise<void>((resolve) => {
+        const checkChunks = setInterval(() => {
+          if (chunksRef.current.length > 0) {
+            clearInterval(checkChunks);
+            resolve();
+          }
+        }, 100);
+        // Timeout after 30 seconds
+        setTimeout(() => {
+          clearInterval(checkChunks);
+          resolve();
+        }, 30000);
+      });
+    }
+    
+    // Start from saved position
+    if (chunksRef.current.length > 0 && file.lastChunkIndex < chunksRef.current.length) {
+      setCurrentChunk(file.lastChunkIndex);
+      await playTTS(chunksRef.current[file.lastChunkIndex]);
+    } else {
+      startReading();
+    }
+    
+    setIsLoading(false);
   };
 
   const skipBack = () => {
@@ -656,18 +713,36 @@ export default function PDFReaderPage() {
                 </Button>
 
                 {!isPlaying ? (
-                  <Button
-                    size="icon"
-                    onClick={startReading}
-                    disabled={isLoading || numPages === 0}
-                    className="h-16 w-16 rounded-full bg-amber-500 hover:bg-amber-600"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-8 w-8 animate-spin" />
-                    ) : (
-                      <Play className="h-8 w-8 ml-1" />
+                  <div className="flex items-center gap-2">
+                    {/* Resume from Last button - only show for stored files with saved progress */}
+                    {file && file.lastChunkIndex && file.lastChunkIndex > 0 && (
+                      <Button
+                        size="icon"
+                        onClick={resumeFromLast}
+                        disabled={isLoading || numPages === 0}
+                        className="h-14 w-14 rounded-full bg-blue-500 hover:bg-blue-600"
+                        title={`Resume from chunk ${file.lastChunkIndex + 1}${file.totalChunks ? ` of ${file.totalChunks}` : ''}`}
+                      >
+                        {isLoading ? (
+                          <Loader2 className="h-6 w-6 animate-spin" />
+                        ) : (
+                          <RotateCcw className="h-6 w-6" />
+                        )}
+                      </Button>
                     )}
-                  </Button>
+                    <Button
+                      size="icon"
+                      onClick={startReading}
+                      disabled={isLoading || numPages === 0}
+                      className="h-16 w-16 rounded-full bg-amber-500 hover:bg-amber-600"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-8 w-8 animate-spin" />
+                      ) : (
+                        <Play className="h-8 w-8 ml-1" />
+                      )}
+                    </Button>
+                  </div>
                 ) : isPaused ? (
                   <Button
                     size="icon"
