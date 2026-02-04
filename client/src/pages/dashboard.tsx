@@ -9117,7 +9117,7 @@ export default function Dashboard() {
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
                     borderRadius: '12px',
-                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 6px white',
+                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 5.5px white',
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
@@ -9186,7 +9186,7 @@ export default function Dashboard() {
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
                     borderRadius: '12px',
-                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 6px white',
+                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 5.5px white',
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
