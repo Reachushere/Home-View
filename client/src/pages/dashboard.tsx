@@ -9102,7 +9102,7 @@ export default function Dashboard() {
               >
               <div 
                   className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center gap-2 rounded-sm hover:bg-white/25"
-                  style={{ color: 'white' }}
+                  style={{ color: 'white', marginTop: '3px' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
