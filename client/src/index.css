@@ -1427,7 +1427,7 @@ input[type="checkbox"]:checked::after {
 }
 
 .animate-fade-in {
-  animation: fade-in 450ms ease-out forwards;
+  animation: fade-in 550ms ease-out forwards;
 }
 
 
