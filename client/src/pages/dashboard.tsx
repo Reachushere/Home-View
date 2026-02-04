@@ -9188,7 +9188,7 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
+                    <span className={`text-[9px] font-normal ${courseId === 'cppa122' || courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                     {moduleCount > 0 ? (
                       <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                         {moduleCount}
@@ -9269,7 +9269,7 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex items-center gap-1">
-                    <span className="text-[9px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
+                    <span className={`text-[9px] font-normal ${courseId === 'cppa122' || courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                     {readingCount > 0 ? (
                       <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                         {readingCount}
