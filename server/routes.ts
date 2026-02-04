@@ -2634,6 +2634,166 @@ export async function registerRoutes(
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
 
+  // ============================================
+  // SHOWER AUTOMATION - Auto-play PDFs on motion
+  // ============================================
+  
+  // In-memory storage for playback progress (persists until server restart)
+  const playbackProgress: Record<string, { chunkIndex: number; totalChunks: number; lastPlayed: Date }> = {};
+  
+  // GET /api/shower/next-reading - Get next unread module/reading for current week
+  app.get("/api/shower/next-reading", async (req, res) => {
+    try {
+      // Get current week info
+      const today = new Date();
+      const tasks = await storage.getAllTasks();
+      const weeks = await storage.getWeeks();
+      
+      // Find current week
+      const currentWeek = weeks.find(w => {
+        const start = new Date(w.startDate);
+        const end = new Date(start);
+        end.setDate(end.getDate() + 6);
+        return today >= start && today <= end;
+      });
+      
+      if (!currentWeek) {
+        return res.json({ message: "No current week found", nextFile: null });
+      }
+      
+      // Get tasks for this week that are readings or modules
+      const weekTasks = tasks.filter(t => {
+        const dueDate = new Date(t.dueDate);
+        const weekStart = new Date(currentWeek.startDate);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekEnd.getDate() + 6);
+        return dueDate >= weekStart && dueDate <= weekEnd;
+      });
+      
+      // Find unfinished module tasks first, then readings
+      const moduleTasks = weekTasks.filter(t => 
+        t.title.toLowerCase().includes('module') && !t.isCompleted
+      );
+      const readingTasks = weekTasks.filter(t => 
+        (t.title.toLowerCase().includes('reading') || t.title.toLowerCase().includes('read')) && !t.isCompleted
+      );
+      
+      // Priority: modules first, then readings
+      const orderedTasks = [...moduleTasks, ...readingTasks];
+      
+      if (orderedTasks.length === 0) {
+        return res.json({ 
+          message: "All modules and readings completed for this week!", 
+          nextFile: null,
+          allComplete: true 
+        });
+      }
+      
+      const nextTask = orderedTasks[0];
+      
+      // Check if we have progress for this task
+      const progressKey = `task-${nextTask.id}`;
+      const progress = playbackProgress[progressKey];
+      
+      res.json({
+        task: {
+          id: nextTask.id,
+          title: nextTask.title,
+          courseName: nextTask.courseName,
+          dueDate: nextTask.dueDate
+        },
+        progress: progress || { chunkIndex: 0, totalChunks: 0 },
+        resuming: !!progress
+      });
+    } catch (error) {
+      console.error("Error getting next reading:", error);
+      res.status(500).json({ error: "Failed to get next reading" });
+    }
+  });
+  
+  // POST /api/shower/update-progress - Update playback progress
+  app.post("/api/shower/update-progress", async (req, res) => {
+    try {
+      const { taskId, chunkIndex, totalChunks } = req.body;
+      
+      if (!taskId) {
+        return res.status(400).json({ error: "Task ID required" });
+      }
+      
+      const progressKey = `task-${taskId}`;
+      playbackProgress[progressKey] = {
+        chunkIndex: chunkIndex || 0,
+        totalChunks: totalChunks || 0,
+        lastPlayed: new Date()
+      };
+      
+      res.json({ success: true, progress: playbackProgress[progressKey] });
+    } catch (error) {
+      console.error("Error updating progress:", error);
+      res.status(500).json({ error: "Failed to update progress" });
+    }
+  });
+  
+  // POST /api/shower/start-reading - Start TTS playback on Echo
+  app.post("/api/shower/start-reading", async (req, res) => {
+    try {
+      const { text, taskId, chunkIndex = 0 } = req.body;
+      
+      if (!text) {
+        return res.status(400).json({ error: "Text content required" });
+      }
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      // Chunk text for TTS (max ~500 chars for Echo TTS)
+      const chunks = text.match(/.{1,450}[.!?]?\s*/g) || [text];
+      const chunk = chunks[chunkIndex] || chunks[0];
+      
+      // Update progress
+      if (taskId) {
+        playbackProgress[`task-${taskId}`] = {
+          chunkIndex,
+          totalChunks: chunks.length,
+          lastPlayed: new Date()
+        };
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Send TTS to Echo
+      const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: chunk,
+          target: BATHROOM_ECHO_ENTITY,
+          data: { type: "tts" }
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Home Assistant TTS error:", errorText);
+        return res.status(response.status).json({ error: "Failed to send TTS" });
+      }
+      
+      res.json({ 
+        success: true, 
+        chunkIndex,
+        totalChunks: chunks.length,
+        hasMore: chunkIndex < chunks.length - 1
+      });
+    } catch (error) {
+      console.error("Error starting reading:", error);
+      res.status(500).json({ error: "Failed to start reading" });
+    }
+  });
+
   // POST /api/echo/tts - Send text-to-speech to Home Assistant Echo device
   app.post("/api/echo/tts", async (req, res) => {
     try {
