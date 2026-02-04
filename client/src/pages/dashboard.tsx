@@ -9053,22 +9053,7 @@ export default function Dashboard() {
               top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0)}px`, 
               right: '18px',
             }}
-            onMouseEnter={() => setOpenCourseDropdown(courseId)}
-            onMouseLeave={() => setOpenCourseDropdown(null)}
           >
-            {/* Expanding black box behind everything */}
-            <div 
-              className="absolute transition-all duration-300 ease-out"
-              style={{ 
-                top: '0px',
-                right: '0px',
-                height: '44px',
-                width: openCourseDropdown === courseId ? '124px' : '44px',
-                borderRadius: openCourseDropdown === courseId ? '22px' : '50%',
-                background: 'rgba(0,0,0,0.9)',
-                zIndex: 1
-              }}
-            />
             {/* Course button */}
             <div 
               className="relative cursor-pointer"
@@ -9081,6 +9066,7 @@ export default function Dashboard() {
                 zIndex: 3
               }}
               data-testid={`pill-course-${courseId}`}
+              onClick={() => setOpenCourseDropdown(openCourseDropdown === courseId ? null : courseId)}
             >
               <div 
                 className="hover:opacity-80 transition-all duration-200"
@@ -9113,24 +9099,26 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-            {/* Menu items inside expanded area */}
-            <div 
-              className="absolute flex flex-col justify-center transition-opacity duration-300"
-              style={{ 
-                top: '0px',
-                right: '48px',
-                height: '44px',
-                opacity: openCourseDropdown === courseId ? 1 : 0,
-                pointerEvents: openCourseDropdown === courseId ? 'auto' : 'none',
-                zIndex: 2
-              }}
-            >
+            {/* Two expanding squares - Module on top, Reading below */}
+            {openCourseDropdown === courseId && (
               <div 
-                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '70px', height: '20px', fontSize: '9px', letterSpacing: '0.8px', fontWeight: 400, position: 'relative' }}
+                className="absolute flex flex-col gap-1 animate-fade-in"
+                style={{ 
+                  top: '-78px',
+                  right: '28px',
+                  zIndex: 2
+                }}
+              >
+                {/* Module square */}
+                <div 
+                  className="cursor-pointer flex flex-col items-center justify-center rounded-md hover:bg-white/10 transition-colors"
+                  style={{ 
+                    width: '100px', 
+                    height: '100px', 
+                    background: 'rgba(0,0,0,0.9)',
+                  }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
-                    setOpenCourseDropdown(null);
                     const oneDriveFolderMap: Record<string, string> = {
                       'cppa122': 'CPPA122 - Local Politics',
                       'cfnf400': 'CFNF400 - Human Sexuality', 
@@ -9165,6 +9153,7 @@ export default function Dashboard() {
                             }));
                             setOneDrivePreviewFiles(fileItems);
                             setPreviewFile(fileItems[0]);
+                            setOpenCourseDropdown(null);
                           }
                         }
                       }
@@ -9173,25 +9162,27 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <span style={{ marginLeft: '3px' }}>Module</span>
-                  <span style={{ minWidth: '18px', display: 'flex', justifyContent: 'flex-end', marginRight: '-2px' }}>
-                    {moduleCount > 0 ? (
-                      <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
-                        {moduleCount}
-                      </span>
-                    ) : moduleListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
-                        {moduleListenedCount}
-                      </span>
-                    ) : null}
-                  </span>
+                  <span className="text-white text-sm font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.8px' }}>Module</span>
+                  {moduleCount > 0 ? (
+                    <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
+                      {moduleCount}
+                    </span>
+                  ) : moduleListenedCount > 0 ? (
+                    <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
+                      {moduleListenedCount}
+                    </span>
+                  ) : null}
                 </div>
+                {/* Reading square */}
                 <div 
-                  className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '70px', height: '20px', fontSize: '9px', letterSpacing: '0.8px', fontWeight: 400 }}
+                  className="cursor-pointer flex flex-col items-center justify-center rounded-md hover:bg-white/10 transition-colors"
+                  style={{ 
+                    width: '100px', 
+                    height: '100px', 
+                    background: 'rgba(0,0,0,0.9)',
+                  }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
-                    setOpenCourseDropdown(null);
                     const oneDriveFolderMap: Record<string, string> = {
                       'cppa122': 'CPPA122 - Local Politics',
                       'cfnf400': 'CFNF400 - Human Sexuality', 
@@ -9226,6 +9217,7 @@ export default function Dashboard() {
                             }));
                             setOneDrivePreviewFiles(fileItems);
                             setPreviewFile(fileItems[0]);
+                            setOpenCourseDropdown(null);
                           }
                         }
                       }
@@ -9234,20 +9226,19 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <span style={{ marginLeft: '3px' }}>Reading</span>
-                  <span style={{ minWidth: '18px', display: 'flex', justifyContent: 'flex-end', marginRight: '-2px' }}>
-                    {readingCount > 0 ? (
-                      <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
-                        {readingCount}
-                      </span>
-                    ) : readingListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
-                        {readingListenedCount}
-                      </span>
-                    ) : null}
-                  </span>
+                  <span className="text-white text-sm font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.8px' }}>Reading</span>
+                  {readingCount > 0 ? (
+                    <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
+                      {readingCount}
+                    </span>
+                  ) : readingListenedCount > 0 ? (
+                    <span className="bg-gray-400 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
+                      {readingListenedCount}
+                    </span>
+                  ) : null}
                 </div>
-            </div>
+              </div>
+            )}
           </div>
         );
       })}
