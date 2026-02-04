@@ -9050,7 +9050,7 @@ export default function Dashboard() {
                 style={{ 
                   width: '44px', 
                   height: '44px', 
-                  top: `${348 + (idx * 50) - (idx === 2 ? 4 : 0)}px`, 
+                  top: `${348 + (idx * 50) - (idx === 2 ? 3 : 0)}px`, 
                   right: '18px',
                   borderRadius: '50%',
                   background: getBorderGradient(courseHex),
