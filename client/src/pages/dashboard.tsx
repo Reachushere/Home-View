@@ -1531,7 +1531,7 @@ export default function Dashboard() {
   const row1DaysRef = useRef<HTMLDivElement>(null);
   const row1ProgressBarRef = useRef<HTMLDivElement>(null);
   const row1ContainerRef = useRef<HTMLDivElement>(null);
-  const [row1Positions, setRow1Positions] = useState({ task: 0, code: 0, course: 0, due: 0, days: 0, progressBar: 0, progressBarTop: 0 });
+  const [row1Positions, setRow1Positions] = useState({ task: 70, code: 170, course: 240, due: 340, days: 400, progressBar: 18, progressBarTop: 0 });
   
   // Save box order to localStorage
   useEffect(() => {
