@@ -9116,6 +9116,7 @@ export default function Dashboard() {
                     width: '100px', 
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
+                    boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.3), inset 0 0 0 4px transparent, inset 0 0 0 5px rgba(255,255,255,0.3)'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
@@ -9180,6 +9181,7 @@ export default function Dashboard() {
                     width: '100px', 
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
+                    boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.3), inset 0 0 0 4px transparent, inset 0 0 0 5px rgba(255,255,255,0.3)'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
