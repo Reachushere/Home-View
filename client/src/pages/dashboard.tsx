@@ -9113,8 +9113,8 @@ export default function Dashboard() {
                 <div 
                   className="cursor-pointer flex flex-col items-start justify-end hover:brightness-110 transition-colors"
                   style={{ 
-                    width: '100px', 
-                    height: '100px', 
+                    width: '75px', 
+                    height: '75px', 
                     background: `linear-gradient(135deg, ${courseHex}bb, ${courseHex}99), linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.4))`,
                     borderRadius: '12px',
                     boxShadow: `inset 0 0 0 5px ${courseHex}99, inset 0 0 0 5.5px white`,
@@ -9182,8 +9182,8 @@ export default function Dashboard() {
                 <div 
                   className="cursor-pointer flex flex-col items-start justify-end hover:brightness-110 transition-colors"
                   style={{ 
-                    width: '100px', 
-                    height: '100px', 
+                    width: '75px', 
+                    height: '75px', 
                     background: `linear-gradient(135deg, ${courseHex}bb, ${courseHex}99), linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.4))`,
                     borderRadius: '12px',
                     boxShadow: `inset 0 0 0 5px ${courseHex}99, inset 0 0 0 5.5px white`,
