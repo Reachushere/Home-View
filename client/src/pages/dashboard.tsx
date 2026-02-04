@@ -336,6 +336,7 @@ export default function Dashboard() {
     setIsInitialized(true);
   }, []);
   const [isKitchenReadingLoading, setIsKitchenReadingLoading] = useState(false);
+  const [isKitchenPlaying, setIsKitchenPlaying] = useState(false);
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
   const [moveFileId, setMoveFileId] = useState<number | null>(null);
   const [moveFileCurrentFolder, setMoveFileCurrentFolder] = useState<string>('');
@@ -462,6 +463,25 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [isInitialized]);
   
+  // Poll kitchen playback status
+  useEffect(() => {
+    const checkKitchenStatus = async () => {
+      try {
+        const response = await fetch('/api/kitchen/status');
+        if (response.ok) {
+          const data = await response.json();
+          setIsKitchenPlaying(data.isPlaying);
+        }
+      } catch (err) {
+        // Ignore errors
+      }
+    };
+    
+    checkKitchenStatus();
+    const interval = setInterval(checkKitchenStatus, 5000); // Check every 5 seconds
+    return () => clearInterval(interval);
+  }, []);
+  
   // Handle kitchen reading trigger
   const handleKitchenReadingTrigger = async () => {
     setIsKitchenReadingLoading(true);
@@ -469,6 +489,7 @@ export default function Dashboard() {
       const response = await fetch('/api/kitchen/trigger', { method: 'POST' });
       const data = await response.json();
       if (response.ok) {
+        setIsKitchenPlaying(true); // Start showing as playing immediately
         toast({
           title: data.action === 'radio' ? 'Playing Radio' : 'Playing Reading',
           description: data.action === 'radio' 
@@ -483,6 +504,19 @@ export default function Dashboard() {
     } finally {
       setIsKitchenReadingLoading(false);
       setShowPartnerAwayPopup(false);
+    }
+  };
+  
+  // Handle stopping kitchen playback
+  const handleKitchenStop = async () => {
+    try {
+      const response = await fetch('/api/kitchen/stop', { method: 'POST' });
+      if (response.ok) {
+        setIsKitchenPlaying(false);
+        toast({ title: 'Playback Stopped', description: 'Kitchen reading stopped' });
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to stop playback', variant: 'destructive' });
     }
   };
   
@@ -9433,6 +9467,45 @@ export default function Dashboard() {
           <Download style={{ color: 'white', strokeWidth: 2, height: '18px', width: '18px' }} />
         </div>
       </div>
+
+      {/* Kitchen Stop Button - Shows when playback is active */}
+      {isKitchenPlaying && (
+        <div 
+          className="absolute z-[60] pointer-events-auto cursor-pointer"
+          style={{ 
+            width: '44px', 
+            height: '44px', 
+            top: `${616 + blinkSettings.tallPillButtonSpacing * 4}px`, 
+            right: '18px',
+            borderRadius: '50%',
+            background: 'linear-gradient(0deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)',
+            padding: '1px',
+            animation: 'pulse 2s infinite',
+          }}
+          data-testid="button-kitchen-stop"
+          onClick={handleKitchenStop}
+        >
+          <div
+            className="hover:opacity-80 transition-all duration-200"
+            style={{
+              position: 'absolute',
+              top: '1px',
+              left: '1px',
+              width: '42px',
+              height: '42px',
+              borderRadius: '50%',
+              background: 'linear-gradient(180deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)',
+              boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 8px rgba(220,20,60,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            title="Stop Kitchen Reading"
+          >
+            <Square className="text-white fill-white" style={{ height: '14px', width: '14px' }} />
+          </div>
+        </div>
+      )}
 
       {/* Radio Button - Moved up after removing arrows toggle */}
       <div 
