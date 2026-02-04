@@ -10094,7 +10094,7 @@ export default function Dashboard() {
                           className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                           data-testid="slider-transparency"
                         />
-                        <span className="text-xs text-muted-foreground w-10 text-right">{colorSettings.boxTransparency}%</span>
+                        <span className="text-xs text-muted-foreground w-14 text-right">{colorSettings.boxTransparency}%</span>
                       </div>
                     )}
                     
@@ -10240,7 +10240,7 @@ export default function Dashboard() {
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-button-spacing"
                       />
-                      <span className="text-xs text-muted-foreground w-10 text-right">{blinkSettings.buttonSpacing}px</span>
+                      <span className="text-xs text-muted-foreground w-14 text-right">{blinkSettings.buttonSpacing}px</span>
                     </div>
                     
                     <div className="flex items-center gap-3">
@@ -10255,7 +10255,7 @@ export default function Dashboard() {
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-media-control-spacing"
                       />
-                      <span className="text-xs text-muted-foreground w-10 text-right">{blinkSettings.mediaControlSpacing}px</span>
+                      <span className="text-xs text-muted-foreground w-14 text-right">{blinkSettings.mediaControlSpacing}px</span>
                     </div>
                     
                     <div className="flex items-center gap-3">
@@ -10270,7 +10270,7 @@ export default function Dashboard() {
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-tall-pill-button-spacing"
                       />
-                      <span className="text-xs text-muted-foreground w-10 text-right">{blinkSettings.tallPillButtonSpacing}px</span>
+                      <span className="text-xs text-muted-foreground w-14 text-right">{blinkSettings.tallPillButtonSpacing}px</span>
                     </div>
                     
                     <div className="flex items-center gap-3">
@@ -10285,7 +10285,7 @@ export default function Dashboard() {
                         className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-tall-pill-height"
                       />
-                      <span className="text-xs text-muted-foreground w-10 text-right">{blinkSettings.tallPillHeight}px</span>
+                      <span className="text-xs text-muted-foreground w-14 text-right">{blinkSettings.tallPillHeight}px</span>
                     </div>
                     
                   </div>
@@ -10359,7 +10359,7 @@ export default function Dashboard() {
                             className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                             data-testid="slider-today-column-speed"
                           />
-                          <span className="text-[10px] text-muted-foreground w-8 text-right">{blinkSettings.todayColumnBlinkSpeed}s</span>
+                          <span className="text-[10px] text-muted-foreground w-14 text-right">{blinkSettings.todayColumnBlinkSpeed}s</span>
                         </div>
                       )}
                     </div>
@@ -10389,7 +10389,7 @@ export default function Dashboard() {
                             className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                             data-testid="slider-allday-files-speed"
                           />
-                          <span className="text-[10px] text-muted-foreground w-8 text-right">{blinkSettings.allDayFilesBlinkSpeed}s</span>
+                          <span className="text-[10px] text-muted-foreground w-14 text-right">{blinkSettings.allDayFilesBlinkSpeed}s</span>
                         </div>
                       )}
                     </div>
@@ -10435,7 +10435,7 @@ export default function Dashboard() {
                           className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                           data-testid="input-tts-start-delay"
                         />
-                        <span className="text-xs text-muted-foreground w-10 text-right">{ttsSettings.startDelay}s</span>
+                        <span className="text-xs text-muted-foreground w-14 text-right">{ttsSettings.startDelay}s</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
                         Time before highlighting begins (network + TTS processing)
