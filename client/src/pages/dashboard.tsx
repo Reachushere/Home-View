@@ -10027,10 +10027,12 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-4 justify-between">
                 <div className="flex flex-col gap-4">
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Colour Settings</Label>
-                  <p className="text-xs text-muted-foreground -mt-1.5 italic">
-                    Customise colours for the app.
-                  </p>
+                  <div>
+                    <Label className="text-sm font-medium">Colour Settings</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Customise colours for the app.
+                    </p>
+                  </div>
                   
                   <div className="space-y-4">
                     {/* Box Background Colour */}
@@ -10230,10 +10232,12 @@ export default function Dashboard() {
                 
                 {/* Layout Settings - in left column */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Layout Settings</Label>
-                  <p className="text-xs text-muted-foreground -mt-1.5 italic">
-                    Adjust spacing and reset column widths.
-                  </p>
+                  <div>
+                    <Label className="text-sm font-medium">Layout Settings</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Adjust spacing and reset column widths.
+                    </p>
+                  </div>
                   
                   <div className="space-y-3">
                     <div className="space-y-1">
@@ -10335,10 +10339,12 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-4">
                 {/* Blinking & Spacing Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Blinking & Spacing</Label>
-                  <p className="text-xs text-muted-foreground -mt-1.5 italic">
-                    Control blinking animations and button spacing.
-                  </p>
+                  <div>
+                    <Label className="text-sm font-medium">Blinking & Spacing</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Control blinking animations and button spacing.
+                    </p>
+                  </div>
                   
                   <div className="space-y-4">
                     {/* Today Column Blink */}
@@ -10427,10 +10433,12 @@ export default function Dashboard() {
                 
                 {/* TTS Highlighting Settings */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
-                  <p className="text-xs text-muted-foreground -mt-1.5 italic">
-                    Fine-tune word highlighting to sync with your Home Assistant TTS voice.
-                  </p>
+                  <div>
+                    <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Fine-tune word highlighting to sync with your Home Assistant TTS voice.
+                    </p>
+                  </div>
                   
                   <div className="space-y-4">
                     <div className="space-y-1">
@@ -10502,10 +10510,12 @@ export default function Dashboard() {
                 
                 {/* Data Sync Section */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Data Sync</Label>
-                  <p className="text-xs text-muted-foreground -mt-1.5 italic">
-                    Push to or pull from the published app.
-                  </p>
+                  <div>
+                    <Label className="text-sm font-medium">Data Sync</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Push to or pull from the published app.
+                    </p>
+                  </div>
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
@@ -10602,10 +10612,12 @@ export default function Dashboard() {
                 
                 {/* Reset Column Spacing */}
                 <div className="border rounded-lg p-3 space-y-3">
-                  <Label className="text-sm font-medium">Column Spacing</Label>
-                  <p className="text-xs text-muted-foreground -mt-1.5 italic">
-                    Reset the column widths in the summary boxes if they appear squished.
-                  </p>
+                  <div>
+                    <Label className="text-sm font-medium">Column Spacing</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Reset the column widths in the summary boxes if they appear squished.
+                    </p>
+                  </div>
                   <Button
                     variant="outline"
                     size="sm"
@@ -10642,10 +10654,12 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {/* Second Google Account Connection */}
                 <div className="border rounded-lg p-3 space-y-2">
-                  <Label className="text-sm font-medium">Second Google Account</Label>
-                  <p className="text-xs text-muted-foreground -mt-1.5 italic">
-                    Connect a second Google account to sync tasks to both accounts. Events from both accounts that conflict with your tasks will show in the calendar.
-                  </p>
+                  <div>
+                    <Label className="text-sm font-medium">Second Google Account</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Connect a second Google account to sync tasks to both accounts. Events from both accounts that conflict with your tasks will show in the calendar.
+                    </p>
+                  </div>
                   {secondAccountStatus?.connected ? (
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-xs text-green-600 dark:text-green-400 font-medium">
@@ -10686,10 +10700,12 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium">Secondary Calendar (same account)</Label>
-                  <p className="text-xs text-muted-foreground -mt-1.5 italic mb-2">
-                    Select a secondary calendar within your primary account to sync tasks to.
-                  </p>
+                  <div>
+                    <Label className="text-sm font-medium">Secondary Calendar (same account)</Label>
+                    <p className="text-xs text-muted-foreground italic">
+                      Select a secondary calendar within your primary account to sync tasks to.
+                    </p>
+                  </div>
                   <Select
                     value={selectedSecondaryCalendar}
                     onValueChange={(value) => {
