@@ -1348,3 +1348,29 @@ input[type="checkbox"]:checked::after {
   color: white !important;
 }
 
+/* Speckle/dot animation for dropdown */
+@keyframes speckle-in {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 0.3;
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 0.7;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}
+
+.speckle-open {
+  animation: speckle-in 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
