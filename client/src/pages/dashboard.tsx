@@ -9017,7 +9017,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: `${361 + blinkSettings.tallPillHeight + (blinkSettings.tallPillButtonSpacing * 6)}px` }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '356px', right: '14px', width: '52px', height: `${(3 * 50) + 300}px` }}>
         <div 
           style={{ 
             width: '100%', 
@@ -9030,381 +9030,185 @@ export default function Dashboard() {
         />
       </div>
       
-      {/* Modules Button - On top of tall pill */}
-      {(() => {
-        const unreadModuleCount = allFiles.filter(f => f.folder?.includes('module') && f.folder?.includes(`week-${selectedWeek}`) && !f.listened).length;
-        const completedModuleCount = allFiles.filter(f => f.folder?.includes('module') && f.folder?.includes(`week-${selectedWeek}`) && f.listened).length;
+      {/* Course Buttons - At top of tall pill */}
+      {coursesData.courses.filter(c => c.name).slice(0, 3).map((course, idx) => {
+        const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
+        const courseHex = course.color || '#4ADE80';
+        const courseId = courseCode.toLowerCase();
+        const moduleFolderKey = `week-${selectedWeek}-${courseId}-module`;
+        const readingFolderKey = `week-${selectedWeek}-${courseId}-reading`;
+        const moduleCount = fileCounts[moduleFolderKey]?.unlistened || 0;
+        const readingCount = fileCounts[readingFolderKey]?.unlistened || 0;
+        const totalUnread = moduleCount + readingCount;
+        const completedCount = (fileCounts[moduleFolderKey]?.listened || 0) + (fileCounts[readingFolderKey]?.listened || 0);
+        
         return (
-          <div 
-            className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'modules' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ 
-              position: 'absolute',
-              width: '44px', 
-              height: '44px', 
-              top: `${361}px`, 
-              right: '18px',
-              borderRadius: '50%',
-              background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-              padding: '1px'
-            }}
-            onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'modules' ? null : 'modules')}
-            data-modules-button
-          >
-            <div 
-              className="hover:opacity-80 transition-all duration-200"
-              style={{
-                position: 'absolute',
-                top: '1px',
-                left: '1px',
-                width: '42px',
-                height: '42px',
-                borderRadius: '50%',
-                background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)',
-                boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <Library className="h-[18px] w-[18px] text-white" strokeWidth={2} />
-            </div>
-            {unreadModuleCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
-                {unreadModuleCount}
-              </div>
-            )}
-            {completedModuleCount > 0 && (
-              <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
-                {completedModuleCount}
-              </div>
-            )}
-          </div>
-        );
-      })()}
-      
-      {/* Dotted lines from Modules button to course buttons - always visible unless readings open */}
-      {modulesHoneycombOpen !== 'readings' && calendarTop > 100 && (() => {
-        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 1;
-        return (
-          <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
-            {/* Line to CPPA - starts from left edge of modules button (right: 18px + 44px width + 1px = 63px from right) */}
-            <line 
-              x1={`calc(100% - 63px)`} 
-              y1={`${361 + 22}px`}
-              x2={`calc(100% - ${103 + 21}px)`}
-              y2={`${courseRowsY + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
-              stroke="white" 
-              strokeWidth="1" 
-              strokeDasharray="2,2"
-              opacity="0.85"
-            />
-            {/* Line to CFNF */}
-            <line 
-              x1={`calc(100% - 63px)`} 
-              y1={`${361 + 22}px`}
-              x2={`calc(100% - ${103 + 21}px)`}
-              y2={`${courseRowsY + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
-              stroke="white" 
-              strokeWidth="1" 
-              strokeDasharray="2,2"
-              opacity="0.85"
-            />
-            {/* Line to CASL */}
-            <line 
-              x1={`calc(100% - 63px)`} 
-              y1={`${361 + 22}px`}
-              x2={`calc(100% - ${103 + 21}px)`}
-              y2={`${courseRowsY + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
-              stroke="white" 
-              strokeWidth="1" 
-              strokeDasharray="2,2"
-              opacity="0.85"
-            />
-          </svg>
-        );
-      })()}
-      
-      {/* Modules Course Buttons - Spring from modules button (331px) to course row positions */}
-      {/* Use filtered courses array matching the course rows */}
-      {calendarTop > 100 && (() => {
-        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 1;
-        const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
-        return filteredCourses.map((course, idx) => {
-          const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
-          const courseHex = course.color || '#4ADE80';
-          const courseId = courseCode.toLowerCase();
-          // Use database file counts with listened/unlistened breakdown
-          const folderKey = `week-${selectedWeek}-${courseId}-module`;
-          const folderCounts = fileCounts[folderKey] || { total: 0, listened: 0, unlistened: 0 };
-          const unreadCount = folderCounts.unlistened;
-          const completedCount = folderCounts.listened;
-          return (
-            <div 
-              key={`module-btn-${courseId}`}
-              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'}`}
-              style={{ 
-                top: `${courseRowsY + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px`,
-                right: '96px',
-                transform: 'scale(1) translateY(-50%)',
-                transitionDelay: `${idx * 50}ms`
-              }}
-              onClick={async (e) => { 
-                e.stopPropagation();
-                setModulesHoneycombOpen(null);
-                
-                // Fetch module files from OneDrive
-                const oneDriveFolderMap: Record<string, string> = {
-                  'cppa122': 'CPPA122 - Local Politics',
-                  'cfnf400': 'CFNF400 - Human Sexuality', 
-                  'casl101': 'CASL101 - American Sign Language'
-                };
-                const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
-                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
-                
-                try {
-                  const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-                  const courseFolders = await courseResponse.json();
-                  const weekFolder = courseFolders.find((f: any) => 
-                    f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-                  );
-                  
-                  if (weekFolder) {
-                    const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                    const weekContents = await weekResponse.json();
-                    const moduleFolder = weekContents.find((f: any) => 
-                      f.type === 'folder' && f.name.toLowerCase().includes('module')
-                    );
-                    
-                    if (moduleFolder) {
-                      const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
-                      const moduleFiles = await moduleResponse.json();
-                      const pdfFiles = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
-                      
-                      if (pdfFiles.length > 0) {
-                        // Create FileItem-compatible objects for all PDFs
-                        const fileItems: FileItem[] = pdfFiles.map((pdf: any, idx: number) => ({
-                          id: Date.now() + idx,
-                          originalName: pdf.name,
-                          displayName: pdf.name,
-                          objectPath: pdf.downloadUrl,
-                          folder: `week-${selectedWeek}-${courseId}-module`,
-                          listened: false
-                        }));
-                        setOneDrivePreviewFiles(fileItems);
-                        setPreviewFile(fileItems[0]);
-                        return;
-                      }
-                    }
-                  }
-                } catch (error) {
-                  console.error('Error fetching OneDrive module files:', error);
-                }
-              }}
-              data-testid={`honeycomb-${courseId}`}
-              data-course-button
-            >
-              <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
-                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-medium pointer-events-none" style={{ color: 'white', WebkitFontSmoothing: 'antialiased' }}>{courseCode.slice(0, 4)}</span>
-                {unreadCount > 0 && (
-                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
-                    {unreadCount}
+          <DropdownMenu key={`course-pill-${courseId}`}>
+            <DropdownMenuTrigger asChild>
+              <div 
+                className="absolute z-50 cursor-pointer"
+                style={{ 
+                  width: '44px', 
+                  height: '44px', 
+                  top: `${361 + (idx * 50)}px`, 
+                  right: '18px',
+                  borderRadius: '50%',
+                  background: getBorderGradient(courseHex),
+                  padding: '1px'
+                }}
+                data-testid={`pill-course-${courseId}`}
+              >
+                <div 
+                  className="hover:opacity-80 transition-all duration-200"
+                  style={{
+                    position: 'absolute',
+                    top: '1px',
+                    left: '1px',
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    background: getButtonGradient(courseHex),
+                    boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  <span className="text-[9px] font-medium text-white" style={{ WebkitFontSmoothing: 'antialiased' }}>
+                    {courseCode.slice(0, 4)}
+                  </span>
+                </div>
+                {totalUnread > 0 && (
+                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
+                    {totalUnread}
                   </div>
                 )}
                 {completedCount > 0 && (
-                  <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
+                  <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
                     {completedCount}
                   </div>
                 )}
               </div>
-            </div>
-          );
-        });
-      })()}
-      
-      {/* Readings Button - Below modules button on tall pill */}
-      {(() => {
-        const unreadReadingCount = allFiles.filter(f => f.folder?.includes('reading') && f.folder?.includes(`week-${selectedWeek}`) && !f.listened).length;
-        const completedReadingCount = allFiles.filter(f => f.folder?.includes('reading') && f.folder?.includes(`week-${selectedWeek}`) && f.listened).length;
-        return (
-          <div 
-            className={`absolute cursor-pointer z-50 ${modulesHoneycombOpen === 'readings' ? 'pointer-events-none' : 'pointer-events-auto'}`}
-            style={{ 
-              width: '44px', 
-              height: '44px', 
-              top: `${411 + blinkSettings.tallPillButtonSpacing}px`, 
-              right: '18px',
-              borderRadius: '50%',
-              background: 'linear-gradient(0deg, #042550 0%, #4578B0 100%)',
-              padding: '1px'
-            }}
-            onClick={() => setModulesHoneycombOpen(modulesHoneycombOpen === 'readings' ? null : 'readings')}
-            data-readings-button
-          >
-            <Button variant="ghost" size="icon" className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200" style={{ background: 'linear-gradient(180deg, #042550 0%, #4578B0 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}>
-              <BookOpenCheck className="h-[18px] w-[18px] text-white" strokeWidth={2} />
-            </Button>
-            {unreadReadingCount > 0 && (
-              <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-1 shadow-lg border border-white/30" style={{ top: '-7px', right: '-4px' }}>
-                {unreadReadingCount}
-              </div>
-            )}
-            {completedReadingCount > 0 && (
-              <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30" style={{ top: '17px', right: '-4px' }}>
-                {completedReadingCount}
-              </div>
-            )}
-          </div>
-        );
-      })()}
-      
-      {/* Dotted lines from Readings button to course buttons */}
-      {modulesHoneycombOpen === 'readings' && calendarTop > 100 && (() => {
-        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 1;
-        return (
-          <svg className="absolute pointer-events-none z-[99]" style={{ top: 0, left: 0, width: '100%', height: '100%', overflow: 'visible' }}>
-            {/* Line to CPPA */}
-            <line 
-              x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${412 + 15}px`}
-              x2={`calc(100% - ${103 + 21}px)`}
-              y2={`${courseRowsY + gridSizes.courseRowHeight * 0 + gridSizes.courseRowHeight / 2}px`}
-              stroke="white" 
-              strokeWidth="1" 
-              strokeDasharray="2,2"
-              opacity="0.85"
-            />
-            {/* Line to CFNF */}
-            <line 
-              x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${412 + 23}px`}
-              x2={`calc(100% - ${103 + 21}px)`}
-              y2={`${courseRowsY + gridSizes.courseRowHeight * 1 + gridSizes.courseRowHeight / 2}px`}
-              stroke="white" 
-              strokeWidth="1" 
-              strokeDasharray="2,2"
-              opacity="0.85"
-            />
-            {/* Line to CASL */}
-            <line 
-              x1={`calc(100% - ${19 + 45}px)`} 
-              y1={`${412 + 30}px`}
-              x2={`calc(100% - ${103 + 21}px)`}
-              y2={`${courseRowsY + gridSizes.courseRowHeight * 2 + gridSizes.courseRowHeight / 2}px`}
-              stroke="white" 
-              strokeWidth="1" 
-              strokeDasharray="2,2"
-              opacity="0.85"
-            />
-          </svg>
-        );
-      })()}
-      
-      {/* Readings Course Buttons - Spring from readings button to SAME course row positions as modules */}
-      {/* Use filtered courses array matching the course rows */}
-      {calendarTop > 100 && (() => {
-        const courseRowsY = calendarTop + 10 + 41 + gridSizes.allDayRowHeight + 1;
-        const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
-        return filteredCourses.map((course, idx) => {
-          const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
-          const courseHex = course.color || '#4ADE80';
-          const courseId = courseCode.toLowerCase();
-          // Use database file counts with listened/unlistened breakdown
-          const folderKey = `week-${selectedWeek}-${courseId}-reading`;
-          const folderCounts = fileCounts[folderKey] || { total: 0, listened: 0, unlistened: 0 };
-          const unreadCount = folderCounts.unlistened;
-          const completedCount = folderCounts.listened;
-          return (
-            <div 
-              key={`reading-btn-${courseId}`}
-              className={`absolute z-[100] cursor-pointer transition-all duration-500 ease-out ${modulesHoneycombOpen === 'readings' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
-              style={{ 
-                top: modulesHoneycombOpen === 'readings' ? `${courseRowsY + gridSizes.courseRowHeight * idx + gridSizes.courseRowHeight / 2}px` : '381px',
-                right: modulesHoneycombOpen === 'readings' ? '103px' : '19px',
-                transform: modulesHoneycombOpen === 'readings' ? 'scale(1) translateY(-50%)' : 'scale(0.3)',
-                transitionDelay: `${idx * 50}ms`
-              }}
-              onClick={async (e) => { 
-                e.stopPropagation();
-                setModulesHoneycombOpen(null);
-                
-                // Fetch reading files from OneDrive
-                const oneDriveFolderMap: Record<string, string> = {
-                  'cppa122': 'CPPA122 - Local Politics',
-                  'cfnf400': 'CFNF400 - Human Sexuality', 
-                  'casl101': 'CASL101 - American Sign Language'
-                };
-                const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
-                const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
-                
-                try {
-                  const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-                  const courseFolders = await courseResponse.json();
-                  const weekFolder = courseFolders.find((f: any) => 
-                    f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-                  );
-                  
-                  if (weekFolder) {
-                    const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-                    const weekContents = await weekResponse.json();
-                    const readingFolder = weekContents.find((f: any) => 
-                      f.type === 'folder' && f.name.toLowerCase().includes('reading')
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="left">
+              <DropdownMenuItem 
+                data-testid={`pill-course-${courseId}-module`}
+                onClick={async () => {
+                  const oneDriveFolderMap: Record<string, string> = {
+                    'cppa122': 'CPPA122 - Local Politics',
+                    'cfnf400': 'CFNF400 - Human Sexuality', 
+                    'casl101': 'CASL101 - American Sign Language'
+                  };
+                  const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
+                  const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
+                  try {
+                    const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+                    const courseFolders = await courseResponse.json();
+                    const weekFolder = courseFolders.find((f: any) => 
+                      f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
                     );
-                    
-                    if (readingFolder) {
-                      const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
-                      const readingFiles = await readingResponse.json();
-                      const pdfFiles = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
-                      
-                      if (pdfFiles.length > 0) {
-                        // Create FileItem-compatible objects for all PDFs
-                        const fileItems: FileItem[] = pdfFiles.map((pdf: any, idx: number) => ({
-                          id: Date.now() + idx,
-                          originalName: pdf.name,
-                          displayName: pdf.name,
-                          objectPath: pdf.downloadUrl,
-                          folder: `week-${selectedWeek}-${courseId}-reading`,
-                          listened: false
-                        }));
-                        setOneDrivePreviewFiles(fileItems);
-                        setPreviewFile(fileItems[0]);
-                        return;
+                    if (weekFolder) {
+                      const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                      const weekContents = await weekResponse.json();
+                      const moduleFolder = weekContents.find((f: any) => 
+                        f.type === 'folder' && f.name.toLowerCase().includes('module')
+                      );
+                      if (moduleFolder) {
+                        const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
+                        const moduleFiles = await moduleResponse.json();
+                        const pdfFiles = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                        if (pdfFiles.length > 0) {
+                          const fileItems: FileItem[] = pdfFiles.map((pdf: any, i: number) => ({
+                            id: Date.now() + i,
+                            originalName: pdf.name,
+                            displayName: pdf.name,
+                            objectPath: pdf.downloadUrl,
+                            folder: `week-${selectedWeek}-${courseId}-module`,
+                            listened: false
+                          }));
+                          setOneDrivePreviewFiles(fileItems);
+                          setPreviewFile(fileItems[0]);
+                        }
                       }
                     }
+                  } catch (error) {
+                    console.error('Error fetching module files:', error);
                   }
-                } catch (error) {
-                  console.error('Error fetching OneDrive reading files:', error);
-                }
-              }}
-              data-testid={`honeycomb-readings-${courseId}`}
-              data-readings-course-button
-            >
-              <div className="relative hover:scale-110 transition-transform pointer-events-none" style={{ width: '44px', height: '44px', borderRadius: '50%', background: getBorderGradient(courseHex), padding: '1px' }}>
-                <div className="w-full h-full rounded-full pointer-events-none" style={{ background: getButtonGradient(courseHex), boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }} />
-                <FolderOpen className="absolute inset-0 m-auto h-4 w-4 pointer-events-none" style={{ color: 'white', strokeWidth: 3 }} />
-                {unreadCount > 0 && (
-                  <div className="absolute bg-[#FF0000] text-white text-[10px] font-bold rounded-full min-w-[21px] h-[21px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '-5px', right: '-2px' }}>
-                    {unreadCount}
-                  </div>
+                }}
+              >
+                <Library className="h-4 w-4 mr-2" />
+                Module
+                {moduleCount > 0 && (
+                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
+                    {moduleCount}
+                  </span>
                 )}
-                {completedCount > 0 && (
-                  <div className="absolute bg-gray-700 text-white text-[9px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-0.5 shadow-lg border border-white/30 pointer-events-none" style={{ top: '17px', right: '-2px' }}>
-                    {completedCount}
-                  </div>
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                data-testid={`pill-course-${courseId}-reading`}
+                onClick={async () => {
+                  const oneDriveFolderMap: Record<string, string> = {
+                    'cppa122': 'CPPA122 - Local Politics',
+                    'cfnf400': 'CFNF400 - Human Sexuality', 
+                    'casl101': 'CASL101 - American Sign Language'
+                  };
+                  const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
+                  const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
+                  try {
+                    const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
+                    const courseFolders = await courseResponse.json();
+                    const weekFolder = courseFolders.find((f: any) => 
+                      f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
+                    );
+                    if (weekFolder) {
+                      const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+                      const weekContents = await weekResponse.json();
+                      const readingFolder = weekContents.find((f: any) => 
+                        f.type === 'folder' && f.name.toLowerCase().includes('reading')
+                      );
+                      if (readingFolder) {
+                        const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
+                        const readingFiles = await readingResponse.json();
+                        const pdfFiles = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
+                        if (pdfFiles.length > 0) {
+                          const fileItems: FileItem[] = pdfFiles.map((pdf: any, i: number) => ({
+                            id: Date.now() + i,
+                            originalName: pdf.name,
+                            displayName: pdf.name,
+                            objectPath: pdf.downloadUrl,
+                            folder: `week-${selectedWeek}-${courseId}-reading`,
+                            listened: false
+                          }));
+                          setOneDrivePreviewFiles(fileItems);
+                          setPreviewFile(fileItems[0]);
+                        }
+                      }
+                    }
+                  } catch (error) {
+                    console.error('Error fetching reading files:', error);
+                  }
+                }}
+              >
+                <BookOpenCheck className="h-4 w-4 mr-2" />
+                Reading
+                {readingCount > 0 && (
+                  <span className="ml-auto bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
+                    {readingCount}
+                  </span>
                 )}
-              </div>
-            </div>
-          );
-        });
-      })()}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      })}
       
-      {/* Push Button - Below readings button on tall pill (moved above radio) */}
+      {/* Push Button - Below course buttons on tall pill */}
       <div 
         className="absolute z-[60] pointer-events-auto cursor-pointer"
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${463 + blinkSettings.tallPillButtonSpacing * 2}px`, 
+          top: `${361 + (3 * 50) + 6}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9443,7 +9247,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${514 + blinkSettings.tallPillButtonSpacing * 3}px`, 
+          top: `${361 + (3 * 50) + 56}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9490,7 +9294,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${565 + blinkSettings.tallPillButtonSpacing * 4}px`, 
+          top: `${361 + (3 * 50) + 106}px`, 
           right: '18px',
           borderRadius: '50%',
           background: isKitchenPlaying 
@@ -9533,7 +9337,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${616 + blinkSettings.tallPillButtonSpacing * 5}px`, 
+          top: `${361 + (3 * 50) + 206}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9546,8 +9350,8 @@ export default function Dashboard() {
           className="hover:opacity-80 transition-all duration-200"
           style={{
             position: 'absolute',
-            top: '1px',
-            left: '1px',
+            top: '2px',
+            left: '2px',
             width: '42px',
             height: '42px',
             borderRadius: '50%',
@@ -9629,7 +9433,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${668 + blinkSettings.tallPillButtonSpacing * 6}px`, 
+          top: `${361 + (3 * 50) + 256}px`, 
           right: '18px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9670,7 +9474,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${565 + blinkSettings.tallPillButtonSpacing * 4}px`, 
+          top: `${361 + (3 * 50) + 156}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
