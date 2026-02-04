@@ -9090,7 +9090,12 @@ export default function Dashboard() {
                 )}
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" side="left" className="text-[11px] min-w-0 border-none shadow-none animate-in fade-in-0 duration-300 !bg-transparent !p-0">
+            <DropdownMenuContent 
+              align="end" 
+              side="left" 
+              className="text-[11px] min-w-0 border-none shadow-none animate-in fade-in-0 duration-300"
+              style={{ background: 'none', backgroundColor: 'transparent', boxShadow: 'none', border: 'none' }}
+            >
               <div 
                 className="text-[11px] py-1 px-2 hover:bg-white/30 cursor-pointer flex items-center rounded-sm"
                 style={{ color: 'white', backgroundColor: 'transparent' }}
