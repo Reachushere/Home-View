@@ -6756,13 +6756,13 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className={`w-[180px] h-6 text-[10px] bg-gray-800 !text-white font-['Raleway'] transition-all duration-200 ${
+                        className={`w-[180px] h-6 text-[10px] bg-gray-800 text-white transition-all duration-200 ${
                           isModule 
                             ? 'border !border-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]' 
-                            : 'border-gray-600 hover:border-green-500/50'
+                            : 'border-gray-700 hover:border-green-500/50'
                         }`}
                         data-testid="select-module-file">
-                        <SelectValue className="!text-white font-['Raleway']" placeholder={(() => {
+                        <SelectValue placeholder={(() => {
                           if (moduleFiles.length === 0) return 'No modules';
                           // Check for unlistened files first
                           const unlistenedFiles = moduleFiles.filter(f => !f.listened);
@@ -6804,13 +6804,13 @@ export default function Dashboard() {
                       }}
                     >
                       <SelectTrigger 
-                        className={`w-[180px] h-6 text-[10px] bg-gray-800 !text-white font-['Raleway'] transition-all duration-200 ${
+                        className={`w-[180px] h-6 text-[10px] bg-gray-800 text-white transition-all duration-200 ${
                           isReading 
                             ? 'border !border-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]' 
-                            : 'border-gray-600 hover:border-blue-500/50'
+                            : 'border-gray-700 hover:border-blue-500/50'
                         }`}
                         data-testid="select-reading-file">
-                        <SelectValue className="!text-white font-['Raleway']" placeholder={readingFiles.length > 0 ? `${readingFiles.length} reading${readingFiles.length > 1 ? 's' : ''}` : 'No readings'} />
+                        <SelectValue placeholder={readingFiles.length > 0 ? `${readingFiles.length} reading${readingFiles.length > 1 ? 's' : ''}` : 'No readings'} />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {readingFiles.length === 0 ? (
