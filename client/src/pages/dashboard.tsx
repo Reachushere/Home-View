@@ -7595,7 +7595,7 @@ export default function Dashboard() {
           {/* Undo Complete - top gradient #BD0000 */}
           {completedTaskHistory.length > 0 ? (
             <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
-              {/* Bottom circle: 44px, solid #FF4545 */}
+              {/* Bottom circle: 44px, gradient opposite of front */}
               <div style={{
                 position: 'absolute',
                 top: 0,
@@ -7603,7 +7603,7 @@ export default function Dashboard() {
                 width: '44px',
                 height: '44px',
                 borderRadius: '50%',
-                backgroundColor: '#FF4545'
+                background: 'linear-gradient(0deg, #500404 0%, #B04545 100%)'
               }} />
               {/* Top circle: 38px, gradient bottom to #BD0000 top */}
               <div 
