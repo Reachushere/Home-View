@@ -9168,7 +9168,7 @@ export default function Dashboard() {
                 </div>
                 <div 
                   className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/50 hover:bg-white/25 animate-fade-in border border-white/25"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '-1px', height: '20px', fontSize: '9px', letterSpacing: '0.6px' }}
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '-1px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 300 }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
