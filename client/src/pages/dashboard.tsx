@@ -9098,7 +9098,7 @@ export default function Dashboard() {
                 className="absolute z-[100] flex flex-col gap-0 overflow-visible"
                 style={{ 
                   top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 14}px`, 
-                  right: '69px',
+                  right: '73px',
                   transformOrigin: 'center center',
                   alignItems: 'flex-start',
                   display: 'flex',
@@ -9106,7 +9106,7 @@ export default function Dashboard() {
                 }}
               >
               <div 
-                  className="text-[9px] py-1 px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/15 hover:bg-white/25 beam-up border border-white/50"
+                  className="text-[9px] py-1 px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/20 hover:bg-white/25 beam-up border border-white/50"
                   style={{ color: 'white', marginTop: '4px', marginBottom: '-1px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', height: '24px', fontSize: '9px' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
@@ -9167,7 +9167,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div 
-                  className="text-[9px] py-1 px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/15 hover:bg-white/25 beam-down border border-white/50"
+                  className="text-[9px] py-1 px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/20 hover:bg-white/25 beam-down border border-white/50"
                   style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '-1px', height: '24px', fontSize: '9px' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
