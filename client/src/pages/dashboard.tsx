@@ -10316,7 +10316,7 @@ export default function Dashboard() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-7 text-xs px-2"
+                    className="h-6 text-xs px-2"
                     onClick={() => {
                       const defaultWidths = {
                         taskGap: 0,
@@ -10521,7 +10521,7 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-7 text-xs px-2"
+                      className="h-6 text-xs px-2"
                       onClick={() => saveTtsSettings(ttsSettings)}
                       data-testid="button-save-tts-settings"
                     >
@@ -10540,7 +10540,7 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-7 text-xs px-2"
+                      className="h-6 text-xs px-2"
                       onClick={async () => {
                         try {
                           toast({ title: "Pushing...", description: "Sending data to production." });
@@ -10583,7 +10583,7 @@ export default function Dashboard() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-7 text-xs px-2"
+                      className="h-6 text-xs px-2"
                       onClick={async () => {
                         try {
                           toast({ title: "Pulling...", description: "Getting data from production." });
