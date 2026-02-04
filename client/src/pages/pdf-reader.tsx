@@ -62,6 +62,7 @@ export default function PDFReaderPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPreloading, setIsPreloading] = useState(false);
   const [currentChunk, setCurrentChunk] = useState(0);
   const [totalChunks, setTotalChunks] = useState(0);
   const [voice, setVoice] = useState<Voice>("nova");
@@ -70,6 +71,8 @@ export default function PDFReaderPage() {
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
+  const pdfDocRef = useRef<any>(null);
+  const isExtractingRef = useRef(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -116,26 +119,87 @@ export default function PDFReaderPage() {
     setExtractedText('');
     setIsPlaying(false);
     setIsPaused(false);
+    setIsPreloading(false);
+    // Reset cached PDF document
+    pdfDocRef.current = null;
+    isExtractingRef.current = false;
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
   };
 
-  const onDocumentLoadSuccess = ({ numPages: pages }: { numPages: number }) => {
+  const onDocumentLoadSuccess = async ({ numPages: pages }: { numPages: number }) => {
     setNumPages(pages);
     setCurrentPage(1);
+    
+    // Pre-extract text in background for faster playback start
+    if (pdfUrl && pages > 0 && !extractedText && !isExtractingRef.current) {
+      isExtractingRef.current = true;
+      extractTextInBackground(pdfUrl, pages);
+    }
+  };
+  
+  // Extract text in background without blocking UI
+  const extractTextInBackground = async (url: string, pages: number) => {
+    setIsPreloading(true);
+    try {
+      const loadingTask = pdfjs.getDocument(url);
+      const pdf = await loadingTask.promise;
+      pdfDocRef.current = pdf;
+      
+      let fullText = "";
+      for (let i = 1; i <= pages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str)
+          .join(" ");
+        fullText += `Page ${i}. ${pageText} `;
+      }
+      
+      setExtractedText(fullText);
+      console.log("PDF text pre-extracted:", fullText.length, "chars");
+    } catch (error) {
+      console.error("Background text extraction failed:", error);
+    } finally {
+      isExtractingRef.current = false;
+      setIsPreloading(false);
+    }
   };
 
   const extractAllText = async (): Promise<string> => {
     if (!pdfUrl || numPages === 0) return "";
     
+    // If already extracted, return cached text
+    if (extractedText) return extractedText;
+    
+    // Wait for background extraction if in progress
+    if (isExtractingRef.current) {
+      setIsLoading(true);
+      // Poll until extraction completes
+      while (isExtractingRef.current) {
+        await new Promise(r => setTimeout(r, 100));
+        if (extractedText) {
+          setIsLoading(false);
+          return extractedText;
+        }
+      }
+      setIsLoading(false);
+      return extractedText || "";
+    }
+    
     setIsLoading(true);
     let fullText = "";
     
     try {
-      const loadingTask = pdfjs.getDocument(pdfUrl);
-      const pdf = await loadingTask.promise;
+      // Use cached PDF document if available
+      let pdf = pdfDocRef.current;
+      if (!pdf) {
+        const loadingTask = pdfjs.getDocument(pdfUrl);
+        pdf = await loadingTask.promise;
+        pdfDocRef.current = pdf;
+      }
       
       for (let i = 1; i <= numPages; i++) {
         const page = await pdf.getPage(i);
@@ -593,7 +657,16 @@ export default function PDFReaderPage() {
 
               <div className="text-center text-sm text-gray-500">
                 <p>Powered by OpenAI TTS</p>
-                <p className="text-xs mt-1">Text is chunked for efficient streaming playback</p>
+                {isPreloading ? (
+                  <p className="text-xs mt-1 flex items-center justify-center gap-1">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Preparing text...
+                  </p>
+                ) : extractedText ? (
+                  <p className="text-xs mt-1 text-green-600">Ready for instant playback</p>
+                ) : (
+                  <p className="text-xs mt-1">Text is chunked for efficient streaming playback</p>
+                )}
               </div>
             </div>
           </div>
