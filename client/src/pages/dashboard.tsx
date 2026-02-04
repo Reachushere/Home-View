@@ -6751,12 +6751,14 @@ export default function Dashboard() {
                     <Select 
                       value={(() => {
                         if (isModule && previewFile) return previewFile.id.toString();
+                        if (moduleFiles.length === 0) return 'none';
                         // Default to first unlistened module, or first module if all listened
                         const unlistenedFile = moduleFiles.find(f => !f.listened);
                         const defaultFile = unlistenedFile || moduleFiles[0];
-                        return defaultFile?.id?.toString() || '';
+                        return defaultFile?.id?.toString() || 'none';
                       })()} 
                       onValueChange={(val) => {
+                        if (val === 'none') return;
                         const file = moduleFiles.find(f => f.id.toString() === val);
                         if (file) setPreviewFile(file);
                       }}
@@ -6769,12 +6771,13 @@ export default function Dashboard() {
                         }`}
                         style={{ color: 'white' }}
                         data-testid="select-module-file">
-                        <SelectValue placeholder="No modules" />
+                        <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
-                        {moduleFiles.length === 0 ? (
+                        {moduleFiles.length === 0 && (
                           <SelectItem value="none" disabled className="text-[10px] text-gray-500">No module files</SelectItem>
-                        ) : moduleFiles.map(file => (
+                        )}
+                        {moduleFiles.map(file => (
                           <SelectItem 
                             key={file.id} 
                             value={file.id.toString()} 
