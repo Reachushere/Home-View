@@ -318,8 +318,8 @@ button[role="combobox"] > span {
   );
   border-radius: inherit;
   pointer-events: none;
-  animation: prep-shimmer-sweep 10s ease-in-out infinite;
-  animation-delay: 5s; /* Offset by half to be opposite */
+  animation: prep-shimmer-sweep 15s ease-in-out infinite;
+  animation-delay: 7.5s; /* Offset by half to be opposite */
   transform: translateX(-100%);
 }
 
@@ -328,14 +328,14 @@ button[role="combobox"] > span {
     transform: translateX(-100%);
     opacity: 0;
   }
-  1% {
+  0.5% {
     opacity: 1;
   }
-  4% {
+  2% {
     transform: translateX(100%);
     opacity: 1;
   }
-  5% {
+  2.5% {
     opacity: 0;
   }
   100% {
@@ -622,7 +622,7 @@ button[role="combobox"] > span {
   transform: translateX(-100%);
   animation: current-hour-row-shimmer-sweep 20s ease-in-out infinite;
   pointer-events: none;
-  z-index: 1;
+  z-index: 50;
 }
 
 @keyframes current-hour-row-shimmer-sweep {
