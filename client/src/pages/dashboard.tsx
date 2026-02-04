@@ -1684,7 +1684,7 @@ export default function Dashboard() {
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
-      { name: 'CPPA122 - Local Politics', color: '#4ade80', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
+      { name: 'CPPA122 - Local Politics', color: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
       { name: 'CASL101 - American Sign Language', color: '#818cf8', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
@@ -4929,7 +4929,7 @@ export default function Dashboard() {
           // Get course color - black for tasks without a course
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
           let color = "#000000";
-          if (courseCode === "CPPA122") color = "#4ade80";
+          if (courseCode === "CPPA122") color = "#47B045";
           else if (courseCode === "CFNF400") color = "#FA67B3";
           else if (courseCode === "CASL101") color = "#818cf8";
           
@@ -5034,7 +5034,7 @@ export default function Dashboard() {
           // Get course color - black for tasks without a course
           const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
           let color = "#000000"; // Default to black when no course
-          if (courseCode === "CPPA122") color = "#4ade80";
+          if (courseCode === "CPPA122") color = "#47B045";
           else if (courseCode === "CFNF400") color = "#FA67B3";
           else if (courseCode === "CASL101") color = "#818cf8";
           
@@ -12324,8 +12324,8 @@ export default function Dashboard() {
                     {oneDriveFolders.map((folder) => {
                       // Check if folder name or current path matches a course - use hardcoded colors
                       const courseColorMap: Record<string, string> = {
-                        'CPPA122': '#4ade80', // green
-                        'CFNF400': '#f472b6', // pink
+                        'CPPA122': '#47B045', // green
+                        'CFNF400': '#FA67B3', // pink
                         'CASL101': '#818cf8', // indigo
                       };
                       let folderColor: string | undefined;
@@ -12848,8 +12848,8 @@ export default function Dashboard() {
           // Helper function to get course color
           const getCourseColor = (courseName: string | null | undefined) => {
             if (!courseName) return '#888888';
-            if (courseName.startsWith('CPPA122')) return '#4ade80'; // green
-            if (courseName.startsWith('CFNF400')) return '#f472b6'; // pink
+            if (courseName.startsWith('CPPA122')) return '#47B045'; // green
+            if (courseName.startsWith('CFNF400')) return '#FA67B3'; // pink
             if (courseName.startsWith('CASL101')) return '#818cf8'; // indigo
             return '#888888';
           };
