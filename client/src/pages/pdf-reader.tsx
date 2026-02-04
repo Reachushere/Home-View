@@ -68,11 +68,14 @@ export default function PDFReaderPage() {
   const [voice, setVoice] = useState<Voice>("nova");
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [chunkWords, setChunkWords] = useState<string[]>([]);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const chunksRef = useRef<string[]>([]);
   const pdfDocRef = useRef<any>(null);
   const isExtractingRef = useRef(false);
+  const audioDurationRef = useRef<number>(0);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -244,6 +247,11 @@ export default function PDFReaderPage() {
 
   const playTTS = async (text: string) => {
     try {
+      // Split text into words for highlighting
+      const words = text.split(/\s+/).filter(w => w.length > 0);
+      setChunkWords(words);
+      setCurrentWordIndex(0);
+      
       const response = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -260,6 +268,14 @@ export default function PDFReaderPage() {
       if (audioRef.current) {
         audioRef.current.src = audioUrl;
         audioRef.current.playbackRate = playbackSpeed;
+        
+        // Wait for metadata to get duration
+        audioRef.current.onloadedmetadata = () => {
+          if (audioRef.current) {
+            audioDurationRef.current = audioRef.current.duration;
+          }
+        };
+        
         await audioRef.current.play();
       }
     } catch (error) {
@@ -269,6 +285,23 @@ export default function PDFReaderPage() {
         description: "Failed to generate speech",
         variant: "destructive",
       });
+    }
+  };
+  
+  // Track word highlighting based on audio progress
+  const handleTimeUpdate = () => {
+    if (!audioRef.current || chunkWords.length === 0 || audioDurationRef.current === 0) return;
+    
+    const currentTime = audioRef.current.currentTime;
+    const duration = audioDurationRef.current;
+    const progress = currentTime / duration;
+    
+    // Estimate current word based on progress through the chunk
+    const estimatedWordIndex = Math.floor(progress * chunkWords.length);
+    const clampedIndex = Math.min(estimatedWordIndex, chunkWords.length - 1);
+    
+    if (clampedIndex !== currentWordIndex) {
+      setCurrentWordIndex(clampedIndex);
     }
   };
 
@@ -410,7 +443,7 @@ export default function PDFReaderPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100">
-      <audio ref={audioRef} onEnded={handleAudioEnded} />
+      <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} />
       
       <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-200 px-4 py-3">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
@@ -554,12 +587,31 @@ export default function PDFReaderPage() {
                       Chunk {currentChunk + 1} of {totalChunks}
                     </span>
                   </div>
-                  <div className="bg-green-200 rounded-full h-2 overflow-hidden">
+                  <div className="bg-green-200 rounded-full h-2 overflow-hidden mb-3">
                     <div
                       className="bg-green-500 h-full transition-all duration-300"
                       style={{ width: `${((currentChunk + 1) / totalChunks) * 100}%` }}
                     />
                   </div>
+                  {/* Word-by-word highlighting display */}
+                  {chunkWords.length > 0 && (
+                    <div className="max-h-40 overflow-y-auto p-3 bg-white rounded border border-green-100 text-sm leading-relaxed">
+                      {chunkWords.map((word, idx) => (
+                        <span
+                          key={idx}
+                          className={`${
+                            idx === currentWordIndex
+                              ? "bg-yellow-300 text-black font-semibold px-0.5 rounded"
+                              : idx < currentWordIndex
+                              ? "text-gray-400"
+                              : "text-gray-700"
+                          } transition-colors duration-100`}
+                        >
+                          {word}{" "}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
