@@ -6688,11 +6688,7 @@ export default function Dashboard() {
             
             return (
               <DialogHeader 
-                className="px-6 py-4 border-b"
-                style={{ 
-                  backgroundColor: colors?.bg || undefined,
-                  borderColor: colors?.border || undefined
-                }}
+                className="px-6 py-4 border-b border-white/20 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95"
               >
                 <DialogTitle 
                   className="flex items-center gap-2 text-sm text-white"
