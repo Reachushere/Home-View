@@ -1240,6 +1240,9 @@ export default function Dashboard() {
       if (parsed.todayCurrentHourCellBackground !== '#160502') {
         parsed.todayCurrentHourCellBackground = '#160502';
       }
+      // Force reset today column and current hour row to taupe
+      parsed.todayCellBackground = '#EAE4DE';
+      parsed.currentHourRowBackground = '#EAE4DE';
       // Save the corrected settings
       const merged = { ...defaults, ...parsed };
       localStorage.setItem('colorSettings', JSON.stringify(merged));
