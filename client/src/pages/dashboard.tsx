@@ -10040,7 +10040,7 @@ export default function Dashboard() {
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.boxBackground}</span>
                         <div className="relative">
                           <div 
-                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
                             style={{ 
                               backgroundColor: colorSettings.boxGlassEffect 
                                 ? `rgba(${parseInt(colorSettings.boxBackground.slice(1,3), 16)}, ${parseInt(colorSettings.boxBackground.slice(3,5), 16)}, ${parseInt(colorSettings.boxBackground.slice(5,7), 16)}, ${colorSettings.boxTransparency / 100})`
@@ -10098,7 +10098,7 @@ export default function Dashboard() {
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.headerBar}</span>
                         <div className="relative">
                           <div 
-                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
                             style={{ backgroundColor: colorSettings.headerBar }}
                             onClick={() => document.getElementById('color-header-bar-input')?.click()}
                             data-testid="color-header-bar"
@@ -10121,7 +10121,7 @@ export default function Dashboard() {
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCellBackground}</span>
                         <div className="relative">
                           <div 
-                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
                             style={{ backgroundColor: colorSettings.todayCellBackground }}
                             onClick={() => document.getElementById('color-today-cell-input')?.click()}
                             data-testid="color-today-cell"
@@ -10144,7 +10144,7 @@ export default function Dashboard() {
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.currentHourCellBackground}</span>
                         <div className="relative">
                           <div 
-                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
                             style={{ backgroundColor: colorSettings.currentHourCellBackground }}
                             onClick={() => document.getElementById('color-current-hour-cell-input')?.click()}
                             data-testid="color-current-hour-cell"
@@ -10167,7 +10167,7 @@ export default function Dashboard() {
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCurrentHourCellBackground}</span>
                         <div className="relative">
                           <div 
-                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
                             style={{ backgroundColor: colorSettings.todayCurrentHourCellBackground }}
                             onClick={() => document.getElementById('color-today-current-hour-cell-input')?.click()}
                             data-testid="color-today-current-hour-cell"
