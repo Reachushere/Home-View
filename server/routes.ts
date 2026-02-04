@@ -3382,13 +3382,11 @@ export async function registerRoutes(
       
       console.log(`Kitchen trigger: Playing ${fileName}`);
       
-      // Check for existing progress - resume from next unplayed chunk
+      // Check for existing progress - resume from the same chunk (replay it)
       const progressKey = `file-${nextFile.id}`;
       const existingProgress = playbackProgress[progressKey];
-      // If we have progress, resume from the NEXT chunk after the last completed one
-      const resumeFromChunk = existingProgress?.lastCompletedChunk !== undefined 
-        ? existingProgress.lastCompletedChunk + 1 
-        : 0;
+      // Resume from the same chunk that was last playing (replay it)
+      const resumeFromChunk = existingProgress?.lastCompletedChunk ?? 0;
       
       // Extract text from the file
       const { ObjectStorageService } = await import("./replit_integrations/object_storage");

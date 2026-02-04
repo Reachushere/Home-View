@@ -11587,12 +11587,13 @@ export default function Dashboard() {
                 {timeSlots.map((hour, hourIdx) => {
                   const currentHour = new Date().getHours();
                   const isCurrentHour = hour === currentHour;
-                  const prepConflictHeight = getTimeSlotPrepConflictHeight(hour);
+                  // TEMP: Disable prep conflict height to debug white lines
+                  const prepConflictHeight = 0; // getTimeSlotPrepConflictHeight(hour);
                   const rowHeight = (gridSizes.timeSlotHeights[hour] || gridSizes.timeSlotHeight) + prepConflictHeight;
                   return (
                   <div 
                     key={hour} 
-                    className={`grid border-b border-border/50 relative group/row ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
+                    className={`grid border-b border-gray-300/30 relative group/row ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                   >
                     <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
@@ -11612,7 +11613,7 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l border-border/50 relative p-0.5 overflow-visible ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
+                          className={`border-l border-border/50 relative p-0.5 overflow-visible bg-[#faf8f5] dark:bg-zinc-900 ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
                           style={{
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                           }}
