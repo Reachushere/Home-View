@@ -1306,7 +1306,7 @@ input[type="checkbox"]:checked::after {
   content: '';
   position: absolute;
   left: 4px;
-  top: 2px;
+  top: 1px;
   width: 2px;
   height: 5px;
   border: solid white;
