@@ -502,7 +502,7 @@ export default function PDFReaderPage() {
     <div className="min-h-screen bg-gradient-to-br from-amber-100 via-orange-50 to-yellow-100">
       <audio ref={audioRef} onEnded={handleAudioEnded} onTimeUpdate={handleTimeUpdate} />
       
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-200 px-4 py-3">
+      <div className="sticky top-0 z-50 bg-amber-800 backdrop-blur-md border-b border-amber-900 px-4 py-3">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/files">
@@ -511,8 +511,8 @@ export default function PDFReaderPage() {
               </Button>
             </Link>
             <div className="truncate">
-              <h1 className="font-semibold text-gray-800 truncate">{fileName || "PDF Document"}</h1>
-              <p className="text-xs text-gray-500">Page {currentPage} of {numPages}</p>
+              <h1 className="font-semibold text-white truncate">{fileName || "PDF Document"}</h1>
+              <p className="text-xs text-amber-200">Page {currentPage} of {numPages}</p>
             </div>
           </div>
           
@@ -525,7 +525,7 @@ export default function PDFReaderPage() {
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <span className="text-sm font-medium min-w-[60px] text-center">{currentPage}/{numPages}</span>
+            <span className="text-sm font-medium min-w-[60px] text-center text-white">{currentPage}/{numPages}</span>
             <Button
               variant="ghost"
               size="icon"
@@ -545,10 +545,10 @@ export default function PDFReaderPage() {
           <div className="flex-1 lg:w-1/2 overflow-auto bg-gray-100 p-4">
             {/* File selector for multiple reading files */}
             {allFiles.length > 1 && (
-              <div className="bg-white rounded-lg shadow p-3 mb-4">
+              <div className="bg-gray-800 rounded-lg shadow p-3 mb-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <FileText className="h-4 w-4 text-amber-600" />
-                  <span className="text-sm font-medium text-gray-700">Reading Files ({allFiles.length})</span>
+                  <FileText className="h-4 w-4 text-amber-300" />
+                  <span className="text-sm font-medium text-white">Reading Files ({allFiles.length})</span>
                 </div>
                 <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto">
                   {allFiles.map((file, idx) => {
@@ -570,8 +570,8 @@ export default function PDFReaderPage() {
                         onClick={() => switchToFile(file)}
                         className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${
                           isCurrentFile 
-                            ? 'bg-amber-100 border border-amber-300' 
-                            : 'hover:bg-gray-100'
+                            ? 'bg-amber-700 border border-amber-500' 
+                            : 'hover:bg-gray-700'
                         }`}
                         data-testid={`reading-file-${idx}`}
                       >
@@ -592,12 +592,12 @@ export default function PDFReaderPage() {
                           onClick={(e) => e.stopPropagation()}
                           className="h-4 w-4 rounded border-gray-300 text-green-500 focus:ring-green-500"
                         />
-                        <FileText className={`h-4 w-4 shrink-0 ${isCurrentFile ? 'text-amber-600' : 'text-red-400'}`} />
-                        <span className={`text-sm ${isListened ? 'text-gray-400 line-through' : 'text-gray-700'} ${isCurrentFile ? 'font-medium' : ''}`}>
+                        <FileText className={`h-4 w-4 shrink-0 ${isCurrentFile ? 'text-amber-300' : 'text-red-400'}`} />
+                        <span className={`text-sm ${isListened ? 'text-gray-400 line-through' : 'text-white'} ${isCurrentFile ? 'font-medium' : ''}`}>
                           {cleanName || file.name}
                         </span>
                         {isCurrentFile && (
-                          <span className="ml-auto text-xs bg-amber-200 text-amber-700 px-2 py-0.5 rounded">Current</span>
+                          <span className="ml-auto text-xs bg-amber-600 text-white px-2 py-0.5 rounded">Current</span>
                         )}
                       </div>
                     );
