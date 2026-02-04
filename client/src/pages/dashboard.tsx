@@ -9111,12 +9111,13 @@ export default function Dashboard() {
               >
                 {/* Module square */}
                 <div 
-                  className="cursor-pointer flex flex-col items-center justify-center rounded-md hover:bg-white/10 transition-colors"
+                  className="cursor-pointer flex flex-col items-start justify-end rounded-md hover:bg-white/10 transition-colors"
                   style={{ 
                     width: '100px', 
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
-                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 6px white'
+                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 5.5px white',
+                    padding: '8px'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
@@ -9163,7 +9164,7 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <span className="text-white text-sm font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.8px' }}>Module</span>
+                  <span className="text-white text-[9px] font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.5px' }}>Module</span>
                   {moduleCount > 0 ? (
                     <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
                       {moduleCount}
@@ -9176,12 +9177,13 @@ export default function Dashboard() {
                 </div>
                 {/* Reading square */}
                 <div 
-                  className="cursor-pointer flex flex-col items-center justify-center rounded-md hover:bg-white/10 transition-colors"
+                  className="cursor-pointer flex flex-col items-start justify-end rounded-md hover:bg-white/10 transition-colors"
                   style={{ 
                     width: '100px', 
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
-                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 6px white'
+                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 5.5px white',
+                    padding: '8px'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
@@ -9228,7 +9230,7 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <span className="text-white text-sm font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.8px' }}>Reading</span>
+                  <span className="text-white text-[9px] font-medium" style={{ fontFamily: 'Raleway, sans-serif', letterSpacing: '0.5px' }}>Reading</span>
                   {readingCount > 0 ? (
                     <span className="bg-red-500 text-[10px] font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 text-white mt-2">
                       {readingCount}
