@@ -768,7 +768,7 @@ export default function PDFReaderPage() {
                   disabled={!isPlaying}
                   className="h-12 w-12 rounded-full"
                 >
-                  <Square className="h-5 w-5" />
+                  <Square className="h-5 w-5 text-red-500" />
                 </Button>
 
                 <Button
