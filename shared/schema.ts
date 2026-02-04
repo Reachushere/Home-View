@@ -117,6 +117,8 @@ export const files = pgTable("files", {
   size: integer("size"),
   folder: text("folder"),
   listened: boolean("listened").default(false),
+  lastChunkIndex: integer("last_chunk_index").default(0),
+  totalChunks: integer("total_chunks").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

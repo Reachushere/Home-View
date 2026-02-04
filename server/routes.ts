@@ -1174,14 +1174,14 @@ export async function registerRoutes(
     }
   });
 
-  // PATCH /api/files/:id - Update file (rename, change folder, or mark listened)
+  // PATCH /api/files/:id - Update file (rename, change folder, mark listened, or save progress)
   app.patch("/api/files/:id", async (req, res) => {
     try {
-      const { displayName, folder, listened } = req.body;
-      if (!displayName && folder === undefined && listened === undefined) {
-        return res.status(400).json({ error: "displayName, folder, or listened is required" });
+      const { displayName, folder, listened, lastChunkIndex, totalChunks } = req.body;
+      if (!displayName && folder === undefined && listened === undefined && lastChunkIndex === undefined && totalChunks === undefined) {
+        return res.status(400).json({ error: "displayName, folder, listened, lastChunkIndex, or totalChunks is required" });
       }
-      const file = await storage.updateFile(Number(req.params.id), { displayName, folder, listened });
+      const file = await storage.updateFile(Number(req.params.id), { displayName, folder, listened, lastChunkIndex, totalChunks });
       if (!file) {
         return res.status(404).json({ error: "File not found" });
       }
