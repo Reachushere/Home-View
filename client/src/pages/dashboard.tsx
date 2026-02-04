@@ -10137,32 +10137,9 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    {/* Current Hour Row Cell Background */}
+                    {/* Today Date & Current Hour Cell Background */}
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Current Hour Row</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.currentHourCellBackground}</span>
-                        <div className="relative">
-                          <div 
-                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
-                            style={{ backgroundColor: colorSettings.currentHourCellBackground }}
-                            onClick={() => document.getElementById('color-current-hour-cell-input')?.click()}
-                            data-testid="color-current-hour-cell"
-                          />
-                          <input
-                            id="color-current-hour-cell-input"
-                            type="color"
-                            value={colorSettings.currentHourCellBackground}
-                            onChange={(e) => setColorSettings(prev => ({ ...prev, currentHourCellBackground: e.target.value }))}
-                            className="absolute opacity-0 w-0 h-0"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Today + Current Hour Cell Background */}
-                    <div className="flex items-center justify-between">
-                      <Label className="text-xs">Today + Current Hour</Label>
+                      <Label className="text-xs">Today Date & Current Hour</Label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCurrentHourCellBackground}</span>
                         <div className="relative">
