@@ -328,14 +328,14 @@ button[role="combobox"] > span {
     transform: translateX(-100%);
     opacity: 0;
   }
-  0.3% {
+  0.4% {
     opacity: 1;
   }
-  1.5% {
+  2.2% {
     transform: translateX(100%);
     opacity: 1;
   }
-  1.8% {
+  2.6% {
     opacity: 0;
   }
   100% {
@@ -548,14 +548,14 @@ button[role="combobox"] > span {
     transform: translateX(0%);
     opacity: 0;
   }
-  0.3% {
+  0.4% {
     opacity: 1;
   }
-  1.5% {
+  2.2% {
     transform: translateX(100%);
     opacity: 1;
   }
-  1.8% {
+  2.6% {
     opacity: 0;
   }
   100% {
