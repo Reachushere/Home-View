@@ -2671,18 +2671,28 @@ export async function registerRoutes(
         return false;
       });
       
-      // Separate modules and readings by folder name
-      const moduleFiles = unlistenedFiles.filter(f => 
+      // Separate by course and type for priority ordering
+      // Priority: 1. CPPA modules, 2. CFNF modules, 3. CPPA readings, 4. CFNF readings
+      const isModule = (f: any) => 
         f.folder?.toLowerCase().includes('module') || 
-        f.originalName?.toLowerCase().includes('module')
-      );
-      const readingFiles = unlistenedFiles.filter(f => 
+        f.originalName?.toLowerCase().includes('module');
+      const isReading = (f: any) => 
         f.folder?.toLowerCase().includes('reading') || 
-        f.originalName?.toLowerCase().includes('reading')
-      );
+        f.originalName?.toLowerCase().includes('reading');
+      const isCPPA = (f: any) => 
+        f.folder?.toLowerCase().includes('cppa') || 
+        f.originalName?.toLowerCase().includes('cppa');
+      const isCFNF = (f: any) => 
+        f.folder?.toLowerCase().includes('cfnf') || 
+        f.originalName?.toLowerCase().includes('cfnf');
       
-      // Priority: modules first, then readings
-      const orderedFiles = [...moduleFiles, ...readingFiles];
+      const cppaModules = unlistenedFiles.filter(f => isCPPA(f) && isModule(f));
+      const cfnfModules = unlistenedFiles.filter(f => isCFNF(f) && isModule(f));
+      const cppaReadings = unlistenedFiles.filter(f => isCPPA(f) && isReading(f));
+      const cfnfReadings = unlistenedFiles.filter(f => isCFNF(f) && isReading(f));
+      
+      // Priority order: CPPA modules > CFNF modules > CPPA readings > CFNF readings
+      const orderedFiles = [...cppaModules, ...cfnfModules, ...cppaReadings, ...cfnfReadings];
       
       if (orderedFiles.length === 0) {
         return res.json({ 
