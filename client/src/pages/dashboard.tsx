@@ -9106,8 +9106,8 @@ export default function Dashboard() {
                 }}
               >
               <div 
-                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-up"
-                  style={{ color: 'white', marginTop: '4px', marginBottom: '-2px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', border: '1px solid rgba(255, 255, 255, 0.5)', borderRadius: '4px' }}
+                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-up border border-white/50"
+                  style={{ color: 'white', marginTop: '4px', marginBottom: '-2px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9167,8 +9167,8 @@ export default function Dashboard() {
                   </span>
                 </div>
                 <div 
-                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-down"
-                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '3px', border: '1px solid rgba(255, 255, 255, 0.5)', borderRadius: '4px' }}
+                  className="text-[11px] py-1.5 px-2 cursor-pointer flex items-center justify-between rounded-sm hover:bg-white/25 beam-down border border-white/50"
+                  style={{ color: 'white', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', marginTop: '3px' }}
                   data-testid={`pill-course-${courseId}-reading`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
