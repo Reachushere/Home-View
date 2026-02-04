@@ -632,7 +632,7 @@ button[role="combobox"] > span {
     transparent 100%
   );
   transform: translateX(-100%);
-  animation: current-hour-row-shimmer-sweep 20s ease-in-out infinite;
+  animation: current-hour-row-shimmer-sweep 16s ease-in-out infinite;
   pointer-events: none;
   z-index: 50;
 }
@@ -642,14 +642,14 @@ button[role="combobox"] > span {
     transform: translateX(-100%);
     opacity: 0;
   }
-  2% {
+  1% {
     opacity: 1;
   }
-  48% {
+  5% {
     transform: translateX(100%);
     opacity: 1;
   }
-  50% {
+  6% {
     opacity: 0;
   }
   100% {
