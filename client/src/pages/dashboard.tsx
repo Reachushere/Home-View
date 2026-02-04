@@ -10129,18 +10129,13 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCellBackground}</span>
                         <div className="relative">
-                          <div 
-                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
-                            style={{ backgroundColor: colorSettings.todayCellBackground }}
-                            onClick={() => document.getElementById('color-today-cell-input')?.click()}
-                            data-testid="color-today-cell"
-                          />
                           <input
-                            id="color-today-cell-input"
                             type="color"
                             value={colorSettings.todayCellBackground}
                             onChange={(e) => setColorSettings(prev => ({ ...prev, todayCellBackground: e.target.value }))}
-                            className="absolute opacity-0 w-0 h-0"
+                            className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
+                            style={{ WebkitAppearance: 'none' }}
+                            data-testid="color-today-cell"
                           />
                         </div>
                       </div>
@@ -10152,18 +10147,13 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.currentHourRowBackground}</span>
                         <div className="relative">
-                          <div 
-                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
-                            style={{ backgroundColor: colorSettings.currentHourRowBackground }}
-                            onClick={() => document.getElementById('color-current-hour-row-input')?.click()}
-                            data-testid="color-current-hour-row"
-                          />
                           <input
-                            id="color-current-hour-row-input"
                             type="color"
                             value={colorSettings.currentHourRowBackground}
                             onChange={(e) => setColorSettings(prev => ({ ...prev, currentHourRowBackground: e.target.value }))}
-                            className="absolute opacity-0 w-0 h-0"
+                            className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
+                            style={{ WebkitAppearance: 'none' }}
+                            data-testid="color-current-hour-row"
                           />
                         </div>
                       </div>
@@ -10175,18 +10165,13 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCurrentHourCellBackground}</span>
                         <div className="relative">
-                          <div 
-                            className="w-5 h-5 rounded cursor-pointer border border-white/30"
-                            style={{ backgroundColor: colorSettings.todayCurrentHourCellBackground }}
-                            onClick={() => document.getElementById('color-today-current-hour-cell-input')?.click()}
-                            data-testid="color-today-current-hour-cell"
-                          />
                           <input
-                            id="color-today-current-hour-cell-input"
                             type="color"
                             value={colorSettings.todayCurrentHourCellBackground}
                             onChange={(e) => setColorSettings(prev => ({ ...prev, todayCurrentHourCellBackground: e.target.value }))}
-                            className="absolute opacity-0 w-0 h-0"
+                            className="w-5 h-5 cursor-pointer border-0 p-0 bg-transparent"
+                            style={{ WebkitAppearance: 'none' }}
+                            data-testid="color-today-current-hour-cell"
                           />
                         </div>
                       </div>

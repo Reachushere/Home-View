@@ -987,6 +987,31 @@ button[role="combobox"] > span {
     cursor: not-allowed;
   }
   
+  /* Color input styling */
+  input[type="color"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 3px;
+  }
+
+  input[type="color"]::-moz-color-swatch {
+    border: none;
+    border-radius: 3px;
+  }
+  
   .flip-card {
     background: linear-gradient(180deg, #1a1a1a 0%, #1a1a1a 48%, #0d0d0d 50%, #1a1a1a 52%, #1a1a1a 100%);
     border-radius: 4px;
