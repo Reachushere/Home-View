@@ -6764,7 +6764,12 @@ export default function Dashboard() {
                         data-testid="select-module-file">
                         <SelectValue className="!text-white font-['Raleway']" placeholder={(() => {
                           if (moduleFiles.length === 0) return 'No modules';
-                          // Show listened file name if available
+                          // Check for unlistened files first
+                          const unlistenedFiles = moduleFiles.filter(f => !f.listened);
+                          if (unlistenedFiles.length > 0) {
+                            return `${moduleFiles.length} module${moduleFiles.length > 1 ? 's' : ''}`;
+                          }
+                          // All files are listened - show the first listened file name
                           const listenedFile = moduleFiles.find(f => f.listened);
                           if (listenedFile) {
                             return (listenedFile.displayName || listenedFile.originalName).replace(/\.pdf$/i, '');
