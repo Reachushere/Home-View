@@ -10062,7 +10062,7 @@ export default function Dashboard() {
                     
                     {/* Glass Effect Toggle */}
                     <div className="flex items-center justify-between">
-                      <Label className="text-xs">Glass Effect</Label>
+                      <Label className="text-xs">Header Glass Effect</Label>
                       <div 
                         className={`w-7 h-3.5 rounded-full cursor-pointer transition-colors ${colorSettings.boxGlassEffect ? 'bg-gradient-to-r from-[#4578B0] to-[#042550]' : 'bg-gray-500'}`}
                         onClick={() => setColorSettings(prev => ({ ...prev, boxGlassEffect: !prev.boxGlassEffect }))}
@@ -10085,7 +10085,7 @@ export default function Dashboard() {
                           max="90"
                           value={colorSettings.boxTransparency}
                           onChange={(e) => setColorSettings(prev => ({ ...prev, boxTransparency: parseInt(e.target.value) }))}
-                          className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                          className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                           data-testid="slider-transparency"
                         />
                       </div>
@@ -10248,7 +10248,7 @@ export default function Dashboard() {
                         step="2"
                         value={blinkSettings.buttonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, buttonSpacing: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-button-spacing"
                       />
                     </div>
@@ -10265,7 +10265,7 @@ export default function Dashboard() {
                         step="2"
                         value={blinkSettings.mediaControlSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, mediaControlSpacing: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-media-control-spacing"
                       />
                     </div>
@@ -10282,7 +10282,7 @@ export default function Dashboard() {
                         step="1"
                         value={blinkSettings.tallPillButtonSpacing}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillButtonSpacing: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-tall-pill-button-spacing"
                       />
                     </div>
@@ -10299,7 +10299,7 @@ export default function Dashboard() {
                         step="1"
                         value={blinkSettings.tallPillHeight}
                         onChange={(e) => setBlinkSettings(prev => ({ ...prev, tallPillHeight: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="slider-tall-pill-height"
                       />
                     </div>
@@ -10375,7 +10375,7 @@ export default function Dashboard() {
                             step="0.1"
                             value={blinkSettings.todayColumnBlinkSpeed}
                             onChange={(e) => setBlinkSettings(prev => ({ ...prev, todayColumnBlinkSpeed: Number(e.target.value) }))}
-                            className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                            className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                             data-testid="slider-today-column-speed"
                           />
                         </div>
@@ -10407,7 +10407,7 @@ export default function Dashboard() {
                             step="0.1"
                             value={blinkSettings.allDayFilesBlinkSpeed}
                             onChange={(e) => setBlinkSettings(prev => ({ ...prev, allDayFilesBlinkSpeed: Number(e.target.value) }))}
-                            className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                            className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                             data-testid="slider-allday-files-speed"
                           />
                         </div>
@@ -10454,7 +10454,7 @@ export default function Dashboard() {
                         step="1"
                         value={ttsSettings.startDelay}
                         onChange={(e) => setTtsSettings(prev => ({ ...prev, startDelay: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="input-tts-start-delay"
                       />
                       <p className="text-xs text-muted-foreground">
@@ -10474,7 +10474,7 @@ export default function Dashboard() {
                         step="5"
                         value={ttsSettings.wordsPerMinute}
                         onChange={(e) => setTtsSettings(prev => ({ ...prev, wordsPerMinute: Number(e.target.value) }))}
-                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:h-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
+                        className="w-1/3 h-0.5 bg-muted rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-1.5 [&::-webkit-slider-thumb]:h-1.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:w-1.5 [&::-moz-range-thumb]:h-1.5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#3b82f6] [&::-moz-range-thumb]:border-0"
                         data-testid="input-tts-wpm"
                       />
                       <p className="text-xs text-muted-foreground">
