@@ -1194,70 +1194,27 @@ export default function Dashboard() {
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
   
-  // Pre-fetch OneDrive file counts for the selected week - run in parallel for speed
+  // Fetch file counts from database - much faster than OneDrive API calls
   useEffect(() => {
-    const fetchOneDriveFileCounts = async () => {
-      const oneDriveFolderMap: Record<string, string> = {
-        'cppa122': 'CPPA122 - Local Politics',
-        'cfnf400': 'CFNF400 - Human Sexuality', 
-        'casl101': 'CASL101 - American Sign Language'
-      };
-      
-      const counts: Record<string, number> = {};
-      
-      // Fetch all courses in parallel
-      const coursePromises = Object.entries(oneDriveFolderMap).map(async ([courseId, courseFolder]) => {
-        const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
-        try {
-          const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
-          const courseFolders = await courseResponse.json();
-          const weekFolder = courseFolders.find((f: any) => 
-            f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`)
-          );
-          
-          if (weekFolder) {
-            const weekResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
-            const weekContents = await weekResponse.json();
-            
-            // Fetch module and reading folders in parallel
-            const folderPromises: Promise<void>[] = [];
-            
-            const moduleFolder = weekContents.find((f: any) => 
-              f.type === 'folder' && f.name.toLowerCase().includes('module')
-            );
-            if (moduleFolder) {
-              folderPromises.push((async () => {
-                const moduleResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(moduleFolder.path)}`);
-                const moduleFiles = await moduleResponse.json();
-                const pdfCount = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf')).length;
-                counts[`week-${selectedWeek}-${courseId}-module`] = pdfCount;
-              })());
-            }
-            
-            const readingFolder = weekContents.find((f: any) => 
-              f.type === 'folder' && f.name.toLowerCase().includes('reading')
-            );
-            if (readingFolder) {
-              folderPromises.push((async () => {
-                const readingResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
-                const readingFiles = await readingResponse.json();
-                const pdfCount = readingFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf')).length;
-                counts[`week-${selectedWeek}-${courseId}-reading`] = pdfCount;
-              })());
-            }
-            
-            await Promise.all(folderPromises);
+    const fetchFileCounts = async () => {
+      try {
+        const response = await fetch('/api/files/counts');
+        if (response.ok) {
+          const counts = await response.json();
+          setFileCounts(counts);
+          // Also set legacy oneDriveFileCounts for backward compatibility
+          const legacyCounts: Record<string, number> = {};
+          for (const [key, value] of Object.entries(counts)) {
+            legacyCounts[key] = (value as { total: number }).total;
           }
-        } catch (error) {
-          console.error(`Error fetching OneDrive counts for ${courseId}:`, error);
+          setOneDriveFileCounts(legacyCounts);
         }
-      });
-      
-      await Promise.all(coursePromises);
-      setOneDriveFileCounts(prev => ({ ...prev, ...counts }));
+      } catch (error) {
+        console.error('Error fetching file counts:', error);
+      }
     };
     
-    fetchOneDriveFileCounts();
+    fetchFileCounts();
   }, [selectedWeek]);
   
   // Close modules/readings honeycomb when clicking outside
@@ -2857,7 +2814,9 @@ export default function Dashboard() {
   // File preview dialog state
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
   const [oneDrivePreviewFiles, setOneDrivePreviewFiles] = useState<FileItem[]>([]);
-  // Cache for OneDrive file counts by folder (e.g., "week-4-cppa122-module": 3)
+  // Cache for file counts by folder with listened breakdown (e.g., "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 })
+  const [fileCounts, setFileCounts] = useState<Record<string, { total: number; listened: number; unlistened: number }>>({});
+  // Legacy: for backward compatibility with OneDrive-only counts
   const [oneDriveFileCounts, setOneDriveFileCounts] = useState<Record<string, number>>({});
   const [fileSelectorGlow, setFileSelectorGlow] = useState(false);
   const fileSelectorGlowTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -9130,11 +9089,11 @@ export default function Dashboard() {
           const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
           const courseHex = course.color || '#4ADE80';
           const courseId = courseCode.toLowerCase();
-          // Use OneDrive file counts - all files are "unread" since we don't track listened state in OneDrive
+          // Use database file counts with listened/unlistened breakdown
           const folderKey = `week-${selectedWeek}-${courseId}-module`;
-          const oneDriveCount = oneDriveFileCounts[folderKey] || 0;
-          const unreadCount = oneDriveCount;
-          const completedCount = 0; // No listened tracking for OneDrive files yet
+          const folderCounts = fileCounts[folderKey] || { total: 0, listened: 0, unlistened: 0 };
+          const unreadCount = folderCounts.unlistened;
+          const completedCount = folderCounts.listened;
           return (
             <div 
               key={`module-btn-${courseId}`}
@@ -9306,11 +9265,11 @@ export default function Dashboard() {
           const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
           const courseHex = course.color || '#4ADE80';
           const courseId = courseCode.toLowerCase();
-          // Use OneDrive file counts - all files are "unread" since we don't track listened state in OneDrive
+          // Use database file counts with listened/unlistened breakdown
           const folderKey = `week-${selectedWeek}-${courseId}-reading`;
-          const oneDriveCount = oneDriveFileCounts[folderKey] || 0;
-          const unreadCount = oneDriveCount;
-          const completedCount = 0; // No listened tracking for OneDrive files yet
+          const folderCounts = fileCounts[folderKey] || { total: 0, listened: 0, unlistened: 0 };
+          const unreadCount = folderCounts.unlistened;
+          const completedCount = folderCounts.listened;
           return (
             <div 
               key={`reading-btn-${courseId}`}

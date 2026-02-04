@@ -880,6 +880,41 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/files/counts - Fast file counts by week/course/type with listened breakdown
+  // Returns: { "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 }, ... }
+  app.get("/api/files/counts", async (_req, res) => {
+    try {
+      const files = await storage.getFiles();
+      const counts: Record<string, { total: number; listened: number; unlistened: number }> = {};
+      
+      for (const file of files) {
+        if (!file.folder) continue;
+        
+        // Extract week number, course, and type from folder name
+        // Folder format: "week-4-cppa122-module" or "week-4-cfnf400-reading"
+        const folderMatch = file.folder.match(/^week-(\d+)-([a-z0-9]+)-(module|reading)$/i);
+        if (!folderMatch) continue;
+        
+        const folderKey = file.folder.toLowerCase();
+        if (!counts[folderKey]) {
+          counts[folderKey] = { total: 0, listened: 0, unlistened: 0 };
+        }
+        
+        counts[folderKey].total++;
+        if (file.listened) {
+          counts[folderKey].listened++;
+        } else {
+          counts[folderKey].unlistened++;
+        }
+      }
+      
+      res.json(counts);
+    } catch (err) {
+      console.error("Error fetching file counts:", err);
+      res.status(500).json({ error: "Failed to fetch file counts" });
+    }
+  });
+
   // GET /api/files - List all uploaded files
   app.get("/api/files", async (_req, res) => {
     try {
@@ -2701,7 +2736,7 @@ export async function registerRoutes(
   });
   
   // In-memory storage for playback progress (persists until server restart)
-  const playbackProgress: Record<string, { chunkIndex: number; totalChunks: number; lastPlayed: Date }> = {};
+  const playbackProgress: Record<string, { chunkIndex: number; totalChunks: number; lastPlayed: Date; lastCompletedChunk?: number; fileId?: number }> = {};
   
   // Track active kitchen playback session (for stopping)
   let kitchenPlaybackActive = false;
