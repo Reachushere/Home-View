@@ -2726,6 +2726,446 @@ export async function registerRoutes(
     }
   });
   
+  // POST /api/shower/trigger - Trigger automatic reading from Home Assistant
+  // This is the endpoint Home Assistant should call when motion is detected
+  app.post("/api/shower/trigger", async (req, res) => {
+    try {
+      const targetEntity = req.body?.entityId || BATHROOM_ECHO_ENTITY;
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // First, sync OneDrive to get latest files
+      console.log("Shower trigger: Syncing OneDrive files...");
+      const { listOneDriveItems } = await import("./onedrive");
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+      
+      // Get current week number
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      let currentWeekNumber = 1;
+      
+      if (semesterSettings?.semesterStartDate) {
+        const startDate = new Date(semesterSettings.semesterStartDate);
+        const today = new Date();
+        const diffTime = today.getTime() - startDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      }
+      
+      // Sync OneDrive files for current week (inline version)
+      const courses = [
+        { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics' },
+        { code: 'CFNF400', path: '/School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality' }
+      ];
+      
+      for (const course of courses) {
+        try {
+          const weekFolders = await listOneDriveItems(course.path);
+          const currentWeekFolder = weekFolders.find((f: any) => {
+            if (f.type !== 'folder') return false;
+            const weekMatch = f.name.match(/Week\s+(\d+)/i);
+            return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
+          });
+          
+          if (!currentWeekFolder) continue;
+          
+          const weekContents = await listOneDriveItems(currentWeekFolder.path);
+          
+          // Check Module folder
+          const moduleFolder = weekContents.find((f: any) => 
+            f.type === 'folder' && f.name.toLowerCase() === 'module'
+          );
+          
+          if (moduleFolder) {
+            const moduleFiles = await listOneDriveItems(moduleFolder.path);
+            for (const file of moduleFiles) {
+              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+              
+              const existingFiles = await storage.getFiles();
+              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-module`;
+              if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
+              
+              const downloadResponse = await fetch(file.downloadUrl);
+              if (!downloadResponse.ok) continue;
+              
+              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+              const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+              const uploadResponse = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: fileBuffer,
+                headers: { 'Content-Type': 'application/pdf' }
+              });
+              if (!uploadResponse.ok) continue;
+              
+              const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+              await storage.createFile({
+                originalName: file.name,
+                displayName: file.name,
+                objectPath: objectPath,
+                contentType: 'application/pdf',
+                size: file.size,
+                folder: folderName,
+                listened: false
+              });
+            }
+          }
+          
+          // Check Reading folder
+          const readingFolder = weekContents.find((f: any) => 
+            f.type === 'folder' && f.name.toLowerCase() === 'reading'
+          );
+          
+          if (readingFolder) {
+            const readingFiles = await listOneDriveItems(readingFolder.path);
+            for (const file of readingFiles) {
+              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+              
+              const existingFiles = await storage.getFiles();
+              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-reading`;
+              if (existingFiles.some((f: any) => f.originalName === file.name && f.folder === folderName)) continue;
+              
+              const downloadResponse = await fetch(file.downloadUrl);
+              if (!downloadResponse.ok) continue;
+              
+              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+              const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+              const uploadResponse = await fetch(uploadUrl, {
+                method: 'PUT',
+                body: fileBuffer,
+                headers: { 'Content-Type': 'application/pdf' }
+              });
+              if (!uploadResponse.ok) continue;
+              
+              const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+              await storage.createFile({
+                originalName: file.name,
+                displayName: file.name,
+                objectPath: objectPath,
+                contentType: 'application/pdf',
+                size: file.size,
+                folder: folderName,
+                listened: false
+              });
+            }
+          }
+        } catch (e) {
+          console.error(`Shower trigger: Error syncing ${course.code}:`, e);
+        }
+      }
+      
+      // Get all files and filter for current week unlistened
+      const allFiles = await storage.getFiles();
+      const unlistenedFiles = allFiles.filter((f: any) => {
+        if (f.listened) return false;
+        const weekMatch = f.folder?.match(/week-(\d+)/i);
+        return weekMatch && parseInt(weekMatch[1], 10) === currentWeekNumber;
+      });
+      
+      // Priority order: CPPA modules > CFNF modules > CPPA readings > CFNF readings
+      const isModule = (f: any) => f.folder?.toLowerCase().includes('module');
+      const isCPPA = (f: any) => f.folder?.toLowerCase().includes('cppa');
+      const isCFNF = (f: any) => f.folder?.toLowerCase().includes('cfnf');
+      
+      const cppaModules = unlistenedFiles.filter((f: any) => isCPPA(f) && isModule(f));
+      const cfnfModules = unlistenedFiles.filter((f: any) => isCFNF(f) && isModule(f));
+      const cppaReadings = unlistenedFiles.filter((f: any) => isCPPA(f) && !isModule(f));
+      const cfnfReadings = unlistenedFiles.filter((f: any) => isCFNF(f) && !isModule(f));
+      
+      const orderedFiles = [...cppaModules, ...cfnfModules, ...cppaReadings, ...cfnfReadings];
+      
+      // If no files left, play CHUM FM radio
+      if (orderedFiles.length === 0) {
+        console.log("Shower trigger: All files complete, playing CHUM FM radio");
+        
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: targetEntity,
+            media_content_type: "custom",
+            media_content_id: "play 104.5 chumfm"
+          }),
+        });
+        
+        return res.json({
+          action: "radio",
+          message: `All week ${currentWeekNumber} readings complete! Playing CHUM FM 104.5`,
+          currentWeek: currentWeekNumber
+        });
+      }
+      
+      // Get next file to play
+      const nextFile = orderedFiles[0];
+      console.log(`Shower trigger: Playing ${nextFile.displayName || nextFile.originalName}`);
+      
+      // Check for resume progress
+      const progressKey = `file-${nextFile.id}`;
+      const progress = playbackProgress[progressKey];
+      const resumeFromChunk = progress?.chunkIndex || 0;
+      
+      // Extract text from PDF
+      let textContent = "";
+      try {
+        const objectFile = await objectStorage.getObjectEntityFile(nextFile.objectPath);
+        const [content] = await objectFile.download();
+        
+        const isPDF = content.slice(0, 4).toString() === '%PDF';
+        if (isPDF) {
+          const PdfParser = await getPdfParser();
+          const parser = new PdfParser({ data: new Uint8Array(content) });
+          await parser.load();
+          const pdfText = await parser.getText();
+          
+          if (pdfText && typeof pdfText === 'object') {
+            if (pdfText.pages && Array.isArray(pdfText.pages)) {
+              textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
+            } else if (Array.isArray(pdfText)) {
+              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
+            } else if (pdfText.text) {
+              textContent = pdfText.text;
+            } else {
+              textContent = Object.values(pdfText).filter(v => typeof v === 'string').join(' ');
+            }
+          } else {
+            textContent = String(pdfText || '');
+          }
+          await parser.destroy();
+        } else {
+          textContent = content.toString('utf-8');
+        }
+      } catch (error) {
+        console.error("Shower trigger: Error extracting text:", error);
+        return res.status(500).json({ error: "Failed to extract text from file" });
+      }
+      
+      if (!textContent.trim()) {
+        return res.status(400).json({ error: "File is empty or not readable" });
+      }
+      
+      // Clean and chunk the text for TTS (max ~500 chars per chunk for Echo)
+      let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
+      const chunks = cleanedContent.match(/.{1,450}[.!?]?\s*/g) || [cleanedContent];
+      
+      // Start from resume point
+      const chunk = chunks[resumeFromChunk] || chunks[0];
+      
+      // Announce which file we're reading
+      const fileName = nextFile.displayName || nextFile.originalName;
+      const courseMatch = nextFile.folder?.match(/(cppa|cfnf)\d*/i);
+      const courseName = courseMatch ? courseMatch[0].toUpperCase() : '';
+      const announcement = resumeFromChunk > 0 
+        ? `Resuming ${courseName} reading, chunk ${resumeFromChunk + 1} of ${chunks.length}.`
+        : `Now reading ${courseName} ${isModule(nextFile) ? 'module' : 'reading'}: ${fileName.replace('.pdf', '')}. ${chunks.length} sections total.`;
+      
+      // Send TTS to Echo
+      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: announcement,
+          target: targetEntity,
+          data: { type: "tts" }
+        }),
+      });
+      
+      // Wait a moment then start the content
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: chunk,
+          target: targetEntity,
+          data: { type: "tts" }
+        }),
+      });
+      
+      // Save progress
+      playbackProgress[progressKey] = {
+        chunkIndex: resumeFromChunk,
+        totalChunks: chunks.length,
+        lastPlayed: new Date()
+      };
+      
+      res.json({
+        action: "reading",
+        file: {
+          id: nextFile.id,
+          name: fileName,
+          folder: nextFile.folder
+        },
+        currentWeek: currentWeekNumber,
+        chunkIndex: resumeFromChunk,
+        totalChunks: chunks.length,
+        resuming: resumeFromChunk > 0,
+        remainingFiles: orderedFiles.length
+      });
+      
+    } catch (error: any) {
+      console.error("Shower trigger error:", error);
+      res.status(500).json({ error: "Failed to trigger shower reading", details: error.message });
+    }
+  });
+
+  // POST /api/shower/mark-listened - Mark a file as listened
+  app.post("/api/shower/mark-listened", async (req, res) => {
+    try {
+      const { fileId } = req.body;
+      
+      if (!fileId) {
+        return res.status(400).json({ error: "File ID required" });
+      }
+      
+      // Update the file to mark it as listened
+      await storage.updateFile(fileId, { listened: true });
+      
+      // Clear progress for this file
+      delete playbackProgress[`file-${fileId}`];
+      
+      res.json({ success: true, fileId, listened: true });
+    } catch (error) {
+      console.error("Error marking file as listened:", error);
+      res.status(500).json({ error: "Failed to mark file as listened" });
+    }
+  });
+
+  // POST /api/shower/next-chunk - Continue to next chunk of current file
+  app.post("/api/shower/next-chunk", async (req, res) => {
+    try {
+      const { fileId, entityId } = req.body;
+      const targetEntity = entityId || BATHROOM_ECHO_ENTITY;
+      
+      if (!fileId) {
+        return res.status(400).json({ error: "File ID required" });
+      }
+      
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Get the file
+      const allFiles = await storage.getFiles();
+      const file = allFiles.find((f: any) => f.id === fileId);
+      
+      if (!file) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      
+      // Get current progress
+      const progressKey = `file-${fileId}`;
+      const progress = playbackProgress[progressKey];
+      
+      if (!progress) {
+        return res.status(400).json({ error: "No progress found for this file. Use /trigger to start." });
+      }
+      
+      const nextChunkIndex = progress.chunkIndex + 1;
+      
+      // If we've finished all chunks, mark as listened
+      if (nextChunkIndex >= progress.totalChunks) {
+        await storage.updateFile(fileId, { listened: true });
+        delete playbackProgress[progressKey];
+        
+        return res.json({
+          action: "completed",
+          message: "File reading complete!",
+          fileId,
+          listened: true
+        });
+      }
+      
+      // Extract text again to get the chunk
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+      
+      let textContent = "";
+      try {
+        const objectFile = await objectStorage.getObjectEntityFile(file.objectPath);
+        const [content] = await objectFile.download();
+        
+        const isPDF = content.slice(0, 4).toString() === '%PDF';
+        if (isPDF) {
+          const PdfParser = await getPdfParser();
+          const parser = new PdfParser({ data: new Uint8Array(content) });
+          await parser.load();
+          const pdfText = await parser.getText();
+          
+          if (pdfText && typeof pdfText === 'object') {
+            if (pdfText.pages && Array.isArray(pdfText.pages)) {
+              textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
+            } else if (Array.isArray(pdfText)) {
+              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
+            } else if (pdfText.text) {
+              textContent = pdfText.text;
+            }
+          } else {
+            textContent = String(pdfText || '');
+          }
+          await parser.destroy();
+        } else {
+          textContent = content.toString('utf-8');
+        }
+      } catch (error) {
+        console.error("Error extracting text:", error);
+        return res.status(500).json({ error: "Failed to extract text from file" });
+      }
+      
+      // Chunk the text
+      let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
+      const chunks = cleanedContent.match(/.{1,450}[.!?]?\s*/g) || [cleanedContent];
+      const chunk = chunks[nextChunkIndex];
+      
+      // Send TTS
+      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: `Section ${nextChunkIndex + 1} of ${chunks.length}. ${chunk}`,
+          target: targetEntity,
+          data: { type: "tts" }
+        }),
+      });
+      
+      // Update progress
+      playbackProgress[progressKey] = {
+        chunkIndex: nextChunkIndex,
+        totalChunks: chunks.length,
+        lastPlayed: new Date()
+      };
+      
+      res.json({
+        action: "reading",
+        fileId,
+        chunkIndex: nextChunkIndex,
+        totalChunks: chunks.length,
+        hasMore: nextChunkIndex < chunks.length - 1
+      });
+      
+    } catch (error) {
+      console.error("Error playing next chunk:", error);
+      res.status(500).json({ error: "Failed to play next chunk" });
+    }
+  });
+
   // POST /api/shower/update-progress - Update playback progress
   app.post("/api/shower/update-progress", async (req, res) => {
     try {
