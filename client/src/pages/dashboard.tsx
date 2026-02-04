@@ -9039,9 +9039,11 @@ export default function Dashboard() {
         const moduleFolderKey = `week-${selectedWeek}-${courseId}-module`;
         const readingFolderKey = `week-${selectedWeek}-${courseId}-reading`;
         const moduleCount = fileCounts[moduleFolderKey]?.unlistened || 0;
+        const moduleListenedCount = fileCounts[moduleFolderKey]?.listened || 0;
         const readingCount = fileCounts[readingFolderKey]?.unlistened || 0;
+        const readingListenedCount = fileCounts[readingFolderKey]?.listened || 0;
         const totalUnread = moduleCount + readingCount;
-        const completedCount = (fileCounts[moduleFolderKey]?.listened || 0) + (fileCounts[readingFolderKey]?.listened || 0);
+        const completedCount = moduleListenedCount + readingListenedCount;
         
         return (
           <>
@@ -9151,11 +9153,15 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  {moduleCount > 0 && (
+                  {moduleCount > 0 ? (
                     <span className="bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {moduleCount}
                     </span>
-                  )}
+                  ) : moduleListenedCount > 0 ? (
+                    <span className="bg-gray-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                      {moduleListenedCount}
+                    </span>
+                  ) : null}
                   Module
                 </div>
                 <div 
@@ -9206,11 +9212,15 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  {readingCount > 0 && (
+                  {readingCount > 0 ? (
                     <span className="bg-red-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
                       {readingCount}
                     </span>
-                  )}
+                  ) : readingListenedCount > 0 ? (
+                    <span className="bg-gray-500 text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white">
+                      {readingListenedCount}
+                    </span>
+                  ) : null}
                   Reading
                 </div>
               </div>
