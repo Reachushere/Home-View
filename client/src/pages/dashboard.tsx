@@ -11593,7 +11593,7 @@ export default function Dashboard() {
                   return (
                   <div 
                     key={hour} 
-                    className={`grid border-b border-gray-300/30 relative group/row ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
+                    className={`grid border-b border-border/50 relative group/row ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                     style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                   >
                     <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
