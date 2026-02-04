@@ -82,6 +82,8 @@ const tokenFromEnv = process.env.HOME_ASSISTANT_TOKEN || "";
 const urlFromEnv = process.env.HOME_ASSISTANT_URL || "";
 const HOME_ASSISTANT_TOKEN = tokenFromEnv.startsWith("eyJ") ? tokenFromEnv : (urlFromEnv.startsWith("eyJ") ? urlFromEnv : tokenFromEnv);
 const BATHROOM_ECHO_ENTITY = "media_player.cat_wr";
+const KITCHEN_ECHO_ENTITY = "media_player.echo_kitchen_studio_black_am";
+const PARTNER_PHONE_ENTITY = "device_tracker.y_s_iphone";
 
 // Track TTS reading session for resume functionality
 interface TTSSession {
@@ -3186,6 +3188,262 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error updating progress:", error);
       res.status(500).json({ error: "Failed to update progress" });
+    }
+  });
+
+  // GET /api/partner-status - Check if partner's phone is away from home
+  app.get("/api/partner-status", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      const response = await fetch(`${haUrl}/api/states/${PARTNER_PHONE_ENTITY}`, {
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to get partner status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const state = data.state?.toLowerCase() || '';
+      
+      // Partner is "away" if state is not "home" (could be "not_home", "work", etc.)
+      const isAway = state !== 'home';
+      
+      res.json({ 
+        isAway,
+        state: data.state,
+        friendlyName: data.attributes?.friendly_name || PARTNER_PHONE_ENTITY
+      });
+    } catch (error: any) {
+      console.error("Error checking partner status:", error);
+      res.status(500).json({ error: "Failed to check partner status", details: error.message });
+    }
+  });
+
+  // POST /api/kitchen/trigger - Trigger reading on kitchen Echo (same as shower but different speaker)
+  app.post("/api/kitchen/trigger", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // First, sync OneDrive to get latest files
+      console.log("Kitchen trigger: Syncing OneDrive...");
+      try {
+        const syncResp = await fetch('http://localhost:5000/api/onedrive/sync', { method: 'POST' });
+        if (!syncResp.ok) {
+          console.log("OneDrive sync warning:", await syncResp.text());
+        }
+      } catch (syncErr) {
+        console.log("OneDrive sync skipped:", syncErr);
+      }
+      
+      // Get current week number from semester info
+      const semesterInfo = await storage.getSemesterInfo();
+      const today = new Date();
+      let currentWeekNumber = 1;
+      
+      if (semesterInfo?.startDate) {
+        const semesterStart = startOfWeek(new Date(semesterInfo.startDate), { weekStartsOn: 6 });
+        const currentWeekStart = startOfWeek(today, { weekStartsOn: 6 });
+        currentWeekNumber = Math.max(1, Math.floor((currentWeekStart.getTime() - semesterStart.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1);
+      }
+      
+      console.log(`Kitchen trigger: Current week is ${currentWeekNumber}`);
+      
+      // Get all files and filter to current week's unlistened files
+      const allFiles = await storage.getFiles();
+      const weekFiles = allFiles.filter((f: any) => {
+        if (f.listened) return false;
+        const folderLower = (f.folder || '').toLowerCase();
+        const weekMatch = folderLower.match(/week[- ]?(\d+)/);
+        if (!weekMatch) return false;
+        const fileWeek = parseInt(weekMatch[1], 10);
+        return fileWeek === currentWeekNumber;
+      });
+      
+      // Priority order: CPPA modules -> CFNF modules -> CPPA readings -> CFNF readings
+      // Exclude ASL (visual-only course)
+      const orderedFiles = weekFiles
+        .filter((f: any) => {
+          const folder = (f.folder || '').toLowerCase();
+          return !folder.includes('casl') && !folder.includes('asl');
+        })
+        .sort((a: any, b: any) => {
+          const aFolder = (a.folder || '').toLowerCase();
+          const bFolder = (b.folder || '').toLowerCase();
+          
+          const aIsCPPA = aFolder.includes('cppa');
+          const bIsCPPA = bFolder.includes('cppa');
+          const aIsModule = aFolder.includes('module');
+          const bIsModule = bFolder.includes('module');
+          
+          // CPPA modules first
+          if (aIsCPPA && aIsModule && !(bIsCPPA && bIsModule)) return -1;
+          if (bIsCPPA && bIsModule && !(aIsCPPA && aIsModule)) return 1;
+          
+          // Then CFNF modules
+          if (!aIsCPPA && aIsModule && !(bIsModule)) return -1;
+          if (!bIsCPPA && bIsModule && !(aIsModule)) return 1;
+          
+          // Then CPPA readings
+          if (aIsCPPA && !aIsModule && !(bIsCPPA && !bIsModule)) return -1;
+          if (bIsCPPA && !bIsModule && !(aIsCPPA && !aIsModule)) return 1;
+          
+          return 0;
+        });
+      
+      // If no unlistened files, play radio
+      if (orderedFiles.length === 0) {
+        console.log("Kitchen trigger: All readings complete, playing radio");
+        
+        await fetch(`${haUrl}/api/services/media_player/play_media`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            entity_id: KITCHEN_ECHO_ENTITY,
+            media_content_id: "play 104.5 chumfm",
+            media_content_type: "custom"
+          }),
+        });
+        
+        return res.json({ 
+          action: "radio", 
+          message: "All readings complete for this week! Playing CHUM FM 104.5",
+          currentWeek: currentWeekNumber
+        });
+      }
+      
+      // Get the next file to read
+      const nextFile = orderedFiles[0];
+      const fileName = nextFile.name || 'Unknown file';
+      const folder = nextFile.folder || '';
+      
+      // Determine course and type for announcement
+      const isCPPA = folder.toLowerCase().includes('cppa');
+      const isModule = folder.toLowerCase().includes('module');
+      const courseName = isCPPA ? 'CPPA 122 Local Politics' : 'CFNF 400 Human Sexuality';
+      const contentType = isModule ? 'Module' : 'Reading';
+      
+      console.log(`Kitchen trigger: Playing ${fileName}`);
+      
+      // Check for existing progress
+      const progressKey = `file-${nextFile.id}`;
+      const existingProgress = playbackProgress[progressKey];
+      const resumeFromChunk = existingProgress?.chunkIndex || 0;
+      
+      // Extract text from the file
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
+      const objectStorage = new ObjectStorageService();
+      
+      let textContent = "";
+      try {
+        const objectFile = await objectStorage.getObjectEntityFile(nextFile.objectPath);
+        const [content] = await objectFile.download();
+        
+        const isPDF = content.slice(0, 4).toString() === '%PDF';
+        if (isPDF) {
+          const PdfParser = await getPdfParser();
+          const parser = new PdfParser({ data: new Uint8Array(content) });
+          await parser.load();
+          const pdfText = await parser.getText();
+          
+          if (pdfText && typeof pdfText === 'object') {
+            if (pdfText.pages && Array.isArray(pdfText.pages)) {
+              textContent = pdfText.pages.map((page: any) => page.text || '').join(' ');
+            } else if (Array.isArray(pdfText)) {
+              textContent = pdfText.map((item: any) => typeof item === 'string' ? item : item.text || '').join(' ');
+            } else if (pdfText.text) {
+              textContent = pdfText.text;
+            }
+          } else {
+            textContent = String(pdfText || '');
+          }
+          await parser.destroy();
+        } else {
+          textContent = content.toString('utf-8');
+        }
+      } catch (error) {
+        console.error("Error extracting text from file:", error);
+        return res.status(500).json({ error: "Failed to extract text from file" });
+      }
+      
+      // Chunk the text (~450 chars per chunk for TTS)
+      let cleanedContent = textContent.trim().replace(/\s+/g, ' ').replace(/[^\x20-\x7E]/g, ' ');
+      const chunks = cleanedContent.match(/.{1,450}[.!?]?\s*/g) || [cleanedContent];
+      const chunk = chunks[resumeFromChunk] || chunks[0];
+      
+      // Announce what we're about to read
+      const announcement = resumeFromChunk > 0 
+        ? `Resuming ${courseName}, ${contentType}: ${fileName.replace('.pdf', '')}. Section ${resumeFromChunk + 1} of ${chunks.length}.`
+        : `Now reading ${courseName}, ${contentType}: ${fileName.replace('.pdf', '')}. Section 1 of ${chunks.length}.`;
+      
+      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: announcement,
+          target: KITCHEN_ECHO_ENTITY,
+          data: { type: "tts" }
+        }),
+      });
+      
+      // Wait a moment then start the content
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: chunk,
+          target: KITCHEN_ECHO_ENTITY,
+          data: { type: "tts" }
+        }),
+      });
+      
+      // Save progress
+      playbackProgress[progressKey] = {
+        chunkIndex: resumeFromChunk,
+        totalChunks: chunks.length,
+        lastPlayed: new Date()
+      };
+      
+      res.json({
+        action: "reading",
+        file: {
+          id: nextFile.id,
+          name: fileName,
+          folder: nextFile.folder
+        },
+        currentWeek: currentWeekNumber,
+        chunkIndex: resumeFromChunk,
+        totalChunks: chunks.length,
+        resuming: resumeFromChunk > 0,
+        remainingFiles: orderedFiles.length
+      });
+      
+    } catch (error: any) {
+      console.error("Kitchen trigger error:", error);
+      res.status(500).json({ error: "Failed to trigger kitchen reading", details: error.message });
     }
   });
   

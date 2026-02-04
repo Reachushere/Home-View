@@ -317,6 +317,15 @@ export default function Dashboard() {
   const [uploadTargetFolder, setUploadTargetFolder] = useState<string>('week-3-cppa122-reading');
   const [renameFileId, setRenameFileId] = useState<number | null>(null);
   const [renameFileName, setRenameFileName] = useState<string>('');
+  
+  // Partner away popup state - show when partner is at work
+  const [showPartnerAwayPopup, setShowPartnerAwayPopup] = useState(false);
+  const [isPartnerAway, setIsPartnerAway] = useState(false);
+  const [partnerAwayDismissedUntil, setPartnerAwayDismissedUntil] = useState<number | null>(() => {
+    const saved = localStorage.getItem('partnerAwayDismissedUntil');
+    return saved ? parseInt(saved, 10) : null;
+  });
+  const [isKitchenReadingLoading, setIsKitchenReadingLoading] = useState(false);
   const [draggedFileForMove, setDraggedFileForMove] = useState<{id: number; folder: string} | null>(null);
   const [moveFileId, setMoveFileId] = useState<number | null>(null);
   const [moveFileCurrentFolder, setMoveFileCurrentFolder] = useState<string>('');
@@ -409,6 +418,66 @@ export default function Dashboard() {
     };
     loadFoldersFromDB();
   }, []);
+  
+  // Check partner status every 60 seconds to show kitchen reading popup
+  useEffect(() => {
+    const checkPartnerStatus = async () => {
+      try {
+        const response = await fetch('/api/partner-status');
+        if (response.ok) {
+          const data = await response.json();
+          setIsPartnerAway(data.isAway);
+          
+          // Show popup if partner is away and we haven't dismissed it recently
+          if (data.isAway) {
+            const now = Date.now();
+            if (!partnerAwayDismissedUntil || now > partnerAwayDismissedUntil) {
+              setShowPartnerAwayPopup(true);
+            }
+          }
+        }
+      } catch (err) {
+        // Silently fail - Home Assistant might not be configured
+      }
+    };
+    
+    // Check immediately, then every 60 seconds
+    checkPartnerStatus();
+    const interval = setInterval(checkPartnerStatus, 60000);
+    return () => clearInterval(interval);
+  }, [partnerAwayDismissedUntil]);
+  
+  // Handle kitchen reading trigger
+  const handleKitchenReadingTrigger = async () => {
+    setIsKitchenReadingLoading(true);
+    try {
+      const response = await fetch('/api/kitchen/trigger', { method: 'POST' });
+      const data = await response.json();
+      if (response.ok) {
+        toast({
+          title: data.action === 'radio' ? 'Playing Radio' : 'Playing Reading',
+          description: data.action === 'radio' 
+            ? data.message 
+            : `Now playing: ${data.file?.name || 'Unknown file'}`
+        });
+      } else {
+        toast({ title: 'Error', description: data.error || 'Failed to trigger reading', variant: 'destructive' });
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to trigger kitchen reading', variant: 'destructive' });
+    } finally {
+      setIsKitchenReadingLoading(false);
+      setShowPartnerAwayPopup(false);
+    }
+  };
+  
+  // Dismiss partner popup for 4 hours
+  const handleDismissPartnerPopup = () => {
+    const dismissUntil = Date.now() + 4 * 60 * 60 * 1000; // 4 hours
+    setPartnerAwayDismissedUntil(dismissUntil);
+    localStorage.setItem('partnerAwayDismissedUntil', dismissUntil.toString());
+    setShowPartnerAwayPopup(false);
+  };
   
   // Handle folder right-click context menu
   const handleFolderContextMenu = (e: React.MouseEvent, parentFolder: string) => {
@@ -5540,6 +5609,39 @@ export default function Dashboard() {
           </Button>
         </div>
       )}
+
+      {/* Partner Away Popup - Kitchen Reading Prompt */}
+      <Dialog open={showPartnerAwayPopup} onOpenChange={setShowPartnerAwayPopup}>
+        <DialogContent className="max-w-[340px] p-4 bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base text-white">
+              <Volume2 className="h-5 w-5 text-blue-400" />
+              Play Readings?
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-sm text-white/80 py-3">
+            Your partner is away. Would you like to play your readings on the Kitchen Echo?
+          </div>
+          <DialogFooter className="flex gap-2 justify-end">
+            <Button
+              variant="outline"
+              className="border-white/30 text-white hover:bg-white/10"
+              onClick={handleDismissPartnerPopup}
+              data-testid="button-dismiss-partner-popup"
+            >
+              No, not now
+            </Button>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={handleKitchenReadingTrigger}
+              disabled={isKitchenReadingLoading}
+              data-testid="button-play-kitchen-reading"
+            >
+              {isKitchenReadingLoading ? 'Starting...' : 'Yes, play readings'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Readings Popup Dialog - OneDrive Files */}
       <Dialog open={!!readingsPopupCourse} onOpenChange={(open) => !open && setReadingsPopupCourse(null)}>
