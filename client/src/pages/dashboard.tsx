@@ -13124,7 +13124,7 @@ export default function Dashboard() {
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Task</span>
                 </div>
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px', maxWidth: `${row1Positions.code - row1Positions.task + 13}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px', maxWidth: `${row1Positions.code - row1Positions.task + 28}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
               </div>
               {/* Code header - absolute positioned */}
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '0px' }}>Code</span>
@@ -13192,7 +13192,7 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[1]), opacity: 0.9 }} />
                 </div>
                 {/* Task title - same position as row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 6}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[1]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 21}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[1]?.title || ''}</span>
                 {/* Course code - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course name - same position as row 1, clipped to not overflow into due date (add 7px for marginLeft in row 1 text) */}
@@ -13224,7 +13224,7 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[2]), opacity: 0.9 }} />
                 </div>
                 {/* Task title - same position as row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 6}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[2]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 21}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[2]?.title || ''}</span>
                 {/* Course code - same position as row 1 (add 7px for marginLeft in row 1 text) */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueThisWeekTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course name - same position as row 1, clipped to not overflow into due date (add 7px for marginLeft in row 1 text) */}
@@ -13343,7 +13343,7 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[0], 'today'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[0]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[0]?.title || ''}</span>
                 {/* Code */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
@@ -13367,7 +13367,7 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[1], 'today'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[1]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[1]?.title || ''}</span>
                 {/* Code */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
@@ -13391,7 +13391,7 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[2], 'today'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[2]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[2]?.title || ''}</span>
                 {/* Code */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
@@ -13503,7 +13503,7 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[0], 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.title || ''}</span>
                 {/* Code */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
@@ -13527,7 +13527,7 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[1], 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.title || ''}</span>
                 {/* Code */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
@@ -13551,7 +13551,7 @@ export default function Dashboard() {
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[2], 'tomorrow'), opacity: 0.9 }} />
                 </div>
                 {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.title || ''}</span>
                 {/* Code */}
                 <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '10px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
