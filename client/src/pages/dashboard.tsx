@@ -10438,7 +10438,7 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-3">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Text-to-Speech Highlighting</Label>
-                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;fine-tune word highlighting</span>
+                    <span className="text-xs text-muted-foreground italic">&nbsp;|&nbsp;Fine-tune word highlighting</span>
                   </div>
                   
                   <div className="space-y-4">
