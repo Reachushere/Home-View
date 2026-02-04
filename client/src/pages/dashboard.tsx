@@ -431,6 +431,9 @@ export default function Dashboard() {
   }, []);
   
   // Check partner status every 60 seconds to show kitchen reading popup
+  // Use ref to track if popup is already showing (prevents re-triggering during same session)
+  const partnerPopupShownRef = useRef(false);
+  
   useEffect(() => {
     const checkPartnerStatus = async () => {
       try {
@@ -440,13 +443,18 @@ export default function Dashboard() {
           setIsPartnerAway(data.isAway);
           
           // Show popup if partner is away and we haven't dismissed it recently
-          if (data.isAway) {
+          // Also check ref to prevent showing if already shown this session
+          if (data.isAway && !partnerPopupShownRef.current) {
             const now = Date.now();
             const savedDismiss = localStorage.getItem('partnerAwayDismissedUntil');
             const dismissedUntil = savedDismiss ? parseInt(savedDismiss, 10) : 0;
             if (!dismissedUntil || now > dismissedUntil) {
               setShowPartnerAwayPopup(true);
+              partnerPopupShownRef.current = true; // Mark as shown
             }
+          } else if (!data.isAway) {
+            // Reset ref when partner comes home so popup can show again when they leave
+            partnerPopupShownRef.current = false;
           }
         }
       } catch (err) {
@@ -503,7 +511,8 @@ export default function Dashboard() {
       toast({ title: 'Error', description: 'Failed to trigger kitchen reading', variant: 'destructive' });
     } finally {
       setIsKitchenReadingLoading(false);
-      setShowPartnerAwayPopup(false);
+      // Dismiss for 4 hours when playing readings too (same as clicking "No, not now")
+      handleDismissPartnerPopup();
     }
   };
   
