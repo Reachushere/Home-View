@@ -13295,15 +13295,6 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTodayTasks.length === 0 ? (
                 <div style={{ position: 'relative', minHeight: '80px' }}>
-                  {/* Headers row for empty state */}
-                  <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
-                  </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due today</div>
                 </div>
@@ -13331,15 +13322,6 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <>
-              {/* Desktop Layout - Headers row */}
-              <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
-              </div>
               {/* Task Row 1 */}
               {dueTodayTasks[0] && row1Positions.course > 0 && (
               <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
@@ -13465,15 +13447,6 @@ export default function Dashboard() {
                 <div className="flex-1 flex items-center justify-center text-white/60 text-xs">Loading...</div>
               ) : dueTomorrowTasks.length === 0 ? (
                 <div style={{ position: 'relative', minHeight: '80px' }}>
-                  {/* Headers row for empty state */}
-                  <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 7}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
-                  </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due tomorrow</div>
                 </div>
@@ -13501,15 +13474,6 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <>
-              {/* Desktop Layout - Headers row */}
-              <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
-              </div>
               {/* Task Row 1 */}
               {dueTomorrowTasks[0] && row1Positions.course > 0 && (
               <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
