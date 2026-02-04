@@ -9223,13 +9223,16 @@ export default function Dashboard() {
                         </span>
                       ) : null}
                     </div>
-                    {/* Progress bar */}
+                    {/* Progress bar with label */}
                     {(moduleCount + moduleListenedCount) > 0 && (
-                      <div className="w-full h-1 bg-black/30 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-green-400 transition-all duration-300 rounded-full"
-                          style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
-                        />
+                      <div className="flex items-center gap-1 w-full">
+                        <div className="flex-1 h-1.5 bg-black/30 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-green-400 transition-all duration-300 rounded-full"
+                            style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-[7px] text-white/80">{moduleListenedCount}/{moduleCount + moduleListenedCount}</span>
                       </div>
                     )}
                   </div>
@@ -9315,13 +9318,16 @@ export default function Dashboard() {
                         </span>
                       ) : null}
                     </div>
-                    {/* Progress bar */}
+                    {/* Progress bar with label */}
                     {(readingCount + readingListenedCount) > 0 && (
-                      <div className="w-full h-1 bg-black/30 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-blue-400 transition-all duration-300 rounded-full"
-                          style={{ width: `${(readingListenedCount / (readingCount + readingListenedCount)) * 100}%` }}
-                        />
+                      <div className="flex items-center gap-1 w-full">
+                        <div className="flex-1 h-1.5 bg-black/30 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-blue-400 transition-all duration-300 rounded-full"
+                            style={{ width: `${(readingListenedCount / (readingCount + readingListenedCount)) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-[7px] text-white/80">{readingListenedCount}/{readingCount + readingListenedCount}</span>
                       </div>
                     )}
                   </div>
