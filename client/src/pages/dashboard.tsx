@@ -9107,7 +9107,7 @@ export default function Dashboard() {
               >
               <div 
                   className="text-[9px] px-1.5 cursor-pointer flex items-center justify-between rounded-sm bg-black/60 hover:bg-white/25 animate-fade-in"
-                  style={{ color: 'white', marginTop: '4px', marginBottom: '0px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 375, position: 'relative' }}
+                  style={{ color: 'white', marginTop: '4px', marginBottom: '0px', fontFamily: 'Raleway, sans-serif', minWidth: '75px', marginLeft: '-2px', height: '20px', fontSize: '9px', letterSpacing: '0.6px', fontWeight: 375, borderBottom: '1px solid rgba(255,255,255,0.50)' }}
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setOpenCourseDropdown(null);
@@ -9155,7 +9155,6 @@ export default function Dashboard() {
                 >
                   <span style={{ marginLeft: '3px' }}>Module</span>
                   <span style={{ minWidth: '18px', display: 'flex', justifyContent: 'flex-end', marginRight: '-2px' }}>
-                  <div style={{ position: 'absolute', bottom: 0, left: '9px', right: '4px', height: '1px', backgroundColor: 'rgba(255,255,255,0.50)' }} />
                     {moduleCount > 0 ? (
                       <span className="bg-red-500 text-[9px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                         {moduleCount}
