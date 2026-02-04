@@ -9117,7 +9117,7 @@ export default function Dashboard() {
                     height: '75px', 
                     background: `linear-gradient(135deg, ${courseHex}bb, ${courseHex}99), linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.4))`,
                     borderRadius: '12px',
-                    boxShadow: `inset 0 0 0 5px ${courseHex}99, inset 0 0 0 5.5px white`,
+                    boxShadow: `inset 0 0 0 5px ${courseHex}, inset 0 0 0 5.5px white`,
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
@@ -9186,7 +9186,7 @@ export default function Dashboard() {
                     height: '75px', 
                     background: `linear-gradient(135deg, ${courseHex}bb, ${courseHex}99), linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.4))`,
                     borderRadius: '12px',
-                    boxShadow: `inset 0 0 0 5px ${courseHex}99, inset 0 0 0 5.5px white`,
+                    boxShadow: `inset 0 0 0 5px ${courseHex}, inset 0 0 0 5.5px white`,
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
