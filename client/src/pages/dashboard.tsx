@@ -9150,6 +9150,14 @@ export default function Dashboard() {
                     width: '75px', 
                     height: '75px', 
                     background: (() => {
+                      // Use specific gradient colors for each course
+                      if (courseId === 'cppa122') {
+                        return 'linear-gradient(180deg, rgba(15, 80, 4, 0.88) 0%, rgba(71, 176, 69, 0.78) 100%)';
+                      } else if (courseId === 'cfnf400') {
+                        return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
+                      } else if (courseId === 'casl101') {
+                        return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+                      }
                       const rgb = hexToRgb(courseHex);
                       const darkerR = Math.max(0, rgb.r - 40);
                       const darkerG = Math.max(0, rgb.g - 40);
@@ -9245,6 +9253,14 @@ export default function Dashboard() {
                     width: '75px', 
                     height: '75px', 
                     background: (() => {
+                      // Use specific gradient colors for each course
+                      if (courseId === 'cppa122') {
+                        return 'linear-gradient(180deg, rgba(15, 80, 4, 0.88) 0%, rgba(71, 176, 69, 0.78) 100%)';
+                      } else if (courseId === 'cfnf400') {
+                        return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
+                      } else if (courseId === 'casl101') {
+                        return 'linear-gradient(180deg, rgba(80, 4, 66, 0.88) 0%, rgba(176, 69, 162, 0.78) 100%)';
+                      }
                       const rgb = hexToRgb(courseHex);
                       const darkerR = Math.max(0, rgb.r - 40);
                       const darkerG = Math.max(0, rgb.g - 40);
