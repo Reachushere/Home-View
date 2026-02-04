@@ -3214,11 +3214,14 @@ export async function registerRoutes(
       const data = await response.json();
       const state = data.state?.toLowerCase() || '';
       
+      // Partner is "at work" if state is "work" (zone.work)
       // Partner is "away" if state is not "home" (could be "not_home", "work", etc.)
+      const isAtWork = state === 'work';
       const isAway = state !== 'home';
       
       res.json({ 
         isAway,
+        isAtWork,
         state: data.state,
         friendlyName: data.attributes?.friendly_name || PARTNER_PHONE_ENTITY
       });
