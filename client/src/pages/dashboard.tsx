@@ -6771,7 +6771,14 @@ export default function Dashboard() {
                         }`}
                         style={{ color: 'white' }}
                         data-testid="select-module-file">
-                        <SelectValue />
+                        <SelectValue>
+                          {(() => {
+                            if (moduleFiles.length === 0) return 'No modules';
+                            const unlistenedFile = moduleFiles.find(f => !f.listened);
+                            const fileToShow = isModule && previewFile ? previewFile : (unlistenedFile || moduleFiles[0]);
+                            return fileToShow ? (fileToShow.displayName || fileToShow.originalName).replace(/\.pdf$/i, '') : 'No modules';
+                          })()}
+                        </SelectValue>
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {moduleFiles.length === 0 && (
@@ -7162,18 +7169,18 @@ export default function Dashboard() {
             
             <div className="w-px h-6 bg-white/30" />
             
-            {/* Progress Bar */}
-            {totalChunks > 0 && (
-              <div className="flex items-center gap-2">
-                <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-green-500 transition-all duration-300 rounded-full"
-                    style={{ width: `${((currentChunkIndex + 1) / totalChunks) * 100}%` }}
-                  />
-                </div>
-                <span className="text-[9px] text-white/70">{currentChunkIndex + 1}/{totalChunks}</span>
+            {/* Progress Bar - Always visible */}
+            <div className="flex items-center gap-2">
+              <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-green-500 transition-all duration-300 rounded-full"
+                  style={{ width: totalChunks > 0 ? `${((currentChunkIndex + 1) / totalChunks) * 100}%` : '0%' }}
+                />
               </div>
-            )}
+              <span className="text-[9px] text-white/70">
+                {totalChunks > 0 ? `${currentChunkIndex + 1}/${totalChunks}` : '0/0'}
+              </span>
+            </div>
             
             <Button
               size="icon"
