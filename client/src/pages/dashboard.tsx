@@ -6762,7 +6762,7 @@ export default function Dashboard() {
                             : 'border-gray-600 hover:border-green-500/50'
                         }`}
                         data-testid="select-module-file">
-                        <SelectValue placeholder={moduleFiles.length > 0 ? `${moduleFiles.length} module${moduleFiles.length > 1 ? 's' : ''}` : 'No modules'} />
+                        <SelectValue className="!text-white" placeholder={moduleFiles.length > 0 ? `${moduleFiles.length} module${moduleFiles.length > 1 ? 's' : ''}` : 'No modules'} />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {moduleFiles.length === 0 ? (
@@ -6797,7 +6797,7 @@ export default function Dashboard() {
                             : 'border-gray-600 hover:border-blue-500/50'
                         }`}
                         data-testid="select-reading-file">
-                        <SelectValue placeholder={readingFiles.length > 0 ? `${readingFiles.length} reading${readingFiles.length > 1 ? 's' : ''}` : 'No readings'} />
+                        <SelectValue className="!text-white" placeholder={readingFiles.length > 0 ? `${readingFiles.length} reading${readingFiles.length > 1 ? 's' : ''}` : 'No readings'} />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {readingFiles.length === 0 ? (
