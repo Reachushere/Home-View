@@ -3368,7 +3368,7 @@ export async function registerRoutes(
       
       // Get the next file to read
       const nextFile = orderedFiles[0];
-      const fileName = nextFile.name || 'Unknown file';
+      const fileName = nextFile.displayName || nextFile.originalName || 'Unknown file';
       const folder = nextFile.folder || '';
       
       // Determine course and type for announcement
