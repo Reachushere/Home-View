@@ -1348,29 +1348,41 @@ input[type="checkbox"]:checked::after {
   color: white !important;
 }
 
-/* Speckle/dot animation for dropdown */
-@keyframes speckle-in {
+/* Star Trek transporter beam-in animation */
+@keyframes beam-in {
   0% {
     opacity: 0;
-    filter: blur(8px);
-    transform: scale(0.8);
+    filter: brightness(3) blur(4px);
+    clip-path: inset(0 100% 0 0);
   }
-  30% {
-    opacity: 0.3;
-    filter: blur(4px);
+  20% {
+    opacity: 0.4;
+    filter: brightness(2.5) blur(3px);
+    clip-path: inset(0 70% 0 0);
+  }
+  40% {
+    opacity: 0.6;
+    filter: brightness(2) blur(2px);
+    clip-path: inset(0 40% 0 0);
   }
   60% {
-    opacity: 0.7;
-    filter: blur(2px);
+    opacity: 0.8;
+    filter: brightness(1.5) blur(1px);
+    clip-path: inset(0 20% 0 0);
+  }
+  80% {
+    opacity: 0.9;
+    filter: brightness(1.2) blur(0.5px);
+    clip-path: inset(0 5% 0 0);
   }
   100% {
     opacity: 1;
-    filter: blur(0);
-    transform: scale(1);
+    filter: brightness(1) blur(0);
+    clip-path: inset(0 0 0 0);
   }
 }
 
 .speckle-open {
-  animation: speckle-in 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: beam-in 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
