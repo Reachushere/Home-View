@@ -10204,9 +10204,9 @@ export default function Dashboard() {
                       <Label className="text-xs">Main Background Colour</Label>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.mainBackground}</span>
-                        <div className="relative w-8 h-8">
+                        <div className="relative w-5 h-5">
                           <div 
-                            className={`w-8 h-8 rounded border border-white/30 ${colorSettings.mainBackgroundOverlay ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
+                            className={`w-5 h-5 rounded border border-white/30 ${colorSettings.mainBackgroundOverlay ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}
                             style={{ backgroundColor: colorSettings.mainBackground }}
                             onClick={() => colorSettings.mainBackgroundOverlay && document.getElementById('color-main-background-input')?.click()}
                             data-testid="color-main-background"
@@ -10214,7 +10214,7 @@ export default function Dashboard() {
                           {/* Red X when disabled */}
                           {!colorSettings.mainBackgroundOverlay && (
                             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-                              <X className="w-6 h-6" strokeWidth={1.5} style={{ stroke: '#dc2626', color: '#dc2626' }} />
+                              <X className="w-4 h-4" strokeWidth={1.5} style={{ stroke: '#dc2626', color: '#dc2626' }} />
                             </div>
                           )}
                           <input
