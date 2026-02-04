@@ -6762,7 +6762,7 @@ export default function Dashboard() {
                             : 'border-gray-600 hover:border-green-500/50'
                         }`}
                         data-testid="select-module-file">
-                        <SelectValue className="!text-white" placeholder={(() => {
+                        <SelectValue className="!text-white font-['Raleway']" placeholder={(() => {
                           if (moduleFiles.length === 0) return 'No modules';
                           // Show listened file name if available
                           const listenedFile = moduleFiles.find(f => f.listened);
@@ -6805,7 +6805,7 @@ export default function Dashboard() {
                             : 'border-gray-600 hover:border-blue-500/50'
                         }`}
                         data-testid="select-reading-file">
-                        <SelectValue className="!text-white" placeholder={readingFiles.length > 0 ? `${readingFiles.length} reading${readingFiles.length > 1 ? 's' : ''}` : 'No readings'} />
+                        <SelectValue className="!text-white font-['Raleway']" placeholder={readingFiles.length > 0 ? `${readingFiles.length} reading${readingFiles.length > 1 ? 's' : ''}` : 'No readings'} />
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px] min-w-[350px]">
                         {readingFiles.length === 0 ? (
