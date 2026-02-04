@@ -2640,6 +2640,38 @@ export async function registerRoutes(
   // SHOWER AUTOMATION - Auto-play PDFs on motion
   // ============================================
   
+  // GET /api/debug/week - Debug endpoint to check current week calculation
+  app.get("/api/debug/week", async (req, res) => {
+    try {
+      const semesterSettings = await storage.getActiveSemesterSettings();
+      const today = new Date();
+      
+      if (!semesterSettings?.semesterStartDate) {
+        return res.json({
+          error: "No semester settings found",
+          semesterSettings: null,
+          serverTime: today.toISOString()
+        });
+      }
+      
+      const startDate = new Date(semesterSettings.semesterStartDate);
+      const diffTime = today.getTime() - startDate.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const currentWeekNumber = Math.floor(diffDays / 7) + 1;
+      
+      return res.json({
+        semesterStartDate: semesterSettings.semesterStartDate,
+        startDateParsed: startDate.toISOString(),
+        serverTime: today.toISOString(),
+        diffDays,
+        currentWeekNumber,
+        semesterName: semesterSettings.semesterName
+      });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
+  });
+  
   // In-memory storage for playback progress (persists until server restart)
   const playbackProgress: Record<string, { chunkIndex: number; totalChunks: number; lastPlayed: Date }> = {};
   
