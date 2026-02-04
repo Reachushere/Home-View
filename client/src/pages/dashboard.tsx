@@ -9097,8 +9097,8 @@ export default function Dashboard() {
               <div 
                 className="absolute z-[100] flex flex-col gap-0 overflow-visible"
                 style={{ 
-                  top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 6}px`, 
-                  right: '73px',
+                  top: `${349 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0) + 4 - 5}px`, 
+                  right: '69px',
                   transformOrigin: 'center center',
                   alignItems: 'flex-start',
                   display: 'flex',
