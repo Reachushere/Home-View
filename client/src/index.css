@@ -1338,3 +1338,13 @@ input[type="checkbox"]:checked::after {
   line-height: 1;
 }
 
+/* Transparent dropdown menu item hover */
+[data-variant="transparent"]:hover,
+[data-variant="transparent"]:focus {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-variant="transparent"] svg {
+  color: white !important;
+}
+
