@@ -1761,9 +1761,14 @@ export default function Dashboard() {
       const hex = course.color;
       const rgb = hexToRgb(hex);
       
+      // Calculate a light tint by mixing with white (for opaque task backgrounds)
+      const tintR = Math.round(rgb.r + (255 - rgb.r) * 0.85);
+      const tintG = Math.round(rgb.g + (255 - rgb.g) * 0.85);
+      const tintB = Math.round(rgb.b + (255 - rgb.b) * 0.85);
+      
       colors[courseCode] = {
         hex,
-        bg: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`,
+        bg: `rgb(${tintR}, ${tintG}, ${tintB})`, // Opaque light tint of course color
         border: hex,
         text: hex,
         dot: hex,
