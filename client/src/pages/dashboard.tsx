@@ -9111,12 +9111,13 @@ export default function Dashboard() {
               >
                 {/* Module square */}
                 <div 
-                  className="cursor-pointer flex flex-col items-start justify-end rounded-md hover:bg-white/10 transition-colors"
+                  className="cursor-pointer flex flex-col items-start justify-end hover:bg-white/10 transition-colors"
                   style={{ 
                     width: '100px', 
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
-                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 5.5px white',
+                    borderRadius: '12px',
+                    border: '1px solid white',
                     padding: '8px'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
@@ -9177,12 +9178,13 @@ export default function Dashboard() {
                 </div>
                 {/* Reading square */}
                 <div 
-                  className="cursor-pointer flex flex-col items-start justify-end rounded-md hover:bg-white/10 transition-colors"
+                  className="cursor-pointer flex flex-col items-start justify-end hover:bg-white/10 transition-colors"
                   style={{ 
                     width: '100px', 
                     height: '100px', 
                     background: 'rgba(0,0,0,0.9)',
-                    boxShadow: 'inset 0 0 0 5px rgba(0,0,0,0.9), inset 0 0 0 5.5px white',
+                    borderRadius: '12px',
+                    border: '1px solid white',
                     padding: '8px'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
