@@ -2650,8 +2650,8 @@ export async function registerRoutes(
       const semesterSettings = await storage.getActiveSemesterSettings();
       let currentWeekNumber = 1;
       
-      if (semesterSettings?.startDate) {
-        const startDate = new Date(semesterSettings.startDate);
+      if (semesterSettings?.semesterStartDate) {
+        const startDate = new Date(semesterSettings.semesterStartDate);
         const today = new Date();
         const diffTime = today.getTime() - startDate.getTime();
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
