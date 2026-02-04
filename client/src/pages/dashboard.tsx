@@ -10316,7 +10316,7 @@ export default function Dashboard() {
                   <div>
                     <Label className="text-sm font-medium">Column Spacing</Label>
                     <p className="text-xs text-muted-foreground italic border-b border-white/30 inline-block pb-0.5">
-                      Reset the column widths in the summary boxes if they appear squished.
+                      Reset the column widths in the summary boxes.
                     </p>
                   </div>
                   <Button
