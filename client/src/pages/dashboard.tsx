@@ -1202,6 +1202,9 @@ export default function Dashboard() {
     boxGlassEffect: boolean;
     boxTransparency: number;
     mainBackgroundOverlay: boolean;
+    todayCellBackground: string;
+    currentHourCellBackground: string;
+    todayCurrentHourCellBackground: string;
   }>(() => {
     const saved = localStorage.getItem('colorSettings');
     const defaults = {
@@ -1210,7 +1213,10 @@ export default function Dashboard() {
       mainBackground: '#1a1a2e',
       boxGlassEffect: true,
       boxTransparency: 35,
-      mainBackgroundOverlay: false
+      mainBackgroundOverlay: false,
+      todayCellBackground: '#EAE4DE',
+      currentHourCellBackground: '#E8E8E8',
+      todayCurrentHourCellBackground: '#C5D8EC'
     };
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -10103,6 +10109,75 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
+                    {/* Today Column Cell Background */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Today Column</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCellBackground}</span>
+                        <div className="relative">
+                          <div 
+                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            style={{ backgroundColor: colorSettings.todayCellBackground }}
+                            onClick={() => document.getElementById('color-today-cell-input')?.click()}
+                            data-testid="color-today-cell"
+                          />
+                          <input
+                            id="color-today-cell-input"
+                            type="color"
+                            value={colorSettings.todayCellBackground}
+                            onChange={(e) => setColorSettings(prev => ({ ...prev, todayCellBackground: e.target.value }))}
+                            className="absolute opacity-0 w-0 h-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Current Hour Row Cell Background */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Current Hour Row</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.currentHourCellBackground}</span>
+                        <div className="relative">
+                          <div 
+                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            style={{ backgroundColor: colorSettings.currentHourCellBackground }}
+                            onClick={() => document.getElementById('color-current-hour-cell-input')?.click()}
+                            data-testid="color-current-hour-cell"
+                          />
+                          <input
+                            id="color-current-hour-cell-input"
+                            type="color"
+                            value={colorSettings.currentHourCellBackground}
+                            onChange={(e) => setColorSettings(prev => ({ ...prev, currentHourCellBackground: e.target.value }))}
+                            className="absolute opacity-0 w-0 h-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Today + Current Hour Cell Background */}
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs">Today + Current Hour</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground font-mono w-16">{colorSettings.todayCurrentHourCellBackground}</span>
+                        <div className="relative">
+                          <div 
+                            className="w-8 h-8 rounded cursor-pointer border border-white/30"
+                            style={{ backgroundColor: colorSettings.todayCurrentHourCellBackground }}
+                            onClick={() => document.getElementById('color-today-current-hour-cell-input')?.click()}
+                            data-testid="color-today-current-hour-cell"
+                          />
+                          <input
+                            id="color-today-current-hour-cell-input"
+                            type="color"
+                            value={colorSettings.todayCurrentHourCellBackground}
+                            onChange={(e) => setColorSettings(prev => ({ ...prev, todayCurrentHourCellBackground: e.target.value }))}
+                            className="absolute opacity-0 w-0 h-0"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    
                     {/* Main Background Overlay Toggle */}
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Background Colour Overlay</Label>
@@ -10788,7 +10863,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? '#EAE4DE' : 'white'
+                      backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -11449,7 +11524,7 @@ export default function Dashboard() {
                               // Remove current hour row background when there are tasks in this cell (including multi-hour tasks)
                               backgroundColor: isCurrentHour && hasAnyTasks 
                                 ? undefined 
-                                : (isToday && isCurrentHour) ? '#C5D8EC' : isToday ? '#EAE4DE' : isCurrentHour ? '#E8E8E8' : undefined,
+                                : (isToday && isCurrentHour) ? colorSettings.todayCurrentHourCellBackground : isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourCellBackground : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
