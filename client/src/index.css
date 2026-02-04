@@ -1284,3 +1284,10 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
 }
 
+/* Settings dialog checkbox styling */
+input[type="checkbox"] {
+  width: 10px !important;
+  height: 10px !important;
+  accent-color: #3b82f6;
+}
+
