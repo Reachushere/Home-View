@@ -10998,7 +10998,8 @@ export default function Dashboard() {
                   data-testid="time-column-resize-handle"
                 />
               </div>
-                            {weekDays.map((day, idx) => {
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
+              {weekDays.map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
                 const isFriday = day.getDay() === 5;
                 const dayName = format(day, "EEE").toUpperCase();
@@ -11054,6 +11055,7 @@ export default function Dashboard() {
               <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative" style={{ backgroundColor: colorSettings.headerBar }}>
                 ALL DAY
               </div>
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
               {/* Day cells */}
               {weekDays.map((day, dayIdx) => {
                 // Only show true all-day tasks (midnight due) and all-day calendar events
@@ -11449,6 +11451,7 @@ export default function Dashboard() {
                       );
                     })()}
                   </div>
+                  {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg }} />}
                   {weekDays.map((day, dayIdx) => {
                     // Course row day cells - show tasks due on this day for this course
                     const isDayToday = isSameDay(day, new Date());
@@ -11678,6 +11681,7 @@ export default function Dashboard() {
                     <div className="text-[10px] font-medium tracking-wide flex items-center justify-center relative" style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: '#faf8f5' }} />}
                     {weekDays.map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
