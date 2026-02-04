@@ -13138,7 +13138,7 @@ export default function Dashboard() {
                   />
                   <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Code</span>
                 </div>
-                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ fontSize: '10px', color: '#9ca3af', marginLeft: '15px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
               </div>
               {/* Course header - absolute positioned */}
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '0px' }}>Course</span>
