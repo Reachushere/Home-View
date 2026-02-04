@@ -9133,7 +9133,7 @@ export default function Dashboard() {
                       const lighterR = Math.min(255, rgb.r + 100);
                       const lighterG = Math.min(255, rgb.g + 100);
                       const lighterB = Math.min(255, rgb.b + 100);
-                      return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.73) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.6) 100%)`;
+                      return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.88) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.78) 100%)`;
                     })(),
                     borderRadius: '8px',
                     boxShadow: `inset 0 0 0 3px ${courseHex}, inset 0 0 0 3.5px white`,
@@ -9214,7 +9214,7 @@ export default function Dashboard() {
                       const lighterR = Math.min(255, rgb.r + 100);
                       const lighterG = Math.min(255, rgb.g + 100);
                       const lighterB = Math.min(255, rgb.b + 100);
-                      return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.73) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.6) 100%)`;
+                      return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.88) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.78) 100%)`;
                     })(),
                     borderRadius: '8px',
                     boxShadow: `inset 0 0 0 3px ${courseHex}, inset 0 0 0 3.5px white`,
