@@ -7025,18 +7025,16 @@ export default function Dashboard() {
               <Play className="h-4 w-4 text-white fill-white" />
             </Button>
             
-            {previewFile && getTtsProgress(previewFile.id) && !isPlaying && (
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-6 w-6 border !border-green-500 text-white hover:text-white hover:!border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] focus:ring-2 focus:ring-green-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
-                onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
-                data-testid="button-preview-resume"
-                title={`Resume from section ${(getTtsProgress(previewFile.id)?.chunkIndex || 0) + 1}`}
-              >
-                <RotateCcw className="h-4 w-4 text-white stroke-white" />
-              </Button>
-            )}
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-6 w-6 border !border-green-500 text-white hover:text-white hover:!border-green-400 hover:bg-transparent shadow-[0_0_8px_rgba(34,197,94,0.4)] hover:shadow-[0_0_12px_rgba(34,197,94,0.6)] focus:ring-2 focus:ring-green-400 focus:ring-offset-1 focus:ring-offset-transparent transition-all duration-200"
+              onClick={() => previewFile && handlePlayFile(previewFile.objectPath, previewFile.displayName || previewFile.originalName, true)}
+              data-testid="button-preview-resume"
+              title={`Resume from section ${(getTtsProgress(previewFile?.id)?.chunkIndex || 0) + 1}`}
+            >
+              <RotateCcw className="h-4 w-4 text-white stroke-white" />
+            </Button>
             
             <Button
               size="icon"
