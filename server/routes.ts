@@ -2643,6 +2643,10 @@ export async function registerRoutes(
   // In-memory storage for playback progress (persists until server restart)
   const playbackProgress: Record<string, { chunkIndex: number; totalChunks: number; lastPlayed: Date }> = {};
   
+  // Track active kitchen playback session (for stopping)
+  let kitchenPlaybackActive = false;
+  let kitchenPlaybackAbortController: AbortController | null = null;
+  
   // GET /api/shower/next-reading - Get next unlistened module/reading file for current week
   app.get("/api/shower/next-reading", async (req, res) => {
     try {
@@ -3433,6 +3437,7 @@ export async function registerRoutes(
         ? `Resuming ${courseName}, ${contentType}: ${fileName.replace('.pdf', '')}. Starting from section ${resumeFromChunk + 1} of ${chunks.length}.`
         : `Now reading ${courseName}, ${contentType}: ${fileName.replace('.pdf', '')}. ${chunks.length} sections total.`;
       
+      // Send announcement
       await fetch(`${haUrl}/api/services/notify/alexa_media`, {
         method: 'POST',
         headers: {
@@ -3446,50 +3451,7 @@ export async function registerRoutes(
         }),
       });
       
-      // Wait a moment then start playing ALL chunks sequentially
-      await new Promise(resolve => setTimeout(resolve, 4000));
-      
-      // Play all remaining chunks
-      for (let i = resumeFromChunk; i < chunks.length; i++) {
-        const chunk = chunks[i];
-        console.log(`Kitchen trigger: Playing chunk ${i + 1} of ${chunks.length}`);
-        
-        await fetch(`${haUrl}/api/services/notify/alexa_media`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            message: chunk,
-            target: KITCHEN_ECHO_ENTITY,
-            data: { type: "tts" }
-          }),
-        });
-        
-        // Save progress after each chunk completes
-        playbackProgress[progressKey] = {
-          lastCompletedChunk: i,
-          totalChunks: chunks.length,
-          lastPlayed: new Date(),
-          fileId: nextFile.id,
-          fileName: fileName,
-          folder: nextFile.folder
-        };
-        
-        // Estimate TTS duration: ~80 chars per second at normal speed
-        // Wait for TTS to finish before playing next chunk
-        const estimatedDuration = Math.max(3000, (chunk.length / 80) * 1000 + 2000);
-        await new Promise(resolve => setTimeout(resolve, estimatedDuration));
-      }
-      
-      // All chunks complete - mark file as listened
-      console.log(`Kitchen trigger: All ${chunks.length} chunks complete, marking file ${nextFile.id} as listened`);
-      await storage.updateFile(nextFile.id, { listened: true });
-      
-      // Clear progress since file is complete
-      delete playbackProgress[progressKey];
-      
+      // Return immediately - play chunks in background
       res.json({
         action: "reading",
         file: {
@@ -3499,14 +3461,125 @@ export async function registerRoutes(
         },
         currentWeek: currentWeekNumber,
         totalChunks: chunks.length,
-        completed: true,
+        startingFromChunk: resumeFromChunk + 1,
         remainingFiles: orderedFiles.length - 1
       });
+      
+      // Set up abort controller for stopping playback
+      kitchenPlaybackAbortController = new AbortController();
+      kitchenPlaybackActive = true;
+      
+      // Play chunks in background (don't await)
+      (async () => {
+        try {
+          // Wait for announcement to finish (~5 seconds should be enough)
+          await new Promise(resolve => setTimeout(resolve, 6000));
+          
+          for (let i = resumeFromChunk; i < chunks.length; i++) {
+            // Check if playback was stopped
+            if (!kitchenPlaybackActive) {
+              console.log(`Kitchen trigger: Playback stopped at chunk ${i + 1}`);
+              break;
+            }
+            
+            const chunk = chunks[i];
+            console.log(`Kitchen trigger: Playing chunk ${i + 1} of ${chunks.length}`);
+            
+            await fetch(`${haUrl}/api/services/notify/alexa_media`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                message: chunk,
+                target: KITCHEN_ECHO_ENTITY,
+                data: { type: "tts" }
+              }),
+            });
+            
+            // Save progress after each chunk starts
+            playbackProgress[progressKey] = {
+              lastCompletedChunk: i,
+              totalChunks: chunks.length,
+              lastPlayed: new Date(),
+              fileId: nextFile.id,
+              fileName: fileName,
+              folder: nextFile.folder
+            };
+            
+            // IMPORTANT: Alexa TTS takes time to process before speaking
+            // Use ~50 chars per second (slower estimate) + 5 second buffer for processing
+            const estimatedDuration = Math.max(8000, (chunk.length / 50) * 1000 + 5000);
+            console.log(`Kitchen trigger: Waiting ${estimatedDuration}ms for chunk ${i + 1} (${chunk.length} chars)`);
+            await new Promise(resolve => setTimeout(resolve, estimatedDuration));
+          }
+          
+          // All chunks complete - mark file as listened (only if not stopped)
+          if (kitchenPlaybackActive) {
+            console.log(`Kitchen trigger: All ${chunks.length} chunks complete, marking file ${nextFile.id} as listened`);
+            await storage.updateFile(nextFile.id, { listened: true });
+            delete playbackProgress[progressKey];
+          }
+          
+          kitchenPlaybackActive = false;
+          kitchenPlaybackAbortController = null;
+        } catch (error) {
+          console.error("Kitchen background playback error:", error);
+          kitchenPlaybackActive = false;
+          kitchenPlaybackAbortController = null;
+        }
+      })();
       
     } catch (error: any) {
       console.error("Kitchen trigger error:", error);
       res.status(500).json({ error: "Failed to trigger kitchen reading", details: error.message });
     }
+  });
+  
+  // POST /api/kitchen/stop - Stop playback on kitchen Echo
+  app.post("/api/kitchen/stop", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+      
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+      
+      // Stop background playback loop
+      kitchenPlaybackActive = false;
+      if (kitchenPlaybackAbortController) {
+        kitchenPlaybackAbortController.abort();
+        kitchenPlaybackAbortController = null;
+      }
+      
+      // Stop media playback on Echo
+      await fetch(`${haUrl}/api/services/media_player/media_stop`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          entity_id: KITCHEN_ECHO_ENTITY
+        }),
+      });
+      
+      console.log("Kitchen playback stopped (both background loop and Echo)");
+      
+      res.json({ success: true, message: "Playback stopped on Kitchen Echo" });
+    } catch (error: any) {
+      console.error("Kitchen stop error:", error);
+      res.status(500).json({ error: "Failed to stop kitchen playback", details: error.message });
+    }
+  });
+  
+  // GET /api/kitchen/status - Get current playback status
+  app.get("/api/kitchen/status", async (req, res) => {
+    res.json({
+      isPlaying: kitchenPlaybackActive,
+      progress: Object.values(playbackProgress).find(p => (p as any).fileId) || null
+    });
   });
   
   // POST /api/shower/start-reading - Start TTS playback on Echo
