@@ -1405,14 +1405,14 @@ input[type="checkbox"]:checked::after {
 }
 
 .beam-up {
-  animation: diffuse-up 500ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: diffuse-up 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
   position: relative;
   overflow: visible;
 }
 
 
 .beam-down {
-  animation: diffuse-down 500ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: diffuse-down 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
   position: relative;
   overflow: visible;
 }
