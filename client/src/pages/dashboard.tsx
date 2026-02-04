@@ -1224,9 +1224,18 @@ export default function Dashboard() {
       currentHourRowBackground: '#EAE4DE',
       todayCurrentHourCellBackground: '#160502'
     };
-    // Force clear and reset colorSettings to ensure correct values
-    localStorage.removeItem('colorSettings');
-    localStorage.setItem('colorSettings', JSON.stringify(defaults));
+    // Check if migration has been done
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV3');
+    if (!migrationDone) {
+      // Force reset to correct defaults
+      localStorage.setItem('colorSettings', JSON.stringify(defaults));
+      localStorage.setItem('colorSettingsMigrationV3', 'done');
+      return defaults;
+    }
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { ...defaults, ...parsed };
+    }
     return defaults;
   });
   
