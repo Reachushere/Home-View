@@ -10305,7 +10305,20 @@ export default function Dashboard() {
                       };
                       setTaskColumnWidths(defaultWidths);
                       localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
-                      toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
+                      // Also reset the test* position values
+                      setTestProgressBarLeft(0);
+                      setTestTextLeft(8);
+                      setTestCourseLeft(12);
+                      setTestCourseNameLeft(8);
+                      setTestDueDateLeft(8);
+                      setTestDaysLeftLeft(8);
+                      localStorage.setItem('testProgressBarLeft', '0');
+                      localStorage.setItem('testTextLeft', '8');
+                      localStorage.setItem('testCourseLeft', '12');
+                      localStorage.setItem('testCourseNameLeft', '8');
+                      localStorage.setItem('testDueDateLeft', '8');
+                      localStorage.setItem('testDaysLeftLeft', '8');
+                      toast({ title: "Column widths reset", description: "All summary box columns have been reset to defaults." });
                     }}
                     data-testid="button-reset-column-widths"
                   >
