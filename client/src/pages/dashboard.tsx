@@ -10308,51 +10308,32 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Column Spacing */}
-                <div className="border rounded-lg p-3 space-y-3">
+                <div className="border rounded-lg p-3 space-y-2">
                   <div className="border-b border-primary inline-block -mt-1">
                     <Label className="text-sm font-medium">Column Spacing</Label>
                     <span className="text-xs text-muted-foreground italic">&nbsp;&nbsp;&nbsp;Reset the column widths in the summary boxes.</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-6 text-xs px-2"
-                      onClick={() => {
-                        const defaultWidths = {
-                          taskGap: 0,
-                          taskName: 48,
-                          courseCode: 100,
-                          courseName: 145,
-                          dueDate: 55
-                        };
-                        setTaskColumnWidths(defaultWidths);
-                        localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
-                        toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
-                      }}
-                      data-testid="button-reset-column-widths"
-                    >
-                      <RotateCcw className="h-3 w-3 mr-1" />
-                      Reset
-                    </Button>
-                    <Button 
-                      variant="outline"
-                      className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 px-4"
-                      style={{
-                        boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-                        fontSize: '12px'
-                      }}
-                      onClick={() => {
-                        localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
-                        localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
-                        toast({ title: "Settings saved", description: "Your settings have been applied." });
-                        setIsSettingsDialogOpen(false);
-                      }}
-                      data-testid="button-save-settings"
-                    >
-                      Save Settings
-                    </Button>
-                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 text-xs px-2"
+                    onClick={() => {
+                      const defaultWidths = {
+                        taskGap: 0,
+                        taskName: 48,
+                        courseCode: 100,
+                        courseName: 145,
+                        dueDate: 55
+                      };
+                      setTaskColumnWidths(defaultWidths);
+                      localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
+                      toast({ title: "Column widths reset", description: "This Week box columns have been reset to defaults." });
+                    }}
+                    data-testid="button-reset-column-widths"
+                  >
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    Reset Column Widths
+                  </Button>
                 </div>
                 </div>
                 
@@ -10628,6 +10609,27 @@ export default function Dashboard() {
                       Pull
                     </Button>
                   </div>
+                </div>
+                
+                {/* Save Settings Button */}
+                <div className="flex justify-end">
+                  <Button 
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-6 px-4"
+                    style={{
+                      boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                      fontSize: '12px'
+                    }}
+                    onClick={() => {
+                      localStorage.setItem('colorSettings', JSON.stringify(colorSettings));
+                      localStorage.setItem('blinkSettings', JSON.stringify(blinkSettings));
+                      toast({ title: "Settings saved", description: "Your settings have been applied." });
+                      setIsSettingsDialogOpen(false);
+                    }}
+                    data-testid="button-save-settings"
+                  >
+                    Save Settings
+                  </Button>
                 </div>
                 </div>
               </div>
