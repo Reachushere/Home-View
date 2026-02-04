@@ -60,21 +60,31 @@ const DropdownMenuContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content> & {
     variant?: "default" | "transparent"
   }
->(({ className, sideOffset = 4, style, variant = "default", ...props }, ref) => (
-  <DropdownMenuPrimitive.Portal>
-    <DropdownMenuPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md p-1 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]",
-        variant === "default" && "border bg-popover text-popover-foreground shadow-md",
-        className
-      )}
-      style={variant === "transparent" ? { ...style, background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none', color: 'white' } : style}
-      {...props}
-    />
-  </DropdownMenuPrimitive.Portal>
-))
+>(({ className, sideOffset = 4, style, variant = "default", ...props }, ref) => {
+  const transparentStyles = variant === "transparent" ? {
+    background: 'transparent',
+    backgroundColor: 'transparent', 
+    border: 'none',
+    boxShadow: 'none',
+    color: 'white'
+  } : {};
+  
+  return (
+    <DropdownMenuPrimitive.Portal>
+      <DropdownMenuPrimitive.Content
+        ref={ref}
+        sideOffset={sideOffset}
+        {...props}
+        className={cn(
+          "z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md p-1 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin]",
+          variant === "default" && "border bg-popover text-popover-foreground shadow-md",
+          className
+        )}
+        style={{ ...style, ...transparentStyles }}
+      />
+    </DropdownMenuPrimitive.Portal>
+  );
+})
 DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName
 
 const DropdownMenuItem = React.forwardRef<
@@ -83,20 +93,27 @@ const DropdownMenuItem = React.forwardRef<
     inset?: boolean
     variant?: "default" | "transparent"
   }
->(({ className, inset, style, variant = "default", ...props }, ref) => (
-  <DropdownMenuPrimitive.Item
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-      variant === "default" && "focus:bg-accent",
-      inset && "pl-8",
-      className
-    )}
-    style={variant === "transparent" ? { ...style, color: 'white', backgroundColor: 'transparent' } : style}
-    data-variant={variant}
-    {...props}
-  />
-))
+>(({ className, inset, style, variant = "default", ...props }, ref) => {
+  const transparentStyles = variant === "transparent" ? {
+    color: 'white',
+    backgroundColor: 'transparent'
+  } : {};
+  
+  return (
+    <DropdownMenuPrimitive.Item
+      ref={ref}
+      {...props}
+      className={cn(
+        "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        variant === "default" && "focus:bg-accent",
+        inset && "pl-8",
+        className
+      )}
+      style={{ ...style, ...transparentStyles }}
+      data-variant={variant}
+    />
+  );
+})
 DropdownMenuItem.displayName = DropdownMenuPrimitive.Item.displayName
 
 const DropdownMenuCheckboxItem = React.forwardRef<
