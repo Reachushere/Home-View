@@ -1348,79 +1348,75 @@ input[type="checkbox"]:checked::after {
   color: white !important;
 }
 
-/* Star Trek transporter beam-in animation - upward (for Module) */
-@keyframes beam-up {
+/* Star Trek transporter particle materialization - upward (for Module) */
+@keyframes teleport-up {
   0% {
     opacity: 0;
-    filter: brightness(3) blur(4px);
-    clip-path: inset(100% 0 0 0);
+    filter: brightness(2) blur(3px) contrast(2);
+    transform: translateY(8px) scale(0.9);
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  20% {
-    opacity: 0.4;
-    filter: brightness(2.5) blur(3px);
-    clip-path: inset(70% 0 0 0);
-  }
-  40% {
+  30% {
     opacity: 0.6;
-    filter: brightness(2) blur(2px);
-    clip-path: inset(40% 0 0 0);
+    filter: brightness(1.8) blur(2px) contrast(1.5);
+    transform: translateY(4px) scale(0.95);
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   60% {
-    opacity: 0.8;
-    filter: brightness(1.5) blur(1px);
-    clip-path: inset(20% 0 0 0);
-  }
-  80% {
-    opacity: 0.9;
-    filter: brightness(1.2) blur(0.5px);
-    clip-path: inset(5% 0 0 0);
+    opacity: 0.85;
+    filter: brightness(1.4) blur(1px) contrast(1.2);
+    transform: translateY(1px) scale(0.98);
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   100% {
     opacity: 1;
-    filter: brightness(1) blur(0);
-    clip-path: inset(0 0 0 0);
+    filter: brightness(1) blur(0) contrast(1);
+    transform: translateY(0) scale(1);
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 }
 
-/* Star Trek transporter beam-in animation - downward (for Reading) */
-@keyframes beam-down {
+/* Star Trek transporter particle materialization - downward (for Reading) */
+@keyframes teleport-down {
   0% {
     opacity: 0;
-    filter: brightness(3) blur(4px);
-    clip-path: inset(0 0 100% 0);
+    filter: brightness(2) blur(3px) contrast(2);
+    transform: translateY(-8px) scale(0.9);
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  20% {
-    opacity: 0.4;
-    filter: brightness(2.5) blur(3px);
-    clip-path: inset(0 0 70% 0);
-  }
-  40% {
+  30% {
     opacity: 0.6;
-    filter: brightness(2) blur(2px);
-    clip-path: inset(0 0 40% 0);
+    filter: brightness(1.8) blur(2px) contrast(1.5);
+    transform: translateY(-4px) scale(0.95);
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   60% {
-    opacity: 0.8;
-    filter: brightness(1.5) blur(1px);
-    clip-path: inset(0 0 20% 0);
-  }
-  80% {
-    opacity: 0.9;
-    filter: brightness(1.2) blur(0.5px);
-    clip-path: inset(0 0 5% 0);
+    opacity: 0.85;
+    filter: brightness(1.4) blur(1px) contrast(1.2);
+    transform: translateY(-1px) scale(0.98);
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   100% {
     opacity: 1;
-    filter: brightness(1) blur(0);
-    clip-path: inset(0 0 0 0);
+    filter: brightness(1) blur(0) contrast(1);
+    transform: translateY(0) scale(1);
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 }
 
 .beam-up {
-  animation: beam-up 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: teleport-up 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .beam-down {
-  animation: beam-down 800ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: teleport-down 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
