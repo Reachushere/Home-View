@@ -7592,7 +7592,7 @@ export default function Dashboard() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Undo Complete - top gradient #FF0D0D */}
+          {/* Undo Complete - top gradient #BD0000 */}
           {completedTaskHistory.length > 0 ? (
             <div style={{ position: 'relative', width: '44px', height: '44px', marginTop: '4px', zIndex: 100 }}>
               {/* Bottom circle: 44px, solid #FF4545 */}
@@ -7605,7 +7605,7 @@ export default function Dashboard() {
                 borderRadius: '50%',
                 backgroundColor: '#FF4545'
               }} />
-              {/* Top circle: 38px, gradient bottom to #FF0D0D top */}
+              {/* Top circle: 38px, gradient bottom to #BD0000 top */}
               <div 
                 style={{
                   position: 'absolute',
@@ -7614,7 +7614,7 @@ export default function Dashboard() {
                   width: '38px',
                   height: '38px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(0deg, #FF9494 0%, #FF0D0D 100%)',
+                  background: 'linear-gradient(0deg, #FF9494 0%, #BD0000 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
