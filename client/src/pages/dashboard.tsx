@@ -9115,7 +9115,16 @@ export default function Dashboard() {
                   style={{ 
                     width: '75px', 
                     height: '75px', 
-                    background: `linear-gradient(135deg, ${courseHex}bb, ${courseHex}99), linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.5))`,
+                    background: (() => {
+                      const rgb = hexToRgb(courseHex);
+                      const darkerR = Math.max(0, rgb.r - 40);
+                      const darkerG = Math.max(0, rgb.g - 40);
+                      const darkerB = Math.max(0, rgb.b - 40);
+                      const lighterR = Math.min(255, rgb.r + 100);
+                      const lighterG = Math.min(255, rgb.g + 100);
+                      const lighterB = Math.min(255, rgb.b + 100);
+                      return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.73) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.6) 100%)`;
+                    })(),
                     borderRadius: '8px',
                     boxShadow: `inset 0 0 0 3px ${courseHex}, inset 0 0 0 3.5px white`,
                     padding: '10px'
@@ -9184,7 +9193,16 @@ export default function Dashboard() {
                   style={{ 
                     width: '75px', 
                     height: '75px', 
-                    background: `linear-gradient(135deg, ${courseHex}bb, ${courseHex}99), linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.5))`,
+                    background: (() => {
+                      const rgb = hexToRgb(courseHex);
+                      const darkerR = Math.max(0, rgb.r - 40);
+                      const darkerG = Math.max(0, rgb.g - 40);
+                      const darkerB = Math.max(0, rgb.b - 40);
+                      const lighterR = Math.min(255, rgb.r + 100);
+                      const lighterG = Math.min(255, rgb.g + 100);
+                      const lighterB = Math.min(255, rgb.b + 100);
+                      return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.73) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.6) 100%)`;
+                    })(),
                     borderRadius: '8px',
                     boxShadow: `inset 0 0 0 3px ${courseHex}, inset 0 0 0 3.5px white`,
                     padding: '10px'
