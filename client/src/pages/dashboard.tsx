@@ -9168,7 +9168,7 @@ export default function Dashboard() {
                       return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.88) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.78) 100%)`;
                     })(),
                     borderRadius: '8px',
-                    boxShadow: `inset 0 0 0 3px ${courseHex}, inset 0 0 0 3.5px white`,
+                    boxShadow: 'inset 0 0 0 3px white',
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
@@ -9271,7 +9271,7 @@ export default function Dashboard() {
                       return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.88) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.78) 100%)`;
                     })(),
                     borderRadius: '8px',
-                    boxShadow: `inset 0 0 0 3px ${courseHex}, inset 0 0 0 3.5px white`,
+                    boxShadow: 'inset 0 0 0 3px white',
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
