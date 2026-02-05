@@ -13210,7 +13210,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  This Week ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom' }}>{(() => {
+                  This Week ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px' }}>{(() => {
                     const today = new Date();
                     const dayOfWeek = today.getDay(); // 0=Sun, 5=Fri
                     const friday = new Date(today);
@@ -13456,7 +13456,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  Today ({dueTodayTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
+                  Today ({dueTodayTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px' }}>{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
@@ -13617,7 +13617,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  Tomorrow ({dueTomorrowTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
+                  Tomorrow ({dueTomorrowTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px' }}>{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
