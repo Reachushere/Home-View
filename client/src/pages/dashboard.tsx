@@ -9134,7 +9134,7 @@ export default function Dashboard() {
               )}
             </div>
             {/* Two expanding squares - Module on top, Reading below */}
-            {(
+            {openCourseDropdown === courseId && (
               <div 
                 className="absolute flex flex-col gap-1 animate-fade-in"
                 style={{ 
