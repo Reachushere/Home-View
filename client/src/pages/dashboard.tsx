@@ -9220,7 +9220,7 @@ export default function Dashboard() {
                   }}
                 >
                   <Play className="absolute h-3.5 w-3.5 text-white" style={{ top: '4px', left: '4px' }} />
-                  <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '18px' }}>
+                  <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '22px' }}>
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       {moduleCount > 0 ? (
