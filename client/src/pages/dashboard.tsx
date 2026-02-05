@@ -3179,6 +3179,17 @@ export default function Dashboard() {
       setPreviewText("");
       setCurrentWordIndex(0);
       setIsPlaying(false);
+      isPlayingRef.current = false;
+      // Reset speaker to Bluetooth (browser_tts) when opening a new file
+      setPreviewSpeaker("browser_tts");
+      // CRITICAL: Stop any existing audio to prevent double voices
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      if (openaiAudioRef.current) {
+        openaiAudioRef.current.pause();
+        openaiAudioRef.current = null;
+      }
       // CRITICAL: Clear TTS chunks when file changes to prevent "Invalid chunk" errors
       // and wrong file content being played
       ttsChunksRef.current = [];
@@ -3625,14 +3636,15 @@ export default function Dashboard() {
       toast({ title: `Adjusted to section ${validChunkIndex + 1} of ${chunks.length}` });
     }
     
-    // Cancel any current speech
-    if (useBrowserTts) {
+    // CRITICAL: Cancel ALL current speech to prevent double voices
+    if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
-    } else {
-      stopOpenAiTts();
     }
+    stopOpenAiTts();
     shouldContinueRef.current = false;
-    await new Promise(r => setTimeout(r, 100));
+    setIsPlaying(false);
+    isPlayingRef.current = false;
+    await new Promise(r => setTimeout(r, 150)); // Slightly longer wait to ensure complete stop
     
     // Start playing from this chunk
     setCurrentChunkIndex(validChunkIndex);
@@ -3677,64 +3689,55 @@ export default function Dashboard() {
           return;
         }
         
-        // Cancel any existing speech
-        if (useBrowserTts) {
+        // CRITICAL: Cancel ALL existing speech to prevent double voices
+        if (window.speechSynthesis) {
           window.speechSynthesis.cancel();
-        } else {
-          stopOpenAiTts();
         }
+        stopOpenAiTts();
         shouldContinueRef.current = false;
-        await new Promise(r => setTimeout(r, 100));
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+        await new Promise(r => setTimeout(r, 150)); // Slightly longer wait to ensure complete stop
         
-        // Detect and skip title pages (short pages with publication info like JSTOR, author, published, etc.)
-        let textForTts = previewText;
-        const titlePageKeywords = /jstor|published|publisher|author[s]?:|doi:|copyright|©|issn|isbn|volume\s+\d|issue\s+\d|journal|university press|all rights reserved|accessed|stable url|abstract|keywords:|introduction\s*\n|pp\.\s*\d+|pages?\s+\d+|supplementary|appendix|supporting information|online resource|electronic supplementary|table of contents|references\s*\n|bibliography|citation/i;
-        
-        const firstPageEnd = textForTts.indexOf('---PAGE---');
-        if (firstPageEnd !== -1) {
-          const firstPageContent = textForTts.substring(0, firstPageEnd).toLowerCase();
-          const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
-          // Check if first page looks like a title page (contains publication keywords)
-          // Increased word count threshold to 500 for supplementary materials that may have longer cover pages
-          if (wordCount < 500 && titlePageKeywords.test(firstPageContent)) {
-            textForTts = textForTts.substring(firstPageEnd + 10); // Skip past first ---PAGE---
-            console.log("Skipped title page (via PAGE marker)");
-          }
-        } else {
-          // No page markers - check beginning of text for title page patterns
-          const first500Words = textForTts.split(/\s+/).slice(0, 500).join(' ').toLowerCase();
-          if (titlePageKeywords.test(first500Words)) {
-            // Find first paragraph break after initial content
-            const skipTo = textForTts.search(/\n\n[A-Z]/);
-            if (skipTo > 100 && skipTo < 3000) {
-              textForTts = textForTts.substring(skipTo + 2);
-              console.log("Skipped title content (no page markers)");
+        // Use pre-initialized chunks if available (from useEffect), otherwise create them
+        let chunks = ttsChunksRef.current;
+        if (chunks.length === 0) {
+          // Fallback: create chunks if not yet initialized
+          let textForTts = previewText;
+          const titlePageKeywords = /jstor|published|publisher|author[s]?:|doi:|copyright|©|issn|isbn|volume\s+\d|issue\s+\d|journal|university press|all rights reserved|accessed|stable url|abstract|keywords:|introduction\s*\n|pp\.\s*\d+|pages?\s+\d+|supplementary|appendix|supporting information|online resource|electronic supplementary|table of contents|references\s*\n|bibliography|citation/i;
+          
+          const firstPageEnd = textForTts.indexOf('---PAGE---');
+          if (firstPageEnd !== -1) {
+            const firstPageContent = textForTts.substring(0, firstPageEnd).toLowerCase();
+            const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
+            if (wordCount < 500 && titlePageKeywords.test(firstPageContent)) {
+              textForTts = textForTts.substring(firstPageEnd + 10);
+            }
+          } else {
+            const first500Words = textForTts.split(/\s+/).slice(0, 500).join(' ').toLowerCase();
+            if (titlePageKeywords.test(first500Words)) {
+              const skipTo = textForTts.search(/\n\n[A-Z]/);
+              if (skipTo > 100 && skipTo < 3000) {
+                textForTts = textForTts.substring(skipTo + 2);
+              }
             }
           }
+          let cleanTextForTts = textForTts.replace(/---PAGE---/g, '');
+          cleanTextForTts = removeFrenchText(cleanTextForTts);
+          cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
+          cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+          cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
+          cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
+          cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
+          cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
+          cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
+          const chunkSize = useBrowserTts ? 2000 : 4000;
+          chunks = splitTextIntoChunks(cleanTextForTts, chunkSize);
+          
+          ttsChunksRef.current = chunks;
+          setTtsChunks(chunks);
+          setTotalChunks(chunks.length);
         }
-        // First remove page separators
-        let cleanTextForTts = textForTts.replace(/---PAGE---/g, '');
-        // Apply the same filters used for display - removes French, URLs, timestamps, video/audio refs
-        cleanTextForTts = removeFrenchText(cleanTextForTts);
-        // Normalize whitespace and line breaks
-        cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
-        cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
-        cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
-        // Remove bullet point characters so TTS doesn't say "bullet"
-        cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
-        // Add slight pauses after lines that were bullet points (add period if line doesn't end with punctuation)
-        cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
-        // Add longer pause after paragraph breaks (double newline becomes period + pause)
-        cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
-        // Clean up duplicate periods
-        cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
-        // Use larger chunks for OpenAI TTS (4000 chars) vs browser TTS (2000 chars)
-        const chunkSize = useBrowserTts ? 2000 : 4000;
-        const chunks = splitTextIntoChunks(cleanTextForTts, chunkSize);
-        
-        ttsChunksRef.current = chunks;
-        setTtsChunks(chunks);
-        setTotalChunks(chunks.length);
         
         // Check for saved progress
         let startChunk = 0;
