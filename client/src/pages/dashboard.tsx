@@ -9250,7 +9250,7 @@ export default function Dashboard() {
                         </span>
                       ) : null}
                     </div>
-                    <div className="flex items-center gap-1 w-full">
+                    <div className="flex items-center gap-1 w-full" style={{ marginTop: '4px' }}>
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                       <div className="flex-1" />
                       {readingCount > 0 ? (
