@@ -5652,7 +5652,7 @@ export default function Dashboard() {
             </DialogTitle>
           </DialogHeader>
           <div className="text-sm text-white/80 py-3">
-            Your partner is away. Would you like to play your readings on the Kitchen Echo?
+            Your partner is at work. Would you like to play your readings on the Kitchen Echo?
           </div>
           <DialogFooter className="flex gap-2 justify-end">
             <Button
