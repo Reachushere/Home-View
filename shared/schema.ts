@@ -342,12 +342,12 @@ export function getWeekNumber(date: Date, customSemesterStart?: Date): number {
 }
 
 export function getWeekDates(weekNum: number, customSemesterStart?: Date): { start: Date; end: Date } {
-  const startOfSemester = new Date(customSemesterStart || SEMESTER_START);
-  const weekStart = new Date(startOfSemester);
-  weekStart.setDate(startOfSemester.getDate() + (weekNum - 1) * 7);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6);
-  weekEnd.setHours(23, 59, 59, 999);
+  const startOfSemester = customSemesterStart || SEMESTER_START;
+  // Calculate week start by adding days in milliseconds (timezone-safe)
+  const msPerDay = 24 * 60 * 60 * 1000;
+  const weekStartMs = startOfSemester.getTime() + (weekNum - 1) * 7 * msPerDay;
+  const weekStart = new Date(weekStartMs);
+  const weekEnd = new Date(weekStartMs + 6 * msPerDay);
   return { start: weekStart, end: weekEnd };
 }
 
