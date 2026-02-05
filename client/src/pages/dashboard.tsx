@@ -9236,7 +9236,7 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '34px' }}>
+                  <div className="absolute flex flex-col items-start gap-0.5 w-full left-0 px-2.5" style={{ bottom: '22px' }}>
                     <div className="flex items-center gap-1 w-full">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       <div className="flex-1" />
@@ -9247,6 +9247,19 @@ export default function Dashboard() {
                       ) : moduleListenedCount > 0 ? (
                         <span className="bg-gray-400 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                           {moduleListenedCount}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex items-center gap-1 w-full">
+                      <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
+                      <div className="flex-1" />
+                      {readingCount > 0 ? (
+                        <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                          {readingCount}
+                        </span>
+                      ) : readingListenedCount > 0 ? (
+                        <span className="bg-gray-400 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
+                          {readingListenedCount}
                         </span>
                       ) : null}
                     </div>
