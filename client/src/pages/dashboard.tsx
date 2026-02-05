@@ -9220,7 +9220,7 @@ export default function Dashboard() {
                   }}
                 >
                   <Play className="absolute h-3.5 w-3.5 text-white" style={{ top: '4px', left: '4px' }} />
-                  <div className="flex flex-col items-start gap-1 w-full h-full justify-end">
+                  <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '18px' }}>
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       {moduleCount > 0 ? (
@@ -9236,7 +9236,7 @@ export default function Dashboard() {
                     {/* Progress bar with label */}
                     {(moduleCount + moduleListenedCount) > 0 && (
                       <div className="flex items-center gap-1 w-full">
-                        <div className="flex-1 h-1.5 bg-black/30 rounded-full overflow-hidden">
+                        <div className="flex-1 h-1 bg-black/30 rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-green-400 transition-all duration-300 rounded-full"
                             style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
