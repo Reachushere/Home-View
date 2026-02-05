@@ -13210,13 +13210,13 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  This Week ({dueThisWeekTasks.length}) - {(() => {
+                  This Week ({dueThisWeekTasks.length}) - <span className="text-[10px]">{(() => {
                     const today = new Date();
                     const dayOfWeek = today.getDay(); // 0=Sun, 5=Fri
                     const friday = new Date(today);
                     friday.setDate(today.getDate() + (5 - dayOfWeek));
-                    return `${format(today, 'MMM d')}-${format(friday, 'd, yyyy')}`;
-                  })()}
+                    return `${format(today, 'EEE, MMMM d')} - ${format(friday, 'EEE, MMMM d, yyyy')}`;
+                  })()}</span>
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
@@ -13456,7 +13456,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  Today ({dueTodayTasks.length}) - {format(new Date(), 'EEE, MMMM d, yyyy')}
+                  Today ({dueTodayTasks.length}) - <span className="text-[10px]">{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
@@ -13616,7 +13616,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  Tomorrow ({dueTomorrowTasks.length}) - {format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}
+                  Tomorrow ({dueTomorrowTasks.length}) - <span className="text-[10px]">{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
