@@ -9032,7 +9032,7 @@ export default function Dashboard() {
       )}
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '268px', right: '6px', width: '70px' }}>
+      <div className="absolute z-50 flex items-center justify-center gap-2" style={{ top: '265px', right: '6px', width: '70px' }}>
         <div 
           className="cursor-pointer hover:bg-white/20 rounded p-0.5"
           onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
@@ -9052,7 +9052,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: '326px', right: '14px', width: '52px', height: `${(3 * 50) + 296}px` }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: '323px', right: '14px', width: '52px', height: `${(3 * 50) + 296}px` }}>
         <div 
           style={{ 
             width: '100%', 
@@ -9084,7 +9084,7 @@ export default function Dashboard() {
             key={`course-wrapper-${courseId}`}
             className="absolute z-50"
             style={{ 
-              top: `${333 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0)}px`, 
+              top: `${330 + (idx * 50) - (idx === 1 ? 1 : 0) - (idx === 2 ? 3 : 0)}px`, 
               right: '18px',
             }}
           >
@@ -9363,7 +9363,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${333 + (3 * 50) - 5}px`, 
+          top: `${330 + (3 * 50) - 5}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
