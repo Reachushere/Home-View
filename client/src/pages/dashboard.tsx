@@ -3238,6 +3238,55 @@ export default function Dashboard() {
     }
   }, [previewFile]);
 
+  // Initialize TTS chunks when previewText changes - ensures display and playback use same chunks
+  useEffect(() => {
+    if (!previewText) {
+      ttsChunksRef.current = [];
+      setTtsChunks([]);
+      setTotalChunks(0);
+      return;
+    }
+    
+    // Apply the same processing as TTS playback to ensure consistency
+    let textForTts = previewText;
+    const titlePageKeywords = /jstor|published|publisher|author[s]?:|doi:|copyright|©|issn|isbn|volume\s+\d|issue\s+\d|journal|university press|all rights reserved|accessed|stable url|abstract|keywords:|introduction\s*\n|pp\.\s*\d+|pages?\s+\d+/i;
+    
+    // Skip title pages
+    const firstPageEnd = textForTts.indexOf('---PAGE---');
+    if (firstPageEnd !== -1) {
+      const firstPageContent = textForTts.substring(0, firstPageEnd).toLowerCase();
+      const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
+      if (wordCount < 300 && titlePageKeywords.test(firstPageContent)) {
+        textForTts = textForTts.substring(firstPageEnd + 10);
+      }
+    } else {
+      const first500Words = textForTts.split(/\s+/).slice(0, 500).join(' ').toLowerCase();
+      if (titlePageKeywords.test(first500Words)) {
+        const skipTo = textForTts.search(/\n\n[A-Z]/);
+        if (skipTo > 100 && skipTo < 2000) {
+          textForTts = textForTts.substring(skipTo + 2);
+        }
+      }
+    }
+    
+    // Remove page separators and apply filters
+    let cleanTextForTts = textForTts.replace(/---PAGE---/g, '');
+    cleanTextForTts = removeFrenchText(cleanTextForTts);
+    cleanTextForTts = cleanTextForTts.replace(/[ \t]+/g, ' ');
+    cleanTextForTts = cleanTextForTts.replace(/([a-z,;:])\s*\n\s*([a-z])/gi, '$1 $2');
+    cleanTextForTts = cleanTextForTts.replace(/\n{3,}/g, '\n\n');
+    cleanTextForTts = cleanTextForTts.replace(/^[•\-\*►▶→·]\s*/gm, '');
+    cleanTextForTts = cleanTextForTts.replace(/([^.!?\n])$/gm, '$1.');
+    cleanTextForTts = cleanTextForTts.replace(/\n\n+/g, '.\n\n');
+    cleanTextForTts = cleanTextForTts.replace(/\.{2,}/g, '.');
+    
+    // Use 2000 char chunks for display consistency
+    const chunks = splitTextIntoChunks(cleanTextForTts, 2000);
+    ttsChunksRef.current = chunks;
+    setTtsChunks(chunks);
+    setTotalChunks(chunks.length);
+  }, [previewText]);
+
   // Cleanup interval and timeout on unmount
   useEffect(() => {
     return () => {
@@ -7342,28 +7391,11 @@ export default function Dashboard() {
               ) : previewText ? (
                 <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200" style={{ fontFamily: 'Georgia, "Times New Roman", serif' }}>
                   {(() => {
-                    // Detect and skip title pages (short pages with publication info)
-                    let textForDisplay = previewText;
-                    const firstPageEnd = textForDisplay.indexOf('---PAGE---');
-                    if (firstPageEnd !== -1) {
-                      const firstPageContent = textForDisplay.substring(0, firstPageEnd).toLowerCase();
-                      const wordCount = firstPageContent.split(/\s+/).filter(w => w.length > 0).length;
-                      const titlePageKeywords = /jstor|published|publisher|author|doi:|copyright|©|issn|isbn|volume|issue|journal|university press|all rights reserved|accessed|stable url|http|www\./i;
-                      if (wordCount < 200 && titlePageKeywords.test(firstPageContent)) {
-                        textForDisplay = textForDisplay.substring(firstPageEnd + 10);
-                      }
+                    // Use the same chunks as TTS to ensure play button plays the correct section
+                    const chunks = ttsChunks.length > 0 ? ttsChunks : [];
+                    if (chunks.length === 0) {
+                      return <div className="text-muted-foreground">Loading text sections...</div>;
                     }
-                    // Clean text for display - remove page markers and URLs only
-                    let cleanText = textForDisplay.replace(/---PAGE---/g, '\n\n').replace(/https?:\/\/[^\s]+/g, '').replace(/www\.[^\s]+/g, '');
-                    // Normalize multiple spaces to single space (but preserve newlines)
-                    cleanText = cleanText.replace(/[ \t]+/g, ' ');
-                    // Only join lines when previous line does NOT end with sentence-ending punctuation
-                    cleanText = cleanText.replace(/([a-z,;:\-])\s*\n\s*([a-z])/g, '$1 $2');
-                    // Clean up excessive newlines (3+ becomes 2)
-                    cleanText = cleanText.replace(/\n{3,}/g, '\n\n');
-                    
-                    // Split into chunks for section navigation
-                    const chunks = splitTextIntoChunks(cleanText, 2000);
                     
                     // Chunk background colors (alternating)
                     const chunkColors = [
