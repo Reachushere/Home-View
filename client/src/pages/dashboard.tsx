@@ -9220,15 +9220,20 @@ export default function Dashboard() {
                   }}
                 >
                   {/* Play button and progress bar row */}
-                  <div className="absolute flex items-center gap-1" style={{ top: '4px', left: '4px', right: '4px' }}>
-                    <Play className="h-3.5 w-3.5 text-white shrink-0" />
+                  <div className="absolute flex flex-col items-start gap-0.5" style={{ top: '4px', left: '4px', right: '4px' }}>
+                    <div className="flex items-center gap-1 w-full">
+                      <Play className="h-3.5 w-3.5 text-white shrink-0" />
+                      {(moduleCount + moduleListenedCount) > 0 && (
+                        <div className="flex-1 h-1 bg-black/30 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-green-400 transition-all duration-300 rounded-full"
+                            style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
                     {(moduleCount + moduleListenedCount) > 0 && (
-                      <div className="flex-1 h-1 bg-black/30 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-green-400 transition-all duration-300 rounded-full"
-                          style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
-                        />
-                      </div>
+                      <span className="text-[7px] text-white/80 ml-auto">{moduleListenedCount}/{moduleCount + moduleListenedCount}</span>
                     )}
                   </div>
                   <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '34px' }}>
@@ -9243,9 +9248,6 @@ export default function Dashboard() {
                           {moduleListenedCount}
                         </span>
                       ) : null}
-                      {(moduleCount + moduleListenedCount) > 0 && (
-                        <span className="text-[7px] text-white/80">{moduleListenedCount}/{moduleCount + moduleListenedCount}</span>
-                      )}
                     </div>
                   </div>
                 </div>
