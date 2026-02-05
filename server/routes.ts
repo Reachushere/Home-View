@@ -1881,17 +1881,10 @@ export async function registerRoutes(
     const now = new Date();
     const weekNum = getWeekNumber(now, semesterStart);
     const { start, end } = getWeekDates(weekNum, semesterStart);
-    // Format as local date string to avoid timezone shifts
-    const formatLocalDate = (d: Date) => {
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}T12:00:00`;
-    };
     res.json({
       weekNumber: weekNum,
-      startDate: formatLocalDate(start),
-      endDate: formatLocalDate(end),
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
     });
   });
 
@@ -1904,17 +1897,10 @@ export async function registerRoutes(
     
     for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
       const { start, end } = getWeekDates(w, semesterStart);
-      // Format as local date string to avoid timezone shifts
-      const formatLocalDate = (d: Date) => {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}T12:00:00`;
-      };
       weeks.push({
         weekNumber: w,
-        startDate: formatLocalDate(start),
-        endDate: formatLocalDate(end),
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
         taskCount: taskCounts[w] || 0,
       });
     }

@@ -4766,8 +4766,15 @@ export default function Dashboard() {
 
   // Weekly view - get the current selected week's days
   const selectedWeekInfo = weeks.find(w => w.weekNumber === selectedWeek);
-  const weekStartDate = selectedWeekInfo ? parseISO(selectedWeekInfo.startDate) : new Date(2026, 0, 17);
-  const weekEndDate = selectedWeekInfo ? parseISO(selectedWeekInfo.endDate) : new Date(2026, 0, 23);
+  // Parse dates as local dates to avoid timezone shifts
+  // Extract YYYY-MM-DD and create local date at noon to avoid any edge cases
+  const parseAsLocalDate = (isoString: string) => {
+    const datePart = isoString.split('T')[0]; // Get just YYYY-MM-DD
+    const [year, month, day] = datePart.split('-').map(Number);
+    return new Date(year, month - 1, day, 12, 0, 0); // noon local time
+  };
+  const weekStartDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.startDate) : new Date(2026, 0, 17, 12);
+  const weekEndDate = selectedWeekInfo ? parseAsLocalDate(selectedWeekInfo.endDate) : new Date(2026, 0, 23, 12);
   
   // Generate weekdays for the weekly view
   // School week runs Saturday to Friday, but we display Sunday-Saturday visually
