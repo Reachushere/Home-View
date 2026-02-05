@@ -9363,7 +9363,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${319 + (3 * 50) - 5}px`, 
+          top: `${330 + (3 * 50) - 5}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
