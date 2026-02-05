@@ -9328,10 +9328,27 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <Play className="absolute h-3.5 w-3.5 text-white" style={{ top: '4px', left: '4px' }} />
-                  <div className="flex flex-col items-start gap-1 w-full h-full justify-end">
-                    <div className="flex items-center gap-1">
+                  {/* Play button and progress bar row */}
+                  <div className="absolute flex flex-col items-start gap-0.5" style={{ top: '-2px', left: '4px', right: '4px' }}>
+                    {(readingCount + readingListenedCount) > 0 && (
+                      <span className="text-[7px] text-white/80 ml-auto" style={{ marginTop: '-2px' }}>{readingListenedCount}/{readingCount + readingListenedCount}</span>
+                    )}
+                    <div className="flex items-center gap-1 w-full">
+                      <Play className="h-3.5 w-3.5 text-white shrink-0" />
+                      {(readingCount + readingListenedCount) > 0 && (
+                        <div className="flex-1 h-1 bg-black/30 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-blue-400 transition-all duration-300 rounded-full"
+                            style={{ width: `${(readingListenedCount / (readingCount + readingListenedCount)) * 100}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '34px' }}>
+                    <div className="flex items-center gap-1 w-full">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
+                      <div className="flex-1" />
                       {readingCount > 0 ? (
                         <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                           {readingCount}
@@ -9342,18 +9359,6 @@ export default function Dashboard() {
                         </span>
                       ) : null}
                     </div>
-                    {/* Progress bar with label */}
-                    {(readingCount + readingListenedCount) > 0 && (
-                      <div className="flex items-center gap-1 w-full">
-                        <div className="flex-1 h-1.5 bg-black/30 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-blue-400 transition-all duration-300 rounded-full"
-                            style={{ width: `${(readingListenedCount / (readingCount + readingListenedCount)) * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-[7px] text-white/80">{readingListenedCount}/{readingCount + readingListenedCount}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
