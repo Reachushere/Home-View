@@ -9236,7 +9236,7 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <div className="absolute flex items-center gap-1 w-full left-0 px-2.5" style={{ bottom: '26px' }}>
+                  <div className="absolute flex items-center gap-1 w-full left-0 px-2.5" style={{ bottom: '30px' }}>
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                     <div className="flex-1" />
                     {moduleCount > 0 ? (
