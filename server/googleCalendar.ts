@@ -503,3 +503,54 @@ export async function listEvents(timeMin: Date, timeMax: Date) {
   
   return response.data.items || [];
 }
+
+// Create a recurring class event
+export async function createRecurringClassEvent(classInfo: {
+  courseName: string;
+  courseCode: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  startTime: string; // HH:MM (24hr)
+  endTime: string; // HH:MM (24hr)
+  daysOfWeek: string[]; // ['MO', 'TU', 'WE', 'TH', 'FR']
+  location?: string;
+}) {
+  const calendar = await getGoogleCalendarClient();
+  
+  // Build RRULE - e.g., RRULE:FREQ=WEEKLY;BYDAY=TU,TH;UNTIL=20260616T235959Z
+  const untilDate = classInfo.endDate.replace(/-/g, '') + 'T235959Z';
+  const byDay = classInfo.daysOfWeek.join(',');
+  const recurrence = [`RRULE:FREQ=WEEKLY;BYDAY=${byDay};UNTIL=${untilDate}`];
+  
+  // Create start and end datetime
+  const startDateTime = `${classInfo.startDate}T${classInfo.startTime}:00`;
+  const endDateTime = `${classInfo.startDate}T${classInfo.endTime}:00`;
+  
+  const event = {
+    summary: `${classInfo.courseCode} - ${classInfo.courseName}`,
+    location: classInfo.location || '',
+    start: {
+      dateTime: startDateTime,
+      timeZone: 'America/Toronto',
+    },
+    end: {
+      dateTime: endDateTime,
+      timeZone: 'America/Toronto',
+    },
+    recurrence,
+    reminders: {
+      useDefault: false,
+      overrides: [
+        { method: 'popup', minutes: 60 }, // 1 hour before
+        { method: 'popup', minutes: 15 }, // 15 minutes before
+      ],
+    },
+  };
+  
+  const response = await calendar.events.insert({
+    calendarId: 'primary',
+    requestBody: event,
+  });
+  
+  return response.data;
+}

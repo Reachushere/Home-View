@@ -9,7 +9,7 @@ import { getWeekDates, getWeekNumber, FIRST_WEEK, LAST_WEEK, DEFAULT_REMINDER_1,
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import { objectStorageClient } from "./replit_integrations/object_storage/objectStorage";
-import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar } from "./googleCalendar";
+import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEvents, listCalendars, createPrepCalendarEvent, updatePrepCalendarEvent, createEventInCalendar, deleteEventFromCalendar, createRecurringClassEvent } from "./googleCalendar";
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, type TaskReminder } from "./email";
@@ -4976,6 +4976,29 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Google Calendar delete error:", error);
       res.status(500).json({ error: "Failed to remove from Google Calendar" });
+    }
+  });
+
+  // POST /api/calendar/class - Create a recurring class event
+  app.post("/api/calendar/class", async (req, res) => {
+    try {
+      const { courseName, courseCode, startDate, endDate, startTime, endTime, daysOfWeek, location } = req.body;
+      
+      const event = await createRecurringClassEvent({
+        courseName,
+        courseCode,
+        startDate,
+        endDate,
+        startTime,
+        endTime,
+        daysOfWeek,
+        location
+      });
+      
+      res.json({ success: true, event });
+    } catch (err) {
+      console.error("Error creating class event:", err);
+      res.status(500).json({ message: "Failed to create class event", error: String(err) });
     }
   });
 
