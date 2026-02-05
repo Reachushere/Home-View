@@ -9219,8 +9219,8 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <div className="flex flex-col gap-1 w-full">
-                    <Play className="h-3.5 w-3.5 text-white mb-0.5" />
+                  <div className="flex flex-col items-start gap-1 w-full">
+                    <Play className="h-3.5 w-3.5 text-white" />
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       {moduleCount > 0 ? (
@@ -9323,8 +9323,8 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <div className="flex flex-col gap-1 w-full">
-                    <Play className="h-3.5 w-3.5 text-white mb-0.5" />
+                  <div className="flex flex-col items-start gap-1 w-full">
+                    <Play className="h-3.5 w-3.5 text-white" />
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                       {readingCount > 0 ? (
