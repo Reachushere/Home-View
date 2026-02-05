@@ -9219,8 +9219,19 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <Play className="absolute h-3.5 w-3.5 text-white" style={{ top: '4px', left: '4px' }} />
-                  <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '22px' }}>
+                  {/* Play button and progress bar row */}
+                  <div className="absolute flex items-center gap-1" style={{ top: '4px', left: '4px', right: '4px' }}>
+                    <Play className="h-3.5 w-3.5 text-white shrink-0" />
+                    {(moduleCount + moduleListenedCount) > 0 && (
+                      <div className="flex-1 h-1 bg-black/30 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-green-400 transition-all duration-300 rounded-full"
+                          style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '10px' }}>
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       {moduleCount > 0 ? (
@@ -9232,19 +9243,10 @@ export default function Dashboard() {
                           {moduleListenedCount}
                         </span>
                       ) : null}
-                    </div>
-                    {/* Progress bar with label */}
-                    {(moduleCount + moduleListenedCount) > 0 && (
-                      <div className="flex items-center gap-1 w-full">
-                        <div className="flex-1 h-1 bg-black/30 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-green-400 transition-all duration-300 rounded-full"
-                            style={{ width: `${(moduleListenedCount / (moduleCount + moduleListenedCount)) * 100}%` }}
-                          />
-                        </div>
+                      {(moduleCount + moduleListenedCount) > 0 && (
                         <span className="text-[7px] text-white/80">{moduleListenedCount}/{moduleCount + moduleListenedCount}</span>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
                 {/* Reading square */}
