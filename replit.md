@@ -71,3 +71,20 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Replit Plugins**: Runtime error overlay, cartographer, and dev banner.
 - **OpenAI TTS**: For server-side text-to-speech.
 - **Home Assistant**: For push notifications and voice integration.
+
+## Upcoming Semesters
+
+### Spring/Summer 2026
+**Semester Start**: May 4, 2026
+**Note**: This semester has courses with different start/end dates and schedules.
+
+| Course | Name | Start | End | Days | Time | Notes |
+|--------|------|-------|-----|------|------|-------|
+| CSOC113 | How Society Works | May 4, 2026 | July 31, 2026 | Online | Async | Full-length online course |
+| CPHL110 | Philosophy of Religion | May 5, 2026 | June 16, 2026 | Tue/Thu | 1:00-4:00pm | Intensive 6-week course |
+| CASL201 | American Sign Language II | June 22, 2026 | August 10, 2026 | Mon/Wed | 9:30am-12:30pm | Starts after CPHL ends |
+
+**Key Considerations for Schema**:
+- Courses need individual start/end dates (not just semester-wide)
+- Class schedules (days of week, times) should be stored per course
+- Week numbers may need to be relative to each course's start date
