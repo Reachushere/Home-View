@@ -1876,18 +1876,13 @@ export async function registerRoutes(
 
   // GET /api/weeks/current
   app.get(api.weeks.current.path, async (_req, res) => {
-    const activeSemester = await storage.getActiveSemesterSettings();
-    // Extract date parts to avoid timezone interpretation issues
-    let semesterStart: Date | undefined;
-    if (activeSemester?.semesterStartDate) {
-      const d = new Date(activeSemester.semesterStartDate);
-      // Create date at noon UTC to avoid any timezone edge cases
-      semesterStart = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12, 0, 0));
-    }
+    // Hardcode semester start as UTC to ensure consistency across all servers
+    // Winter 2026 starts Saturday January 10, 2026
+    const semesterStart = new Date(Date.UTC(2026, 0, 10, 12, 0, 0)); // Jan 10, 2026 noon UTC
     const now = new Date();
     const weekNum = getWeekNumber(now, semesterStart);
     const { start, end } = getWeekDates(weekNum, semesterStart);
-    // Format as YYYY-MM-DD to avoid timezone shifts between servers
+    // Format as YYYY-MM-DD using UTC
     const formatDateOnly = (d: Date) => {
       return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
     };
@@ -1900,18 +1895,13 @@ export async function registerRoutes(
 
   // GET /api/weeks
   app.get(api.weeks.list.path, async (_req, res) => {
-    const activeSemester = await storage.getActiveSemesterSettings();
-    // Extract date parts to avoid timezone interpretation issues
-    let semesterStart: Date | undefined;
-    if (activeSemester?.semesterStartDate) {
-      const d = new Date(activeSemester.semesterStartDate);
-      // Create date at noon UTC to avoid any timezone edge cases
-      semesterStart = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12, 0, 0));
-    }
+    // Hardcode semester start as UTC to ensure consistency across all servers
+    // Winter 2026 starts Saturday January 10, 2026
+    const semesterStart = new Date(Date.UTC(2026, 0, 10, 12, 0, 0)); // Jan 10, 2026 noon UTC
     const taskCounts = await storage.getTaskCountByWeek();
     const weeks = [];
     
-    // Format as YYYY-MM-DD using UTC to avoid timezone shifts
+    // Format as YYYY-MM-DD using UTC
     const formatDateOnly = (d: Date) => {
       return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
     };
