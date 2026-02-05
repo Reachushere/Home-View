@@ -9100,7 +9100,7 @@ export default function Dashboard() {
                 zIndex: 3
               }}
               data-testid={`pill-course-${courseId}`}
-              onClick={() => setOpenCourseDropdown(openCourseDropdown === courseId ? null : courseId)}
+              onClick={() => setOpenCourseDropdown(courseId)}
             >
               <div 
                 className="hover:opacity-80 transition-all duration-200"
@@ -9138,7 +9138,7 @@ export default function Dashboard() {
               <div 
                 className="absolute flex flex-col gap-1 animate-fade-in"
                 style={{ 
-                  top: courseId === 'cfnf400' ? '-11px' : courseId === 'casl101' ? '56px' : '-46px',
+                  top: courseId === 'cfnf400' ? '-11px' : courseId === 'casl101' ? '38px' : '-46px',
                   right: '57px',
                   zIndex: 2
                 }}
