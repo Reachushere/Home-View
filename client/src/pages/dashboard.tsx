@@ -9139,7 +9139,7 @@ export default function Dashboard() {
                 className="absolute flex flex-col gap-1 animate-fade-in"
                 style={{ 
                   top: '-55px',
-                  right: '67px',
+                  right: '63px',
                   zIndex: 2
                 }}
               >
@@ -9220,7 +9220,7 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex flex-col items-start gap-1 w-full">
-                    <Play className="h-3.5 w-3.5 text-white" style={{ marginLeft: '-2px', marginTop: '-20px' }} />
+                    <Play className="h-3.5 w-3.5 text-white" style={{ marginLeft: '-2px', position: 'relative', top: '-6px' }} />
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       {moduleCount > 0 ? (
@@ -9324,7 +9324,7 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex flex-col items-start gap-1 w-full">
-                    <Play className="h-3.5 w-3.5 text-white" style={{ marginLeft: '-2px', marginTop: '-20px' }} />
+                    <Play className="h-3.5 w-3.5 text-white" style={{ marginLeft: '-2px', position: 'relative', top: '-6px' }} />
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                       {readingCount > 0 ? (
