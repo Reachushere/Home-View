@@ -239,7 +239,7 @@ export default function Dashboard() {
   }, []);
   
   const [selectedWeek, setSelectedWeek] = useState<number>(2);
-  const [openCourseDropdown, setOpenCourseDropdown] = useState<string | null>('cppa122');
+  const [openCourseDropdown, setOpenCourseDropdown] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 0, 17)); // January 2026
   const [calendarView, setCalendarView] = useState<"week" | "month">("week");
