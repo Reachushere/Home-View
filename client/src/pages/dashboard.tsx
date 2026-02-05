@@ -9145,7 +9145,7 @@ export default function Dashboard() {
               >
                 {/* Module square */}
                 <div 
-                  className="cursor-pointer flex flex-col items-start justify-end hover:brightness-110 transition-colors"
+                  className="cursor-pointer relative hover:brightness-110 transition-colors"
                   style={{ 
                     width: '75px', 
                     height: '75px', 
@@ -9219,8 +9219,8 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <div className="flex flex-col items-start gap-1 w-full">
-                    <Play className="h-3.5 w-3.5 text-white" style={{ marginLeft: '-2px', position: 'relative', top: '-6px' }} />
+                  <Play className="absolute h-3.5 w-3.5 text-white" style={{ top: '4px', left: '4px' }} />
+                  <div className="flex flex-col items-start gap-1 w-full h-full justify-end">
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       {moduleCount > 0 ? (
@@ -9249,7 +9249,7 @@ export default function Dashboard() {
                 </div>
                 {/* Reading square */}
                 <div 
-                  className="cursor-pointer flex flex-col items-start justify-end hover:brightness-110 transition-colors"
+                  className="cursor-pointer relative hover:brightness-110 transition-colors"
                   style={{ 
                     width: '75px', 
                     height: '75px', 
@@ -9323,8 +9323,8 @@ export default function Dashboard() {
                     }
                   }}
                 >
-                  <div className="flex flex-col items-start gap-1 w-full">
-                    <Play className="h-3.5 w-3.5 text-white" style={{ marginLeft: '-2px', position: 'relative', top: '-6px' }} />
+                  <Play className="absolute h-3.5 w-3.5 text-white" style={{ top: '4px', left: '4px' }} />
+                  <div className="flex flex-col items-start gap-1 w-full h-full justify-end">
                     <div className="flex items-center gap-1">
                       <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                       {readingCount > 0 ? (
