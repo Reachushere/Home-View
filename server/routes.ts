@@ -1881,10 +1881,17 @@ export async function registerRoutes(
     const now = new Date();
     const weekNum = getWeekNumber(now, semesterStart);
     const { start, end } = getWeekDates(weekNum, semesterStart);
+    // Format as YYYY-MM-DD to avoid timezone shifts between servers
+    const formatDateOnly = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
     res.json({
       weekNumber: weekNum,
-      startDate: start.toISOString(),
-      endDate: end.toISOString(),
+      startDate: formatDateOnly(start),
+      endDate: formatDateOnly(end),
     });
   });
 
@@ -1895,12 +1902,19 @@ export async function registerRoutes(
     const taskCounts = await storage.getTaskCountByWeek();
     const weeks = [];
     
+    // Format as YYYY-MM-DD to avoid timezone shifts between servers
+    const formatDateOnly = (d: Date) => {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
     for (let w = FIRST_WEEK; w <= LAST_WEEK; w++) {
       const { start, end } = getWeekDates(w, semesterStart);
       weeks.push({
         weekNumber: w,
-        startDate: start.toISOString(),
-        endDate: end.toISOString(),
+        startDate: formatDateOnly(start),
+        endDate: formatDateOnly(end),
         taskCount: taskCounts[w] || 0,
       });
     }

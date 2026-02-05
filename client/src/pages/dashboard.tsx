@@ -4766,10 +4766,10 @@ export default function Dashboard() {
 
   // Weekly view - get the current selected week's days
   const selectedWeekInfo = weeks.find(w => w.weekNumber === selectedWeek);
-  // Parse dates as local dates to avoid timezone shifts
-  // Extract YYYY-MM-DD and create local date at noon to avoid any edge cases
-  const parseAsLocalDate = (isoString: string) => {
-    const datePart = isoString.split('T')[0]; // Get just YYYY-MM-DD
+  // Parse YYYY-MM-DD dates as local dates at noon to avoid any edge cases
+  const parseAsLocalDate = (dateStr: string) => {
+    // Handle both YYYY-MM-DD and full ISO strings
+    const datePart = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;
     const [year, month, day] = datePart.split('-').map(Number);
     return new Date(year, month - 1, day, 12, 0, 0); // noon local time
   };
