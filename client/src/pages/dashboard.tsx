@@ -9152,7 +9152,7 @@ export default function Dashboard() {
                     background: (() => {
                       // Use specific gradient colors for each course
                       if (courseId === 'cppa122') {
-                        return 'linear-gradient(180deg, rgba(15, 80, 4, 0.88) 0%, rgba(71, 176, 69, 0.78) 100%)';
+                        return 'linear-gradient(0deg, #0F5004 0%, #47B045 100%)';
                       } else if (courseId === 'cfnf400') {
                         return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
                       } else if (courseId === 'casl101') {
@@ -9221,7 +9221,7 @@ export default function Dashboard() {
                 >
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex items-center gap-1">
-                      <span className={`text-[9px] font-normal ${courseId === 'cppa122' || courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
+                      <span className={`text-[9px] font-normal ${courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       {moduleCount > 0 ? (
                         <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                           {moduleCount}
@@ -9255,7 +9255,7 @@ export default function Dashboard() {
                     background: (() => {
                       // Use specific gradient colors for each course
                       if (courseId === 'cppa122') {
-                        return 'linear-gradient(180deg, rgba(15, 80, 4, 0.88) 0%, rgba(71, 176, 69, 0.78) 100%)';
+                        return 'linear-gradient(0deg, #0F5004 0%, #47B045 100%)';
                       } else if (courseId === 'cfnf400') {
                         return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
                       } else if (courseId === 'casl101') {
@@ -9324,7 +9324,7 @@ export default function Dashboard() {
                 >
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex items-center gap-1">
-                      <span className={`text-[9px] font-normal ${courseId === 'cppa122' || courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
+                      <span className={`text-[9px] font-normal ${courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                       {readingCount > 0 ? (
                         <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                           {readingCount}
