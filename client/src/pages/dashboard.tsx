@@ -9168,7 +9168,7 @@ export default function Dashboard() {
                       return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.88) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.78) 100%)`;
                     })(),
                     borderRadius: '8px',
-                    boxShadow: 'inset 0 0 0 0.5px white',
+                    border: '0.5px solid white',
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-module`}
@@ -9221,7 +9221,7 @@ export default function Dashboard() {
                 >
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex items-center gap-1">
-                      <span className={`text-[9px] font-normal ${courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
+                      <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                       {moduleCount > 0 ? (
                         <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                           {moduleCount}
@@ -9271,7 +9271,7 @@ export default function Dashboard() {
                       return `linear-gradient(180deg, rgba(${darkerR}, ${darkerG}, ${darkerB}, 0.88) 0%, rgba(${lighterR}, ${lighterG}, ${lighterB}, 0.78) 100%)`;
                     })(),
                     borderRadius: '8px',
-                    boxShadow: 'inset 0 0 0 0.5px white',
+                    border: '0.5px solid white',
                     padding: '10px'
                   }}
                   data-testid={`pill-course-${courseId}-reading`}
@@ -9324,7 +9324,7 @@ export default function Dashboard() {
                 >
                   <div className="flex flex-col gap-1 w-full">
                     <div className="flex items-center gap-1">
-                      <span className={`text-[9px] font-normal ${courseId === 'cfnf400' ? 'text-black' : 'text-white'}`} style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
+                      <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                       {readingCount > 0 ? (
                         <span className="bg-red-500 text-[8px] font-medium rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-0.5 text-white">
                           {readingCount}
@@ -13450,7 +13450,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  TODAY ({dueTodayTasks.length})
+                  Today ({dueTodayTasks.length}) - {format(new Date(), 'EEE, MMMM d, yyyy')}
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
