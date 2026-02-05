@@ -1350,7 +1350,7 @@ export default function Dashboard() {
     const defaultSizes = {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
-      dayColumnWidths: [1, 1, 1, 1, 1, 1, 1], // flex proportions
+      dayColumnWidths: [1, 1, 1, 1, 1, 1, 1, 0.5], // flex proportions (7 days + extra half-width column)
       allDayRowHeight: 36,
       courseRowHeight: 36,
       timeSlotHeight: 36,
@@ -10974,6 +10974,11 @@ export default function Dashboard() {
                   </div>
                 );
               })}
+              {/* Extra half-width black column after Saturday */}
+              <div 
+                className="border-l border-border"
+                style={{ backgroundColor: colorSettings.headerBar }}
+              />
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
@@ -11105,6 +11110,11 @@ export default function Dashboard() {
                   </div>
                 );
               })}
+              {/* Extra half-width black column after Saturday */}
+              <div 
+                className="border-l border-border/50"
+                style={{ backgroundColor: colorSettings.headerBar }}
+              />
               {/* ALL DAY row resize handle */}
               <div
                 className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/alldayrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -11579,6 +11589,11 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
+                  {/* Extra half-width black column after Saturday */}
+                  <div 
+                    className="border-l border-border/50"
+                    style={{ backgroundColor: colorSettings.headerBar }}
+                  />
                   {/* Course row resize handle */}
                   <div
                     className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/courserow:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -11891,6 +11906,11 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
+                    {/* Extra half-width black column after Saturday */}
+                    <div 
+                      className="border-l border-border/50"
+                      style={{ backgroundColor: colorSettings.headerBar, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
+                    />
                     {/* Individual time slot row resize handle */}
                     <div 
                       className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/row:opacity-100 hover:bg-blue-400/50 transition-opacity"
