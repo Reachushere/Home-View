@@ -4685,15 +4685,15 @@ export default function Dashboard() {
         const containerRect = row1ContainerRef.current.getBoundingClientRect();
         const containerLeft = containerRect.left;
         const containerTop = containerRect.top;
-        setRow1Positions({
-          task: row1TaskRef.current.getBoundingClientRect().left - containerLeft,
-          code: row1CodeRef.current.getBoundingClientRect().left - containerLeft,
-          course: row1CourseRef.current.getBoundingClientRect().left - containerLeft,
-          due: row1DueRef.current.getBoundingClientRect().left - containerLeft,
-          days: row1DaysRef.current ? row1DaysRef.current.getBoundingClientRect().left - containerLeft : 0,
-          progressBar: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().left - containerLeft : 0,
-          progressBarTop: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().top - containerTop : 0
-        });
+        setRow1Positions(prev => ({
+          task: row1TaskRef.current!.getBoundingClientRect().left - containerLeft,
+          code: row1CodeRef.current!.getBoundingClientRect().left - containerLeft,
+          course: row1CourseRef.current!.getBoundingClientRect().left - containerLeft,
+          due: prev.due, // Keep fixed - do not measure dynamically
+          days: prev.days, // Keep fixed - do not measure dynamically
+          progressBar: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().left - containerLeft : prev.progressBar,
+          progressBarTop: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().top - containerTop : prev.progressBarTop
+        }));
       }
     };
     // Delay measurement to ensure DOM is rendered
