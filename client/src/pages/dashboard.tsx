@@ -13210,7 +13210,13 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  THIS WEEK ({dueThisWeekTasks.length})
+                  This Week ({dueThisWeekTasks.length}) - {(() => {
+                    const today = new Date();
+                    const dayOfWeek = today.getDay(); // 0=Sun, 5=Fri
+                    const friday = new Date(today);
+                    friday.setDate(today.getDate() + (5 - dayOfWeek));
+                    return `${format(today, 'MMM d')}-${format(friday, 'd, yyyy')}`;
+                  })()}
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
@@ -13610,7 +13616,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  TOMORROW ({dueTomorrowTasks.length})
+                  Tomorrow ({dueTomorrowTasks.length}) - {format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
