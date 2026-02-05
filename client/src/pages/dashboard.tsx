@@ -7229,14 +7229,14 @@ export default function Dashboard() {
             <div className="w-px h-6 bg-white/30" />
             
             {/* Progress Bar - Always visible */}
-            <div className="flex items-center gap-2">
-              <div className="w-20 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+            <div className="flex items-center gap-2 bg-gray-900/50 px-2 py-1 rounded-md border border-white/10">
+              <div className="w-24 h-2.5 bg-gray-700 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-green-500 transition-all duration-300 rounded-full"
+                  className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-300 rounded-full"
                   style={{ width: totalChunks > 0 ? `${((currentChunkIndex + 1) / totalChunks) * 100}%` : '0%' }}
                 />
               </div>
-              <span className="text-[9px] text-white/70">
+              <span className="text-[11px] text-white font-medium min-w-[40px]">
                 {totalChunks > 0 ? `${currentChunkIndex + 1}/${totalChunks}` : '0/0'}
               </span>
             </div>
