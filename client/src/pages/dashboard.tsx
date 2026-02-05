@@ -9220,7 +9220,7 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex flex-col gap-1 w-full">
-                    <div className="w-5 h-5 bg-white/20 rounded-sm flex items-center justify-center mb-0.5">
+                    <div className="w-5 h-5 bg-transparent rounded-sm flex items-center justify-center mb-0.5">
                       <Play className="h-3.5 w-3.5 text-white" />
                     </div>
                     <div className="flex items-center gap-1">
@@ -9326,7 +9326,7 @@ export default function Dashboard() {
                   }}
                 >
                   <div className="flex flex-col gap-1 w-full">
-                    <div className="w-5 h-5 bg-white/20 rounded-sm flex items-center justify-center mb-0.5">
+                    <div className="w-5 h-5 bg-transparent rounded-sm flex items-center justify-center mb-0.5">
                       <Play className="h-3.5 w-3.5 text-white" />
                     </div>
                     <div className="flex items-center gap-1">
