@@ -1372,6 +1372,10 @@ export default function Dashboard() {
       parsed.courseRowHeight = 48;
       parsed.moduleColumnWidth = 0;
       parsed.timeColumnWidth = 59;
+      // Ensure 8 columns (7 days + extra half-width column)
+      if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 8) {
+        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1, 0.5];
+      }
       return parsed;
     }
     
@@ -1387,6 +1391,10 @@ export default function Dashboard() {
       parsed.moduleColumnWidth = 0;
       // Force timeColumnWidth to 59
       parsed.timeColumnWidth = 59;
+      // Ensure 8 columns (7 days + extra half-width column)
+      if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 8) {
+        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1, 0.5];
+      }
       return parsed;
     }
     return defaultSizes;
