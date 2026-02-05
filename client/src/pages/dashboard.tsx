@@ -11812,7 +11812,7 @@ export default function Dashboard() {
                                   const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
                                   if (actualPrepDays <= 0) return null;
                                   // Calculate width: actualPrepDays * (single column width) - adjustment to align with course row prep days (2px margin)
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7) - 10px)`;
+                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7.5) - 10px)`;
                                   const prepHeight = 18;
                                   const borderWidth = selectedTaskId === task.id ? 2 : 1;
                                   return (
@@ -11982,8 +11982,8 @@ export default function Dashboard() {
                     : 0;
                   const adjustedHeightPx = heightPx + heightExtension;
                   
-                  // Calculate day column width for prep extension
-                  const dayColWidth = `calc((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)`;
+                  // Calculate day column width for prep extension (7.5 total column widths: 7 days + 0.5 extra)
+                  const dayColWidth = `calc((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)`;
                   
                   return (
                     <div
@@ -12023,11 +12023,11 @@ export default function Dashboard() {
                       style={{
                         top: `${adjustedTopPx}px`,
                         left: hasPrepDays && prepDaysCount > 0
-                          ? `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)))`
-                          : `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7)) + 2px)`,
+                          ? `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)))`
+                          : `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)) + 2px)`,
                         width: hasPrepDays && prepDaysCount > 0
-                          ? `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 2px)`
-                          : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7) - 4px)`,
+                          ? `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5) - 2px)`
+                          : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5) - 4px)`,
                         height: `${adjustedHeightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                         borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
