@@ -9363,7 +9363,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${330 + (3 * 50) - 5}px`, 
+          top: `${319 + (3 * 50) - 5}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9402,7 +9402,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${349 + (3 * 50) + 43}px`, 
+          top: `${338 + (3 * 50) + 43}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9449,7 +9449,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${349 + (3 * 50) + 91}px`, 
+          top: `${338 + (3 * 50) + 91}px`, 
           right: '18px',
           borderRadius: '50%',
           background: isKitchenPlaying 
@@ -9492,7 +9492,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${349 + (3 * 50) + 187}px`, 
+          top: `${338 + (3 * 50) + 187}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9588,7 +9588,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${349 + (3 * 50) + 235}px`, 
+          top: `${338 + (3 * 50) + 235}px`, 
           right: '18px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9629,7 +9629,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${349 + (3 * 50) + 139}px`, 
+          top: `${338 + (3 * 50) + 139}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
