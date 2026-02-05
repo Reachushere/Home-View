@@ -9139,7 +9139,7 @@ export default function Dashboard() {
                 className="absolute flex flex-col gap-1 animate-fade-in"
                 style={{ 
                   top: '-55px',
-                  right: '57px',
+                  right: courseId === 'cfnf400' ? '140px' : '57px',
                   zIndex: 2
                 }}
               >
