@@ -9152,7 +9152,7 @@ export default function Dashboard() {
                     background: (() => {
                       // Use specific gradient colors for each course
                       if (courseId === 'cppa122') {
-                        return 'linear-gradient(0deg, #0F5004 0%, #47B045 100%)';
+                        return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
                       } else if (courseId === 'cfnf400') {
                         return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
                       } else if (courseId === 'casl101') {
@@ -9255,7 +9255,7 @@ export default function Dashboard() {
                     background: (() => {
                       // Use specific gradient colors for each course
                       if (courseId === 'cppa122') {
-                        return 'linear-gradient(0deg, #0F5004 0%, #47B045 100%)';
+                        return 'linear-gradient(0deg, #47B045 0%, #0F5004 100%)';
                       } else if (courseId === 'cfnf400') {
                         return 'linear-gradient(180deg, rgba(222, 24, 100, 0.88) 0%, rgba(250, 103, 179, 0.78) 100%)';
                       } else if (courseId === 'casl101') {
