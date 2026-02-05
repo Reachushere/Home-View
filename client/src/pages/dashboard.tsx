@@ -9221,6 +9221,9 @@ export default function Dashboard() {
                 >
                   {/* Play button and progress bar row */}
                   <div className="absolute flex flex-col items-start gap-0.5" style={{ top: '4px', left: '4px', right: '4px' }}>
+                    {(moduleCount + moduleListenedCount) > 0 && (
+                      <span className="text-[7px] text-white/80 ml-auto">{moduleListenedCount}/{moduleCount + moduleListenedCount}</span>
+                    )}
                     <div className="flex items-center gap-1 w-full">
                       <Play className="h-3.5 w-3.5 text-white shrink-0" />
                       {(moduleCount + moduleListenedCount) > 0 && (
@@ -9232,9 +9235,6 @@ export default function Dashboard() {
                         </div>
                       )}
                     </div>
-                    {(moduleCount + moduleListenedCount) > 0 && (
-                      <span className="text-[7px] text-white/80 ml-auto">{moduleListenedCount}/{moduleCount + moduleListenedCount}</span>
-                    )}
                   </div>
                   <div className="absolute flex flex-col items-start gap-1 w-full left-0 px-2.5" style={{ bottom: '34px' }}>
                     <div className="flex items-center gap-1">
