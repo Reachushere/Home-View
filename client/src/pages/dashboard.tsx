@@ -9219,7 +9219,7 @@ export default function Dashboard() {
                   }}
                 >
                   {/* Play button and progress bar row */}
-                  <div className="absolute flex flex-col items-start gap-0.5" style={{ top: courseId === 'casl101' ? '3px' : '-2px', left: '4px', right: '4px' }}>
+                  <div className="absolute flex flex-col items-start gap-0.5" style={{ top: courseId === 'casl101' ? '8px' : '-2px', left: '4px', right: '4px' }}>
                     {(moduleCount + moduleListenedCount) > 0 && (
                       <span className="text-[7px] text-white/80 ml-auto" style={{ marginTop: '1px' }}>{moduleListenedCount}/{moduleCount + moduleListenedCount}</span>
                     )}
