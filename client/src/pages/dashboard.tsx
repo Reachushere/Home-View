@@ -13210,7 +13210,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  This Week ({dueThisWeekTasks.length}) - <span className="text-[10px]">{(() => {
+                  This Week ({dueThisWeekTasks.length}) -<span className="text-[10px]"> {(() => {
                     const today = new Date();
                     const dayOfWeek = today.getDay(); // 0=Sun, 5=Fri
                     const friday = new Date(today);
@@ -13303,7 +13303,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px', maxWidth: `${row1Positions.code - row1Positions.task + 23}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
               </div>
               {/* Code header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '0px' }}>Code</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '0px' }}>Code</span>
               {/* Group 3: Code */}
               <div ref={row1CodeRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
@@ -13317,7 +13317,7 @@ export default function Dashboard() {
                 <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '15px', marginTop: '-3px', transform: 'translateX(3px)' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
               </div>
               {/* Course header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 15}px`, top: '0px' }}>Course</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '0px' }}>Course</span>
               {/* Group 4: Course */}
               <div ref={row1CourseRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
                 <div className="flex items-start" style={{ marginBottom: '6px' }}>
@@ -13456,7 +13456,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  Today ({dueTodayTasks.length}) - <span className="text-[10px]">{format(new Date(), 'EEE, MMMM d, yyyy')}</span>
+                  Today ({dueTodayTasks.length}) -<span className="text-[10px]"> {format(new Date(), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
@@ -13616,7 +13616,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  Tomorrow ({dueTomorrowTasks.length}) - <span className="text-[10px]">{format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
+                  Tomorrow ({dueTomorrowTasks.length}) -<span className="text-[10px]"> {format(addDays(new Date(), 1), 'EEE, MMMM d, yyyy')}</span>
                 </span>
                 {/* 9-dot grip */}
                 <div className="grid grid-cols-3 gap-[2px]">
@@ -13661,8 +13661,8 @@ export default function Dashboard() {
               {/* Headers row */}
               <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '0px' }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 12}px`, top: '0px' }}>Course</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '0px' }}>Code</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '0px' }}>Course</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '0px' }}>Due</span>
                 <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
               </div>
@@ -13681,9 +13681,9 @@ export default function Dashboard() {
                 {/* Task */}
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 12}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
@@ -13705,9 +13705,9 @@ export default function Dashboard() {
                 {/* Task */}
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 12}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
@@ -13729,9 +13729,9 @@ export default function Dashboard() {
                 {/* Task */}
                 <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.title || ''}</span>
                 {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 18}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
                 {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course + 12}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course - 10}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
                 {/* Due */}
                 <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
                 {/* Days */}
