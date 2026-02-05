@@ -80,9 +80,14 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 
 | Course | Name | Start | End | Days | Time | Notes |
 |--------|------|-------|-----|------|------|-------|
-| CSOC113 | How Society Works | May 4, 2026 | July 31, 2026 | Online | Async | Full-length online course |
-| CPHL110 | Philosophy of Religion | May 5, 2026 | June 16, 2026 | Tue/Thu | 1:00-4:00pm | Intensive 6-week course |
-| CASL201 | American Sign Language II | June 22, 2026 | August 10, 2026 | Mon/Wed | 9:30am-12:30pm | Starts after CPHL ends |
+| CSOC103 | How Society Works | May 4, 2026 | July 31, 2026 | Online | Async | Full-length online course |
+| CPHL110 | Philosophy of Religion I | May 5, 2026 | June 16, 2026 | Tue/Thu | 1:00-4:00pm | Intensive 7-week course |
+| CASL201 | Intro to ASL II | June 22, 2026 | August 10, 2026 | Mon/Wed | 9:30am-12:30pm | Starts after CPHL ends |
+
+**OneDrive Folder Path**: `/School/1. TMU/Courses/2026/Spring & Summer/`
+- `CSOC 103 - How Society Works`
+- `CPHL 110 - Philosophy of Religion I` (Weeks 1-7)
+- `CASL 201 - Intro to ASL II`
 
 **Key Considerations for Schema**:
 - Courses need individual start/end dates (not just semester-wide)
