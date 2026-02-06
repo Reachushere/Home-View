@@ -11599,11 +11599,30 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
-                  {/* Extra half-width black column after Saturday */}
+                  {/* Extra half-width black column after Saturday - progress bars */}
                   <div 
-                    className="border-l border-border/50"
+                    className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
                     style={{ backgroundColor: '#000000' }}
-                  />
+                  >
+                    <div className="flex items-center gap-[2px]">
+                      <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">M</span>
+                      <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-400 rounded-full" style={{ width: '0%' }} />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-[2px]">
+                      <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">R</span>
+                      <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-green-400 rounded-full" style={{ width: '0%' }} />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-[2px]">
+                      <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">O</span>
+                      <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                        <div className="h-full bg-orange-400 rounded-full" style={{ width: '0%' }} />
+                      </div>
+                    </div>
+                  </div>
                   {/* Course row resize handle */}
                   <div
                     className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/courserow:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -11916,30 +11935,11 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {/* Extra half-width column after Saturday - progress bars */}
+                    {/* Extra half-width column after Saturday */}
                     <div 
-                      className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
+                      className="border-l border-border/50"
                       style={{ backgroundColor: '#faf8f5', borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
-                    >
-                      <div className="flex items-center gap-[2px]">
-                        <span className="text-[7px] font-bold text-gray-500 w-[7px] flex-shrink-0">M</span>
-                        <div className="flex-1 h-[3px] bg-gray-200 rounded-full overflow-hidden">
-                          <div className="h-full bg-blue-500 rounded-full" style={{ width: '0%' }} />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-[2px]">
-                        <span className="text-[7px] font-bold text-gray-500 w-[7px] flex-shrink-0">R</span>
-                        <div className="flex-1 h-[3px] bg-gray-200 rounded-full overflow-hidden">
-                          <div className="h-full bg-green-500 rounded-full" style={{ width: '0%' }} />
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-[2px]">
-                        <span className="text-[7px] font-bold text-gray-500 w-[7px] flex-shrink-0">O</span>
-                        <div className="flex-1 h-[3px] bg-gray-200 rounded-full overflow-hidden">
-                          <div className="h-full bg-orange-500 rounded-full" style={{ width: '0%' }} />
-                        </div>
-                      </div>
-                    </div>
+                    />
                     {/* Individual time slot row resize handle */}
                     <div 
                       className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/row:opacity-100 hover:bg-blue-400/50 transition-opacity"
