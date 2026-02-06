@@ -11496,7 +11496,7 @@ export default function Dashboard() {
                         style={{ backgroundColor: '#000000' }}
                       >
                         {hasNoData ? (
-                          <span className="text-[7px] font-bold text-white text-center leading-tight">{courseName.startsWith('CASL') ? 'No progress to display' : 'N/A'}</span>
+                          <span className="text-[8px] font-bold text-white text-center leading-tight">{courseName.startsWith('CASL') ? 'No progress to display' : 'N/A'}</span>
                         ) : (
                           <>
                             <div className="flex items-center gap-[2px]">
