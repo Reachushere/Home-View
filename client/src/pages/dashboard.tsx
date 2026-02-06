@@ -2935,12 +2935,18 @@ export default function Dashboard() {
         if (shouldContinueRef.current && currentChunkIndexRef.current < ttsChunksRef.current.length - 1) {
           currentChunkIndexRef.current++;
           setCurrentChunkIndex(currentChunkIndexRef.current);
+          if (previewFile) {
+            saveTtsProgress(previewFile.id, currentChunkIndexRef.current, 0);
+          }
           const nextChunk = ttsChunksRef.current[currentChunkIndexRef.current];
           if (nextChunk) {
             playWithOpenAiTts(nextChunk, voice, currentChunkIndexRef.current);
           }
         } else {
           setIsPlaying(false);
+          if (previewFile) {
+            saveTtsProgress(previewFile.id, currentChunkIndexRef.current, 0);
+          }
         }
       };
       
@@ -2981,6 +2987,17 @@ export default function Dashboard() {
   const saveTtsProgress = (fileId: number, chunkIndex: number, wordIndex: number, charPosition?: number) => {
     try {
       localStorage.setItem(`tts-progress-${fileId}`, JSON.stringify({ chunkIndex, wordIndex, charPosition: charPosition || 0 }));
+      const totalChunks = ttsChunksRef.current.length;
+      if (totalChunks > 0) {
+        const isFinished = chunkIndex + 1 >= totalChunks;
+        apiRequest("PATCH", `/api/files/${fileId}`, {
+          lastChunkIndex: chunkIndex + 1,
+          totalChunks,
+          ...(isFinished ? { listened: true } : {}),
+        }).then(() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+        }).catch(() => {});
+      }
     } catch {}
   };
   
