@@ -10899,8 +10899,8 @@ export default function Dashboard() {
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
               );
               return (
-                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
-                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Read your today tasks` : !isSaturday ? <span className="text-white">NEW WEEK</span> : ''}
+                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", overflow: 'visible' }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] whitespace-nowrap ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
+                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Read your today tasks` : !isSaturday ? <span className="text-black">NEW WEEK</span> : ''}
                 </div>
               );
             })()}
