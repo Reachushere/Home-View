@@ -10904,12 +10904,13 @@ export default function Dashboard() {
             {weekDays[6] && (() => {
               const day = weekDays[6];
               const isToday = isSameDay(day, new Date());
+              const isSaturday = new Date().getDay() === 6;
               const todayHasTasks = isToday && allTasks.some(t => 
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
               );
               return (
                 <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
-                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Read your today tasks` : ''}
+                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Read your today tasks` : !isSaturday ? 'NEW WEEK' : ''}
                 </div>
               );
             })()}
