@@ -10231,6 +10231,7 @@ export default function Dashboard() {
                 <div className="flex flex-col gap-4 pt-4">
                 {/* Course Legend */}
                 <div className="border rounded-lg p-3 space-y-3">
+                  <Label className="text-[10px] font-medium">Courses</Label>
                   {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
                     const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
