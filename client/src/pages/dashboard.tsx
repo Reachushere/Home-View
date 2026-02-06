@@ -11606,8 +11606,8 @@ export default function Dashboard() {
                       const taskCourse = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       return taskCourse === courseCode && t.weekNumber === selectedWeek;
                     });
-                    const moduleTasks = courseTasks.filter(t => t.type === 'module');
-                    const readingTasks = courseTasks.filter(t => t.type === 'reading');
+                    const moduleTasks = courseTasks.filter(t => t.type?.toLowerCase() === 'module');
+                    const readingTasks = courseTasks.filter(t => t.type?.toLowerCase() === 'reading');
                     const moduleProgress = moduleTasks.length > 0 ? Math.round((moduleTasks.filter(t => t.isCompleted).length / moduleTasks.length) * 100) : 0;
                     const readingProgress = readingTasks.length > 0 ? Math.round((readingTasks.filter(t => t.isCompleted).length / readingTasks.length) * 100) : 0;
                     return (
