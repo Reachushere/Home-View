@@ -2508,15 +2508,17 @@ export default function Dashboard() {
   };
 
   const handleStickyNoteMouseMove = useCallback((e: MouseEvent) => {
-    // Use refs for reliable access to current values
     if (draggingStickyNoteRef.current !== null) {
       const offset = stickyNoteOffsetRef.current;
       const newX = Math.max(0, e.clientX - offset.x);
       const newY = Math.max(0, e.clientY - offset.y);
-      // Update both state and ref - ref used for mouseup to avoid stale closure
       const newPos = { x: newX, y: newY };
-      setDragPosition(newPos);
       dragPositionRef.current = newPos;
+      const el = document.querySelector(`[data-sticky-note-id="${draggingStickyNoteRef.current}"]`) as HTMLElement;
+      if (el) {
+        el.style.left = `${newX}px`;
+        el.style.top = `${newY}px`;
+      }
     }
   }, []);
 
@@ -9691,6 +9693,7 @@ export default function Dashboard() {
           <div
             key={note.id}
             data-sticky-note
+            data-sticky-note-id={note.id}
             className="fixed shadow-lg rounded-md overflow-hidden"
             style={{
               left: `${displayX}px`,
@@ -9701,6 +9704,8 @@ export default function Dashboard() {
               backgroundColor: colors.bg,
               border: `1px solid ${colors.border}`,
               pointerEvents: 'auto',
+              willChange: isDragging ? 'left, top' : 'auto',
+              transition: isDragging ? 'none' : undefined,
             }}
             data-testid={`sticky-note-${note.id}`}
           >
