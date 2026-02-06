@@ -9087,7 +9087,7 @@ export default function Dashboard() {
       )}
       
       {/* Arrows on Tall Pill */}
-      <div className="absolute z-50 flex flex-col items-center" style={{ top: `${calendarTop - 5}px`, right: '6px', width: '70px' }}>
+      <div className="absolute z-50 flex flex-col items-center" style={{ top: `${calendarTop - 5}px`, right: '14px', width: '52px' }}>
         <div className="flex items-center justify-center gap-2">
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
