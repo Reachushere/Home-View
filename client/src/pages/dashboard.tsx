@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { Document, Page, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -114,6 +115,7 @@ import {
   Copy,
   Eye,
   Lock,
+  AlertCircle,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -1731,9 +1733,13 @@ export default function Dashboard() {
     const saved = localStorage.getItem('profileData');
     return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
   });
-  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }>(() => {
+  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }>(() => {
     const saved = localStorage.getItem('schoolData');
-    return saved ? JSON.parse(saved) : { schoolLogo: null, numberOfWeeks: 13, week1StartDate: '2026-01-17', firstDayOfWeek: 'saturday' };
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return { schoolName: 'Toronto Metropolitan University', ...parsed };
+    }
+    return { schoolLogo: null, schoolName: 'Toronto Metropolitan University', numberOfWeeks: 13, week1StartDate: '2026-01-17', firstDayOfWeek: 'saturday' };
   });
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
@@ -1770,6 +1776,18 @@ export default function Dashboard() {
   });
   const [isCoursesDialogOpen, setIsCoursesDialogOpen] = useState(false);
   const [isNewCourseDialogOpen, setIsNewCourseDialogOpen] = useState(false);
+
+  const [aasSentStatus, setAasSentStatus] = useState<Record<string, boolean>>(() => {
+    const saved = localStorage.getItem('aasSentStatus');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [showAasReminder, setShowAasReminder] = useState(false);
+
+  const toggleAasSent = (courseCode: string) => {
+    const updated = { ...aasSentStatus, [courseCode]: !aasSentStatus[courseCode] };
+    setAasSentStatus(updated);
+    localStorage.setItem('aasSentStatus', JSON.stringify(updated));
+  };
   
   // Get the display timezone (travel if set, otherwise home)
   const displayTimezone = profileData.travelTimezone || profileData.timezone;
@@ -1789,7 +1807,7 @@ export default function Dashboard() {
     toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
   
-  const saveSchool = (data: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => {
+  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => {
     setSchoolData(data);
     localStorage.setItem('schoolData', JSON.stringify(data));
     setIsSchoolDialogOpen(false);
@@ -7691,7 +7709,7 @@ export default function Dashboard() {
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '12px', zIndex: 100 }} />
           <div className="flex flex-col fixed" style={{ left: '66px', top: '14px', zIndex: 100 }}>
             <span className="text-white font-bold text-[11px] leading-tight">Schedule for {profileData.firstName}{profileData.lastName ? ` ${profileData.lastName}` : ''}</span>
-            <span className="text-white/60 font-medium text-[10px] leading-tight">Toronto Metropolitan University</span>
+            <span className="text-white/60 font-medium text-[10px] leading-tight">{schoolData.schoolName || 'Toronto Metropolitan University'}</span>
           </div>
         </div>
 
@@ -7844,7 +7862,18 @@ export default function Dashboard() {
               className="!h-[42px] !w-[42px] !min-h-[42px] !min-w-[42px] !p-0 aspect-square hover:opacity-80 rounded-full border-0 transition-all duration-200"
               style={{ background: 'linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)', boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.2), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.3)' }}
               data-testid="button-settings-panel"
-              onClick={() => { triggerButtonGlow('settings'); setIsSettingsPanelOpen(true); }}
+              onClick={() => {
+                triggerButtonGlow('settings');
+                setIsSettingsPanelOpen(true);
+                const activeCourses = coursesData.courses.filter(c => c.name.trim());
+                const uncheckedAas = activeCourses.filter(c => {
+                  const code = c.name.split(' - ')[0];
+                  return !aasSentStatus[code];
+                });
+                if (uncheckedAas.length > 0) {
+                  setShowAasReminder(true);
+                }
+              }}
             >
               <GraduationCap className="text-white" style={{ height: '22px', width: '22px' }} />
             </Button>
@@ -8372,6 +8401,17 @@ export default function Dashboard() {
                         )
                       )}
                     </span>
+                    <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-aas-${courseCode}`}>
+                      <input
+                        type="checkbox"
+                        checked={!!aasSentStatus[courseCode]}
+                        onChange={() => toggleAasSent(courseCode)}
+                        className="w-3 h-3 rounded accent-green-500"
+                      />
+                      <span className={`text-[10px] ${aasSentStatus[courseCode] ? 'text-green-400' : 'text-amber-400'}`}>
+                        AAS
+                      </span>
+                    </label>
                   </div>
                 );
               })}
@@ -10160,6 +10200,60 @@ export default function Dashboard() {
             </section>
           </div>
           
+          {/* AAS Reminder Popup */}
+          <Dialog open={showAasReminder} onOpenChange={setShowAasReminder}>
+            <DialogContent className="max-w-sm text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '45%' }}>
+              <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-3.5 w-3.5 text-amber-400" />
+                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                    AAS REMINDER
+                  </h2>
+                </div>
+                <button 
+                  onClick={() => setShowAasReminder(false)}
+                  className="text-white hover:text-white/80 transition-colors p-1"
+                  data-testid="button-close-aas-reminder"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="p-4 space-y-3">
+                <p className="text-[12px] text-white/90">
+                  You haven't confirmed sending your AAS letter via the portal for the following course(s):
+                </p>
+                <div className="space-y-2">
+                  {coursesData.courses.filter(c => c.name.trim()).filter(c => {
+                    const code = c.name.split(' - ')[0];
+                    return !aasSentStatus[code];
+                  }).map((course, idx) => {
+                    const code = course.name.split(' - ')[0];
+                    const name = course.name.split(' - ').slice(1).join(' - ');
+                    return (
+                      <div key={idx} className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 rounded-md px-3 py-2">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: course.color }} />
+                        <span className="text-[11px] font-medium">{code}</span>
+                        {name && <span className="text-[11px] text-white/70">- {name}</span>}
+                        {course.professor && <span className="text-[10px] text-white/50 ml-auto">({course.professor})</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-[11px] text-white/60">
+                  Please send your Academic Accommodation Support letter to each professor via the portal. Check off the AAS box once sent.
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-white/30 text-white hover:text-white hover:bg-white/10"
+                  onClick={() => setShowAasReminder(false)}
+                  data-testid="button-dismiss-aas-reminder"
+                >
+                  Got it
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
           {/* Profile Dialog */}
           <Dialog open={isProfileDialogOpen} onOpenChange={setIsProfileDialogOpen}>
             <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
@@ -11096,7 +11190,7 @@ export default function Dashboard() {
             {weekDays.slice(0, 6).map((day, idx) => {
               const isToday = isSameDay(day, new Date());
               const todayHasTasks = isToday && allTasks.some(t => 
-                t.dueDate && isSameDay(new Date(t.dueDate), day)
+                t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), day)
               );
               return (
                 <div key={idx} style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
@@ -11185,7 +11279,7 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isToday && new Date().getDay() !== 6 && (
-                      <div className="text-[8px] font-bold tracking-wider text-white/70 uppercase" style={{ marginBottom: '-4px', marginTop: '2px' }}>NEW WEEK</div>
+                      <div className="text-[8px] font-bold tracking-wider text-yellow-400 uppercase" style={{ marginBottom: '-4px', marginTop: '2px' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
                       <div className="text-2xl font-bold text-white">{dayNum}</div>
@@ -13596,8 +13690,7 @@ export default function Dashboard() {
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
                   One Week Ahead ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px' }}>{(() => {
-                    const today = new Date();
-                    return `${format(thisWeekStart, 'MMM d')} - ${format(thisWeekEnd, 'MMM d')}`;
+                    return `${format(thisWeekStart, 'EEE, MMM d')} - ${format(thisWeekEnd, 'EEE, MMM d')}`;
                   })()}</span>
                 </span>
                 {/* 9-dot grip */}
@@ -15854,17 +15947,75 @@ function ProfileForm({
   );
 }
 
+const NORTH_AMERICAN_SCHOOLS = [
+  'Toronto Metropolitan University',
+  'University of Toronto',
+  'York University',
+  'McMaster University',
+  'University of Waterloo',
+  'Western University',
+  'Queen\'s University',
+  'University of Ottawa',
+  'Carleton University',
+  'University of Guelph',
+  'Ontario Tech University',
+  'Wilfrid Laurier University',
+  'Brock University',
+  'Trent University',
+  'Lakehead University',
+  'University of Windsor',
+  'Nipissing University',
+  'Laurentian University',
+  'McGill University',
+  'Universit\u00e9 de Montr\u00e9al',
+  'Concordia University',
+  'Universit\u00e9 Laval',
+  'University of British Columbia',
+  'Simon Fraser University',
+  'University of Victoria',
+  'University of Alberta',
+  'University of Calgary',
+  'University of Manitoba',
+  'University of Saskatchewan',
+  'Dalhousie University',
+  'Memorial University',
+  'University of New Brunswick',
+  'Harvard University',
+  'MIT',
+  'Stanford University',
+  'Yale University',
+  'Princeton University',
+  'Columbia University',
+  'University of Michigan',
+  'UCLA',
+  'UC Berkeley',
+  'NYU',
+  'Cornell University',
+  'University of Pennsylvania',
+  'Duke University',
+  'Northwestern University',
+  'University of Chicago',
+  'Johns Hopkins University',
+  'Georgetown University',
+  'Boston University',
+  'Northeastern University',
+  'University of Southern California',
+  'Other',
+];
+
 function SchoolForm({ 
   schoolData, 
   semesterSettings,
   onSave,
   onCancel 
 }: { 
-  schoolData: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string };
+  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string };
   semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { schoolLogo: string | null; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => void;
+  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => void;
   onCancel: () => void;
 }) {
+  const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
+  const [customSchoolName, setCustomSchoolName] = useState('');
   const [numberOfWeeks, setNumberOfWeeks] = useState(schoolData.numberOfWeeks);
   const [week1StartDate, setWeek1StartDate] = useState(schoolData.week1StartDate);
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
@@ -15881,7 +16032,8 @@ function SchoolForm({
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ schoolLogo: schoolData.schoolLogo, numberOfWeeks, week1StartDate, firstDayOfWeek });
+    const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
+    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek });
   };
 
   const semesterEnd = week1StartDate 
@@ -15891,8 +16043,31 @@ function SchoolForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
       <div className="border rounded-lg p-3 space-y-3">
-        <Label className="text-[10px] font-medium">School Schedule</Label>
+        <Label className="text-[10px] font-medium">School</Label>
         <div className="space-y-3">
+          <div className="space-y-1">
+            <Label htmlFor="schoolName" className="text-[10px]">School Name</Label>
+            <Select value={NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? schoolName : 'Other'} onValueChange={(v) => { setSchoolName(v); if (v !== 'Other') setCustomSchoolName(''); }}>
+              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-school-name">
+                <SelectValue placeholder="Select school" />
+              </SelectTrigger>
+              <SelectContent className="bg-white [&_*]:!text-black !text-[10px] max-h-[200px]">
+                {NORTH_AMERICAN_SCHOOLS.map(s => (
+                  <SelectItem key={s} value={s} className="!text-black !text-[10px]">{s}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {(schoolName === 'Other' || !NORTH_AMERICAN_SCHOOLS.includes(schoolName)) && (
+              <Input
+                value={customSchoolName || (NORTH_AMERICAN_SCHOOLS.includes(schoolName) ? '' : schoolName)}
+                onChange={(e) => { setCustomSchoolName(e.target.value); setSchoolName('Other'); }}
+                placeholder="Enter your school name"
+                className="!text-black !text-[10px] h-8 mt-1"
+                style={{ fontSize: '10px' }}
+                data-testid="input-custom-school-name"
+              />
+            )}
+          </div>
           <div className="space-y-1">
             <Label htmlFor="numberOfWeeks" className="text-[10px]">Number of School Weeks</Label>
             <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
@@ -16488,7 +16663,7 @@ function NewCourseDialog({
     { value: 'other', label: 'Other' },
   ];
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-gradient-to-br from-gray-800/98 via-black/95 to-gray-900/98 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
@@ -16790,7 +16965,8 @@ function NewCourseDialog({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
