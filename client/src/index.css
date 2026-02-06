@@ -663,33 +663,33 @@ button[role="combobox"] > span {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.15) 30%,
-    rgba(255, 255, 255, 0.5) 50%,
-    rgba(255, 255, 255, 0.15) 70%,
+    rgba(255, 200, 200, 0.4) 20%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 200, 200, 0.4) 80%,
     transparent 100%
   );
   transform: translateY(-100%);
-  animation: red-separator-shimmer-sweep 6s ease-in-out infinite;
+  animation: red-separator-shimmer-sweep 4s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes red-separator-shimmer-sweep {
   0% {
-    transform: translateY(-100%);
+    transform: translateY(-120%);
     opacity: 0;
   }
-  2% {
+  5% {
     opacity: 1;
   }
-  10% {
-    transform: translateY(100%);
+  20% {
+    transform: translateY(120%);
     opacity: 1;
   }
-  12% {
+  25% {
     opacity: 0;
   }
   100% {
-    transform: translateY(100%);
+    transform: translateY(120%);
     opacity: 0;
   }
 }

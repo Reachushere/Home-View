@@ -11672,7 +11672,7 @@ export default function Dashboard() {
                     const moduleFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-module`);
                     const readingFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-reading`);
                     const calcFileProgress = (files: WeeklyFile[]) => {
-                      if (files.length === 0) return 0;
+                      if (files.length === 0) return { percent: 0, hasFiles: false };
                       let totalProgress = 0;
                       for (const f of files) {
                         if (f.listened) {
@@ -11681,13 +11681,18 @@ export default function Dashboard() {
                           totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
                         }
                       }
-                      return Math.round(totalProgress / files.length);
+                      return { percent: Math.round(totalProgress / files.length), hasFiles: true };
                     };
-                    const moduleProgress = calcFileProgress(moduleFiles);
-                    const readingProgress = calcFileProgress(readingFiles);
+                    const getProgressColor = (percent: number) => {
+                      if (percent === 100) return '#22c55e';
+                      if (percent > 0) return '#f97316';
+                      return '#ef4444';
+                    };
+                    const moduleP = calcFileProgress(moduleFiles);
+                    const readingP = calcFileProgress(readingFiles);
                     const otherTasks = courseTasks.filter(t => t.type?.toLowerCase() !== 'module' && t.type?.toLowerCase() !== 'reading');
                     const otherProgress = otherTasks.length > 0 ? Math.round((otherTasks.filter(t => t.isCompleted).length / otherTasks.length) * 100) : 0;
-                    const hasNoData = moduleFiles.length === 0 && readingFiles.length === 0 && otherTasks.length === 0;
+                    const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && otherTasks.length === 0;
                     return (
                       <div 
                         className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
@@ -11697,24 +11702,36 @@ export default function Dashboard() {
                           <span className="text-[10px] font-bold text-white/50 text-center leading-none">N/A</span>
                         ) : (
                           <>
-                            <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">M</span>
-                              <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${moduleProgress}%` }} />
+                            {moduleP.hasFiles && (
+                              <div className="flex items-center gap-[2px]">
+                                <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">M</span>
+                                <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: getProgressColor(moduleP.percent) }}>
+                                  {moduleP.percent > 0 && moduleP.percent < 100 && (
+                                    <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: '#f97316' }} />
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">R</span>
-                              <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                                <div className="h-full bg-green-400 rounded-full transition-all" style={{ width: `${readingProgress}%` }} />
+                            )}
+                            {readingP.hasFiles && (
+                              <div className="flex items-center gap-[2px]">
+                                <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">R</span>
+                                <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: getProgressColor(readingP.percent) }}>
+                                  {readingP.percent > 0 && readingP.percent < 100 && (
+                                    <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: '#f97316' }} />
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-[2px]">
-                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">O</span>
-                              <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                                <div className="h-full bg-orange-400 rounded-full transition-all" style={{ width: `${otherProgress}%` }} />
+                            )}
+                            {otherTasks.length > 0 && (
+                              <div className="flex items-center gap-[2px]">
+                                <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">O</span>
+                                <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: getProgressColor(otherProgress) }}>
+                                  {otherProgress > 0 && otherProgress < 100 && (
+                                    <div className="h-full rounded-full" style={{ width: `${otherProgress}%`, backgroundColor: '#f97316' }} />
+                                  )}
+                                </div>
                               </div>
-                            </div>
+                            )}
                           </>
                         )}
                       </div>
