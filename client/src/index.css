@@ -662,35 +662,35 @@ button[role="combobox"] > span {
 /* Red separator vertical shimmer */
 .red-separator-shimmer-sweep {
   background: linear-gradient(
-    90deg,
+    180deg,
     transparent 0%,
     rgba(255, 200, 200, 0.4) 20%,
     rgba(255, 255, 255, 0.9) 50%,
     rgba(255, 200, 200, 0.4) 80%,
     transparent 100%
   );
-  transform: translateX(-100%);
-  animation: red-separator-shimmer-sweep 8s ease-in-out infinite;
+  transform: translateY(-100%);
+  animation: red-separator-shimmer-sweep 14s ease-in-out infinite;
   pointer-events: none;
 }
 
 @keyframes red-separator-shimmer-sweep {
   0% {
-    transform: translateX(-120%);
+    transform: translateY(-120%);
     opacity: 0;
   }
-  3% {
+  2% {
     opacity: 1;
   }
-  12% {
-    transform: translateX(120%);
+  8% {
+    transform: translateY(120%);
     opacity: 1;
   }
-  15% {
+  10% {
     opacity: 0;
   }
   100% {
-    transform: translateX(120%);
+    transform: translateY(120%);
     opacity: 0;
   }
 }
