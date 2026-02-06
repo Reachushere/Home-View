@@ -8310,7 +8310,7 @@ export default function Dashboard() {
       <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
           className="overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden" 
-          style={{ width: '900px', maxWidth: '95vw', height: '85vh' }}
+          style={{ width: '600px', maxWidth: '95vw', height: '85vh' }}
         >
           {/* Header bar matching flyouts */}
           <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
