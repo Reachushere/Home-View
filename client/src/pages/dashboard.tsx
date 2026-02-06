@@ -11719,36 +11719,42 @@ export default function Dashboard() {
                           <span className="text-[10px] font-bold text-white/50 text-center leading-none">N/A</span>
                         ) : (
                           <>
-                            {moduleP.hasFiles && (
-                              <div className="flex items-center gap-[2px]">
-                                <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">M</span>
+                            <div className="flex items-center gap-[2px]">
+                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">M</span>
+                              {moduleP.hasFiles ? (
                                 <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: getProgressColor(moduleP.percent) }}>
                                   {moduleP.percent > 0 && moduleP.percent < 100 && (
                                     <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: '#f97316' }} />
                                   )}
                                 </div>
-                              </div>
-                            )}
-                            {readingP.hasFiles && (
-                              <div className="flex items-center gap-[2px]">
-                                <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">R</span>
+                              ) : (
+                                <span className="text-[8px] text-white/40 leading-none">N/A</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-[2px]">
+                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">R</span>
+                              {readingP.hasFiles ? (
                                 <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: getProgressColor(readingP.percent) }}>
                                   {readingP.percent > 0 && readingP.percent < 100 && (
                                     <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: '#f97316' }} />
                                   )}
                                 </div>
-                              </div>
-                            )}
-                            {otherTasks.length > 0 && (
-                              <div className="flex items-center gap-[2px]">
-                                <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">O</span>
+                              ) : (
+                                <span className="text-[8px] text-white/40 leading-none">N/A</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-[2px]">
+                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">O</span>
+                              {otherTasks.length > 0 ? (
                                 <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: getProgressColor(otherProgress) }}>
                                   {otherProgress > 0 && otherProgress < 100 && (
                                     <div className="h-full rounded-full" style={{ width: `${otherProgress}%`, backgroundColor: '#f97316' }} />
                                   )}
                                 </div>
-                              </div>
-                            )}
+                              ) : (
+                                <span className="text-[8px] text-white/40 leading-none">N/A</span>
+                              )}
+                            </div>
                           </>
                         )}
                       </div>
