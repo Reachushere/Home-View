@@ -1769,6 +1769,7 @@ export default function Dashboard() {
     return { courses: defaultCourses };
   });
   const [isCoursesDialogOpen, setIsCoursesDialogOpen] = useState(false);
+  const [isNewCourseDialogOpen, setIsNewCourseDialogOpen] = useState(false);
   
   // Get the display timezone (travel if set, otherwise home)
   const displayTimezone = profileData.travelTimezone || profileData.timezone;
@@ -7734,6 +7735,10 @@ export default function Dashboard() {
                 <GraduationCap className="h-4 w-4 mr-2" />
                 Courses, Weeks & Schedule
               </DropdownMenuItem>
+              <DropdownMenuItem data-testid="menu-item-new-course" onClick={() => setIsNewCourseDialogOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                New Course
+              </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-settings" onClick={() => {
                   setOriginalColorSettings({...colorSettings});
                   setOriginalBlinkSettings({...blinkSettings});
@@ -10240,6 +10245,87 @@ export default function Dashboard() {
             </DialogContent>
           </Dialog>
           
+          {/* New Course Dialog (opened from grad cap menu) */}
+          {isNewCourseDialogOpen && (
+            <NewCourseDialog
+              onSave={(courseData) => {
+                const fullName = `${courseData.courseCode} - ${courseData.courseName}`;
+                const updatedCourses = [...coursesData.courses];
+                const emptyIdx = updatedCourses.findIndex(c => !c.name.trim());
+                if (emptyIdx === -1 && updatedCourses.filter(c => c.name.trim()).length >= 3) {
+                  toast({ title: "Maximum courses reached", description: "You can only have up to 3 courses.", variant: "destructive" });
+                  return;
+                }
+                const targetIdx = emptyIdx !== -1 ? emptyIdx : updatedCourses.length;
+                if (emptyIdx !== -1) {
+                  updatedCourses[emptyIdx] = {
+                    name: fullName,
+                    color: courseData.color,
+                    professor: courseData.professorName,
+                    professorEmail: courseData.professorEmail,
+                  };
+                } else {
+                  updatedCourses.push({
+                    name: fullName,
+                    color: courseData.color,
+                    professor: courseData.professorName,
+                    professorEmail: courseData.professorEmail,
+                  });
+                }
+                setCoursesData({ courses: updatedCourses });
+                localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+
+                const prefix = `course${targetIdx + 1}`;
+                if (targetIdx < 3) {
+                  const schedulePayload: Record<string, any> = {
+                    semesterType: courseData.semesterType,
+                    [`${prefix}DeliveryMode`]: courseData.deliveryMode || null,
+                    [`${prefix}ClassDay`]: courseData.classDay || null,
+                    [`${prefix}ClassDay2`]: courseData.classDay2 || null,
+                    [`${prefix}ClassTime`]: courseData.classTime || null,
+                    [`${prefix}ClassEndTime`]: courseData.classEndTime || null,
+                    [`${prefix}SpringSummerTerm`]: courseData.springSummerTerm || null,
+                    [`${prefix}StartDate`]: courseData.startDate ? new Date(courseData.startDate).toISOString() : null,
+                    [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
+                  };
+                  saveSemesterScheduleMutation.mutate(schedulePayload);
+                }
+
+                setIsNewCourseDialogOpen(false);
+                toast({ title: "Course added", description: `${fullName} has been added.` });
+
+                if (courseData.deadlines.length > 0) {
+                  (async () => {
+                    for (const deadline of courseData.deadlines) {
+                      if (deadline.title && deadline.dueDate) {
+                        try {
+                          const dueDate = new Date(deadline.dueDate);
+                          dueDate.setHours(23, 59, 0, 0);
+                          await apiRequest("POST", "/api/tasks", {
+                            title: deadline.title,
+                            description: deadline.description || '',
+                            type: deadline.type || 'assignment',
+                            courseName: fullName,
+                            dueDate: dueDate.toISOString(),
+                            priority: deadline.type === 'exam' || deadline.type === 'quiz' ? 'high' : 'medium',
+                            weekNumber: getWeekNumber(dueDate),
+                            reminder1: DEFAULT_REMINDER_1,
+                            reminder2: DEFAULT_REMINDER_2,
+                          });
+                        } catch (err) {
+                          console.error("Failed to create deadline task:", err);
+                        }
+                      }
+                    }
+                    queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+                    toast({ title: "Deadlines created", description: `${courseData.deadlines.length} deadline(s) added for ${courseData.courseCode}.` });
+                  })();
+                }
+              }}
+              onClose={() => setIsNewCourseDialogOpen(false)}
+            />
+          )}
+
           {/* Settings Dialog */}
           <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
             <DialogContent data-settings-dialog className="max-w-4xl max-h-[90vh] text-[9px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white [&_.text-sm]:text-xs [&_.text-xs]:text-[9px] [&_.text-muted-foreground]:text-[8px] p-0 [&>button.absolute]:hidden flex flex-col overflow-hidden">
@@ -16015,337 +16101,688 @@ function CoursesForm({
   isGenerating,
   onCancel 
 }: { 
-  coursesData: { courses: Array<{ name: string; color: string; professor: string }> };
+  coursesData: { courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> };
   semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { courses: Array<{ name: string; color: string; professor: string }> }) => void;
+  onSave: (data: { courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }) => void;
   onSaveSemesterSchedule: (data: Record<string, any>) => void;
   onGenerateClassTasks: () => void;
   isGenerating?: boolean;
   onCancel: () => void;
 }) {
   const [courses, setCourses] = useState(coursesData.courses);
-  const [activeTab, setActiveTab] = useState<'courses' | 'schedule'>('courses');
+  const [isNewCourseOpen, setIsNewCourseOpen] = useState(false);
+  const [editingCourseIndex, setEditingCourseIndex] = useState<number | null>(null);
 
-  const courseFields = [
-    { prefix: 'course1', label: 'Course 1' },
-    { prefix: 'course2', label: 'Course 2' },
-    { prefix: 'course3', label: 'Course 3' },
-  ];
-
-  const [scheduleData, setScheduleData] = useState(() => {
-    const s = semesterSettings;
-    return {
-      semesterType: s?.semesterType || 'winter',
-      course1DeliveryMode: s?.course1DeliveryMode || '',
-      course1ClassDay: s?.course1ClassDay || '',
-      course1ClassDay2: s?.course1ClassDay2 || '',
-      course1ClassTime: s?.course1ClassTime || '',
-      course1ClassEndTime: s?.course1ClassEndTime || '',
-      course1StartDate: s?.course1StartDate ? new Date(s.course1StartDate).toISOString().split('T')[0] : '',
-      course1EndDate: s?.course1EndDate ? new Date(s.course1EndDate).toISOString().split('T')[0] : '',
-      course1SpringSummerTerm: s?.course1SpringSummerTerm || 'full',
-      course2DeliveryMode: s?.course2DeliveryMode || '',
-      course2ClassDay: s?.course2ClassDay || '',
-      course2ClassDay2: s?.course2ClassDay2 || '',
-      course2ClassTime: s?.course2ClassTime || '',
-      course2ClassEndTime: s?.course2ClassEndTime || '',
-      course2StartDate: s?.course2StartDate ? new Date(s.course2StartDate).toISOString().split('T')[0] : '',
-      course2EndDate: s?.course2EndDate ? new Date(s.course2EndDate).toISOString().split('T')[0] : '',
-      course2SpringSummerTerm: s?.course2SpringSummerTerm || 'full',
-      course3DeliveryMode: s?.course3DeliveryMode || '',
-      course3ClassDay: s?.course3ClassDay || '',
-      course3ClassDay2: s?.course3ClassDay2 || '',
-      course3ClassTime: s?.course3ClassTime || '',
-      course3ClassEndTime: s?.course3ClassEndTime || '',
-      course3StartDate: s?.course3StartDate ? new Date(s.course3StartDate).toISOString().split('T')[0] : '',
-      course3EndDate: s?.course3EndDate ? new Date(s.course3EndDate).toISOString().split('T')[0] : '',
-      course3SpringSummerTerm: s?.course3SpringSummerTerm || 'full',
-    };
-  });
-  
-  const updateCourse = (index: number, field: 'name' | 'color' | 'professor', value: string) => {
-    setCourses(prev => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
-
-  const updateScheduleField = (field: string, value: string) => {
-    setScheduleData(prev => ({ ...prev, [field]: value }));
-  };
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (activeTab === 'courses') {
-      onSave({ courses });
-    } else {
-      const payload: Record<string, any> = {
-        semesterType: scheduleData.semesterType,
+  const handleSaveNewCourse = (courseData: {
+    courseCode: string;
+    courseName: string;
+    professorName: string;
+    professorEmail: string;
+    color: string;
+    semesterType: string;
+    deliveryMode: string;
+    classDay: string;
+    classDay2: string;
+    classTime: string;
+    classEndTime: string;
+    startDate: string;
+    endDate: string;
+    springSummerTerm: string;
+    deadlines: Array<{ title: string; type: string; dueDate: string; description: string }>;
+  }) => {
+    const fullName = `${courseData.courseCode} - ${courseData.courseName}`;
+    const updatedCourses = [...courses];
+    
+    if (editingCourseIndex !== null) {
+      updatedCourses[editingCourseIndex] = {
+        name: fullName,
+        color: courseData.color,
+        professor: courseData.professorName,
+        professorEmail: courseData.professorEmail,
       };
-      courseFields.forEach(({ prefix }) => {
-        const p = prefix as 'course1' | 'course2' | 'course3';
-        payload[`${p}DeliveryMode`] = (scheduleData as any)[`${p}DeliveryMode`] || null;
-        payload[`${p}ClassDay`] = (scheduleData as any)[`${p}ClassDay`] || null;
-        payload[`${p}ClassDay2`] = (scheduleData as any)[`${p}ClassDay2`] || null;
-        payload[`${p}ClassTime`] = (scheduleData as any)[`${p}ClassTime`] || null;
-        payload[`${p}ClassEndTime`] = (scheduleData as any)[`${p}ClassEndTime`] || null;
-        payload[`${p}SpringSummerTerm`] = (scheduleData as any)[`${p}SpringSummerTerm`] || null;
-        const startVal = (scheduleData as any)[`${p}StartDate`];
-        const endVal = (scheduleData as any)[`${p}EndDate`];
-        payload[`${p}StartDate`] = startVal ? new Date(startVal).toISOString() : null;
-        payload[`${p}EndDate`] = endVal ? new Date(endVal).toISOString() : null;
-      });
-      onSaveSemesterSchedule(payload);
+    } else {
+      const emptyIdx = updatedCourses.findIndex(c => !c.name.trim());
+      if (emptyIdx !== -1) {
+        updatedCourses[emptyIdx] = {
+          name: fullName,
+          color: courseData.color,
+          professor: courseData.professorName,
+          professorEmail: courseData.professorEmail,
+        };
+      } else {
+        updatedCourses.push({
+          name: fullName,
+          color: courseData.color,
+          professor: courseData.professorName,
+          professorEmail: courseData.professorEmail,
+        });
+      }
+    }
+    
+    setCourses(updatedCourses);
+    onSave({ courses: updatedCourses });
+
+    const courseIndex = editingCourseIndex !== null ? editingCourseIndex : updatedCourses.findIndex(c => c.name === fullName);
+    const prefix = `course${courseIndex + 1}` as const;
+    
+    if (courseIndex >= 0 && courseIndex < 3) {
+      const schedulePayload: Record<string, any> = {
+        semesterType: courseData.semesterType,
+        [`${prefix}DeliveryMode`]: courseData.deliveryMode || null,
+        [`${prefix}ClassDay`]: courseData.classDay || null,
+        [`${prefix}ClassDay2`]: courseData.classDay2 || null,
+        [`${prefix}ClassTime`]: courseData.classTime || null,
+        [`${prefix}ClassEndTime`]: courseData.classEndTime || null,
+        [`${prefix}SpringSummerTerm`]: courseData.springSummerTerm || null,
+        [`${prefix}StartDate`]: courseData.startDate ? new Date(courseData.startDate).toISOString() : null,
+        [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
+      };
+      onSaveSemesterSchedule(schedulePayload);
+    }
+
+    setIsNewCourseOpen(false);
+    setEditingCourseIndex(null);
+
+    if (courseData.deadlines.length > 0) {
+      (async () => {
+        let created = 0;
+        for (const deadline of courseData.deadlines) {
+          if (deadline.title && deadline.dueDate) {
+            try {
+              const dueDate = new Date(deadline.dueDate);
+              dueDate.setHours(23, 59, 0, 0);
+              await apiRequest("POST", "/api/tasks", {
+                title: deadline.title,
+                description: deadline.description || '',
+                type: deadline.type || 'assignment',
+                courseName: fullName,
+                dueDate: dueDate.toISOString(),
+                priority: deadline.type === 'exam' || deadline.type === 'quiz' ? 'high' : 'medium',
+                weekNumber: getWeekNumber(dueDate),
+                reminder1: DEFAULT_REMINDER_1,
+                reminder2: DEFAULT_REMINDER_2,
+              });
+              created++;
+            } catch (err) {
+              console.error("Failed to create deadline task:", err);
+            }
+          }
+        }
+        queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      })();
     }
   };
 
-  const dayOptions = [
-    { value: '', label: '—' },
-    { value: 'monday', label: 'Mon' },
-    { value: 'tuesday', label: 'Tue' },
-    { value: 'wednesday', label: 'Wed' },
-    { value: 'thursday', label: 'Thu' },
-    { value: 'friday', label: 'Fri' },
-    { value: 'saturday', label: 'Sat' },
-    { value: 'sunday', label: 'Sun' },
-  ];
-  
+  const handleEditCourse = (index: number) => {
+    setEditingCourseIndex(index);
+    setIsNewCourseOpen(true);
+  };
+
+  const handleDeleteCourse = (index: number) => {
+    const updatedCourses = [...courses];
+    updatedCourses[index] = { name: '', color: '#6b7280', professor: '', professorEmail: '' };
+    setCourses(updatedCourses);
+    onSave({ courses: updatedCourses });
+  };
+
+  const activeCoursesWithIndex = courses
+    .map((course, index) => ({ course, index }))
+    .filter(({ course }) => course.name.trim());
+
+  const canAddMore = activeCoursesWithIndex.length < 3;
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 text-[10px]">
-      <div className="flex gap-2 mb-2">
-        <button 
-          type="button"
-          onClick={() => setActiveTab('courses')}
-          className={`px-3 py-1 rounded text-[10px] transition-colors ${activeTab === 'courses' ? 'bg-white/20 text-white' : 'text-white/50 hover:text-white/80'}`}
-          data-testid="tab-courses"
-        >
-          Courses
-        </button>
-        <button 
-          type="button"
-          onClick={() => setActiveTab('schedule')}
-          className={`px-3 py-1 rounded text-[10px] transition-colors ${activeTab === 'schedule' ? 'bg-white/20 text-white' : 'text-white/50 hover:text-white/80'}`}
-          data-testid="tab-schedule"
-        >
-          Schedule
-        </button>
-      </div>
-
-      {activeTab === 'courses' ? (
-        <>
-          <p className="text-[9px] text-muted-foreground">
-            Enter your course names, professor names, and select a color for each.
-          </p>
-          <div className="space-y-2">
-            {courses.map((course, index) => (
-              <div key={index} className="flex items-center gap-1">
-                <span className="text-[10px] text-muted-foreground w-3">{index + 1}.</span>
-                <input
-                  type="color"
-                  value={course.color}
-                  onChange={(e) => updateCourse(index, 'color', e.target.value)}
-                  className="w-5 h-5 rounded cursor-pointer border-0 p-0"
-                  data-testid={`input-course-color-${index}`}
-                />
-                <Input
-                  value={course.name}
-                  onChange={(e) => updateCourse(index, 'name', e.target.value)}
-                  placeholder={`Course name (e.g., MATH101 - Calculus)`}
-                  className="w-64 !text-[10px] h-8 !text-black"
-                  style={{ fontSize: '10px' }}
-                  data-testid={`input-course-name-${index}`}
-                />
-                <Input
-                  value={course.professor}
-                  onChange={(e) => updateCourse(index, 'professor', e.target.value)}
-                  placeholder={`Professor`}
-                  className="flex-1 !text-[10px] h-8 !text-black"
-                  style={{ fontSize: '10px' }}
-                  data-testid={`input-course-professor-${index}`}
-                />
-              </div>
-            ))}
-          </div>
-        </>
+    <div className="space-y-3 text-[10px]">
+      {activeCoursesWithIndex.length === 0 ? (
+        <p className="text-[10px] text-white/50 text-center py-4">No courses added yet. Click the button below to add your first course.</p>
       ) : (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Label className="text-[10px] w-24">Semester Type</Label>
-            <select
-              value={scheduleData.semesterType}
-              onChange={(e) => updateScheduleField('semesterType', e.target.value)}
-              className="flex-1 h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
-              data-testid="select-semester-type"
-            >
-              <option value="fall" className="bg-gray-800">Fall</option>
-              <option value="winter" className="bg-gray-800">Winter</option>
-              <option value="spring_summer" className="bg-gray-800">Spring/Summer</option>
-            </select>
-          </div>
-
-          {courseFields.map(({ prefix, label }, idx) => {
-            const courseName = courses[idx]?.name || label;
-            const courseColor = courses[idx]?.color || '#6b7280';
-            const deliveryMode = (scheduleData as any)[`${prefix}DeliveryMode`] || '';
-            const classDay = (scheduleData as any)[`${prefix}ClassDay`] || '';
-            const classDay2 = (scheduleData as any)[`${prefix}ClassDay2`] || '';
-            const classTime = (scheduleData as any)[`${prefix}ClassTime`] || '';
-            const classEndTime = (scheduleData as any)[`${prefix}ClassEndTime`] || '';
-            const startDate = (scheduleData as any)[`${prefix}StartDate`] || '';
-            const endDate = (scheduleData as any)[`${prefix}EndDate`] || '';
-            const springSummerTerm = (scheduleData as any)[`${prefix}SpringSummerTerm`] || 'full';
-
-            if (!courseName || courseName === label) return null;
+        <div className="space-y-2">
+          {activeCoursesWithIndex.map(({ course, index: realIndex }) => {
+            const prefix = `course${realIndex + 1}`;
+            const deliveryMode = (semesterSettings as any)?.[`${prefix}DeliveryMode`] || '';
+            const classDay = (semesterSettings as any)?.[`${prefix}ClassDay`] || '';
+            const classDay2 = (semesterSettings as any)?.[`${prefix}ClassDay2`] || '';
+            const classTime = (semesterSettings as any)?.[`${prefix}ClassTime`] || '';
+            const classEndTime = (semesterSettings as any)?.[`${prefix}ClassEndTime`] || '';
+            const dayNames: Record<string, string> = { monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun' };
 
             return (
-              <div key={prefix} className="border border-white/20 rounded p-2 space-y-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: courseColor }} />
-                  <span className="text-[10px] font-medium">{courseName.split(' - ')[0]}</span>
-                  <span className="text-[9px] text-white/60">{courseName.split(' - ').slice(1).join(' - ')}</span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-[9px] text-white/60">Delivery</Label>
-                    <select
-                      value={deliveryMode}
-                      onChange={(e) => updateScheduleField(`${prefix}DeliveryMode`, e.target.value)}
-                      className="w-full h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
-                      data-testid={`select-${prefix}-delivery`}
+              <div key={realIndex} className="border border-white/20 rounded p-3 space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: course.color }} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] font-medium truncate">{course.name.split(' - ')[0]}</span>
+                      <span className="text-[9px] text-white/50 truncate">{course.name.split(' - ').slice(1).join(' - ')}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleEditCourse(realIndex)}
+                      className="p-1 text-white/40 transition-colors"
+                      data-testid={`button-edit-course-${realIndex}`}
                     >
-                      <option value="" className="bg-gray-800">—</option>
-                      <option value="virtual" className="bg-gray-800">Virtual (live class)</option>
-                      <option value="online" className="bg-gray-800">Online (async)</option>
-                    </select>
+                      <Pencil className="h-3 w-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCourse(realIndex)}
+                      className="p-1 text-white/40 transition-colors"
+                      data-testid={`button-delete-course-${realIndex}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
                   </div>
-
-                  {scheduleData.semesterType === 'spring_summer' && (
-                    <div>
-                      <Label className="text-[9px] text-white/60">Term</Label>
-                      <select
-                        value={springSummerTerm}
-                        onChange={(e) => updateScheduleField(`${prefix}SpringSummerTerm`, e.target.value)}
-                        className="w-full h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
-                        data-testid={`select-${prefix}-term`}
-                      >
-                        <option value="full" className="bg-gray-800">Full (May-Aug)</option>
-                        <option value="first_half" className="bg-gray-800">First Half (May-Jun)</option>
-                        <option value="second_half" className="bg-gray-800">Second Half (Jun-Aug)</option>
-                      </select>
-                    </div>
-                  )}
                 </div>
-
-                {deliveryMode === 'virtual' && (
-                  <div className="grid grid-cols-4 gap-2">
-                    <div>
-                      <Label className="text-[9px] text-white/60">Day 1</Label>
-                      <select
-                        value={classDay}
-                        onChange={(e) => updateScheduleField(`${prefix}ClassDay`, e.target.value)}
-                        className="w-full h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
-                        data-testid={`select-${prefix}-day1`}
-                      >
-                        {dayOptions.map(d => (
-                          <option key={d.value} value={d.value} className="bg-gray-800">{d.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <Label className="text-[9px] text-white/60">Day 2</Label>
-                      <select
-                        value={classDay2}
-                        onChange={(e) => updateScheduleField(`${prefix}ClassDay2`, e.target.value)}
-                        className="w-full h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
-                        data-testid={`select-${prefix}-day2`}
-                      >
-                        {dayOptions.map(d => (
-                          <option key={d.value} value={d.value} className="bg-gray-800">{d.label}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <Label className="text-[9px] text-white/60">Start</Label>
-                      <Input
-                        type="time"
-                        value={classTime}
-                        onChange={(e) => updateScheduleField(`${prefix}ClassTime`, e.target.value)}
-                        className="h-7 !text-[10px] !text-black"
-                        data-testid={`input-${prefix}-start-time`}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-[9px] text-white/60">End</Label>
-                      <Input
-                        type="time"
-                        value={classEndTime}
-                        onChange={(e) => updateScheduleField(`${prefix}ClassEndTime`, e.target.value)}
-                        className="h-7 !text-[10px] !text-black"
-                        data-testid={`input-${prefix}-end-time`}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-[9px] text-white/60">Start Date</Label>
-                    <Input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => updateScheduleField(`${prefix}StartDate`, e.target.value)}
-                      className="h-7 !text-[10px] !text-black"
-                      data-testid={`input-${prefix}-start-date`}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-[9px] text-white/60">End Date</Label>
-                    <Input
-                      type="date"
-                      value={endDate}
-                      onChange={(e) => updateScheduleField(`${prefix}EndDate`, e.target.value)}
-                      className="h-7 !text-[10px] !text-black"
-                      data-testid={`input-${prefix}-end-date`}
-                    />
-                  </div>
+                <div className="flex items-center gap-3 text-[9px] text-white/50 pl-5">
+                  {course.professor && (
+                    <span className="flex items-center gap-1">
+                      <User className="h-2.5 w-2.5" />
+                      {course.professor}
+                    </span>
+                  )}
+                  {(course as any).professorEmail && (
+                    <span className="flex items-center gap-1">
+                      <Mail className="h-2.5 w-2.5" />
+                      {(course as any).professorEmail}
+                    </span>
+                  )}
+                  {deliveryMode && (
+                    <span className="flex items-center gap-1">
+                      {deliveryMode === 'virtual' ? <Radio className="h-2.5 w-2.5" /> : <Cloud className="h-2.5 w-2.5" />}
+                      {deliveryMode === 'virtual' ? 'Virtual' : 'Online'}
+                    </span>
+                  )}
+                  {classDay && deliveryMode === 'virtual' && (
+                    <span>
+                      {dayNames[classDay] || classDay}{classDay2 ? `/${dayNames[classDay2] || classDay2}` : ''} {classTime && classEndTime ? `${classTime}-${classEndTime}` : ''}
+                    </span>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
       )}
-      
-      <div className="flex justify-between items-center gap-2">
-        {activeTab === 'schedule' && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onGenerateClassTasks}
-            disabled={isGenerating}
-            className="border !border-blue-400/50 text-blue-300 hover:text-blue-200 hover:!border-blue-400 hover:bg-transparent transition-all duration-200 h-8 px-4"
-            style={{ fontSize: '11px' }}
-            data-testid="button-generate-class-tasks"
-          >
-            {isGenerating ? 'Generating...' : 'Generate Class Tasks'}
-          </Button>
-        )}
-        <div className="flex-1" />
-        <Button 
-          type="submit" 
+
+      <div className="flex justify-between items-center gap-2 pt-1">
+        <Button
+          type="button"
           variant="outline"
-          className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6" 
-          style={{
-            boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-            fontSize: '12px'
-          }}
-          data-testid="button-save-courses"
+          onClick={() => { setEditingCourseIndex(null); setIsNewCourseOpen(true); }}
+          disabled={!canAddMore}
+          className="border !border-green-400/50 text-green-300 transition-all duration-200"
+          style={{ fontSize: '11px' }}
+          data-testid="button-new-course"
         >
-          {activeTab === 'courses' ? 'Save Courses' : 'Save Schedule'}
+          <Plus className="h-3.5 w-3.5 mr-1" />
+          {canAddMore ? 'New Course' : 'Max 3 Courses'}
         </Button>
+        <div className="flex items-center gap-2">
+          {activeCoursesWithIndex.some(({ index }) => {
+            return (semesterSettings as any)?.[`course${index + 1}DeliveryMode`] === 'virtual';
+          }) && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onGenerateClassTasks}
+              disabled={isGenerating}
+              className="border !border-blue-400/50 text-blue-300 transition-all duration-200"
+              style={{ fontSize: '11px' }}
+              data-testid="button-generate-class-tasks"
+            >
+              {isGenerating ? 'Generating...' : 'Generate Class Tasks'}
+            </Button>
+          )}
+        </div>
       </div>
-    </form>
+
+      {isNewCourseOpen && (
+        <NewCourseDialog
+          existingCourse={editingCourseIndex !== null ? {
+            courseCode: courses[editingCourseIndex]?.name?.split(' - ')[0] || '',
+            courseName: courses[editingCourseIndex]?.name?.split(' - ').slice(1).join(' - ') || '',
+            professorName: courses[editingCourseIndex]?.professor || '',
+            professorEmail: (courses[editingCourseIndex] as any)?.professorEmail || '',
+            color: courses[editingCourseIndex]?.color || '#6b7280',
+            semesterType: semesterSettings?.semesterType || 'winter',
+            deliveryMode: (semesterSettings as any)?.[`course${editingCourseIndex + 1}DeliveryMode`] || '',
+            classDay: (semesterSettings as any)?.[`course${editingCourseIndex + 1}ClassDay`] || '',
+            classDay2: (semesterSettings as any)?.[`course${editingCourseIndex + 1}ClassDay2`] || '',
+            classTime: (semesterSettings as any)?.[`course${editingCourseIndex + 1}ClassTime`] || '',
+            classEndTime: (semesterSettings as any)?.[`course${editingCourseIndex + 1}ClassEndTime`] || '',
+            startDate: (semesterSettings as any)?.[`course${editingCourseIndex + 1}StartDate`] ? new Date((semesterSettings as any)[`course${editingCourseIndex + 1}StartDate`]).toISOString().split('T')[0] : '',
+            endDate: (semesterSettings as any)?.[`course${editingCourseIndex + 1}EndDate`] ? new Date((semesterSettings as any)[`course${editingCourseIndex + 1}EndDate`]).toISOString().split('T')[0] : '',
+            springSummerTerm: (semesterSettings as any)?.[`course${editingCourseIndex + 1}SpringSummerTerm`] || 'full',
+          } : undefined}
+          onSave={handleSaveNewCourse}
+          onClose={() => { setIsNewCourseOpen(false); setEditingCourseIndex(null); }}
+        />
+      )}
+    </div>
+  );
+}
+
+function NewCourseDialog({
+  existingCourse,
+  onSave,
+  onClose,
+}: {
+  existingCourse?: {
+    courseCode: string;
+    courseName: string;
+    professorName: string;
+    professorEmail: string;
+    color: string;
+    semesterType: string;
+    deliveryMode: string;
+    classDay: string;
+    classDay2: string;
+    classTime: string;
+    classEndTime: string;
+    startDate: string;
+    endDate: string;
+    springSummerTerm: string;
+  };
+  onSave: (data: {
+    courseCode: string;
+    courseName: string;
+    professorName: string;
+    professorEmail: string;
+    color: string;
+    semesterType: string;
+    deliveryMode: string;
+    classDay: string;
+    classDay2: string;
+    classTime: string;
+    classEndTime: string;
+    startDate: string;
+    endDate: string;
+    springSummerTerm: string;
+    deadlines: Array<{ title: string; type: string; dueDate: string; description: string }>;
+  }) => void;
+  onClose: () => void;
+}) {
+  const [courseCode, setCourseCode] = useState(existingCourse?.courseCode || '');
+  const [courseName, setCourseName] = useState(existingCourse?.courseName || '');
+  const [professorName, setProfessorName] = useState(existingCourse?.professorName || '');
+  const [professorEmail, setProfessorEmail] = useState(existingCourse?.professorEmail || '');
+  const [color, setColor] = useState(existingCourse?.color || '#6366F1');
+  const [semesterType, setSemesterType] = useState(existingCourse?.semesterType || 'winter');
+  const [deliveryMode, setDeliveryMode] = useState(existingCourse?.deliveryMode || '');
+  const [classDay, setClassDay] = useState(existingCourse?.classDay || '');
+  const [classDay2, setClassDay2] = useState(existingCourse?.classDay2 || '');
+  const [classTime, setClassTime] = useState(existingCourse?.classTime || '');
+  const [classEndTime, setClassEndTime] = useState(existingCourse?.classEndTime || '');
+  const [startDate, setStartDate] = useState(existingCourse?.startDate || '');
+  const [endDate, setEndDate] = useState(existingCourse?.endDate || '');
+  const [springSummerTerm, setSpringSummerTerm] = useState(existingCourse?.springSummerTerm || 'full');
+  const [deadlines, setDeadlines] = useState<Array<{ title: string; type: string; dueDate: string; description: string }>>([]);
+
+  const addDeadline = () => {
+    setDeadlines(prev => [...prev, { title: '', type: 'assignment', dueDate: '', description: '' }]);
+  };
+
+  const updateDeadline = (index: number, field: string, value: string) => {
+    setDeadlines(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const removeDeadline = (index: number) => {
+    setDeadlines(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!courseCode.trim() || !courseName.trim()) return;
+    onSave({
+      courseCode: courseCode.trim(),
+      courseName: courseName.trim(),
+      professorName: professorName.trim(),
+      professorEmail: professorEmail.trim(),
+      color,
+      semesterType,
+      deliveryMode,
+      classDay,
+      classDay2,
+      classTime,
+      classEndTime,
+      startDate,
+      endDate,
+      springSummerTerm,
+      deadlines: deadlines.filter(d => d.title.trim() && d.dueDate),
+    });
+  };
+
+  const dayOptions = [
+    { value: '', label: 'None' },
+    { value: 'monday', label: 'Monday' },
+    { value: 'tuesday', label: 'Tuesday' },
+    { value: 'wednesday', label: 'Wednesday' },
+    { value: 'thursday', label: 'Thursday' },
+    { value: 'friday', label: 'Friday' },
+    { value: 'saturday', label: 'Saturday' },
+    { value: 'sunday', label: 'Sunday' },
+  ];
+
+  const deadlineTypes = [
+    { value: 'assignment', label: 'Assignment' },
+    { value: 'exam', label: 'Exam' },
+    { value: 'quiz', label: 'Quiz' },
+    { value: 'essay', label: 'Essay' },
+    { value: 'project', label: 'Project' },
+    { value: 'discussion', label: 'Discussion' },
+    { value: 'reading', label: 'Reading' },
+    { value: 'other', label: 'Other' },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="bg-gradient-to-br from-gray-800/98 via-black/95 to-gray-900/98 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="h-3.5 w-3.5 text-white" />
+            <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+              {existingCourse ? 'EDIT COURSE' : 'NEW COURSE'}
+            </h2>
+          </div>
+          <button onClick={onClose} className="text-white/60 transition-colors p-1" data-testid="button-close-new-course">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="grid grid-cols-[1fr_1fr_auto] gap-2">
+            <div>
+              <Label className="text-[9px] text-white/60 mb-1 block">Course Number</Label>
+              <Input
+                value={courseCode}
+                onChange={(e) => setCourseCode(e.target.value)}
+                placeholder="e.g. CSOC103"
+                className="h-8 !text-[10px] !text-black"
+                style={{ fontSize: '10px' }}
+                required
+                data-testid="input-new-course-code"
+              />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white/60 mb-1 block">Course Name</Label>
+              <Input
+                value={courseName}
+                onChange={(e) => setCourseName(e.target.value)}
+                placeholder="e.g. How Society Works"
+                className="h-8 !text-[10px] !text-black"
+                style={{ fontSize: '10px' }}
+                required
+                data-testid="input-new-course-name"
+              />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white/60 mb-1 block">Color</Label>
+              <input
+                type="color"
+                value={color}
+                onChange={(e) => setColor(e.target.value)}
+                className="w-8 h-8 rounded cursor-pointer border border-white/20 p-0"
+                data-testid="input-new-course-color"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <Label className="text-[9px] text-white/60 mb-1 block">Professor Name</Label>
+              <Input
+                value={professorName}
+                onChange={(e) => setProfessorName(e.target.value)}
+                placeholder="e.g. Dr. Smith"
+                className="h-8 !text-[10px] !text-black"
+                style={{ fontSize: '10px' }}
+                data-testid="input-new-professor-name"
+              />
+            </div>
+            <div>
+              <Label className="text-[9px] text-white/60 mb-1 block">Professor Email</Label>
+              <Input
+                value={professorEmail}
+                onChange={(e) => setProfessorEmail(e.target.value)}
+                placeholder="e.g. prof@university.ca"
+                className="h-8 !text-[10px] !text-black"
+                style={{ fontSize: '10px' }}
+                data-testid="input-new-professor-email"
+              />
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 pt-3">
+            <Label className="text-[10px] font-medium mb-2 block">Semester & Schedule</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-[9px] text-white/60 mb-1 block">Semester</Label>
+                <select
+                  value={semesterType}
+                  onChange={(e) => setSemesterType(e.target.value)}
+                  className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                  data-testid="select-new-course-semester"
+                >
+                  <option value="fall" className="bg-gray-800">Fall</option>
+                  <option value="winter" className="bg-gray-800">Winter</option>
+                  <option value="spring_summer" className="bg-gray-800">Spring/Summer</option>
+                </select>
+              </div>
+              <div>
+                <Label className="text-[9px] text-white/60 mb-1 block">Delivery Mode</Label>
+                <select
+                  value={deliveryMode}
+                  onChange={(e) => setDeliveryMode(e.target.value)}
+                  className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                  data-testid="select-new-course-delivery"
+                >
+                  <option value="" className="bg-gray-800">Select...</option>
+                  <option value="virtual" className="bg-gray-800">Virtual (live class)</option>
+                  <option value="online" className="bg-gray-800">Online (async)</option>
+                </select>
+              </div>
+            </div>
+
+            {semesterType === 'spring_summer' && (
+              <div className="mt-2">
+                <Label className="text-[9px] text-white/60 mb-1 block">Spring/Summer Term</Label>
+                <select
+                  value={springSummerTerm}
+                  onChange={(e) => setSpringSummerTerm(e.target.value)}
+                  className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                  data-testid="select-new-course-term"
+                >
+                  <option value="full" className="bg-gray-800">Full Length (May-Aug)</option>
+                  <option value="first_half" className="bg-gray-800">First Half (May-Jun)</option>
+                  <option value="second_half" className="bg-gray-800">Second Half (Jun-Aug)</option>
+                </select>
+              </div>
+            )}
+
+            {deliveryMode === 'virtual' && (
+              <div className="grid grid-cols-4 gap-2 mt-2">
+                <div>
+                  <Label className="text-[9px] text-white/60 mb-1 block">Day 1</Label>
+                  <select
+                    value={classDay}
+                    onChange={(e) => setClassDay(e.target.value)}
+                    className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                    data-testid="select-new-course-day1"
+                  >
+                    {dayOptions.map(d => (
+                      <option key={d.value} value={d.value} className="bg-gray-800">{d.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label className="text-[9px] text-white/60 mb-1 block">Day 2</Label>
+                  <select
+                    value={classDay2}
+                    onChange={(e) => setClassDay2(e.target.value)}
+                    className="w-full h-8 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                    data-testid="select-new-course-day2"
+                  >
+                    {dayOptions.map(d => (
+                      <option key={d.value} value={d.value} className="bg-gray-800">{d.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label className="text-[9px] text-white/60 mb-1 block">Start Time</Label>
+                  <Input
+                    type="time"
+                    value={classTime}
+                    onChange={(e) => setClassTime(e.target.value)}
+                    className="h-8 !text-[10px] !text-black"
+                    data-testid="input-new-course-start-time"
+                  />
+                </div>
+                <div>
+                  <Label className="text-[9px] text-white/60 mb-1 block">End Time</Label>
+                  <Input
+                    type="time"
+                    value={classEndTime}
+                    onChange={(e) => setClassEndTime(e.target.value)}
+                    className="h-8 !text-[10px] !text-black"
+                    data-testid="input-new-course-end-time"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <div>
+                <Label className="text-[9px] text-white/60 mb-1 block">Course Start Date</Label>
+                <Input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="h-8 !text-[10px] !text-black"
+                  data-testid="input-new-course-start-date"
+                />
+              </div>
+              <div>
+                <Label className="text-[9px] text-white/60 mb-1 block">Course End Date</Label>
+                <Input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="h-8 !text-[10px] !text-black"
+                  data-testid="input-new-course-end-date"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 pt-3">
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-[10px] font-medium">Known Deadlines</Label>
+              <button
+                type="button"
+                onClick={addDeadline}
+                className="flex items-center gap-1 text-[9px] text-blue-300 transition-colors"
+                data-testid="button-add-deadline"
+              >
+                <Plus className="h-3 w-3" />
+                Add Deadline
+              </button>
+            </div>
+            <p className="text-[9px] text-white/40 mb-2">Add tests, exams, assignments, and other deadlines you already know about.</p>
+
+            {deadlines.length === 0 ? (
+              <div className="text-center py-3 border border-dashed border-white/15 rounded">
+                <p className="text-[9px] text-white/30">No deadlines added yet</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-[200px] overflow-y-auto pr-1">
+                {deadlines.map((deadline, idx) => (
+                  <div key={idx} className="border border-white/15 rounded p-2 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 grid grid-cols-[1fr_auto_auto] gap-2">
+                        <Input
+                          value={deadline.title}
+                          onChange={(e) => updateDeadline(idx, 'title', e.target.value)}
+                          placeholder="Deadline title (e.g. Midterm Exam)"
+                          className="h-7 !text-[10px] !text-black"
+                          style={{ fontSize: '10px' }}
+                          data-testid={`input-deadline-title-${idx}`}
+                        />
+                        <select
+                          value={deadline.type}
+                          onChange={(e) => updateDeadline(idx, 'type', e.target.value)}
+                          className="h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2 w-28"
+                          data-testid={`select-deadline-type-${idx}`}
+                        >
+                          {deadlineTypes.map(t => (
+                            <option key={t.value} value={t.value} className="bg-gray-800">{t.label}</option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => removeDeadline(idx)}
+                          className="p-1 text-white/40 transition-colors"
+                          data-testid={`button-remove-deadline-${idx}`}
+                        >
+                          <Minus className="h-3 w-3" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-[1fr_1fr] gap-2">
+                      <Input
+                        type="date"
+                        value={deadline.dueDate}
+                        onChange={(e) => updateDeadline(idx, 'dueDate', e.target.value)}
+                        className="h-7 !text-[10px] !text-black"
+                        data-testid={`input-deadline-date-${idx}`}
+                      />
+                      <Input
+                        value={deadline.description}
+                        onChange={(e) => updateDeadline(idx, 'description', e.target.value)}
+                        placeholder="Notes (optional)"
+                        className="h-7 !text-[10px] !text-black"
+                        style={{ fontSize: '10px' }}
+                        data-testid={`input-deadline-description-${idx}`}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="border !border-white/30 text-white/60 transition-all duration-200"
+              style={{ fontSize: '11px' }}
+              data-testid="button-cancel-new-course"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="outline"
+              className="border !border-white/50 text-white transition-all duration-200"
+              style={{
+                boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                fontSize: '11px'
+              }}
+              data-testid="button-save-new-course"
+            >
+              {existingCourse ? 'Update Course' : 'Save Course'}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 

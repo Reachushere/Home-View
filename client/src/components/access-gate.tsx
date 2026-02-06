@@ -35,33 +35,46 @@ export function AccessGate({ children }: AccessGateProps) {
     checkAccess();
   }, []);
 
+  const isAdminStored = () => {
+    if (localStorage.getItem(ADMIN_KEY) === "true") return true;
+    if (document.cookie.split(';').some(c => c.trim() === `${ADMIN_KEY}=true`)) {
+      localStorage.setItem(ADMIN_KEY, "true");
+      return true;
+    }
+    return false;
+  };
+
+  const persistAdmin = () => {
+    localStorage.setItem(ADMIN_KEY, "true");
+    document.cookie = `${ADMIN_KEY}=true;path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+  };
+
   const checkAccess = async () => {
-    // Check URL for access token FIRST - this takes priority over admin mode
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlToken = urlParams.get("access");
-    
-    // If URL has access token, validate it and use read-only mode (never auto-admin)
-    if (urlToken) {
-      await validateToken(urlToken);
-      // Clean up URL after validation
-      window.history.replaceState({}, "", window.location.pathname);
+    // Check admin mode FIRST - owner should never be blocked
+    if (isAdminStored()) {
+      persistAdmin();
+      setIsAdmin(true);
+      setIsAuthorized(true);
       return;
     }
 
-    // Only auto-enable admin for truly local development (localhost only, not replit.app)
+    // Auto-enable admin in dev mode
     const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
     const isDevMode = import.meta.env.DEV && isLocalhost;
     if (isDevMode) {
-      localStorage.setItem(ADMIN_KEY, "true");
+      persistAdmin();
       setIsAdmin(true);
       setIsAuthorized(true);
       return;
     }
 
-    // Check if admin mode is stored (user clicked "I'm the owner")
-    if (localStorage.getItem(ADMIN_KEY) === "true") {
-      setIsAdmin(true);
-      setIsAuthorized(true);
+    // Check URL for access token - for share link visitors
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get("access");
+    
+    if (urlToken) {
+      await validateToken(urlToken);
+      window.history.replaceState({}, "", window.location.pathname);
       return;
     }
 
@@ -69,16 +82,13 @@ export function AccessGate({ children }: AccessGateProps) {
     const storedToken = localStorage.getItem(ACCESS_TOKEN_KEY);
     const storedExpiry = localStorage.getItem(EXPIRES_AT_KEY);
 
-    // If stored token exists and not expired, use it (for returning share link users)
     if (storedToken && storedExpiry) {
       const expiryDate = new Date(storedExpiry);
       if (expiryDate > new Date()) {
         setExpiresAt(expiryDate);
         setIsAuthorized(true);
-        // Note: isAdmin stays false, so this is read-only mode
         return;
       } else {
-        // Clear expired token
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(EXPIRES_AT_KEY);
       }
@@ -127,7 +137,7 @@ export function AccessGate({ children }: AccessGateProps) {
   };
 
   const enableAdminMode = () => {
-    localStorage.setItem(ADMIN_KEY, "true");
+    persistAdmin();
     setIsAdmin(true);
     setIsAuthorized(true);
   };
