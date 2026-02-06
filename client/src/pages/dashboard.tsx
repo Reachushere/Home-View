@@ -7575,7 +7575,7 @@ export default function Dashboard() {
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '12px', zIndex: 100 }} />
           <div className="flex flex-col fixed" style={{ left: '66px', top: '14px', zIndex: 100 }}>
-            <span className="text-white font-bold text-[14px] leading-tight">Schedule for Bryn Kai-Hendricks</span>
+            <span className="text-white font-bold text-[11px] leading-tight">Schedule for Bryn Kai-Hendricks</span>
             <span className="text-white/60 font-medium text-[10px] leading-tight">Toronto Metropolitan University</span>
           </div>
         </div>
