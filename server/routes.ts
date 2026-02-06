@@ -13,6 +13,7 @@ import { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent, listEven
 import { getSecondAccountAuthUrl, exchangeCodeForTokens, isSecondAccountConnected, disconnectSecondAccount, createEventInSecondAccount, createPrepEventInSecondAccount, deleteEventFromSecondAccount, updateEventInSecondAccount, getEventsFromSecondAccount } from "./secondGoogleAccount";
 import { textToSpeech } from "./replit_integrations/audio/client";
 import { sendTestEmail, sendTaskReminder, sendDailyDigest, sendTestSms, sendSmsReminder, sendTestHaPush, sendHaTaskReminder, type TaskReminder } from "./email";
+import { getSchedulerStatus } from "./reminderScheduler";
 import { listOneDriveItems, getOneDriveFile, searchOneDriveFiles } from "./onedrive";
 
 // Helper function to generate repeated task due dates
@@ -2448,6 +2449,10 @@ export async function registerRoutes(
       console.error("Error sending test HA push:", err);
       res.status(500).json({ message: "Failed to send test push notification" });
     }
+  });
+
+  app.get("/api/reminders/status", (_req, res) => {
+    res.json(getSchedulerStatus());
   });
 
   // POST /api/ha-push/reminder - Send a push notification reminder for a specific task via Home Assistant

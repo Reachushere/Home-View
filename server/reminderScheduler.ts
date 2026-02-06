@@ -5,15 +5,29 @@ const sentReminders = new Set<string>();
 
 const DAILY_DIGEST_HOUR = 7;
 let lastDigestDate = "";
+let schedulerRunning = false;
+let lastCheckTime: Date | null = null;
+let remindersSentCount = 0;
 
 function getReminderKey(taskId: number, reminderMinutes: number): string {
   return `${taskId}-${reminderMinutes}`;
+}
+
+export function getSchedulerStatus() {
+  return {
+    running: schedulerRunning,
+    lastCheck: lastCheckTime?.toISOString() || null,
+    remindersSent: remindersSentCount,
+    trackedReminders: sentReminders.size,
+    lastDigestDate,
+  };
 }
 
 export async function checkReminders() {
   try {
     const allTasks = await storage.getTasks({ showCompleted: false });
     const now = new Date();
+    lastCheckTime = now;
 
     for (const task of allTasks) {
       if (task.isCompleted || !task.dueDate) continue;
@@ -65,6 +79,7 @@ export async function checkReminders() {
           }
 
           sentReminders.add(key);
+          remindersSentCount++;
         }
 
         if (now > dueDate) {
@@ -131,7 +146,8 @@ export async function checkDailyDigest() {
 let reminderInterval: ReturnType<typeof setInterval> | null = null;
 
 export function startReminderScheduler() {
-  console.log("[Reminder] Starting reminder scheduler (checking every 60 seconds)");
+  console.log("=== [Reminder] Starting reminder scheduler (checking every 60 seconds) ===");
+  schedulerRunning = true;
 
   checkReminders();
   checkDailyDigest();
@@ -146,6 +162,7 @@ export function stopReminderScheduler() {
   if (reminderInterval) {
     clearInterval(reminderInterval);
     reminderInterval = null;
+    schedulerRunning = false;
     console.log("[Reminder] Scheduler stopped");
   }
 }
