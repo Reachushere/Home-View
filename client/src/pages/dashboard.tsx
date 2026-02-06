@@ -10982,11 +10982,13 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Extra half-width black column after Saturday */}
+              {/* Extra half-width black column after Saturday - header */}
               <div 
-                className="border-l border-border"
+                className="flex items-center justify-center border-l border-border"
                 style={{ backgroundColor: '#000000' }}
-              />
+              >
+                <span className="text-[11px] font-medium tracking-wide text-white">Progress</span>
+              </div>
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
