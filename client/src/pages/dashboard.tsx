@@ -11674,19 +11674,19 @@ export default function Dashboard() {
                         style={{ backgroundColor: '#000000' }}
                       >
                         <div className="flex items-center gap-[2px]">
-                          <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">M</span>
+                          <span className="text-[9px] font-bold text-white w-[9px] flex-shrink-0">M</span>
                           <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
                             <div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${moduleProgress}%` }} />
                           </div>
                         </div>
                         <div className="flex items-center gap-[2px]">
-                          <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">R</span>
+                          <span className="text-[9px] font-bold text-white w-[9px] flex-shrink-0">R</span>
                           <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
                             <div className="h-full bg-green-400 rounded-full transition-all" style={{ width: `${readingProgress}%` }} />
                           </div>
                         </div>
                         <div className="flex items-center gap-[2px]">
-                          <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">O</span>
+                          <span className="text-[9px] font-bold text-white w-[9px] flex-shrink-0">O</span>
                           <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
                             <div className="h-full bg-orange-400 rounded-full" style={{ width: '0%' }} />
                           </div>
