@@ -11714,8 +11714,8 @@ export default function Dashboard() {
               })}
               {/* Progress column - half-width, black background */}
               <div 
-                className="border-l border-border/50 border-b-0"
-                style={{ backgroundColor: '#000000' }}
+                className="border-l border-border/50 relative"
+                style={{ backgroundColor: '#000000', marginBottom: '-1px', paddingBottom: '1px' }}
               />
               {/* Saturday all-day cell */}
               {weekDays[6] && (() => {
