@@ -2650,6 +2650,8 @@ export default function Dashboard() {
     size: number;
     folder: string | null;
     listened?: boolean;
+    lastChunkIndex?: number;
+    totalChunks?: number;
   }
   
   const { data: weeklyFiles = [] } = useQuery<WeeklyFile[]>({
@@ -11660,14 +11662,29 @@ export default function Dashboard() {
                   {/* Progress column - half-width black with M/R/O bars */}
                   {(() => {
                     const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
+                    const courseCodeLower = courseCode.toLowerCase();
                     const courseTasks = allTasks.filter(t => {
                       const taskCourse = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
                       return taskCourse === courseCode && t.weekNumber === selectedWeek;
                     });
-                    const moduleTasks = courseTasks.filter(t => t.type?.toLowerCase() === 'module');
-                    const readingTasks = courseTasks.filter(t => t.type?.toLowerCase() === 'reading');
-                    const moduleProgress = moduleTasks.length > 0 ? Math.round((moduleTasks.filter(t => t.isCompleted).length / moduleTasks.length) * 100) : 0;
-                    const readingProgress = readingTasks.length > 0 ? Math.round((readingTasks.filter(t => t.isCompleted).length / readingTasks.length) * 100) : 0;
+                    const moduleFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-module`);
+                    const readingFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-reading`);
+                    const calcFileProgress = (files: WeeklyFile[]) => {
+                      if (files.length === 0) return 0;
+                      let totalProgress = 0;
+                      for (const f of files) {
+                        if (f.listened) {
+                          totalProgress += 100;
+                        } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex) {
+                          totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
+                        }
+                      }
+                      return Math.round(totalProgress / files.length);
+                    };
+                    const moduleProgress = calcFileProgress(moduleFiles);
+                    const readingProgress = calcFileProgress(readingFiles);
+                    const otherTasks = courseTasks.filter(t => t.type?.toLowerCase() !== 'module' && t.type?.toLowerCase() !== 'reading');
+                    const otherProgress = otherTasks.length > 0 ? Math.round((otherTasks.filter(t => t.isCompleted).length / otherTasks.length) * 100) : 0;
                     return (
                       <div 
                         className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
@@ -11688,7 +11705,7 @@ export default function Dashboard() {
                         <div className="flex items-center gap-[2px]">
                           <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">O</span>
                           <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                            <div className="h-full bg-orange-400 rounded-full" style={{ width: '0%' }} />
+                            <div className="h-full bg-orange-400 rounded-full transition-all" style={{ width: `${otherProgress}%` }} />
                           </div>
                         </div>
                       </div>
