@@ -4714,28 +4714,15 @@ export default function Dashboard() {
     return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // Due This Week: tasks due on remaining school week days (not today, not tomorrow)
-  // School week is Mon-Fri, so we need to find remaining days until Friday
+  // Due This Week: tasks due in the 7 days starting after tomorrow
+  const thisWeekStart = addDays(startOfDay(today), 2); // day after tomorrow
+  const thisWeekEnd = addDays(thisWeekStart, 6); // 7 days total (inclusive)
   const dueThisWeekTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
-    if (isCASL101Finished(t)) return false; // Auto-hide finished CASL101 tasks
+    if (isCASL101Finished(t)) return false;
     if (!t.dueDate) return false;
-    const dueDate = new Date(t.dueDate);
-    const dueDateStart = startOfDay(dueDate);
-    const todayStart = startOfDay(today);
-    const tomorrowStart = startOfDay(tomorrow);
-    // Not today or tomorrow
-    if (isSameDay(dueDateStart, todayStart) || isSameDay(dueDateStart, tomorrowStart)) return false;
-    // Must be after tomorrow
-    if (dueDateStart <= tomorrowStart) return false;
-    // Must be within the current school week (Mon-Fri)
-    const dayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
-    // Find end of school week (Friday)
-    const daysUntilFriday = dayOfWeek === 0 ? 5 : dayOfWeek === 6 ? 6 : 5 - dayOfWeek;
-    const endOfSchoolWeek = new Date(today);
-    endOfSchoolWeek.setDate(today.getDate() + daysUntilFriday);
-    endOfSchoolWeek.setHours(23, 59, 59, 999);
-    return dueDateStart <= endOfSchoolWeek;
+    const dueDateStart = startOfDay(new Date(t.dueDate));
+    return dueDateStart >= thisWeekStart && dueDateStart <= thisWeekEnd;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
   // Measure first row positions after render for second row alignment
@@ -13228,10 +13215,7 @@ export default function Dashboard() {
                   <Calendar className="h-3 w-3 text-white" />
                   This Week ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px' }}>{(() => {
                     const today = new Date();
-                    const dayOfWeek = today.getDay(); // 0=Sun, 5=Fri
-                    const friday = new Date(today);
-                    friday.setDate(today.getDate() + (5 - dayOfWeek));
-                    return `${format(today, 'EEE, MMMM d')} - ${format(friday, 'EEE, MMMM d, yyyy')}`;
+                    return `${format(thisWeekStart, 'MMM d')} - ${format(thisWeekEnd, 'MMM d')}`;
                   })()}</span>
                 </span>
                 {/* 9-dot grip */}
