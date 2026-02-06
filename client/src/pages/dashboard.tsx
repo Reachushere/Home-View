@@ -16670,8 +16670,8 @@ function NewCourseDialog({
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-gradient-to-br from-gray-800 via-black to-gray-900 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
           <div className="flex items-center gap-2">
             <GraduationCap className="h-3.5 w-3.5 text-white" />
