@@ -12055,9 +12055,9 @@ export default function Dashboard() {
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       return (
                         <div 
-                          className="border-l border-border/50 border-t border-t-gray-300/50 relative overflow-visible"
+                          className={`border-l border-border/50 border-t border-t-gray-300/50 relative overflow-visible ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                           style={{ 
-                            backgroundColor: isToday ? colorSettings.todayCellBackground : '#faf8f5',
+                            backgroundColor: isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourRowBackground : '#faf8f5',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined
                           }}
                         >
