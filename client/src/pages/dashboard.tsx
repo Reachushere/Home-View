@@ -13213,7 +13213,7 @@ export default function Dashboard() {
               >
                 <span className="flex items-center gap-2">
                   <Calendar className="h-3 w-3 text-white" />
-                  This Week ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px' }}>{(() => {
+                  One Week Ahead ({dueThisWeekTasks.length}) -<span className="text-[10px]" style={{ verticalAlign: 'bottom', marginLeft: '-2px' }}>{(() => {
                     const today = new Date();
                     return `${format(thisWeekStart, 'MMM d')} - ${format(thisWeekEnd, 'MMM d')}`;
                   })()}</span>
