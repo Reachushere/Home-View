@@ -10891,19 +10891,7 @@ export default function Dashboard() {
               );
             })}
             <div style={{ minWidth: 0 }} /> {/* Progress column spacer */}
-            {weekDays[6] && (() => {
-              const day = weekDays[6];
-              const isToday = isSameDay(day, new Date());
-              const isSaturday = new Date().getDay() === 6;
-              const todayHasTasks = isToday && allTasks.some(t => 
-                t.dueDate && isSameDay(new Date(t.dueDate), day)
-              );
-              return (
-                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", overflow: 'visible' }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] whitespace-nowrap ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
-                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Read your today tasks` : !isSaturday ? <span className="text-black">NEW WEEK</span> : ''}
-                </div>
-              );
-            })()}
+            <div style={{ minWidth: 0 }} /> {/* Saturday column spacer */}
           </div>
           <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Progress/Saturday divider line - dashed (6.5 / 7.5 total column widths), hidden on Saturday */}
@@ -10982,6 +10970,9 @@ export default function Dashboard() {
                     style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black" }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
+                    {!isToday && new Date().getDay() !== 6 && (
+                      <div className="text-[8px] font-bold tracking-wider text-white/70 uppercase" style={{ marginBottom: '-2px' }}>NEW WEEK</div>
+                    )}
                     <div className="flex items-center gap-1.5">
                       <div className="text-2xl font-bold text-white">{dayNum}</div>
                       <div className="text-[10px] font-medium tracking-wide text-white/80">{dayName}</div>
