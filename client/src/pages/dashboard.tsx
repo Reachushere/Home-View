@@ -11890,8 +11890,8 @@ export default function Dashboard() {
                     }) || [];
                     return (
                       <div 
-                        className="border-l border-border/50 relative p-0.5 overflow-hidden min-w-0"
-                        style={{ backgroundColor: isDayToday ? colorSettings.todayCellBackground : course.bg }}
+                        className="border-l border-border/50 relative overflow-hidden min-w-0"
+                        style={{ backgroundColor: isDayToday ? colorSettings.todayCellBackground : course.bg, padding: '2px 2px 2px 8px' }}
                       >
                         {dueTasks.map(task => {
                           const today = startOfDay(new Date());
@@ -12061,8 +12061,8 @@ export default function Dashboard() {
                 const allDayEvents = getAllDayCalendarEvents(day);
                 return (
                   <div 
-                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white' }}
+                    className="border-l border-border/50 relative flex flex-col gap-0.5 overflow-hidden min-w-0"
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white', padding: '2px 2px 2px 8px' }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -12435,7 +12435,8 @@ export default function Dashboard() {
                           className={`border-l border-border/50 border-t border-t-gray-300/50 relative overflow-visible ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                           style={{ 
                             backgroundColor: isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourRowBackground : '#faf8f5',
-                            borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined
+                            borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
+                            paddingLeft: '6px'
                           }}
                         >
                           {hour % 1 === 0 && (
