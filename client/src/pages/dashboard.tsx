@@ -10991,200 +10991,6 @@ export default function Dashboard() {
               })()}
             </div>
             
-            {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
-            <div ref={allDayRowRef} className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
-              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative" style={{ backgroundColor: colorSettings.headerBar }}>
-                ALL DAY
-              </div>
-              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
-              {/* Day cells - Sun-Fri */}
-              {weekDays.slice(0, 6).map((day, dayIdx) => {
-                const allDayTasks = getAllDayTasks(day);
-                const allDayEvents = getAllDayCalendarEvents(day);
-                
-                return (
-                  <div 
-                    key={dayIdx} 
-                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white'
-                    }}
-                    data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
-                  >
-                    {/* All-day tasks */}
-                    {allDayTasks.map(task => {
-                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                      const colors = dynamicCourseColors[courseCode];
-                      const today = startOfDay(new Date());
-                      const tomorrow = addDays(today, 1);
-                      const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                      const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                      return (
-                        <div
-                          key={task.id}
-                          className="relative w-full min-w-0"
-                          data-testid={`all-day-task-${task.id}`}
-                        >
-                          <div
-                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
-                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
-                            } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
-                            style={{
-                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
-                            }}
-                            onContextMenu={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setContextMenu({
-                                x: e.clientX,
-                                y: e.clientY,
-                                taskId: task.id,
-                                taskTitle: task.title
-                              });
-                            }}
-                            onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
-                            onTouchEnd={handleTouchEnd}
-                            onTouchMove={handleTouchMove}
-                          >
-                            {!isCASL101Task(task) && (
-                              <Checkbox
-                                checked={task.isCompleted || false}
-                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
-                                data-testid={`checkbox-allday-${task.id}`}
-                              />
-                            )}
-                            <span 
-                              onClick={() => setEditingTask(task)}
-                              className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}
-                            >
-                              {task.title}
-                            </span>
-                            {/* Delete button - always visible */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (confirm('Delete this task?')) {
-                                  deleteMutation.mutate(task.id);
-                                }
-                              }}
-                              className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500"
-                              title="Delete task"
-                              data-testid={`button-delete-allday-${task.id}`}
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {/* All-day Google Calendar events */}
-                    {allDayEvents.map(event => (
-                      <a
-                        key={event.id}
-                        href={event.htmlLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80 w-full min-w-0"
-                        data-testid={`all-day-gcal-${event.id}`}
-                      >
-                        <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                        <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
-                      </a>
-                    ))}
-                    {/* Projects with target date on this day */}
-                    {getProjectsForDay(day).map(project => {
-                      const isCompleted = project.status === 'completed';
-                      return (
-                        <RouterLink
-                          key={`project-${project.id}`}
-                          href="/projects"
-                          className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 w-full min-w-0 ${
-                            isCompleted ? "text-gray-400" : "text-white"
-                          }`}
-                          style={{
-                            background: isCompleted ? '#9ca3af' : 'linear-gradient(to right, #6366F1, #8B5CF6)',
-                            borderColor: isCompleted ? '#6b7280' : '#4F46E5'
-                          }}
-                          data-testid={`calendar-project-${project.id}`}
-                        >
-                          <FolderOpen className="h-3 w-3 shrink-0" />
-                          <span className={`truncate font-bold flex-1 min-w-0 ${isCompleted ? "line-through" : ""}`}>
-                            {project.name}
-                          </span>
-                        </RouterLink>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-              {/* Progress column - half-width, black background */}
-              <div 
-                className="border-l border-border/50"
-                style={{ backgroundColor: '#000000' }}
-              />
-              {/* Saturday all-day cell */}
-              {weekDays[6] && (() => {
-                const day = weekDays[6];
-                const allDayTasks = getAllDayTasks(day);
-                const allDayEvents = getAllDayCalendarEvents(day);
-                return (
-                  <div 
-                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white' }}
-                    data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
-                  >
-                    {allDayTasks.map(task => {
-                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                      const colors = dynamicCourseColors[courseCode];
-                      const today = startOfDay(new Date());
-                      const tomorrow = addDays(today, 1);
-                      const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
-                      const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
-                      return (
-                        <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
-                          <div
-                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
-                            style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af') }}
-                            onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
-                          >
-                            {!isCASL101Task(task) && (
-                              <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black" data-testid={`checkbox-allday-${task.id}`} />
-                            )}
-                            <span onClick={() => setEditingTask(task)} className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
-                            <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this task?')) { deleteMutation.mutate(task.id); } }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {allDayEvents.map(event => (
-                      <a key={event.id} href={event.htmlLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80 w-full min-w-0" data-testid={`all-day-gcal-${event.id}`}>
-                        <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
-                        <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
-                      </a>
-                    ))}
-                    {getProjectsForDay(day).map(project => {
-                      const isCompleted = project.status === 'completed';
-                      return (
-                        <RouterLink key={`project-${project.id}`} href="/projects" className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 w-full min-w-0 ${isCompleted ? "text-gray-400" : "text-white"}`} style={{ background: isCompleted ? '#9ca3af' : 'linear-gradient(to right, #6366F1, #8B5CF6)', borderColor: isCompleted ? '#6b7280' : '#4F46E5' }} data-testid={`calendar-project-${project.id}`}>
-                          <FolderOpen className="h-3 w-3 shrink-0" />
-                          <span className={`truncate font-bold flex-1 min-w-0 ${isCompleted ? "line-through" : ""}`}>{project.name}</span>
-                        </RouterLink>
-                      );
-                    })}
-                  </div>
-                );
-              })()}
-              {/* ALL DAY row resize handle */}
-              <div
-                className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/alldayrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
-                onMouseDown={(e) => handleRowResizeStart(e, 'allDay')}
-                data-testid="allday-row-resize-handle"
-              />
-              </div>
-            
-                          
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
               <div ref={courseRowsRef} data-testid="course-rows-container">
               {coursesData.courses.filter(c => c.name).slice(0, 3).map((courseData, courseIdx) => {
@@ -11777,6 +11583,199 @@ export default function Dashboard() {
                 );
               })}
               </div>
+
+            {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
+            <div ref={allDayRowRef} className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
+              <div className="text-[10px] font-medium tracking-wide flex items-center justify-center text-white/80 relative" style={{ backgroundColor: colorSettings.headerBar }}>
+                ALL DAY
+              </div>
+              {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
+              {/* Day cells - Sun-Fri */}
+              {weekDays.slice(0, 6).map((day, dayIdx) => {
+                const allDayTasks = getAllDayTasks(day);
+                const allDayEvents = getAllDayCalendarEvents(day);
+                
+                return (
+                  <div 
+                    key={dayIdx} 
+                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
+                    style={{ 
+                      backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white'
+                    }}
+                    data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
+                  >
+                    {/* All-day tasks */}
+                    {allDayTasks.map(task => {
+                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                      const colors = dynamicCourseColors[courseCode];
+                      const today = startOfDay(new Date());
+                      const tomorrow = addDays(today, 1);
+                      const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                      const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                      return (
+                        <div
+                          key={task.id}
+                          className="relative w-full min-w-0"
+                          data-testid={`all-day-task-${task.id}`}
+                        >
+                          <div
+                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${
+                              isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""
+                            } ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            style={{
+                              backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
+                              borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                            }}
+                            onContextMenu={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setContextMenu({
+                                x: e.clientX,
+                                y: e.clientY,
+                                taskId: task.id,
+                                taskTitle: task.title
+                              });
+                            }}
+                            onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
+                            onTouchEnd={handleTouchEnd}
+                            onTouchMove={handleTouchMove}
+                          >
+                            {!isCASL101Task(task) && (
+                              <Checkbox
+                                checked={task.isCompleted || false}
+                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                data-testid={`checkbox-allday-${task.id}`}
+                              />
+                            )}
+                            <span 
+                              onClick={() => setEditingTask(task)}
+                              className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}
+                            >
+                              {task.title}
+                            </span>
+                            {/* Delete button - always visible */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm('Delete this task?')) {
+                                  deleteMutation.mutate(task.id);
+                                }
+                              }}
+                              className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500"
+                              title="Delete task"
+                              data-testid={`button-delete-allday-${task.id}`}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {/* All-day Google Calendar events */}
+                    {allDayEvents.map(event => (
+                      <a
+                        key={event.id}
+                        href={event.htmlLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80 w-full min-w-0"
+                        data-testid={`all-day-gcal-${event.id}`}
+                      >
+                        <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
+                        <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
+                      </a>
+                    ))}
+                    {/* Projects with target date on this day */}
+                    {getProjectsForDay(day).map(project => {
+                      const isCompleted = project.status === 'completed';
+                      return (
+                        <RouterLink
+                          key={`project-${project.id}`}
+                          href="/projects"
+                          className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 w-full min-w-0 ${
+                            isCompleted ? "text-gray-400" : "text-white"
+                          }`}
+                          style={{
+                            background: isCompleted ? '#9ca3af' : 'linear-gradient(to right, #6366F1, #8B5CF6)',
+                            borderColor: isCompleted ? '#6b7280' : '#4F46E5'
+                          }}
+                          data-testid={`calendar-project-${project.id}`}
+                        >
+                          <FolderOpen className="h-3 w-3 shrink-0" />
+                          <span className={`truncate font-bold flex-1 min-w-0 ${isCompleted ? "line-through" : ""}`}>
+                            {project.name}
+                          </span>
+                        </RouterLink>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+              {/* Progress column - half-width, black background */}
+              <div 
+                className="border-l border-border/50"
+                style={{ backgroundColor: '#000000' }}
+              />
+              {/* Saturday all-day cell */}
+              {weekDays[6] && (() => {
+                const day = weekDays[6];
+                const allDayTasks = getAllDayTasks(day);
+                const allDayEvents = getAllDayCalendarEvents(day);
+                return (
+                  <div 
+                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white' }}
+                    data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
+                  >
+                    {allDayTasks.map(task => {
+                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                      const colors = dynamicCourseColors[courseCode];
+                      const today = startOfDay(new Date());
+                      const tomorrow = addDays(today, 1);
+                      const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                      const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                      return (
+                        <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
+                          <div
+                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af') }}
+                            onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
+                          >
+                            {!isCASL101Task(task) && (
+                              <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black" data-testid={`checkbox-allday-${task.id}`} />
+                            )}
+                            <span onClick={() => setEditingTask(task)} className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
+                            <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this task?')) { deleteMutation.mutate(task.id); } }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {allDayEvents.map(event => (
+                      <a key={event.id} href={event.htmlLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80 w-full min-w-0" data-testid={`all-day-gcal-${event.id}`}>
+                        <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
+                        <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
+                      </a>
+                    ))}
+                    {getProjectsForDay(day).map(project => {
+                      const isCompleted = project.status === 'completed';
+                      return (
+                        <RouterLink key={`project-${project.id}`} href="/projects" className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 w-full min-w-0 ${isCompleted ? "text-gray-400" : "text-white"}`} style={{ background: isCompleted ? '#9ca3af' : 'linear-gradient(to right, #6366F1, #8B5CF6)', borderColor: isCompleted ? '#6b7280' : '#4F46E5' }} data-testid={`calendar-project-${project.id}`}>
+                          <FolderOpen className="h-3 w-3 shrink-0" />
+                          <span className={`truncate font-bold flex-1 min-w-0 ${isCompleted ? "line-through" : ""}`}>{project.name}</span>
+                        </RouterLink>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+              {/* ALL DAY row resize handle */}
+              <div
+                className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/alldayrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
+                onMouseDown={(e) => handleRowResizeStart(e, 'allDay')}
+                data-testid="allday-row-resize-handle"
+              />
+            </div>
               
                           {/* Time Slots - Scrollable area */}
             <div ref={calendarScrollRef} className="flex-1 overflow-y-scroll overflow-x-hidden scrollbar-hidden relative flex flex-col" style={{ borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px', backgroundColor: '#faf8f5' }}>
