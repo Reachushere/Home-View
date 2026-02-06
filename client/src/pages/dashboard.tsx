@@ -1226,13 +1226,36 @@ export default function Dashboard() {
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
   
-  // Fetch file counts from database - much faster than OneDrive API calls
+  // Fetch file counts from database, then supplement with OneDrive counts for missing weeks
   useEffect(() => {
     const fetchFileCounts = async () => {
       try {
         const response = await fetch('/api/files/counts');
         if (response.ok) {
           const counts = await response.json();
+          
+          // Check if database has any counts for the selected week
+          const weekPrefix = `week-${selectedWeek}-`;
+          const hasDbCounts = Object.keys(counts).some(k => k.startsWith(weekPrefix));
+          
+          if (!hasDbCounts) {
+            // No database counts for this week - fetch from OneDrive
+            try {
+              const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}`);
+              if (odResponse.ok) {
+                const odCounts = await odResponse.json();
+                // Merge OneDrive counts into the database counts
+                for (const [key, value] of Object.entries(odCounts)) {
+                  if (!counts[key]) {
+                    counts[key] = value;
+                  }
+                }
+              }
+            } catch (odError) {
+              console.error('Error fetching OneDrive week counts:', odError);
+            }
+          }
+          
           setFileCounts(counts);
           // Also set legacy oneDriveFileCounts for backward compatibility
           const legacyCounts: Record<string, number> = {};

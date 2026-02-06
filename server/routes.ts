@@ -972,6 +972,96 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/onedrive/week-counts/:weekNum - Fetch file counts from OneDrive for a given week
+  app.get("/api/onedrive/week-counts/:weekNum", async (req, res) => {
+    try {
+      const weekNum = parseInt(req.params.weekNum);
+      if (isNaN(weekNum)) return res.status(400).json({ error: "Invalid week number" });
+
+      const basePath = `/School/1. TMU/Courses/2026/Winter`;
+      const courses = ['CPPA122', 'CFNF400', 'CASL101'];
+      const counts: Record<string, { total: number; listened: number; unlistened: number }> = {};
+
+      // Get list of course folders from OneDrive
+      const { getOneDriveClient } = await import("./onedrive");
+      const client = await getOneDriveClient();
+      
+      let baseFolders: any[] = [];
+      try {
+        const baseResp = await client.api(`/me/drive/root:${basePath}:/children`).get();
+        baseFolders = baseResp.value || [];
+      } catch (e) {
+        return res.json(counts);
+      }
+
+      // Check files from database first to get listened status
+      const dbFiles = await storage.getFiles();
+      const dbListened = new Set<string>();
+      for (const f of dbFiles) {
+        if (f.listened && f.originalName) {
+          dbListened.add(f.originalName.toLowerCase());
+        }
+      }
+
+      // Process each course in parallel
+      await Promise.all(courses.map(async (courseCode) => {
+        const courseId = courseCode.toLowerCase();
+        try {
+          const matchedFolder = baseFolders.find((f: any) => 
+            f.folder && f.name.toUpperCase().startsWith(courseCode)
+          );
+          if (!matchedFolder) return;
+
+          const coursePath = `${basePath}/${matchedFolder.name}`;
+          const courseResp = await client.api(`/me/drive/root:${coursePath}:/children`).get();
+          const courseFolders = courseResp.value || [];
+          
+          const weekFolder = courseFolders.find((f: any) => 
+            f.folder && f.name.toLowerCase().startsWith(`week ${weekNum}`)
+          );
+          if (!weekFolder) return;
+
+          const weekPath = `${coursePath}/${weekFolder.name}`;
+          const weekResp = await client.api(`/me/drive/root:${weekPath}:/children`).get();
+          const weekContents = weekResp.value || [];
+
+          // Count files in Module and Reading subfolders
+          for (const subfolder of weekContents) {
+            if (!subfolder.folder) continue;
+            const subName = subfolder.name.toLowerCase();
+            let type: string | null = null;
+            if (subName.includes('module')) type = 'module';
+            else if (subName.includes('reading')) type = 'reading';
+            if (!type) continue;
+
+            const subPath = `${weekPath}/${subfolder.name}`;
+            const subResp = await client.api(`/me/drive/root:${subPath}:/children`).get();
+            const files = (subResp.value || []).filter((f: any) => !f.folder);
+            
+            const key = `week-${weekNum}-${courseId}-${type}`;
+            let listened = 0;
+            let unlistened = 0;
+            for (const file of files) {
+              if (dbListened.has(file.name.toLowerCase())) {
+                listened++;
+              } else {
+                unlistened++;
+              }
+            }
+            counts[key] = { total: files.length, listened, unlistened };
+          }
+        } catch (e) {
+          // Skip course on error
+        }
+      }));
+
+      res.json(counts);
+    } catch (err) {
+      console.error("Error fetching OneDrive week counts:", err);
+      res.status(500).json({ error: "Failed to fetch OneDrive week counts" });
+    }
+  });
+
   // GET /api/files/counts - Fast file counts by week/course/type with listened breakdown
   // Returns: { "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 }, ... }
   app.get("/api/files/counts", async (_req, res) => {
