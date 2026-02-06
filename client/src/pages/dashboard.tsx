@@ -10395,6 +10395,12 @@ export default function Dashboard() {
                   saveSemesterScheduleMutation.mutate(schedulePayload);
                 }
 
+                if (courseData.reminders && courseData.reminders.length > 0) {
+                  const courseReminders = JSON.parse(localStorage.getItem('courseReminders') || '{}');
+                  courseReminders[fullName] = courseData.reminders;
+                  localStorage.setItem('courseReminders', JSON.stringify(courseReminders));
+                }
+
                 setIsNewCourseDialogOpen(false);
                 toast({ title: "Course added", description: `${fullName} has been added.` });
 
@@ -16314,6 +16320,7 @@ function CoursesForm({
     endDate: string;
     springSummerTerm: string;
     deadlines: Array<{ title: string; type: string; dueDate: string; description: string }>;
+    reminders: number[];
   }) => {
     const fullName = `${courseData.courseCode} - ${courseData.courseName}`;
     const updatedCourses = [...courses];
@@ -16363,6 +16370,12 @@ function CoursesForm({
         [`${prefix}EndDate`]: courseData.endDate ? new Date(courseData.endDate).toISOString() : null,
       };
       onSaveSemesterSchedule(schedulePayload);
+    }
+
+    if (courseData.reminders && courseData.reminders.length > 0) {
+      const courseReminders = JSON.parse(localStorage.getItem('courseReminders') || '{}');
+      courseReminders[fullName] = courseData.reminders;
+      localStorage.setItem('courseReminders', JSON.stringify(courseReminders));
     }
 
     setIsNewCourseOpen(false);
@@ -16586,6 +16599,7 @@ function NewCourseDialog({
     endDate: string;
     springSummerTerm: string;
     deadlines: Array<{ title: string; type: string; dueDate: string; description: string }>;
+    reminders: number[];
   }) => void;
   onClose: () => void;
 }) {
@@ -16603,6 +16617,9 @@ function NewCourseDialog({
   const [startDate, setStartDate] = useState(existingCourse?.startDate || '');
   const [endDate, setEndDate] = useState(existingCourse?.endDate || '');
   const [springSummerTerm, setSpringSummerTerm] = useState(existingCourse?.springSummerTerm || 'full');
+  const [reminder1, setReminder1] = useState(15);
+  const [reminder2, setReminder2] = useState(60);
+  const [reminder3, setReminder3] = useState(0);
   const [deadlines, setDeadlines] = useState<Array<{ title: string; type: string; dueDate: string; description: string }>>([]);
 
   const addDeadline = () => {
@@ -16640,6 +16657,7 @@ function NewCourseDialog({
       endDate,
       springSummerTerm,
       deadlines: deadlines.filter(d => d.title.trim() && d.dueDate),
+      reminders: [15, ...(reminder2 > 0 ? [reminder2] : []), ...(reminder3 > 0 ? [reminder3] : [])],
     });
   };
 
@@ -16861,6 +16879,68 @@ function NewCourseDialog({
                   className="h-8 !text-[10px] !text-black"
                   data-testid="input-new-course-end-date"
                 />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 pt-3">
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-[10px] font-medium flex items-center gap-1.5">
+                <Bell className="h-3.5 w-3.5 text-amber-400" />
+                Class Reminders
+              </Label>
+            </div>
+            <p className="text-[9px] text-white/40 mb-2">Popup reminders before class starts. 15-minute reminder is always active.</p>
+
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10">
+                <div className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+                <span className="text-[10px] text-white/80 flex-1">15 minutes before</span>
+                <span className="text-[9px] text-amber-400/80 italic">Always on</span>
+              </div>
+
+              <div className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10">
+                <div className={`w-2 h-2 rounded-full shrink-0 ${reminder2 > 0 ? 'bg-blue-400' : 'bg-white/20'}`} />
+                <span className="text-[10px] text-white/80 flex-1">Reminder 2</span>
+                <select
+                  value={reminder2}
+                  onChange={(e) => setReminder2(Number(e.target.value))}
+                  className="h-6 rounded bg-white/10 border border-white/20 text-white text-[10px] px-1.5"
+                  data-testid="select-reminder-2"
+                >
+                  <option value={0} className="bg-gray-800">Off</option>
+                  <option value={5} className="bg-gray-800">5 min before</option>
+                  <option value={10} className="bg-gray-800">10 min before</option>
+                  <option value={30} className="bg-gray-800">30 min before</option>
+                  <option value={45} className="bg-gray-800">45 min before</option>
+                  <option value={60} className="bg-gray-800">1 hour before</option>
+                  <option value={90} className="bg-gray-800">1.5 hours before</option>
+                  <option value={120} className="bg-gray-800">2 hours before</option>
+                  <option value={180} className="bg-gray-800">3 hours before</option>
+                  <option value={1440} className="bg-gray-800">1 day before</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2 px-2 py-1.5 rounded bg-white/5 border border-white/10">
+                <div className={`w-2 h-2 rounded-full shrink-0 ${reminder3 > 0 ? 'bg-blue-400' : 'bg-white/20'}`} />
+                <span className="text-[10px] text-white/80 flex-1">Reminder 3</span>
+                <select
+                  value={reminder3}
+                  onChange={(e) => setReminder3(Number(e.target.value))}
+                  className="h-6 rounded bg-white/10 border border-white/20 text-white text-[10px] px-1.5"
+                  data-testid="select-reminder-3"
+                >
+                  <option value={0} className="bg-gray-800">Off</option>
+                  <option value={5} className="bg-gray-800">5 min before</option>
+                  <option value={10} className="bg-gray-800">10 min before</option>
+                  <option value={30} className="bg-gray-800">30 min before</option>
+                  <option value={45} className="bg-gray-800">45 min before</option>
+                  <option value={60} className="bg-gray-800">1 hour before</option>
+                  <option value={90} className="bg-gray-800">1.5 hours before</option>
+                  <option value={120} className="bg-gray-800">2 hours before</option>
+                  <option value={180} className="bg-gray-800">3 hours before</option>
+                  <option value={1440} className="bg-gray-800">1 day before</option>
+                </select>
               </div>
             </div>
           </div>
