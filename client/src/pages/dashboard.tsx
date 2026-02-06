@@ -8309,8 +8309,8 @@ export default function Dashboard() {
       </div>
 
       {/* Settings Panel Popup - Contains sidebar content */}
-      <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
-        <DialogContent className="overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden" style={{ width: '900px', maxWidth: '95vw', height: '85vh' }}>
+      <Dialog open={isSettingsPanelOpen} onOpenChange={(open) => { if (!isNewCourseDialogOpen) setIsSettingsPanelOpen(open); }}>
+        <DialogContent className="overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden" style={{ width: '900px', maxWidth: '95vw', height: '85vh', pointerEvents: isNewCourseDialogOpen ? 'none' : 'auto' }}>
           {/* Header bar matching flyouts */}
           <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
             <div className="flex items-center gap-2">
@@ -16664,8 +16664,8 @@ function NewCourseDialog({
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="bg-gradient-to-br from-gray-800/98 via-black/95 to-gray-900/98 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="bg-gradient-to-br from-gray-800 via-black to-gray-900 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
           <div className="flex items-center gap-2">
             <GraduationCap className="h-3.5 w-3.5 text-white" />
