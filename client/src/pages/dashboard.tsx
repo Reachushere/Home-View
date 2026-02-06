@@ -10991,7 +10991,7 @@ export default function Dashboard() {
                 className="flex items-center justify-center border-l border-border"
                 style={{ backgroundColor: '#000000' }}
               >
-                <span className="text-[10px] font-medium tracking-wide text-white/80">Progress</span>
+                <span className="text-[10px] font-medium tracking-wide text-white/80 uppercase">Progress</span>
               </div>
               {/* Saturday header */}
               {weekDays[6] && (() => {
