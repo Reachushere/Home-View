@@ -311,6 +311,37 @@ export default function Dashboard() {
     const saved = localStorage.getItem('listenedOneDriveFiles');
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
+  useEffect(() => {
+    if (!readingsPopupCourse) { setOneDriveReadingFiles([]); return; }
+    const courseCode = readingsPopupCourse.toUpperCase();
+    const basePath = `/School/1. TMU/Courses/2026/Winter`;
+    (async () => {
+      try {
+        const baseRes = await fetch(`/api/onedrive/files?path=${encodeURIComponent(basePath)}`);
+        const baseFolders = await baseRes.json();
+        if (!Array.isArray(baseFolders)) return;
+        const matched = baseFolders.find((f: any) => f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode));
+        if (!matched) return;
+        const courseRes = await fetch(`/api/onedrive/files?path=${encodeURIComponent(matched.path)}`);
+        const courseFolders = await courseRes.json();
+        if (!Array.isArray(courseFolders)) return;
+        const weekFolder = courseFolders.find((f: any) => f.type === 'folder' && f.name.toLowerCase().startsWith(`week ${selectedWeek}`));
+        if (!weekFolder) return;
+        const weekRes = await fetch(`/api/onedrive/files?path=${encodeURIComponent(weekFolder.path)}`);
+        const weekContents = await weekRes.json();
+        if (!Array.isArray(weekContents)) return;
+        const readingFolder = weekContents.find((f: any) => f.type === 'folder' && f.name.toLowerCase().includes('reading'));
+        if (!readingFolder) return;
+        const readingRes = await fetch(`/api/onedrive/files?path=${encodeURIComponent(readingFolder.path)}`);
+        const readingFiles = await readingRes.json();
+        if (Array.isArray(readingFiles)) {
+          setOneDriveReadingFiles(readingFiles.filter((f: any) => f.type === 'file'));
+        }
+      } catch (err) {
+        console.error('Error loading reading files:', err);
+      }
+    })();
+  }, [readingsPopupCourse, selectedWeek]);
   const [isWeekReadingsOpen, setIsWeekReadingsOpen] = useState(false);
   const [weekReadingSelectedFile, setWeekReadingSelectedFile] = useState<any | null>(null);
   const [isWeeksFlyoutOpen, setIsWeeksFlyoutOpen] = useState(false);
@@ -9203,14 +9234,16 @@ export default function Dashboard() {
                   data-testid={`pill-course-${courseId}-module`}
                   onClick={async () => {
                     setIsLoadingOneDriveFiles(true);
-                    const oneDriveFolderMap: Record<string, string> = {
-                      'cppa122': 'CPPA122 - Local Politics and Government',
-                      'cfnf400': 'CFNF400 - Human Sexuality', 
-                      'casl101': 'CASL101 - American Sign Language'
-                    };
-                    const courseFolder = oneDriveFolderMap[courseId] || course.name || '';
-                    const coursePath = `/School/1. TMU/Courses/2026/Winter/${courseFolder}`;
+                    const basePath = `/School/1. TMU/Courses/2026/Winter`;
                     try {
+                      const baseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(basePath)}`);
+                      const baseFolders = await baseResponse.json();
+                      if (!Array.isArray(baseFolders)) throw new Error('Failed to list course folders');
+                      const matchedFolder = baseFolders.find((f: any) => 
+                        f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
+                      );
+                      if (!matchedFolder) { setIsLoadingOneDriveFiles(false); return; }
+                      const coursePath = matchedFolder.path;
                       const courseResponse = await fetch(`/api/onedrive/files?path=${encodeURIComponent(coursePath)}`);
                       const courseFolders = await courseResponse.json();
                       const weekFolder = courseFolders.find((f: any) => 
