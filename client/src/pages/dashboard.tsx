@@ -11118,10 +11118,10 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Extra half-width black column after Saturday */}
+              {/* Extra half-width column after Saturday */}
               <div 
                 className="border-l border-border/50"
-                style={{ backgroundColor: colorSettings.headerBar }}
+                style={{ backgroundColor: '#faf8f5' }}
               />
               {/* ALL DAY row resize handle */}
               <div
@@ -11597,10 +11597,10 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
-                  {/* Extra half-width black column after Saturday */}
+                  {/* Extra half-width column after Saturday */}
                   <div 
                     className="border-l border-border/50"
-                    style={{ backgroundColor: colorSettings.headerBar }}
+                    style={{ backgroundColor: '#faf8f5' }}
                   />
                   {/* Course row resize handle */}
                   <div
@@ -11914,10 +11914,10 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {/* Extra half-width black column after Saturday */}
+                    {/* Extra half-width column after Saturday */}
                     <div 
                       className="border-l border-border/50"
-                      style={{ backgroundColor: colorSettings.headerBar, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
+                      style={{ backgroundColor: '#faf8f5', borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
                     />
                     {/* Individual time slot row resize handle */}
                     <div 
