@@ -7571,29 +7571,9 @@ export default function Dashboard() {
         height: '50px',
         marginTop: '7px'
       }}>
-        {/* Logo and Timer - Fixed Left */}
+        {/* Logo - Fixed Left */}
         <div className="flex items-center pl-3 gap-2 h-full flex-shrink-0">
           <img src={unicalLogo} alt="Uni-Cal" className="rounded h-[46px] w-[46px] fixed" style={{ left: '12px', top: '12px', zIndex: 100 }} />
-          {/* Pomodoro Timer */}
-          <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ marginLeft: '49px', backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-            <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
-              pomodoroMode === "work" ? "text-white" : 
-              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
-            }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px' }} data-testid="pomodoro-timer">
-              {formatPomodoroTime(pomodoroTime)}
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
-                {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
-              </button>
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
-                <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-              </button>
-              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
-                <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* All items with equal gaps - absolutely centered on screen */}
@@ -8128,9 +8108,28 @@ export default function Dashboard() {
                     </div>
         </div>
 
-        {/* Date Range and Clock - Fixed Right */}
+        {/* Timer and Clock - Fixed Right */}
         <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '2px' }}>
-          
+          {/* Pomodoro Timer */}
+          <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+            <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
+              pomodoroMode === "work" ? "text-white" : 
+              pomodoroMode === "shortBreak" ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"
+            }`} style={{ fontFamily: "'Raleway', sans-serif", minWidth: '52px' }} data-testid="pomodoro-timer">
+              {formatPomodoroTime(pomodoroTime)}
+            </div>
+            <div className="flex items-center gap-3">
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={togglePomodoro} data-testid="button-pomodoro-toggle">
+                {pomodoroRunning ? <Pause className="h-3.5 w-3.5 text-white" strokeWidth={2.5} /> : <Play className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
+              </button>
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={resetPomodoro} data-testid="button-pomodoro-reset">
+                <RotateCcw className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+              </button>
+              <button className="p-0.5 hover:bg-white/20 rounded transition-colors" onClick={skipPomodoro} data-testid="button-pomodoro-skip">
+                <SkipForward className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+              </button>
+            </div>
+          </div>
           {/* Clock - wrapper clips 9px from left */}
           <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
             <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
