@@ -10899,7 +10899,7 @@ export default function Dashboard() {
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
               );
               return (
-                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", overflow: 'visible', border: '1px solid red' }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] whitespace-nowrap ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
+                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", overflow: 'visible' }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] whitespace-nowrap ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
                   {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Read your today tasks` : !isSaturday ? <span className="text-black">NEW WEEK</span> : ''}
                 </div>
               );
@@ -12289,8 +12289,8 @@ export default function Dashboard() {
                   
                   return (
                     <div 
-                      className="absolute left-0 right-0 z-[5] pointer-events-none"
-                      style={{ top: `${topPosition}px` }}
+                      className="absolute left-0 z-[5] pointer-events-none"
+                      style={{ top: `${topPosition}px`, right: `calc((1.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }}
                     >
                       <div 
                         className="w-full border-t border-dashed"
