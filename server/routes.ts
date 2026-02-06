@@ -95,8 +95,12 @@ interface TTSSession {
   isPlaying: boolean;
   autoTimer: ReturnType<typeof setTimeout> | null;
   targetEntity?: string;
+  consecutiveErrors: number;
+  sessionCreatedAt: number;
 }
 let currentTTSSession: TTSSession | null = null;
+const MAX_CONSECUTIVE_ERRORS = 3;
+const MAX_SESSION_AGE_MS = 4 * 60 * 60 * 1000; // 4 hours max session
 // Alexa reads faster than expected - ~200 words per minute at normal speed
 // At 80% speed: ~160 wpm = ~800 chars/min = ~13.3 chars/sec
 // But we want to send next chunk BEFORE current finishes, so use higher value
@@ -263,19 +267,43 @@ function getChunkWithSentenceBoundary(text: string, maxLength: number): string {
   return text.substring(0, cutoff);
 }
 
+// Function to fully stop and clean up TTS session
+function stopTTSSession(reason: string) {
+  console.log(`[TTS] Stopping session: ${reason}`);
+  if (currentTTSSession) {
+    if (currentTTSSession.autoTimer) {
+      clearTimeout(currentTTSSession.autoTimer);
+      currentTTSSession.autoTimer = null;
+    }
+    currentTTSSession.isPlaying = false;
+  }
+}
+
 // Function to send next TTS chunk automatically
 async function sendNextChunk() {
   if (!currentTTSSession || !currentTTSSession.isPlaying) {
-    console.log("sendNextChunk: No active session or not playing");
+    console.log("[TTS] sendNextChunk: No active session or not playing");
+    return;
+  }
+
+  // Safety: check session age to prevent zombie sessions
+  const sessionAge = Date.now() - currentTTSSession.sessionCreatedAt;
+  if (sessionAge > MAX_SESSION_AGE_MS) {
+    stopTTSSession(`Session too old (${Math.round(sessionAge / 60000)} minutes)`);
+    return;
+  }
+
+  // Safety: check consecutive errors
+  if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+    stopTTSSession(`Too many consecutive errors (${currentTTSSession.consecutiveErrors})`);
     return;
   }
   
-  console.log("sendNextChunk called, currentPosition:", currentTTSSession.currentPosition);
+  console.log("[TTS] sendNextChunk called, currentPosition:", currentTTSSession.currentPosition);
   
   // Check if we've finished
   if (currentTTSSession.currentPosition >= currentTTSSession.fullText.length) {
-    console.log("TTS auto-read complete - finished entire document");
-    currentTTSSession.isPlaying = false;
+    stopTTSSession("Finished entire document");
     return;
   }
   
@@ -286,8 +314,7 @@ async function sendNextChunk() {
   );
   
   if (rawChunk.trim().length === 0) {
-    console.log("TTS auto-read complete - no more content");
-    currentTTSSession.isPlaying = false;
+    stopTTSSession("No more content");
     return;
   }
   
@@ -301,7 +328,7 @@ async function sendNextChunk() {
   currentTTSSession.startTime = Date.now();
   
   const targetEntity = currentTTSSession.targetEntity || BATHROOM_ECHO_ENTITY;
-  console.log("Auto-continuing TTS, sent chunk length:", chunkLength, 
+  console.log("[TTS] Auto-continuing, chunk length:", chunkLength, 
     "new position:", currentTTSSession.currentPosition,
     "remaining:", currentTTSSession.fullText.length - currentTTSSession.currentPosition,
     "to:", targetEntity);
@@ -309,10 +336,8 @@ async function sendNextChunk() {
   const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
   
   try {
-    // Use 90% speaking rate
     const ssmlChunk = `<speak><prosody rate="90%">${nextChunk}</prosody></speak>`;
     
-    console.log("Sending chunk to Home Assistant...");
     const response = await fetch(`${haUrl}/api/services/notify/alexa_media`, {
       method: 'POST',
       headers: {
@@ -328,28 +353,32 @@ async function sendNextChunk() {
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Auto-continue TTS error, response:", response.status, errorText);
-      // Don't stop - try to continue anyway
-      console.log("Attempting to continue despite error...");
+      console.error("[TTS] Chunk send error, status:", response.status, errorText);
+      currentTTSSession.consecutiveErrors++;
+      if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+        stopTTSSession(`Giving up after ${MAX_CONSECUTIVE_ERRORS} consecutive errors`);
+        return;
+      }
     } else {
-      console.log("Chunk sent successfully");
+      currentTTSSession.consecutiveErrors = 0;
+      console.log("[TTS] Chunk sent successfully");
     }
     
-    // Always schedule next chunk if we still have content
+    // Schedule next chunk only if session is still active and healthy
     if (currentTTSSession && currentTTSSession.isPlaying && 
         currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
-      console.log("Scheduling next chunk...");
       scheduleNextChunk();
     } else {
-      console.log("Not scheduling next - session ended or no more content");
+      console.log("[TTS] Not scheduling next - session ended or no more content");
     }
   } catch (error) {
-    console.error("Auto-continue error:", error);
-    // Don't stop completely on error - try to schedule next anyway
-    if (currentTTSSession && currentTTSSession.isPlaying && 
-        currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
-      console.log("Scheduling next chunk despite error...");
-      scheduleNextChunk();
+    console.error("[TTS] Auto-continue error:", error);
+    if (currentTTSSession) {
+      currentTTSSession.consecutiveErrors++;
+      if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+        stopTTSSession(`Network error, giving up after ${MAX_CONSECUTIVE_ERRORS} consecutive errors`);
+        return;
+      }
     }
   }
 }
@@ -360,27 +389,30 @@ const SPEED_RATE = 0.90;
 
 function scheduleNextChunk() {
   if (!currentTTSSession || !currentTTSSession.isPlaying) {
-    console.log("scheduleNextChunk: No active session or not playing, aborting schedule");
+    console.log("[TTS] scheduleNextChunk: No active session or not playing, aborting");
+    return;
+  }
+
+  // Safety: don't schedule if too many errors
+  if (currentTTSSession.consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+    stopTTSSession("Too many errors, not scheduling more chunks");
     return;
   }
   
   // Clear any existing timer
   if (currentTTSSession.autoTimer) {
-    console.log("Clearing existing timer");
     clearTimeout(currentTTSSession.autoTimer);
+    currentTTSSession.autoTimer = null;
   }
   
-  // Calculate estimated speaking time
-  // Base: CHUNK_SIZE chars / CHARS_PER_SECOND chars per sec
-  // Adjust for speed: divide by speed rate (88% = 0.88 means slower)
   const baseSeconds = CHUNK_SIZE / CHARS_PER_SECOND;
   const adjustedSeconds = baseSeconds / SPEED_RATE;
   const delayMs = adjustedSeconds * 1000;
   
-  console.log(`scheduleNextChunk: Scheduling next chunk in ${(delayMs / 1000).toFixed(1)} seconds (${CHUNK_SIZE} chars at ${SPEED_RATE * 100}% speed)`);
+  console.log(`[TTS] Scheduling next chunk in ${(delayMs / 1000).toFixed(1)}s`);
   
   currentTTSSession.autoTimer = setTimeout(() => {
-    console.log("Timer fired, calling sendNextChunk");
+    console.log("[TTS] Timer fired, calling sendNextChunk");
     sendNextChunk();
   }, delayMs);
 }
@@ -3828,6 +3860,32 @@ export async function registerRoutes(
     });
   });
   
+  // GET /api/tts/status - Get TTS session status
+  app.get("/api/tts/status", (req, res) => {
+    if (!currentTTSSession) {
+      return res.json({ active: false });
+    }
+    res.json({
+      active: true,
+      isPlaying: currentTTSSession.isPlaying,
+      position: currentTTSSession.currentPosition,
+      totalLength: currentTTSSession.fullText.length,
+      progressPercent: Math.round((currentTTSSession.currentPosition / currentTTSSession.fullText.length) * 100),
+      consecutiveErrors: currentTTSSession.consecutiveErrors,
+      sessionAgeMinutes: Math.round((Date.now() - currentTTSSession.sessionCreatedAt) / 60000),
+      targetEntity: currentTTSSession.targetEntity
+    });
+  });
+
+  // POST /api/tts/force-stop - Force stop any running TTS session
+  app.post("/api/tts/force-stop", (req, res) => {
+    if (currentTTSSession) {
+      stopTTSSession("Force stopped via API");
+      currentTTSSession = null;
+    }
+    res.json({ success: true, message: "TTS session force stopped" });
+  });
+
   // POST /api/shower/start-reading - Start TTS playback on Echo
   app.post("/api/shower/start-reading", async (req, res) => {
     try {
@@ -4226,7 +4284,9 @@ export async function registerRoutes(
         currentPosition: 0,
         startTime: Date.now(),
         isPlaying: true,
-        autoTimer: null
+        autoTimer: null,
+        consecutiveErrors: 0,
+        sessionCreatedAt: Date.now()
       };
       
       // Use simple message without prefix for Simon Says compatibility
@@ -4435,6 +4495,7 @@ export async function registerRoutes(
       // Update session
       currentTTSSession.startTime = Date.now();
       currentTTSSession.isPlaying = true;
+      currentTTSSession.consecutiveErrors = 0;
       
       console.log("Resuming TTS from position", currentTTSSession.currentPosition, "preview:", remainingText.substring(0, 100));
       
@@ -4560,6 +4621,7 @@ export async function registerRoutes(
       // If we have more content, send the next chunk immediately
       if (currentTTSSession.currentPosition < currentTTSSession.fullText.length) {
         currentTTSSession.isPlaying = true;
+        currentTTSSession.consecutiveErrors = 0;
         currentTTSSession.startTime = Date.now();
         sendNextChunk();
         res.json({ success: true, position: currentTTSSession.currentPosition });
