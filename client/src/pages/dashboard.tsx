@@ -11685,29 +11685,36 @@ export default function Dashboard() {
                     const readingProgress = calcFileProgress(readingFiles);
                     const otherTasks = courseTasks.filter(t => t.type?.toLowerCase() !== 'module' && t.type?.toLowerCase() !== 'reading');
                     const otherProgress = otherTasks.length > 0 ? Math.round((otherTasks.filter(t => t.isCompleted).length / otherTasks.length) * 100) : 0;
+                    const hasNoData = moduleFiles.length === 0 && readingFiles.length === 0 && otherTasks.length === 0;
                     return (
                       <div 
                         className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
                         style={{ backgroundColor: '#000000' }}
                       >
-                        <div className="flex items-center gap-[2px]">
-                          <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">M</span>
-                          <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${moduleProgress}%` }} />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-[2px]">
-                          <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">R</span>
-                          <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                            <div className="h-full bg-green-400 rounded-full transition-all" style={{ width: `${readingProgress}%` }} />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-[2px]">
-                          <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">O</span>
-                          <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                            <div className="h-full bg-orange-400 rounded-full transition-all" style={{ width: `${otherProgress}%` }} />
-                          </div>
-                        </div>
+                        {hasNoData ? (
+                          <span className="text-[10px] font-bold text-white/50 text-center leading-none">N/A</span>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-[2px]">
+                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">M</span>
+                              <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                                <div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${moduleProgress}%` }} />
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-[2px]">
+                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">R</span>
+                              <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                                <div className="h-full bg-green-400 rounded-full transition-all" style={{ width: `${readingProgress}%` }} />
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-[2px]">
+                              <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">O</span>
+                              <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                                <div className="h-full bg-orange-400 rounded-full transition-all" style={{ width: `${otherProgress}%` }} />
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     );
                   })()}
