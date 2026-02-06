@@ -1350,7 +1350,7 @@ export default function Dashboard() {
     const defaultSizes = {
       timeColumnWidth: 59,
       moduleColumnWidth: 0,
-      dayColumnWidths: [1, 1, 1, 1, 1, 1, 1, 0.5], // flex proportions (7 days + extra half-width column)
+      dayColumnWidths: [1, 1, 1, 1, 1, 1, 0.5, 1], // flex proportions (6 days + half-width progress + Saturday)
       allDayRowHeight: 36,
       courseRowHeight: 36,
       timeSlotHeight: 36,
@@ -1374,7 +1374,7 @@ export default function Dashboard() {
       parsed.timeColumnWidth = 59;
       // Ensure 8 columns (7 days + extra half-width column)
       if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 8) {
-        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1, 0.5];
+        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 0.5, 1];
       }
       return parsed;
     }
@@ -1393,7 +1393,7 @@ export default function Dashboard() {
       parsed.timeColumnWidth = 59;
       // Ensure 8 columns (7 days + extra half-width column)
       if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 8) {
-        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 1, 0.5];
+        parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 0.5, 1];
       }
       return parsed;
     }
@@ -10887,7 +10887,7 @@ export default function Dashboard() {
           <div className="grid w-full h-[15px]" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px' }}>
             <div style={{ minWidth: 0 }} /> {/* Time column spacer */}
             {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0 }} />} {/* Module column spacer */}
-            {weekDays.map((day, idx) => {
+            {weekDays.slice(0, 6).map((day, idx) => {
               const isToday = isSameDay(day, new Date());
               const todayHasTasks = isToday && allTasks.some(t => 
                 t.dueDate && isSameDay(new Date(t.dueDate), day)
@@ -10898,6 +10898,19 @@ export default function Dashboard() {
                 </div>
               );
             })}
+            <div style={{ minWidth: 0 }} /> {/* Progress column spacer */}
+            {weekDays[6] && (() => {
+              const day = weekDays[6];
+              const isToday = isSameDay(day, new Date());
+              const todayHasTasks = isToday && allTasks.some(t => 
+                t.dueDate && isSameDay(new Date(t.dueDate), day)
+              );
+              return (
+                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
+                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Read your today tasks` : ''}
+                </div>
+              );
+            })()}
           </div>
           <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
             {/* Friday/Saturday divider line - dashed (6 days / 7.5 total column widths), hidden on Saturday */}
@@ -10922,62 +10935,65 @@ export default function Dashboard() {
                 />
               </div>
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
-              {weekDays.map((day, idx) => {
+              {/* Sun-Fri day headers (indices 0-5) */}
+              {weekDays.slice(0, 6).map((day, idx) => {
                 const isToday = isSameDay(day, new Date());
-                const isFriday = day.getDay() === 5;
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
-                
-                // Check if there are tasks for this day
                 const hasTodayTasks = isToday && allTasks.some(t => 
                   !t.isCompleted && isSameDay(new Date(t.dueDate), day)
                 );
-                
-                // Calculate next task due (excluding prep tasks, only actual due dates)
-                const nextTaskDue = isToday ? allTasks
-                  .filter(t => !t.isCompleted && !t.isMissed && new Date(t.dueDate) > new Date())
-                  .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0] : null;
-                const daysUntilNextTask = nextTaskDue 
-                  ? differenceInDays(startOfDay(new Date(nextTaskDue.dueDate)), startOfDay(new Date()))
-                  : null;
-                
                 return (
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ 
-                      backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black"
-                    }}
+                    style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black" }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className="text-2xl font-bold text-white">
-                        {dayNum}
-                      </div>
+                      <div className="text-2xl font-bold text-white">{dayNum}</div>
                       <div className="text-[10px] font-medium tracking-wide text-white/80">{dayName}</div>
                     </div>
-                    {/* Day column resize handle - right edge */}
-                    {idx < weekDays.length - 1 && (
+                    {idx < 5 && (
                       <div
                         className="absolute right-0 top-0 bottom-0 w-[2px] cursor-col-resize bg-white/50 hover:bg-white"
                         style={{ zIndex: 9999 }}
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          handleColumnResizeStart(e, idx);
-                        }}
+                        onMouseDown={(e) => { e.stopPropagation(); handleColumnResizeStart(e, idx); }}
                         data-testid={`day-column-resize-handle-${idx}`}
                       />
                     )}
                   </div>
                 );
               })}
-              {/* Extra half-width black column after Saturday - header */}
+              {/* Progress column header (half-width, between Fri and Sat) */}
               <div 
                 className="flex items-center justify-center border-l border-border"
                 style={{ backgroundColor: '#000000' }}
               >
                 <span className="text-[11px] font-medium tracking-wide text-white">Progress</span>
               </div>
+              {/* Saturday header */}
+              {weekDays[6] && (() => {
+                const day = weekDays[6];
+                const isToday = isSameDay(day, new Date());
+                const dayName = format(day, "EEE").toUpperCase();
+                const dayNum = format(day, "d");
+                const hasTodayTasks = isToday && allTasks.some(t => 
+                  !t.isCompleted && isSameDay(new Date(t.dueDate), day)
+                );
+                return (
+                  <div 
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && hasTodayTasks && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
+                    style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black" }}
+                    data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <div className="text-2xl font-bold text-white">{dayNum}</div>
+                      <div className="text-[10px] font-medium tracking-wide text-white/80">{dayName}</div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
             
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
@@ -10986,9 +11002,8 @@ export default function Dashboard() {
                 ALL DAY
               </div>
               {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: colorSettings.headerBar }} />}
-              {/* Day cells */}
-              {weekDays.map((day, dayIdx) => {
-                // Only show true all-day tasks (midnight due) and all-day calendar events
+              {/* Day cells - Sun-Fri */}
+              {weekDays.slice(0, 6).map((day, dayIdx) => {
                 const allDayTasks = getAllDayTasks(day);
                 const allDayEvents = getAllDayCalendarEvents(day);
                 
@@ -11109,11 +11124,63 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Extra half-width column after Saturday */}
+              {/* Progress column - half-width */}
               <div 
                 className="border-l border-border/50"
                 style={{ backgroundColor: '#faf8f5' }}
               />
+              {/* Saturday all-day cell */}
+              {weekDays[6] && (() => {
+                const day = weekDays[6];
+                const allDayTasks = getAllDayTasks(day);
+                const allDayEvents = getAllDayCalendarEvents(day);
+                return (
+                  <div 
+                    className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white' }}
+                    data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
+                  >
+                    {allDayTasks.map(task => {
+                      const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                      const colors = dynamicCourseColors[courseCode];
+                      const today = startOfDay(new Date());
+                      const tomorrow = addDays(today, 1);
+                      const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                      const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                      return (
+                        <div key={task.id} className="relative w-full min-w-0" data-testid={`all-day-task-${task.id}`}>
+                          <div
+                            className={`group flex items-center gap-1 text-[8px] px-1 py-0.5 truncate rounded border w-full min-w-0 cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                            style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af') }}
+                            onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); setContextMenu({ x: e.clientX, y: e.clientY, taskId: task.id, taskTitle: task.title }); }}
+                          >
+                            {!isCASL101Task(task) && (
+                              <Checkbox checked={task.isCompleted || false} onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })} className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black" data-testid={`checkbox-allday-${task.id}`} />
+                            )}
+                            <span onClick={() => setEditingTask(task)} className={`cursor-pointer hover:opacity-80 truncate flex-1 font-bold ${task.isCompleted ? "line-through" : ""}`}>{task.title}</span>
+                            <button onClick={(e) => { e.stopPropagation(); if (confirm('Delete this task?')) { deleteMutation.mutate(task.id); } }} className="ml-auto shrink-0 p-0.5 rounded hover:bg-red-500/20 text-red-500" title="Delete task" data-testid={`button-delete-allday-${task.id}`}><X className="h-3 w-3" /></button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {allDayEvents.map(event => (
+                      <a key={event.id} href={event.htmlLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate bg-gray-200 dark:bg-gray-700 text-black dark:text-white border border-gray-500 cursor-pointer hover:opacity-80 w-full min-w-0" data-testid={`all-day-gcal-${event.id}`}>
+                        <CalendarDays className="h-3 w-3 shrink-0 text-gray-600 dark:text-gray-300" />
+                        <span className="truncate font-bold flex-1 min-w-0">{event.title}</span>
+                      </a>
+                    ))}
+                    {getProjectsForDay(day).map(project => {
+                      const isCompleted = project.status === 'completed';
+                      return (
+                        <RouterLink key={`project-${project.id}`} href="/projects" className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 w-full min-w-0 ${isCompleted ? "text-gray-400" : "text-white"}`} style={{ background: isCompleted ? '#9ca3af' : 'linear-gradient(to right, #6366F1, #8B5CF6)', borderColor: isCompleted ? '#6b7280' : '#4F46E5' }} data-testid={`calendar-project-${project.id}`}>
+                          <FolderOpen className="h-3 w-3 shrink-0" />
+                          <span className={`truncate font-bold flex-1 min-w-0 ${isCompleted ? "line-through" : ""}`}>{project.name}</span>
+                        </RouterLink>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
               {/* ALL DAY row resize handle */}
               <div
                 className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/alldayrow:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -11162,7 +11229,7 @@ export default function Dashboard() {
                 // Get Saturday column width (Saturday is at index 6 when not Saturday, index 6 when Saturday)
                 // When not Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - Sat at end
                 // When Saturday: weekDays = [Sun, Mon, Tue, Wed, Thu, Fri, Sat] - same order
-                const saturdayColumnWidth = gridSizes.dayColumnWidths[6] || 100;
+                const saturdayColumnWidth = gridSizes.dayColumnWidths[7] || 100;
                 
 // Check if this course has any full-week tasks
                 const hasFullWeekTasks = fullWeekTasks.length > 0;
@@ -11323,6 +11390,8 @@ export default function Dashboard() {
                               );
                             })}
                             
+                            {/* Progress column - empty with black background */}
+                            <div style={{ backgroundColor: '#000000' }} />
                             {/* Saturday column - empty with course background */}
                             <div style={{ backgroundColor: course.bg }} />
                           </div>
@@ -11387,7 +11456,7 @@ export default function Dashboard() {
                     })()}
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg }} />}
-                  {weekDays.map((day, dayIdx) => {
+                  {weekDays.slice(0, 6).map((day, dayIdx) => {
                     // Course row day cells - show tasks due on this day for this course
                     const isDayToday = isSameDay(day, new Date());
                     // Use solid color for today's column, no transparency
@@ -11588,7 +11657,7 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
-                  {/* Extra half-width black column after Saturday - progress bars */}
+                  {/* Progress column - half-width black with M/R/O bars */}
                   {(() => {
                     const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
                     const courseTasks = allTasks.filter(t => {
@@ -11625,6 +11694,39 @@ export default function Dashboard() {
                       </div>
                     );
                   })()}
+                  {/* Saturday column cell */}
+                  {weekDays[6] && (() => {
+                    const day = weekDays[6];
+                    const isDayToday = isSameDay(day, new Date());
+                    const cellDate = startOfDay(day);
+                    const dueTasks = tasks?.filter(task => {
+                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
+                      if (task.isCompleted) return false;
+                      const taskDueDate = startOfDay(new Date(task.dueDate));
+                      return isSameDay(taskDueDate, cellDate);
+                    }) || [];
+                    return (
+                      <div 
+                        className="border-l border-border/50 relative p-0.5 overflow-hidden min-w-0"
+                        style={{ backgroundColor: isDayToday ? colorSettings.todayCellBackground : course.bg }}
+                      >
+                        {dueTasks.map(task => {
+                          const today = startOfDay(new Date());
+                          const tomorrow = addDays(today, 1);
+                          const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                          const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
+                          return (
+                            <div key={task.id} className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""} ${task.isCompleted ? "text-gray-400" : "text-black"}`}
+                              style={{ backgroundColor: task.isCompleted ? '#e5e7eb' : (course.colors?.bg || '#e5e7eb'), borderColor: task.isCompleted ? '#d1d5db' : (course.colors?.border || '#9ca3af') }}
+                              onClick={() => setEditingTask(task)}
+                            >
+                              <span className="truncate font-bold">{task.title}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
                   {/* Course row resize handle */}
                   <div
                     className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/courserow:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -11654,7 +11756,7 @@ export default function Dashboard() {
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
                     {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: '#faf8f5' }} />}
-                    {weekDays.map((day, dayIdx) => {
+                    {weekDays.slice(0, 6).map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
@@ -11937,11 +12039,34 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {/* Extra half-width column after Saturday */}
+                    {/* Progress column - half-width */}
                     <div 
                       className="border-l border-border/50"
-                      style={{ backgroundColor: '#faf8f5', borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}
+                      style={{ backgroundColor: '#faf8f5' }}
                     />
+                    {/* Saturday time slot cell */}
+                    {weekDays[6] && (() => {
+                      const day = weekDays[6];
+                      const hourTasks = getTasksForHour(day, hour);
+                      const continuingTasks = getContinuingTasksForHour(day, hour);
+                      const hourCalendarEvents = getCalendarEventsForHour(day, hour);
+                      const isToday = isSameDay(day, new Date());
+                      const totalItems = hourTasks.length + hourCalendarEvents.length;
+                      const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
+                      return (
+                        <div 
+                          className="border-l border-border/50 border-t border-t-gray-300/50 relative overflow-visible"
+                          style={{ 
+                            backgroundColor: isToday ? colorSettings.todayCellBackground : '#faf8f5',
+                            borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined
+                          }}
+                        >
+                          {hour % 1 === 0 && (
+                            <div className="absolute left-0 right-0 border-t border-dotted border-gray-300/50 z-0" style={{ top: '50%' }} />
+                          )}
+                        </div>
+                      );
+                    })()}
                     {/* Individual time slot row resize handle */}
                     <div 
                       className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/row:opacity-100 hover:bg-blue-400/50 transition-opacity"
@@ -12046,8 +12171,8 @@ export default function Dashboard() {
                       style={{
                         top: `${adjustedTopPx}px`,
                         left: hasPrepDays && prepDaysCount > 0
-                          ? `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)))`
-                          : `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)) + 2px)`,
+                          ? `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? 6.5 : dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)))`
+                          : `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? 6.5 : dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)) + 2px)`,
                         width: hasPrepDays && prepDaysCount > 0
                           ? `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5) - 2px)`
                           : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5) - 4px)`,
