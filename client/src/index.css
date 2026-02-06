@@ -658,6 +658,42 @@ button[role="combobox"] > span {
   }
 }
 
+/* Red separator vertical shimmer */
+.red-separator-shimmer-sweep {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.15) 70%,
+    transparent 100%
+  );
+  transform: translateY(-100%);
+  animation: red-separator-shimmer-sweep 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes red-separator-shimmer-sweep {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  10% {
+    transform: translateY(100%);
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
 /* Task box border blink for due today */
 .task-blink-border {
   animation: task-border-blink 1.5s ease-in-out infinite;
