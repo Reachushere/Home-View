@@ -7749,10 +7749,6 @@ export default function Dashboard() {
                 <GraduationCap className="h-4 w-4 mr-2" />
                 School
               </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
-                <GraduationCap className="h-4 w-4 mr-2" />
-                Courses, Weeks & Schedule
-              </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-settings" onClick={() => {
                   setOriginalColorSettings({...colorSettings});
                   setOriginalBlinkSettings({...blinkSettings});
