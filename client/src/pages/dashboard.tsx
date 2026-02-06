@@ -10318,6 +10318,21 @@ export default function Dashboard() {
                   })}
                 </div>
               </div>
+              <div className="px-4 py-3 border-t border-white/20 bg-black/30">
+                <Button 
+                  type="submit" 
+                  form="school-settings-form"
+                  variant="outline"
+                  className="w-full border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6" 
+                  style={{
+                    boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
+                    fontSize: '12px'
+                  }}
+                  data-testid="button-save-school"
+                >
+                  Save School Settings
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
           
@@ -16054,7 +16069,7 @@ function SchoolForm({
     : 'Not set';
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 text-[10px]">
+    <form id="school-settings-form" onSubmit={handleSubmit} className="space-y-4 text-[10px]">
       <div className="border rounded-lg p-3 space-y-3">
         <Label className="text-[10px] font-medium">School</Label>
         <div className="space-y-3">
@@ -16270,20 +16285,6 @@ function SchoolForm({
         </div>
       )}
       
-      <div className="flex justify-end">
-        <Button 
-          type="submit" 
-          variant="outline"
-          className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 h-8 px-6" 
-          style={{
-            boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)',
-            fontSize: '12px'
-          }}
-          data-testid="button-save-school"
-        >
-          Save School Settings
-        </Button>
-      </div>
     </form>
   );
 }
