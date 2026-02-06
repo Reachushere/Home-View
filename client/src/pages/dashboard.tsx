@@ -8326,7 +8326,7 @@ export default function Dashboard() {
               <X className="h-5 w-5" />
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto space-y-4 p-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div className="flex-1 overflow-y-auto space-y-4 p-2 pt-1 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {/* PAG Level Carousel */}
             <div>
               {/* Navigation with arrows and dots */}
