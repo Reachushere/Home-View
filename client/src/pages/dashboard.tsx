@@ -11600,29 +11600,42 @@ export default function Dashboard() {
                     );
                   })}
                   {/* Extra half-width black column after Saturday - progress bars */}
-                  <div 
-                    className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
-                    style={{ backgroundColor: '#000000' }}
-                  >
-                    <div className="flex items-center gap-[2px]">
-                      <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">M</span>
-                      <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-blue-400 rounded-full" style={{ width: '0%' }} />
+                  {(() => {
+                    const courseCode = course.name?.split(' - ')[0]?.toUpperCase() || '';
+                    const courseTasks = allTasks.filter(t => {
+                      const taskCourse = t.courseName?.split(' - ')[0]?.toUpperCase() || '';
+                      return taskCourse === courseCode && t.weekNumber === selectedWeek;
+                    });
+                    const moduleTasks = courseTasks.filter(t => t.type === 'module');
+                    const readingTasks = courseTasks.filter(t => t.type === 'reading');
+                    const moduleProgress = moduleTasks.length > 0 ? Math.round((moduleTasks.filter(t => t.isCompleted).length / moduleTasks.length) * 100) : 0;
+                    const readingProgress = readingTasks.length > 0 ? Math.round((readingTasks.filter(t => t.isCompleted).length / readingTasks.length) * 100) : 0;
+                    return (
+                      <div 
+                        className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
+                        style={{ backgroundColor: '#000000' }}
+                      >
+                        <div className="flex items-center gap-[2px]">
+                          <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">M</span>
+                          <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-400 rounded-full transition-all" style={{ width: `${moduleProgress}%` }} />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-[2px]">
+                          <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">R</span>
+                          <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-green-400 rounded-full transition-all" style={{ width: `${readingProgress}%` }} />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-[2px]">
+                          <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">O</span>
+                          <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
+                            <div className="h-full bg-orange-400 rounded-full" style={{ width: '0%' }} />
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-[2px]">
-                      <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">R</span>
-                      <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-green-400 rounded-full" style={{ width: '0%' }} />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-[2px]">
-                      <span className="text-[7px] font-bold text-white w-[7px] flex-shrink-0">O</span>
-                      <div className="flex-1 h-[3px] bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-orange-400 rounded-full" style={{ width: '0%' }} />
-                      </div>
-                    </div>
-                  </div>
+                    );
+                  })()}
                   {/* Course row resize handle */}
                   <div
                     className="absolute bottom-0 left-0 right-0 h-[3px] cursor-row-resize z-[50] opacity-0 group-hover/courserow:opacity-100 hover:bg-blue-400/50 transition-opacity"
