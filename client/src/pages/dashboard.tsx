@@ -8132,8 +8132,8 @@ export default function Dashboard() {
         <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '2px' }}>
           {/* Week navigation with arrows around date, Today/Month stacked above */}
           <div className="flex flex-col items-center gap-0.5" style={{ position: 'relative', left: '-8px' }}>
-            {/* Today/Month buttons - centered above date range */}
-            <div className="flex items-center justify-center gap-0.5" style={{ marginTop: '2px', width: '100%' }}>
+            {/* Today button - centered above date range */}
+            <div className="flex items-center justify-center" style={{ marginTop: '2px', width: '100%' }}>
               <Button 
                 variant="ghost"
                 className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
@@ -8141,15 +8141,6 @@ export default function Dashboard() {
                 data-testid="button-today"
               >
                 Today
-              </Button>
-              <div className="w-[1px] h-3 bg-white/50" />
-              <Button 
-                variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0"
-                onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
-                data-testid="button-month-view"
-              >
-                {calendarView === "month" ? "Week" : "Month"}
               </Button>
             </div>
             {/* Date display with arrows */}
@@ -9106,7 +9097,15 @@ export default function Dashboard() {
             <ChevronRight className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
         </div>
-        <span className="text-[10px] font-medium text-white/80 tracking-wide uppercase" style={{ marginTop: '1px' }}>{format(weekStartDate, "MMMM")}</span>
+        <Button 
+          variant="ghost"
+          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white/80 border-0 tracking-wide uppercase"
+          style={{ marginTop: '1px' }}
+          onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+          data-testid="button-month-view"
+        >
+          {calendarView === "month" ? "Week" : "Month"}
+        </Button>
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
