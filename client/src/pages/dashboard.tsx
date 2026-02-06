@@ -11696,9 +11696,9 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[2px]">
                               <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: moduleP.hasFiles ? getProgressColor(moduleP.percent) : 'white' }}>M</span>
                               {moduleP.hasFiles ? (
-                                <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ outline: '0.1px solid white', backgroundColor: moduleP.percent === 0 ? '#ef4444' : undefined }}>
+                                <div className="flex-1 h-[3px] overflow-hidden" style={{ outline: '0.1px solid white', backgroundColor: moduleP.percent === 0 ? '#ef4444' : undefined }}>
                                   {moduleP.percent > 0 && (
-                                    <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
+                                    <div className="h-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                   )}
                                 </div>
                               ) : (
@@ -11708,9 +11708,9 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[2px]">
                               <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: readingP.hasFiles ? getProgressColor(readingP.percent) : 'white' }}>R</span>
                               {readingP.hasFiles ? (
-                                <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ outline: '0.1px solid white', backgroundColor: readingP.percent === 0 ? '#ef4444' : undefined }}>
+                                <div className="flex-1 h-[3px] overflow-hidden" style={{ outline: '0.1px solid white', backgroundColor: readingP.percent === 0 ? '#ef4444' : undefined }}>
                                   {readingP.percent > 0 && (
-                                    <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
+                                    <div className="h-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                   )}
                                 </div>
                               ) : (
@@ -11720,9 +11720,9 @@ export default function Dashboard() {
                             <div className="flex items-center gap-[2px]">
                               <span className="text-[10px] font-bold w-[10px] flex-shrink-0 leading-none uppercase" style={{ color: otherP.hasFiles ? getProgressColor(otherP.percent) : 'white' }}>O</span>
                               {otherP.hasFiles ? (
-                                <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ outline: '0.1px solid white', backgroundColor: otherP.percent === 0 ? '#ef4444' : undefined }}>
+                                <div className="flex-1 h-[3px] overflow-hidden" style={{ outline: '0.1px solid white', backgroundColor: otherP.percent === 0 ? '#ef4444' : undefined }}>
                                   {otherP.percent > 0 && (
-                                    <div className="h-full rounded-full" style={{ width: `${otherP.percent}%`, backgroundColor: getProgressColor(otherP.percent) }} />
+                                    <div className="h-full" style={{ width: `${otherP.percent}%`, backgroundColor: getProgressColor(otherP.percent) }} />
                                   )}
                                 </div>
                               ) : (
