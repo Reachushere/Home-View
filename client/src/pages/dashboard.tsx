@@ -10886,7 +10886,7 @@ export default function Dashboard() {
               );
               return (
                 <div key={idx} style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isToday && todayHasTasks ? 'animate-pulse' : ''}`}>
-                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Read your today tasks` : ''}
+                  {isToday && todayHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
                 </div>
               );
             })}
