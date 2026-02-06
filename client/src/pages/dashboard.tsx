@@ -1692,7 +1692,7 @@ export default function Dashboard() {
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
     const defaultCourses = [
-      { name: 'CPPA122 - Local Politics', color: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
+      { name: 'CPPA122 - Local Politics and Government', color: '#47B045', professor: 'Caryl Arundel', professorEmail: 'carundel@torontomu.ca' },
       { name: 'CFNF400 - Human Sexuality', color: '#FA67B3', professor: 'Alex McKay', professorEmail: 'a4mckay@torontomu.ca' },
       { name: 'CASL101 - American Sign Language', color: '#818cf8', professor: 'Christina Moreau', professorEmail: 'christina.moreau@torontomu.ca' },
       { name: '', color: '#6b7280', professor: '', professorEmail: '' },
@@ -5751,7 +5751,7 @@ export default function Dashboard() {
                 className={`h-4 w-4 ${readingsPopupCourse === 'cppa122' ? 'text-green-400 fill-green-200/50' : readingsPopupCourse === 'cfnf400' ? 'text-pink-400 fill-pink-200/50' : 'text-indigo-400 fill-indigo-200/50'}`} 
                 strokeWidth={1.5}
               />
-              {readingsPopupCourse === 'cppa122' ? 'CPPA122 Local Politics' : readingsPopupCourse === 'cfnf400' ? 'CFNF400 Human Sexuality' : 'CASL101 Sign Language'}
+              {readingsPopupCourse === 'cppa122' ? 'CPPA122 Local Politics and Government' : readingsPopupCourse === 'cfnf400' ? 'CFNF400 Human Sexuality' : 'CASL101 Sign Language'}
             </DialogTitle>
           </DialogHeader>
           <div className="text-xs text-white/60 mb-2">Week {selectedWeek} Readings</div>
@@ -9225,7 +9225,7 @@ export default function Dashboard() {
                   onClick={async () => {
                     setIsLoadingOneDriveFiles(true);
                     const oneDriveFolderMap: Record<string, string> = {
-                      'cppa122': 'CPPA122 - Local Politics',
+                      'cppa122': 'CPPA122 - Local Politics and Government',
                       'cfnf400': 'CFNF400 - Human Sexuality', 
                       'casl101': 'CASL101 - American Sign Language'
                     };
@@ -11371,7 +11371,7 @@ export default function Dashboard() {
                       const fullName = course.name.split(' - ').slice(1).join(' - ');
                       // CPPA122: show all on one line, centered
                       if (code === 'CPPA122') {
-                        return <span className="text-center">CPPA122 Local Politics</span>;
+                        return <span className="text-center">CPPA122 Local Politics and Government</span>;
                       }
                       // CFNF400: show CFNF400, then Human, then Sexuality on separate lines
                       if (code === 'CFNF400') {

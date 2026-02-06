@@ -867,8 +867,8 @@ export async function registerRoutes(
       
       // Update CPPA122 files that don't have the course name yet
       await db.execute(sql`
-        UPDATE files SET display_name = REPLACE(display_name, 'CPPA122, ', 'CPPA122 - Local Politics, ') 
-        WHERE display_name LIKE 'CPPA122,%' AND display_name NOT LIKE 'CPPA122 - Local Politics,%'
+        UPDATE files SET display_name = REPLACE(display_name, 'CPPA122, ', 'CPPA122 - Local Politics and Government, ') 
+        WHERE display_name LIKE 'CPPA122,%' AND display_name NOT LIKE 'CPPA122 - Local Politics and Government,%'
       `);
       
       // Update CFNF400 files that don't have the course name yet
@@ -920,8 +920,8 @@ export async function registerRoutes(
       
       // Update file display names with course names
       await db.execute(sql`
-        UPDATE files SET display_name = REPLACE(display_name, 'CPPA122, ', 'CPPA122 - Local Politics, ') 
-        WHERE display_name LIKE 'CPPA122,%' AND display_name NOT LIKE 'CPPA122 - Local Politics,%'
+        UPDATE files SET display_name = REPLACE(display_name, 'CPPA122, ', 'CPPA122 - Local Politics and Government, ') 
+        WHERE display_name LIKE 'CPPA122,%' AND display_name NOT LIKE 'CPPA122 - Local Politics and Government,%'
       `);
       await db.execute(sql`
         UPDATE files SET display_name = REPLACE(display_name, 'CFNF400, ', 'CFNF400 - Human Sexuality, ') 
@@ -2758,7 +2758,7 @@ export async function registerRoutes(
         semesterName: "Winter 2026",
         semesterStartDate: new Date("2026-01-12T00:00:00.000Z"),
         course1Code: "CPPA122",
-        course1Name: "Local Politics",
+        course1Name: "Local Politics and Government",
         course2Code: "CFNF400", 
         course2Name: "Human Sexuality",
         course3Code: "CASL101",
@@ -2928,7 +2928,7 @@ export async function registerRoutes(
       
       // Sync OneDrive files for current week
       const courses = [
-        { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics' },
+        { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics and Government' },
         { code: 'CFNF400', path: '/School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality' }
       ];
       
@@ -3623,7 +3623,7 @@ export async function registerRoutes(
       // Determine course and type for announcement
       const isCPPA = folder.toLowerCase().includes('cppa');
       const isModule = folder.toLowerCase().includes('module');
-      const courseName = isCPPA ? 'CPPA 122 Local Politics' : 'CFNF 400 Human Sexuality';
+      const courseName = isCPPA ? 'CPPA 122 Local Politics and Government' : 'CFNF 400 Human Sexuality';
       const contentType = isModule ? 'Module' : 'Reading';
       
       console.log(`Kitchen trigger: Playing ${fileName}`);
@@ -3904,7 +3904,7 @@ export async function registerRoutes(
       
       // Course configurations
       const courses = [
-        { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics' },
+        { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics and Government' },
         { code: 'CFNF400', path: '/School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality' }
       ];
       
