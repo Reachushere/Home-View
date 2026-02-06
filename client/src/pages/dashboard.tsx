@@ -8130,37 +8130,6 @@ export default function Dashboard() {
 
         {/* Date Range and Clock - Fixed Right */}
         <div className="absolute flex items-center gap-[5px] h-full flex-shrink-0" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '2px' }}>
-          {/* Week navigation with arrows around date, Today/Month stacked above */}
-          <div className="flex flex-col items-center gap-0.5" style={{ position: 'relative', left: '-8px' }}>
-            {/* Today button - centered above date range */}
-            <div className="flex items-center justify-center" style={{ marginTop: '2px', width: '100%' }}>
-              <Button 
-                variant="ghost"
-                className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white border-0" 
-                onClick={() => { setCalendarView("week"); setSelectedWeek(2); }} 
-                data-testid="button-today"
-              >
-                Today
-              </Button>
-            </div>
-            {/* Date display with arrows */}
-            <div className="flex items-center justify-center gap-1">
-              {/* Left arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))} data-testid="button-prev-week" data-date-nav>
-                <ChevronLeft className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
-              {/* Date display */}
-              <div className="flex items-center justify-center gap-1 whitespace-nowrap" style={{ minWidth: '80px' }}>
-                <span className="text-[11px] font-medium text-white">{format(weekStartDate, "d")}</span>
-                <span className="text-[11px] text-white/50">—</span>
-                <span className="text-[11px] font-medium text-white">{format(weekEndDate, "d")}</span>
-              </div>
-              {/* Right arrow */}
-              <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-white/20 rounded-md" onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))} data-testid="button-next-week" data-date-nav>
-                <ChevronRight className="h-4 w-4 text-white" strokeWidth={2.5} />
-              </Button>
-            </div>
-          </div>
           
           {/* Clock - wrapper clips 9px from left */}
           <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
