@@ -153,7 +153,7 @@ const courseColors: Record<string, { bg: string; border: string; text: string; d
 const courseDisplayNames: Record<string, string> = {
   "CPPA122": "CPPA122-LP",
   "CFNF400": "CFNF400-HS",
-  "CASL101": "CASL101-SL",
+  "CASL101": "CASL101 American Sign Language",
 };
 
 // Helper function to get display name for course row labels
