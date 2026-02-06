@@ -1305,16 +1305,15 @@ export default function Dashboard() {
       boxGlassEffect: true,
       boxTransparency: 35,
       mainBackgroundOverlay: false,
-      todayCellBackground: '#EAE4DE',
-      currentHourRowBackground: '#EAE4DE',
+      todayCellBackground: '#e5e5e5',
+      currentHourRowBackground: '#e5e5e5',
       todayCurrentHourCellBackground: '#160502'
     };
     // Check if migration has been done
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV3');
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV4');
     if (!migrationDone) {
-      // Force reset to correct defaults
       localStorage.setItem('colorSettings', JSON.stringify(defaults));
-      localStorage.setItem('colorSettingsMigrationV3', 'done');
+      localStorage.setItem('colorSettingsMigrationV4', 'done');
       return defaults;
     }
     if (saved) {
