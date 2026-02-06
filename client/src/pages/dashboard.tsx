@@ -10225,7 +10225,7 @@ export default function Dashboard() {
                 />
                 
                 {/* Course Legend */}
-                <div className="space-y-4 pt-4 border-t border-white/20">
+                <div className="space-y-3 pt-4 border-t border-white/20">
                   {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
                     const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
@@ -10236,45 +10236,65 @@ export default function Dashboard() {
                       isSameDay(new Date(task.dueDate), tomorrow)
                     );
                     const professorEmail = course.professorEmail;
+                    const semCourse = semesterSettings ? (() => {
+                      const idx = index + 1;
+                      const s = semesterSettings as any;
+                      return {
+                        delivery: s[`course${idx}DeliveryMode`],
+                        day: s[`course${idx}ClassDay`],
+                        day2: s[`course${idx}ClassDay2`],
+                        time: s[`course${idx}ClassTime`],
+                        endTime: s[`course${idx}ClassEndTime`],
+                      };
+                    })() : null;
                     return (
-                      <div key={index} className="flex items-center gap-1.5">
-                        <div 
-                          className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
-                          style={{ backgroundColor: course.color }}
-                        />
-                        <span className="text-[12px] text-white">
-                          <span className="font-medium">{courseCode}</span>
-                          {courseName !== courseCode && <span> - {courseName}</span>}
-                          {course.professor && (
-                            professorEmail ? (
-                              <a
-                                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-400 underline hover:text-blue-300 cursor-pointer"
-                                data-testid={`link-school-email-professor-${index + 1}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`, '_blank');
-                                }}
-                              >
-                                {" "}({course.professor})
-                              </a>
-                            ) : (
-                              <span className="text-white/70"> ({course.professor})</span>
-                            )
-                          )}
-                        </span>
-                        <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
-                          <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
-                            {aasSentStatus[courseCode] && (
-                              <Check className="w-2.5 h-2.5 text-white" />
+                      <div key={index} className="space-y-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <div 
+                            className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
+                            style={{ backgroundColor: course.color }}
+                          />
+                          <span className="text-[12px] text-white">
+                            <span className="font-medium">{courseCode}</span>
+                            {courseName !== courseCode && <span> - {courseName}</span>}
+                            {course.professor && (
+                              professorEmail ? (
+                                <a
+                                  href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-400 underline hover:text-blue-300 cursor-pointer"
+                                  data-testid={`link-school-email-professor-${index + 1}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`, '_blank');
+                                  }}
+                                >
+                                  {" "}({course.professor})
+                                </a>
+                              ) : (
+                                <span className="text-white/70"> ({course.professor})</span>
+                              )
                             )}
-                          </div>
-                          <span className={`text-[10px] ${aasSentStatus[courseCode] ? 'text-blue-400' : 'text-amber-400'}`}>
-                            AAS
                           </span>
-                        </label>
+                          <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
+                            <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
+                              {aasSentStatus[courseCode] && (
+                                <Check className="w-2.5 h-2.5 text-white" />
+                              )}
+                            </div>
+                            <span className={`text-[10px] ${aasSentStatus[courseCode] ? 'text-blue-400' : 'text-amber-400'}`}>
+                              AAS
+                            </span>
+                          </label>
+                        </div>
+                        {semCourse && (semCourse.delivery || semCourse.day || semCourse.time) && (
+                          <div className="flex items-center gap-2 pl-4 text-[9px] text-white/50">
+                            {semCourse.delivery && <span>{semCourse.delivery}</span>}
+                            {semCourse.day && <span>{semCourse.day}{semCourse.day2 ? `/${semCourse.day2}` : ''}</span>}
+                            {semCourse.time && <span>{semCourse.time}{semCourse.endTime ? `-${semCourse.endTime}` : ''}</span>}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -16165,79 +16185,7 @@ function SchoolForm({
               </div>
             )}
           </div>
-          <div className="mt-3 pt-3 border-t border-white/20 space-y-3">
-            {[
-              { code: semesterSettings.course1Code, name: semesterSettings.course1Name, professor: semesterSettings.course1Professor, email: semesterSettings.course1ProfessorEmail, delivery: semesterSettings.course1DeliveryMode, day: semesterSettings.course1ClassDay, day2: semesterSettings.course1ClassDay2, time: semesterSettings.course1ClassTime, endTime: semesterSettings.course1ClassEndTime, color: 'bg-green-500', idx: 1 },
-              { code: semesterSettings.course2Code, name: semesterSettings.course2Name, professor: semesterSettings.course2Professor, email: semesterSettings.course2ProfessorEmail, delivery: semesterSettings.course2DeliveryMode, day: semesterSettings.course2ClassDay, day2: semesterSettings.course2ClassDay2, time: semesterSettings.course2ClassTime, endTime: semesterSettings.course2ClassEndTime, color: 'bg-pink-500', idx: 2 },
-              { code: semesterSettings.course3Code, name: semesterSettings.course3Name, professor: semesterSettings.course3Professor, email: semesterSettings.course3ProfessorEmail, delivery: semesterSettings.course3DeliveryMode, day: semesterSettings.course3ClassDay, day2: semesterSettings.course3ClassDay2, time: semesterSettings.course3ClassTime, endTime: semesterSettings.course3ClassEndTime, color: 'bg-indigo-500', idx: 3 },
-            ].map((course) => (
-              <div key={course.idx} className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${course.color} shrink-0`} />
-                  <span className="font-medium text-[10px]">{course.code}</span>
-                  <span className="text-white/70 text-[10px]">- {course.name}</span>
-                  {course.professor && (
-                    course.email ? (
-                      <a
-                        href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(course.email)}&su=${encodeURIComponent(`${course.code} - `)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[9px] text-blue-400 underline hover:text-blue-300 cursor-pointer ml-auto"
-                        data-testid={`link-email-professor-${course.idx}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(course.email!)}&su=${encodeURIComponent(`${course.code} - `)}`, '_blank');
-                        }}
-                      >
-                        Prof. {course.professor}
-                      </a>
-                    ) : (
-                      <span className="text-[9px] text-white/50 ml-auto">Prof. {course.professor}</span>
-                    )
-                  )}
-                </div>
-                <div className="flex items-center gap-3 pl-4 text-[9px] text-white/60">
-                  {course.delivery && <span>{course.delivery}</span>}
-                  {course.day && <span>{course.day}{course.day2 ? `/${course.day2}` : ''}</span>}
-                  {course.time && <span>{course.time}{course.endTime ? `-${course.endTime}` : ''}</span>}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-3 pt-3 border-t border-white/20 space-y-2">
-            <Label className="text-[9px] font-medium text-white/50">Professor Emails (click name above to send email)</Label>
-            <div className="space-y-2">
-              {[
-                { code: semesterSettings.course1Code, email: semesterSettings.course1ProfessorEmail, color: 'bg-green-500', field: 'course1ProfessorEmail', testId: 'input-course1-email-edit' },
-                { code: semesterSettings.course2Code, email: semesterSettings.course2ProfessorEmail, color: 'bg-pink-500', field: 'course2ProfessorEmail', testId: 'input-course2-email-edit' },
-                { code: semesterSettings.course3Code, email: semesterSettings.course3ProfessorEmail, color: 'bg-indigo-500', field: 'course3ProfessorEmail', testId: 'input-course3-email-edit' },
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${item.color} shrink-0`} />
-                  <Input
-                    type="email"
-                    placeholder={`${item.code} professor email`}
-                    defaultValue={item.email || ""}
-                    onChange={(e) => {
-                      const email = e.target.value;
-                      const updates: Record<string, string | null> = {
-                        course1ProfessorEmail: semesterSettings.course1ProfessorEmail,
-                        course2ProfessorEmail: semesterSettings.course2ProfessorEmail,
-                        course3ProfessorEmail: semesterSettings.course3ProfessorEmail,
-                      };
-                      updates[item.field] = email || null;
-                      apiRequest("PATCH", "/api/semester-settings/professor-emails", updates)
-                        .then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
-                    }}
-                    className="h-7 !text-[10px] !text-black"
-                    style={{ fontSize: '10px' }}
-                    data-testid={item.testId}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-          <p className="text-[8px] text-white/40">Course details are set when starting a new semester.</p>
+          <p className="text-[8px] text-white/40 mt-1">Course details shown in the Courses section below.</p>
         </div>
       )}
       
