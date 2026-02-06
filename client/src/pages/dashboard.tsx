@@ -1801,6 +1801,31 @@ export default function Dashboard() {
     setIsCoursesDialogOpen(false);
     toast({ title: "Courses saved", description: "Your courses have been updated." });
   };
+
+  const saveSemesterScheduleMutation = useMutation({
+    mutationFn: async (data: Record<string, any>) => {
+      return apiRequest("PATCH", "/api/semester", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+      setIsCoursesDialogOpen(false);
+      toast({ title: "Schedule saved", description: "Course schedule has been updated." });
+    },
+  });
+
+  const generateClassTasksMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/semester/generate-class-tasks", {});
+    },
+    onSuccess: async (response: any) => {
+      const data = await response.json();
+      queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
+      toast({ title: "Class Tasks Created", description: data.message || "Class tasks have been generated." });
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to generate class tasks.", variant: "destructive" });
+    },
+  });
   
   // TTS settings for word highlighting synchronization
   const [ttsSettings, setTtsSettings] = useState<{
@@ -4261,19 +4286,45 @@ export default function Dashboard() {
   const [isNewSemesterDialogOpen, setIsNewSemesterDialogOpen] = useState(false);
   const [newSemesterForm, setNewSemesterForm] = useState({
     semesterName: "Spring/Summer 2026 Semester",
-    semesterStartDate: "2026-05-02",
+    semesterType: "spring_summer" as string,
+    semesterStartDate: "2026-05-04",
+    semesterEndDate: "2026-08-07",
     course1Code: "",
     course1Name: "",
     course1Professor: "",
     course1ProfessorEmail: "",
+    course1DeliveryMode: "" as string,
+    course1ClassDay: "" as string,
+    course1ClassDay2: "" as string,
+    course1ClassTime: "",
+    course1ClassEndTime: "",
+    course1StartDate: "",
+    course1EndDate: "",
+    course1SpringSummerTerm: "full" as string,
     course2Code: "",
     course2Name: "",
     course2Professor: "",
     course2ProfessorEmail: "",
+    course2DeliveryMode: "" as string,
+    course2ClassDay: "" as string,
+    course2ClassDay2: "" as string,
+    course2ClassTime: "",
+    course2ClassEndTime: "",
+    course2StartDate: "",
+    course2EndDate: "",
+    course2SpringSummerTerm: "full" as string,
     course3Code: "",
     course3Name: "",
     course3Professor: "",
     course3ProfessorEmail: "",
+    course3DeliveryMode: "" as string,
+    course3ClassDay: "" as string,
+    course3ClassDay2: "" as string,
+    course3ClassTime: "",
+    course3ClassEndTime: "",
+    course3StartDate: "",
+    course3EndDate: "",
+    course3SpringSummerTerm: "full" as string,
     secondaryCalendarId: "",
   });
   
@@ -4431,8 +4482,11 @@ export default function Dashboard() {
   // Mutation for creating new semester
   const createSemesterMutation = useMutation({
     mutationFn: async (data: typeof newSemesterForm) => {
-      return apiRequest("POST", "/api/semester", {
+      const payload: Record<string, any> = {
+        semesterName: data.semesterName,
+        semesterType: data.semesterType,
         semesterStartDate: new Date(data.semesterStartDate).toISOString(),
+        semesterEndDate: data.semesterEndDate ? new Date(data.semesterEndDate).toISOString() : null,
         course1Code: data.course1Code,
         course1Name: data.course1Name,
         course1Professor: data.course1Professor || null,
@@ -4445,7 +4499,20 @@ export default function Dashboard() {
         course3Name: data.course3Name,
         course3Professor: data.course3Professor || null,
         course3ProfessorEmail: data.course3ProfessorEmail || null,
+      };
+      ['course1', 'course2', 'course3'].forEach(prefix => {
+        payload[`${prefix}DeliveryMode`] = (data as any)[`${prefix}DeliveryMode`] || null;
+        payload[`${prefix}ClassDay`] = (data as any)[`${prefix}ClassDay`] || null;
+        payload[`${prefix}ClassDay2`] = (data as any)[`${prefix}ClassDay2`] || null;
+        payload[`${prefix}ClassTime`] = (data as any)[`${prefix}ClassTime`] || null;
+        payload[`${prefix}ClassEndTime`] = (data as any)[`${prefix}ClassEndTime`] || null;
+        payload[`${prefix}SpringSummerTerm`] = (data as any)[`${prefix}SpringSummerTerm`] || null;
+        const startVal = (data as any)[`${prefix}StartDate`];
+        const endVal = (data as any)[`${prefix}EndDate`];
+        payload[`${prefix}StartDate`] = startVal ? new Date(startVal).toISOString() : null;
+        payload[`${prefix}EndDate`] = endVal ? new Date(endVal).toISOString() : null;
       });
+      return apiRequest("POST", "/api/semester", payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
@@ -7664,8 +7731,8 @@ export default function Dashboard() {
                 School
               </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-courses" onClick={() => setIsCoursesDialogOpen(true)}>
-                <Palette className="h-4 w-4 mr-2" />
-                Courses
+                <GraduationCap className="h-4 w-4 mr-2" />
+                Courses, Weeks & Schedule
               </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-settings" onClick={() => {
                   setOriginalColorSettings({...colorSettings});
@@ -10146,9 +10213,9 @@ export default function Dashboard() {
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
-                  <BookOpen className="h-3 w-3 text-white" />
+                  <GraduationCap className="h-3 w-3 text-white" />
                   <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                    COURSES
+                    COURSES & SCHEDULE
                   </h2>
                 </div>
                 <button 
@@ -10162,7 +10229,11 @@ export default function Dashboard() {
               <div className="p-4">
                 <CoursesForm 
                   coursesData={coursesData}
+                  semesterSettings={semesterSettings}
                   onSave={saveCourses}
+                  onSaveSemesterSchedule={(data) => saveSemesterScheduleMutation.mutate(data)}
+                  onGenerateClassTasks={() => generateClassTasksMutation.mutate()}
+                  isGenerating={generateClassTasksMutation.isPending}
                   onCancel={() => setIsCoursesDialogOpen(false)} 
                 />
               </div>
@@ -15937,14 +16008,60 @@ function SchoolForm({
 
 function CoursesForm({ 
   coursesData, 
+  semesterSettings,
   onSave,
+  onSaveSemesterSchedule,
+  onGenerateClassTasks,
+  isGenerating,
   onCancel 
 }: { 
   coursesData: { courses: Array<{ name: string; color: string; professor: string }> };
+  semesterSettings: SemesterSettings | null | undefined;
   onSave: (data: { courses: Array<{ name: string; color: string; professor: string }> }) => void;
+  onSaveSemesterSchedule: (data: Record<string, any>) => void;
+  onGenerateClassTasks: () => void;
+  isGenerating?: boolean;
   onCancel: () => void;
 }) {
   const [courses, setCourses] = useState(coursesData.courses);
+  const [activeTab, setActiveTab] = useState<'courses' | 'schedule'>('courses');
+
+  const courseFields = [
+    { prefix: 'course1', label: 'Course 1' },
+    { prefix: 'course2', label: 'Course 2' },
+    { prefix: 'course3', label: 'Course 3' },
+  ];
+
+  const [scheduleData, setScheduleData] = useState(() => {
+    const s = semesterSettings;
+    return {
+      semesterType: s?.semesterType || 'winter',
+      course1DeliveryMode: s?.course1DeliveryMode || '',
+      course1ClassDay: s?.course1ClassDay || '',
+      course1ClassDay2: s?.course1ClassDay2 || '',
+      course1ClassTime: s?.course1ClassTime || '',
+      course1ClassEndTime: s?.course1ClassEndTime || '',
+      course1StartDate: s?.course1StartDate ? new Date(s.course1StartDate).toISOString().split('T')[0] : '',
+      course1EndDate: s?.course1EndDate ? new Date(s.course1EndDate).toISOString().split('T')[0] : '',
+      course1SpringSummerTerm: s?.course1SpringSummerTerm || 'full',
+      course2DeliveryMode: s?.course2DeliveryMode || '',
+      course2ClassDay: s?.course2ClassDay || '',
+      course2ClassDay2: s?.course2ClassDay2 || '',
+      course2ClassTime: s?.course2ClassTime || '',
+      course2ClassEndTime: s?.course2ClassEndTime || '',
+      course2StartDate: s?.course2StartDate ? new Date(s.course2StartDate).toISOString().split('T')[0] : '',
+      course2EndDate: s?.course2EndDate ? new Date(s.course2EndDate).toISOString().split('T')[0] : '',
+      course2SpringSummerTerm: s?.course2SpringSummerTerm || 'full',
+      course3DeliveryMode: s?.course3DeliveryMode || '',
+      course3ClassDay: s?.course3ClassDay || '',
+      course3ClassDay2: s?.course3ClassDay2 || '',
+      course3ClassTime: s?.course3ClassTime || '',
+      course3ClassEndTime: s?.course3ClassEndTime || '',
+      course3StartDate: s?.course3StartDate ? new Date(s.course3StartDate).toISOString().split('T')[0] : '',
+      course3EndDate: s?.course3EndDate ? new Date(s.course3EndDate).toISOString().split('T')[0] : '',
+      course3SpringSummerTerm: s?.course3SpringSummerTerm || 'full',
+    };
+  });
   
   const updateCourse = (index: number, field: 'name' | 'color' | 'professor', value: string) => {
     setCourses(prev => {
@@ -15953,50 +16070,268 @@ function CoursesForm({
       return updated;
     });
   };
+
+  const updateScheduleField = (field: string, value: string) => {
+    setScheduleData(prev => ({ ...prev, [field]: value }));
+  };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ courses });
+    if (activeTab === 'courses') {
+      onSave({ courses });
+    } else {
+      const payload: Record<string, any> = {
+        semesterType: scheduleData.semesterType,
+      };
+      courseFields.forEach(({ prefix }) => {
+        const p = prefix as 'course1' | 'course2' | 'course3';
+        payload[`${p}DeliveryMode`] = (scheduleData as any)[`${p}DeliveryMode`] || null;
+        payload[`${p}ClassDay`] = (scheduleData as any)[`${p}ClassDay`] || null;
+        payload[`${p}ClassDay2`] = (scheduleData as any)[`${p}ClassDay2`] || null;
+        payload[`${p}ClassTime`] = (scheduleData as any)[`${p}ClassTime`] || null;
+        payload[`${p}ClassEndTime`] = (scheduleData as any)[`${p}ClassEndTime`] || null;
+        payload[`${p}SpringSummerTerm`] = (scheduleData as any)[`${p}SpringSummerTerm`] || null;
+        const startVal = (scheduleData as any)[`${p}StartDate`];
+        const endVal = (scheduleData as any)[`${p}EndDate`];
+        payload[`${p}StartDate`] = startVal ? new Date(startVal).toISOString() : null;
+        payload[`${p}EndDate`] = endVal ? new Date(endVal).toISOString() : null;
+      });
+      onSaveSemesterSchedule(payload);
+    }
   };
+
+  const dayOptions = [
+    { value: '', label: '—' },
+    { value: 'monday', label: 'Mon' },
+    { value: 'tuesday', label: 'Tue' },
+    { value: 'wednesday', label: 'Wed' },
+    { value: 'thursday', label: 'Thu' },
+    { value: 'friday', label: 'Fri' },
+    { value: 'saturday', label: 'Sat' },
+    { value: 'sunday', label: 'Sun' },
+  ];
   
   return (
     <form onSubmit={handleSubmit} className="space-y-3 text-[10px]">
-      <p className="text-[9px] text-muted-foreground">
-        Enter your course names, professor names, and select a color for each. Colors will be used throughout the app for tasks associated with each course.
-      </p>
-      
-      <div className="space-y-2">
-        {courses.map((course, index) => (
-          <div key={index} className="flex items-center gap-1">
-            <span className="text-[10px] text-muted-foreground w-3">{index + 1}.</span>
-            <input
-              type="color"
-              value={course.color}
-              onChange={(e) => updateCourse(index, 'color', e.target.value)}
-              className="w-5 h-5 rounded cursor-pointer border-0 p-0"
-              data-testid={`input-course-color-${index}`}
-            />
-            <Input
-              value={course.name}
-              onChange={(e) => updateCourse(index, 'name', e.target.value)}
-              placeholder={`Course name (e.g., MATH101 - Calculus)`}
-              className="w-64 !text-[10px] h-8 !text-black"
-              style={{ fontSize: '10px' }}
-              data-testid={`input-course-name-${index}`}
-            />
-            <Input
-              value={course.professor}
-              onChange={(e) => updateCourse(index, 'professor', e.target.value)}
-              placeholder={`Professor`}
-              className="flex-1 !text-[10px] h-8 !text-black"
-              style={{ fontSize: '10px' }}
-              data-testid={`input-course-professor-${index}`}
-            />
-          </div>
-        ))}
+      <div className="flex gap-2 mb-2">
+        <button 
+          type="button"
+          onClick={() => setActiveTab('courses')}
+          className={`px-3 py-1 rounded text-[10px] transition-colors ${activeTab === 'courses' ? 'bg-white/20 text-white' : 'text-white/50 hover:text-white/80'}`}
+          data-testid="tab-courses"
+        >
+          Courses
+        </button>
+        <button 
+          type="button"
+          onClick={() => setActiveTab('schedule')}
+          className={`px-3 py-1 rounded text-[10px] transition-colors ${activeTab === 'schedule' ? 'bg-white/20 text-white' : 'text-white/50 hover:text-white/80'}`}
+          data-testid="tab-schedule"
+        >
+          Schedule
+        </button>
       </div>
+
+      {activeTab === 'courses' ? (
+        <>
+          <p className="text-[9px] text-muted-foreground">
+            Enter your course names, professor names, and select a color for each.
+          </p>
+          <div className="space-y-2">
+            {courses.map((course, index) => (
+              <div key={index} className="flex items-center gap-1">
+                <span className="text-[10px] text-muted-foreground w-3">{index + 1}.</span>
+                <input
+                  type="color"
+                  value={course.color}
+                  onChange={(e) => updateCourse(index, 'color', e.target.value)}
+                  className="w-5 h-5 rounded cursor-pointer border-0 p-0"
+                  data-testid={`input-course-color-${index}`}
+                />
+                <Input
+                  value={course.name}
+                  onChange={(e) => updateCourse(index, 'name', e.target.value)}
+                  placeholder={`Course name (e.g., MATH101 - Calculus)`}
+                  className="w-64 !text-[10px] h-8 !text-black"
+                  style={{ fontSize: '10px' }}
+                  data-testid={`input-course-name-${index}`}
+                />
+                <Input
+                  value={course.professor}
+                  onChange={(e) => updateCourse(index, 'professor', e.target.value)}
+                  placeholder={`Professor`}
+                  className="flex-1 !text-[10px] h-8 !text-black"
+                  style={{ fontSize: '10px' }}
+                  data-testid={`input-course-professor-${index}`}
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Label className="text-[10px] w-24">Semester Type</Label>
+            <select
+              value={scheduleData.semesterType}
+              onChange={(e) => updateScheduleField('semesterType', e.target.value)}
+              className="flex-1 h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+              data-testid="select-semester-type"
+            >
+              <option value="fall" className="bg-gray-800">Fall</option>
+              <option value="winter" className="bg-gray-800">Winter</option>
+              <option value="spring_summer" className="bg-gray-800">Spring/Summer</option>
+            </select>
+          </div>
+
+          {courseFields.map(({ prefix, label }, idx) => {
+            const courseName = courses[idx]?.name || label;
+            const courseColor = courses[idx]?.color || '#6b7280';
+            const deliveryMode = (scheduleData as any)[`${prefix}DeliveryMode`] || '';
+            const classDay = (scheduleData as any)[`${prefix}ClassDay`] || '';
+            const classDay2 = (scheduleData as any)[`${prefix}ClassDay2`] || '';
+            const classTime = (scheduleData as any)[`${prefix}ClassTime`] || '';
+            const classEndTime = (scheduleData as any)[`${prefix}ClassEndTime`] || '';
+            const startDate = (scheduleData as any)[`${prefix}StartDate`] || '';
+            const endDate = (scheduleData as any)[`${prefix}EndDate`] || '';
+            const springSummerTerm = (scheduleData as any)[`${prefix}SpringSummerTerm`] || 'full';
+
+            if (!courseName || courseName === label) return null;
+
+            return (
+              <div key={prefix} className="border border-white/20 rounded p-2 space-y-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: courseColor }} />
+                  <span className="text-[10px] font-medium">{courseName.split(' - ')[0]}</span>
+                  <span className="text-[9px] text-white/60">{courseName.split(' - ').slice(1).join(' - ')}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[9px] text-white/60">Delivery</Label>
+                    <select
+                      value={deliveryMode}
+                      onChange={(e) => updateScheduleField(`${prefix}DeliveryMode`, e.target.value)}
+                      className="w-full h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                      data-testid={`select-${prefix}-delivery`}
+                    >
+                      <option value="" className="bg-gray-800">—</option>
+                      <option value="virtual" className="bg-gray-800">Virtual (live class)</option>
+                      <option value="online" className="bg-gray-800">Online (async)</option>
+                    </select>
+                  </div>
+
+                  {scheduleData.semesterType === 'spring_summer' && (
+                    <div>
+                      <Label className="text-[9px] text-white/60">Term</Label>
+                      <select
+                        value={springSummerTerm}
+                        onChange={(e) => updateScheduleField(`${prefix}SpringSummerTerm`, e.target.value)}
+                        className="w-full h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                        data-testid={`select-${prefix}-term`}
+                      >
+                        <option value="full" className="bg-gray-800">Full (May-Aug)</option>
+                        <option value="first_half" className="bg-gray-800">First Half (May-Jun)</option>
+                        <option value="second_half" className="bg-gray-800">Second Half (Jun-Aug)</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+
+                {deliveryMode === 'virtual' && (
+                  <div className="grid grid-cols-4 gap-2">
+                    <div>
+                      <Label className="text-[9px] text-white/60">Day 1</Label>
+                      <select
+                        value={classDay}
+                        onChange={(e) => updateScheduleField(`${prefix}ClassDay`, e.target.value)}
+                        className="w-full h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                        data-testid={`select-${prefix}-day1`}
+                      >
+                        {dayOptions.map(d => (
+                          <option key={d.value} value={d.value} className="bg-gray-800">{d.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-[9px] text-white/60">Day 2</Label>
+                      <select
+                        value={classDay2}
+                        onChange={(e) => updateScheduleField(`${prefix}ClassDay2`, e.target.value)}
+                        className="w-full h-7 rounded bg-white/10 border border-white/20 text-white text-[10px] px-2"
+                        data-testid={`select-${prefix}-day2`}
+                      >
+                        {dayOptions.map(d => (
+                          <option key={d.value} value={d.value} className="bg-gray-800">{d.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label className="text-[9px] text-white/60">Start</Label>
+                      <Input
+                        type="time"
+                        value={classTime}
+                        onChange={(e) => updateScheduleField(`${prefix}ClassTime`, e.target.value)}
+                        className="h-7 !text-[10px] !text-black"
+                        data-testid={`input-${prefix}-start-time`}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-[9px] text-white/60">End</Label>
+                      <Input
+                        type="time"
+                        value={classEndTime}
+                        onChange={(e) => updateScheduleField(`${prefix}ClassEndTime`, e.target.value)}
+                        className="h-7 !text-[10px] !text-black"
+                        data-testid={`input-${prefix}-end-time`}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-[9px] text-white/60">Start Date</Label>
+                    <Input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => updateScheduleField(`${prefix}StartDate`, e.target.value)}
+                      className="h-7 !text-[10px] !text-black"
+                      data-testid={`input-${prefix}-start-date`}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[9px] text-white/60">End Date</Label>
+                    <Input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => updateScheduleField(`${prefix}EndDate`, e.target.value)}
+                      className="h-7 !text-[10px] !text-black"
+                      data-testid={`input-${prefix}-end-date`}
+                    />
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center gap-2">
+        {activeTab === 'schedule' && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onGenerateClassTasks}
+            disabled={isGenerating}
+            className="border !border-blue-400/50 text-blue-300 hover:text-blue-200 hover:!border-blue-400 hover:bg-transparent transition-all duration-200 h-8 px-4"
+            style={{ fontSize: '11px' }}
+            data-testid="button-generate-class-tasks"
+          >
+            {isGenerating ? 'Generating...' : 'Generate Class Tasks'}
+          </Button>
+        )}
+        <div className="flex-1" />
         <Button 
           type="submit" 
           variant="outline"
@@ -16007,7 +16342,7 @@ function CoursesForm({
           }}
           data-testid="button-save-courses"
         >
-          Save Courses
+          {activeTab === 'courses' ? 'Save Courses' : 'Save Schedule'}
         </Button>
       </div>
     </form>

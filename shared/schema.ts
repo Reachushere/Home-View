@@ -67,23 +67,65 @@ export const REMINDER_OPTIONS = [
 export const DEFAULT_REMINDER_1 = 30; // 30 minutes
 export const DEFAULT_REMINDER_2 = 120; // 2 hours
 
+// Semester type enums
+export const SEMESTER_TYPES = ["fall", "winter", "spring_summer"] as const;
+export type SemesterType = typeof SEMESTER_TYPES[number];
+
+export const DELIVERY_MODES = ["virtual", "online"] as const;
+export type DeliveryMode = typeof DELIVERY_MODES[number];
+
+export const SPRING_SUMMER_TERMS = ["full", "first_half", "second_half"] as const;
+export type SpringSummerTerm = typeof SPRING_SUMMER_TERMS[number];
+
+export const DAYS_OF_WEEK = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
+export type DayOfWeek = typeof DAYS_OF_WEEK[number];
+
 // Semester settings table to store dynamic semester configuration
 export const semesterSettings = pgTable("semester_settings", {
   id: serial("id").primaryKey(),
   semesterName: text("semester_name").notNull().default("Winter 2026 Semester"),
   semesterStartDate: timestamp("semester_start_date").notNull(),
+  semesterEndDate: timestamp("semester_end_date"),
+  semesterType: text("semester_type").default("winter"),
   course1Code: text("course1_code").notNull(),
   course1Name: text("course1_name").notNull(),
   course1Professor: text("course1_professor"),
   course1ProfessorEmail: text("course1_professor_email"),
+  course1SemesterType: text("course1_semester_type"),
+  course1DeliveryMode: text("course1_delivery_mode"),
+  course1ClassDay: text("course1_class_day"),
+  course1ClassDay2: text("course1_class_day2"),
+  course1ClassTime: text("course1_class_time"),
+  course1ClassEndTime: text("course1_class_end_time"),
+  course1StartDate: timestamp("course1_start_date"),
+  course1EndDate: timestamp("course1_end_date"),
+  course1SpringSummerTerm: text("course1_spring_summer_term"),
   course2Code: text("course2_code").notNull(),
   course2Name: text("course2_name").notNull(),
   course2Professor: text("course2_professor"),
   course2ProfessorEmail: text("course2_professor_email"),
+  course2SemesterType: text("course2_semester_type"),
+  course2DeliveryMode: text("course2_delivery_mode"),
+  course2ClassDay: text("course2_class_day"),
+  course2ClassDay2: text("course2_class_day2"),
+  course2ClassTime: text("course2_class_time"),
+  course2ClassEndTime: text("course2_class_end_time"),
+  course2StartDate: timestamp("course2_start_date"),
+  course2EndDate: timestamp("course2_end_date"),
+  course2SpringSummerTerm: text("course2_spring_summer_term"),
   course3Code: text("course3_code").notNull(),
   course3Name: text("course3_name").notNull(),
   course3Professor: text("course3_professor"),
   course3ProfessorEmail: text("course3_professor_email"),
+  course3SemesterType: text("course3_semester_type"),
+  course3DeliveryMode: text("course3_delivery_mode"),
+  course3ClassDay: text("course3_class_day"),
+  course3ClassDay2: text("course3_class_day2"),
+  course3ClassTime: text("course3_class_time"),
+  course3ClassEndTime: text("course3_class_end_time"),
+  course3StartDate: timestamp("course3_start_date"),
+  course3EndDate: timestamp("course3_end_date"),
+  course3SpringSummerTerm: text("course3_spring_summer_term"),
   secondaryCalendarId: text("secondary_calendar_id"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),

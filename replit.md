@@ -47,6 +47,7 @@ Publishing preference: Always publish with mobile-ready compatibility enabled.
 - **Dashboard Layout**: "Due Today," "Upcoming," and "Missed" sections with distinct visual indicators.
 - **Blinking Animations**: Visual cues for task urgency.
 - **Task Repeat**: Configurable daily, weekly, monthly, or custom interval task repetition with Google Calendar sync.
+- **Semester System**: Comprehensive semester management with Fall/Winter/Spring-Summer types. Per-course configuration for delivery mode (Virtual/Online), class day/time scheduling, individual start/end dates, and Spring/Summer term options (full/first-half/second-half). Auto-generation of class tasks for Virtual courses with duplicate prevention. Semester date calculation utilities for computing standard academic date ranges.
 - **Semester Transition**: Automated prompt and configuration for new academic semesters.
 - **Subtasks**: Nested tasks with completion tracking, progress counters, and cascading deletion. Supports task dependencies (blocks, blocked_by, relates_to).
 - **Projects**: Comprehensive project management with creation/editing, status, priority, progress bars, task linking, and multiple view modes (Grid, List, Workflow). Workflow view visualizes task dependencies.

@@ -849,6 +849,21 @@ export async function registerRoutes(
     }
   });
 
+  // PATCH /api/semester - Update active semester settings (all fields)
+  app.patch("/api/semester", async (req, res) => {
+    try {
+      const activeSemester = await storage.getActiveSemesterSettings();
+      if (!activeSemester) {
+        return res.status(404).json({ error: "No active semester settings found" });
+      }
+      const updated = await storage.updateSemesterSettings(activeSemester.id, req.body);
+      res.json(updated);
+    } catch (err) {
+      console.error("Error updating semester settings:", err);
+      res.status(500).json({ error: "Failed to update semester settings" });
+    }
+  });
+
   // PATCH /api/semester-settings/calendar - Update secondary calendar
   app.patch("/api/semester-settings/calendar", async (req, res) => {
     try {
@@ -882,6 +897,113 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error updating professor emails:", err);
       res.status(500).json({ error: "Failed to update professor emails" });
+    }
+  });
+
+  // POST /api/semester/generate-class-tasks - Auto-create class tasks for virtual courses
+  app.post("/api/semester/generate-class-tasks", async (req, res) => {
+    try {
+      const activeSemester = await storage.getActiveSemesterSettings();
+      if (!activeSemester) {
+        return res.status(404).json({ error: "No active semester settings found" });
+      }
+
+      const validDeliveryModes = ['virtual', 'online', '', null];
+      const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', '', null];
+
+      const courseConfigs = [
+        { prefix: 'course1' as const, code: activeSemester.course1Code, name: activeSemester.course1Name },
+        { prefix: 'course2' as const, code: activeSemester.course2Code, name: activeSemester.course2Name },
+        { prefix: 'course3' as const, code: activeSemester.course3Code, name: activeSemester.course3Name },
+      ];
+
+      const dayToNumber: Record<string, number> = {
+        sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+        thursday: 4, friday: 5, saturday: 6,
+      };
+
+      const allTasks = await storage.getAllTasks();
+      const existingClassTasks = allTasks.filter(t => t.type === 'class');
+
+      const createdTasks: any[] = [];
+      let skippedCount = 0;
+
+      for (const config of courseConfigs) {
+        const deliveryMode = (activeSemester as any)[`${config.prefix}DeliveryMode`];
+        if (deliveryMode !== 'virtual') continue;
+
+        const classDay1 = (activeSemester as any)[`${config.prefix}ClassDay`];
+        const classDay2 = (activeSemester as any)[`${config.prefix}ClassDay2`];
+        const classTime = (activeSemester as any)[`${config.prefix}ClassTime`] || '09:00';
+        const classEndTime = (activeSemester as any)[`${config.prefix}ClassEndTime`] || '12:00';
+        const courseStartDate = (activeSemester as any)[`${config.prefix}StartDate`];
+        const courseEndDate = (activeSemester as any)[`${config.prefix}EndDate`];
+
+        if (!validDays.includes(classDay1) || !validDays.includes(classDay2)) continue;
+
+        const classDays: number[] = [];
+        if (classDay1 && dayToNumber[classDay1] !== undefined) classDays.push(dayToNumber[classDay1]);
+        if (classDay2 && dayToNumber[classDay2] !== undefined) classDays.push(dayToNumber[classDay2]);
+
+        if (classDays.length === 0) continue;
+
+        const semesterStart = courseStartDate ? new Date(courseStartDate) : new Date(activeSemester.semesterStartDate);
+        const semesterEnd = courseEndDate 
+          ? new Date(courseEndDate) 
+          : (activeSemester.semesterEndDate ? new Date(activeSemester.semesterEndDate) : new Date(semesterStart.getTime() + 13 * 7 * 24 * 60 * 60 * 1000));
+
+        const courseName = `${config.code} - ${config.name}`;
+        const [startHour, startMinute] = classTime.split(':').map(Number);
+        const [endHour, endMinute] = classEndTime.split(':').map(Number);
+
+        const current = new Date(semesterStart);
+        while (current <= semesterEnd) {
+          if (classDays.includes(current.getDay())) {
+            const taskDate = new Date(current);
+            taskDate.setHours(endHour, endMinute, 0, 0);
+
+            const weekNum = getWeekNumber(taskDate);
+            if (weekNum >= FIRST_WEEK && weekNum <= LAST_WEEK) {
+              const dateStr = taskDate.toISOString().split('T')[0];
+              const isDuplicate = existingClassTasks.some(t => {
+                if (!t.dueDate) return false;
+                const existingDateStr = new Date(t.dueDate).toISOString().split('T')[0];
+                return existingDateStr === dateStr 
+                  && t.courseName === courseName 
+                  && t.eventStartTime === classTime;
+              });
+
+              if (isDuplicate) {
+                skippedCount++;
+              } else {
+                const task = await storage.createTask({
+                  title: `${config.code} Class`,
+                  type: "class",
+                  courseName,
+                  dueDate: taskDate,
+                  eventStartTime: classTime,
+                  eventEndTime: classEndTime,
+                  weekNumber: weekNum,
+                  priority: "medium",
+                  reminder1: DEFAULT_REMINDER_1,
+                  reminder2: DEFAULT_REMINDER_2,
+                });
+                createdTasks.push(task);
+              }
+            }
+          }
+          current.setDate(current.getDate() + 1);
+        }
+      }
+
+      const message = skippedCount > 0 
+        ? `Created ${createdTasks.length} class tasks (${skippedCount} duplicates skipped)`
+        : `Created ${createdTasks.length} class tasks`;
+
+      res.json({ message, tasks: createdTasks });
+    } catch (err) {
+      console.error("Error generating class tasks:", err);
+      res.status(500).json({ error: "Failed to generate class tasks" });
     }
   });
 
