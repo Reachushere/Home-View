@@ -10985,7 +10985,7 @@ export default function Dashboard() {
               {/* Extra half-width black column after Saturday */}
               <div 
                 className="border-l border-border"
-                style={{ backgroundColor: colorSettings.headerBar }}
+                style={{ backgroundColor: '#000000' }}
               />
             </div>
             
@@ -11597,10 +11597,10 @@ export default function Dashboard() {
                       </div>
                     );
                   })}
-                  {/* Extra half-width column after Saturday */}
+                  {/* Extra half-width black column after Saturday */}
                   <div 
                     className="border-l border-border/50"
-                    style={{ backgroundColor: '#faf8f5' }}
+                    style={{ backgroundColor: '#000000' }}
                   />
                   {/* Course row resize handle */}
                   <div
