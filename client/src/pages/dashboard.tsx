@@ -11712,7 +11712,7 @@ export default function Dashboard() {
                     const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
                     return (
                       <div 
-                        className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
+                        className="border-l border-border/50 flex flex-col justify-center gap-[4px] px-[3px]"
                         style={{ backgroundColor: '#000000' }}
                       >
                         {hasNoData ? (
