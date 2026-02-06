@@ -16146,6 +16146,101 @@ function SchoolForm({
         </div>
       </div>
       
+      {semesterSettings && (
+        <div className="border rounded-lg p-3 space-y-3">
+          <Label className="text-[10px] font-medium">Semester Settings</Label>
+          <div className="space-y-2 text-[10px]">
+            <div className="flex items-center justify-between">
+              <span className="text-white/70">Semester</span>
+              <span className="font-medium">{semesterSettings.semesterName}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-white/70">Type</span>
+              <span className="font-medium capitalize">{semesterSettings.semesterType || 'Winter'}</span>
+            </div>
+            {semesterSettings.semesterStartDate && (
+              <div className="flex items-center justify-between">
+                <span className="text-white/70">Start Date</span>
+                <span className="font-medium">{format(new Date(semesterSettings.semesterStartDate), 'MMM d, yyyy')}</span>
+              </div>
+            )}
+          </div>
+          <div className="mt-3 pt-3 border-t border-white/20 space-y-3">
+            {[
+              { code: semesterSettings.course1Code, name: semesterSettings.course1Name, professor: semesterSettings.course1Professor, email: semesterSettings.course1ProfessorEmail, delivery: semesterSettings.course1DeliveryMode, day: semesterSettings.course1ClassDay, day2: semesterSettings.course1ClassDay2, time: semesterSettings.course1ClassTime, endTime: semesterSettings.course1ClassEndTime, color: 'bg-green-500', idx: 1 },
+              { code: semesterSettings.course2Code, name: semesterSettings.course2Name, professor: semesterSettings.course2Professor, email: semesterSettings.course2ProfessorEmail, delivery: semesterSettings.course2DeliveryMode, day: semesterSettings.course2ClassDay, day2: semesterSettings.course2ClassDay2, time: semesterSettings.course2ClassTime, endTime: semesterSettings.course2ClassEndTime, color: 'bg-pink-500', idx: 2 },
+              { code: semesterSettings.course3Code, name: semesterSettings.course3Name, professor: semesterSettings.course3Professor, email: semesterSettings.course3ProfessorEmail, delivery: semesterSettings.course3DeliveryMode, day: semesterSettings.course3ClassDay, day2: semesterSettings.course3ClassDay2, time: semesterSettings.course3ClassTime, endTime: semesterSettings.course3ClassEndTime, color: 'bg-indigo-500', idx: 3 },
+            ].map((course) => (
+              <div key={course.idx} className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${course.color} shrink-0`} />
+                  <span className="font-medium text-[10px]">{course.code}</span>
+                  <span className="text-white/70 text-[10px]">- {course.name}</span>
+                  {course.professor && (
+                    course.email ? (
+                      <a
+                        href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(course.email)}&su=${encodeURIComponent(`${course.code} - `)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[9px] text-blue-400 underline hover:text-blue-300 cursor-pointer ml-auto"
+                        data-testid={`link-email-professor-${course.idx}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(course.email!)}&su=${encodeURIComponent(`${course.code} - `)}`, '_blank');
+                        }}
+                      >
+                        Prof. {course.professor}
+                      </a>
+                    ) : (
+                      <span className="text-[9px] text-white/50 ml-auto">Prof. {course.professor}</span>
+                    )
+                  )}
+                </div>
+                <div className="flex items-center gap-3 pl-4 text-[9px] text-white/60">
+                  {course.delivery && <span>{course.delivery}</span>}
+                  {course.day && <span>{course.day}{course.day2 ? `/${course.day2}` : ''}</span>}
+                  {course.time && <span>{course.time}{course.endTime ? `-${course.endTime}` : ''}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 pt-3 border-t border-white/20 space-y-2">
+            <Label className="text-[9px] font-medium text-white/50">Professor Emails (click name above to send email)</Label>
+            <div className="space-y-2">
+              {[
+                { code: semesterSettings.course1Code, email: semesterSettings.course1ProfessorEmail, color: 'bg-green-500', field: 'course1ProfessorEmail', testId: 'input-course1-email-edit' },
+                { code: semesterSettings.course2Code, email: semesterSettings.course2ProfessorEmail, color: 'bg-pink-500', field: 'course2ProfessorEmail', testId: 'input-course2-email-edit' },
+                { code: semesterSettings.course3Code, email: semesterSettings.course3ProfessorEmail, color: 'bg-indigo-500', field: 'course3ProfessorEmail', testId: 'input-course3-email-edit' },
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${item.color} shrink-0`} />
+                  <Input
+                    type="email"
+                    placeholder={`${item.code} professor email`}
+                    defaultValue={item.email || ""}
+                    onChange={(e) => {
+                      const email = e.target.value;
+                      const updates: Record<string, string | null> = {
+                        course1ProfessorEmail: semesterSettings.course1ProfessorEmail,
+                        course2ProfessorEmail: semesterSettings.course2ProfessorEmail,
+                        course3ProfessorEmail: semesterSettings.course3ProfessorEmail,
+                      };
+                      updates[item.field] = email || null;
+                      apiRequest("PATCH", "/api/semester-settings/professor-emails", updates)
+                        .then(() => queryClient.invalidateQueries({ queryKey: ["/api/semester"] }));
+                    }}
+                    className="h-7 !text-[10px] !text-black"
+                    style={{ fontSize: '10px' }}
+                    data-testid={item.testId}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <p className="text-[8px] text-white/40">Course details are set when starting a new semester.</p>
+        </div>
+      )}
+      
     </form>
   );
 }
