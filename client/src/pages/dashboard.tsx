@@ -9964,9 +9964,13 @@ export default function Dashboard() {
               </DialogHeader>
               <div className="flex-1 overflow-y-auto space-y-2 pr-2">
                 {(() => {
-                  const completedTasks = tasks
+                  const completedTasks = allTasks
                     .filter(t => t.isCompleted)
-                    .sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
+                    .sort((a, b) => {
+                      const aTime = a.completedAt ? new Date(a.completedAt).getTime() : new Date(a.dueDate).getTime();
+                      const bTime = b.completedAt ? new Date(b.completedAt).getTime() : new Date(b.dueDate).getTime();
+                      return bTime - aTime;
+                    });
                   
                   if (completedTasks.length === 0) {
                     return <div className="text-muted-foreground text-sm py-4 text-center">No completed tasks yet</div>;
@@ -9974,10 +9978,8 @@ export default function Dashboard() {
                   
                   const getCourseColor = (courseName: string | null | undefined) => {
                     if (!courseName) return '#888888';
-                    if (courseName.startsWith('CPPA122')) return '#22c55e';
-                    if (courseName.startsWith('CFNF400')) return '#ec4899';
-                    if (courseName.startsWith('CASL101')) return '#6366f1';
-                    return '#888888';
+                    const course = coursesData.courses.find(c => c.name && courseName.includes(c.name.split(' - ')[0]));
+                    return course?.color || '#888888';
                   };
                   
                   return completedTasks.map(task => (
