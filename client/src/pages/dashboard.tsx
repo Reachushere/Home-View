@@ -11716,7 +11716,7 @@ export default function Dashboard() {
                         style={{ backgroundColor: '#000000' }}
                       >
                         {hasNoData ? (
-                          <span className="text-[10px] font-bold text-white/50 text-center leading-none">N/A</span>
+                          <span className="text-[10px] font-bold text-white text-center leading-none">N/A</span>
                         ) : (
                           <>
                             <div className="flex items-center gap-[2px]">
@@ -11726,7 +11726,7 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${moduleP.percent}%`, backgroundColor: getProgressColor(moduleP.percent) }} />
                                 </div>
                               ) : (
-                                <span className="text-[8px] text-white/40 leading-none">N/A</span>
+                                <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
                             </div>
                             <div className="flex items-center gap-[2px]">
@@ -11736,7 +11736,7 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${readingP.percent}%`, backgroundColor: getProgressColor(readingP.percent) }} />
                                 </div>
                               ) : (
-                                <span className="text-[8px] text-white/40 leading-none">N/A</span>
+                                <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
                             </div>
                             <div className="flex items-center gap-[2px]">
@@ -11746,7 +11746,7 @@ export default function Dashboard() {
                                   <div className="h-full rounded-full" style={{ width: `${otherP.percent}%`, backgroundColor: getProgressColor(otherP.percent) }} />
                                 </div>
                               ) : (
-                                <span className="text-[8px] text-white/40 leading-none">N/A</span>
+                                <span className="text-[8px] text-white leading-none">N/A</span>
                               )}
                             </div>
                           </>
