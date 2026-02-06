@@ -669,7 +669,7 @@ button[role="combobox"] > span {
     transparent 100%
   );
   transform: translateY(-100%);
-  animation: red-separator-shimmer-sweep 4s ease-in-out infinite;
+  animation: red-separator-shimmer-sweep 8s ease-in-out infinite;
   pointer-events: none;
 }
 
@@ -678,14 +678,14 @@ button[role="combobox"] > span {
     transform: translateY(-120%);
     opacity: 0;
   }
-  5% {
+  3% {
     opacity: 1;
   }
-  20% {
+  12% {
     transform: translateY(120%);
     opacity: 1;
   }
-  25% {
+  15% {
     opacity: 0;
   }
   100% {
