@@ -11707,9 +11707,9 @@ export default function Dashboard() {
                     };
                     const moduleP = calcFileProgress(moduleFiles);
                     const readingP = calcFileProgress(readingFiles);
-                    const otherTasks = courseTasks.filter(t => t.type?.toLowerCase() !== 'module' && t.type?.toLowerCase() !== 'reading');
-                    const otherProgress = otherTasks.length > 0 ? Math.round((otherTasks.filter(t => t.isCompleted).length / otherTasks.length) * 100) : 0;
-                    const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && otherTasks.length === 0;
+                    const otherFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-other`);
+                    const otherP = calcFileProgress(otherFiles);
+                    const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
                     return (
                       <div 
                         className="border-l border-border/50 flex flex-col justify-center gap-[2px] px-[3px]"
@@ -11745,10 +11745,10 @@ export default function Dashboard() {
                             </div>
                             <div className="flex items-center gap-[2px]">
                               <span className="text-[10px] font-bold text-white w-[10px] flex-shrink-0 leading-none uppercase">O</span>
-                              {otherTasks.length > 0 ? (
-                                <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: getProgressColor(otherProgress) }}>
-                                  {otherProgress > 0 && otherProgress < 100 && (
-                                    <div className="h-full rounded-full" style={{ width: `${otherProgress}%`, backgroundColor: '#f97316' }} />
+                              {otherP.hasFiles ? (
+                                <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ backgroundColor: getProgressColor(otherP.percent) }}>
+                                  {otherP.percent > 0 && otherP.percent < 100 && (
+                                    <div className="h-full rounded-full" style={{ width: `${otherP.percent}%`, backgroundColor: '#f97316' }} />
                                   )}
                                 </div>
                               ) : (
