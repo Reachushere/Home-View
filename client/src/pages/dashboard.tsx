@@ -4870,7 +4870,7 @@ export default function Dashboard() {
   }
   
   // Time slots for the day view (6am-midnight)
-  const timeSlots = Array.from({ length: 19 }, (_, i) => i + 6); // 6am-midnight (6-24)
+  const timeSlots = Array.from({ length: 16 }, (_, i) => i + 6); // 6am-9pm (6-21)
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to current time by default
