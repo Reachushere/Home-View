@@ -8407,13 +8407,12 @@ export default function Dashboard() {
                         )
                       )}
                     </span>
-                    <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-aas-${courseCode}`}>
-                      <input
-                        type="checkbox"
-                        checked={!!aasSentStatus[courseCode]}
-                        onChange={() => toggleAasSent(courseCode)}
-                        className="w-3 h-3 rounded accent-green-500"
-                      />
+                    <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
+                      <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-green-500 border-green-500' : 'border-amber-400 bg-transparent'}`}>
+                        {aasSentStatus[courseCode] && (
+                          <Check className="w-2.5 h-2.5 text-white" />
+                        )}
+                      </div>
                       <span className={`text-[10px] ${aasSentStatus[courseCode] ? 'text-green-400' : 'text-amber-400'}`}>
                         AAS
                       </span>
