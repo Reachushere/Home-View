@@ -10971,7 +10971,7 @@ export default function Dashboard() {
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isToday && new Date().getDay() !== 6 && (
-                      <div className="text-[8px] font-bold tracking-wider text-white/70 uppercase" style={{ marginBottom: '-2px' }}>NEW WEEK</div>
+                      <div className="text-[8px] font-bold tracking-wider text-white/70 uppercase" style={{ marginBottom: '-4px', marginTop: '2px' }}>NEW WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
                       <div className="text-2xl font-bold text-white">{dayNum}</div>
