@@ -9067,7 +9067,7 @@ export default function Dashboard() {
         </div>
         <Button 
           variant="ghost"
-          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-medium text-white/80 border-0 tracking-wide uppercase"
+          className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase"
           style={{ marginTop: '5px' }}
           onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
           data-testid="button-month-view"
