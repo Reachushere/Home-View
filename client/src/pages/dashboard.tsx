@@ -4714,8 +4714,8 @@ export default function Dashboard() {
     return false;
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
   
-  // Due This Week: tasks due in the 7 days starting after tomorrow
-  const thisWeekStart = addDays(startOfDay(today), 2); // day after tomorrow
+  // One Week Ahead: tasks due in the 7 days starting from today
+  const thisWeekStart = startOfDay(today);
   const thisWeekEnd = addDays(thisWeekStart, 6); // 7 days total (inclusive)
   const dueThisWeekTasks = allTasks.filter(t => {
     if (t.isMissed || t.isCompleted) return false;
