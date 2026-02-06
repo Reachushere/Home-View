@@ -11714,7 +11714,7 @@ export default function Dashboard() {
               })}
               {/* Progress column - half-width, black background */}
               <div 
-                className="border-l border-border/50"
+                className="border-l border-border/50 border-b-0"
                 style={{ backgroundColor: '#000000' }}
               />
               {/* Saturday all-day cell */}
