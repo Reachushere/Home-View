@@ -10900,8 +10900,10 @@ export default function Dashboard() {
             })}
           </div>
           <Card className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px' }}>
-            {/* Friday/Saturday divider line - dashed (6 days / 7.5 total column widths) */}
+            {/* Friday/Saturday divider line - dashed (6 days / 7.5 total column widths), hidden on Saturday */}
+            {new Date().getDay() !== 6 && (
             <div className="absolute top-0 bottom-0 w-[1.5px] z-50 pointer-events-none" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundImage: 'repeating-linear-gradient(to bottom, black 0px, black 8px, transparent 8px, transparent 14px)' }} />
+            )}
             
             <CardContent className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
