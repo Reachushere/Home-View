@@ -11124,10 +11124,10 @@ export default function Dashboard() {
                   </div>
                 );
               })}
-              {/* Progress column - half-width, red background */}
+              {/* Progress column - half-width, black background */}
               <div 
                 className="border-l border-border/50"
-                style={{ backgroundColor: '#dc2626' }}
+                style={{ backgroundColor: '#000000' }}
               />
               {/* Saturday all-day cell */}
               {weekDays[6] && (() => {
@@ -12039,10 +12039,10 @@ export default function Dashboard() {
                         </div>
                       );
                     })}
-                    {/* Progress column - half-width, red background */}
+                    {/* Progress column - half-width, black background */}
                     <div 
                       className="border-l border-border/50"
-                      style={{ backgroundColor: '#dc2626' }}
+                      style={{ backgroundColor: '#000000' }}
                     />
                     {/* Saturday time slot cell */}
                     {weekDays[6] && (() => {
