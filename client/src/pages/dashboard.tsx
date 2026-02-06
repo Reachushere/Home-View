@@ -8304,164 +8304,29 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Settings Panel Popup - Contains sidebar content */}
-      <Dialog open={isSettingsPanelOpen} onOpenChange={(open) => { if (!isNewCourseDialogOpen) setIsSettingsPanelOpen(open); }}>
+      {/* Settings Panel Popup - Certificate Tracking Only */}
+      <Dialog open={isSettingsPanelOpen} onOpenChange={setIsSettingsPanelOpen}>
         <DialogContent 
           className="overflow-hidden flex flex-col text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] p-0 [&>button.absolute]:hidden" 
           style={{ width: '900px', maxWidth: '95vw', height: '85vh' }}
-          onInteractOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
-          onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
-          onPointerDownOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
-          onFocusOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
         >
           {/* Header bar matching flyouts */}
           <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
             <div className="flex items-center gap-2">
-              <Button 
-                type="button" 
-                variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
-                style={{
-                  boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
-                }}
-                onClick={() => {
-                  localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
-                  localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
-                  toast({ title: "Settings saved", description: "Your progress has been saved." });
-                  setIsSettingsPanelOpen(false);
-                }}
-                data-testid="button-save-settings-panel"
-              >
-                Save
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
-                onClick={() => setIsNewCourseDialogOpen(true)}
-                data-testid="button-new-course-gradcap"
-              >
-                <Plus className="h-3.5 w-3.5 mr-1" />
-                New Course
-              </Button>
+              <Settings className="h-3 w-3 text-white" />
+              <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                CERTIFICATE TRACKING
+              </h2>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Settings className="h-3 w-3 text-white" />
-                <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                  COURSES, WEEKS & CERTIFICATE TRACKING
-                </h2>
-              </div>
-              <button 
-                onClick={() => setIsSettingsPanelOpen(false)}
-                className="text-white hover:text-white/80 transition-colors p-1"
-                data-testid="button-close-settings-panel"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+            <button 
+              onClick={() => setIsSettingsPanelOpen(false)}
+              className="text-white hover:text-white/80 transition-colors p-1"
+              data-testid="button-close-settings-panel"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
           <div className="flex-1 overflow-y-auto space-y-4 p-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-            {/* Course Legend */}
-            <div className="space-y-4">
-              {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
-                const courseCode = course.name.split(' - ')[0];
-                const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
-                const tomorrow = addDays(startOfDay(new Date()), 1);
-                const hasDueTomorrow = allTasks.some(task => 
-                  task.courseName?.includes(courseCode) && 
-                  !task.isCompleted &&
-                  isSameDay(new Date(task.dueDate), tomorrow)
-                );
-                // Get professor email from coursesData
-                const professorEmail = course.professorEmail;
-                return (
-                  <div key={index} className="flex items-center gap-1.5">
-                    <div 
-                      className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
-                      style={{ backgroundColor: course.color }}
-                    />
-                    <span className="text-[12px] text-white">
-                      <span className="font-medium">{courseCode}</span>
-                      {courseName !== courseCode && <span> - {courseName}</span>}
-                      {course.professor && (
-                        professorEmail ? (
-                          <a
-                            href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-400 underline hover:text-blue-300 cursor-pointer"
-                            data-testid={`link-settings-email-professor-${index + 1}`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`, '_blank');
-                            }}
-                          >
-                            {" "}({course.professor})
-                          </a>
-                        ) : (
-                          <span className="text-white/70"> ({course.professor})</span>
-                        )
-                      )}
-                    </span>
-                    <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
-                      <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
-                        {aasSentStatus[courseCode] && (
-                          <Check className="w-2.5 h-2.5 text-white" />
-                        )}
-                      </div>
-                      <span className={`text-[10px] ${aasSentStatus[courseCode] ? 'text-blue-400' : 'text-amber-400'}`}>
-                        AAS
-                      </span>
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
-            
-            {/* Weeks */}
-            <div className="space-y-1.5 mt-6">
-              {[...weeks].sort((a, b) => {
-                const aFinished = parseISO(a.endDate) < new Date();
-                const bFinished = parseISO(b.endDate) < new Date();
-                if (aFinished && !bFinished) return 1;
-                if (!aFinished && bFinished) return -1;
-                return a.weekNumber - b.weekNumber;
-              }).map((week) => {
-                const weekEnd = parseISO(week.endDate);
-                const isWeekFinished = weekEnd < new Date();
-                const isSelected = selectedWeek === week.weekNumber && !selectedDate;
-                return (
-                  <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
-                    <Button
-                      variant="ghost"
-                      className={`justify-start gap-1 h-auto py-1 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
-                      size="sm"
-                      onClick={() => {
-                        setSelectedWeek(week.weekNumber);
-                        setSelectedDate(null);
-                        setIsSettingsPanelOpen(false);
-                      }}
-                      data-testid={`button-week-panel-${week.weekNumber}`}
-                    >
-                      <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
-                        <Calendar className={`h-3 w-3 ${isSelected ? 'text-black' : 'text-white'}`} />
-                        <span className={`text-xs ${isSelected ? 'text-black' : 'text-white'}`}>Week {week.weekNumber}</span>
-                        <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`}>
-                          ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
-                        </span>
-                      </div>
-                      {week.taskCount > 0 && (
-                        <Badge variant="outline" className={`text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto ${isSelected ? 'text-black border-black' : 'text-white border-white'}`}>
-                          {week.taskCount}
-                        </Badge>
-                      )}
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
-
             {/* PAG Level Carousel */}
             <div className="mt-4 pt-4 border-t border-white/30">
               {/* Navigation with arrows and dots */}
@@ -9176,6 +9041,26 @@ export default function Dashboard() {
               </div>
               </div>
             </div>
+          </div>
+          {/* Save button at bottom */}
+          <div className="px-4 py-3 border-t border-white/20 bg-black/30">
+            <Button 
+              type="button" 
+              variant="outline"
+              className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 w-full"
+              style={{
+                boxShadow: '0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(255,255,255,0.4), 0 0 18px rgba(255,255,255,0.3)'
+              }}
+              onClick={() => {
+                localStorage.setItem('checkedCourses', JSON.stringify(checkedCourses));
+                localStorage.setItem('courseGrades', JSON.stringify(courseGrades));
+                toast({ title: "Settings saved", description: "Your progress has been saved." });
+                setIsSettingsPanelOpen(false);
+              }}
+              data-testid="button-save-settings-panel"
+            >
+              Save
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -10287,31 +10172,151 @@ export default function Dashboard() {
           </Dialog>
           
           {/* School Dialog */}
-          <Dialog open={isSchoolDialogOpen} onOpenChange={setIsSchoolDialogOpen}>
-            <DialogContent className="max-w-md text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" style={{ top: '55%' }}>
+          <Dialog open={isSchoolDialogOpen} onOpenChange={(open) => { if (!isNewCourseDialogOpen) setIsSchoolDialogOpen(open); }}>
+            <DialogContent 
+              className="overflow-hidden flex flex-col max-w-2xl text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden" 
+              style={{ height: '85vh' }}
+              onInteractOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
+              onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
+              onPointerDownOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
+              onFocusOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
+            >
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
-                  <GraduationCap className="h-3 w-3 text-white" />
-                  <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
-                    SCHOOL SETTINGS
-                  </h2>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
+                    onClick={() => setIsNewCourseDialogOpen(true)}
+                    data-testid="button-new-course-school"
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-1" />
+                    New Course
+                  </Button>
                 </div>
-                <button 
-                  onClick={() => setIsSchoolDialogOpen(false)}
-                  className="text-white hover:text-white/80 transition-colors p-1"
-                  data-testid="button-close-school"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <GraduationCap className="h-3 w-3 text-white" />
+                    <h2 className="text-xs font-normal text-white" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", textShadow: '0 1px 2px rgba(0,0,0,0.2)' }}>
+                      SCHOOL SETTINGS
+                    </h2>
+                  </div>
+                  <button 
+                    onClick={() => setIsSchoolDialogOpen(false)}
+                    className="text-white hover:text-white/80 transition-colors p-1"
+                    data-testid="button-close-school"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
               </div>
-              <div className="p-4">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 <SchoolForm 
                   schoolData={schoolData}
                   semesterSettings={semesterSettings}
                   onSave={saveSchool}
                   onCancel={() => setIsSchoolDialogOpen(false)} 
                 />
+                
+                {/* Course Legend */}
+                <div className="space-y-4 pt-4 border-t border-white/20">
+                  {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
+                    const courseCode = course.name.split(' - ')[0];
+                    const courseName = course.name.split(' - ').slice(1).join(' - ') || course.name;
+                    const tomorrow = addDays(startOfDay(new Date()), 1);
+                    const hasDueTomorrow = allTasks.some(task => 
+                      task.courseName?.includes(courseCode) && 
+                      !task.isCompleted &&
+                      isSameDay(new Date(task.dueDate), tomorrow)
+                    );
+                    const professorEmail = course.professorEmail;
+                    return (
+                      <div key={index} className="flex items-center gap-1.5">
+                        <div 
+                          className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
+                          style={{ backgroundColor: course.color }}
+                        />
+                        <span className="text-[12px] text-white">
+                          <span className="font-medium">{courseCode}</span>
+                          {courseName !== courseCode && <span> - {courseName}</span>}
+                          {course.professor && (
+                            professorEmail ? (
+                              <a
+                                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-400 underline hover:text-blue-300 cursor-pointer"
+                                data-testid={`link-school-email-professor-${index + 1}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`, '_blank');
+                                }}
+                              >
+                                {" "}({course.professor})
+                              </a>
+                            ) : (
+                              <span className="text-white/70"> ({course.professor})</span>
+                            )
+                          )}
+                        </span>
+                        <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
+                          <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
+                            {aasSentStatus[courseCode] && (
+                              <Check className="w-2.5 h-2.5 text-white" />
+                            )}
+                          </div>
+                          <span className={`text-[10px] ${aasSentStatus[courseCode] ? 'text-blue-400' : 'text-amber-400'}`}>
+                            AAS
+                          </span>
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* Weeks */}
+                <div className="space-y-1.5 mt-6">
+                  {[...weeks].sort((a, b) => {
+                    const aFinished = parseISO(a.endDate) < new Date();
+                    const bFinished = parseISO(b.endDate) < new Date();
+                    if (aFinished && !bFinished) return 1;
+                    if (!aFinished && bFinished) return -1;
+                    return a.weekNumber - b.weekNumber;
+                  }).map((week) => {
+                    const weekEnd = parseISO(week.endDate);
+                    const isWeekFinished = weekEnd < new Date();
+                    const isSelected = selectedWeek === week.weekNumber && !selectedDate;
+                    return (
+                      <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
+                        <Button
+                          variant="ghost"
+                          className={`justify-start gap-1 h-auto py-1 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
+                          size="sm"
+                          onClick={() => {
+                            setSelectedWeek(week.weekNumber);
+                            setSelectedDate(null);
+                            setIsSchoolDialogOpen(false);
+                          }}
+                          data-testid={`button-week-school-${week.weekNumber}`}
+                        >
+                          <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
+                            <Calendar className={`h-3 w-3 ${isSelected ? 'text-black' : 'text-white'}`} />
+                            <span className={`text-xs ${isSelected ? 'text-black' : 'text-white'}`}>Week {week.weekNumber}</span>
+                            <span className={`text-[9px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`}>
+                              ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
+                            </span>
+                          </div>
+                          {week.taskCount > 0 && (
+                            <Badge variant="outline" className={`text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto ${isSelected ? 'text-black border-black' : 'text-white border-white'}`}>
+                              {week.taskCount}
+                            </Badge>
+                          )}
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </DialogContent>
           </Dialog>
