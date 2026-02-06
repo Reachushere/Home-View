@@ -4036,176 +4036,117 @@ export async function registerRoutes(
     }
   });
 
-  // POST /api/shower/sync-onedrive - Auto-sync module files from OneDrive for current week
+  // POST /api/shower/sync-onedrive - Auto-sync module/reading files from OneDrive for all weeks
   app.post("/api/shower/sync-onedrive", async (req, res) => {
     try {
-      // Get current week number
-      const semesterSettings = await storage.getActiveSemesterSettings();
-      let currentWeekNumber = 1;
-      
-      if (semesterSettings?.semesterStartDate) {
-        const startDate = new Date(semesterSettings.semesterStartDate);
-        const today = new Date();
-        const diffTime = today.getTime() - startDate.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        currentWeekNumber = Math.floor(diffDays / 7) + 1;
-      }
-      
       const { listOneDriveItems } = await import("./onedrive");
-      const { ObjectStorageService, objectStorageClient } = await import("./replit_integrations/object_storage");
+      const { ObjectStorageService } = await import("./replit_integrations/object_storage");
       const objectStorage = new ObjectStorageService();
       
-      // Course configurations
-      const courses = [
-        { code: 'CPPA122', path: '/School/1. TMU/Courses/2026/Winter/CPPA122 - Local Politics and Government' },
-        { code: 'CFNF400', path: '/School/1. TMU/Courses/2026/Winter/CFNF400 - Human Sexuality' }
-      ];
+      const basePath = `/School/1. TMU/Courses/2026/Winter`;
+      const courseCodes = ['CPPA122', 'CFNF400', 'CASL101'];
+      
+      // Get all existing files once to avoid repeated DB queries
+      const existingFiles = await storage.getFiles();
+      const existingFileKeys = new Set(
+        existingFiles.map((f: any) => `${f.originalName}|||${f.folder}`)
+      );
+      
+      // List base folder to find course folders dynamically
+      const baseFolders = await listOneDriveItems(basePath);
       
       const syncedFiles: any[] = [];
       const errors: any[] = [];
       
-      for (const course of courses) {
+      for (const courseCode of courseCodes) {
         try {
-          // List all week folders for this course
-          const weekFolders = await listOneDriveItems(course.path);
-          
-          // Find the current week folder (e.g., "Week 4 - Jan 31-Feb 6")
-          const currentWeekFolder = weekFolders.find((f: any) => {
-            if (f.type !== 'folder') return false;
-            const weekMatch = f.name.match(/Week\s+(\d+)/i);
-            if (weekMatch) {
-              return parseInt(weekMatch[1], 10) === currentWeekNumber;
-            }
-            return false;
-          });
-          
-          if (!currentWeekFolder) {
-            console.log(`No week ${currentWeekNumber} folder found for ${course.code}`);
+          const matchedFolder = baseFolders.find((f: any) => 
+            f.type === 'folder' && f.name.toUpperCase().startsWith(courseCode)
+          );
+          if (!matchedFolder) {
+            console.log(`No OneDrive folder found for ${courseCode}`);
             continue;
           }
           
-          // List contents of the week folder
-          const weekContents = await listOneDriveItems(currentWeekFolder.path);
+          const coursePath = matchedFolder.path;
+          const weekFolders = await listOneDriveItems(coursePath);
           
-          // Find Module folder
-          const moduleFolder = weekContents.find((f: any) => 
-            f.type === 'folder' && f.name.toLowerCase() === 'module'
-          );
-          
-          if (moduleFolder) {
-            // List module files
-            const moduleFiles = await listOneDriveItems(moduleFolder.path);
+          // Process ALL week folders (not just current week)
+          for (const weekFolder of weekFolders) {
+            if (weekFolder.type !== 'folder') continue;
+            const weekMatch = weekFolder.name.match(/Week\s+(\d+)/i);
+            if (!weekMatch) continue;
+            const weekNum = parseInt(weekMatch[1], 10);
             
-            for (const file of moduleFiles) {
-              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
-              
-              // Check if already in files table
-              const existingFiles = await storage.getFiles();
-              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-module`;
-              const alreadyExists = existingFiles.some(
-                (f: any) => f.originalName === file.name && f.folder === folderName
-              );
-              
-              if (alreadyExists) {
-                console.log(`File ${file.name} already synced`);
-                continue;
-              }
-              
-              // Download file from OneDrive
-              const downloadResponse = await fetch(file.downloadUrl);
-              if (!downloadResponse.ok) {
-                errors.push({ file: file.name, error: 'Download failed' });
-                continue;
-              }
-              
-              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
-              
-              // Upload to object storage
-              const uploadUrl = await objectStorage.getObjectEntityUploadURL();
-              const uploadResponse = await fetch(uploadUrl, {
-                method: 'PUT',
-                body: fileBuffer,
-                headers: { 'Content-Type': 'application/pdf' }
-              });
-              
-              if (!uploadResponse.ok) {
-                errors.push({ file: file.name, error: 'Upload to storage failed' });
-                continue;
-              }
-              
-              // Get the normalized object path
-              const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
-              
-              // Add to files table
-              await storage.createFile({
-                originalName: file.name,
-                displayName: file.name,
-                objectPath: objectPath,
-                contentType: 'application/pdf',
-                size: file.size,
-                folder: folderName,
-                listened: false
-              });
-              
-              syncedFiles.push({ name: file.name, folder: folderName, course: course.code });
-            }
-          }
-          
-          // Also check for Reading folder
-          const readingFolder = weekContents.find((f: any) => 
-            f.type === 'folder' && f.name.toLowerCase() === 'reading'
-          );
-          
-          if (readingFolder) {
-            const readingFiles = await listOneDriveItems(readingFolder.path);
+            const weekContents = await listOneDriveItems(weekFolder.path);
             
-            for (const file of readingFiles) {
-              if (file.type !== 'file' || !file.name.endsWith('.pdf')) continue;
+            // Process Module and Reading subfolders
+            for (const subfolder of weekContents) {
+              if (subfolder.type !== 'folder') continue;
+              const subName = subfolder.name.toLowerCase();
+              let type: string | null = null;
+              if (subName.includes('module')) type = 'module';
+              else if (subName.includes('reading')) type = 'reading';
+              if (!type) continue;
               
-              const existingFiles = await storage.getFiles();
-              const folderName = `week-${currentWeekNumber}-${course.code.toLowerCase()}-reading`;
-              const alreadyExists = existingFiles.some(
-                (f: any) => f.originalName === file.name && f.folder === folderName
-              );
+              const folderName = `week-${weekNum}-${courseCode.toLowerCase()}-${type}`;
+              const subFiles = await listOneDriveItems(subfolder.path);
               
-              if (alreadyExists) continue;
-              
-              const downloadResponse = await fetch(file.downloadUrl);
-              if (!downloadResponse.ok) continue;
-              
-              const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
-              const uploadUrl = await objectStorage.getObjectEntityUploadURL();
-              const uploadResponse = await fetch(uploadUrl, {
-                method: 'PUT',
-                body: fileBuffer,
-                headers: { 'Content-Type': 'application/pdf' }
-              });
-              
-              if (!uploadResponse.ok) continue;
-              
-              const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
-              
-              await storage.createFile({
-                originalName: file.name,
-                displayName: file.name,
-                objectPath: objectPath,
-                contentType: 'application/pdf',
-                size: file.size,
-                folder: folderName,
-                listened: false
-              });
-              
-              syncedFiles.push({ name: file.name, folder: folderName, course: course.code });
+              for (const file of subFiles) {
+                if (file.type !== 'file' || !file.name.toLowerCase().endsWith('.pdf')) continue;
+                
+                const fileKey = `${file.name}|||${folderName}`;
+                if (existingFileKeys.has(fileKey)) continue;
+                
+                try {
+                  const downloadResponse = await fetch(file.downloadUrl);
+                  if (!downloadResponse.ok) {
+                    errors.push({ file: file.name, week: weekNum, error: 'Download failed' });
+                    continue;
+                  }
+                  
+                  const fileBuffer = Buffer.from(await downloadResponse.arrayBuffer());
+                  const uploadUrl = await objectStorage.getObjectEntityUploadURL();
+                  const uploadResponse = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: fileBuffer,
+                    headers: { 'Content-Type': 'application/pdf' }
+                  });
+                  
+                  if (!uploadResponse.ok) {
+                    errors.push({ file: file.name, week: weekNum, error: 'Upload to storage failed' });
+                    continue;
+                  }
+                  
+                  const objectPath = objectStorage.normalizeObjectEntityPath(uploadUrl);
+                  
+                  await storage.createFile({
+                    originalName: file.name,
+                    displayName: file.name,
+                    objectPath: objectPath,
+                    contentType: 'application/pdf',
+                    size: file.size,
+                    folder: folderName,
+                    listened: false
+                  });
+                  
+                  existingFileKeys.add(fileKey);
+                  syncedFiles.push({ name: file.name, folder: folderName, course: courseCode, week: weekNum });
+                  console.log(`Synced: ${file.name} -> ${folderName}`);
+                } catch (fileErr: any) {
+                  errors.push({ file: file.name, week: weekNum, error: fileErr.message });
+                }
+              }
             }
           }
         } catch (courseError: any) {
-          errors.push({ course: course.code, error: courseError.message });
+          errors.push({ course: courseCode, error: courseError.message });
         }
       }
       
       res.json({ 
         success: true, 
-        currentWeek: currentWeekNumber,
+        totalSynced: syncedFiles.length,
         synced: syncedFiles,
         errors: errors.length > 0 ? errors : undefined
       });

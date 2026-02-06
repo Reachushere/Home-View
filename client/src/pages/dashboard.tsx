@@ -11508,8 +11508,15 @@ export default function Dashboard() {
                     });
                     const moduleFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-module`);
                     const readingFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-reading`);
-                    const calcFileProgress = (files: WeeklyFile[]) => {
-                      if (files.length === 0) return { percent: 0, hasFiles: false };
+                    const calcFileProgress = (files: WeeklyFile[], folderKey: string) => {
+                      if (files.length === 0) {
+                        const fc = fileCounts[folderKey];
+                        if (fc && fc.total > 0) {
+                          const listenedPct = fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0;
+                          return { percent: listenedPct, hasFiles: true };
+                        }
+                        return { percent: 0, hasFiles: false };
+                      }
                       let totalProgress = 0;
                       for (const f of files) {
                         if (f.listened) {
@@ -11525,10 +11532,13 @@ export default function Dashboard() {
                       if (percent > 0) return '#f97316';
                       return '#ef4444';
                     };
-                    const moduleP = calcFileProgress(moduleFiles);
-                    const readingP = calcFileProgress(readingFiles);
-                    const otherFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-other`);
-                    const otherP = calcFileProgress(otherFiles);
+                    const moduleFolderKey = `week-${selectedWeek}-${courseCodeLower}-module`;
+                    const readingFolderKey = `week-${selectedWeek}-${courseCodeLower}-reading`;
+                    const otherFolderKey = `week-${selectedWeek}-${courseCodeLower}-other`;
+                    const moduleP = calcFileProgress(moduleFiles, moduleFolderKey);
+                    const readingP = calcFileProgress(readingFiles, readingFolderKey);
+                    const otherFiles = weeklyFiles.filter(f => f.folder === otherFolderKey);
+                    const otherP = calcFileProgress(otherFiles, otherFolderKey);
                     const hasNoData = !moduleP.hasFiles && !readingP.hasFiles && !otherP.hasFiles;
                     return (
                       <div 
