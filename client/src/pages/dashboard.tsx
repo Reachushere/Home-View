@@ -7751,11 +7751,11 @@ export default function Dashboard() {
             <DropdownMenuContent align="start">
               <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
                 <User className="h-4 w-4 mr-2" />
-                Profile
+                Profile Settings
               </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
                 <GraduationCap className="h-4 w-4 mr-2" />
-                School
+                School Settings
               </DropdownMenuItem>
               <DropdownMenuItem data-testid="menu-item-settings" onClick={() => {
                   setOriginalColorSettings({...colorSettings});
@@ -7763,7 +7763,7 @@ export default function Dashboard() {
                   setIsSettingsDialogOpen(true);
                 }}>
                 <Settings className="h-4 w-4 mr-2" />
-                Settings
+                Calendar Settings
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
