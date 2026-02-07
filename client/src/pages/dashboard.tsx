@@ -2538,7 +2538,8 @@ export default function Dashboard() {
   }, [localStickyNoteContent]);
 
   const toggleStickyNoteBullets = useCallback((noteId: number, textareaEl: HTMLTextAreaElement | null) => {
-    const currentContent = localStickyNoteContent[noteId] ?? '';
+    const note = stickyNotes?.find(n => n.id === noteId);
+    const currentContent = localStickyNoteContent[noteId] !== undefined ? localStickyNoteContent[noteId] : (note?.content ?? '');
     const lines = currentContent.split('\n');
     const hasBullets = lines.some(line => line.trimStart().startsWith('\u25CF ') || line.trimStart().startsWith('\u2022 '));
     
