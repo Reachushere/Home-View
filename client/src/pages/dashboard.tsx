@@ -13281,7 +13281,7 @@ export default function Dashboard() {
                         <div
                           key={idx}
                           className={`p-1 border-r border-b border-border last:border-r-0 ${
-                            isCurrentMonth ? "bg-card" : "bg-muted/30"
+                            "bg-card"
                           }`}
                           onClick={() => {
                             const weekInfo = weeks.find(w => {
@@ -13296,7 +13296,7 @@ export default function Dashboard() {
                           }}
                         >
                           <div className={`text-xs font-bold mb-1 ${
-                            isToday ? "text-[#5979CC]" : isCurrentMonth ? "text-foreground" : "text-muted-foreground"
+                            isToday ? "text-[#5979CC]" : "text-foreground"
                           }`}>
                             {format(day, "d")}
                           </div>
