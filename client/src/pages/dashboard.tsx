@@ -1438,8 +1438,8 @@ export default function Dashboard() {
   const row1ProgressBarRef = useRef<HTMLDivElement>(null);
   const row1ContainerRef = useRef<HTMLDivElement>(null);
   // HARDCODED header positions - NEVER change without explicit user permission
-  // remaining=25, task=75, code=177, course=240, due=365, days=right-aligned to right edge
-  const HEADER_POS = { remaining: 25, task: 75, code: 177, course: 240, due: 365 };
+  // remaining=25, task=75, code=177, course=214, due=365, days=right-aligned to right edge
+  const HEADER_POS = { remaining: 25, task: 75, code: 177, course: 214, due: 365 };
   const [row1Positions, setRow1Positions] = useState({ task: 70, code: 170, course: 240, due: 340, days: 400, progressBar: 18, progressBarTop: 0 });
   
   // Save box order to localStorage
@@ -13678,111 +13678,35 @@ export default function Dashboard() {
                 </div>
               ) : (
               <>
-              {/* Desktop Layout - Task row with labels above */}
-              <div ref={row1ContainerRef} className="flex" style={{ position: 'relative', width: '100%' }}>
-              {/* Blank checkbox - hidden for class type tasks */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
-                <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
+              {/* Desktop Layout - ALL rows use HEADER_POS constants, NO measurement needed */}
+              {/* Headers row */}
+              <div style={{ position: 'relative', height: '10px', marginBottom: '4px' }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
-              {/* HARDCODED headers - absolute positioned, NEVER move without explicit user permission */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
-              {/* Row 1 content - all absolutely positioned at fixed top to ensure bottom alignment */}
-              {/* Group 1: Progress bar */}
-              <div ref={row1ProgressBarRef} style={{ position: 'absolute', left: `${HEADER_POS.remaining - 2}px`, top: '18px', width: '44px' }}>
-                <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[0]), opacity: 0.9 }} />
-              </div>
-              {/* Group 2: Task */}
-              <div ref={row1TaskRef} style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '12px' }}>
-                <span style={{ fontSize: '10px', color: 'white', display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px` }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
-              </div>
-              {/* Group 3: Code */}
-              <div ref={row1CodeRef} style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '13px' }}>
-                <span style={{ fontSize: '9px', color: '#9ca3af' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
-              </div>
-              {/* Group 4: Course */}
-              <div ref={row1CourseRef} style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '13px' }}>
-                <span style={{ fontSize: '9px', color: '#9ca3af', display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px` }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
-              </div>
-              {/* Group 5: Due */}
-              <div ref={row1DueRef} style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '12px' }}>
-                <span style={{ fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
-              </div>
-              {/* Group 6: Days - right aligned */}
-              <div ref={row1DaysRef} style={{ position: 'absolute', right: '0px', top: '12px' }}>
-                <span style={{ fontSize: '10px', color: getProgressColor(dueThisWeekTasks[0]), width: '22px', textAlign: 'right', display: 'inline-block' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-              </div>
-              {/* Spacer to maintain row height */}
-              <div style={{ height: '26px', width: '100%' }} />
-              </div>
-              {/* Second task row - only render after measurements are available */}
-              {dueThisWeekTasks[1] && row1Positions.due > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '-3px' }}>
-                {/* Checkbox - position 0 */}
-                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueThisWeekTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
+              {/* Task rows - each row is position:relative with all content absolutely positioned at same baseline */}
+              {dueThisWeekTasks.slice(0, 5).map((task, idx) => (
+              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px' }}>
+                <div style={{ position: 'absolute', left: '0px', bottom: '2px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                {/* Progress bar - same position as row 1 */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                <div style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '50%', transform: 'translateY(-50%)', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[1]), opacity: 0.9 }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task), opacity: 0.9 }} />
                 </div>
-                {/* Task title - same position as row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 16}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[1]?.title || ''}</span>
-                {/* Course code - same position as row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course name - same position as row 1, clipped to not overflow into due date (add 7px for marginLeft in row 1 text) */}
-                <span className="truncate" style={{ 
-                  position: 'absolute', 
-                  left: `${row1Positions.course + 7}px`, 
-                  top: '1px', 
-                  fontSize: '10px', 
-                  color: '#9ca3af',
-                  maxWidth: `${row1Positions.due - row1Positions.course - 10}px`,
-                  display: 'inline-block'
-                }}>{dueThisWeekTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[1]?.dueDate ? format(new Date(dueThisWeekTasks[1].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueThisWeekTasks[1]), width: '22px', textAlign: 'right' }}>{dueThisWeekTasks[1]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[1].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, bottom: '1px', fontSize: '10px', lineHeight: '1', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, bottom: '1px', fontSize: '9px', lineHeight: '1', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, bottom: '1px', fontSize: '9px', lineHeight: '1', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, bottom: '1px', fontSize: '10px', lineHeight: '1', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', bottom: '1px', fontSize: '10px', lineHeight: '1', color: getProgressColor(task), textAlign: 'right' }}>{task.dueDate ? `${Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
-              )}
-              {/* Third task row - same settings as row 2 */}
-              {dueThisWeekTasks[2] && row1Positions.due > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginTop: '4px' }}>
-                {/* Checkbox - position 0 */}
-                <div style={{ position: 'absolute', left: '0px', top: '-1px', visibility: dueThisWeekTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
-                </div>
-                {/* Progress bar - same position as row 1 */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[2]), opacity: 0.9 }} />
-                </div>
-                {/* Task title - same position as row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 7}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 16}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[2]?.title || ''}</span>
-                {/* Course code - same position as row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueThisWeekTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course name - same position as row 1, clipped to not overflow into due date (add 7px for marginLeft in row 1 text) */}
-                <span className="truncate" style={{ 
-                  position: 'absolute', 
-                  left: `${row1Positions.course + 7}px`, 
-                  top: '1px', 
-                  fontSize: '10px', 
-                  color: '#9ca3af',
-                  maxWidth: `${row1Positions.due - row1Positions.course - 10}px`,
-                  display: 'inline-block'
-                }}>{dueThisWeekTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due date - same position as row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueThisWeekTasks[2]?.dueDate ? format(new Date(dueThisWeekTasks[2].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days left - use measured position from row 1 (add 7px for marginLeft in row 1 text) */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueThisWeekTasks[2]), width: '22px', textAlign: 'right' }}>{dueThisWeekTasks[2]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[2].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
-              </div>
+              ))}
+              {dueThisWeekTasks.length > 5 && (
+                <div className="text-xs text-white/50 text-center" style={{ marginTop: '2px' }}>+{dueThisWeekTasks.length - 5} more</div>
               )}
               </>
               )}
@@ -13871,87 +13795,32 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <>
-              {/* Headers row */}
-              <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '0px' }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
+              {/* Headers row - uses HEADER_POS */}
+              <div style={{ position: 'relative', height: '10px', marginBottom: '4px' }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
-              {/* Task Row 1 */}
-              {dueTodayTasks[0] && row1Positions.course > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
-                {/* Checkbox */}
-                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTodayTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
+              {/* Task rows - all use HEADER_POS */}
+              {dueTodayTasks.slice(0, 3).map((task, idx) => (
+              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                {/* Progress bar */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                <div style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[0], 'today'), opacity: 0.9 }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task, 'today'), opacity: 0.9 }} />
                 </div>
-                {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[0]?.title || ''}</span>
-                {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[0]?.dueDate ? format(new Date(dueTodayTasks[0].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[0], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[0]?.dueDate ? `${differenceInCalendarDays(new Date(dueTodayTasks[0].dueDate), new Date())}d` : ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '2px', fontSize: '9px', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '2px', fontSize: '9px', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '1px', fontSize: '10px', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', color: getProgressColor(task, 'today'), textAlign: 'right' }}>{task.dueDate ? `${differenceInCalendarDays(new Date(task.dueDate), new Date())}d` : ''}</span>
               </div>
-              )}
-              {/* Task Row 2 */}
-              {dueTodayTasks[1] && row1Positions.course > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
-                {/* Checkbox */}
-                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTodayTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
-                </div>
-                {/* Progress bar */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[1], 'today'), opacity: 0.9 }} />
-                </div>
-                {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[1]?.title || ''}</span>
-                {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[1]?.dueDate ? format(new Date(dueTodayTasks[1].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[1], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[1]?.dueDate ? `${differenceInCalendarDays(new Date(dueTodayTasks[1].dueDate), new Date())}d` : ''}</span>
-              </div>
-              )}
-              {/* Task Row 3 */}
-              {dueTodayTasks[2] && row1Positions.course > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
-                {/* Checkbox */}
-                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTodayTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
-                </div>
-                {/* Progress bar */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTodayTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTodayTasks[2], 'today'), opacity: 0.9 }} />
-                </div>
-                {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[2]?.title || ''}</span>
-                {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTodayTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTodayTasks[2]?.dueDate ? format(new Date(dueTodayTasks[2].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', color: getProgressColor(dueTodayTasks[2], 'today'), width: '22px', textAlign: 'right' }}>{dueTodayTasks[2]?.dueDate ? `${differenceInCalendarDays(new Date(dueTodayTasks[2].dueDate), new Date())}d` : ''}</span>
-              </div>
-              )}
+              ))}
                 </>
               )}
               <div className="flex-1 flex flex-col" />
@@ -14040,87 +13909,32 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <>
-              {/* Headers row */}
-              <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '0px' }}>Due</span>
-                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
+              {/* Headers row - uses HEADER_POS */}
+              <div style={{ position: 'relative', height: '10px', marginBottom: '4px' }}>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px` }}>Remaining</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px` }}>Task</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px` }}>Code</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px` }}>Course</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px` }}>Due</span>
+                <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', right: '0px', textAlign: 'right' }}>Days</span>
               </div>
-              {/* Task Row 1 */}
-              {dueTomorrowTasks[0] && row1Positions.course > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
-                {/* Checkbox */}
-                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTomorrowTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
+              {/* Task rows - all use HEADER_POS */}
+              {dueTomorrowTasks.slice(0, 3).map((task, idx) => (
+              <div key={task.id || idx} style={{ position: 'relative', height: '16px', marginBottom: '2px' }}>
+                <div style={{ position: 'absolute', left: '0px', top: '0px', visibility: task.type === 'class' ? 'hidden' : 'visible' }}>
                   <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
                 </div>
-                {/* Progress bar */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
+                <div style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '6px', width: '44px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[0], 'tomorrow'), opacity: 0.9 }} />
+                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(task)}px`, height: '3px', backgroundColor: getProgressColor(task, 'tomorrow'), opacity: 0.9 }} />
                 </div>
-                {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.title || ''}</span>
-                {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[0]?.dueDate ? format(new Date(dueTomorrowTasks[0].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[0])}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${HEADER_POS.code - HEADER_POS.task - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.title || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '2px', fontSize: '9px', color: '#9ca3af' }}>{task.courseName?.split(' - ')[0] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '2px', fontSize: '9px', color: '#9ca3af', maxWidth: `${HEADER_POS.due - HEADER_POS.course - 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{task.courseName?.split(' - ')[1] || ''}</span>
+                <span style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '1px', fontSize: '10px', color: 'white' }}>{task.dueDate ? format(new Date(task.dueDate), 'EEE M/d') : ''}</span>
+                <span style={{ position: 'absolute', right: '0px', top: '1px', fontSize: '10px', textAlign: 'right' }}>{getTomorrowDaysDisplay(task)}</span>
               </div>
-              )}
-              {/* Task Row 2 */}
-              {dueTomorrowTasks[1] && row1Positions.course > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
-                {/* Checkbox */}
-                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTomorrowTasks[1]?.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
-                </div>
-                {/* Progress bar */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[1])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[1], 'tomorrow'), opacity: 0.9 }} />
-                </div>
-                {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.title || ''}</span>
-                {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[1]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[1]?.dueDate ? format(new Date(dueTomorrowTasks[1].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[1])}</span>
-              </div>
-              )}
-              {/* Task Row 3 */}
-              {dueTomorrowTasks[2] && row1Positions.course > 0 && (
-              <div style={{ position: 'relative', height: '16px', marginBottom: '1px' }}>
-                {/* Checkbox */}
-                <div style={{ position: 'absolute', left: '0px', top: '-4px', visibility: dueTomorrowTasks[2]?.type === 'class' ? 'hidden' : 'visible' }}>
-                  <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
-                </div>
-                {/* Progress bar */}
-                <div style={{ position: 'absolute', left: `${row1Positions.progressBar}px`, top: '6px', width: '44px' }}>
-                  <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
-                  <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueTomorrowTasks[2])}px`, height: '3px', backgroundColor: getProgressColor(dueTomorrowTasks[2], 'tomorrow'), opacity: 0.9 }} />
-                </div>
-                {/* Task */}
-                <span style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '1px', fontSize: '10px', color: 'white', maxWidth: `${row1Positions.code - row1Positions.task + 5}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.title || ''}</span>
-                {/* Code */}
-                <span style={{ position: 'absolute', left: `${row1Positions.code + 6}px`, top: '1px', fontSize: '9px', color: '#9ca3af' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[0] || ''}</span>
-                {/* Course */}
-                <span style={{ position: 'absolute', left: `${row1Positions.course - 9}px`, top: '1px', fontSize: '9px', color: '#9ca3af', maxWidth: `${row1Positions.due - row1Positions.course + 20}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueTomorrowTasks[2]?.courseName?.split(' - ')[1] || ''}</span>
-                {/* Due */}
-                <span style={{ position: 'absolute', left: `${row1Positions.due + 25}px`, top: '1px', fontSize: '10px', color: 'white' }}>{dueTomorrowTasks[2]?.dueDate ? format(new Date(dueTomorrowTasks[2].dueDate), 'EEE M/d') : ''}</span>
-                {/* Days */}
-                <span style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '1px', fontSize: '10px', width: '22px', textAlign: 'right' }}>{getTomorrowDaysDisplay(dueTomorrowTasks[2])}</span>
-              </div>
-              )}
+              ))}
                 </>
               )}
               <div className="flex-1 flex flex-col" />
