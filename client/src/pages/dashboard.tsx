@@ -12429,22 +12429,23 @@ export default function Dashboard() {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
-                      const isToday = isSameDay(day, new Date());
-                      if (hour === 0) console.log('SAT DEBUG:', { dayStr: format(day, 'yyyy-MM-dd'), nowStr: format(new Date(), 'yyyy-MM-dd'), isToday, dayTime: day.getTime(), bg: isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5' });
+                      const isSatToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
+                      const satBg = isSatToday && isCurrentHour ? '#d9d9d9' : isSatToday || isCurrentHour ? '#e8e8e8' : '#faf8f5';
                       return (
                         <div 
-                          className={`border-l border-border/50 border-t border-t-gray-300/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
+                          className={`border-l border-border/50 border-t border-t-gray-300/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isSatToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
                           style={{ 
-                            backgroundColor: isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5',
+                            backgroundColor: satBg,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             paddingLeft: '6px',
                             overflow: 'hidden'
                           }}
                         >
+                          <div className="absolute inset-0 z-0" style={{ backgroundColor: satBg }} />
                           {hour % 1 === 0 && (
-                            <div className="absolute left-0 right-0 border-t border-dotted border-gray-300/50 z-0" style={{ top: '50%' }} />
+                            <div className="absolute left-0 right-0 border-t border-dotted border-gray-300/50 z-[1]" style={{ top: '50%' }} />
                           )}
                         </div>
                       );
