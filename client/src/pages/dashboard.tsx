@@ -11338,7 +11338,7 @@ export default function Dashboard() {
               {/* Progress column header (half-width, between Fri and Sat) */}
               <div 
                 className="flex items-center justify-center border-l border-border"
-                style={{ backgroundColor: '#000000' }}
+                style={{ backgroundColor: '#000000', borderBottom: '2px solid white' }}
               >
                 <span className="text-[10px] font-medium tracking-wide text-white/80 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
               </div>
