@@ -994,44 +994,41 @@ export default function Dashboard() {
     setDiscussionDueComplete(savedDue === 'true');
   }, [selectedWeek]);
   
-  // Fetch file counts from database, then supplement with OneDrive counts for missing weeks
-  useEffect(() => {
-    const fetchFileCounts = async () => {
-      try {
-        const response = await fetch('/api/files/counts');
-        if (response.ok) {
-          const counts = await response.json();
-          
-          // Always fetch OneDrive counts for the selected week to fill in missing course/type combos
-          try {
-            const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}`);
-            if (odResponse.ok) {
-              const odCounts = await odResponse.json();
-              for (const [key, value] of Object.entries(odCounts)) {
-                if (!counts[key] || (counts[key] as any).total === 0) {
-                  counts[key] = value;
-                }
+  const refreshFileCounts = useCallback(async () => {
+    try {
+      const response = await fetch('/api/files/counts');
+      if (response.ok) {
+        const counts = await response.json();
+        
+        try {
+          const odResponse = await fetch(`/api/onedrive/week-counts/${selectedWeek}`);
+          if (odResponse.ok) {
+            const odCounts = await odResponse.json();
+            for (const [key, value] of Object.entries(odCounts)) {
+              if (!counts[key] || (counts[key] as any).total === 0) {
+                counts[key] = value;
               }
             }
-          } catch (odError) {
-            console.error('Error fetching OneDrive week counts:', odError);
           }
-          
-          setFileCounts(counts);
-          // Also set legacy oneDriveFileCounts for backward compatibility
-          const legacyCounts: Record<string, number> = {};
-          for (const [key, value] of Object.entries(counts)) {
-            legacyCounts[key] = (value as { total: number }).total;
-          }
-          setOneDriveFileCounts(legacyCounts);
+        } catch (odError) {
+          console.error('Error fetching OneDrive week counts:', odError);
         }
-      } catch (error) {
-        console.error('Error fetching file counts:', error);
+        
+        setFileCounts(counts);
+        const legacyCounts: Record<string, number> = {};
+        for (const [key, value] of Object.entries(counts)) {
+          legacyCounts[key] = (value as { total: number }).total;
+        }
+        setOneDriveFileCounts(legacyCounts);
       }
-    };
-    
-    fetchFileCounts();
+    } catch (error) {
+      console.error('Error fetching file counts:', error);
+    }
   }, [selectedWeek]);
+
+  useEffect(() => {
+    refreshFileCounts();
+  }, [refreshFileCounts]);
   
   // Close modules/readings honeycomb when clicking outside
   useEffect(() => {
@@ -2744,6 +2741,7 @@ export default function Dashboard() {
 
   // File preview dialog state
   const [previewFile, setPreviewFile] = useState<FileItem | null>(null);
+  const previewFileRef = useRef<FileItem | null>(null);
   const [oneDrivePreviewFiles, setOneDrivePreviewFiles] = useState<FileItem[]>([]);
   const [isLoadingOneDriveFiles, setIsLoadingOneDriveFiles] = useState(false);
   // Cache for file counts by folder with listened breakdown (e.g., "week-4-cppa122-module": { total: 3, listened: 1, unlistened: 2 })
@@ -2852,12 +2850,13 @@ export default function Dashboard() {
       
       audio.onended = () => {
         URL.revokeObjectURL(audioUrl);
+        const currentFile = previewFileRef.current;
         // Play next chunk if available
         if (shouldContinueRef.current && currentChunkIndexRef.current < ttsChunksRef.current.length - 1) {
           currentChunkIndexRef.current++;
           setCurrentChunkIndex(currentChunkIndexRef.current);
-          if (previewFile) {
-            saveTtsProgress(previewFile.id, currentChunkIndexRef.current, 0);
+          if (currentFile) {
+            saveTtsProgress(currentFile.id, currentChunkIndexRef.current, 0);
           }
           const nextChunk = ttsChunksRef.current[currentChunkIndexRef.current];
           if (nextChunk) {
@@ -2865,8 +2864,8 @@ export default function Dashboard() {
           }
         } else {
           setIsPlaying(false);
-          if (previewFile) {
-            saveTtsProgress(previewFile.id, currentChunkIndexRef.current, 0);
+          if (currentFile) {
+            saveTtsProgress(currentFile.id, currentChunkIndexRef.current, 0);
           }
         }
       };
@@ -2908,18 +2907,27 @@ export default function Dashboard() {
   const saveTtsProgress = (fileId: number, chunkIndex: number, wordIndex: number, charPosition?: number) => {
     try {
       localStorage.setItem(`tts-progress-${fileId}`, JSON.stringify({ chunkIndex, wordIndex, charPosition: charPosition || 0 }));
-      const totalChunks = ttsChunksRef.current.length;
-      if (totalChunks > 0) {
-        const isFinished = chunkIndex + 1 >= totalChunks;
+      const totalChunksVal = ttsChunksRef.current.length;
+      console.log(`[saveTtsProgress] fileId=${fileId}, chunkIndex=${chunkIndex}, totalChunks=${totalChunksVal}`);
+      if (totalChunksVal > 0) {
+        const isFinished = chunkIndex + 1 >= totalChunksVal;
         apiRequest("PATCH", `/api/files/${fileId}`, {
           lastChunkIndex: chunkIndex + 1,
-          totalChunks,
+          totalChunks: totalChunksVal,
           ...(isFinished ? { listened: true } : {}),
         }).then(() => {
+          console.log(`[saveTtsProgress] PATCH success for fileId=${fileId}: lastChunkIndex=${chunkIndex + 1}, totalChunks=${totalChunksVal}`);
           queryClient.invalidateQueries({ queryKey: ["/api/files"] });
-        }).catch(() => {});
+          refreshFileCounts();
+        }).catch((err) => {
+          console.error(`[saveTtsProgress] PATCH failed for fileId=${fileId}:`, err);
+        });
+      } else {
+        console.warn(`[saveTtsProgress] Skipped PATCH - totalChunks is 0 for fileId=${fileId}`);
       }
-    } catch {}
+    } catch (e) {
+      console.error('[saveTtsProgress] Error:', e);
+    }
   };
   
   const clearTtsProgress = (fileId: number) => {
@@ -3015,6 +3023,11 @@ export default function Dashboard() {
     }
   }, [currentWordIndex, isPlaying, syncHighlight, pageWordBoundaries, numPages]);
   
+  // Keep previewFileRef in sync with state (avoids stale closures in TTS callbacks)
+  useEffect(() => {
+    previewFileRef.current = previewFile;
+  }, [previewFile]);
+
   // Load PDF when file is selected
   useEffect(() => {
     if (previewFile && previewFile.objectPath) {
@@ -3419,12 +3432,12 @@ export default function Dashboard() {
 
   // Speak a single chunk and continue to next
   const speakChunk = async (chunkIndex: number, chunks: string[], voices: SpeechSynthesisVoice[], wordOffset: number = 0) => {
+    const currentFile = previewFileRef.current;
     if (chunkIndex >= chunks.length || !shouldContinueRef.current) {
-      // Finished all chunks
       setIsPlaying(false);
       isPlayingRef.current = false;
-      if (previewFile) {
-        clearTtsProgress(previewFile.id);
+      if (currentFile) {
+        clearTtsProgress(currentFile.id);
         toast({ title: "Finished reading file" });
       }
       return;
@@ -3435,7 +3448,6 @@ export default function Dashboard() {
     utterance.rate = browserTtsRate;
     utterance.pitch = 1;
     
-    // Use selected voice
     const voice = selectedVoice 
       ? voices.find(v => v.name === selectedVoice)
       : voices.find(v => v.name.includes('Google') && v.lang.startsWith('en')) 
@@ -3446,7 +3458,6 @@ export default function Dashboard() {
       utterance.voice = voice;
     }
     
-    // Track word position for highlighting
     let localWordIndex = 0;
     const chunkWordCount = chunk.split(/\s+/).length;
     
@@ -3454,14 +3465,13 @@ export default function Dashboard() {
       if (event.name === 'word') {
         setCurrentWordIndex(wordOffset + localWordIndex);
         localWordIndex++;
-        // Save progress periodically with character position
-        if (previewFile && localWordIndex % 10 === 0) {
-          // Calculate character position from previous chunks
+        const fileForSave = previewFileRef.current;
+        if (fileForSave && localWordIndex % 10 === 0) {
           let charPosition = 0;
           for (let i = 0; i < chunkIndex; i++) {
             charPosition += chunks[i].length;
           }
-          saveTtsProgress(previewFile.id, chunkIndex, localWordIndex, charPosition);
+          saveTtsProgress(fileForSave.id, chunkIndex, localWordIndex, charPosition);
         }
       }
     };
@@ -3475,7 +3485,6 @@ export default function Dashboard() {
     utterance.onend = () => {
       console.log(`Chunk ${chunkIndex + 1}/${chunks.length} ended`);
       if (shouldContinueRef.current) {
-        // Small delay before next chunk to prevent Chrome issues
         setTimeout(() => {
           speakChunk(chunkIndex + 1, chunks, voices, wordOffset + chunkWordCount);
         }, 100);
@@ -3484,16 +3493,15 @@ export default function Dashboard() {
     
     utterance.onerror = (event) => {
       console.error("Speech error:", event.error);
-      // On interrupted, don't show error - user stopped it
       if (event.error !== 'interrupted') {
         toast({ title: `Speech paused at chunk ${chunkIndex + 1}. Tap play to resume.`, variant: "default" });
-        if (previewFile) {
-          // Calculate character position from previous chunks
+        const fileForSave = previewFileRef.current;
+        if (fileForSave) {
           let charPosition = 0;
           for (let i = 0; i < chunkIndex; i++) {
             charPosition += chunks[i].length;
           }
-          saveTtsProgress(previewFile.id, chunkIndex, localWordIndex, charPosition);
+          saveTtsProgress(fileForSave.id, chunkIndex, localWordIndex, charPosition);
         }
       }
       setIsPlaying(false);
@@ -3776,13 +3784,14 @@ export default function Dashboard() {
         openaiAudioRef.current = null;
         
         // Save progress so user can resume later
-        if (previewFile) {
+        const stopFile = previewFileRef.current;
+        if (stopFile) {
           let charPosition = 0;
           const chunks = ttsChunksRef.current;
           for (let i = 0; i < currentChunkIndexRef.current; i++) {
             charPosition += chunks[i]?.length || 0;
           }
-          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex, charPosition);
+          saveTtsProgress(stopFile.id, currentChunkIndexRef.current, currentWordIndex, charPosition);
         }
         
         setIsPlaying(false);
@@ -3797,13 +3806,14 @@ export default function Dashboard() {
         window.speechSynthesis.cancel();
         
         // Save progress so user can resume later
-        if (previewFile) {
+        const stopFile = previewFileRef.current;
+        if (stopFile) {
           let charPosition = 0;
           const chunks = ttsChunksRef.current;
           for (let i = 0; i < currentChunkIndexRef.current; i++) {
             charPosition += chunks[i]?.length || 0;
           }
-          saveTtsProgress(previewFile.id, currentChunkIndexRef.current, currentWordIndex, charPosition);
+          saveTtsProgress(stopFile.id, currentChunkIndexRef.current, currentWordIndex, charPosition);
           toast({ title: `Paused at section ${currentChunkIndexRef.current + 1} of ${totalChunks}. Progress saved.` });
         }
         
@@ -4405,6 +4415,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+      refreshFileCounts();
       setPreviewFile(null);
       toast({ title: "File marked as completed and moved to Completed folder" });
       setShowCelebration(true);
@@ -8839,6 +8850,7 @@ export default function Dashboard() {
                             setOneDrivePreviewFiles(ensuredFiles);
                             setPreviewFile(ensuredFiles[0]);
                             queryClient.invalidateQueries({ queryKey: ["/api/files"] });
+                            refreshFileCounts();
                           }
                         }
                       }
@@ -10733,6 +10745,7 @@ export default function Dashboard() {
                             queryClient.invalidateQueries({ queryKey: ["/api/tasks"] });
                             queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                             queryClient.invalidateQueries({ queryKey: ["/api/semester"] });
+                            refreshFileCounts();
                           } else {
                             toast({ title: "Pull failed", description: result.error || "Unknown error", variant: "destructive" });
                           }
@@ -11439,10 +11452,10 @@ export default function Dashboard() {
                     const readingFiles = weeklyFiles.filter(f => f.folder === `week-${selectedWeek}-${courseCodeLower}-reading`);
                     const calcFileProgress = (files: WeeklyFile[], folderKey: string) => {
                       if (files.length === 0) {
-                        const fc = fileCounts[folderKey];
+                        const fc = fileCounts[folderKey] as { total: number; listened: number; unlistened: number; partialProgress?: number } | undefined;
                         if (fc && fc.total > 0) {
-                          const listenedPct = fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0;
-                          return { percent: listenedPct, hasFiles: true };
+                          const pct = fc.partialProgress != null ? Math.round(fc.partialProgress / fc.total) : (fc.listened > 0 ? Math.round((fc.listened / fc.total) * 100) : 0);
+                          return { percent: pct, hasFiles: true };
                         }
                         return { percent: 0, hasFiles: false };
                       }
@@ -12575,6 +12588,7 @@ export default function Dashboard() {
                                 });
                                 if (res.ok) {
                                   queryClient.invalidateQueries({ queryKey: ['/api/files'] });
+                                  refreshFileCounts();
                                   toast({ title: "File moved to CPPA122 Reading" });
                                 } else {
                                   toast({ title: "Failed to move file", variant: "destructive" });

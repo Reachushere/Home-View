@@ -1189,26 +1189,28 @@ export async function registerRoutes(
   app.get("/api/files/counts", async (_req, res) => {
     try {
       const files = await storage.getFiles();
-      const counts: Record<string, { total: number; listened: number; unlistened: number }> = {};
+      const counts: Record<string, { total: number; listened: number; unlistened: number; partialProgress: number }> = {};
       
       for (const file of files) {
         if (!file.folder) continue;
         
-        // Extract week number, course, and type from folder name
-        // Folder format: "week-4-cppa122-module" or "week-4-cfnf400-reading"
         const folderMatch = file.folder.match(/^week-(\d+)-([a-z0-9]+)-(module|reading|other)$/i);
         if (!folderMatch) continue;
         
         const folderKey = file.folder.toLowerCase();
         if (!counts[folderKey]) {
-          counts[folderKey] = { total: 0, listened: 0, unlistened: 0 };
+          counts[folderKey] = { total: 0, listened: 0, unlistened: 0, partialProgress: 0 };
         }
         
         counts[folderKey].total++;
         if (file.listened) {
           counts[folderKey].listened++;
+          counts[folderKey].partialProgress += 100;
         } else {
           counts[folderKey].unlistened++;
+          if (file.totalChunks && file.totalChunks > 0 && file.lastChunkIndex != null && file.lastChunkIndex > 0) {
+            counts[folderKey].partialProgress += Math.round((file.lastChunkIndex / file.totalChunks) * 100);
+          }
         }
       }
       
@@ -1547,6 +1549,18 @@ export async function registerRoutes(
           file = await storage.updateFile(file.id, { folder }) || file;
         }
         return res.json(file);
+      }
+      
+      // Fallback: check by originalName + folder to prevent duplicates
+      // (same file may exist under a different objectPath, e.g. uploaded vs OneDrive path)
+      if (folder) {
+        const allFiles = await storage.getFiles();
+        const match = allFiles.find(f => f.originalName === originalName && f.folder === folder);
+        if (match) {
+          // Update the objectPath to the new stable path so future lookups match
+          file = await storage.updateFile(match.id, { objectPath }) || match;
+          return res.json(file);
+        }
       }
       
       // Create new file entry
