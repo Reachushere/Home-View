@@ -16639,7 +16639,7 @@ function NewCourseDialog({
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50" onPointerDown={(e) => e.stopPropagation()} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="bg-gradient-to-br from-gray-800 via-[#111] to-gray-900 border border-white/20 rounded-lg w-[520px] max-h-[85vh] overflow-hidden flex flex-col text-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20 flex-shrink-0">
           <div className="flex items-center gap-2">
@@ -16648,7 +16648,7 @@ function NewCourseDialog({
               {existingCourse ? 'EDIT COURSE' : 'NEW COURSE'}
             </h2>
           </div>
-          <button onClick={onClose} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-new-course">
+          <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }} className="text-white hover:text-white/80 transition-colors p-1" data-testid="button-close-new-course">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -16980,7 +16980,7 @@ function NewCourseDialog({
             <Button
               type="button"
               variant="outline"
-              onClick={onClose}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
               className="border !border-white/30 text-white/60 transition-all duration-200"
               style={{ fontSize: '11px' }}
               data-testid="button-cancel-new-course"
