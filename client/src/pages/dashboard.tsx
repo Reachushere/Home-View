@@ -13233,8 +13233,8 @@ export default function Dashboard() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
-          <div className="shadow-lg overflow-hidden h-full flex flex-col border border-black" style={{ background: 'white', borderRadius: '16px' }}>
-            <div className="p-0 flex-1 flex flex-col overflow-auto scrollbar-hidden">
+          <div className="shadow-lg overflow-hidden h-full flex flex-col" style={{ background: 'white', borderRadius: '16px', border: '1px solid #000000' }}>
+            <div className="p-0 flex-1 flex flex-col overflow-hidden">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
@@ -13254,79 +13254,81 @@ export default function Dashboard() {
                 ))}
               </div>
               {/* Calendar Grid */}
-              <div className="grid grid-cols-7 flex-1">
-                {(() => {
-                  const monthStart = startOfMonth(currentMonth);
-                  const monthEnd = endOfMonth(currentMonth);
-                  const startDate = startOfWeek(monthStart, { weekStartsOn: 6 }); // Saturday
-                  const endDate = endOfWeek(monthEnd, { weekStartsOn: 6 });
-                  
-                  const days: Date[] = [];
-                  let day = startDate;
-                  while (day <= endDate) {
-                    days.push(day);
-                    day = addDays(day, 1);
-                  }
-                  
-                  return days.map((day, idx) => {
-                    const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
-                    const isToday = isSameDay(day, new Date());
-                    const dayTasks = allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
-                    
-                    return (
-                      <div
-                        key={idx}
-                        className={`min-h-[80px] p-1 border-r border-b border-border last:border-r-0 ${
-                          isCurrentMonth ? "bg-card" : "bg-muted/30"
-                        } ${isToday ? "" : ""}`}
-                        onClick={() => {
-                          // Find which week this day belongs to
-                          const weekInfo = weeks.find(w => {
-                            const wStart = new Date(w.startDate);
-                            const wEnd = new Date(w.endDate);
-                            return day >= wStart && day <= wEnd;
-                          });
-                          if (weekInfo) {
-                            setSelectedWeek(weekInfo.weekNumber);
-                            setCalendarView("week");
-                          }
-                        }}
-                      >
-                        <div className={`text-xs font-bold mb-1 ${
-                          isToday ? "text-[#5979CC]" : isCurrentMonth ? "text-foreground" : "text-muted-foreground"
-                        }`}>
-                          {format(day, "d")}
+              {(() => {
+                const monthStart = startOfMonth(currentMonth);
+                const monthEnd = endOfMonth(currentMonth);
+                const startDate = startOfWeek(monthStart, { weekStartsOn: 6 });
+                const endDate = endOfWeek(monthEnd, { weekStartsOn: 6 });
+                
+                const days: Date[] = [];
+                let d = startDate;
+                while (d <= endDate) {
+                  days.push(d);
+                  d = addDays(d, 1);
+                }
+                const numRows = Math.ceil(days.length / 7);
+                
+                return (
+                  <div className="grid grid-cols-7 flex-1" style={{ gridTemplateRows: `repeat(${numRows}, 1fr)` }}>
+                    {days.map((day, idx) => {
+                      const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
+                      const isToday = isSameDay(day, new Date());
+                      const dayTasks = allTasks.filter(t => isSameDay(new Date(t.dueDate), day));
+                      
+                      return (
+                        <div
+                          key={idx}
+                          className={`p-1 border-r border-b border-border last:border-r-0 ${
+                            isCurrentMonth ? "bg-card" : "bg-muted/30"
+                          }`}
+                          onClick={() => {
+                            const weekInfo = weeks.find(w => {
+                              const wStart = new Date(w.startDate);
+                              const wEnd = new Date(w.endDate);
+                              return day >= wStart && day <= wEnd;
+                            });
+                            if (weekInfo) {
+                              setSelectedWeek(weekInfo.weekNumber);
+                              setCalendarView("week");
+                            }
+                          }}
+                        >
+                          <div className={`text-xs font-bold mb-1 ${
+                            isToday ? "text-[#5979CC]" : isCurrentMonth ? "text-foreground" : "text-muted-foreground"
+                          }`}>
+                            {format(day, "d")}
+                          </div>
+                          <div className="space-y-0.5">
+                            {dayTasks.slice(0, 3).map((task) => {
+                              const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
+                              const colors = dynamicCourseColors[courseCode];
+                              return (
+                                <div
+                                  key={task.id}
+                                  className={`text-[7px] px-1 py-0.5 rounded truncate border ${
+                                    task.isCompleted ? "line-through" : ""
+                                  }`}
+                                  style={{
+                                    backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
+                                    color: task.isCompleted ? '#6b7280' : (colors?.text || '#000'),
+                                    borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
+                                  }}
+                                  title={task.title}
+                                >
+                                  {task.title}
+                                </div>
+                              );
+                            })}
+                            {dayTasks.length > 3 && (
+                              <div className="text-[7px] text-muted-foreground text-center">+{dayTasks.length - 3} more</div>
+                            )}
+                          </div>
                         </div>
-                        <div className="space-y-0.5">
-                          {dayTasks.slice(0, 3).map((task) => {
-                            const courseCode = task.courseName?.split(" ")[0]?.toUpperCase() || "";
-                            const colors = dynamicCourseColors[courseCode];
-                            return (
-                              <div
-                                key={task.id}
-                                className={`text-[7px] px-1 py-0.5 rounded truncate border ${
-                                  task.isCompleted ? "line-through" : ""
-                                }`}
-                                style={{
-                                  backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
-                                  color: task.isCompleted ? '#6b7280' : (colors?.text || '#000'),
-                                  borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
-                                }}
-                                title={task.title}
-                              >
-                                {task.title}
-                              </div>
-                            );
-                          })}
-                          {dayTasks.length > 3 && (
-                            <div className="text-[7px] text-muted-foreground text-center">+{dayTasks.length - 3} more</div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  });
-                })()}
-              </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
             </div>
           </div>
           </div>
