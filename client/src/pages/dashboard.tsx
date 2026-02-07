@@ -4847,7 +4847,7 @@ export default function Dashboard() {
   }
   
   // Time slots for the day view (6am-midnight)
-  const timeSlots = Array.from({ length: 16 }, (_, i) => i + 6); // 6am-9pm (6-21)
+  const timeSlots = Array.from({ length: 24 }, (_, i) => i); // 12am-11pm (0-23)
   const calendarScrollRef = useRef<HTMLDivElement>(null);
   
   // Auto-scroll to current time by default
@@ -4859,7 +4859,7 @@ export default function Dashboard() {
       
       const now = new Date();
       const currentHour = now.getHours();
-      const startHour = 6; // calendar starts at 6am
+      const startHour = 0; // calendar starts at 12am
       
       // Calculate scroll position to show the entire current hour row at the top
       let scrollPosition = 0;
@@ -12615,7 +12615,7 @@ export default function Dashboard() {
                   const now = new Date();
                   const currentHour = now.getHours();
                   const currentMinutes = now.getMinutes();
-                  const startHour = 6;
+                  const startHour = 0;
                   const endHour = 24;
                   
                   // Only show if current time is within calendar range
