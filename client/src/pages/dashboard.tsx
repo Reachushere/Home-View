@@ -2026,14 +2026,13 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Speak "New Day" at midnight with a female voice
-  const speakNewDay = useCallback(() => {
-    if (!window.speechSynthesis) return; // Not available on Fire tablets
+  // Speak "New Week" when the week changes (Sunday midnight) with a female voice
+  const speakNewWeek = useCallback(() => {
+    if (!window.speechSynthesis) return;
     try {
-      const utterance = new SpeechSynthesisUtterance("New Day");
+      const utterance = new SpeechSynthesisUtterance("New Week");
       utterance.rate = 0.9;
       utterance.pitch = 1.1;
-      // Try to find a female voice
       const voices = window.speechSynthesis.getVoices() || [];
       const femaleVoice = voices.find(v => 
         v.name.toLowerCase().includes('female') || 
@@ -2055,21 +2054,35 @@ export default function Dashboard() {
     }
   }, []);
 
-  // Update clock every second and detect midnight
+  // Update clock every second and detect week change (Sunday midnight)
+  const lastWeekRef = useRef(() => {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    return Math.floor((now.getTime() - startOfYear.getTime()) / (7 * 24 * 60 * 60 * 1000));
+  });
   const lastDateRef = useRef(new Date().getDate());
   useEffect(() => {
+    const getWeekNumber = (date: Date) => {
+      const startOfYear = new Date(date.getFullYear(), 0, 1);
+      return Math.floor((date.getTime() - startOfYear.getTime()) / (7 * 24 * 60 * 60 * 1000));
+    };
+    const currentWeekNum = getWeekNumber(new Date());
+    lastWeekRef.current = currentWeekNum;
+    
     const timer = setInterval(() => {
       const now = new Date();
       const currentDate = now.getDate();
-      // Check if we crossed midnight (date changed)
-      if (currentDate !== lastDateRef.current) {
-        lastDateRef.current = currentDate;
-        speakNewDay();
+      lastDateRef.current = currentDate;
+      
+      const weekNum = getWeekNumber(now);
+      if (weekNum !== lastWeekRef.current) {
+        lastWeekRef.current = weekNum;
+        speakNewWeek();
       }
       setCurrentTime(now);
     }, 1000);
     return () => clearInterval(timer);
-  }, [speakNewDay]);
+  }, [speakNewWeek]);
 
   // Check if mute period has expired
   useEffect(() => {
@@ -11141,30 +11154,17 @@ export default function Dashboard() {
           {/* Calendar wrapper - leaves space for honeycombs on right */}
           <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)', marginTop: '-2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
-          {/* Glass effect backing box - 30px bigger than calendar */}
+          {/* Glass effect backing box - fixed size, does not change with resize handle */}
           <div 
             className="absolute pointer-events-none"
             style={{ 
               top: '-5px', 
               left: '-15px', 
               right: '-15px', 
-              bottom: '-27px', 
+              height: `${(534 - 35 - 5) + 5 + 27}px`,
               background: 'rgba(255, 255, 255, 0.35)',
               borderRadius: '31px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}
-          />
-          {/* Gap filler - covers area between card bottom and glass box bottom */}
-          <div 
-            className="absolute pointer-events-none"
-            style={{ 
-              bottom: '-27px',
-              left: 0,
-              right: 0,
-              height: '40px',
-              background: '#faf8f5',
-              borderRadius: '0 0 16px 16px',
-              zIndex: 1
             }}
           />
           
