@@ -11175,14 +11175,14 @@ export default function Dashboard() {
           {/* Calendar wrapper - leaves space for honeycombs on right */}
           <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)', marginTop: '-2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
-          {/* Glass effect backing box - fixed size, does not change with resize handle */}
+          {/* Glass effect backing box - resizes with calendar */}
           <div 
             className="absolute pointer-events-none"
             style={{ 
               top: '-5px', 
               left: '-15px', 
               right: '-15px', 
-              height: `${(534 - 35 - 5) + 5 + 27}px`,
+              bottom: '-27px', 
               background: 'rgba(255, 255, 255, 0.35)',
               borderRadius: '31px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
