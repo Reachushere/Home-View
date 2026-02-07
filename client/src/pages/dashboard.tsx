@@ -11150,7 +11150,7 @@ export default function Dashboard() {
             <div style={{ minWidth: 0 }} /> {/* Progress column spacer */}
             <div style={{ minWidth: 0 }} /> {/* Saturday column spacer */}
           </div>
-          <Card className="shadow-lg border border-white flex flex-col relative" style={{ background: 'white', overflow: 'hidden', borderRadius: '16px', flex: '1 1 0%', minHeight: 0 }}>
+          <Card className="shadow-lg border border-white flex flex-col relative overflow-hidden" style={{ background: 'white', borderRadius: '16px', flex: '1 1 0%', minHeight: 0 }}>
             {/* Progress/Saturday divider line - dashed (6.5 / 7.5 total column widths), hidden on Saturday */}
             {new Date().getDay() !== 6 && (
             <div className="absolute top-0 bottom-0 w-[5px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
