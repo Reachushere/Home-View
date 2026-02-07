@@ -11165,7 +11165,7 @@ export default function Dashboard() {
             </div>
             )}
             
-            <div className="p-0 flex-1 flex flex-col overflow-hidden relative" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
+            <div className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: selectedWeek === 4 ? '#160502' : colorSettings.headerBar }}>
