@@ -8959,37 +8959,29 @@ export default function Dashboard() {
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map(cid => (
+                      <div key={cid} className={`h-11 flex items-center justify-center ${checkedCourses[cid] ? 'bg-gray-300' : ''}`}>
+                        <input type="checkbox" className="checkbox-black" checked={checkedCourses[cid] || false} disabled={!openElectives[cid]?.trim()} onChange={() => toggleCourse(cid)} />
+                      </div>
+                    ))}
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                     <div className="leading-tight"><span className="font-bold">FOUR</span> COURSES REQUIRED,<br/><br/><span className="font-bold">ONE</span> one-term LOWER LEVEL (TABLE A)<br/><br/>and <span className="font-bold">THREE</span> one-term UPPER LEVEL courses (TABLE B).</div>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
+                    {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map((cid, i) => (
+                      <div key={cid} className={`h-11 px-1 flex items-center ${checkedCourses[cid] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                        <input type="text" className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`} placeholder={`Course ${i+1}...`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} />
+                      </div>
+                    ))}
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
+                    {['L3_LIBERAL1','L3_LIBERAL2','L3_LIBERAL3','L3_LIBERAL4'].map(cid => (
+                      <div key={cid} className={`h-11 flex flex-col items-center justify-center gap-0.5 ${checkedCourses[cid] ? 'bg-gray-300' : ''}`}>
+                        <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                        <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div className="h-px bg-black"></div>
@@ -9001,49 +8993,29 @@ export default function Dashboard() {
                 </div>
                 <div className="flex">
                   <div className="w-5 border-r border-black flex flex-col">
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
-                    <div className="h-11 flex items-center justify-center"><input type="checkbox" className="checkbox-black" /></div>
+                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6'].map(cid => (
+                      <div key={cid} className={`h-11 flex items-center justify-center ${checkedCourses[cid] ? 'bg-gray-300' : ''}`}>
+                        <input type="checkbox" className="checkbox-black" checked={checkedCourses[cid] || false} disabled={!openElectives[cid]?.trim()} onChange={() => toggleCourse(cid)} />
+                      </div>
+                    ))}
                   </div>
                   <div className="w-[55px] border-r border-black flex items-center justify-center text-[8px] text-center px-0.5">
                     <div className="leading-tight"><span className="font-bold">SIX</span> one-term level courses required from <a href="https://www.torontomu.ca/calendar/2025-2026/open-electives/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OE Table</a>.</div>
                   </div>
                   <div className="flex-1 flex flex-col">
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 1..." /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 2..." /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 3..." /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 4..." /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 5..." /></div>
-                    <div className="h-11 px-1 flex items-center"><input type="text" className="w-full text-[10px] px-1 py-0.5 border border-black rounded-sm bg-white" placeholder="Course 6..." /></div>
+                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6'].map((cid, i) => (
+                      <div key={cid} className={`h-11 px-1 flex items-center ${checkedCourses[cid] ? 'bg-gray-300 text-gray-500' : ''}`}>
+                        <input type="text" className={`w-full text-[10px] px-1 py-0.5 border border-black rounded-sm ${checkedCourses[cid] ? 'bg-gray-300 text-gray-500' : 'bg-white'}`} placeholder={`Course ${i+1}...`} value={openElectives[cid] || ''} onChange={(e) => updateOpenElective(cid, e.target.value)} />
+                      </div>
+                    ))}
                   </div>
                   <div className="w-12 border-l border-black flex flex-col">
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
-                    <div className="h-11 flex flex-col items-center justify-center gap-0.5">
-                      <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black">{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
-                      <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" />
-                    </div>
+                    {['L3_OPEN1','L3_OPEN2','L3_OPEN3','L3_OPEN4','L3_OPEN5','L3_OPEN6'].map(cid => (
+                      <div key={cid} className={`h-11 flex flex-col items-center justify-center gap-0.5 ${checkedCourses[cid] ? 'bg-gray-300' : ''}`}>
+                        <select className="w-10 text-[8px] border border-gray-400 rounded-sm bg-white text-black" value={courseGrades[cid]?.grade || ''} onChange={(e) => updateGrade(cid, e.target.value)}>{gradeOptions.map(g => <option key={g} value={g}>{g}</option>)}</select>
+                        <input type="text" className="w-10 text-[8px] px-0.5 border border-gray-400 rounded-sm bg-white text-center text-black" placeholder="%" value={courseGrades[cid]?.percent || ''} onChange={(e) => updatePercent(cid, e.target.value)} />
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
