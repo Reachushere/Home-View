@@ -13233,7 +13233,7 @@ export default function Dashboard() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
-          <Card className="shadow-lg overflow-hidden h-full border border-black flex flex-col" style={{ background: 'white', borderRadius: '16px' }}>
+          <Card className="shadow-lg overflow-hidden h-full flex flex-col" style={{ background: 'white', borderRadius: '16px', border: '1px solid black' }}>
             <CardContent className="p-0 flex-1 flex flex-col overflow-auto scrollbar-hidden">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
