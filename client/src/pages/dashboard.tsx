@@ -8888,7 +8888,12 @@ export default function Dashboard() {
           <Button 
             variant="ghost"
             className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase underline"
-            onClick={() => setCalendarView(calendarView === "month" ? "week" : "month")}
+            onClick={() => {
+              if (calendarView === "week") {
+                setCurrentMonth(new Date());
+              }
+              setCalendarView(calendarView === "month" ? "week" : "month");
+            }}
             data-testid="button-month-view"
           >
             {calendarView === "month" ? "Week" : "Month"}
@@ -13228,8 +13233,8 @@ export default function Dashboard() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
-          <Card className="shadow-lg overflow-hidden h-full border border-white" style={{ background: 'white', borderRadius: '16px' }}>
-            <CardContent className="p-0 h-full overflow-auto scrollbar-hidden">
+          <Card className="shadow-lg overflow-hidden h-full border border-white flex flex-col" style={{ background: 'white', borderRadius: '16px' }}>
+            <CardContent className="p-0 flex-1 flex flex-col overflow-auto scrollbar-hidden">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
