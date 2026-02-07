@@ -7322,11 +7322,20 @@ export default function Dashboard() {
                 <div className="w-24 h-2.5 bg-gray-700 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-300 rounded-full"
-                    style={{ width: totalChunks > 0 ? `${((currentChunkIndex + 1) / totalChunks) * 100}%` : '0%' }}
+                    style={{ width: (() => {
+                      if (totalChunks > 0) return `${((currentChunkIndex + 1) / totalChunks) * 100}%`;
+                      if (previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0)
+                        return `${(previewFile.lastChunkIndex / previewFile.totalChunks) * 100}%`;
+                      return '0%';
+                    })() }}
                   />
                 </div>
                 <span className="text-[11px] text-white font-medium min-w-[40px]">
-                  {totalChunks > 0 ? `${currentChunkIndex + 1}/${totalChunks}` : '0/0'}
+                  {totalChunks > 0 
+                    ? `${currentChunkIndex + 1}/${totalChunks}` 
+                    : previewFile?.totalChunks && previewFile.totalChunks > 0 && previewFile.lastChunkIndex != null && previewFile.lastChunkIndex > 0
+                      ? `${previewFile.lastChunkIndex}/${previewFile.totalChunks}`
+                      : '0/0'}
                 </span>
               </div>
               <Button
