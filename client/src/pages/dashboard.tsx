@@ -270,6 +270,7 @@ export default function Dashboard() {
   const courseRowsRef = useRef<HTMLDivElement>(null);
   const allDayRowRef = useRef<HTMLDivElement>(null);
   const [calendarTop, setCalendarTop] = useState(247); // Default offset
+  const [calendarRight, setCalendarRight] = useState(0); // Right edge of calendar wrapper relative to viewport
   const [courseRowsTop, setCourseRowsTop] = useState(0); // Position of course rows container
   const [completedFiles, setCompletedFiles] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedFiles');
@@ -4921,6 +4922,7 @@ export default function Dashboard() {
       if (calendarWrapperRef.current) {
         const rect = calendarWrapperRef.current.getBoundingClientRect();
         setCalendarTop(rect.top + window.scrollY);
+        setCalendarRight(window.innerWidth - rect.right);
       }
       // Also track course rows container position directly
       if (courseRowsRef.current) {
@@ -9111,7 +9113,7 @@ export default function Dashboard() {
         </div>
       </div>
       {/* Month/Week toggle - right aligned to calendar */}
-      <div className="absolute z-50 flex justify-end" style={{ top: `${calendarTop - 34}px`, right: '67px' }}>
+      <div className="absolute z-50 flex justify-end" style={{ top: `${calendarTop - 34}px`, right: `${calendarRight}px` }}>
         <Button 
           variant="ghost"
           className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase"
