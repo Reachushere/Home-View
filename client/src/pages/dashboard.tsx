@@ -11071,12 +11071,12 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black" }}
+                    style={{ backgroundColor: isToday ? colorSettings.todayCellBackground : "black" }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <div className="text-2xl font-bold text-white">{dayNum}</div>
-                      <div className="text-[10px] font-medium tracking-wide text-white/80">{dayName}</div>
+                      <div className="text-2xl font-bold" style={{ color: isToday ? '#000' : '#fff' }}>{dayNum}</div>
+                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
                     </div>
                     {idx < 5 && (
                       <div
@@ -11108,15 +11108,15 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: isToday ? colorSettings.todayCellBackground : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isToday && new Date().getDay() !== 6 && (
                       <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#E8E656' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
-                      <div className="text-2xl font-bold text-white">{dayNum}</div>
-                      <div className="text-[10px] font-medium tracking-wide text-white/80">{dayName}</div>
+                      <div className="text-2xl font-bold" style={{ color: isToday ? '#000' : '#fff' }}>{dayNum}</div>
+                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
                     </div>
                   </div>
                 );
@@ -11704,7 +11704,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? '#e8e8e8' : 'white'
+                      backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -11829,7 +11829,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l border-border/50 relative flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#e8e8e8' : 'white', padding: '2px 2px 2px 8px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white', padding: '2px 2px 2px 8px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -11915,7 +11915,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isToday && isCurrentHour ? '#d9d9d9' : isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5'
+                            backgroundColor: isToday && isCurrentHour ? '#c8c8c8' : isToday ? colorSettings.todayCellBackground : isCurrentHour ? '#e8e8e8' : '#faf8f5'
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
@@ -11945,7 +11945,7 @@ export default function Dashboard() {
                           <div 
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
-                              backgroundColor: isToday && isCurrentHour ? '#d9d9d9' : isToday || isCurrentHour ? '#e8e8e8' : undefined,
+                              backgroundColor: isToday && isCurrentHour ? '#c8c8c8' : isToday ? colorSettings.todayCellBackground : isCurrentHour ? '#e8e8e8' : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
@@ -12114,7 +12114,7 @@ export default function Dashboard() {
                       const isSatToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
-                      const satBg = isSatToday && isCurrentHour ? '#d9d9d9' : isSatToday || isCurrentHour ? '#e8e8e8' : '#faf8f5';
+                      const satBg = isSatToday && isCurrentHour ? '#c8c8c8' : isSatToday ? colorSettings.todayCellBackground : isCurrentHour ? '#e8e8e8' : '#faf8f5';
                       return (
                         <div 
                           className={`border-l border-border/50 border-t border-t-gray-300/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isSatToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
