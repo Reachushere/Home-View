@@ -849,6 +849,8 @@ export default function Dashboard() {
   // Profile state
   const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   const [isSchoolDialogOpen, setIsSchoolDialogOpen] = useState(false);
+  const [schoolEditCourseIdx, setSchoolEditCourseIdx] = useState<number | null>(null);
+  const [schoolEditCourseData, setSchoolEditCourseData] = useState({ code: '', name: '', professor: '', email: '' });
   const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
   // Discussion post checkbox states (persisted per week in localStorage)
   const [startDiscussionComplete, setStartDiscussionComplete] = useState<boolean>(() => {
@@ -10256,67 +10258,44 @@ export default function Dashboard() {
                               data-testid={`input-school-course-color-${index}`}
                             />
                           </div>
-                          <input
-                            type="text"
-                            className="text-[10px] text-white bg-transparent border-b border-transparent hover:border-white/30 focus:border-white/60 focus:outline-none font-medium w-[60px] px-0"
-                            value={courseCode}
-                            onChange={(e) => {
-                              const updatedCourses = [...coursesData.courses];
-                              const newName = courseName !== courseCode ? `${e.target.value} - ${courseName}` : e.target.value;
-                              updatedCourses[index] = { ...updatedCourses[index], name: newName };
-                              setCoursesData({ courses: updatedCourses });
-                              localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                              saveCourses({ courses: updatedCourses });
-                            }}
-                            data-testid={`input-school-course-code-${index}`}
-                          />
-                          {courseName !== courseCode && (
-                            <>
-                              <span className="text-[10px] text-white/70">-</span>
-                              <input
-                                type="text"
-                                className="text-[10px] text-white bg-transparent border-b border-transparent hover:border-white/30 focus:border-white/60 focus:outline-none flex-1 min-w-0 px-0"
-                                value={courseName}
-                                onChange={(e) => {
-                                  const updatedCourses = [...coursesData.courses];
-                                  updatedCourses[index] = { ...updatedCourses[index], name: `${courseCode} - ${e.target.value}` };
-                                  setCoursesData({ courses: updatedCourses });
-                                  localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                                  saveCourses({ courses: updatedCourses });
+                          <span className="text-[10px] text-white">
+                            <span className="font-medium">{courseCode}</span>
+                            {courseName !== courseCode && <span className="text-white/80"> {courseName}</span>}
+                          </span>
+                          {course.professor && (
+                            professorEmail ? (
+                              <a
+                                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[10px] !text-blue-400 underline hover:!text-blue-300 cursor-pointer"
+                                data-testid={`link-school-email-professor-${index + 1}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                 }}
-                                data-testid={`input-school-course-name-${index}`}
-                              />
-                            </>
+                              >
+                                {course.professor}
+                              </a>
+                            ) : (
+                              <span className="text-[10px] text-white/70">{course.professor}</span>
+                            )
                           )}
-                          <span className="text-[10px] text-white/50 mx-0.5">|</span>
-                          <input
-                            type="text"
-                            className="text-[10px] text-white/70 bg-transparent border-b border-transparent hover:border-white/30 focus:border-white/60 focus:outline-none w-[70px] px-0"
-                            value={course.professor || ''}
-                            placeholder="Prof..."
-                            onChange={(e) => {
-                              const updatedCourses = [...coursesData.courses];
-                              updatedCourses[index] = { ...updatedCourses[index], professor: e.target.value };
-                              setCoursesData({ courses: updatedCourses });
-                              localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                              saveCourses({ courses: updatedCourses });
+                          <button
+                            className="flex-shrink-0 p-0.5 rounded hover:bg-white/10 cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSchoolEditCourseData({
+                                code: courseCode,
+                                name: courseName !== courseCode ? courseName : '',
+                                professor: course.professor || '',
+                                email: course.professorEmail || '',
+                              });
+                              setSchoolEditCourseIdx(index);
                             }}
-                            data-testid={`input-school-professor-${index}`}
-                          />
-                          <input
-                            type="text"
-                            className="text-[10px] !text-blue-400 bg-transparent border-b border-transparent hover:border-white/30 focus:border-white/60 focus:outline-none w-[90px] px-0"
-                            value={course.professorEmail || ''}
-                            placeholder="email..."
-                            onChange={(e) => {
-                              const updatedCourses = [...coursesData.courses];
-                              updatedCourses[index] = { ...updatedCourses[index], professorEmail: e.target.value };
-                              setCoursesData({ courses: updatedCourses });
-                              localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
-                              saveCourses({ courses: updatedCourses });
-                            }}
-                            data-testid={`input-school-professor-email-${index}`}
-                          />
+                            data-testid={`button-edit-course-${index}`}
+                          >
+                            <Pencil className="w-2.5 h-2.5 text-white/50 hover:text-white/80" />
+                          </button>
                           <label className="flex items-center gap-1 ml-auto cursor-pointer" data-testid={`checkbox-school-aas-${courseCode}`} onClick={() => toggleAasSent(courseCode)}>
                             <div className={`w-3 h-3 rounded-sm border flex items-center justify-center flex-shrink-0 ${aasSentStatus[courseCode] ? 'bg-blue-500 border-blue-500' : 'border-amber-400 bg-transparent'}`}>
                               {aasSentStatus[courseCode] && (
@@ -10339,6 +10318,91 @@ export default function Dashboard() {
                     );
                   })}
                 </div>
+
+                {/* Course Edit Dialog */}
+                {schoolEditCourseIdx !== null && (
+                  <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50" onClick={() => setSchoolEditCourseIdx(null)}>
+                    <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-white/20 rounded-lg p-4 w-[280px] space-y-3 shadow-xl" onClick={(e) => e.stopPropagation()}>
+                      <h3 className="text-[11px] font-medium text-white">Edit Course</h3>
+                      <div className="space-y-2">
+                        <div>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Course Code</label>
+                          <input
+                            type="text"
+                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            value={schoolEditCourseData.code}
+                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, code: e.target.value }))}
+                            data-testid="input-edit-course-code"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Course Name</label>
+                          <input
+                            type="text"
+                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            value={schoolEditCourseData.name}
+                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, name: e.target.value }))}
+                            data-testid="input-edit-course-name"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Professor Name</label>
+                          <input
+                            type="text"
+                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            value={schoolEditCourseData.professor}
+                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, professor: e.target.value }))}
+                            data-testid="input-edit-professor-name"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[9px] text-white/60 block mb-0.5">Professor Email</label>
+                          <input
+                            type="text"
+                            className="w-full text-[10px] text-white bg-white/10 border border-white/20 rounded px-2 py-1 focus:outline-none focus:border-white/50"
+                            value={schoolEditCourseData.email}
+                            onChange={(e) => setSchoolEditCourseData(prev => ({ ...prev, email: e.target.value }))}
+                            data-testid="input-edit-professor-email"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex gap-2 justify-end pt-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-[10px] h-6 px-2 text-white/70"
+                          onClick={() => setSchoolEditCourseIdx(null)}
+                          data-testid="button-cancel-edit-course"
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="text-[10px] h-6 px-3 bg-blue-600 hover:bg-blue-700 text-white"
+                          onClick={() => {
+                            const updatedCourses = [...coursesData.courses];
+                            const fullName = schoolEditCourseData.name
+                              ? `${schoolEditCourseData.code} - ${schoolEditCourseData.name}`
+                              : schoolEditCourseData.code;
+                            updatedCourses[schoolEditCourseIdx] = {
+                              ...updatedCourses[schoolEditCourseIdx],
+                              name: fullName,
+                              professor: schoolEditCourseData.professor,
+                              professorEmail: schoolEditCourseData.email,
+                            };
+                            setCoursesData({ courses: updatedCourses });
+                            localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                            saveCourses({ courses: updatedCourses });
+                            setSchoolEditCourseIdx(null);
+                          }}
+                          data-testid="button-save-edit-course"
+                        >
+                          Save
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 
                 {/* Weeks */}
                 <div className="border rounded-lg p-3 space-y-0.5">
