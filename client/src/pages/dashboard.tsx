@@ -10331,7 +10331,7 @@ export default function Dashboard() {
                     const isWeekFinished = startOfDay(weekEnd) < startOfDay(new Date());
                     const isSelected = selectedWeek === week.weekNumber && !selectedDate;
                     return (
-                      <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
+                      <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md`} style={isSelected ? { backgroundColor: 'rgba(255,255,255,0.15)' } : undefined}>
                         <Button
                           variant="ghost"
                           className={`justify-start gap-1 h-auto py-1 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
@@ -10344,14 +10344,14 @@ export default function Dashboard() {
                           data-testid={`button-week-school-${week.weekNumber}`}
                         >
                           <div className={`flex items-center gap-1 ${isWeekFinished ? "line-through" : ""}`}>
-                            <Calendar className={`h-3 w-3 ${isSelected ? 'text-black' : 'text-white'}`} />
-                            <span className={`text-[10px] ${isSelected ? 'text-black' : 'text-white'}`}>Week {week.weekNumber}</span>
-                            <span className={`text-[10px] font-bold ${isSelected ? 'text-black' : 'text-white/70'}`}>
+                            <Calendar className="h-3 w-3 text-white" />
+                            <span className="text-[10px] text-white">Week {week.weekNumber}</span>
+                            <span className={`text-[10px] font-bold ${isSelected ? 'text-white' : 'text-white/70'}`}>
                               ({format(parseISO(week.startDate), "MMM d")} - {format(parseISO(week.endDate), "MMM d")})
                             </span>
                           </div>
                           {week.taskCount > 0 && (
-                            <Badge variant="outline" className={`text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto ${isSelected ? 'text-black border-black' : 'text-white border-white'}`}>
+                            <Badge variant="outline" className="text-[10px] px-1 py-0 min-w-5 text-center justify-center ml-auto text-white border-white">
                               {week.taskCount}
                             </Badge>
                           )}
