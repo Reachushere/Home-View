@@ -2047,11 +2047,11 @@ export default function Dashboard() {
   }, []);
 
   // Update clock every second and detect week change (Sunday midnight)
-  const lastWeekRef = useRef(() => {
+  const lastWeekRef = useRef((() => {
     const now = new Date();
     const startOfYear = new Date(now.getFullYear(), 0, 1);
     return Math.floor((now.getTime() - startOfYear.getTime()) / (7 * 24 * 60 * 60 * 1000));
-  });
+  })());
   const lastDateRef = useRef(new Date().getDate());
   useEffect(() => {
     const getWeekNumber = (date: Date) => {
@@ -2734,6 +2734,8 @@ export default function Dashboard() {
     objectPath: string;
     folder: string | null;
     listened?: boolean;
+    lastChunkIndex?: number;
+    totalChunks?: number;
   }
   const { data: allFiles = [] } = useQuery<FileItem[]>({
     queryKey: ["/api/files"],
@@ -2904,10 +2906,10 @@ export default function Dashboard() {
     } catch { return null; }
   };
   
-  const saveTtsProgress = (fileId: number, chunkIndex: number, wordIndex: number, charPosition?: number) => {
+  const saveTtsProgress = (fileId: number, chunkIndex: number, wordIndex: number, charPosition?: number, overrideTotalChunks?: number) => {
     try {
       localStorage.setItem(`tts-progress-${fileId}`, JSON.stringify({ chunkIndex, wordIndex, charPosition: charPosition || 0 }));
-      const totalChunksVal = ttsChunksRef.current.length;
+      const totalChunksVal = overrideTotalChunks || ttsChunksRef.current.length;
       console.log(`[saveTtsProgress] fileId=${fileId}, chunkIndex=${chunkIndex}, totalChunks=${totalChunksVal}`);
       if (totalChunksVal > 0) {
         const isFinished = chunkIndex + 1 >= totalChunksVal;
@@ -3024,8 +3026,11 @@ export default function Dashboard() {
   }, [currentWordIndex, isPlaying, syncHighlight, pageWordBoundaries, numPages]);
   
   // Keep previewFileRef in sync with state (avoids stale closures in TTS callbacks)
+  // IMPORTANT: Only update when file is set (not null) — the cleanup effect needs the old ref
   useEffect(() => {
-    previewFileRef.current = previewFile;
+    if (previewFile) {
+      previewFileRef.current = previewFile;
+    }
   }, [previewFile]);
 
   // Load PDF when file is selected
@@ -3192,16 +3197,43 @@ export default function Dashboard() {
           .finally(() => setIsLoadingText(false));
       }
     } else {
+      // Save progress BEFORE clearing anything — capture current state
+      const closingFile = previewFileRef.current;
+      const closingChunkIndex = currentChunkIndexRef.current;
+      const closingTotalChunks = ttsChunksRef.current.length;
+      
+      // Stop any playing TTS immediately
+      shouldContinueRef.current = false;
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      if (openaiAudioRef.current) {
+        openaiAudioRef.current.pause();
+        openaiAudioRef.current = null;
+      }
+      
+      // Save progress to DB for the file that was playing
+      // Pass closingTotalChunks directly since ttsChunksRef may get cleared
+      if (closingFile && closingTotalChunks > 0 && closingChunkIndex > 0) {
+        let charPosition = 0;
+        const closingChunks = ttsChunksRef.current;
+        for (let i = 0; i < closingChunkIndex; i++) {
+          charPosition += closingChunks[i]?.length || 0;
+        }
+        saveTtsProgress(closingFile.id, closingChunkIndex, currentWordIndex, charPosition, closingTotalChunks);
+      }
+      
+      // Now clear everything AFTER saving
+      previewFileRef.current = null;
       setPreviewText("");
       setCurrentWordIndex(0);
       setIsPlaying(false);
-      // Also clear TTS chunks when closing preview
+      isPlayingRef.current = false;
       ttsChunksRef.current = [];
       setTtsChunks([]);
       setTotalChunks(0);
       setCurrentChunkIndex(0);
       currentChunkIndexRef.current = 0;
-      shouldContinueRef.current = false;
       if (highlightIntervalRef.current) {
         clearInterval(highlightIntervalRef.current);
         highlightIntervalRef.current = null;
@@ -3694,15 +3726,13 @@ export default function Dashboard() {
           setTotalChunks(chunks.length);
         }
         
-        // Check for saved progress
+        // Check for saved progress (localStorage first, then DB fallback)
         let startChunk = 0;
         let startWordOffset = 0;
         if (resumeFromProgress && previewFile) {
           const progress = getTtsProgress(previewFile.id);
           if (progress) {
-            // Use character position if available (works across different chunk sizes)
             if (progress.charPosition && progress.charPosition > 0) {
-              // Find which chunk contains this character position
               let charCount = 0;
               for (let i = 0; i < chunks.length; i++) {
                 charCount += chunks[i].length;
@@ -3711,13 +3741,17 @@ export default function Dashboard() {
                   break;
                 }
               }
-              // Clamp to valid range
               startChunk = Math.min(startChunk, chunks.length - 1);
             } else {
-              // Fallback to chunk index (clamp to valid range)
               startChunk = Math.min(progress.chunkIndex, chunks.length - 1);
             }
-            // Calculate word offset from previous chunks
+            for (let i = 0; i < startChunk; i++) {
+              startWordOffset += chunks[i].split(/\s+/).length;
+            }
+            toast({ title: `Resuming from chunk ${startChunk + 1} of ${chunks.length}` });
+          } else if (previewFile.lastChunkIndex && previewFile.lastChunkIndex > 0 && previewFile.totalChunks && previewFile.totalChunks > 0) {
+            // Fallback: use DB-stored progress (lastChunkIndex is 1-indexed, convert to 0-indexed)
+            startChunk = Math.min(previewFile.lastChunkIndex, chunks.length - 1);
             for (let i = 0; i < startChunk; i++) {
               startWordOffset += chunks[i].split(/\s+/).length;
             }
