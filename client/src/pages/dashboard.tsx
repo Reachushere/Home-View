@@ -10207,7 +10207,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Right Column - Courses & Weeks */}
-                <div className="flex flex-col gap-4" style={{ paddingTop: '0px' }}>
+                <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-8px' }}>
                 {/* Course Legend */}
                 <div className="border rounded-lg p-3 space-y-3">
                   <Label className="text-[10px] font-medium">Courses</Label>
