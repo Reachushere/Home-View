@@ -11154,6 +11154,19 @@ export default function Dashboard() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
+          {/* Gap filler - covers area between card bottom and glass box bottom */}
+          <div 
+            className="absolute pointer-events-none"
+            style={{ 
+              bottom: '-27px',
+              left: 0,
+              right: 0,
+              height: '40px',
+              background: '#faf8f5',
+              borderRadius: '0 0 16px 16px',
+              zIndex: 1
+            }}
+          />
           
           {/* BRYN reminder - positioned above today column outside the card */}
           <div className="grid w-full h-[15px] flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns(), marginTop: '-4px' }}>
@@ -11173,7 +11186,7 @@ export default function Dashboard() {
             <div style={{ minWidth: 0 }} /> {/* Progress column spacer */}
             <div style={{ minWidth: 0 }} /> {/* Saturday column spacer */}
           </div>
-          <div className="shadow-lg border border-white flex flex-col relative flex-1" style={{ background: '#faf8f5', borderRadius: '16px', overflow: 'clip', marginBottom: '-27px' }}>
+          <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '16px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - dashed (6.5 / 7.5 total column widths), hidden on Saturday */}
             {new Date().getDay() !== 6 && (
             <div className="absolute top-0 bottom-0 w-[5px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
