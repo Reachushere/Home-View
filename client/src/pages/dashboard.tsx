@@ -11496,10 +11496,11 @@ export default function Dashboard() {
                   return false;
                 }).length || 0;
                 
-                // Use pre-computed max height so all course rows are the same height
+                // Dynamic row height: base height or 20px per task row, whichever is larger
+                const dynamicRowHeight = Math.max(gridSizes.courseRowHeight, courseTaskCount * 20 + 4);
                 
                 return (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px` }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${dynamicRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ backgroundColor: course.label }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
