@@ -9328,28 +9328,26 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <div className="absolute flex items-center gap-1 w-full left-0 px-2.5" style={{ bottom: courseId === 'cppa122' ? '28px' : '30px' }}>
+                  <div className="absolute left-0 w-full px-2.5" style={{ bottom: courseId === 'cppa122' ? '28px' : '30px' }}>
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
-                    <div className="flex-1" />
                     {moduleCount > 0 ? (
-                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1 }}>
+                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                         {moduleCount}
                       </span>
                     ) : moduleListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1 }}>
+                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                         {moduleListenedCount}
                       </span>
                     ) : null}
                   </div>
-                  <div className="absolute flex items-center gap-1 w-full left-0 px-2.5" style={{ bottom: (courseId === 'cfnf400' || courseId === 'casl101') ? '8px' : '5px' }}>
+                  <div className="absolute left-0 w-full px-2.5" style={{ bottom: (courseId === 'cfnf400' || courseId === 'casl101') ? '8px' : '5px' }}>
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
-                    <div className="flex-1" />
                     {readingCount > 0 ? (
-                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1 }}>
+                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                         {readingCount}
                       </span>
                     ) : readingListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1 }}>
+                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                         {readingListenedCount}
                       </span>
                     ) : null}
