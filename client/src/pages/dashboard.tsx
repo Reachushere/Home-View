@@ -1123,12 +1123,12 @@ export default function Dashboard() {
       todayCurrentHourCellBackground: '#160502'
     };
     // Check if migration has been done
-    const migrationDone = localStorage.getItem('colorSettingsMigrationV6');
+    const migrationDone = localStorage.getItem('colorSettingsMigrationV7');
     if (!migrationDone) {
       const existing = saved ? JSON.parse(saved) : {};
       const migrated = { ...defaults, ...existing, todayCellBackground: '#d4d4d4', currentHourRowBackground: '#d4d4d4' };
       localStorage.setItem('colorSettings', JSON.stringify(migrated));
-      localStorage.setItem('colorSettingsMigrationV6', 'done');
+      localStorage.setItem('colorSettingsMigrationV7', 'done');
       return migrated;
     }
     if (saved) {
@@ -11968,12 +11968,12 @@ export default function Dashboard() {
                   <div 
                     key={hour} 
                     className={`grid relative group/row flex-shrink-0 ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
-                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: isCurrentHour ? colorSettings.currentHourRowBackground : '#faf8f5' }}
+                    style={{ gridTemplateColumns: getGridTemplateColumns(), height: `${rowHeight}px`, minHeight: `${rowHeight}px`, overflow: 'visible', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined, backgroundColor: isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5' }}
                   >
                     <div className={`text-[10px] font-medium tracking-wide flex items-center justify-center relative ${isCurrentHour && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`} style={{ backgroundColor: isCurrentHour ? colorSettings.todayCurrentHourCellBackground : colorSettings.headerBar, color: 'white', borderBottomLeftRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined }}>
                       {hour === 0 || hour === 24 ? '12 AM' : hour === 12 ? '12 PM' : hour > 12 ? `${hour - 12} PM` : `${hour} AM`}
                     </div>
-                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? colorSettings.currentHourRowBackground : '#faf8f5' }} />}
+                    {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5' }} />}
                     {weekDays.slice(0, 6).map((day, dayIdx) => {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
@@ -11992,7 +11992,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isToday && isCurrentHour ? '#c8c8c8' : isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourRowBackground : '#faf8f5'
+                            backgroundColor: isToday || isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5'
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
@@ -12022,7 +12022,7 @@ export default function Dashboard() {
                           <div 
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
-                              backgroundColor: isToday && isCurrentHour ? '#c8c8c8' : isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourRowBackground : undefined,
+                              backgroundColor: isToday || isCurrentHour ? colorSettings.todayCellBackground : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
@@ -12196,7 +12196,7 @@ export default function Dashboard() {
                       const isSatToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
-                      const satBg = isSatToday && isCurrentHour ? '#c8c8c8' : isSatToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourRowBackground : '#faf8f5';
+                      const satBg = isSatToday || isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5';
                       return (
                         <div 
                           className={`border-l border-border/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isSatToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
