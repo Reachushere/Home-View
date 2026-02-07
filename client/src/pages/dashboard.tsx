@@ -10015,16 +10015,7 @@ export default function Dashboard() {
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
                 <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200"
-                    onClick={() => setIsNewCourseDialogOpen(true)}
-                    data-testid="button-new-course-school"
-                  >
-                    <Plus className="h-3.5 w-3.5 mr-1" />
-                    New Course
-                  </Button>
+                  <Settings className="h-4 w-4 text-white/70" />
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
@@ -10052,6 +10043,16 @@ export default function Dashboard() {
                   onSave={saveSchool}
                   onCancel={() => setIsSchoolDialogOpen(false)} 
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border !border-white/50 text-white hover:text-white hover:!border-white hover:bg-transparent transition-all duration-200 w-full"
+                  onClick={() => setIsNewCourseDialogOpen(true)}
+                  data-testid="button-new-course-school"
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  New Course
+                </Button>
                 </div>
                 
                 {/* Right Column - Courses & Weeks */}
