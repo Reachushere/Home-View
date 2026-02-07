@@ -11150,7 +11150,9 @@ export default function Dashboard() {
             <div style={{ minWidth: 0 }} /> {/* Progress column spacer */}
             <div style={{ minWidth: 0 }} /> {/* Saturday column spacer */}
           </div>
-          <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', borderRadius: '16px', overflow: 'clip' }}>
+          <div className="h-full flex flex-col relative" style={{ borderRadius: '16px' }}>
+            <div className="absolute inset-0 pointer-events-none z-[100]" style={{ border: '2px solid black', borderRadius: '16px' }} />
+            <div className="shadow-lg h-full flex flex-col relative" style={{ background: 'black', borderRadius: '16px', overflow: 'clip' }}>
             {/* Progress/Saturday divider line - dashed (6.5 / 7.5 total column widths), hidden on Saturday */}
             {new Date().getDay() !== 6 && (
             <div className="absolute top-0 bottom-0 w-[5px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
