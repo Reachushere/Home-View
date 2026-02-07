@@ -11499,13 +11499,13 @@ export default function Dashboard() {
                           </>
                         );
                       }
-                      // CASL101: show full name
+                      // CASL101: show full name, centered
                       if (code === 'CASL101') {
                         return (
                           <>
-                            <span>CASL101</span>
-                            <span>American Sign</span>
-                            <span>Language</span>
+                            <span className="text-center">CASL101</span>
+                            <span className="text-center">American Sign</span>
+                            <span className="text-center">Language</span>
                           </>
                         );
                       }
