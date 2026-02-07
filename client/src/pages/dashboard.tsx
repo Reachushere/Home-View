@@ -117,6 +117,7 @@ import {
   Lock,
   AlertCircle,
   Plane,
+  List,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -2535,6 +2536,66 @@ export default function Dashboard() {
       ? localStickyNoteContent[note.id] 
       : note.content;
   }, [localStickyNoteContent]);
+
+  const toggleStickyNoteBullets = useCallback((noteId: number, textareaEl: HTMLTextAreaElement | null) => {
+    const currentContent = localStickyNoteContent[noteId] ?? '';
+    const lines = currentContent.split('\n');
+    const hasBullets = lines.some(line => line.trimStart().startsWith('\u2022 '));
+    
+    let newContent: string;
+    if (hasBullets) {
+      newContent = lines.map(line => {
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith('\u2022 ')) {
+          return line.replace(/\u2022 /, '');
+        }
+        return line;
+      }).join('\n');
+    } else {
+      newContent = lines.map(line => {
+        if (line.trim() === '') return line;
+        return '\u2022 ' + line;
+      }).join('\n');
+    }
+    
+    handleStickyNoteContentChange(noteId, newContent);
+    if (textareaEl) {
+      setTimeout(() => textareaEl.focus(), 0);
+    }
+  }, [localStickyNoteContent, handleStickyNoteContentChange]);
+
+  const handleStickyNoteKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>, noteId: number) => {
+    if (e.key === 'Enter') {
+      const textarea = e.currentTarget;
+      const { selectionStart } = textarea;
+      const content = textarea.value;
+      const lineStart = content.lastIndexOf('\n', selectionStart - 1) + 1;
+      const currentLine = content.substring(lineStart, selectionStart);
+      
+      if (currentLine.trimStart().startsWith('\u2022 ')) {
+        if (currentLine.trim() === '\u2022') {
+          e.preventDefault();
+          const before = content.substring(0, lineStart);
+          const after = content.substring(selectionStart);
+          const newContent = before + after;
+          handleStickyNoteContentChange(noteId, newContent);
+          setTimeout(() => {
+            textarea.selectionStart = textarea.selectionEnd = lineStart;
+          }, 0);
+        } else {
+          e.preventDefault();
+          const before = content.substring(0, selectionStart);
+          const after = content.substring(selectionStart);
+          const newContent = before + '\n\u2022 ' + after;
+          handleStickyNoteContentChange(noteId, newContent);
+          setTimeout(() => {
+            const newPos = selectionStart + 3;
+            textarea.selectionStart = textarea.selectionEnd = newPos;
+          }, 0);
+        }
+      }
+    }
+  }, [handleStickyNoteContentChange]);
 
   // Handle sticky note title change with debounce to prevent cursor jumping
   const handleStickyNoteTitleChange = useCallback((noteId: number, newTitle: string) => {
@@ -9538,6 +9599,19 @@ export default function Dashboard() {
                     style={{ backgroundColor: note.customColor || colors.header }}
                   />
                 </div>
+                {/* Bullet list toggle */}
+                <button
+                  className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"
+                  onClick={() => {
+                    const textarea = document.querySelector(`[data-testid="sticky-note-content-${note.id}"]`) as HTMLTextAreaElement | null;
+                    toggleStickyNoteBullets(note.id, textarea);
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  title="Toggle bullet list"
+                  data-testid={`sticky-note-bullets-${note.id}`}
+                >
+                  <List className="h-3 w-3" />
+                </button>
                 {/* Minimize button */}
                 <button
                   className="h-4 w-4 flex items-center justify-center text-gray-600 hover:text-gray-800"
@@ -9565,6 +9639,7 @@ export default function Dashboard() {
                   style={{ backgroundColor: 'transparent', fontFamily: 'inherit' }}
                   value={getStickyNoteContent(note)}
                   onChange={(e) => handleStickyNoteContentChange(note.id, e.target.value)}
+                  onKeyDown={(e) => handleStickyNoteKeyDown(e, note.id)}
                   placeholder="Write your note here..."
                   data-testid={`sticky-note-content-${note.id}`}
                 />
