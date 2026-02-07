@@ -904,249 +904,11 @@ export default function Dashboard() {
   
   // TEST: Isolated progress bar position (completely separate from task columns)
   // Load from localStorage on init
-  const [testProgressBarLeft, setTestProgressBarLeft] = useState(() => {
-    const saved = localStorage.getItem('testProgressBarLeft');
-    return saved ? parseInt(saved) : 0;
-  });
-  const [testTextLeft, setTestTextLeft] = useState(() => {
-    const saved = localStorage.getItem('testTextLeft');
-    return saved ? parseInt(saved) : 8;
-  });
-  const [testCourseLeft, setTestCourseLeft] = useState(() => {
-    const saved = localStorage.getItem('testCourseLeft');
-    return saved ? parseInt(saved) : 12;
-  });
-  const [testCourseNameLeft, setTestCourseNameLeft] = useState(() => {
-    const saved = localStorage.getItem('testCourseNameLeft');
-    return saved ? parseInt(saved) : 8;
-  });
-  const [testDueDateLeft, setTestDueDateLeft] = useState(() => {
-    const saved = localStorage.getItem('testDueDateLeft');
-    return saved ? parseInt(saved) : 8;
-  });
-  const [testDaysLeftLeft, setTestDaysLeftLeft] = useState(() => {
-    const saved = localStorage.getItem('testDaysLeftLeft');
-    return saved ? parseInt(saved) : 8;
-  });
-  const [resizingTestBar, setResizingTestBar] = useState(false);
-  const [resizingTestText, setResizingTestText] = useState(false); // Separate state for text resizing
-  const [resizingTestCourse, setResizingTestCourse] = useState(false); // Separate state for course resizing
-  const [resizingTestCourseName, setResizingTestCourseName] = useState(false); // Separate state for course name resizing
-  const [resizingTestDueDate, setResizingTestDueDate] = useState(false); // Separate state for due date resizing
-  const [resizingTestDaysLeft, setResizingTestDaysLeft] = useState(false); // Separate state for days left resizing
-  const testBarStartX = useRef(0);
-  const testBarStartLeft = useRef(0);
-  const testTextStartX = useRef(0);
-  const testTextStartLeft = useRef(0);
-  const testCourseStartX = useRef(0);
-  const testCourseStartLeft = useRef(0);
-  const testCourseNameStartX = useRef(0);
-  const testCourseNameStartLeft = useRef(0);
-  const testDueDateStartX = useRef(0);
-  const testDueDateStartLeft = useRef(0);
-  const testDaysLeftStartX = useRef(0);
-  const testDaysLeftStartLeft = useRef(0);
-  
-  // Left handle: moves progress bar group
-  const handleTestBarResizeStart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setResizingTestBar(true);
-    testBarStartX.current = e.clientX;
-    testBarStartLeft.current = testProgressBarLeft;
-  };
-  
-  // Right handle: moves text only
-  const handleTestTextResizeStart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setResizingTestText(true);
-    testTextStartX.current = e.clientX;
-    testTextStartLeft.current = testTextLeft;
-  };
-  
-  // Third handle: moves course only
-  const handleTestCourseResizeStart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setResizingTestCourse(true);
-    testCourseStartX.current = e.clientX;
-    testCourseStartLeft.current = testCourseLeft;
-  };
-  
-  // Fourth handle: moves course name only
-  const handleTestCourseNameResizeStart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setResizingTestCourseName(true);
-    testCourseNameStartX.current = e.clientX;
-    testCourseNameStartLeft.current = testCourseNameLeft;
-  };
-  
-  // Fifth handle: moves due date only
-  const handleTestDueDateResizeStart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setResizingTestDueDate(true);
-    testDueDateStartX.current = e.clientX;
-    testDueDateStartLeft.current = testDueDateLeft;
-  };
-  
-  // Sixth handle: moves days left only
-  const handleTestDaysLeftResizeStart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setResizingTestDaysLeft(true);
-    testDaysLeftStartX.current = e.clientX;
-    testDaysLeftStartLeft.current = testDaysLeftLeft;
-  };
-  
-  useEffect(() => {
-    if (!resizingTestBar) return;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const diff = e.clientX - testBarStartX.current;
-      const newLeft = Math.max(0, Math.min(200, testBarStartLeft.current + diff));
-      console.log('Left handle - newLeft:', newLeft);
-      setTestProgressBarLeft(newLeft);
-    };
-    
-    const handleMouseUp = () => {
-      setResizingTestBar(false);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [resizingTestBar]);
-  
-  useEffect(() => {
-    if (!resizingTestText) return;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const diff = e.clientX - testTextStartX.current;
-      const newLeft = Math.max(0, Math.min(200, testTextStartLeft.current + diff));
-      console.log('Right handle - text newLeft:', newLeft);
-      setTestTextLeft(newLeft);
-    };
-    
-    const handleMouseUp = () => {
-      setResizingTestText(false);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [resizingTestText]);
-  
-  useEffect(() => {
-    if (!resizingTestCourse) return;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const diff = e.clientX - testCourseStartX.current;
-      const newLeft = Math.max(0, Math.min(200, testCourseStartLeft.current + diff));
-      console.log('Third handle - course newLeft:', newLeft);
-      setTestCourseLeft(newLeft);
-    };
-    
-    const handleMouseUp = () => {
-      setResizingTestCourse(false);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [resizingTestCourse]);
-  
-  useEffect(() => {
-    if (!resizingTestCourseName) return;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const diff = e.clientX - testCourseNameStartX.current;
-      const newLeft = Math.max(0, Math.min(200, testCourseNameStartLeft.current + diff));
-      console.log('Fourth handle - course name newLeft:', newLeft);
-      setTestCourseNameLeft(newLeft);
-    };
-    
-    const handleMouseUp = () => {
-      setResizingTestCourseName(false);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [resizingTestCourseName]);
-  
-  useEffect(() => {
-    if (!resizingTestDueDate) return;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const diff = e.clientX - testDueDateStartX.current;
-      const newLeft = Math.max(0, Math.min(200, testDueDateStartLeft.current + diff));
-      console.log('Fifth handle - due date newLeft:', newLeft);
-      setTestDueDateLeft(newLeft);
-    };
-    
-    const handleMouseUp = () => {
-      setResizingTestDueDate(false);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [resizingTestDueDate]);
-  
-  useEffect(() => {
-    if (!resizingTestDaysLeft) return;
-    
-    const handleMouseMove = (e: MouseEvent) => {
-      const diff = e.clientX - testDaysLeftStartX.current;
-      const newLeft = Math.max(0, Math.min(200, testDaysLeftStartLeft.current + diff));
-      console.log('Sixth handle - days left newLeft:', newLeft);
-      setTestDaysLeftLeft(newLeft);
-    };
-    
-    const handleMouseUp = () => {
-      setResizingTestDaysLeft(false);
-    };
-    
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [resizingTestDaysLeft]);
-
-  // Save test positions to localStorage (only after user interaction, not on mount)
-  const testPositionsInitialized = useRef(false);
-  useEffect(() => {
-    if (!testPositionsInitialized.current) {
-      testPositionsInitialized.current = true;
-      return;
-    }
-    localStorage.setItem('testProgressBarLeft', testProgressBarLeft.toString());
-    localStorage.setItem('testTextLeft', testTextLeft.toString());
-    localStorage.setItem('testCourseLeft', testCourseLeft.toString());
-    localStorage.setItem('testCourseNameLeft', testCourseNameLeft.toString());
-    localStorage.setItem('testDueDateLeft', testDueDateLeft.toString());
-    localStorage.setItem('testDaysLeftLeft', testDaysLeftLeft.toString());
-  }, [testProgressBarLeft, testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft, testDaysLeftLeft]);
+  const testProgressBarLeft = 0;
+  const testTextLeft = 8;
+  const testCourseLeft = 12;
+  const testCourseNameLeft = 8;
+  const testDueDateLeft = 8;
 
   // Task column widths - resizable
   const [taskColumnWidths, setTaskColumnWidths] = useState<{
@@ -1675,6 +1437,7 @@ export default function Dashboard() {
   const row1DaysRef = useRef<HTMLDivElement>(null);
   const row1ProgressBarRef = useRef<HTMLDivElement>(null);
   const row1ContainerRef = useRef<HTMLDivElement>(null);
+  const HEADER_POS = { remaining: 25, task: 75, code: 177, course: 247, due: 328, days: 407, progressBar: 18 };
   const [row1Positions, setRow1Positions] = useState({ task: 70, code: 170, course: 240, due: 340, days: 400, progressBar: 18, progressBarTop: 0 });
   
   // Save box order to localStorage
@@ -4912,7 +4675,7 @@ export default function Dashboard() {
       clearTimeout(timer);
       window.removeEventListener('resize', measurePositions);
     };
-  }, [testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft]);
+  }, []);
 
   // Track calendar wrapper and course rows positions for course button alignment
   useEffect(() => {
@@ -10906,19 +10669,7 @@ export default function Dashboard() {
                       };
                       setTaskColumnWidths(defaultWidths);
                       localStorage.setItem('taskColumnWidths', JSON.stringify(defaultWidths));
-                      // Also reset the test* position values
-                      setTestProgressBarLeft(0);
-                      setTestTextLeft(8);
-                      setTestCourseLeft(12);
-                      setTestCourseNameLeft(8);
-                      setTestDueDateLeft(8);
-                      setTestDaysLeftLeft(8);
-                      localStorage.setItem('testProgressBarLeft', '0');
-                      localStorage.setItem('testTextLeft', '8');
-                      localStorage.setItem('testCourseLeft', '12');
-                      localStorage.setItem('testCourseNameLeft', '8');
-                      localStorage.setItem('testDueDateLeft', '8');
-                      localStorage.setItem('testDaysLeftLeft', '8');
+                      
                       toast({ title: "Column widths reset", description: "All summary box columns have been reset to defaults." });
                     }}
                     data-testid="button-reset-column-widths"
@@ -13891,12 +13642,12 @@ export default function Dashboard() {
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.days}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due this week</div>
@@ -13926,93 +13677,44 @@ export default function Dashboard() {
               ) : (
               <>
               {/* Desktop Layout - Task row with labels above */}
-              <div ref={row1ContainerRef} className="flex" style={{ position: 'relative', width: '100%' }}>
+              <div ref={row1ContainerRef} className="flex items-end" style={{ position: 'relative', width: '100%', paddingTop: '12px' }}>
               {/* Blank checkbox - hidden for class type tasks */}
-              <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
+              <div className="flex-shrink-0 self-end" style={{ marginRight: '4px', marginBottom: '1px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
-              {/* Progress header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${23 + testProgressBarLeft}px`, top: '0px' }}>Remaining</span>
-              {/* Group 1: Left handle on header + progress bar on content line */}
-              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestBarResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Remaining</span>
-                </div>
-                <div ref={row1ProgressBarRef} style={{ position: 'relative', width: '44px', marginLeft: '7px', marginTop: '3px' }}>
+              {/* HARDCODED headers - absolute positioned, never move */}
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
+              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.days}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
+              {/* Group 1: Progress bar */}
+              <div className="flex-shrink-0 self-end flex flex-col" style={{ marginLeft: `${testProgressBarLeft}px` }}>
+                <div ref={row1ProgressBarRef} style={{ position: 'relative', width: '44px', marginLeft: '7px', marginBottom: '2px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[0]), opacity: 0.9 }} />
                 </div>
               </div>
-              {/* Task header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
               {/* Group 2: Task */}
-              <div ref={row1TaskRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestTextResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Task</span>
-                </div>
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px', maxWidth: `${row1Positions.code - row1Positions.task + 23}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
+              <div ref={row1TaskRef} className="flex-shrink-0 self-end" style={{ marginLeft: `${testTextLeft}px` }}>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginBottom: '0px', maxWidth: `${row1Positions.code - row1Positions.task + 23}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
               </div>
-              {/* Code header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 7}px`, top: '0px' }}>Code</span>
               {/* Group 3: Code */}
-              <div ref={row1CodeRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestCourseResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Code</span>
-                </div>
-                <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+              <div ref={row1CodeRef} className="flex-shrink-0 self-end" style={{ marginLeft: `${testCourseLeft}px` }}>
+                <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '7px', marginBottom: '1px', display: 'inline-block' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
               </div>
-              {/* Course header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 7}px`, top: '0px' }}>Course</span>
               {/* Group 4: Course */}
-              <div ref={row1CourseRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestCourseNameResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Course</span>
-                </div>
-                <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+              <div ref={row1CourseRef} className="flex-shrink-0 self-end" style={{ marginLeft: `${testCourseNameLeft}px` }}>
+                <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '7px', marginBottom: '1px', display: 'inline-block' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
               </div>
-              {/* Due header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due - 12}px`, top: '0px' }}>Due</span>
               {/* Group 5: Due */}
-              <div ref={row1DueRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  <div 
-                    className="cursor-col-resize"
-                    style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }}
-                    onMouseDown={handleTestDueDateResizeStart}
-                  />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Due</span>
-                </div>
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '-12px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
+              <div ref={row1DueRef} className="flex-shrink-0 self-end" style={{ marginLeft: `${testDueDateLeft}px` }}>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '-12px', marginBottom: '0px', display: 'inline-block' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
-              {/* Days header - absolute positioned */}
-              <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
               {/* Group 6: Days - absolutely positioned */}
-              <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '-4px', top: '2px' }}>
-                <div className="flex items-start" style={{ marginBottom: '6px' }}>
-                  <div style={{ width: '1px', height: '10px', backgroundColor: 'transparent', marginRight: '4px', marginTop: '-15px' }} />
-                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Days</span>
-                </div>
-                <span style={{ fontSize: '10px', color: getProgressColor(dueThisWeekTasks[0]), marginLeft: '7px', marginTop: '-3px', width: '22px', textAlign: 'right', display: 'inline-block' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+              <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '-4px', bottom: '2px' }}>
+                <span style={{ fontSize: '10px', color: getProgressColor(dueThisWeekTasks[0]), marginLeft: '7px', width: '22px', textAlign: 'right', display: 'inline-block' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
               {/* Second task row - only render after measurements are available */}
@@ -14132,12 +13834,12 @@ export default function Dashboard() {
                 <div style={{ position: 'relative', minHeight: '80px' }}>
                   {/* Headers row for empty state */}
                   <div style={{ position: 'relative', height: '12px', marginBottom: '2px' }}>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.progressBar + 7}px`, top: '0px' }}>Remaining</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.task + 5}px`, top: '0px' }}>Task</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.code + 5}px`, top: '0px' }}>Code</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.course + 5}px`, top: '0px' }}>Course</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.due + 5}px`, top: '0px' }}>Due</span>
-                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${row1Positions.days + 7}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.course}px`, top: '0px' }}>Course</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
+                    <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.days}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
                   </div>
                   {/* Empty state message - centered in body */}
                   <div className="flex items-center justify-center text-white/60 text-xs" style={{ height: '60px' }}>No tasks due today</div>
