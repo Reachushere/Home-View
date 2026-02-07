@@ -16154,33 +16154,18 @@ function SchoolForm({
               </SelectContent>
             </Select>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
-              <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
-                <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
-                  <SelectValue placeholder="Select day" />
-                </SelectTrigger>
-                <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
-                  {daysOfWeek.map(day => (
-                    <SelectItem key={day.value} value={day.value} className="!text-black !text-[10px]">{day.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="semesterType" className="text-[10px]">Semester Type</Label>
-              <Select value={semesterType} onValueChange={setSemesterType}>
-                <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-semester-type">
-                  <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
-                  <SelectItem value="fall" className="!text-black !text-[10px]">Fall</SelectItem>
-                  <SelectItem value="winter" className="!text-black !text-[10px]">Winter</SelectItem>
-                  <SelectItem value="spring_summer" className="!text-black !text-[10px]">Spring/Summer</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-1">
+            <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
+            <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
+              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
+                <SelectValue placeholder="Select day" />
+              </SelectTrigger>
+              <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
+                {daysOfWeek.map(day => (
+                  <SelectItem key={day.value} value={day.value} className="!text-black !text-[10px]">{day.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="text-[9px] text-muted-foreground pt-1">
             Semester ends: {semesterEnd}
@@ -16196,17 +16181,32 @@ function SchoolForm({
               <span className="text-white/70">Semester</span>
               <span className="font-medium">{semesterSettings.semesterName}</span>
             </div>
-            <div className="space-y-1">
-              <Label htmlFor="week1StartDate" className="text-[10px] text-white/70">Week 1, Day 1 Date</Label>
-              <Input 
-                id="week1StartDate"
-                type="date"
-                value={week1StartDate}
-                onChange={(e) => setWeek1StartDate(e.target.value)}
-                className="!text-black !text-[10px] h-8"
-                style={{ fontSize: '10px' }}
-                data-testid="input-week1-start-date"
-              />
+            <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-1">
+                <Label htmlFor="week1StartDate" className="text-[10px] text-white/70">Week 1, Day 1 Date</Label>
+                <Input 
+                  id="week1StartDate"
+                  type="date"
+                  value={week1StartDate}
+                  onChange={(e) => setWeek1StartDate(e.target.value)}
+                  className="!text-black !text-[10px] h-8"
+                  style={{ fontSize: '10px' }}
+                  data-testid="input-week1-start-date"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="semesterType" className="text-[10px] text-white/70">Semester Type</Label>
+                <Select value={semesterType} onValueChange={setSemesterType}>
+                  <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-semester-type">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
+                    <SelectItem value="fall" className="!text-black !text-[10px]">Fall</SelectItem>
+                    <SelectItem value="winter" className="!text-black !text-[10px]">Winter</SelectItem>
+                    <SelectItem value="spring_summer" className="!text-black !text-[10px]">Spring/Summer</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           <p className="text-[8px] text-white/40 mt-1">Course details shown in the Courses section.</p>
