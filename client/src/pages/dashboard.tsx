@@ -11275,7 +11275,8 @@ export default function Dashboard() {
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg }} />}
                   {weekDays.slice(0, 6).map((day, dayIdx) => {
-                    const cellBgColor = course.bg;
+                    const isDayToday = isSameDay(day, new Date());
+                    const cellBgColor = isDayToday ? '#e8e8e8' : course.bg;
                     const cellDate = startOfDay(day);
                     
                     const dueTasks = tasks?.filter(task => {
@@ -11467,6 +11468,7 @@ export default function Dashboard() {
                   {/* Saturday column cell */}
                   {weekDays[6] && (() => {
                     const day = weekDays[6];
+                    const isSatToday = isSameDay(day, new Date());
                     const cellDate = startOfDay(day);
                     const dueTasks = tasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
@@ -11491,7 +11493,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: course.bg, padding: '2px 2px 2px 4px' }}
+                        style={{ backgroundColor: isSatToday ? '#e8e8e8' : course.bg, padding: '2px 2px 2px 4px' }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
