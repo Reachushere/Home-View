@@ -1807,9 +1807,13 @@ export default function Dashboard() {
     toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
   
-  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => {
-    setSchoolData(data);
-    localStorage.setItem('schoolData', JSON.stringify(data));
+  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; semesterType?: string }) => {
+    const { semesterType: semType, ...schoolOnly } = data;
+    setSchoolData(schoolOnly);
+    localStorage.setItem('schoolData', JSON.stringify(schoolOnly));
+    if (semType && semesterSettings) {
+      saveSemesterScheduleMutation.mutate({ semesterType: semType });
+    }
     setIsSchoolDialogOpen(false);
     toast({ title: "School settings saved", description: "Your school settings have been updated." });
   };
@@ -16079,7 +16083,7 @@ function SchoolForm({
 }: { 
   schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string };
   semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string }) => void;
+  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; semesterType?: string }) => void;
   onCancel: () => void;
 }) {
   const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
@@ -16087,6 +16091,7 @@ function SchoolForm({
   const [numberOfWeeks, setNumberOfWeeks] = useState(schoolData.numberOfWeeks);
   const [week1StartDate, setWeek1StartDate] = useState(schoolData.week1StartDate);
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
+  const [semesterType, setSemesterType] = useState(semesterSettings?.semesterType || 'winter');
   
   const daysOfWeek = [
     { value: 'sunday', label: 'Sunday' },
@@ -16101,7 +16106,7 @@ function SchoolForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
-    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek });
+    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, semesterType });
   };
 
   const semesterEnd = week1StartDate 
@@ -16149,18 +16154,33 @@ function SchoolForm({
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
-            <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
-              <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
-                <SelectValue placeholder="Select day" />
-              </SelectTrigger>
-              <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
-                {daysOfWeek.map(day => (
-                  <SelectItem key={day.value} value={day.value} className="!text-black !text-[10px]">{day.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
+              <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
+                <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
+                  <SelectValue placeholder="Select day" />
+                </SelectTrigger>
+                <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
+                  {daysOfWeek.map(day => (
+                    <SelectItem key={day.value} value={day.value} className="!text-black !text-[10px]">{day.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="semesterType" className="text-[10px]">Semester Type</Label>
+              <Select value={semesterType} onValueChange={setSemesterType}>
+                <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-semester-type">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
+                  <SelectItem value="fall" className="!text-black !text-[10px]">Fall</SelectItem>
+                  <SelectItem value="winter" className="!text-black !text-[10px]">Winter</SelectItem>
+                  <SelectItem value="spring_summer" className="!text-black !text-[10px]">Spring/Summer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="text-[9px] text-muted-foreground pt-1">
             Semester ends: {semesterEnd}
@@ -16175,10 +16195,6 @@ function SchoolForm({
             <div className="flex items-center justify-between">
               <span className="text-white/70">Semester</span>
               <span className="font-medium">{semesterSettings.semesterName}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-white/70">Type</span>
-              <span className="font-medium capitalize">{semesterSettings.semesterType || 'Winter'}</span>
             </div>
             <div className="space-y-1">
               <Label htmlFor="week1StartDate" className="text-[10px] text-white/70">Week 1, Day 1 Date</Label>
