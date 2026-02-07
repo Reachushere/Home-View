@@ -118,6 +118,7 @@ import {
   AlertCircle,
   Plane,
   List,
+  ArrowRightLeft,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -2833,6 +2834,7 @@ export default function Dashboard() {
     }, 1000);
   };
   const [previewSpeaker, setPreviewSpeaker] = useState<string>("browser_tts");
+  const [showTransferMenu, setShowTransferMenu] = useState(false);
   const [previewText, setPreviewText] = useState<string>("");
   const [isLoadingText, setIsLoadingText] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -3741,6 +3743,51 @@ export default function Dashboard() {
       const chunk = chunks[validChunkIndex];
       await playWithOpenAiTts(chunk, openaiVoice);
     }
+  };
+
+  const transferPlayback = async (targetSpeakerId: string) => {
+    if (!isPlaying) {
+      toast({ title: "Nothing is currently playing", variant: "destructive" });
+      return;
+    }
+    const currentChunk = currentChunkIndexRef.current;
+    const targetName = SPEAKERS.find(s => s.id === targetSpeakerId)?.name || targetSpeakerId;
+    const sourceName = SPEAKERS.find(s => s.id === previewSpeaker)?.name || previewSpeaker;
+    
+    // Stop current playback
+    if (openaiAudioRef.current) {
+      shouldContinueRef.current = false;
+      openaiAudioRef.current.pause();
+      openaiAudioRef.current.currentTime = 0;
+      openaiAudioRef.current = null;
+    }
+    if (window.speechSynthesis) {
+      shouldContinueRef.current = false;
+      window.speechSynthesis.cancel();
+    }
+    // Stop HA speaker if it's an Echo device
+    if (previewSpeaker !== "browser_tts" && previewSpeaker !== "openai_tts") {
+      await fetch("/api/media/stop", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entityId: previewSpeaker }),
+      }).catch(() => {});
+    }
+    
+    setIsPlaying(false);
+    isPlayingRef.current = false;
+    
+    // Switch to new speaker
+    setPreviewSpeaker(targetSpeakerId);
+    setShowTransferMenu(false);
+    
+    // Brief delay for state to settle
+    await new Promise(r => setTimeout(r, 300));
+    
+    toast({ title: `Transferring from ${sourceName} to ${targetName}...` });
+    
+    // Resume from the same chunk on the new speaker
+    await playFromChunk(currentChunk);
   };
 
   const handlePlayFile = async (fileUrl: string, fileName: string, resumeFromProgress: boolean = false) => {
@@ -6732,7 +6779,7 @@ export default function Dashboard() {
             })()}
             
             {/* Speaker Selector */}
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-2 w-full sm:w-auto relative">
               <span className="text-[9px] text-white/60">Speaker:</span>
               <Select value={previewSpeaker} onValueChange={setPreviewSpeaker}>
                 <SelectTrigger className="flex-1 sm:w-[180px] h-6 text-[10px] bg-gray-800 border-gray-700 text-white" data-testid="select-preview-speaker">
@@ -6746,6 +6793,32 @@ export default function Dashboard() {
                   ))}
                 </SelectContent>
               </Select>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-6 w-6 text-white hover:bg-gray-700"
+                onClick={() => setShowTransferMenu(!showTransferMenu)}
+                disabled={!isPlaying}
+                title="Transfer playback to another speaker"
+                data-testid="button-transfer-speaker"
+              >
+                <ArrowRightLeft className="h-3 w-3" />
+              </Button>
+              {showTransferMenu && (
+                <div className="absolute top-8 right-0 z-50 bg-gray-900 border border-white/20 rounded-lg shadow-xl p-2 min-w-[220px] max-h-[300px] overflow-y-auto">
+                  <div className="text-[10px] text-white/50 px-2 py-1 mb-1 border-b border-white/10">Transfer to:</div>
+                  {SPEAKERS.filter(s => s.id !== previewSpeaker).map(speaker => (
+                    <button
+                      key={speaker.id}
+                      className="w-full text-left text-[11px] text-white px-2 py-1.5 rounded hover:bg-white/10 transition-colors"
+                      onClick={() => transferPlayback(speaker.id)}
+                      data-testid={`transfer-to-${speaker.id}`}
+                    >
+                      {speaker.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           
