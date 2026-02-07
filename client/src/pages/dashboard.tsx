@@ -9100,7 +9100,7 @@ export default function Dashboard() {
           >
             <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[11px] text-white/80 whitespace-nowrap font-bold tracking-wide" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="text-week-dates">
+          <span className="text-[12px] text-white/80 whitespace-nowrap font-bold tracking-wide" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} to {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
@@ -13841,7 +13841,7 @@ export default function Dashboard() {
           };
           
           return (
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-[6px] mt-[0px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 17px + 14px)', marginLeft: '-17px', marginRight: '-14px', height: '145px' }} data-task-boxes-container="true">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-[6px] mt-[6px] items-stretch flex-shrink-0 relative" style={{ order: 1, zIndex: 35, width: 'calc(100% + 17px + 14px)', marginLeft: '-17px', marginRight: '-14px', height: '145px' }} data-task-boxes-container="true">
           {/* Due This Week - CSS Box */}
           <section 
             className={`flex-1 rounded-[12px] overflow-hidden flex flex-col min-h-[91px] sm:min-h-[131px] ${draggedBox === 'this-week' ? 'opacity-50' : ''}`} 
