@@ -13235,7 +13235,7 @@ export default function Dashboard() {
           />
           <div className="relative" style={{ height: 'calc(100% + 5px)', marginTop: '8px' }}>
             <div className="absolute inset-0 pointer-events-none z-[100]" style={{ border: '2px solid black', borderRadius: '16px' }} />
-            <div className="overflow-hidden h-full" style={{ background: 'white', borderRadius: '14px' }}>
+            <div className="overflow-hidden h-full" style={{ background: 'black', borderRadius: '16px' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
