@@ -11800,7 +11800,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0"
-                        style={{ backgroundColor: isDayToday ? colorSettings.todayCellBackground : course.bg, padding: '2px 2px 2px 8px' }}
+                        style={{ backgroundColor: isDayToday ? '#e8e8e8' : course.bg, padding: '2px 2px 2px 8px' }}
                       >
                         {dueTasks.map(task => {
                           const today = startOfDay(new Date());
@@ -11846,7 +11846,7 @@ export default function Dashboard() {
                     key={dayIdx} 
                     className="border-l border-border/50 relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
                     style={{ 
-                      backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white'
+                      backgroundColor: isSameDay(day, new Date()) ? '#e8e8e8' : 'white'
                     }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
@@ -11971,7 +11971,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l border-border/50 relative flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? colorSettings.todayCellBackground : 'white', padding: '2px 2px 2px 8px' }}
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#e8e8e8' : 'white', padding: '2px 2px 2px 8px' }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -12090,7 +12090,7 @@ export default function Dashboard() {
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
                               // Always show current hour/today background - task boxes have their own backgrounds
-                              backgroundColor: isToday && isCurrentHour ? colorSettings.todayCellBackground : isToday ? '#e8e8e8' : isCurrentHour ? '#e8e8e8' : undefined,
+                              backgroundColor: isToday || isCurrentHour ? '#e8e8e8' : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
@@ -12343,7 +12343,7 @@ export default function Dashboard() {
                         <div 
                           className={`border-l border-border/50 border-t border-t-gray-300/50 relative overflow-visible ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                           style={{ 
-                            backgroundColor: isToday && isCurrentHour ? colorSettings.todayCellBackground : isToday ? '#e8e8e8' : isCurrentHour ? '#e8e8e8' : '#faf8f5',
+                            backgroundColor: isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             paddingLeft: '6px'
                           }}
