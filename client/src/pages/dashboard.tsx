@@ -8890,7 +8890,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 53}px`, right: '14px', width: '52px', height: `${(3 * 50) + 344}px` }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 53}px`, right: '14px', width: '52px', height: `${(3 * 50) + 354}px` }}>
         <div 
           style={{ 
             width: '100%', 
@@ -9151,7 +9151,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (3 * 50) + 43}px`, 
+          top: `${calendarTop + 3 + (3 * 50) + 45}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9198,7 +9198,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (3 * 50) + 139}px`, 
+          top: `${calendarTop + 3 + (3 * 50) + 145}px`, 
           right: '18px',
           borderRadius: '50%',
           background: isKitchenPlaying 
@@ -9241,7 +9241,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (3 * 50) + 187}px`, 
+          top: `${calendarTop + 3 + (3 * 50) + 195}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9378,7 +9378,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (3 * 50) + 91}px`, 
+          top: `${calendarTop + 3 + (3 * 50) + 95}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
