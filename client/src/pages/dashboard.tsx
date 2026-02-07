@@ -11110,10 +11110,10 @@ export default function Dashboard() {
           <div 
             className="absolute pointer-events-none"
             style={{ 
-              top: '-5px', 
+              top: '-14px', 
               left: '-15px', 
               right: '-15px', 
-              bottom: '-24px', 
+              bottom: '-15px', 
               background: 'rgba(255, 255, 255, 0.35)',
               borderRadius: '31px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
