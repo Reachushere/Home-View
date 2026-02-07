@@ -11499,9 +11499,15 @@ export default function Dashboard() {
                           </>
                         );
                       }
-                      // CASL101: show just the code
+                      // CASL101: show full name
                       if (code === 'CASL101') {
-                        return <span>CASL101</span>;
+                        return (
+                          <>
+                            <span>CASL101</span>
+                            <span>American Sign</span>
+                            <span>Language</span>
+                          </>
+                        );
                       }
                       // Default: code on first line, then each word
                       const words = fullName.split(' ');
