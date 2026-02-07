@@ -12232,7 +12232,7 @@ export default function Dashboard() {
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
                               // Always show current hour/today background - task boxes have their own backgrounds
-                              backgroundColor: isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourRowBackground : undefined,
+                              backgroundColor: isToday && isCurrentHour ? colorSettings.todayCellBackground : isToday ? '#e8e8e8' : isCurrentHour ? '#e8e8e8' : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
@@ -12485,7 +12485,7 @@ export default function Dashboard() {
                         <div 
                           className={`border-l border-border/50 border-t border-t-gray-300/50 relative overflow-visible ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                           style={{ 
-                            backgroundColor: isToday ? colorSettings.todayCellBackground : isCurrentHour ? colorSettings.currentHourRowBackground : '#faf8f5',
+                            backgroundColor: isToday && isCurrentHour ? colorSettings.todayCellBackground : isToday ? '#e8e8e8' : isCurrentHour ? '#e8e8e8' : '#faf8f5',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             paddingLeft: '6px'
                           }}
