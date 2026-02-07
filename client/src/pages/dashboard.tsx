@@ -13233,7 +13233,7 @@ export default function Dashboard() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
-          <div className="shadow-lg overflow-hidden border-2 border-black" style={{ background: 'white', borderRadius: '16px', height: 'calc(100% + 5px)', marginTop: '8px' }}>
+          <div className="shadow-lg overflow-hidden" style={{ background: 'white', borderRadius: '16px', height: 'calc(100% + 5px)', marginTop: '8px', outline: '2px solid black', outlineOffset: '-1px' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
