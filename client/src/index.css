@@ -992,19 +992,26 @@ button[role="combobox"] > span {
   }
   
   .checkbox-black {
-    appearance: none;
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    border: 1.5px solid black;
-    border-radius: 2px;
-    background-color: white;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    width: 12px !important;
+    height: 12px !important;
+    min-width: 12px !important;
+    min-height: 12px !important;
+    border: 1.5px solid black !important;
+    border-radius: 2px !important;
+    background-color: white !important;
+    background-image: none !important;
     cursor: pointer;
     position: relative;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
   }
   
   .checkbox-black:checked {
-    background-color: black;
+    background-color: black !important;
   }
   
   .checkbox-black:checked::after {
