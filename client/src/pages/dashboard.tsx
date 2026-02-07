@@ -9331,11 +9331,11 @@ export default function Dashboard() {
                   <div className="absolute left-0 w-full px-2.5" style={{ bottom: courseId === 'cppa122' ? '28px' : '30px' }}>
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                     {moduleCount > 0 ? (
-                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                         {moduleCount}
                       </span>
                     ) : moduleListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                         {moduleListenedCount}
                       </span>
                     ) : null}
@@ -9343,11 +9343,11 @@ export default function Dashboard() {
                   <div className="absolute left-0 w-full px-2.5" style={{ bottom: (courseId === 'cfnf400' || courseId === 'casl101') ? '8px' : '5px' }}>
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                     {readingCount > 0 ? (
-                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                         {readingCount}
                       </span>
                     ) : readingListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
+                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
                         {readingListenedCount}
                       </span>
                     ) : null}
