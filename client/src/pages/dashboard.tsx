@@ -5482,7 +5482,7 @@ export default function Dashboard() {
           animation: file-blink ${blinkSettings.allDayFilesBlinkSpeed}s ease-in-out infinite !important;
         }
         .animate-today-date {
-          animation: today-date-pulse ${blinkSettings.todayColumnBlinkSpeed}s ease-in-out infinite !important;
+          animation: today-date-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important;
         }
       `}</style>
       {/* New Semester Banner - Shows when past Week 13 */}
@@ -11197,7 +11197,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isTodaySaturday ? '#b8b8b8' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: isTodaySaturday ? '#b4b4b4' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
@@ -11918,7 +11918,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: '#b8b8b8', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: '#b4b4b4', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -12208,7 +12208,7 @@ export default function Dashboard() {
                         <div 
                           className={`border-l relative p-0.5`}
                           style={{ 
-                            backgroundColor: '#b8b8b8',
+                            backgroundColor: '#b4b4b4',
                             borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
