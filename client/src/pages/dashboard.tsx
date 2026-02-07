@@ -1776,6 +1776,7 @@ export default function Dashboard() {
   });
   const [isCoursesDialogOpen, setIsCoursesDialogOpen] = useState(false);
   const [isNewCourseDialogOpen, setIsNewCourseDialogOpen] = useState(false);
+  const newCourseDialogClosingRef = useRef(false);
 
   const [aasSentStatus, setAasSentStatus] = useState<Record<string, boolean>>(() => {
     const saved = localStorage.getItem('aasSentStatus');
@@ -10183,13 +10184,13 @@ export default function Dashboard() {
           </Dialog>
           
           {/* School Dialog */}
-          <Dialog open={isSchoolDialogOpen} onOpenChange={(open) => { if (!isNewCourseDialogOpen) setIsSchoolDialogOpen(open); }}>
+          <Dialog open={isSchoolDialogOpen} onOpenChange={(open) => { if (!isNewCourseDialogOpen && !newCourseDialogClosingRef.current) setIsSchoolDialogOpen(open); }}>
             <DialogContent 
               className="overflow-hidden flex flex-col max-w-4xl max-h-[90vh] text-[11px] bg-gradient-to-br from-gray-800/95 via-black/90 to-gray-900/95 border border-white/20 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] [&_*]:text-white [&_label]:text-white [&_input]:text-white [&_select]:text-white p-0 [&>button.absolute]:hidden"
-              onInteractOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
-              onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
-              onPointerDownOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
-              onFocusOutside={(e) => { if (isNewCourseDialogOpen) e.preventDefault(); }}
+              onInteractOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current) e.preventDefault(); }}
+              onEscapeKeyDown={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current) e.preventDefault(); }}
+              onPointerDownOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current) e.preventDefault(); }}
+              onFocusOutside={(e) => { if (isNewCourseDialogOpen || newCourseDialogClosingRef.current) e.preventDefault(); }}
             >
               {/* Header bar matching flyouts */}
               <div className="flex items-center justify-between px-4 py-3 bg-black/30 border-b border-white/20">
@@ -10464,7 +10465,9 @@ export default function Dashboard() {
                   localStorage.setItem('courseReminders', JSON.stringify(courseReminders));
                 }
 
+                newCourseDialogClosingRef.current = true;
                 setIsNewCourseDialogOpen(false);
+                setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300);
                 toast({ title: "Course added", description: `${fullName} has been added.` });
 
                 if (courseData.deadlines.length > 0) {
@@ -10495,7 +10498,11 @@ export default function Dashboard() {
                   })();
                 }
               }}
-              onClose={() => setIsNewCourseDialogOpen(false)}
+              onClose={() => {
+                newCourseDialogClosingRef.current = true;
+                setIsNewCourseDialogOpen(false);
+                setTimeout(() => { newCourseDialogClosingRef.current = false; }, 300);
+              }}
             />
           )}
 
