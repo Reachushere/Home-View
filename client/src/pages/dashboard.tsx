@@ -4885,6 +4885,7 @@ export default function Dashboard() {
   }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
 
   // Measure first row positions after render for second row alignment
+  // IMPORTANT: Does NOT depend on dueThisWeekTasks - positions only update on resize handle changes
   useEffect(() => {
     const measurePositions = () => {
       if (row1ContainerRef.current && row1TaskRef.current && row1CodeRef.current && row1CourseRef.current && row1DueRef.current) {
@@ -4895,21 +4896,20 @@ export default function Dashboard() {
           task: row1TaskRef.current!.getBoundingClientRect().left - containerLeft,
           code: row1CodeRef.current!.getBoundingClientRect().left - containerLeft,
           course: row1CourseRef.current!.getBoundingClientRect().left - containerLeft,
-          due: prev.due, // Keep fixed - do not measure dynamically
-          days: prev.days, // Keep fixed - do not measure dynamically
+          due: prev.due,
+          days: prev.days,
           progressBar: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().left - containerLeft : prev.progressBar,
           progressBarTop: row1ProgressBarRef.current ? row1ProgressBarRef.current.getBoundingClientRect().top - containerTop : prev.progressBarTop
         }));
       }
     };
-    // Delay measurement to ensure DOM is rendered
     const timer = setTimeout(measurePositions, 100);
     window.addEventListener('resize', measurePositions);
     return () => {
       clearTimeout(timer);
       window.removeEventListener('resize', measurePositions);
     };
-  }, [dueThisWeekTasks, testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft]);
+  }, [testTextLeft, testCourseLeft, testCourseNameLeft, testDueDateLeft]);
 
   // Track calendar wrapper and course rows positions for course button alignment
   useEffect(() => {
