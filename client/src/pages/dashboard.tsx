@@ -13238,7 +13238,7 @@ export default function Dashboard() {
             <div className="overflow-hidden h-full" style={{ background: 'black', borderRadius: '16px' }}>
             <div className="p-0 h-full flex flex-col" style={{ overflow: 'hidden' }}>
               {/* Month Header */}
-              <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
+              <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white z-10">
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
