@@ -9051,7 +9051,7 @@ export default function Dashboard() {
             </div>
           </div>
           {/* Save button at bottom */}
-          <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex justify-end">
+          <div className="px-4 py-3 border-t border-white/20 bg-black/30 flex justify-start">
             <Button 
               type="button" 
               variant="outline"
