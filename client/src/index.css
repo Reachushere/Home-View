@@ -430,29 +430,29 @@ button[role="combobox"] > span {
 /* Prominent pulse for today date header - dark to light */
 @keyframes today-date-pulse {
   0%, 100% { 
-    background-color: #3B302C;
+    background-color: #1a1512;
   }
   50% { 
-    background-color: #1a1512;
+    background-color: #3B302C;
   }
 }
 
 .animate-today-date {
-  animation: today-date-pulse 1.5s ease-in-out infinite;
+  animation: today-date-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Reversed pulse for time cells to sync with header */
 @keyframes today-pulse-sync {
   0%, 100% { 
-    box-shadow: inset 0 0 0 100px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.15);
   }
   50% { 
-    box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 0 0 100px rgba(0, 0, 0, 0.1);
   }
 }
 
 .animate-today-column-sync {
-  animation: today-pulse-sync 1.5s ease-in-out infinite;
+  animation: today-pulse-sync 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Silver shimmer header for task boxes */
