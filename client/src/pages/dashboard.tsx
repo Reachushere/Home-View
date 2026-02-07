@@ -1739,7 +1739,7 @@ export default function Dashboard() {
       const parsed = JSON.parse(saved);
       return { schoolName: 'Toronto Metropolitan University', ...parsed };
     }
-    return { schoolLogo: null, schoolName: 'Toronto Metropolitan University', numberOfWeeks: 13, week1StartDate: '2026-01-17', firstDayOfWeek: 'saturday' };
+    return { schoolLogo: null, schoolName: 'Toronto Metropolitan University', numberOfWeeks: 13, week1StartDate: '2026-01-12', firstDayOfWeek: 'saturday' };
   });
   
   const [coursesData, setCoursesData] = useState<{ courses: Array<{ name: string; color: string; professor: string; professorEmail?: string }> }>(() => {
@@ -10312,14 +10312,17 @@ export default function Dashboard() {
                 <div className="border rounded-lg p-3 space-y-1.5">
                   <Label className="text-[10px] font-medium">Weeks</Label>
                   {[...weeks].sort((a, b) => {
-                    const aFinished = parseISO(a.endDate) < new Date();
-                    const bFinished = parseISO(b.endDate) < new Date();
+                    const today = startOfDay(new Date());
+                    const aEndDay = startOfDay(parseISO(a.endDate));
+                    const bEndDay = startOfDay(parseISO(b.endDate));
+                    const aFinished = aEndDay < today;
+                    const bFinished = bEndDay < today;
                     if (aFinished && !bFinished) return 1;
                     if (!aFinished && bFinished) return -1;
                     return a.weekNumber - b.weekNumber;
                   }).map((week) => {
                     const weekEnd = parseISO(week.endDate);
-                    const isWeekFinished = weekEnd < new Date();
+                    const isWeekFinished = startOfDay(weekEnd) < startOfDay(new Date());
                     const isSelected = selectedWeek === week.weekNumber && !selectedDate;
                     return (
                       <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md ${isSelected ? 'bg-secondary' : ''}`}>
@@ -16147,18 +16150,6 @@ function SchoolForm({
             </Select>
           </div>
           <div className="space-y-1">
-            <Label htmlFor="week1StartDate" className="text-[10px]">Week 1, Day 1 Date</Label>
-            <Input 
-              id="week1StartDate"
-              type="date"
-              value={week1StartDate}
-              onChange={(e) => setWeek1StartDate(e.target.value)}
-              className="!text-black !text-[10px] h-8"
-              style={{ fontSize: '10px' }}
-              data-testid="input-week1-start-date"
-            />
-          </div>
-          <div className="space-y-1">
             <Label htmlFor="firstDayOfWeek" className="text-[10px]">First Day of School Week</Label>
             <Select value={firstDayOfWeek} onValueChange={setFirstDayOfWeek}>
               <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-first-day-of-week">
@@ -16189,14 +16180,20 @@ function SchoolForm({
               <span className="text-white/70">Type</span>
               <span className="font-medium capitalize">{semesterSettings.semesterType || 'Winter'}</span>
             </div>
-            {semesterSettings.semesterStartDate && (
-              <div className="flex items-center justify-between">
-                <span className="text-white/70">Start Date</span>
-                <span className="font-medium">{format(new Date(semesterSettings.semesterStartDate), 'MMM d, yyyy')}</span>
-              </div>
-            )}
+            <div className="space-y-1">
+              <Label htmlFor="week1StartDate" className="text-[10px] text-white/70">Week 1, Day 1 Date</Label>
+              <Input 
+                id="week1StartDate"
+                type="date"
+                value={week1StartDate}
+                onChange={(e) => setWeek1StartDate(e.target.value)}
+                className="!text-black !text-[10px] h-8"
+                style={{ fontSize: '10px' }}
+                data-testid="input-week1-start-date"
+              />
+            </div>
           </div>
-          <p className="text-[8px] text-white/40 mt-1">Course details shown in the Courses section below.</p>
+          <p className="text-[8px] text-white/40 mt-1">Course details shown in the Courses section.</p>
         </div>
       )}
       
