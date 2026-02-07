@@ -2540,12 +2540,15 @@ export default function Dashboard() {
   const toggleStickyNoteBullets = useCallback((noteId: number, textareaEl: HTMLTextAreaElement | null) => {
     const currentContent = localStickyNoteContent[noteId] ?? '';
     const lines = currentContent.split('\n');
-    const hasBullets = lines.some(line => line.trimStart().startsWith('\u2022 '));
+    const hasBullets = lines.some(line => line.trimStart().startsWith('\u25CF ') || line.trimStart().startsWith('\u2022 '));
     
     let newContent: string;
     if (hasBullets) {
       newContent = lines.map(line => {
         const trimmed = line.trimStart();
+        if (trimmed.startsWith('\u25CF ')) {
+          return line.replace(/\u25CF /, '');
+        }
         if (trimmed.startsWith('\u2022 ')) {
           return line.replace(/\u2022 /, '');
         }
@@ -2554,7 +2557,7 @@ export default function Dashboard() {
     } else {
       newContent = lines.map(line => {
         if (line.trim() === '') return line;
-        return '\u2022 ' + line;
+        return '\u25CF ' + line;
       }).join('\n');
     }
     
@@ -2572,8 +2575,9 @@ export default function Dashboard() {
       const lineStart = content.lastIndexOf('\n', selectionStart - 1) + 1;
       const currentLine = content.substring(lineStart, selectionStart);
       
-      if (currentLine.trimStart().startsWith('\u2022 ')) {
-        if (currentLine.trim() === '\u2022') {
+      if (currentLine.trimStart().startsWith('\u25CF ') || currentLine.trimStart().startsWith('\u2022 ')) {
+        const bulletChar = currentLine.trimStart().startsWith('\u25CF ') ? '\u25CF' : '\u2022';
+        if (currentLine.trim() === bulletChar) {
           e.preventDefault();
           const before = content.substring(0, lineStart);
           const after = content.substring(selectionStart);
@@ -2586,7 +2590,7 @@ export default function Dashboard() {
           e.preventDefault();
           const before = content.substring(0, selectionStart);
           const after = content.substring(selectionStart);
-          const newContent = before + '\n\u2022 ' + after;
+          const newContent = before + '\n' + bulletChar + ' ' + after;
           handleStickyNoteContentChange(noteId, newContent);
           setTimeout(() => {
             const newPos = selectionStart + 3;
