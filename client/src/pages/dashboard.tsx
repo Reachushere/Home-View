@@ -11104,7 +11104,7 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 67px)' }} className="relative overflow-visible h-full">
+          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - 30px bigger than calendar */}
           <div 
@@ -11113,7 +11113,7 @@ export default function Dashboard() {
               top: '-5px', 
               left: '-15px', 
               right: '-15px', 
-              bottom: '-25px', 
+              bottom: '-20px', 
               background: 'rgba(255, 255, 255, 0.35)',
               borderRadius: '31px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
