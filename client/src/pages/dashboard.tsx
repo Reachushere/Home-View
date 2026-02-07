@@ -12463,7 +12463,7 @@ export default function Dashboard() {
                   // Calculate position at render time
                   // Pre-calculate cumulative heights including prep conflict heights
                   let topPx = 0;
-                  for (let h = 6; h < startHour; h++) {
+                  for (let h = 0; h < startHour; h++) {
                     topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
                     // Add prep conflict height for this hour (calculated inline to avoid circular dependency)
                     topPx += prepConflictHeights[h] || 0;
