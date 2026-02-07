@@ -267,6 +267,8 @@ export default function Dashboard() {
   const [doTodayBounce, setDoTodayBounce] = useState(false);
   const todayTaskCountRef = useRef(0);
   const calendarWrapperRef = useRef<HTMLDivElement>(null);
+  const clockContainerRef = useRef<HTMLDivElement>(null);
+  const [clockWidth, setClockWidth] = useState(0);
   const courseRowsRef = useRef<HTMLDivElement>(null);
   const allDayRowRef = useRef<HTMLDivElement>(null);
   const [calendarTop, setCalendarTop] = useState(247); // Default offset
@@ -4689,6 +4691,9 @@ export default function Dashboard() {
         setCalendarTop(rect.top + window.scrollY);
         setCalendarRight(window.innerWidth - rect.right);
       }
+      if (clockContainerRef.current) {
+        setClockWidth(clockContainerRef.current.offsetWidth);
+      }
       // Also track course rows container position directly
       if (courseRowsRef.current) {
         const rect = courseRowsRef.current.getBoundingClientRect();
@@ -8029,8 +8034,8 @@ export default function Dashboard() {
                     </div>
         </div>
 
-        {/* Pomodoro Timer - Fixed Right, left of clock */}
-        <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '232px', top: '7px', zIndex: 100 }}>
+        {/* Pomodoro Timer - Fixed, positioned left of clock */}
+        <div className="fixed flex items-center h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: `${16 + clockWidth + 5}px`, top: '7px', zIndex: 100 }}>
           <div className="flex items-center gap-4 rounded-full px-5 h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
             <div className={`text-[15px] font-bold px-1.5 py-0.5 rounded ${
               pomodoroMode === "work" ? "text-white" : 
@@ -8053,7 +8058,7 @@ export default function Dashboard() {
         </div>
 
         {/* Clock - Fixed Right */}
-        <div className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '7px', zIndex: 100 }}>
+        <div ref={clockContainerRef} className="fixed h-[35px]" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif", right: '16px', top: '7px', zIndex: 100 }}>
           <div style={{ overflow: 'hidden', borderRadius: '9999px' }}>
             <div className="h-[35px] overflow-hidden" style={{ backgroundImage: `url(${clockBg})`, backgroundSize: 'cover', backgroundPosition: 'center', paddingLeft: '5px', paddingRight: '14px', marginLeft: '-14px', borderRadius: '9999px' }} data-testid="digital-clock">
               <div className="flex items-center gap-1 h-full" style={{ transform: 'translateX(14px)' }}>
