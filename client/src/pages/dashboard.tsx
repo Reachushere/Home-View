@@ -13677,12 +13677,12 @@ export default function Dashboard() {
               ) : (
               <>
               {/* Desktop Layout - Task row with labels above */}
-              <div ref={row1ContainerRef} className="flex items-end" style={{ position: 'relative', width: '100%', paddingTop: '12px' }}>
+              <div ref={row1ContainerRef} className="flex" style={{ position: 'relative', width: '100%' }}>
               {/* Blank checkbox - hidden for class type tasks */}
-              <div className="flex-shrink-0 self-end" style={{ marginRight: '4px', marginBottom: '1px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
+              <div className="flex-shrink-0 self-start" style={{ marginTop: '11px', marginRight: '4px', visibility: dueThisWeekTasks[0]?.type === 'class' ? 'hidden' : 'visible' }}>
                 <input type="checkbox" className="h-3.5 w-3.5 rounded-sm border-0 cursor-pointer" disabled />
               </div>
-              {/* HARDCODED headers - absolute positioned, never move */}
+              {/* HARDCODED headers - absolute positioned, NEVER move without explicit user permission */}
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.remaining}px`, top: '0px' }}>Remaining</span>
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.task}px`, top: '0px' }}>Task</span>
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.code}px`, top: '0px' }}>Code</span>
@@ -13690,31 +13690,49 @@ export default function Dashboard() {
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.due}px`, top: '0px' }}>Due</span>
               <span className="text-[8px] text-white/50 font-normal" style={{ position: 'absolute', left: `${HEADER_POS.days}px`, top: '0px', width: '22px', textAlign: 'right' }}>Days</span>
               {/* Group 1: Progress bar */}
-              <div className="flex-shrink-0 self-end flex flex-col" style={{ marginLeft: `${testProgressBarLeft}px` }}>
-                <div ref={row1ProgressBarRef} style={{ position: 'relative', width: '44px', marginLeft: '7px', marginBottom: '2px' }}>
+              <div className="flex-shrink-0 self-start flex flex-col" style={{ marginTop: '2px', marginLeft: `${testProgressBarLeft}px` }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Remaining</span>
+                </div>
+                <div ref={row1ProgressBarRef} style={{ position: 'relative', width: '44px', marginLeft: '7px', marginTop: '3px' }}>
                   <div className="rounded-full" style={{ width: '44px', height: '3px', backgroundColor: 'rgba(255,255,255,0.15)' }} />
                   <div className="rounded-full" style={{ position: 'absolute', top: 0, left: 0, width: `${getProgressBarWidth(dueThisWeekTasks[0])}px`, height: '3px', backgroundColor: getProgressColor(dueThisWeekTasks[0]), opacity: 0.9 }} />
                 </div>
               </div>
               {/* Group 2: Task */}
-              <div ref={row1TaskRef} className="flex-shrink-0 self-end" style={{ marginLeft: `${testTextLeft}px` }}>
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginBottom: '0px', maxWidth: `${row1Positions.code - row1Positions.task + 23}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
+              <div ref={row1TaskRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testTextLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Task</span>
+                </div>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '7px', marginTop: '-3px', maxWidth: `${row1Positions.code - row1Positions.task + 23}px`, display: 'inline-block', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'clip' }}>{dueThisWeekTasks[0]?.title || 'No tasks'}</span>
               </div>
               {/* Group 3: Code */}
-              <div ref={row1CodeRef} className="flex-shrink-0 self-end" style={{ marginLeft: `${testCourseLeft}px` }}>
-                <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '7px', marginBottom: '1px', display: 'inline-block' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
+              <div ref={row1CodeRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Code</span>
+                </div>
+                <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[0] || ''}</span>
               </div>
               {/* Group 4: Course */}
-              <div ref={row1CourseRef} className="flex-shrink-0 self-end" style={{ marginLeft: `${testCourseNameLeft}px` }}>
-                <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '7px', marginBottom: '1px', display: 'inline-block' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
+              <div ref={row1CourseRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testCourseNameLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Course</span>
+                </div>
+                <span style={{ fontSize: '9px', color: '#9ca3af', marginLeft: '7px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.courseName?.split(' - ')[1] || ''}</span>
               </div>
               {/* Group 5: Due */}
-              <div ref={row1DueRef} className="flex-shrink-0 self-end" style={{ marginLeft: `${testDueDateLeft}px` }}>
-                <span style={{ fontSize: '10px', color: 'white', marginLeft: '-12px', marginBottom: '0px', display: 'inline-block' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
+              <div ref={row1DueRef} className="flex-shrink-0 self-start flex flex-col" style={{ marginLeft: `${testDueDateLeft}px`, marginTop: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Due</span>
+                </div>
+                <span style={{ fontSize: '10px', color: 'white', marginLeft: '-12px', marginTop: '-3px' }}>{dueThisWeekTasks[0]?.dueDate ? format(new Date(dueThisWeekTasks[0].dueDate), 'EEE M/d') : ''}</span>
               </div>
               {/* Group 6: Days - absolutely positioned */}
-              <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '-4px', bottom: '2px' }}>
-                <span style={{ fontSize: '10px', color: getProgressColor(dueThisWeekTasks[0]), marginLeft: '7px', width: '22px', textAlign: 'right', display: 'inline-block' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
+              <div ref={row1DaysRef} className="flex flex-col" style={{ position: 'absolute', right: '-4px', top: '2px' }}>
+                <div className="flex items-start" style={{ marginBottom: '6px' }}>
+                  <span className="text-[8px] text-white/50 font-normal" style={{ marginTop: '-2px', visibility: 'hidden' }}>Days</span>
+                </div>
+                <span style={{ fontSize: '10px', color: getProgressColor(dueThisWeekTasks[0]), marginLeft: '7px', marginTop: '-3px', width: '22px', textAlign: 'right', display: 'inline-block' }}>{dueThisWeekTasks[0]?.dueDate ? `${Math.ceil((new Date(dueThisWeekTasks[0].dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d` : ''}</span>
               </div>
               </div>
               {/* Second task row - only render after measurements are available */}
