@@ -3776,8 +3776,7 @@ export default function Dashboard() {
         openaiAudioRef.current = null;
         
         // Save progress so user can resume later
-        if (previewFile && currentChunkIndexRef.current > 0) {
-          // Calculate character position from previous chunks
+        if (previewFile) {
           let charPosition = 0;
           const chunks = ttsChunksRef.current;
           for (let i = 0; i < currentChunkIndexRef.current; i++) {
@@ -3798,8 +3797,7 @@ export default function Dashboard() {
         window.speechSynthesis.cancel();
         
         // Save progress so user can resume later
-        if (previewFile && currentChunkIndexRef.current > 0) {
-          // Calculate character position from previous chunks
+        if (previewFile) {
           let charPosition = 0;
           const chunks = ttsChunksRef.current;
           for (let i = 0; i < currentChunkIndexRef.current; i++) {
@@ -8803,16 +8801,44 @@ export default function Dashboard() {
                           const moduleFiles = await moduleResponse.json();
                           const pdfFiles = moduleFiles.filter((f: any) => f.type === 'file' && f.mimeType?.includes('pdf'));
                           if (pdfFiles.length > 0) {
-                            const fileItems: FileItem[] = pdfFiles.map((pdf: any, i: number) => ({
-                              id: Date.now() + i,
-                              originalName: pdf.name,
-                              displayName: pdf.name,
-                              objectPath: pdf.downloadUrl,
-                              folder: `week-${selectedWeek}-${courseId}-module`,
-                              listened: false
+                            const folder = `week-${selectedWeek}-${courseId}-module`;
+                            const ensuredFiles = await Promise.all(pdfFiles.map(async (pdf: any) => {
+                              const stablePath = pdf.path || `onedrive://${folder}/${pdf.name}`;
+                              try {
+                                const resp = await fetch('/api/files/ensure', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({
+                                    objectPath: stablePath,
+                                    originalName: pdf.name,
+                                    displayName: pdf.name,
+                                    folder,
+                                  }),
+                                });
+                                if (resp.ok) {
+                                  const dbFile = await resp.json();
+                                  return {
+                                    id: dbFile.id,
+                                    originalName: dbFile.originalName,
+                                    displayName: dbFile.displayName,
+                                    objectPath: pdf.downloadUrl,
+                                    folder: dbFile.folder,
+                                    listened: dbFile.listened || false,
+                                  } as FileItem;
+                                }
+                              } catch {}
+                              return {
+                                id: Date.now() + Math.random(),
+                                originalName: pdf.name,
+                                displayName: pdf.name,
+                                objectPath: pdf.downloadUrl,
+                                folder,
+                                listened: false,
+                              } as FileItem;
                             }));
-                            setOneDrivePreviewFiles(fileItems);
-                            setPreviewFile(fileItems[0]);
+                            setOneDrivePreviewFiles(ensuredFiles);
+                            setPreviewFile(ensuredFiles[0]);
+                            queryClient.invalidateQueries({ queryKey: ["/api/files"] });
                           }
                         }
                       }
@@ -11422,13 +11448,16 @@ export default function Dashboard() {
                       }
                       let totalProgress = 0;
                       for (const f of files) {
+                        const isCurrentlyPlaying = !f.listened && previewFile && f.id === previewFile.id && isPlaying && totalChunks > 0;
                         if (f.listened) {
                           totalProgress += 100;
-                        } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex) {
+                        } else if (isCurrentlyPlaying) {
+                          totalProgress += Math.round(((currentChunkIndex + 1) / totalChunks) * 100);
+                        } else if (f.totalChunks && f.totalChunks > 0 && f.lastChunkIndex != null && f.lastChunkIndex >= 0) {
                           totalProgress += Math.round((f.lastChunkIndex / f.totalChunks) * 100);
                         }
                       }
-                      return { percent: Math.round(totalProgress / files.length), hasFiles: true };
+                      return { percent: Math.min(100, Math.round(totalProgress / files.length)), hasFiles: true };
                     };
                     const getProgressColor = (percent: number) => {
                       if (percent === 100) return '#22c55e';

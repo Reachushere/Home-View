@@ -1196,7 +1196,7 @@ export async function registerRoutes(
         
         // Extract week number, course, and type from folder name
         // Folder format: "week-4-cppa122-module" or "week-4-cfnf400-reading"
-        const folderMatch = file.folder.match(/^week-(\d+)-([a-z0-9]+)-(module|reading)$/i);
+        const folderMatch = file.folder.match(/^week-(\d+)-([a-z0-9]+)-(module|reading|other)$/i);
         if (!folderMatch) continue;
         
         const folderKey = file.folder.toLowerCase();
@@ -1528,6 +1528,44 @@ export async function registerRoutes(
     } catch (err) {
       console.error("Error updating file:", err);
       res.status(500).json({ error: "Failed to update file" });
+    }
+  });
+
+  // POST /api/files/ensure - Create or find a file by objectPath (for OneDrive files that need DB entries)
+  app.post("/api/files/ensure", async (req, res) => {
+    try {
+      const { objectPath, originalName, displayName, folder } = req.body;
+      if (!objectPath || !originalName) {
+        return res.status(400).json({ error: "objectPath and originalName are required" });
+      }
+      
+      // Check if file already exists by objectPath
+      let file = await storage.getFileByPath(objectPath);
+      if (file) {
+        // Update folder if provided and different
+        if (folder && file.folder !== folder) {
+          file = await storage.updateFile(file.id, { folder }) || file;
+        }
+        return res.json(file);
+      }
+      
+      // Create new file entry
+      file = await storage.createFile({
+        objectPath,
+        originalName,
+        displayName: displayName || originalName,
+        folder: folder || null,
+        contentType: 'application/pdf',
+        size: 0,
+        listened: false,
+        lastChunkIndex: 0,
+        totalChunks: 0,
+      });
+      
+      res.json(file);
+    } catch (err) {
+      console.error("Error ensuring file:", err);
+      res.status(500).json({ error: "Failed to ensure file" });
     }
   });
 
