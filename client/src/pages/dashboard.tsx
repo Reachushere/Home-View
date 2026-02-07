@@ -9087,7 +9087,7 @@ export default function Dashboard() {
       )}
       
       {/* Navigation Arrows with week dates - centered above calendar */}
-      <div className="absolute z-50 flex items-center justify-center" style={{ top: `${calendarTop - 28}px`, left: '0px', right: '66px' }}>
+      <div className="absolute z-50 flex items-center justify-center" style={{ top: `${calendarTop - 34}px`, left: '0px', right: '66px' }}>
         <div className="flex items-center justify-center gap-1">
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
@@ -9111,7 +9111,7 @@ export default function Dashboard() {
         </div>
       </div>
       {/* Month/Week toggle - right aligned to calendar */}
-      <div className="absolute z-50" style={{ top: `${calendarTop - 28}px`, right: '81px' }}>
+      <div className="absolute z-50" style={{ top: `${calendarTop - 34}px`, right: '81px' }}>
         <Button 
           variant="ghost"
           className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase"
