@@ -11176,24 +11176,23 @@ export default function Dashboard() {
               {/* Saturday header */}
               {weekDays[6] && (() => {
                 const day = weekDays[6];
-                const isToday = isSameDay(day, new Date());
                 const dayName = format(day, "EEE").toUpperCase();
                 const dayNum = format(day, "d");
-                const hasTodayTasks = isToday && allTasks.some(t => 
+                const hasTodayTasks = isTodaySaturday && allTasks.some(t => 
                   !t.isCompleted && isSameDay(new Date(t.dueDate), day)
                 );
                 return (
                   <div 
-                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? '#d4d4d4' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
+                    style={{ backgroundColor: isTodaySaturday ? '#d4d4d4' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
-                    {!isToday && new Date().getDay() !== 6 && (
+                    {!isTodaySaturday && new Date().getDay() !== 6 && (
                       <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#E8E656' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
-                      <div className="text-2xl font-bold" style={{ color: isToday ? '#000' : '#fff' }}>{dayNum}</div>
-                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isToday ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
+                      <div className="text-2xl font-bold" style={{ color: isTodaySaturday ? '#000' : '#fff' }}>{dayNum}</div>
+                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isTodaySaturday ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
                     </div>
                   </div>
                 );
@@ -11906,7 +11905,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l border-border/50 relative flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#d4d4d4' : 'white', padding: '2px 2px 2px 8px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: isTodaySaturday ? '#d4d4d4' : 'white', padding: '2px 2px 2px 8px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -12190,10 +12189,9 @@ export default function Dashboard() {
                       const hourTasks = getTasksForHour(day, hour);
                       const continuingTasks = getContinuingTasksForHour(day, hour);
                       const hourCalendarEvents = getCalendarEventsForHour(day, hour);
-                      const isSatToday = isSameDay(day, new Date());
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
-                      const satBg = isSatToday || isCurrentHour ? '#d4d4d4' : '#faf8f5';
+                      const satBg = isTodaySaturday || isCurrentHour ? '#d4d4d4' : '#faf8f5';
                       return (
                         <div 
                           className={`border-l border-border/50 relative`}
