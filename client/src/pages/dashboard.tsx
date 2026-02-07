@@ -10262,10 +10262,27 @@ export default function Dashboard() {
                     return (
                       <div key={index} className="space-y-0.5">
                         <div className="flex items-center gap-1.5">
-                          <div 
-                            className={`w-2 h-2 rounded-full ${hasDueTomorrow ? "animate-blink" : ""}`} 
-                            style={{ backgroundColor: course.color }}
-                          />
+                          <div className="relative flex-shrink-0">
+                            <div 
+                              className={`w-3 h-3 rounded-full cursor-pointer ${hasDueTomorrow ? "animate-blink" : ""}`} 
+                              style={{ backgroundColor: course.color }}
+                              onClick={() => document.getElementById(`school-course-color-${index}`)?.click()}
+                            />
+                            <input
+                              id={`school-course-color-${index}`}
+                              type="color"
+                              value={course.color}
+                              onChange={(e) => {
+                                const updatedCourses = [...coursesData.courses];
+                                updatedCourses[index] = { ...updatedCourses[index], color: e.target.value };
+                                setCoursesData({ courses: updatedCourses });
+                                localStorage.setItem('coursesData', JSON.stringify({ courses: updatedCourses }));
+                                saveCourses({ courses: updatedCourses });
+                              }}
+                              className="absolute inset-0 w-0 h-0 opacity-0"
+                              data-testid={`input-school-course-color-${index}`}
+                            />
+                          </div>
                           <span className="text-[10px] text-white">
                             <span className="font-medium">{courseCode}</span>
                             {courseName !== courseCode && <span> - {courseName}</span>}
