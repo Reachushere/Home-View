@@ -116,6 +116,7 @@ import {
   Eye,
   Lock,
   AlertCircle,
+  Plane,
 } from "lucide-react";
 import { Link as RouterLink, useLocation } from "wouter";
 import { useAccessMode } from "@/components/access-gate";
@@ -1519,7 +1520,7 @@ export default function Dashboard() {
     const saved = localStorage.getItem('profileData');
     return saved ? JSON.parse(saved) : { firstName: 'Bryn', lastName: '', birthdate: '', timezone: 'America/Toronto', travelTimezone: null };
   });
-  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string }>(() => {
+  const [schoolData, setSchoolData] = useState<{ schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string }>(() => {
     const saved = localStorage.getItem('schoolData');
     if (saved) {
       const parsed = JSON.parse(saved);
@@ -1595,7 +1596,7 @@ export default function Dashboard() {
     toast({ title: "Profile saved", description: "Your profile has been updated." });
   };
   
-  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; semesterType?: string }) => {
+  const saveSchool = (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; semesterType?: string }) => {
     const { semesterType: semType, ...schoolOnly } = data;
     setSchoolData(schoolOnly);
     localStorage.setItem('schoolData', JSON.stringify(schoolOnly));
@@ -10056,7 +10057,7 @@ export default function Dashboard() {
                 {/* Right Column - Courses & Weeks */}
                 <div className="flex flex-col gap-4" style={{ paddingTop: '0px', marginTop: '-8px' }}>
                 {/* Course Legend */}
-                <div className="border rounded-lg p-3 space-y-3">
+                <div className="border rounded-lg p-3 space-y-3 mt-2">
                   <Label className="text-[10px] font-medium">Courses</Label>
                   {coursesData.courses.filter(course => course.name.trim()).map((course, index) => {
                     const courseCode = course.name.split(' - ')[0];
@@ -10250,7 +10251,7 @@ export default function Dashboard() {
                 )}
                 
                 {/* Weeks */}
-                <div className="border rounded-lg p-3 space-y-0.5">
+                <div className="border rounded-lg p-3 space-y-0">
                   <Label className="text-[10px] font-medium">Weeks</Label>
                   {[...weeks].sort((a, b) => {
                     const today = startOfDay(new Date());
@@ -10269,7 +10270,7 @@ export default function Dashboard() {
                       <div key={week.weekNumber} className={`flex items-center gap-0.5 rounded-md`} style={isSelected ? { backgroundColor: 'rgba(255,255,255,0.15)' } : undefined}>
                         <Button
                           variant="ghost"
-                          className={`justify-start gap-1 h-auto py-1 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
+                          className={`justify-start gap-1 h-auto py-0 px-1 w-full ${isWeekFinished ? "opacity-60" : ""} ${isSelected ? "bg-transparent hover:bg-transparent" : ""}`}
                           size="sm"
                           onClick={() => {
                             setSelectedWeek(week.weekNumber);
@@ -15831,9 +15832,9 @@ function SchoolForm({
   onSave,
   onCancel 
 }: { 
-  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string };
+  schoolData: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string };
   semesterSettings: SemesterSettings | null | undefined;
-  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; semesterType?: string }) => void;
+  onSave: (data: { schoolLogo: string | null; schoolName: string; numberOfWeeks: number; week1StartDate: string; firstDayOfWeek: string; timezone: string; isTravelling?: boolean; travelTimezone?: string; semesterType?: string }) => void;
   onCancel: () => void;
 }) {
   const [schoolName, setSchoolName] = useState(schoolData.schoolName || 'Toronto Metropolitan University');
@@ -15842,6 +15843,8 @@ function SchoolForm({
   const [week1StartDate, setWeek1StartDate] = useState(schoolData.week1StartDate);
   const [firstDayOfWeek, setFirstDayOfWeek] = useState(schoolData.firstDayOfWeek);
   const [timezone, setTimezone] = useState(schoolData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Toronto');
+  const [isTravelling, setIsTravelling] = useState(schoolData.isTravelling || false);
+  const [travelTimezone, setTravelTimezone] = useState(schoolData.travelTimezone || '');
   const [semesterType, setSemesterType] = useState(semesterSettings?.semesterType || 'winter');
   
   const daysOfWeek = [
@@ -15857,7 +15860,7 @@ function SchoolForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const finalSchoolName = schoolName === 'Other' ? customSchoolName : schoolName;
-    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, timezone, semesterType });
+    onSave({ schoolLogo: schoolData.schoolLogo, schoolName: finalSchoolName, numberOfWeeks, week1StartDate, firstDayOfWeek, timezone, isTravelling, travelTimezone: isTravelling ? travelTimezone : undefined, semesterType });
   };
 
   const semesterEnd = week1StartDate 
@@ -15994,6 +15997,73 @@ function SchoolForm({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div className="space-y-2 pt-1">
+              <div className="flex items-center gap-2">
+                <Checkbox 
+                  id="isTravelling"
+                  checked={isTravelling}
+                  onCheckedChange={(checked) => setIsTravelling(!!checked)}
+                  className="h-3.5 w-3.5 border-white/50 data-[state=checked]:bg-orange-500 data-[state=checked]:border-orange-500"
+                  data-testid="checkbox-travelling"
+                />
+                <Label htmlFor="isTravelling" className="text-[10px] text-white/70 cursor-pointer flex items-center gap-1">
+                  <Plane className="h-3 w-3" />
+                  I'm travelling
+                </Label>
+              </div>
+              {isTravelling && (
+                <div className="space-y-1 ml-5">
+                  <Label htmlFor="travelTimezone" className="text-[10px] text-white/70">Travel Time Zone</Label>
+                  <Select value={travelTimezone} onValueChange={setTravelTimezone}>
+                    <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-travel-timezone">
+                      <SelectValue placeholder="Where are you?" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white [&_*]:!text-black !text-[10px] max-h-[200px]">
+                      {[
+                        { value: 'America/Toronto', label: 'Eastern (Toronto)' },
+                        { value: 'America/New_York', label: 'Eastern (New York)' },
+                        { value: 'America/Chicago', label: 'Central (Chicago)' },
+                        { value: 'America/Denver', label: 'Mountain (Denver)' },
+                        { value: 'America/Los_Angeles', label: 'Pacific (LA)' },
+                        { value: 'America/Vancouver', label: 'Pacific (Vancouver)' },
+                        { value: 'America/Edmonton', label: 'Mountain (Edmonton)' },
+                        { value: 'America/Winnipeg', label: 'Central (Winnipeg)' },
+                        { value: 'America/Halifax', label: 'Atlantic (Halifax)' },
+                        { value: 'America/St_Johns', label: 'Newfoundland (St. John\'s)' },
+                        { value: 'America/Regina', label: 'Central - No DST (Regina)' },
+                        { value: 'Pacific/Honolulu', label: 'Hawaii' },
+                        { value: 'America/Anchorage', label: 'Alaska' },
+                        { value: 'America/Mexico_City', label: 'Central (Mexico City)' },
+                        { value: 'America/Bogota', label: 'Colombia (Bogota)' },
+                        { value: 'America/Sao_Paulo', label: 'Brazil (Sao Paulo)' },
+                        { value: 'Europe/London', label: 'GMT (London)' },
+                        { value: 'Europe/Paris', label: 'CET (Paris)' },
+                        { value: 'Europe/Berlin', label: 'CET (Berlin)' },
+                        { value: 'Europe/Rome', label: 'CET (Rome)' },
+                        { value: 'Europe/Madrid', label: 'CET (Madrid)' },
+                        { value: 'Europe/Amsterdam', label: 'CET (Amsterdam)' },
+                        { value: 'Europe/Athens', label: 'EET (Athens)' },
+                        { value: 'Europe/Istanbul', label: 'Turkey (Istanbul)' },
+                        { value: 'Asia/Dubai', label: 'Gulf (Dubai)' },
+                        { value: 'Asia/Kolkata', label: 'India (Kolkata)' },
+                        { value: 'Asia/Bangkok', label: 'Indochina (Bangkok)' },
+                        { value: 'Asia/Singapore', label: 'Singapore' },
+                        { value: 'Asia/Tokyo', label: 'JST (Tokyo)' },
+                        { value: 'Asia/Shanghai', label: 'CST (Shanghai)' },
+                        { value: 'Asia/Seoul', label: 'KST (Seoul)' },
+                        { value: 'Australia/Sydney', label: 'AEST (Sydney)' },
+                        { value: 'Australia/Melbourne', label: 'AEST (Melbourne)' },
+                        { value: 'Pacific/Auckland', label: 'NZST (Auckland)' },
+                        { value: 'UTC', label: 'UTC' },
+                      ].map(tz => (
+                        <SelectItem key={tz.value} value={tz.value} className="!text-black !text-[10px]">{tz.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[8px] text-orange-300/70">Due times will show in both your school and travel time zones.</p>
+                </div>
+              )}
             </div>
           </div>
           <p className="text-[8px] text-white/40 mt-1">Course details shown in the Courses section.</p>
