@@ -10905,7 +10905,7 @@ export default function Dashboard() {
                 </div>
               );
             })}
-            <div style={{ minWidth: 0 }} /> {/* Progress column spacer */}
+            <div style={{ minWidth: 0, gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }} /> {/* Progress column spacer */}
             {/* Saturday column - show reminder if Saturday is today */}
             {(() => {
               const satDay = weekDays[6];
@@ -10914,7 +10914,7 @@ export default function Dashboard() {
                 t.dueDate && !t.isCompleted && isSameDay(new Date(t.dueDate), satDay)
               );
               return (
-                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif" }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
+                <div style={{ minWidth: 0, width: '100%', fontFamily: "'Nunito', 'Avenir', sans-serif", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }} className={`text-[11px] font-medium text-white tracking-wide text-center leading-[15px] ${isSatToday && satHasTasks ? 'animate-pulse' : ''}`}>
                   {isSatToday && satHasTasks ? `${profileData.firstName.toUpperCase()}: Review your today tasks` : ''}
                 </div>
               );
@@ -10976,7 +10976,7 @@ export default function Dashboard() {
               {/* Progress column header (half-width, between Fri and Sat) */}
               <div 
                 className="flex items-center justify-center border-l border-border"
-                style={{ backgroundColor: '#000000', borderBottom: '1px solid white' }}
+                style={{ backgroundColor: '#000000', borderBottom: '1px solid white', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
               >
                 <span className="text-[10px] font-medium tracking-wide text-white/80 uppercase leading-tight text-center">This Week's<br/><span className="mt-1 block">Progress</span></span>
               </div>
@@ -10992,7 +10992,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black" }}
+                    style={{ backgroundColor: isToday ? colorSettings.todayCurrentHourCellBackground : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isToday && new Date().getDay() !== 6 && (
@@ -11105,7 +11105,8 @@ export default function Dashboard() {
                               {taskIdx === 0 ? course.name : ''}
                             </div>
                             
-                            {/* Static MODULE column task - always visible */}
+                            {/* Static MODULE column task - only when module column is visible */}
+                            {gridSizes.moduleColumnWidth > 0 && (
                             <div style={{ backgroundColor: course.bg }}>
                               <div 
                                 className={`flex items-center gap-1 text-[8px] px-1 py-0.5 rounded m-0.5 border ${task.isCompleted ? "text-gray-400" : "text-black"}`}
@@ -11129,6 +11130,7 @@ export default function Dashboard() {
                                 </span>
                               </div>
                             </div>
+                            )}
                             
                             {/* Sun-Fri columns (6 columns: index 0-5) - dynamic task starts from today */}
                             {weekDays.slice(0, 6).map((day, dayIdx) => {
@@ -11230,9 +11232,9 @@ export default function Dashboard() {
                             })}
                             
                             {/* Progress column - empty with black background */}
-                            <div style={{ backgroundColor: '#000000' }} />
+                            <div style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }} />
                             {/* Saturday column - grey if today, otherwise course bg */}
-                            <div style={{ backgroundColor: weekDays[6] && isSameDay(weekDays[6], new Date()) ? '#e8e8e8' : course.bg }} />
+                            <div style={{ backgroundColor: weekDays[6] && isSameDay(weekDays[6], new Date()) ? '#e8e8e8' : course.bg, gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }} />
                           </div>
                         );
                       })}
@@ -11444,7 +11446,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 flex flex-col justify-center gap-[4px] px-[3px]"
-                        style={{ backgroundColor: '#000000' }}
+                        style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
                       >
                         {hasNoData ? (
                           <span className="text-[9px] font-bold text-white/60 text-center" style={{ lineHeight: '1.6' }}>{courseName.startsWith('CASL') ? <>No progress<br/>to display</> : 'N/A'}</span>
@@ -11519,7 +11521,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0 flex flex-col gap-0.5 pt-0.5"
-                        style={{ backgroundColor: isSatToday ? '#e8e8e8' : course.bg, padding: '2px 2px 2px 4px' }}
+                        style={{ backgroundColor: isSatToday ? '#e8e8e8' : course.bg, padding: '2px 2px 2px 4px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                       >
                         {allItems.map((item, itemIdx) => {
                           const task = item.task;
@@ -11698,7 +11700,7 @@ export default function Dashboard() {
               {/* Progress column - half-width, black background */}
               <div 
                 className="border-l border-border/50 relative"
-                style={{ backgroundColor: '#000000', marginBottom: '-1px', paddingBottom: '1px' }}
+                style={{ backgroundColor: '#000000', marginBottom: '-1px', paddingBottom: '1px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
               />
               {/* Saturday all-day cell */}
               {weekDays[6] && (() => {
@@ -11708,7 +11710,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l border-border/50 relative flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#e8e8e8' : 'white', padding: '2px 2px 2px 8px' }}
+                    style={{ backgroundColor: isSameDay(day, new Date()) ? '#e8e8e8' : 'white', padding: '2px 2px 2px 8px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -11982,7 +11984,7 @@ export default function Dashboard() {
                     {/* Progress column - half-width, black background */}
                     <div 
                       className="border-l border-border/50"
-                      style={{ backgroundColor: '#000000' }}
+                      style={{ backgroundColor: '#000000', gridColumn: gridSizes.moduleColumnWidth > 0 ? 9 : 8 }}
                     />
                     {/* Saturday time slot cell */}
                     {weekDays[6] && (() => {
@@ -12001,7 +12003,8 @@ export default function Dashboard() {
                             backgroundColor: satBg,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             paddingLeft: '6px',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9
                           }}
                         >
                           <div className="absolute inset-0 z-0" style={{ backgroundColor: satBg }} />
