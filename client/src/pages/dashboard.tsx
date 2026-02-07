@@ -11212,12 +11212,10 @@ export default function Dashboard() {
             <div style={{ minWidth: 0 }} /> {/* Saturday column spacer */}
           </div>
           <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: '#faf8f5', borderRadius: '16px', overflow: 'clip' }}>
-            {/* Progress/Saturday divider line - dashed (6.5 / 7.5 total column widths), hidden on Saturday */}
-            {new Date().getDay() !== 6 && (
+            {/* Progress/Saturday divider line - red separator */}
             <div className="absolute top-0 bottom-0 w-[5px] z-50 pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
             </div>
-            )}
             
             <div className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
@@ -12636,12 +12634,12 @@ export default function Dashboard() {
                   
                   return (
                     <div 
-                      className="absolute left-0 right-0 z-[5] pointer-events-none"
-                      style={{ top: `${topPosition}px` }}
+                      className="absolute left-0 z-[5] pointer-events-none"
+                      style={{ top: `${topPosition}px`, right: `calc((1.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))` }}
                     >
                       <div 
-                        className="w-full"
-                        style={{ borderTop: '2px solid #ef4444' }}
+                        className="w-full border-t border-dashed"
+                        style={{ borderColor: 'rgba(0, 0, 0, 0.3)' }}
                       />
                     </div>
                   );
