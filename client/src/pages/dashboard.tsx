@@ -16206,12 +16206,12 @@ function SchoolForm({
             <div className="space-y-1">
               <Label htmlFor="numberOfWeeks" className="text-[10px] text-white/70">Number of School Weeks</Label>
               <Select value={String(numberOfWeeks)} onValueChange={(v) => setNumberOfWeeks(Number(v))}>
-                <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-8" style={{ color: 'black', fontSize: '10px' }} data-testid="select-number-of-weeks">
+                <SelectTrigger className="!text-black [&_*]:!text-black [&_span]:!text-[10px] bg-white !text-[10px] h-6 w-24 px-2" style={{ color: 'black', fontSize: '10px' }} data-testid="select-number-of-weeks">
                   <SelectValue placeholder="Select weeks" />
                 </SelectTrigger>
-                <SelectContent className="bg-white [&_*]:!text-black !text-[10px]">
+                <SelectContent className="bg-white [&_*]:!text-black !text-[10px] min-w-0 w-24">
                   {[10, 11, 12, 13, 14, 15, 16].map(w => (
-                    <SelectItem key={w} value={String(w)} className="!text-black !text-[10px]">{w} weeks</SelectItem>
+                    <SelectItem key={w} value={String(w)} className="!text-black !text-[10px] py-1">{w} weeks</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
