@@ -8890,7 +8890,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '14px', width: '52px', height: `${(4 * 52) + 312}px` }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '14px', width: '52px', height: `${(9 * 52) + 56}px` }}>
         <div 
           style={{ 
             width: '100%', 
@@ -9112,7 +9112,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (4 * 52) - 5}px`, 
+          top: `${calendarTop + 3 + (4 * 52)}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9151,7 +9151,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (4 * 52) + 45}px`, 
+          top: `${calendarTop + 3 + (5 * 52)}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9198,7 +9198,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (4 * 52) + 145}px`, 
+          top: `${calendarTop + 3 + (7 * 52)}px`, 
           right: '18px',
           borderRadius: '50%',
           background: isKitchenPlaying 
@@ -9241,7 +9241,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (4 * 52) + 195}px`, 
+          top: `${calendarTop + 3 + (8 * 52)}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
@@ -9378,7 +9378,7 @@ export default function Dashboard() {
         style={{ 
           width: '44px', 
           height: '44px', 
-          top: `${calendarTop + 3 + (4 * 52) + 95}px`, 
+          top: `${calendarTop + 3 + (6 * 52)}px`, 
           right: '18px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
