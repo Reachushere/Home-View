@@ -3726,6 +3726,82 @@ export async function registerRoutes(
     }
   });
 
+  // POST /api/ha/automation/partner-leaves-work - Create HA automation to notify when partner leaves work zone
+  app.post("/api/ha/automation/partner-leaves-work", async (req, res) => {
+    try {
+      if (!HOME_ASSISTANT_URL || !HOME_ASSISTANT_TOKEN) {
+        return res.status(500).json({ error: "Home Assistant not configured" });
+      }
+
+      const haUrl = HOME_ASSISTANT_URL.replace(/\/$/, '');
+
+      const automationConfig = {
+        alias: "Notify when Yasu leaves work",
+        description: "Send push notification to iPhone when Yasu's phone leaves the work zone",
+        mode: "single",
+        trigger: [
+          {
+            platform: "zone",
+            entity_id: PARTNER_PHONE_ENTITY,
+            zone: "zone.work",
+            event: "leave"
+          }
+        ],
+        condition: [],
+        action: [
+          {
+            service: "notify.mobile_app_iphone_10",
+            data: {
+              title: "Yasu Left Work",
+              message: "Yasu just left the work zone.",
+              data: {
+                push: {
+                  sound: "default",
+                  interruption_level: "time-sensitive"
+                }
+              }
+            }
+          }
+        ]
+      };
+
+      const response = await fetch(`${haUrl}/api/services/automation/create`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(automationConfig),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('HA automation create error, trying config endpoint:', errorText);
+
+        const configResponse = await fetch(`${haUrl}/api/config/automation/config/uni_cal_partner_leaves_work`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HOME_ASSISTANT_TOKEN}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(automationConfig),
+        });
+
+        if (!configResponse.ok) {
+          const configError = await configResponse.text();
+          console.error('HA automation config error:', configError);
+          return res.status(500).json({ error: "Failed to create automation", details: configError });
+        }
+      }
+
+      console.log('HA automation created: Notify when Yasu leaves work');
+      res.json({ success: true, message: "Automation created: You'll get a notification when Yasu leaves the work zone" });
+    } catch (error: any) {
+      console.error("Error creating partner leaves work automation:", error);
+      res.status(500).json({ error: "Failed to create automation", details: error.message });
+    }
+  });
+
   // GET /api/ha/device-trackers - List all device trackers to find correct entity IDs
   app.get("/api/ha/device-trackers", async (req, res) => {
     try {
