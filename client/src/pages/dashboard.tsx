@@ -9097,7 +9097,7 @@ export default function Dashboard() {
           >
             <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[10px] text-white/80 whitespace-nowrap font-bold uppercase tracking-wide" data-testid="text-week-dates">
+          <span className="text-[11px] text-white/80 whitespace-nowrap font-bold uppercase tracking-wide" data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} to {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
