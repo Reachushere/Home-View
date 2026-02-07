@@ -11246,7 +11246,7 @@ export default function Dashboard() {
         <div className="flex-1 overflow-y-auto overflow-x-visible scrollbar-hidden flex flex-col" style={{ marginTop: '0px', marginLeft: '-25px', marginRight: '-19px', paddingLeft: '25px', paddingRight: '23px' }}>
         {/* Calendar Views */}
         {calendarView === "week" ? (
-        <div className="mb-[12px] mt-[10px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight, order: 2 }}>
+        <div className="mb-[12px] mt-[30px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 20, order: 2 }}>
           
           {/* Module Media Controls Dialog */}
           <Dialog open={moduleMediaControlCourse !== null} onOpenChange={(open) => !open && setModuleMediaControlCourse(null)}>
@@ -13354,7 +13354,7 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] transition-all duration-300" style={{ height: calendarHeight, order: 2 }}>
+        <div className="mb-[12px] mt-[20px] transition-all duration-300" style={{ height: calendarHeight - 20, order: 2 }}>
           <Card className="shadow-lg overflow-hidden h-full border-[0.1px] border-white bg-white/50 backdrop-blur-sm" style={{ borderRadius: '16px' }}>
             <CardContent className="p-0 h-full overflow-auto scrollbar-hidden">
               {/* Month Header */}
