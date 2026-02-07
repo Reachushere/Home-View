@@ -262,20 +262,12 @@ export default function Dashboard() {
     const deviceSaved = localStorage.getItem(`calendarHeight_${deviceId}`);
     if (deviceSaved) {
       const val = parseInt(deviceSaved, 10);
-      if (val > defaultHeight + 50) {
-        localStorage.removeItem(`calendarHeight_${deviceId}`);
-        return defaultHeight;
-      }
-      return val;
+      if (!isNaN(val) && val > 0) return val;
     }
     const saved = localStorage.getItem('calendarHeight');
     if (saved) {
       const val = parseInt(saved, 10);
-      if (val > defaultHeight + 50) {
-        localStorage.removeItem('calendarHeight');
-        return defaultHeight;
-      }
-      return val;
+      if (!isNaN(val) && val > 0) return val;
     }
     return defaultHeight;
   });
@@ -1198,13 +1190,13 @@ export default function Dashboard() {
     
     if (deviceSaved) {
       const parsed = JSON.parse(deviceSaved);
-      // Always reset certain values
-      parsed.timeSlotHeights = defaultHeights;
-      parsed.timeSlotHeight = 36;
-      parsed.courseRowHeight = 48;
-      parsed.moduleColumnWidth = 0;
-      parsed.timeColumnWidth = 59;
-      // Ensure 8 columns (7 days + extra half-width column)
+      if (!parsed.timeSlotHeights || parsed.timeSlotHeights.length !== 24) {
+        parsed.timeSlotHeights = defaultHeights;
+      }
+      if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
+      if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
+      if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
+      if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 8) {
         parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 0.5, 1];
       }
@@ -1215,15 +1207,13 @@ export default function Dashboard() {
     const saved = localStorage.getItem('gridSizes');
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Always reset timeSlotHeights to default uniform heights
-      parsed.timeSlotHeights = defaultHeights;
-      parsed.timeSlotHeight = 36;
-      parsed.courseRowHeight = 48;
-      // Set moduleColumnWidth to 0 (column removed)
-      parsed.moduleColumnWidth = 0;
-      // Force timeColumnWidth to 59
-      parsed.timeColumnWidth = 59;
-      // Ensure 8 columns (7 days + extra half-width column)
+      if (!parsed.timeSlotHeights || parsed.timeSlotHeights.length !== 24) {
+        parsed.timeSlotHeights = defaultHeights;
+      }
+      if (!parsed.timeSlotHeight) parsed.timeSlotHeight = 36;
+      if (!parsed.courseRowHeight) parsed.courseRowHeight = 48;
+      if (parsed.moduleColumnWidth === undefined) parsed.moduleColumnWidth = 0;
+      if (!parsed.timeColumnWidth) parsed.timeColumnWidth = 59;
       if (!parsed.dayColumnWidths || parsed.dayColumnWidths.length < 8) {
         parsed.dayColumnWidths = [1, 1, 1, 1, 1, 1, 0.5, 1];
       }
