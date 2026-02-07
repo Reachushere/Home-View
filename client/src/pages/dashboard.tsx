@@ -11113,7 +11113,7 @@ export default function Dashboard() {
               top: '-5px', 
               left: '-15px', 
               right: '-15px', 
-              bottom: '-22px', 
+              bottom: '-24px', 
               background: 'rgba(255, 255, 255, 0.35)',
               borderRadius: '31px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
