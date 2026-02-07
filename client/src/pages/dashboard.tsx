@@ -8102,7 +8102,7 @@ export default function Dashboard() {
               <span className="text-[13px] text-white font-normal" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>
                 {new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: displayTimezone }).format(currentTime)}
               </span>
-              <div className="w-[1px] h-4 bg-white/50" />
+              <div className="w-[1px] h-4 bg-white/50 mx-1" />
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', width: '95px' }}>
               <span style={{ fontFamily: "'Raleway', sans-serif", fontSize: '14px', fontWeight: 'bold', color: 'white', width: '44px', textAlign: 'right', flexShrink: 0 }}>
