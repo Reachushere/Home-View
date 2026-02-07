@@ -12159,11 +12159,11 @@ export default function Dashboard() {
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l relative p-0.5 overflow-visible ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
+                          className={`border-l relative p-0.5 ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5'
+                            backgroundColor: isToday && isCurrentHour ? '#d9d9d9' : isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5'
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
@@ -12193,8 +12193,7 @@ export default function Dashboard() {
                           <div 
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
-                              // Always show current hour/today background - task boxes have their own backgrounds
-                              backgroundColor: isToday || isCurrentHour ? '#e8e8e8' : undefined,
+                              backgroundColor: isToday && isCurrentHour ? '#d9d9d9' : isToday || isCurrentHour ? '#e8e8e8' : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
