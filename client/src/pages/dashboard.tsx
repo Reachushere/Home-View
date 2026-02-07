@@ -12195,7 +12195,7 @@ export default function Dashboard() {
                         <div 
                           className={`border-l border-border/50 relative`}
                           style={{ 
-                            backgroundColor: '#d4d4d4',
+                            backgroundColor: 'orange',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             paddingLeft: '6px',
                             overflow: 'hidden',
