@@ -9539,7 +9539,7 @@ export default function Dashboard() {
       >
         <div 
           className="relative w-full h-full cursor-pointer"
-          onClick={() => setReadingsPopupCourse('cppa122')}
+          onClick={() => setReadingsPopupCourse(prev => prev === 'cppa122' ? null : 'cppa122')}
         >
           <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
@@ -9559,7 +9559,7 @@ export default function Dashboard() {
       >
         <div 
           className="relative w-full h-full cursor-pointer"
-          onClick={() => setReadingsPopupCourse('cfnf400')}
+          onClick={() => setReadingsPopupCourse(prev => prev === 'cfnf400' ? null : 'cfnf400')}
         >
           <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
@@ -9579,7 +9579,7 @@ export default function Dashboard() {
       >
         <div 
           className="relative w-full h-full cursor-pointer"
-          onClick={() => setReadingsPopupCourse('casl101')}
+          onClick={() => setReadingsPopupCourse(prev => prev === 'casl101' ? null : 'casl101')}
         >
           <img src={hexIcon} alt="" className="w-full h-full object-contain" style={{ filter: 'drop-shadow(2px 2px 1px rgba(10, 27, 34, 0.6))' }} />
           <FolderOpen className="absolute inset-0 m-auto h-4 w-4" style={{ color: 'white', strokeWidth: 3 }} />
