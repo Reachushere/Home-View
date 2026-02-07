@@ -1011,7 +1011,8 @@ button[role="combobox"] > span {
   }
   
   .checkbox-black:checked {
-    background-color: black !important;
+    background-color: #2563eb !important;
+    border-color: #2563eb !important;
   }
   
   .checkbox-black:checked::after {
