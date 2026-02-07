@@ -11983,12 +11983,10 @@ export default function Dashboard() {
                       const totalItems = hourTasks.length + hourCalendarEvents.length;
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       const columnWidth = totalItems > 0 ? 100 / totalItems : 100;
-                      // Apply shimmer to today column (including current hour intersection)
-                      const shouldShimmer = isToday;
                       return (
                         <div 
                           key={dayIdx} 
-                          className={`border-l relative p-0.5 ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""} ${shouldShimmer ? "today-hour-shimmer" : ""}`}
+                          className={`border-l relative p-0.5 ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "ring-2 ring-primary ring-inset" : ""}`}
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
@@ -12022,7 +12020,6 @@ export default function Dashboard() {
                           <div 
                             className={`absolute inset-0 z-0 ${hasAnyTasks && !isToday && !isCurrentHour ? "bg-blue-50/50 dark:bg-blue-900/20" : ""} ${dragOverSlot && isSameDay(dragOverSlot.day, day) && dragOverSlot.hour === hour ? "bg-primary/20" : ""}`}
                             style={{
-                              backgroundColor: isToday || isCurrentHour ? colorSettings.todayCellBackground : undefined,
                               borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined
                             }}
                           />
@@ -12199,7 +12196,7 @@ export default function Dashboard() {
                       const satBg = isSatToday || isCurrentHour ? colorSettings.todayCellBackground : '#faf8f5';
                       return (
                         <div 
-                          className={`border-l border-border/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isSatToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
+                          className={`border-l border-border/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""}`}
                           style={{ 
                             backgroundColor: satBg,
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
@@ -12208,7 +12205,7 @@ export default function Dashboard() {
                             gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9
                           }}
                         >
-                          <div className="absolute inset-0 z-0" style={{ backgroundColor: satBg }} />
+                          <div className="absolute inset-0 z-0" />
                           {/* Hour boundary dotted line */}
                           <div className="absolute left-0 right-0 border-t border-dotted border-gray-400 z-[1]" style={{ top: '0' }} />
                           {/* Half-hour dotted line */}
