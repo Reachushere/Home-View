@@ -8890,7 +8890,7 @@ export default function Dashboard() {
       </div>
       
       {/* Tall Pill Panel - Right side of calendar (CSS) */}
-      <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '12px', width: '52px', height: `${(9 * 52) + 9}px` }}>
+      <div className="absolute z-40 pointer-events-none" style={{ top: `${calendarTop - 5}px`, right: '13px', width: '52px', height: `${(9 * 52) + 9}px` }}>
         <div 
           style={{ 
             width: '100%', 
@@ -8923,7 +8923,7 @@ export default function Dashboard() {
             className="absolute z-50"
             style={{ 
               top: `${calendarTop + 3 + ((idx + 1) * 52)}px`, 
-              right: '16px',
+              right: '17px',
             }}
           >
             {/* Course button */}
@@ -9113,7 +9113,7 @@ export default function Dashboard() {
           width: '44px', 
           height: '44px', 
           top: `${calendarTop + 3 + (4 * 52)}px`, 
-          right: '16px',
+          right: '17px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           padding: '1px',
@@ -9152,7 +9152,7 @@ export default function Dashboard() {
           width: '44px', 
           height: '44px', 
           top: `${calendarTop + 3 + (5 * 52)}px`, 
-          right: '16px',
+          right: '17px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           padding: '1px',
@@ -9199,7 +9199,7 @@ export default function Dashboard() {
           width: '44px', 
           height: '44px', 
           top: `${calendarTop + 3 + (7 * 52)}px`, 
-          right: '16px',
+          right: '17px',
           borderRadius: '50%',
           background: isKitchenPlaying 
             ? 'linear-gradient(0deg, #8B0000 0%, #DC143C 50%, #FF4500 100%)'
@@ -9242,7 +9242,7 @@ export default function Dashboard() {
           width: '44px', 
           height: '44px', 
           top: `${calendarTop + 3 + (8 * 52)}px`, 
-          right: '16px',
+          right: '17px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           padding: '1px',
@@ -9338,7 +9338,7 @@ export default function Dashboard() {
           width: '44px', 
           height: '44px', 
           top: `${calendarTop + 3}px`, 
-          right: '16px',
+          right: '17px',
           borderRadius: '50%',
           background: isMuted ? 'linear-gradient(0deg, #FF4545 0%, #FF6666 100%)' : 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           padding: '1px',
@@ -9379,7 +9379,7 @@ export default function Dashboard() {
           width: '44px', 
           height: '44px', 
           top: `${calendarTop + 3 + (6 * 52)}px`, 
-          right: '16px',
+          right: '17px',
           borderRadius: '50%',
           background: 'linear-gradient(0deg, #1a1a1a 0%, #2a2a2a 50%, #4a4a4a 100%)',
           padding: '1px',
