@@ -9328,7 +9328,7 @@ export default function Dashboard() {
                       )}
                     </div>
                   </div>
-                  <div className="absolute left-0 w-full px-2.5" style={{ bottom: courseId === 'cppa122' ? '28px' : '30px' }}>
+                  <div className="absolute left-0 w-full px-2.5" style={{ bottom: courseId === 'cppa122' ? '25px' : '27px' }}>
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                     {moduleCount > 0 ? (
                       <span className="bg-red-500 text-[8px] font-medium text-white" style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)', width: '14px', height: '14px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1 }}>
