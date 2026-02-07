@@ -8865,7 +8865,7 @@ export default function Dashboard() {
           >
             <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-[12px] text-white/80 whitespace-nowrap font-bold tracking-wide" style={{ fontFamily: "Avenir, 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif" }} data-testid="text-week-dates">
+          <span className="text-[13px] text-white/80 whitespace-nowrap font-normal tracking-wide" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }} data-testid="text-week-dates">
             {format(weekStartDate, 'EEE, MMMM d')} to {format(weekEndDate, 'EEE, MMMM d')}
           </span>
           <div 
