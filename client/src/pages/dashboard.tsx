@@ -7749,20 +7749,20 @@ export default function Dashboard() {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
-              <DropdownMenuItem data-testid="menu-item-profile" onClick={() => setIsProfileDialogOpen(true)}>
-                <User className="h-4 w-4 mr-2" />
+              <DropdownMenuItem data-testid="menu-item-profile" className="text-xs" onClick={() => setIsProfileDialogOpen(true)}>
+                <User className="h-3.5 w-3.5 mr-2" />
                 Profile Settings
               </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-school" onClick={() => setIsSchoolDialogOpen(true)}>
-                <GraduationCap className="h-4 w-4 mr-2" />
+              <DropdownMenuItem data-testid="menu-item-school" className="text-xs" onClick={() => setIsSchoolDialogOpen(true)}>
+                <GraduationCap className="h-3.5 w-3.5 mr-2" />
                 School Settings
               </DropdownMenuItem>
-              <DropdownMenuItem data-testid="menu-item-settings" onClick={() => {
+              <DropdownMenuItem data-testid="menu-item-settings" className="text-xs" onClick={() => {
                   setOriginalColorSettings({...colorSettings});
                   setOriginalBlinkSettings({...blinkSettings});
                   setIsSettingsDialogOpen(true);
                 }}>
-                <Settings className="h-4 w-4 mr-2" />
+                <Settings className="h-3.5 w-3.5 mr-2" />
                 Calendar Settings
               </DropdownMenuItem>
             </DropdownMenuContent>
