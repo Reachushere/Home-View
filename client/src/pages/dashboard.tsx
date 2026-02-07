@@ -11917,8 +11917,8 @@ export default function Dashboard() {
                 const allDayEvents = getAllDayCalendarEvents(day);
                 return (
                   <div 
-                    className="border-l border-border/50 relative flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: '#c0c0c0', padding: '2px 2px 2px 8px', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    className="border-l relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
+                    style={{ backgroundColor: '#c0c0c0', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -12206,11 +12206,11 @@ export default function Dashboard() {
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       return (
                         <div 
-                          className={`border-l border-border relative`}
+                          className={`border-l relative p-0.5`}
                           style={{ 
                             backgroundColor: '#c0c0c0',
+                            borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
-                            paddingLeft: '6px',
                             overflow: 'hidden',
                             gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9
                           }}
