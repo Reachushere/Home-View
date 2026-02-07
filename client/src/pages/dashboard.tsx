@@ -16389,7 +16389,22 @@ function CoursesForm({
             return (
               <div key={realIndex} className="border border-white/20 rounded p-3 space-y-1">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: course.color }} />
+                  <div className="relative flex-shrink-0">
+                    <div className="w-3 h-3 rounded-full cursor-pointer" style={{ backgroundColor: course.color }} onClick={() => document.getElementById(`course-color-${realIndex}`)?.click()} />
+                    <input
+                      id={`course-color-${realIndex}`}
+                      type="color"
+                      value={course.color}
+                      onChange={(e) => {
+                        const updatedCourses = [...courses];
+                        updatedCourses[realIndex] = { ...updatedCourses[realIndex], color: e.target.value };
+                        setCourses(updatedCourses);
+                        onSave({ courses: updatedCourses });
+                      }}
+                      className="absolute inset-0 w-0 h-0 opacity-0"
+                      data-testid={`input-course-color-${realIndex}`}
+                    />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-medium truncate">{course.name.split(' - ')[0]}</span>
