@@ -481,7 +481,7 @@ export default function Dashboard() {
           
           // Show popup if partner is away and we haven't dismissed it recently
           // Also check ref to prevent showing if already shown this session
-          if (data.isAway && !partnerPopupShownRef.current) {
+          if (false && data.isAway && !partnerPopupShownRef.current) {
             const now = Date.now();
             const savedDismiss = localStorage.getItem('partnerAwayDismissedUntil');
             const dismissedUntil = savedDismiss ? parseInt(savedDismiss, 10) : 0;
