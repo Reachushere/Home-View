@@ -11588,42 +11588,9 @@ export default function Dashboard() {
                   </div>
                   {gridSizes.moduleColumnWidth > 0 && <div style={{ minWidth: 0, backgroundColor: course.bg }} />}
                   {weekDays.slice(0, 6).map((day, dayIdx) => {
-                    // Course row day cells - show tasks due on this day for this course
-                    const isDayToday = isSameDay(day, new Date());
                     const cellBgColor = course.bg;
-                    
-                    // Find tasks for this course on this day (due date OR within prep days range)
                     const cellDate = startOfDay(day);
-                    const dayTasks = tasks?.filter(task => {
-                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
-                      if (task.isCompleted) return false;
-                      const taskDueDate = startOfDay(new Date(task.dueDate));
-                      
-                      // Check if this is the due date
-                      if (isSameDay(taskDueDate, cellDate)) return true;
-                      
-                      // Check if this day falls within prep days (startDate to dueDate)
-                      if (task.startDate) {
-                        const taskStartDate = startOfDay(new Date(task.startDate));
-                        // Day is within prep range if: startDate <= cellDate < dueDate
-                        if (cellDate >= taskStartDate && cellDate < taskDueDate) return true;
-                      }
-                      
-                      return false;
-                    }) || [];
                     
-                    // Find prep-only tasks for this cell (tasks where this is a prep day, NOT the due day)
-                    const prepTasks = tasks?.filter(task => {
-                      if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
-                      if (task.isCompleted) return false;
-                      if (!task.startDate) return false;
-                      const taskDueDate = startOfDay(new Date(task.dueDate));
-                      const taskStartDate = startOfDay(new Date(task.startDate));
-                      // This is a prep day if: startDate <= cellDate < dueDate
-                      return cellDate >= taskStartDate && cellDate < taskDueDate;
-                    }) || [];
-                    
-                    // Find due tasks for this cell (tasks where this IS the due day)
                     const dueTasks = tasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
@@ -11631,60 +11598,28 @@ export default function Dashboard() {
                       return isSameDay(taskDueDate, cellDate);
                     }) || [];
                     
-                    // Get task summary for this cell (first task title, truncated)
-                    const taskSummary = dayTasks.length > 0 ? dayTasks[0].title : '';
-                    const hasMultipleTasks = dayTasks.length > 1;
-                    
-                    // Check if any prep bar continues into this cell from the previous day (not first prep day)
-                    const hasContinuingPrepBar = prepTasks.some(task => {
-                      if (!task.startDate) return false;
-                      const taskStartDate = startOfDay(new Date(task.startDate));
-                      // It's a continuing prep bar if this is NOT the first prep day
-                      return !isSameDay(cellDate, taskStartDate);
-                    });
-                    
-                    // Get all tasks for this course (not just this day) to assign row indices
-                    const allCourseTasks = tasks?.filter(task => {
+                    const prepTasks = tasks?.filter(task => {
                       if (!task.courseName?.toUpperCase().startsWith(course.name)) return false;
                       if (task.isCompleted) return false;
-                      return true;
-                    }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()) || [];
+                      if (!task.startDate) return false;
+                      const taskDueDate = startOfDay(new Date(task.dueDate));
+                      const taskStartDate = startOfDay(new Date(task.startDate));
+                      return cellDate >= taskStartDate && cellDate < taskDueDate;
+                    }) || [];
                     
-                    // Create a map of task ID to row index (sorted by due date)
-                    const taskRowMap = new Map<number, number>();
-                    allCourseTasks.forEach((task, idx) => {
-                      taskRowMap.set(task.id, idx);
-                    });
+                    const rgb = hexToRgb(course.label);
+                    const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
                     
-                    // Combine prep and due tasks with their row assignments
-                    const taskChains: { task: typeof dayTasks[0], isPrep: boolean, isDue: boolean, rowIdx: number }[] = [];
-                    
-                    prepTasks.forEach(task => {
-                      const rowIdx = taskRowMap.get(task.id) ?? 0;
-                      taskChains.push({ task, isPrep: true, isDue: false, rowIdx });
-                    });
-                    
-                    dueTasks.forEach(task => {
-                      const rowIdx = taskRowMap.get(task.id) ?? 0;
-                      // Check if this task already has a prep entry
-                      const existingIdx = taskChains.findIndex(tc => tc.task.id === task.id);
-                      if (existingIdx >= 0) {
-                        taskChains[existingIdx].isDue = true;
-                      } else {
-                        taskChains.push({ task, isPrep: false, isDue: true, rowIdx });
-                      }
-                    });
-                    
-                    // Sort by row index
-                    taskChains.sort((a, b) => a.rowIdx - b.rowIdx);
+                    const allItems: { task: typeof dueTasks[0], isPrep: boolean }[] = [
+                      ...dueTasks.map(t => ({ task: t, isPrep: false })),
+                      ...prepTasks.map(t => ({ task: t, isPrep: true })),
+                    ];
                     
                     return (
                       <div 
                         key={dayIdx} 
-                        className={`overflow-visible relative flex flex-col pt-0.5 ${hasContinuingPrepBar ? '' : 'border-l border-border/50'}`}
-                        style={{ 
-                          backgroundColor: cellBgColor,
-                        }}
+                        className="overflow-hidden relative flex flex-col gap-0.5 pt-0.5 border-l border-border/50"
+                        style={{ backgroundColor: cellBgColor, padding: '2px 2px 2px 4px' }}
                         data-testid={`course-row-${course.name}-${format(day, "yyyy-MM-dd")}`}
                         onDragOver={(e) => {
                           e.preventDefault();
@@ -11698,89 +11633,52 @@ export default function Dashboard() {
                           handleCourseRowDrop(e, course.name, day);
                         }}
                       >
-                        {/* Render each task chain on its own row, using absolute positioning to maintain alignment */}
-                        {taskChains.map((chain, chainIdx) => {
-                          const task = chain.task;
-                          const taskStartDate = task.startDate ? startOfDay(new Date(task.startDate)) : null;
-                          const taskDueDate = startOfDay(new Date(task.dueDate));
-                          const isFirstPrepDay = taskStartDate && isSameDay(cellDate, taskStartDate);
-                          const prepDaysTotal = taskStartDate ? Math.ceil((taskDueDate.getTime() - taskStartDate.getTime()) / (1000 * 60 * 60 * 24)) : 0;
+                        {allItems.map((item, itemIdx) => {
+                          const task = item.task;
+                          const today = startOfDay(new Date());
+                          const tomorrow = addDays(today, 1);
+                          const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
+                          const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                           
-                          const rgb = hexToRgb(course.label);
-                          const lightBg = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                          const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-                          
-                          // Use rowIdx for consistent positioning across all cells
-                          const rowOffset = chain.rowIdx * 20; // 18px height + 2px gap
+                          if (item.isPrep) {
+                            return (
+                              <div 
+                                key={`prep-${task.id}`}
+                                className="flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer"
+                                style={{ 
+                                  backgroundColor: 'rgba(156, 163, 175, 0.15)',
+                                  borderColor: 'rgba(156, 163, 175, 0.5)',
+                                }}
+                                onClick={() => setEditingTask(task)}
+                                title={`Prep Day - ${task.title}`}
+                              >
+                                <span className="truncate font-bold text-gray-700">Prep Day - {task.title}</span>
+                              </div>
+                            );
+                          }
                           
                           return (
                             <div 
-                              key={`chain-${task.id}-${chainIdx}`}
-                              className="flex items-center absolute"
+                              key={task.id}
+                              className={`flex items-center gap-0.5 text-[7px] px-0.5 py-0.5 truncate rounded border cursor-pointer ${isDueToday ? "animate-blink" : isDueTomorrow ? "animate-slow-blink" : ""}`}
                               style={{ 
-                                height: '18px',
-                                top: `${rowOffset}px`,
-                                left: isFirstPrepDay ? '0' : '-1px',
-                                right: chain.isDue ? '0' : '-1px',
+                                backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`,
+                                borderColor: borderColor,
                               }}
+                              title={task.title}
                             >
-                              {/* Prep bar segment - extends past cell edge for seamless connection */}
-                              {chain.isPrep && !chain.isDue && (
-                                <div
-                                  className="flex items-center justify-center h-full animate-prep-shimmer"
-                                  style={{
-                                    marginLeft: isFirstPrepDay ? '2px' : '0',
-                                    marginRight: '0',
-                                    borderRadius: isFirstPrepDay ? '4px 0 0 4px' : '0',
-                                    background: 'rgba(156, 163, 175, 0.15)',
-                                    borderTop: '1px solid rgba(156, 163, 175, 0.5)',
-                                    borderBottom: '1px solid rgba(156, 163, 175, 0.5)',
-                                    borderLeft: isFirstPrepDay ? '1px solid rgba(156, 163, 175, 0.5)' : 'none',
-                                    borderRight: 'none',
-                                    flex: 1,
-                                    zIndex: 5,
-                                  }}
-                                  title={`Prep: ${task.title} (${prepDaysTotal} days)`}
-                                >
-                                  <span className="text-[8px] text-gray-700 font-medium truncate px-0.5">
-                                    Prep days
-                                  </span>
-                                </div>
-                              )}
-                              {/* Due task segment - left side open if has prep days for seamless connection */}
-                              {chain.isDue && (
-                                <div 
-                                  className="text-[8px] text-black truncate flex items-center gap-1 z-10 relative h-full"
-                                  style={{
-                                    marginLeft: task.startDate ? '-1px' : '2px',
-                                    marginRight: '2px',
-                                    paddingLeft: '4px',
-                                    paddingRight: '2px',
-                                    borderRadius: task.startDate ? '0 4px 4px 0' : '4px',
-                                    backgroundColor: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.25)`,
-                                    borderTop: `1px solid ${borderColor}`,
-                                    borderBottom: `1px solid ${borderColor}`,
-                                    borderRight: `1px solid ${borderColor}`,
-                                    borderLeft: task.startDate ? 'none' : `1px solid ${borderColor}`,
-                                    flex: 1,
-                                    zIndex: 6,
-                                  }}
-                                  title={task.title}
-                                >
-                                  <Checkbox
-                                    checked={task.isCompleted || false}
-                                    onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
-                                    className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black z-10"
-                                    data-testid={`checkbox-course-row-${task.id}`}
-                                  />
-                                  <span 
-                                    className="truncate cursor-pointer hover:opacity-80 z-10"
-                                    onClick={() => setEditingTask(task)}
-                                  >
-                                    {task.title}
-                                  </span>
-                                </div>
-                              )}
+                              <Checkbox
+                                checked={task.isCompleted || false}
+                                onCheckedChange={(checked) => completeMutation.mutate({ id: task.id, isCompleted: !!checked })}
+                                className="h-3 w-3 shrink-0 border-black data-[state=checked]:bg-black data-[state=checked]:border-black"
+                                data-testid={`checkbox-course-row-${task.id}`}
+                              />
+                              <span 
+                                className="truncate cursor-pointer hover:opacity-80"
+                                onClick={() => setEditingTask(task)}
+                              >
+                                {task.title}
+                              </span>
                             </div>
                           );
                         })}
