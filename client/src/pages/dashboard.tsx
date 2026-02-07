@@ -12113,23 +12113,9 @@ export default function Dashboard() {
                             const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                             const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                             
-                            // Check for prep days
-                            const hasPrepDays = !!task.startDate && !task.isCompleted;
-                            const prepDaysCount = hasPrepDays && task.startDate
-                              ? Math.max(0, differenceInCalendarDays(new Date(task.dueDate), new Date(task.startDate)))
-                              : 0;
-                            
-                            // Check if this task is covered by a prep extension from another task
-                            const isCoveredByPrep = isTaskCoveredByPrepExtension(day, hour, task.id);
-                            
                             // Calculate height based on duration for events with start/end times
                             let taskHeight = 40; // Same height for all tasks
                             let topOffset = 2; // Default top offset
-                            
-                            // If covered by prep extension, push task down below it
-                            if (isCoveredByPrep) {
-                              topOffset += 22; // Push down by prep extension height (22px, tight against bottom)
-                            }
                             
                             if (task.eventStartTime && task.eventEndTime) {
                               const [startHour, startMin] = task.eventStartTime.split(':').map(Number);
@@ -12137,10 +12123,8 @@ export default function Dashboard() {
                               const startMinutes = startHour * 60 + startMin;
                               const endMinutes = endHour * 60 + endMin;
                               const durationMinutes = endMinutes - startMinutes;
-                              // Single hour tasks only now - same height for all
                               taskHeight = Math.max(40, (durationMinutes / 60) * 44 - 4);
-                              // Offset for minutes past the hour, plus prep offset if covered
-                              topOffset = (startMin / 60) * 44 + (isCoveredByPrep ? 22 : 0);
+                              topOffset = (startMin / 60) * 44;
                             }
                             
                             return (
@@ -12178,16 +12162,12 @@ export default function Dashboard() {
                                 onTouchStart={(e) => handleTouchStart(e, task.id, task.title)}
                                 onTouchEnd={handleTouchEnd}
                                 onTouchMove={handleTouchMove}
-                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                                className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden ${
                                   draggedTask?.id === task.id ? "opacity-50" : ""
                                 } ${
-                                  selectedTaskId === task.id && !(hasPrepDays && prepDaysCount > 0) ? "ring-2 ring-red-500 ring-offset-1" : ""
+                                  selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                                 } ${
                                   isDueToday ? "task-blink-border" : ""
-                                } ${
-                                  hasPrepDays && prepDaysCount > 0
-                                    ? "rounded overflow-visible" 
-                                    : "rounded overflow-hidden"
                                 }`}
                                 style={{
                                   top: `${topOffset}px`,
@@ -12197,65 +12177,11 @@ export default function Dashboard() {
                                   zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
                                   backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
                                   border: selectedTaskId === task.id ? '2px solid rgb(239, 68, 68)' : `1px solid ${task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')}`,
-                                  borderLeftColor: (hasPrepDays && prepDaysCount > 0 && selectedTaskId === task.id) ? 'rgb(239, 68, 68)' : undefined
                                 }}
                                 data-testid={`time-task-${task.id}`}
                                 data-cal-task-id={task.id}
                                 data-cal-date={format(day, 'yyyy-MM-dd')}
                               >
-                                {/* Prep extension bar extending to the left - spans prepDaysCount columns */}
-                                {hasPrepDays && prepDaysCount > 0 && (() => {
-                                  // Always use light grey for prep days
-                                  const lightBg = 'rgba(156, 163, 175, 0.15)';
-                                  // Use grey border for prep days, red if selected
-                                  const prepBorderColor = selectedTaskId === task.id ? 'rgb(239, 68, 68)' : 'rgba(156, 163, 175, 0.7)';
-                                  // Limit prep days to actual days available to the left in the week
-                                  const currentDayIdx = weekDays.findIndex(d => isSameDay(d, day));
-                                  const actualPrepDays = Math.min(prepDaysCount, currentDayIdx);
-                                  if (actualPrepDays <= 0) return null;
-                                  // Calculate width: actualPrepDays * (single column width) - adjustment to align with course row prep days (2px margin)
-                                  const prepWidth = `calc(${actualPrepDays} * ((100vw - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth + 70}px) / 7.5) - 10px)`;
-                                  const prepHeight = 18;
-                                  const borderWidth = selectedTaskId === task.id ? 2 : 1;
-                                  return (
-                                    <>
-                                      {/* Prep extension bar */}
-                                      <div
-                                        className="absolute flex items-center justify-center"
-                                        style={{
-                                          top: '-1px',
-                                          right: 'calc(100% - 1px)',
-                                          width: prepWidth,
-                                          height: `${prepHeight}px`,
-                                          borderRadius: '4px 0 0 4px',
-                                          background: `linear-gradient(${lightBg}, ${lightBg}), white`,
-                                          borderTop: `${borderWidth}px solid ${prepBorderColor}`,
-                                          borderLeft: `${borderWidth}px solid ${prepBorderColor}`,
-                                          borderBottom: `${borderWidth}px solid ${prepBorderColor}`,
-                                          borderRight: 'none',
-                                          zIndex: 50,
-                                        }}
-                                        title={`${actualPrepDays} prep days`}
-                                      >
-                                        <span className="text-[8px] text-gray-700 font-medium truncate px-0.5">
-                                          Prep days
-                                        </span>
-                                      </div>
-                                      {/* Border segment below prep extension to complete the task box border */}
-                                      <div
-                                        className="absolute"
-                                        style={{
-                                          top: `${prepHeight - 2}px`,
-                                          left: `-${borderWidth - 1}px`,
-                                          width: `${borderWidth}px`,
-                                          height: `${taskHeight - prepHeight - 1}px`,
-                                          backgroundColor: prepBorderColor,
-                                          zIndex: 51,
-                                        }}
-                                      />
-                                    </>
-                                  );
-                                })()}
                                 {/* Silver shimmer header with checkbox and title for due today tasks */}
                                 <div className={`flex items-center gap-1.5 px-0.5 py-1 ${isDueToday ? "silver-shimmer-header" : ""}`}>
                                   {!isCASL101Task(task) && (
@@ -12360,27 +12286,18 @@ export default function Dashboard() {
                 
                 {/* Multi-hour tasks overlay - rendered as single absolute positioned elements */}
                 {getMultiHourTasksForWeek().map(({ task, dayIdx, startHour, startMin, endHour, endMin }) => {
-                  // Calculate position at render time
-                  // Pre-calculate cumulative heights including prep conflict heights
                   let topPx = 0;
                   for (let h = 0; h < startHour; h++) {
                     topPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                    // Add prep conflict height for this hour (calculated inline to avoid circular dependency)
-                    topPx += prepConflictHeights[h] || 0;
                   }
-                  // Add prep conflict height for the start hour itself (task starts after prep area)
-                  const startHourPrepConflict = prepConflictHeights[startHour] || 0;
-                  topPx += startHourPrepConflict;
                   
                   const startHourHeight = gridSizes.timeSlotHeights[startHour] || gridSizes.timeSlotHeight;
                   topPx += (startMin / 60) * startHourHeight;
                   
-                  // Calculate height including prep conflict heights for spanned hours
                   let heightPx = 0;
                   heightPx += ((60 - startMin) / 60) * startHourHeight;
                   for (let h = startHour + 1; h < endHour; h++) {
                     heightPx += gridSizes.timeSlotHeights[h] || gridSizes.timeSlotHeight;
-                    heightPx += prepConflictHeights[h] || 0;
                   }
                   if (endHour > startHour) {
                     const endHourHeight = gridSizes.timeSlotHeights[endHour] || gridSizes.timeSlotHeight;
@@ -12394,25 +12311,7 @@ export default function Dashboard() {
                   const isDueToday = !task.isCompleted && isSameDay(new Date(task.dueDate), today);
                   const isDueTomorrow = !task.isCompleted && isSameDay(new Date(task.dueDate), tomorrow);
                   
-                  // Check for prep days
-                  const hasPrepDays = !!task.startDate && !task.isCompleted;
-                  const prepDaysCount = hasPrepDays && task.startDate
-                    ? Math.max(0, Math.min(2, differenceInCalendarDays(new Date(task.dueDate), new Date(task.startDate))))
-                    : 0;
-                  
-                  // The prep conflict height is already added to topPx above, so no additional adjustment needed
                   const taskDay = weekDays[dayIdx];
-                  const adjustedTopPx = topPx;
-                  
-                  // For tasks with prep days, check if they need extra height to match pushed-down tasks
-                  const prepStartDayIdx = hasPrepDays && prepDaysCount > 0 ? Math.max(0, dayIdx - prepDaysCount) : dayIdx;
-                  const heightExtension = hasPrepDays && prepDaysCount > 0 
-                    ? getPrepTaskHeightExtension(task.id, startHour, prepStartDayIdx, dayIdx) 
-                    : 0;
-                  const adjustedHeightPx = heightPx + heightExtension;
-                  
-                  // Calculate day column width for prep extension (7.5 total column widths: 7 days + 0.5 extra)
-                  const dayColWidth = `calc((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)`;
                   
                   return (
                     <div
@@ -12438,28 +12337,19 @@ export default function Dashboard() {
                           taskTitle: task.title
                         });
                       }}
-                      className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing ${
+                      className={`absolute hover:opacity-90 shadow-sm cursor-grab active:cursor-grabbing rounded overflow-hidden border ${
                         draggedTask?.id === task.id ? "opacity-50" : ""
                       } ${
                         selectedTaskId === task.id ? "ring-2 ring-red-500 ring-offset-1" : ""
                       } ${
                         isDueToday ? "task-blink-border" : ""
-                      } ${
-                        hasPrepDays && prepDaysCount > 0
-                          ? "rounded-r rounded-bl overflow-visible border-t border-r border-b" 
-                          : "rounded overflow-hidden border"
                       }`}
                       style={{
-                        top: `${adjustedTopPx}px`,
-                        left: hasPrepDays && prepDaysCount > 0
-                          ? `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? 6.5 : dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)))`
-                          : `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? 6.5 : dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)) + 2px)`,
-                        width: hasPrepDays && prepDaysCount > 0
-                          ? `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5) - 2px)`
-                          : `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5) - 4px)`,
-                        height: `${adjustedHeightPx}px`,
+                        top: `${topPx}px`,
+                        left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (${dayIdx >= 6 ? 6.5 : dayIdx} * ((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5)) + 2px)`,
+                        width: `calc(((100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px) / 7.5) - 4px)`,
+                        height: `${heightPx}px`,
                         zIndex: selectedTaskId === task.id ? 50 : (draggedTask?.id === task.id ? 45 : 43),
-                        borderTopLeftRadius: hasPrepDays && prepDaysCount > 0 ? '0' : undefined,
                         backgroundColor: task.isCompleted ? '#e5e7eb' : (colors?.bg || '#e5e7eb'),
                         borderColor: task.isCompleted ? '#d1d5db' : (colors?.border || '#9ca3af')
                       }}
