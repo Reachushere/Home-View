@@ -12155,7 +12155,7 @@ export default function Dashboard() {
                           style={{
                             borderLeftColor: isCurrentHour ? 'rgba(0,0,0,0.15)' : 'hsl(var(--border) / 0.5)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 && dayIdx === 6 ? '16px' : undefined,
-                            backgroundColor: '#faf8f5'
+                            backgroundColor: isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5'
                           }}
                           data-testid={`time-slot-${format(day, "yyyy-MM-dd")}-${hour}`}
                           onDragOver={(e) => handleDragOver(e, day, hour)}
