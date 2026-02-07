@@ -1761,9 +1761,10 @@ export default function Dashboard() {
       const parsed = JSON.parse(saved);
       const hasNamedCourses = parsed.courses?.some((c: { name: string }) => c.name.trim());
       if (hasNamedCourses) {
-        // Keep course names/colors from saved, but always use default professor emails
         const coursesWithProfessor = parsed.courses.map((c: { name: string; color: string; professor?: string; professorEmail?: string }, i: number) => ({
           ...c,
+          name: c.name?.trim() ? c.name : defaultCourses[i]?.name ?? '',
+          color: c.color || defaultCourses[i]?.color || '#6b7280',
           professor: c.professor ?? defaultCourses[i]?.professor ?? '',
           professorEmail: defaultCourses[i]?.professorEmail ?? ''
         }));
