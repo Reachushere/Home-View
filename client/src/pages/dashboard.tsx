@@ -10272,19 +10272,19 @@ export default function Dashboard() {
                             {courseName !== courseCode && <span> - {courseName}</span>}
                             {course.professor && (
                               professorEmail ? (
-                                <a
+                                <>{" "}(<a
                                   href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-400 underline hover:text-blue-300 cursor-pointer"
+                                  className="!text-blue-400 underline hover:!text-blue-300 cursor-pointer"
                                   data-testid={`link-school-email-professor-${index + 1}`}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(professorEmail)}&su=${encodeURIComponent(`${courseCode} - `)}`, '_blank');
                                   }}
                                 >
-                                  {" "}({course.professor})
-                                </a>
+                                  {course.professor}
+                                </a>)</>
                               ) : (
                                 <span className="text-white/70"> ({course.professor})</span>
                               )
