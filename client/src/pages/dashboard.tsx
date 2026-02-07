@@ -11161,7 +11161,7 @@ export default function Dashboard() {
                   <div 
                     key={idx} 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isToday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isToday ? '#d4d4d4' : "black" }}
+                    style={{ backgroundColor: isToday ? '#c0c0c0' : "black" }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -11197,7 +11197,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isTodaySaturday ? '#c0c0c0' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: isTodaySaturday ? '#ababab' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
@@ -11918,7 +11918,7 @@ export default function Dashboard() {
                 return (
                   <div 
                     className="border-l relative p-0.5 flex flex-col gap-0.5 overflow-hidden min-w-0"
-                    style={{ backgroundColor: '#c0c0c0', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: '#ababab', borderLeftColor: 'rgba(0,0,0,0.15)', gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`all-day-slot-${format(day, "yyyy-MM-dd")}`}
                   >
                     {allDayTasks.map(task => {
@@ -12208,7 +12208,7 @@ export default function Dashboard() {
                         <div 
                           className={`border-l relative p-0.5`}
                           style={{ 
-                            backgroundColor: '#c0c0c0',
+                            backgroundColor: '#ababab',
                             borderLeftColor: 'rgba(0,0,0,0.15)',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
                             overflow: 'hidden',
