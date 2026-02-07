@@ -13233,8 +13233,8 @@ export default function Dashboard() {
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}
           />
-          <Card className="shadow-lg overflow-hidden h-full flex flex-col" style={{ background: 'white', borderRadius: '16px', border: '1px solid black' }}>
-            <CardContent className="p-0 flex-1 flex flex-col overflow-auto scrollbar-hidden">
+          <div className="shadow-lg overflow-hidden h-full flex flex-col border border-black" style={{ background: 'white', borderRadius: '16px' }}>
+            <div className="p-0 flex-1 flex flex-col overflow-auto scrollbar-hidden">
               {/* Month Header */}
               <div className="flex items-center justify-between p-3 border-b border-border sticky top-0 bg-white/50 backdrop-blur-sm z-10">
                 <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))}>
@@ -13327,8 +13327,8 @@ export default function Dashboard() {
                   });
                 })()}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           </div>
         </div>
         )}
