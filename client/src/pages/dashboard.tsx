@@ -9332,11 +9332,11 @@ export default function Dashboard() {
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Module</span>
                     <div className="flex-1" />
                     {moduleCount > 0 ? (
-                      <span className="bg-red-500 text-[8px] font-medium rounded-full w-[14px] h-[14px] flex items-center justify-center text-white">
+                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1 }}>
                         {moduleCount}
                       </span>
                     ) : moduleListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[8px] font-medium rounded-full w-[14px] h-[14px] flex items-center justify-center text-white">
+                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1 }}>
                         {moduleListenedCount}
                       </span>
                     ) : null}
@@ -9345,11 +9345,11 @@ export default function Dashboard() {
                     <span className="text-[9px] font-normal text-white" style={{ fontFamily: "'Raleway', sans-serif", letterSpacing: '0.3px' }}>Reading</span>
                     <div className="flex-1" />
                     {readingCount > 0 ? (
-                      <span className="bg-red-500 text-[8px] font-medium rounded-full w-[14px] h-[14px] flex items-center justify-center text-white">
+                      <span className="bg-red-500 text-[8px] font-medium text-white" style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1 }}>
                         {readingCount}
                       </span>
                     ) : readingListenedCount > 0 ? (
-                      <span className="bg-gray-400 text-[8px] font-medium rounded-full w-[14px] h-[14px] flex items-center justify-center text-white">
+                      <span className="bg-gray-400 text-[8px] font-medium text-white" style={{ width: '14px', height: '14px', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, lineHeight: 1 }}>
                         {readingListenedCount}
                       </span>
                     ) : null}
