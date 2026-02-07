@@ -11228,8 +11228,30 @@ export default function Dashboard() {
             </div>
             
               {/* Course Rows - CPPA122, CFNF400, CASL101 - Fixed, not scrollable - Now shows prep tasks */}
+              {/* Pre-compute course row height: minimum = 3 tasks height, expand only if any course has >3 tasks */}
+              {(() => {
+                const filteredCourses = coursesData.courses.filter(c => c.name).slice(0, 3);
+                const minThreeTaskHeight = 3 * 20 + 4; // 64px minimum (3 tasks)
+                const maxCourseRowHeight = Math.max(minThreeTaskHeight, ...filteredCourses.map(cd => {
+                  const cn = cd.name.split(' - ')[0].toUpperCase();
+                  const count = tasks?.filter(task => {
+                    if (!task.courseName?.toUpperCase().startsWith(cn)) return false;
+                    if (task.isCompleted) return false;
+                    const taskDueDate = startOfDay(new Date(task.dueDate));
+                    const weekStart = startOfDay(weekDays[0]);
+                    const weekEnd = startOfDay(addDays(weekDays[6], 1));
+                    if (taskDueDate >= weekStart && taskDueDate < weekEnd) return true;
+                    if (task.startDate) {
+                      const taskStartDate = startOfDay(new Date(task.startDate));
+                      if (taskStartDate < weekEnd && taskDueDate > weekStart) return true;
+                    }
+                    return false;
+                  }).length || 0;
+                  return count * 20 + 4;
+                }));
+                return (
               <div ref={courseRowsRef} data-testid="course-rows-container">
-              {coursesData.courses.filter(c => c.name).slice(0, 3).map((courseData, courseIdx) => {
+              {filteredCourses.map((courseData, courseIdx) => {
                 const courseName = courseData.name.split(' - ')[0].toUpperCase();
                 const rgb = hexToRgb(courseData.color);
                 const course = { 
@@ -11455,11 +11477,10 @@ export default function Dashboard() {
                   return false;
                 }).length || 0;
                 
-                // Dynamic row height: base height or 20px per task row, whichever is larger
-                const dynamicRowHeight = Math.max(gridSizes.courseRowHeight, courseTaskCount * 20 + 4);
+                // Use pre-computed max height so all course rows are the same height
                 
                 return (
-                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${dynamicRowHeight}px` }}>
+                <div key={course.name} className="grid border-b border-border/50 w-full flex-shrink-0 relative z-[43] group/courserow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${maxCourseRowHeight}px` }}>
                   <div className="px-1 py-0.5 text-[10px] font-medium tracking-wide flex flex-col items-center justify-center text-white relative leading-tight" style={{ backgroundColor: course.label }}>
                     {(() => {
                       const code = course.name.split(' - ')[0];
@@ -11829,6 +11850,7 @@ export default function Dashboard() {
                 );
               })}
               </div>
+                ); })()}
 
             {/* ALL DAY Row - Fixed, not scrollable - Only shows true all-day tasks (midnight due time) */}
             <div ref={allDayRowRef} className="grid border-b border-border/50 z-[44] w-full flex-shrink-0 relative group/alldayrow" style={{ gridTemplateColumns: getGridTemplateColumns(), minHeight: `${gridSizes.allDayRowHeight}px` }}>
