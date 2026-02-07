@@ -12427,7 +12427,7 @@ export default function Dashboard() {
                     {/* Progress column - half-width, black background */}
                     <div 
                       className="border-l border-border/50"
-                      style={{ backgroundColor: isCurrentHour ? '#333333' : '#000000' }}
+                      style={{ backgroundColor: '#000000' }}
                     />
                     {/* Saturday time slot cell */}
                     {weekDays[6] && (() => {
@@ -12440,11 +12440,12 @@ export default function Dashboard() {
                       const hasAnyTasks = totalItems > 0 || continuingTasks.length > 0;
                       return (
                         <div 
-                          className={`border-l border-border/50 border-t border-t-gray-300/50 relative overflow-visible ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
+                          className={`border-l border-border/50 border-t border-t-gray-300/50 relative ${isCurrentHour ? "current-hour-row-shimmer" : ""} ${isToday && !isCurrentHour ? "today-hour-shimmer" : ""}`}
                           style={{ 
                             backgroundColor: isToday || isCurrentHour ? '#e8e8e8' : '#faf8f5',
                             borderBottomRightRadius: hourIdx === timeSlots.length - 1 ? '16px' : undefined,
-                            paddingLeft: '6px'
+                            paddingLeft: '6px',
+                            overflow: 'hidden'
                           }}
                         >
                           {hour % 1 === 0 && (
