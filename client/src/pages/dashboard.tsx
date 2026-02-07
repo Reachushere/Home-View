@@ -9110,8 +9110,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      {/* Month/Week toggle - left aligned to calendar */}
-      <div className="absolute z-50" style={{ top: `${calendarTop - 28}px`, left: '4px' }}>
+      {/* Month/Week toggle - right aligned to calendar */}
+      <div className="absolute z-50" style={{ top: `${calendarTop - 28}px`, right: '66px' }}>
         <Button 
           variant="ghost"
           className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase"
