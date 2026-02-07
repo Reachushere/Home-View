@@ -13269,7 +13269,7 @@ export default function Dashboard() {
                 const numRows = Math.ceil(days.length / 7);
                 
                 return (
-                  <div className="grid grid-cols-7" style={{ gridTemplateRows: `repeat(${numRows}, 1fr)`, flex: 1, minHeight: 0 }}>
+                  <div className="grid grid-cols-7" style={{ gridTemplateRows: `repeat(${numRows}, 1fr)`, flex: '1 1 0%', minHeight: 0, height: 0 }}>
                     {days.map((day, idx) => {
                       const isCurrentMonth = day.getMonth() === currentMonth.getMonth();
                       const isToday = isSameDay(day, new Date());
