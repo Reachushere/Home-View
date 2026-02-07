@@ -9086,9 +9086,9 @@ export default function Dashboard() {
         </div>
       )}
       
-      {/* Navigation Arrows - centered above calendar */}
-      <div className="absolute z-50 flex items-center justify-center" style={{ top: `${calendarTop - 20}px`, left: '0px', right: '66px' }}>
-        <div className="flex items-center justify-center gap-2">
+      {/* Navigation Arrows with week dates - centered above calendar */}
+      <div className="absolute z-50 flex items-center justify-center" style={{ top: `${calendarTop - 28}px`, left: '0px', right: '66px' }}>
+        <div className="flex items-center justify-center gap-1">
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
             onClick={() => setSelectedWeek(Math.max(1, selectedWeek - 1))}
@@ -9097,6 +9097,9 @@ export default function Dashboard() {
           >
             <ChevronLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
+          <span className="text-[10px] text-white/80 whitespace-nowrap" data-testid="text-week-dates">
+            {format(weekStartDate, 'EEE, MMMM d')} to {format(weekEndDate, 'EEE MMM d')}
+          </span>
           <div 
             className="cursor-pointer hover:bg-white/20 rounded p-0.5"
             onClick={() => setSelectedWeek(Math.min(13, selectedWeek + 1))}
@@ -9108,7 +9111,7 @@ export default function Dashboard() {
         </div>
       </div>
       {/* Month/Week toggle - left aligned to calendar */}
-      <div className="absolute z-50" style={{ top: `${calendarTop - 20}px`, left: '4px' }}>
+      <div className="absolute z-50" style={{ top: `${calendarTop - 28}px`, left: '4px' }}>
         <Button 
           variant="ghost"
           className="!h-4 !min-h-0 px-1 text-[10px] hover:bg-white/20 rounded font-bold text-white/80 border-0 tracking-wide uppercase"
