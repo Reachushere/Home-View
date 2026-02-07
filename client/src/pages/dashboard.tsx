@@ -13218,8 +13218,8 @@ export default function Dashboard() {
           </div>
         </div>
         ) : (
-        <div className="mb-[12px] mt-[35px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 2 }}>
-          <div style={{ width: 'calc(100% - 67px)', height: '100%' }} className="relative overflow-visible">
+        <div className="mb-[12px] mt-[45px] relative flex gap-4 transition-all duration-300" style={{ height: calendarHeight - 35, order: 2 }}>
+          <div style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)', marginTop: '-2px' }} className="relative overflow-visible">
           {/* Glass effect backing box */}
           <div 
             className="absolute pointer-events-none"
@@ -13227,7 +13227,7 @@ export default function Dashboard() {
               top: '-5px', 
               left: '-15px', 
               right: '-15px', 
-              bottom: '-5px', 
+              bottom: '-27px', 
               background: 'rgba(255, 255, 255, 0.35)',
               borderRadius: '31px',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
