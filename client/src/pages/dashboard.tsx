@@ -11184,15 +11184,15 @@ export default function Dashboard() {
                 return (
                   <div 
                     className={`border-l border-border flex flex-col items-center justify-center h-full relative ${isTodaySaturday && blinkSettings.todayColumnBlink ? "animate-today-date" : ""}`}
-                    style={{ backgroundColor: isTodaySaturday ? '#d4d4d4' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
+                    style={{ backgroundColor: isTodaySaturday ? '#cccccc' : "black", gridColumn: gridSizes.moduleColumnWidth > 0 ? 10 : 9 }}
                     data-testid={`day-header-${format(day, "yyyy-MM-dd")}`}
                   >
                     {!isTodaySaturday && new Date().getDay() !== 6 && (
                       <div className="text-[8px] font-bold tracking-wider uppercase" style={{ marginBottom: '-4px', marginTop: '2px', color: '#E8E656' }}>NEW SCHOOL WEEK</div>
                     )}
                     <div className="flex items-center gap-1.5">
-                      <div className="text-2xl font-bold" style={{ color: isTodaySaturday ? '#000' : '#fff' }}>{dayNum}</div>
-                      <div className="text-[10px] font-medium tracking-wide" style={{ color: isTodaySaturday ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.8)' }}>{dayName}</div>
+                      <div className="text-2xl font-bold" style={{ color: '#fff' }}>{dayNum}</div>
+                      <div className="text-[10px] font-medium tracking-wide" style={{ color: 'rgba(255,255,255,0.8)' }}>{dayName}</div>
                     </div>
                   </div>
                 );
