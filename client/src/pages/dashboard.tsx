@@ -11520,8 +11520,8 @@ export default function Dashboard() {
                             
                             {/* Progress column - empty with black background */}
                             <div style={{ backgroundColor: '#000000' }} />
-                            {/* Saturday column - grey if today, course bg otherwise */}
-                            <div style={{ backgroundColor: isSameDay(weekDays[6], new Date()) ? '#e8e8e8' : course.bg }} />
+                            {/* Saturday column - course bg */}
+                            <div style={{ backgroundColor: course.bg }} />
                           </div>
                         );
                       })}
@@ -11592,8 +11592,7 @@ export default function Dashboard() {
                   {weekDays.slice(0, 6).map((day, dayIdx) => {
                     // Course row day cells - show tasks due on this day for this course
                     const isDayToday = isSameDay(day, new Date());
-                    // Use grey for today's column, course color otherwise
-                    const cellBgColor = isDayToday ? '#e8e8e8' : course.bg;
+                    const cellBgColor = course.bg;
                     
                     // Find tasks for this course on this day (due date OR within prep days range)
                     const cellDate = startOfDay(day);
@@ -11896,7 +11895,7 @@ export default function Dashboard() {
                     return (
                       <div 
                         className="border-l border-border/50 relative overflow-hidden min-w-0"
-                        style={{ backgroundColor: isDayToday ? '#e8e8e8' : course.bg, padding: '2px 2px 2px 8px' }}
+                        style={{ backgroundColor: course.bg, padding: '2px 2px 2px 8px' }}
                       >
                         {dueTasks.map(task => {
                           const today = startOfDay(new Date());
