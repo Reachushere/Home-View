@@ -11116,7 +11116,7 @@ export default function Dashboard() {
           </Dialog>
           
           {/* Calendar wrapper - leaves space for honeycombs on right */}
-          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)', marginTop: '-2px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
+          <div ref={calendarWrapperRef} style={{ width: 'calc(100% - 67px)', height: 'calc(100% - 5px)', marginTop: '5px', display: 'flex', flexDirection: 'column' }} className="relative overflow-visible">
           
           {/* Glass effect backing box - 30px bigger than calendar */}
           <div 
@@ -11151,14 +11151,14 @@ export default function Dashboard() {
             <div style={{ minWidth: 0 }} /> {/* Saturday column spacer */}
           </div>
           <div className="shadow-lg h-full border border-white flex flex-col relative" style={{ background: 'white', borderRadius: '16px', overflow: 'hidden' }}>
-            {/* Progress/Saturday divider line - dashed (6.5 / 7.5 total column widths), hidden on Saturday */}
+            
+            <div className="p-0 flex-1 flex flex-col overflow-hidden relative" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
+            {/* Progress/Saturday divider line - inside the clipped content area */}
             {new Date().getDay() !== 6 && (
-            <div className="absolute top-0 bottom-0 w-[5px] z-[15] pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
+            <div className="absolute top-0 bottom-0 w-[5px] z-[40] pointer-events-none overflow-hidden red-separator-shimmer" style={{ left: `calc(${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px + (6.5 / 7.5) * (100% - ${gridSizes.timeColumnWidth + gridSizes.moduleColumnWidth}px))`, backgroundColor: '#ef4444' }}>
               <div className="absolute inset-0 red-separator-shimmer-sweep" />
             </div>
             )}
-            
-            <div className="p-0 flex-1 flex flex-col overflow-hidden relative z-20" style={{ borderRadius: '16px' }} onClick={() => setSelectedTaskId(null)}>
             {/* Day Headers - Fixed, not scrollable */}
             <div data-calendar-grid="true" className="grid border-b border-border z-[44] h-[41px] w-full flex-shrink-0" style={{ gridTemplateColumns: getGridTemplateColumns() }}>
               <div className="flex items-center justify-center relative" style={{ backgroundColor: selectedWeek === 4 ? '#160502' : colorSettings.headerBar }}>
