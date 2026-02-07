@@ -10313,7 +10313,7 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Weeks */}
-                <div className="border rounded-lg p-3 space-y-1.5">
+                <div className="border rounded-lg p-3 space-y-0.5">
                   <Label className="text-[10px] font-medium">Weeks</Label>
                   {[...weeks].sort((a, b) => {
                     const today = startOfDay(new Date());
